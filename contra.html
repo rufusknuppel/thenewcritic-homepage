@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Contra — The New Critic</title>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABWGlDQ1BJQ0MgUHJvZmlsZQAAeJx9kLFLw1AQxr9WpaB1EB0cHDKJQ5SSCro4tBVEcQhVweqUvqapkMZHkiIFN/+Bgv+BCs5uFoc6OjgIopPo5uSk4KLleS+JpCJ6j+N+fO+74zggOW5wbvcDqDu+W1zKK5ulLSX1jAS9IAzm8Zyur0r+rj/j/T703k7LWb///43Biukxqp+UGcZdH0ioxPqezyXvE4+5tBRxS7IV8onkcsjngWe9WCC+JlZYzagQvxCr5R7d6uG63WDRDnL7tOlsrMk5lBNYxA48cNgw0IQCHdk//LOBv4BdcjfhUp+FGnzqyZEiJ5jEy3DAMAOVWEOGUpN3ju53F91PjbWDJ2ChI4S4iLWVDnA2Rydrx9rUPDAyBFy1ueEagdRHmaxWgddTYLgEjN5Qz7ZXzWrh9uk8MPAoxNskkDoEui0hPo6E6B5T8wNw6XwBA6diE8HYWhMAAAWHSURBVHja7VpfSFNtGH/fd2ebmk6jNsdIxdFEvYoIvegqQ+pG7zQIhERQwSAQBZEu6qI7ryJYUCRaaARdRAnSTYF/LrI/Soh/LpweRU2ncnBTT2d7nu/iocNYfX7LzTPHt+fiwMbOOc/v+ft7nneMpSUtaUnL/0w45yaTKW2HJNmeMWa3269fv845F0KkGABJkhhjd+/enZubY4wlBEASbLC3t3f+/PnCwkIAiB+DoQAQkTGmKIoQoqurSw+qFAuhnp4eRAwEAi6XK1GBZJBQ9bx8+XIoFELEO3fu6KhSKYRqamoODg4Q8datW5xzAEgZABQtfr//1KlTmqZduHChoaEBAOJ0gtF9IC8vz+fzAQAATExMxJnKwvgcaGxstFgsmqZxzktLSx0OByIeGYOI3XKJyoHl5WWXyyWEAIDs7OySkpJ4atF/3JaTk0MvTgj9os41Ojo6OTkpSVI4HGaM5efnx2MjcYjVOeeFhYUdHR1OpzMcDsfPXqjmWCwWl8ult+FAIKA75yi95RB3c86np6cZY+3t7d+/f3/+/Dm5AhGPUPsoZtxud0NDg6IoDoeDHrK6uhoPgJii32w2t7W19fb2VlVV6en4t94QQkiS9PDhQ0QMBoOIiIgHBwcFBQXH24/1R5eUlDx9+rS/v//SpUuRo0ks4UsBmZGRMT09HQqFNE0DAETc2Niw2WxGkCI9iWtqat68efPs2TPdG7E4hG6/ffu2z+cLh8MAEA6HEXFhYcFsNhvE6iJHwdra2levXr19+7apqSkvLy+Srv0OhrLf4XDcu3cvEAjAL0HElZWVzMxMQ2lpZMxUVFQ8evTo48ePXq830iH6LwkPQXI6nbIsq6pKqifBA1HK6Wa22+1tbW0jIyMTExOPHz+uq6ujvPxdxsfHddXpOjs7S6onZzAQQkQ2uMrKyidPniiKgojz8/MvXrzo7Oy8du2ax+NxuVyZmZlerxcRiUsTgMXFRavVmuTJJqoW5ebmtra2Tk1N4S9RVVVRFFmWNzY2qIfo17W1tZycHCGEcQAOeRNVev1jVVVVX1/f1tYW/kkIgKqqRCUoYQhJkudMznkkjHPnzt2/f1+WZT1sdKGPfX19paWl/1a1kzxA6nrk5ua+fPkSACgBojDs7++/f/++sbGxqKjozJkzuj9PxLhsMpnMZnNZWdnMzIzevw6R7e3tb9++1dXVxUvmEiiapnk8HqfTGTm4AADnfG1t7cGDB+vr61arNT8//8qVK7W1tadPnx4YGHC73cPDw7Ozsz9//jwuqhc7B6mvr1cUJRQKUe7qxfTGjRtRvy8rK6uurvZ4PMXFxeXl5VlZWUkOISosQ0NDkUlMMILBoN1ulyTJbDZLkkRVKGHzQGLrUjAY3NnZycjIIOYDACaTaWZmRi+yUYDpy1iWLsee5qTH0NCQoigWi4V0pev4+DghiRo7ia7GODYZUacA4PXr12NjY5qmRX7/+fPnBISoAR4QQgQCgbGxMVVVKXdpLp2cnCR4J30zR1FktVoVRaHY4Jxvbm76fL74p2GDAAghCgoK9vf3CQBjTJbl3d1dyteTDoCKyY8fP7Kzs/U8lmU5IbO8QWRDCGGz2UKhEDmEJgGd26bAbhQAbDZbUVERzcec8y9fvkStHE/uaQ3xyuHhYQCghcru7q7D4WApccREs8HNmzeJ/1AZ7e7uPimkP0Yy19zcjIhk/qmpKdoJpMYJHyl68eLF1dVVVVURsb6+nsV9NJaE5cW7d+8A4OvXr0djnUkOoatXr1L1bGlpST3zc84/fPiAiH6//+zZs4ndOxjUiT99+gQAvb29fr+fmFzKAKBzjaWlJSGE1+uN/2A4CWsixpjb7R4cHEyxf0b81VYvBVRPefOnJS1pScuf5B94+3TdscEUswAAAABJRU5ErkJggg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="site-header" id="site-header">
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="wordmark" href="/">
+      <img src="bird.png" alt="" aria-hidden="true">
+      THE NEW CRITIC
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="/essays.html">Essays</a></li>
+      <li><a href="/postscript.html">Postscript</a></li>
+      <li><a href="/contra.html" aria-current="page">Contra</a></li>
+      <li><a href="/give.html">Give</a></li>
+      <li><a href="/about.html">About</a></li>
+      </ul>
+      <a class="btn btn--small btn--primary nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
+    </div>
+  </div>
+</nav>
+<div class="promo-banner" id="promo-banner">
+  <div class="wrap promo-banner-inner">
+    <p>Subscribe for $30 / year &mdash; New Critic paid subscribers get access to <em>Postscript</em>, our interview series, <em>Contra</em>, our criticism section, and exclusive New Critic parties.</p>
+    <div class="promo-banner-actions">
+      <a class="btn btn--small btn--primary" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
+      <button class="promo-banner-close" type="button" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'tnc-promo-dismissed';
+  var el = document.getElementById('promo-banner');
+  if (!el) return;
+  try {
+    if (localStorage.getItem(KEY) === '1') { el.remove(); return; }
+  } catch (e) {}
+  var btn = el.querySelector('.promo-banner-close');
+  if (btn) btn.addEventListener('click', function(){
+    el.remove();
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
+</script>
+</div>
+
+<main id="main">
+
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Contra</h1>
+    </header>
+    <div class="card-grid page-grid">
+      
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener" data-preview="Tessa Augsberger contra Olivia Rodrigo’s you seem pretty sad for a girl so in love" data-title="You Seem Pretty Tame for a Girl in Revolt" data-author="Tessa Augsberger">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">You Seem Pretty Tame for a Girl in Revolt</span><span class="overlay-author">Tessa Augsberger</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">You Seem Pretty Tame for a Girl in Revolt</a></h3>
+        <p class="card-dek">Tessa Augsberger contra Olivia Rodrigo’s you seem pretty sad for a girl so in love</p>
+        <p class="card-meta"><span class="meta-date">JUN 24</span> <span class="meta-dot">&middot;</span> <span class="meta-author">TESSA AUGSBERGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">28</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener" data-preview="When the average film directors are a decade south of receiving an AARP subscription, it's a breath of fresh air to see young faces. Kane Parsons, the director of A24's new movie Backrooms, is the youngest we've seen in a while. What started in 2019 as an anonymous 4chan creepypasta (a horror related short story) turned into Parsons's directorial debut at the sober age of 20." data-title="Terms of Service" data-author="Nadav">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Terms of Service</span><span class="overlay-author">Nadav</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">Terms of Service</a></h3>
+        <p class="card-dek">Nadav Asal contra Kane Parsons’s Backrooms</p>
+        <p class="card-meta"><span class="meta-date">JUN 12</span> <span class="meta-dot">&middot;</span> <span class="meta-author">NADAV</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">17</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener" data-preview="It is hard to imagine a reporter having more success out of the gate than (the then 17-year-old) Theo Baker. By the time he returned home after the autumn quarter of his first year at Stanford in 2022, the Stanford Daily journalist had already broken three major stories: the university's heavy-handed suppression of parties in the post-Covid years; its failure to act against a con man who had lived illegally in student dorms for the better part of a year and allegedly harassed a female student; and the revelation that a series of papers published by then‑university president Marc Tessier‑Lavigne…" data-title="Snug as a Gun" data-author="Max Parness">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Snug as a Gun</span><span class="overlay-author">Max Parness</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">Snug as a Gun</a></h3>
+        <p class="card-dek">Max Parness contra Theo Baker’s How to Rule the World</p>
+        <p class="card-meta"><span class="meta-date">JUN 11</span> <span class="meta-dot">&middot;</span> <span class="meta-author">MAX PARNESS</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">19</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener" data-preview="Perhaps the most important quality in a young musician is their ability to make beautiful that which their parents would find hideous. As a teenager, you want to listen to music that makes you feel free, music to play fucking loud, the kind of music your parents would demand you turn off. In short, you're after awful-sounding music that, once illicit, becomes mystical and possessive, all yours, just yours." data-title="Ugly Fleshy Flap" data-author="Rufus Knuppel">
+        <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Ugly Fleshy Flap</span><span class="overlay-author">Rufus Knuppel</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">Ugly Fleshy Flap</a></h3>
+        <p class="card-dek">Rufus Knuppel contra ear’s Rumspringa</p>
+        <p class="card-meta"><span class="meta-date">JUN 10</span> <span class="meta-dot">&middot;</span> <span class="meta-author">RUFUS KNUPPEL</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">20</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener" data-preview="I'm running late to catch the tail end of the thrice-extended, off-broadway run of Dad Don't Read This, a surprise NYT Critic's Pick by 20-something playwright Eliya Smith and director Chloe Claudel. St. Luke's Theatre is not quite a basement, but it's not far from it. Once I settle on a metal stool the producer sets down for me on the periphery, I clock Jesse Eisenberg with his parents in the back. Next to me, a girl with a tooth gap tells me she's working with a director who's worked with Nicole Kidman. So it's a hot show." data-title="Now the Story, Please" data-author="Isabel Mehta">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kRyn!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Now the Story, Please</span><span class="overlay-author">Isabel Mehta</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">Now the Story, Please</a></h3>
+        <p class="card-dek">Isabel Mehta contra Eliya Smith’s Dad Don’t Read This</p>
+        <p class="card-meta"><span class="meta-date">JUN 9</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ISABEL MEHTA</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">14</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener" data-preview="Nelio Biedermann is the rarest of young men: a mainstream literary wunderkind and recipient of the New York Times imprimatur. His Instagram shows him signing books with Patti Smith and modeling for a Warby Parker ad campaign. The jacket blurb from novelist Daniel Kehlmann on Lázár, Biedermann's recently translated novel, reads like stage directions: “A truly great writer steps onto the stage, in full possession of his powers.” Biedermann, a 22-year-old writer from Zurich, has been called the next Thomas Mann, the next Joseph Roth, and the next Gabriel García Márquez. He is very handsome, and his novel—a multi-generational story…" data-title="Young Mann in a Hurry" data-author="Elan Kluger">
+        <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Young Mann in a Hurry</span><span class="overlay-author">Elan Kluger</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">Young Mann in a Hurry</a></h3>
+        <p class="card-dek">Elan Kluger contra Nelio Biedermann’s Lázár</p>
+        <p class="card-meta"><span class="meta-date">JUN 8</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ELAN KLUGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">24</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/contra" rel="noopener" data-preview="The critic has two roles: to worship excellence and to wage war on its behalf." data-title="Contra!" data-author="The New Critic">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AIKi!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Contra!</span><span class="overlay-author">The New Critic</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/contra" rel="noopener">Contra!</a></h3>
+        <p class="card-dek">Introducing our criticism section</p>
+        <p class="card-meta"><span class="meta-date">JUN 7</span> <span class="meta-dot">&middot;</span> <span class="meta-author">THE NEW CRITIC</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">39</span></span></p>
+      </div>
+    </article>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="foot-bird-link" href="/"><img class="foot-bird" src="bird.png" alt="The New Critic"></a>
+    <p class="foot-tag">The Young American Magazine</p>
+    <ul class="foot-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/essays.html">Essays</a></li>
+      <li><a href="/postscript.html">Postscript</a></li>
+      <li><a href="/contra.html">Contra</a></li>
+      <li><a href="/give.html">Give</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
+    <p class="foot-fine">&copy; 2026 The New Critic &middot; est. May 2025 &middot; editors@thenewcritic.com</p>
+  </div>
+</footer>
+
+<div id="preview-card" role="tooltip" aria-hidden="true"></div>
+<script>
+  (function(){
+    if (window.matchMedia('(hover: none)').matches) return;
+    var card = document.getElementById('preview-card');
+    var timer = null;
+    var activeLink = null;
+    var overCard = false;
+    var scrollTimer = null;
+    var isScrolling = false;
+    window.addEventListener('scroll', function() {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function(){ isScrolling = false; }, 200);
+    }, { passive: true });
+
+    function esc(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function show(link) {
+      var text = link.dataset.preview;
+      if (!text) return;
+      var glowCanvas = card.querySelector('canvas');
+      card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on &#8594;</a>';
+      if (glowCanvas) card.appendChild(glowCanvas);
+      card.setAttribute('aria-hidden', 'false');
+
+      // Absolute positioning — document coordinates so card scrolls with the image.
+      // For popular-row items, anchor to the full .card so the popup spans card width.
+      var anchor = link.closest('.popular-row .card') || link;
+      var rect = anchor.getBoundingClientRect();
+      var scrollY = window.scrollY || window.pageYOffset;
+      var scrollX = window.scrollX || window.pageXOffset;
+      var margin = 8;
+      var vw = document.documentElement.clientWidth;
+
+      card.style.visibility = 'hidden';
+      card.style.left = '-9999px';
+      card.style.top = '-9999px';
+      card.style.width = rect.width + 'px';
+      card.classList.add('preview-card--visible');
+
+      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
+      card.style.left = left + 'px';
+      card.style.top = (rect.bottom + scrollY) + 'px';
+
+      link.classList.add('preview-active');
+      card.style.visibility = '';
+    }
+
+    function hide() {
+      clearTimeout(timer);
+      timer = null;
+      if (activeLink) activeLink.classList.remove('preview-active');
+      activeLink = null;
+      card.classList.remove('preview-card--visible');
+      card.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('mouseover', function(e) {
+      var link = e.target.closest('.card-image-link[data-preview]');
+      if (!link) return;
+      if (link === activeLink) return;
+      clearTimeout(timer);
+      activeLink = link;
+      timer = setTimeout(function(){ show(link); }, 500);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      var link = e.target.closest('.card-image-link[data-preview]');
+      if (!link) return;
+      if (link.contains(e.relatedTarget)) return;
+      if (e.relatedTarget === card || card.contains(e.relatedTarget)) return;
+      if (overCard || isScrolling) return;
+      hide();
+    });
+
+    card.addEventListener('mouseenter', function(){ overCard = true; clearTimeout(timer); });
+    card.addEventListener('mouseleave', function(){ overCard = false; hide(); });
+
+  })();
+</script>
+<script>
+(function(){
+  var PAD = 6; // canvas overbleed — glow is centered on the border line
+
+  function buildPath(pts) {
+    var segs = [], total = 0;
+    for (var i = 0; i < pts.length - 1; i++) {
+      var dx = pts[i+1][0]-pts[i][0], dy = pts[i+1][1]-pts[i][1];
+      var len = Math.sqrt(dx*dx+dy*dy);
+      segs.push([pts[i], pts[i+1], total, total+len]);
+      total += len;
+    }
+    var fn = function(t) {
+      var d = ((t%1)+1)%1 * total;
+      for (var i = 0; i < segs.length; i++) {
+        if (d <= segs[i][3]+1e-6) {
+          var f = segs[i][3]>segs[i][2] ? Math.min(1,(d-segs[i][2])/(segs[i][3]-segs[i][2])) : 0;
+          return [segs[i][0][0]+(segs[i][1][0]-segs[i][0][0])*f,
+                  segs[i][0][1]+(segs[i][1][1]-segs[i][0][1])*f];
+        }
+      }
+      return pts[pts.length-1];
+    };
+    fn.total = total;
+    return fn;
+  }
+
+  // Smooth wire glow: line strokes + shadowBlur, no discrete circles
+  // tail is a fraction of path length (capped to ~51px so large elements match nav bar size)
+  function drawDroplet(ctx, pathFn, t, cw, ch, opacity, tail) {
+    ctx.clearRect(0,0,cw,ch);
+    if (opacity < 0.01) return;
+    var N = 60;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Pre-sample points
+    var pts = [];
+    for (var i = 0; i <= N; i++) pts.push(pathFn(t - (1-i/N)*tail));
+
+    // Outer glow halo (shadow pass)
+    ctx.save();
+    ctx.shadowColor = 'rgba(247,246,241,1)';
+    ctx.shadowBlur = 5;
+    for (var i = 1; i <= N; i++) {
+      var frac = i/N, a = frac*frac*opacity*0.32;
+      if (a < 0.003) continue;
+      ctx.beginPath();
+      ctx.moveTo(pts[i-1][0], pts[i-1][1]);
+      ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.lineWidth = 1 + frac*2;
+      ctx.strokeStyle = 'rgba(247,246,241,'+a+')';
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Crisp inner core
+    for (var i = 1; i <= N; i++) {
+      var frac = i/N, a = frac*frac*opacity*0.88;
+      if (a < 0.003) continue;
+      ctx.beginPath();
+      ctx.moveTo(pts[i-1][0], pts[i-1][1]);
+      ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.lineWidth = 0.2 + frac*1.1;
+      ctx.strokeStyle = 'rgba(247,246,241,'+a+')';
+      ctx.stroke();
+    }
+  }
+
+  function attach(el, makePathFn, speed, zIndex, maxTailPx) {
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;top:-'+PAD+'px;left:-'+PAD+'px;pointer-events:none;z-index:'+(zIndex||4)+';';
+    el.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+    var t=0, raf=null, on=false, opacity=0, pathFn=null, cw=0, ch=0, last=null;
+    var sizeChanged = true;
+
+    var ro = new ResizeObserver(function() { sizeChanged = true; });
+    ro.observe(el);
+
+    function rebuild() {
+      if (!sizeChanged) return;
+      var w=el.offsetWidth, h=el.offsetHeight;
+      if (!w||!h) return;
+      sizeChanged = false;
+      cw=w; ch=h;
+      pathFn = makePathFn(el,w,h);
+      canvas.width  = (pathFn && pathFn.canvasW) || w+2*PAD;
+      canvas.height = (pathFn && pathFn.canvasH) || h+2*PAD;
+    }
+
+    function frame(now) {
+      if (!last) last=now;
+      var dt=Math.min(now-last,100); last=now;
+      on ? (opacity=Math.min(1,opacity+0.004*dt)) : (opacity=Math.max(0,opacity-0.003*dt));
+      rebuild();
+      // Maintain constant pixel speed regardless of path length
+      var spd = (pathFn && pathFn.total) ? PIX_PER_MS / pathFn.total : speed;
+      t=(t+spd*dt)%1;
+      if (pathFn) {
+        var capPx = maxTailPx || 51;
+        var tail = Math.min(0.18, capPx / pathFn.total);
+        drawDroplet(ctx,pathFn,t,canvas.width,canvas.height,opacity,tail);
+      }
+      if (on||opacity>0.01) raf=requestAnimationFrame(frame);
+      else { raf=null; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+
+    return {
+      // cw=0;ch=0 forces rebuild on next frame so the path picks up fresh BCR positions
+      start: function(){ sizeChanged=true; on=true;  if(!raf){last=null; raf=requestAnimationFrame(frame);} },
+      stop:  function(){ on=false; if(!raf&&opacity>0.01){last=null; raf=requestAnimationFrame(frame);} }
+    };
+  }
+
+  // Button: 1px CSS border. Canvas positioned from padding edge (1px inside border outer edge).
+  // Traces border center (0.5px inside outer edge on each side).
+  function btnPathFn(el, w, h) {
+    var rect = el.getBoundingClientRect();
+    var p=PAD-0.5, q=rect.width+PAD-1.5, r=rect.height+PAD-1.5;
+    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
+  }
+
+  // Cover image link: no CSS border; outline is box-shadow 0 0 0 1px white (1px spread,
+  // center 0.5px outside element edge). Canvas at -PAD from outer edge (no border offset).
+  function imgPathFn(el, w, h) {
+    var rect = el.getBoundingClientRect();
+    var p=PAD-0.5, q=rect.width+PAD+0.5, r=rect.height+PAD+0.5;
+    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
+  }
+
+
+  var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
+  var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
+
+  // Buttons — glow on hover
+  document.querySelectorAll('a.btn').forEach(function(btn) {
+    btn.style.position = 'relative';
+    btn.style.overflow = 'visible';
+    var a = attach(btn, btnPathFn, SPD);
+    btn.addEventListener('mouseenter', a.start);
+    btn.addEventListener('mouseleave', a.stop);
+  });
+
+
+  // Cover images — glow on hover
+  document.querySelectorAll('.card-image-link').forEach(function(img) {
+    img.style.overflow = 'visible';
+    var a = attach(img, imgPathFn, SPD, 45);
+    new MutationObserver(function() {
+      if (img.classList.contains('preview-active')) a.start(); else a.stop();
+    }).observe(img, { attributes: true, attributeFilter: ['class'] });
+  });
+
+ }
+
+
+
+})();
+</script>
+</body>
+</html>
