@@ -462,14 +462,15 @@ ${renderBanner()}
 </div>`;
 }
 
-function renderCard(post, { variant = '', dekLength = 110 } = {}) {
+function renderCard(post, { variant = '', dekLength = 110, eager = false } = {}) {
   const cls = variant ? `card card--${variant}` : 'card';
   const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, dekLength))}</p>` : '';
   const hasPreview = post.preview && post.image;
   const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
+  const imgAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
   const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
-        ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="lazy">` : '<span class="card-image card-image--blank"></span>'}
+        ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
         ${overlayHtml}
       </a></span>`;
 
@@ -505,7 +506,7 @@ function renderPopularItem(post) {
   const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
   const imgHtml = post.image
-    ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="lazy">`
+    ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="eager">`
     : '<span class="card-image card-image--blank"></span>';
 
   return `
@@ -546,7 +547,10 @@ function renderAnnouncement(a) {
 }
 
 function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive, notes }) {
-  const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180 }) : '';
+  const heroPreload = hero?.image
+    ? `<link rel="preload" as="image" href="${escapeHtml(hero.image)}">`
+    : '';
+  const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180, eager: true }) : '';
 
   const popularHtml = popular.length ? `
     <section class="popular-strip reveal" aria-labelledby="popular-heading">
@@ -613,9 +617,10 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 <link rel="icon" href="${FAVICON}">
+${heroPreload}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -768,38 +773,39 @@ const ABOUT_PEOPLE = [
   { name: 'Milla Ben-Ezra', role: 'Founder' },
 ];
 
-function imageToDataUri(relPath) {
-  const ext = path.extname(relPath).slice(1).toLowerCase();
-  const mime = ext === 'jpg' ? 'jpeg' : ext;
-  const buf = fs.readFileSync(path.join(__dirname, relPath));
-  return `data:image/${mime};base64,${buf.toString('base64')}`;
+function copyPersonPhoto(relPath) {
+  const base = path.basename(relPath);
+  const destDir = path.join(OUT_DIR, 'people');
+  fs.mkdirSync(destDir, { recursive: true });
+  fs.copyFileSync(path.join(__dirname, relPath), path.join(destDir, base));
+  return `/people/${base}`;
 }
 
 // Photos supplied directly (not scraped from give.html, since these two
 // aren't founders) — local files in assets/people/.
 const ADDITIONAL_PEOPLE_PHOTOS = {
   'Will Diana': {
-    photo: imageToDataUri('assets/people/will-diana.jpg'),
+    src: 'assets/people/will-diana.jpg',
     href: 'https://substack.com/@willdiana',
   },
   'Isabel Mehta': {
-    photo: imageToDataUri('assets/people/isabel-mehta.jpg'),
+    src: 'assets/people/isabel-mehta.jpg',
     href: 'https://substack.com/@isabelmehta',
   },
   'Owen Yingling': {
-    photo: imageToDataUri('assets/people/owen-yingling.jpeg'),
+    src: 'assets/people/owen-yingling.jpeg',
     href: 'https://substack.com/@oyyy',
   },
   'Theodore Gary': {
-    photo: imageToDataUri('assets/people/theodore-gary.png'),
+    src: 'assets/people/theodore-gary.png',
     href: 'https://substack.com/@theogary',
   },
   'Milla Ben-Ezra': {
-    photo: imageToDataUri('assets/people/milla-ben-ezra.jpeg'),
+    src: 'assets/people/milla-ben-ezra.jpeg',
     href: 'https://substack.com/@millabenezra',
   },
   'Kit Knuppel': {
-    photo: imageToDataUri('assets/people/kit-knuppel.jpg'),
+    src: 'assets/people/kit-knuppel.jpg',
     href: 'https://substack.com/@kitknuppel1',
   },
 };
@@ -842,11 +848,11 @@ function renderAboutMedallions(people) {
 
 function renderAboutPage(founders) {
   const founderLookup = new Map(founders.map((f) => [f.name, f]));
-  const people = ABOUT_PEOPLE.map((p) => ({
-    ...p,
-    ...founderLookup.get(p.name),
-    ...ADDITIONAL_PEOPLE_PHOTOS[p.name],
-  }));
+  const people = ABOUT_PEOPLE.map((p) => {
+    const extra = ADDITIONAL_PEOPLE_PHOTOS[p.name];
+    const photo = extra?.src ? copyPersonPhoto(extra.src) : undefined;
+    return { ...p, ...founderLookup.get(p.name), ...(extra && { ...extra, photo }) };
+  });
 
   // Title positioned the same as Contra's (item 4) — full-width .wrap,
   // not the narrower .wrap--narrow used for plain prose pages.
