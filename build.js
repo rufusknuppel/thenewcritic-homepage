@@ -385,23 +385,26 @@ function metaLine(post, { showDate = true } = {}) {
 }
 
 function renderNav(currentKey = 'home') {
-  // Home isn't listed (item: removed) — the wordmark already links there
-  // and glows on hover, so it doubles as the home link.
-  const links = SITE_LINKS.filter((l) => l.key !== 'home')
-    .map(
-      (l) => `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`
-    )
-    .join('\n      ');
+  function navLink(l) {
+    return `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
+  }
+  const leftKeys = ['essays', 'postscript', 'contra'];
+  const rightKeys = ['give', 'about'];
+  const leftLinks = SITE_LINKS.filter(l => leftKeys.includes(l.key)).map(navLink).join('\n      ');
+  const rightLinks = SITE_LINKS.filter(l => rightKeys.includes(l.key)).map(navLink).join('\n      ');
 
   return `<nav class="site-nav">
-  <div class="wrap">
+  <div class="wrap nav-wrap">
+    <ul class="nav-links nav-links--left">
+      ${leftLinks}
+    </ul>
     <a class="wordmark" href="/"${currentKey === 'home' ? ' aria-current="page"' : ''}>
       <img src="${BIRD_LOGO}" alt="" aria-hidden="true">
       THE NEW CRITIC
     </a>
     <div class="nav-right">
       <ul class="nav-links">
-        ${links}
+        ${rightLinks}
       </ul>
       <a class="btn btn--small btn--primary nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
     </div>
@@ -539,13 +542,16 @@ function renderPopularItem(post) {
     </article>`;
 }
 
-function renderSectionBlock(label, viewAllHref, posts) {
+function renderSectionBlock(label, viewAllHref, posts, tagline) {
   if (!posts.length) return '';
   return `
     <section class="section-block reveal" aria-labelledby="${escapeHtml(label)}-heading">
       <div class="section-block-head">
-        <h2 id="${escapeHtml(label)}-heading"><a href="${escapeHtml(viewAllHref)}">${escapeHtml(label)}</a></h2>
-        <a class="view-all" href="${escapeHtml(viewAllHref)}">View all</a>
+        <div class="section-block-title">
+          <h2 id="${escapeHtml(label)}-heading"><a href="${escapeHtml(viewAllHref)}">${escapeHtml(label)}</a></h2>
+          ${tagline ? `<em class="section-tagline">${escapeHtml(tagline)}</em>` : ''}
+        </div>
+        <a class="view-all" href="${escapeHtml(viewAllHref)}">See all</a>
       </div>
       <div class="card-grid">
         ${posts.map((p) => renderCard(p)).join('')}
@@ -558,6 +564,8 @@ function renderSectionBlock(label, viewAllHref, posts) {
 function renderAnnouncement(a) {
   return `
     <div class="announcement-box reveal">
+      <p class="eyebrow">From the Editors</p>
+      <h2 class="announcement-title">${escapeHtml(a.title)}</h2>
       ${a.body.map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
       <a class="btn btn--small btn--primary" href="${escapeHtml(a.ctaHref)}" rel="noopener">${escapeHtml(a.ctaLabel)}</a>
     </div>`;
@@ -582,7 +590,7 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 
   const notesHtml = notes.length ? `
     <div class="side-notes">
-      <p class="eyebrow">Ed. Notes</p>
+      <p class="eyebrow side-notes-label">Editors&#8217; Notes</p>
       <ul>
         ${notes.map((n) => `
           <li>
@@ -595,24 +603,25 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 
   const sidebarHtml = `
     <aside class="side-col">
-      <form class="subscribe-box" action="${SITE_URL}/subscribe" method="get" target="_blank" rel="noopener">
-        <input type="email" name="email" placeholder="Type your email&hellip;" aria-label="Email address" required>
-        <button type="submit" class="btn btn--small btn--primary">Subscribe</button>
-      </form>
       ${notesHtml}
+      <p class="side-pitch">Sign up for our free newsletter, or get our parties, interviews, and criticism for $30&thinsp;/&thinsp;year</p>
+      <a class="btn btn--small btn--primary side-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
     </aside>`;
 
   const sectionsHtml = [
-    renderSectionBlock('Essays', '/essays.html', essays),
-    renderSectionBlock('Postscript', '/postscript.html', postscript),
-    renderSectionBlock('Contra', '/contra.html', contra),
+    renderSectionBlock('Essays', '/essays.html', essays, 'Always Ambitious, Always Free, Always Online'),
+    renderSectionBlock('Postscript', '/postscript.html', postscript, 'Our Editors Interview Extraordinary Gen Zers'),
+    renderSectionBlock('Contra', '/contra.html', contra, 'Our Critics Face Off Against Significant Works'),
   ].join('');
 
   const archiveHtml = fromArchive.length ? `
     <section class="archive-strip reveal" aria-labelledby="archive-heading">
       <div class="section-block-head">
-        <h2 id="archive-heading"><a href="/archive.html">From the Archive</a></h2>
-        <a class="view-all" href="/archive.html">View all</a>
+        <div class="section-block-title">
+          <h2 id="archive-heading"><a href="/archive.html">From the Archive</a></h2>
+          <em class="section-tagline">TNC Editors&#8217; Picks</em>
+        </div>
+        <a class="view-all" href="/archive.html">See all</a>
       </div>
       <div class="card-grid">
         ${fromArchive.map((p) => renderCard(p)).join('')}

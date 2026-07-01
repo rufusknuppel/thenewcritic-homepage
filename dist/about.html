@@ -17,17 +17,19 @@
 
 <div class="site-header" id="site-header">
 <nav class="site-nav">
-  <div class="wrap">
+  <div class="wrap nav-wrap">
+    <ul class="nav-links nav-links--left">
+      <li><a href="/essays.html">Essays</a></li>
+      <li><a href="/postscript.html">Postscript</a></li>
+      <li><a href="/contra.html">Contra</a></li>
+    </ul>
     <a class="wordmark" href="/">
       <img src="bird.png" alt="" aria-hidden="true">
       THE NEW CRITIC
     </a>
     <div class="nav-right">
       <ul class="nav-links">
-        <li><a href="/essays.html">Essays</a></li>
-      <li><a href="/postscript.html">Postscript</a></li>
-      <li><a href="/contra.html">Contra</a></li>
-      <li><a href="/give.html">Give</a></li>
+        <li><a href="/give.html">Give</a></li>
       <li><a href="/about.html" aria-current="page">About</a></li>
       </ul>
       <a class="btn btn--small btn--primary nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
@@ -163,6 +165,7 @@
     function show(link) {
       var text = link.dataset.preview;
       if (!text) return;
+      activeLink = link;
       var glowCanvas = card.querySelector('canvas');
       card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on &#8594;</a>';
       if (glowCanvas) card.appendChild(glowCanvas);

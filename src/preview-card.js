@@ -19,6 +19,7 @@
     function show(link) {
       var text = link.dataset.preview;
       if (!text) return;
+      activeLink = link;
       var glowCanvas = card.querySelector('canvas');
       card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on &#8594;</a>';
       if (glowCanvas) card.appendChild(glowCanvas);
