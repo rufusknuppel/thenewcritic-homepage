@@ -355,7 +355,7 @@ function normalizeRssItem(item) {
   };
 }
 
-function metaLine(post) {
+function metaLine(post, { showDate = true } = {}) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
   const md =
@@ -365,7 +365,7 @@ function metaLine(post) {
           : { month: 'short', day: 'numeric' }).toUpperCase()
       : '';
   const parts = [];
-  if (md) parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
+  if (showDate && md) parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
   if (post.author) parts.push(`<span class="meta-author">${escapeHtml(post.author.toUpperCase())}</span>`);
 
   const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
@@ -512,7 +512,7 @@ function renderPopularItem(post) {
       </a>
       <div class="card-text">
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-        <p class="card-meta">${metaLine(post)}</p>
+        <p class="card-meta">${metaLine(post, { showDate: false })}</p>
       </div>
     </article>`;
 }
