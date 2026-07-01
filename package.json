@@ -1,0 +1,12 @@
+{
+  "name": "thenewcritic-homepage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static homepage for The New Critic, generated at build time from its Substack RSS feed.",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv /Users/rufusknuppel/Downloads/CLAUDE.md /Users/rufusknuppel/projects/thenewcritic-homepage/CLAUDE.md && ls /Users/rufusknuppel/projects/thenewcritic-homepage)",
+      "Bash(npm run *)",
+      "Bash(python3 -m http.server 8765)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8765/index.html)",
+      "Bash(curl -s https://www.thenewcritic.com/ -o /tmp/live-home.html -A \"Mozilla/5.0\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s https://www.thenewcritic.com/archive -A \"Mozilla/5.0\" -o /tmp/archive.html)",
+      "Bash(python3 -)",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(curl -s https://www.thenewcritic.com/feed -A \"Mozilla/5.0\")",
+      "Bash(curl -s https://www.thenewcritic.com/feed -A \"Mozilla/5.0\" -o /tmp/feed.xml)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://www.thenewcritic.com/t/essays/feed\" -A \"Mozilla/5.0\")",
+      "Bash(curl -s \"https://www.thenewcritic.com/t/essays/feed\" -A \"Mozilla/5.0\")",
+      "Bash(curl -s \"https://www.thenewcritic.com/t/essays\" -A \"Mozilla/5.0\" -o /tmp/essays.html)",
+      "Bash(curl -s \"https://www.thenewcritic.com/p/changing-of-the-guard\" -A \"Mozilla/5.0\" -o /tmp/post.html)",
+      "Bash(curl -s \"https://www.thenewcritic.com/about\" -A \"Mozilla/5.0\" -o /tmp/about.html)",
+      "Bash(node build.js)",
+      "Bash(curl -s -L \"https://www.thenewcritic.com/give\" -A \"Mozilla/5.0\" -o /tmp/give.html)",
+      "Bash(find /Users/rufusknuppel -maxdepth 4 -iname \"*give*\" 2>/dev/null *)",
+      "Bash(grep -n '\\\\${renderNav\\(' build.js)",
+      "Bash(curl -s \"https://www.thenewcritic.com/t/essays\" -A \"Mozilla/5.0\" -o /tmp/essays2.html)",
+      "Bash(curl -s \"https://www.thenewcritic.com/api/v1/archive?sort=new&search=&offset=12&limit=12&tag=essays\" -A \"Mozilla/5.0\")",
+      "Bash(grep -n \"GIVE_PROMO_BANNER_CSS = \\\\`\" -A 8 build.js)",
+      "Bash(grep -o \"nav-subscribe.\\\\{0,80\\\\}\" dist/index.html)",
+      "Bash(grep -o \"nav-subscribe.\\\\{0,80\\\\}\" dist/give.html)",
+      "Bash(grep -o \"foot-fine.\\\\{0,120\\\\}\" dist/index.html)"
+    ]
+  }
+}

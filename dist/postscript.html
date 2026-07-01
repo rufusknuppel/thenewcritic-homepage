@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Postscript — The New Critic</title>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABWGlDQ1BJQ0MgUHJvZmlsZQAAeJx9kLFLw1AQxr9WpaB1EB0cHDKJQ5SSCro4tBVEcQhVweqUvqapkMZHkiIFN/+Bgv+BCs5uFoc6OjgIopPo5uSk4KLleS+JpCJ6j+N+fO+74zggOW5wbvcDqDu+W1zKK5ulLSX1jAS9IAzm8Zyur0r+rj/j/T703k7LWb///43Biukxqp+UGcZdH0ioxPqezyXvE4+5tBRxS7IV8onkcsjngWe9WCC+JlZYzagQvxCr5R7d6uG63WDRDnL7tOlsrMk5lBNYxA48cNgw0IQCHdk//LOBv4BdcjfhUp+FGnzqyZEiJ5jEy3DAMAOVWEOGUpN3ju53F91PjbWDJ2ChI4S4iLWVDnA2Rydrx9rUPDAyBFy1ueEagdRHmaxWgddTYLgEjN5Qz7ZXzWrh9uk8MPAoxNskkDoEui0hPo6E6B5T8wNw6XwBA6diE8HYWhMAAAWHSURBVHja7VpfSFNtGH/fd2ebmk6jNsdIxdFEvYoIvegqQ+pG7zQIhERQwSAQBZEu6qI7ryJYUCRaaARdRAnSTYF/LrI/Soh/LpweRU2ncnBTT2d7nu/iocNYfX7LzTPHt+fiwMbOOc/v+ft7nneMpSUtaUnL/0w45yaTKW2HJNmeMWa3269fv845F0KkGABJkhhjd+/enZubY4wlBEASbLC3t3f+/PnCwkIAiB+DoQAQkTGmKIoQoqurSw+qFAuhnp4eRAwEAi6XK1GBZJBQ9bx8+XIoFELEO3fu6KhSKYRqamoODg4Q8datW5xzAEgZABQtfr//1KlTmqZduHChoaEBAOJ0gtF9IC8vz+fzAQAATExMxJnKwvgcaGxstFgsmqZxzktLSx0OByIeGYOI3XKJyoHl5WWXyyWEAIDs7OySkpJ4atF/3JaTk0MvTgj9os41Ojo6OTkpSVI4HGaM5efnx2MjcYjVOeeFhYUdHR1OpzMcDsfPXqjmWCwWl8ult+FAIKA75yi95RB3c86np6cZY+3t7d+/f3/+/Dm5AhGPUPsoZtxud0NDg6IoDoeDHrK6uhoPgJii32w2t7W19fb2VlVV6en4t94QQkiS9PDhQ0QMBoOIiIgHBwcFBQXH24/1R5eUlDx9+rS/v//SpUuRo0ks4UsBmZGRMT09HQqFNE0DAETc2Niw2WxGkCI9iWtqat68efPs2TPdG7E4hG6/ffu2z+cLh8MAEA6HEXFhYcFsNhvE6iJHwdra2levXr19+7apqSkvLy+Srv0OhrLf4XDcu3cvEAjAL0HElZWVzMxMQ2lpZMxUVFQ8evTo48ePXq830iH6LwkPQXI6nbIsq6pKqifBA1HK6Wa22+1tbW0jIyMTExOPHz+uq6ujvPxdxsfHddXpOjs7S6onZzAQQkQ2uMrKyidPniiKgojz8/MvXrzo7Oy8du2ax+NxuVyZmZlerxcRiUsTgMXFRavVmuTJJqoW5ebmtra2Tk1N4S9RVVVRFFmWNzY2qIfo17W1tZycHCGEcQAOeRNVev1jVVVVX1/f1tYW/kkIgKqqRCUoYQhJkudMznkkjHPnzt2/f1+WZT1sdKGPfX19paWl/1a1kzxA6nrk5ua+fPkSACgBojDs7++/f/++sbGxqKjozJkzuj9PxLhsMpnMZnNZWdnMzIzevw6R7e3tb9++1dXVxUvmEiiapnk8HqfTGTm4AADnfG1t7cGDB+vr61arNT8//8qVK7W1tadPnx4YGHC73cPDw7Ozsz9//jwuqhc7B6mvr1cUJRQKUe7qxfTGjRtRvy8rK6uurvZ4PMXFxeXl5VlZWUkOISosQ0NDkUlMMILBoN1ulyTJbDZLkkRVKGHzQGLrUjAY3NnZycjIIOYDACaTaWZmRi+yUYDpy1iWLsee5qTH0NCQoigWi4V0pev4+DghiRo7ia7GODYZUacA4PXr12NjY5qmRX7/+fPnBISoAR4QQgQCgbGxMVVVKXdpLp2cnCR4J30zR1FktVoVRaHY4Jxvbm76fL74p2GDAAghCgoK9vf3CQBjTJbl3d1dyteTDoCKyY8fP7Kzs/U8lmU5IbO8QWRDCGGz2UKhEDmEJgGd26bAbhQAbDZbUVERzcec8y9fvkStHE/uaQ3xyuHhYQCghcru7q7D4WApccREs8HNmzeJ/1AZ7e7uPimkP0Yy19zcjIhk/qmpKdoJpMYJHyl68eLF1dVVVVURsb6+nsV9NJaE5cW7d+8A4OvXr0djnUkOoatXr1L1bGlpST3zc84/fPiAiH6//+zZs4ndOxjUiT99+gQAvb29fr+fmFzKAKBzjaWlJSGE1+uN/2A4CWsixpjb7R4cHEyxf0b81VYvBVRPefOnJS1pScuf5B94+3TdscEUswAAAABJRU5ErkJggg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="site-header" id="site-header">
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="wordmark" href="/">
+      <img src="bird.png" alt="" aria-hidden="true">
+      THE NEW CRITIC
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="/essays.html">Essays</a></li>
+      <li><a href="/postscript.html" aria-current="page">Postscript</a></li>
+      <li><a href="/contra.html">Contra</a></li>
+      <li><a href="/give.html">Give</a></li>
+      <li><a href="/about.html">About</a></li>
+      </ul>
+      <a class="btn btn--small btn--primary nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
+    </div>
+  </div>
+</nav>
+<div class="promo-banner" id="promo-banner">
+  <div class="wrap promo-banner-inner">
+    <p>Subscribe for $30 / year &mdash; New Critic paid subscribers get access to <em>Postscript</em>, our interview series, <em>Contra</em>, our criticism section, and exclusive New Critic parties.</p>
+    <div class="promo-banner-actions">
+      <a class="btn btn--small btn--primary" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
+      <button class="promo-banner-close" type="button" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'tnc-promo-dismissed';
+  var el = document.getElementById('promo-banner');
+  if (!el) return;
+  try {
+    if (localStorage.getItem(KEY) === '1') { el.remove(); return; }
+  } catch (e) {}
+  var btn = el.querySelector('.promo-banner-close');
+  if (btn) btn.addEventListener('click', function(){
+    el.remove();
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
+</script>
+</div>
+
+<main id="main">
+
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Postscript</h1>
+    </header>
+    <div class="card-grid page-grid">
+      
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/last-girl-at-the-beginning-of-history" rel="noopener" data-preview="After spending time at both the National Conservatism conference and the liberal “Unpopulist” conference in D.C., Afsari found something missing in liberalism." data-title="Last Girl at the Beginning of History" data-author="Mana Afsari">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!SXxb!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Last Girl at the Beginning of History</span><span class="overlay-author">Mana Afsari</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/last-girl-at-the-beginning-of-history" rel="noopener">Last Girl at the Beginning of History</a></h3>
+        <p class="card-dek">Postscript No. 18 | Mana Afsari on the boys and girls of gen z and the New Right</p>
+        <p class="card-meta"><span class="meta-date">JUN 4</span> <span class="meta-dot">&middot;</span> <span class="meta-author">MANA AFSARI</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">27</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/voluntary-oasis" rel="noopener" data-preview="These are, in many ways, the essential questions of youth — of the examined and serious life. They are the questions that preoccupy the 20-something students who work and study at Deep Springs College, a cattle ranch and two-year university in eastern California, infamous among those who know it for its self-governing pedagogy, hands-on labor, and precocious pupils. Every few years, Deep Springs re-enters the collective conscience through a media report, usually positive, expounding on the virtues of this elite, remote, and oh-so-un-modern institution." data-title="Voluntary Oasis" data-author="The New Critic">
+        <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Voluntary Oasis</span><span class="overlay-author">The New Critic</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/voluntary-oasis" rel="noopener">Voluntary Oasis</a></h3>
+        <p class="card-dek">Postscript No. 17 | Declan Rexer on Deep Springs</p>
+        <p class="card-meta"><span class="meta-date">MAY 30</span> <span class="meta-dot">&middot;</span> <span class="meta-author">THE NEW CRITIC</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">18</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener" data-preview="Being the “voice of your generation” is a rather difficult role, especially if you earned the moniker from a piece you now consider a re-packaging of Jonathan Haidt." data-title="Worse Than You Think" data-author="Clare Ashcraft">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!bK-K!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Worse Than You Think</span><span class="overlay-author">Clare Ashcraft</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener">Worse Than You Think</a></h3>
+        <p class="card-dek">Postscript No. 16 | Clare Ashcraft on gen z doomerism and romantic delusion</p>
+        <p class="card-meta"><span class="meta-date">MAY 22</span> <span class="meta-dot">&middot;</span> <span class="meta-author">CLARE ASHCRAFT</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">19</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/bridge-over-troubled-water" rel="noopener" data-preview="Postscript No. 15 | Owen Yingling on AI at UChicago, the art of the polemic, and everything of any significance" data-title="Bridge over Troubled Water" data-author="The New Critic">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!L6wC!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Febec6757-77bd-48b8-b8fb-820fc24a3e34_1786x1678.png" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Bridge over Troubled Water</span><span class="overlay-author">The New Critic</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/bridge-over-troubled-water" rel="noopener">Bridge over Troubled Water</a></h3>
+        <p class="card-dek">Postscript No. 15 | Owen Yingling on AI at UChicago, the art of the polemic, and everything of any…</p>
+        <p class="card-meta"><span class="meta-date">MAY 15</span> <span class="meta-dot">&middot;</span> <span class="meta-author">THE NEW CRITIC</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">31</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/pathological-nostalgia" rel="noopener" data-preview="Postscript No. 14 | Aitan Avgar and Milo Tasman on socialist Zionist summer camp" data-title="Pathological Nostalgia" data-author="Elan Kluger">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!XYUY!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe782d8e9-ac15-496b-bfee-49f424c4d89e_2664x860.heic" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Pathological Nostalgia</span><span class="overlay-author">Elan Kluger</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/pathological-nostalgia" rel="noopener">Pathological Nostalgia</a></h3>
+        <p class="card-dek">Postscript No. 14 | Aitan Avgar and Milo Tasman on socialist Zionist summer camp</p>
+        <p class="card-meta"><span class="meta-date">APR 30</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ELAN KLUGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">10</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!iaVB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener">Curtis Yarvin Jr.</a></h3>
+        <p class="card-dek">Postscript No. 13 | Steven Miller on living in Mencius Moldbug’s basement</p>
+        <p class="card-meta"><span class="meta-date">APR 15</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ELAN KLUGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">31</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/veritas" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!oMY1!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fddf5bd8f-5c19-48d5-87d3-4525007f3dc6_1656x1800.png" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/veritas" rel="noopener">Veritas</a></h3>
+        <p class="card-dek">Postscript No. 12 | Isabel Mehta on the humanities at Harvard</p>
+        <p class="card-meta"><span class="meta-date">APR 7</span> <span class="meta-dot">&middot;</span> <span class="meta-author">THE NEW CRITIC</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">17</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/showing-your-work" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!eo_I!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc18d44a3-1ee9-4a76-bcb8-657b557524e0_2083x3014.jpeg" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/showing-your-work" rel="noopener">Showing Your Work</a></h3>
+        <p class="card-dek">Postscript No. 11 | Josie Barboriak on the critic and her publics</p>
+        <p class="card-meta"><span class="meta-date">MAR 21</span> <span class="meta-dot">&middot;</span> <span class="meta-author">JOSIE BARBORIAK</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">13</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/naked-journalism" rel="noopener" data-preview="Postscript No. 10 | Sarah Miller and Charlotte Hampton on covering campus politics and editing student newspapers" data-title="Naked Journalism" data-author="Sarah Miller">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!xs-P!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F308036e0-1ad4-4c2e-83bb-f4ac6fc8b147_2352x3137.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Naked Journalism</span><span class="overlay-author">Sarah Miller</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/naked-journalism" rel="noopener">Naked Journalism</a></h3>
+        <p class="card-dek">Postscript No. 10 | Sarah Miller and Charlotte Hampton on covering campus politics and editing student…</p>
+        <p class="card-meta"><span class="meta-date">MAR 13</span> <span class="meta-dot">&middot;</span> <span class="meta-author">SARAH MILLER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">10</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/the-manifesto-with-no-name" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DYc-!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fedebbaef-c93c-4c56-be70-f91f42fa934c_3316x2444.jpeg" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-manifesto-with-no-name" rel="noopener">The Manifesto with No Name</a></h3>
+        <p class="card-dek">Postscript No. 9 | Ramsey Alsheikh on the eros of activism</p>
+        <p class="card-meta"><span class="meta-date">MAR 4</span> <span class="meta-dot">&middot;</span> <span class="meta-author">RAMSEY ALSHEIKH</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">7</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/holy-fool" rel="noopener" data-preview="Postscript No. 8 | Theodore Gary on Joshua Block, Dostoevsky, middle school boys, and authenticity" data-title="Holy Fool" data-author="Theodore Gary">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!VE5I!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe413eed0-7b13-4bca-a533-41ffb0be7eb6_1758x1800.png" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Holy Fool</span><span class="overlay-author">Theodore Gary</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/holy-fool" rel="noopener">Holy Fool</a></h3>
+        <p class="card-dek">Postscript No. 8 | Theodore Gary on Joshua Block, Dostoevsky, middle school boys, and authenticity</p>
+        <p class="card-meta"><span class="meta-date">FEB 25</span> <span class="meta-dot">&middot;</span> <span class="meta-author">THEODORE GARY</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">5</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/strangle-your-idols" rel="noopener" data-preview="Postscript No. 7 | Will Diana on lunar nightmares, faraway lands, and Covid psychosis" data-title="Strangle Your Idols" data-author="Will Diana">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!3dtS!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F59da2cb3-3c78-4871-b9fb-1125ea0fed05_1144x1333.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Strangle Your Idols</span><span class="overlay-author">Will Diana</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/strangle-your-idols" rel="noopener">Strangle Your Idols</a></h3>
+        <p class="card-dek">Postscript No. 7 | Will Diana on lunar nightmares, faraway lands, and Covid psychosis</p>
+        <p class="card-meta"><span class="meta-date">FEB 18</span> <span class="meta-dot">&middot;</span> <span class="meta-author">WILL DIANA</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">16</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/what-troubled-you-in-2025" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!c_gY!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb1a2b64d-70cb-48a8-b812-72024a6c0266.heic" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/what-troubled-you-in-2025" rel="noopener">What Troubled You in 2025?</a></h3>
+        <p class="card-dek">Postscript No. 6 | An end of year symposium</p>
+        <p class="card-meta"><span class="meta-date">JAN 1</span> <span class="meta-dot">&middot;</span> <span class="meta-author">THE NEW CRITIC</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">24</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/the-crazy-train" rel="noopener" data-preview="Postscript No. 5 | Matthew Adelstein, Noah Birnbaum, and Amos Wollen on effective altruism" data-title="The Crazy Train" data-author="Elan Kluger">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!GNS3!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7dacdf7b-06f0-46e0-969b-5061feb718eb_2819x1991.jpeg" alt="" loading="lazy">
+        <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">The Crazy Train</span><span class="overlay-author">Elan Kluger</span></div>
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-crazy-train" rel="noopener">The Crazy Train</a></h3>
+        <p class="card-dek">Postscript No. 5 | Matthew Adelstein, Noah Birnbaum, and Amos Wollen on effective altruism</p>
+        <p class="card-meta"><span class="meta-date">DEC 30, 2025</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ELAN KLUGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">28</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!NHLP!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener">Beyond Pain</a></h3>
+        <p class="card-dek">Postscript No. 4 | Bond Almand IV on cycling and the Pan-American world record</p>
+        <p class="card-meta"><span class="meta-date">OCT 23, 2025</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ELAN KLUGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">21</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/learning-the-machine-an-interview" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!mGdG!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F2387c59d-6c6a-441b-b98e-8dcb5dcbf9d1_910x1110.jpeg" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/learning-the-machine-an-interview" rel="noopener">Learning the Machine</a></h3>
+        <p class="card-dek">Postscript No. 3 | Rhea Madhogarhia on machine learning and AI interns</p>
+        <p class="card-meta"><span class="meta-date">AUG 22, 2025</span> <span class="meta-dot">&middot;</span> <span class="meta-author">TESSA AUGSBERGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">13</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/the-college-combinator-an-interview" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!1g7E!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6215e011-bdf5-4640-a833-da92da1dd35b_1920x2511.jpeg" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-college-combinator-an-interview" rel="noopener">The College Combinator</a></h3>
+        <p class="card-dek">Postscript No. 2 | Danylo Borodchuk on Y Combinator and dropping out of college</p>
+        <p class="card-meta"><span class="meta-date">JUL 25, 2025</span> <span class="meta-dot">&middot;</span> <span class="meta-author">ELAN KLUGER</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">20</span></span></p>
+      </div>
+    </article>
+    <article class="card">
+      <a class="card-image-link" href="https://www.thenewcritic.com/p/two-state-friendship" rel="noopener">
+        <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jbwQ!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffcd0930e-2d66-4120-a91a-b41fb39107e7_2199x2871.heic" alt="" loading="lazy">
+        
+      </a>
+      <div class="card-text">
+        <h3 class="card-title"><a href="https://www.thenewcritic.com/p/two-state-friendship" rel="noopener">Two-State Friendship</a></h3>
+        <p class="card-dek">Postscript No. 1 | Ramsey Alsheikh and Elan Kluger on Israel-Palestine</p>
+        <p class="card-meta"><span class="meta-date">MAY 8, 2025</span> <span class="meta-dot">&middot;</span> <span class="meta-author">RAMSEY ALSHEIKH</span> <span class="meta-dot">&middot;</span> <span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">25</span></span></p>
+      </div>
+    </article>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="foot-bird-link" href="/"><img class="foot-bird" src="bird.png" alt="The New Critic"></a>
+    <p class="foot-tag">The Young American Magazine</p>
+    <ul class="foot-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/essays.html">Essays</a></li>
+      <li><a href="/postscript.html">Postscript</a></li>
+      <li><a href="/contra.html">Contra</a></li>
+      <li><a href="/give.html">Give</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
+    <p class="foot-fine">&copy; 2026 The New Critic &middot; est. May 2025 &middot; editors@thenewcritic.com</p>
+  </div>
+</footer>
+
+<div id="preview-card" role="tooltip" aria-hidden="true"></div>
+<script>
+  (function(){
+    if (window.matchMedia('(hover: none)').matches) return;
+    var card = document.getElementById('preview-card');
+    var timer = null;
+    var activeLink = null;
+    var overCard = false;
+    var scrollTimer = null;
+    var isScrolling = false;
+    window.addEventListener('scroll', function() {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function(){ isScrolling = false; }, 200);
+    }, { passive: true });
+
+    function esc(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function show(link) {
+      var text = link.dataset.preview;
+      if (!text) return;
+      var glowCanvas = card.querySelector('canvas');
+      card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on &#8594;</a>';
+      if (glowCanvas) card.appendChild(glowCanvas);
+      card.setAttribute('aria-hidden', 'false');
+
+      // Absolute positioning — document coordinates so card scrolls with the image.
+      // For popular-row items, anchor to the full .card so the popup spans card width.
+      var anchor = link.closest('.popular-row .card') || link;
+      var rect = anchor.getBoundingClientRect();
+      var scrollY = window.scrollY || window.pageYOffset;
+      var scrollX = window.scrollX || window.pageXOffset;
+      var margin = 8;
+      var vw = document.documentElement.clientWidth;
+
+      card.style.visibility = 'hidden';
+      card.style.left = '-9999px';
+      card.style.top = '-9999px';
+      card.style.width = rect.width + 'px';
+      card.classList.add('preview-card--visible');
+
+      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
+      card.style.left = left + 'px';
+      card.style.top = (rect.bottom + scrollY) + 'px';
+
+      link.classList.add('preview-active');
+      card.style.visibility = '';
+    }
+
+    function hide() {
+      clearTimeout(timer);
+      timer = null;
+      if (activeLink) activeLink.classList.remove('preview-active');
+      activeLink = null;
+      card.classList.remove('preview-card--visible');
+      card.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('mouseover', function(e) {
+      var link = e.target.closest('.card-image-link[data-preview]');
+      if (!link) return;
+      if (link === activeLink) return;
+      clearTimeout(timer);
+      activeLink = link;
+      timer = setTimeout(function(){ show(link); }, 500);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      var link = e.target.closest('.card-image-link[data-preview]');
+      if (!link) return;
+      if (link.contains(e.relatedTarget)) return;
+      if (e.relatedTarget === card || card.contains(e.relatedTarget)) return;
+      if (overCard || isScrolling) return;
+      hide();
+    });
+
+    card.addEventListener('mouseenter', function(){ overCard = true; clearTimeout(timer); });
+    card.addEventListener('mouseleave', function(){ overCard = false; hide(); });
+
+  })();
+</script>
+<script>
+(function(){
+  var PAD = 6; // canvas overbleed — glow is centered on the border line
+
+  function buildPath(pts) {
+    var segs = [], total = 0;
+    for (var i = 0; i < pts.length - 1; i++) {
+      var dx = pts[i+1][0]-pts[i][0], dy = pts[i+1][1]-pts[i][1];
+      var len = Math.sqrt(dx*dx+dy*dy);
+      segs.push([pts[i], pts[i+1], total, total+len]);
+      total += len;
+    }
+    var fn = function(t) {
+      var d = ((t%1)+1)%1 * total;
+      for (var i = 0; i < segs.length; i++) {
+        if (d <= segs[i][3]+1e-6) {
+          var f = segs[i][3]>segs[i][2] ? Math.min(1,(d-segs[i][2])/(segs[i][3]-segs[i][2])) : 0;
+          return [segs[i][0][0]+(segs[i][1][0]-segs[i][0][0])*f,
+                  segs[i][0][1]+(segs[i][1][1]-segs[i][0][1])*f];
+        }
+      }
+      return pts[pts.length-1];
+    };
+    fn.total = total;
+    return fn;
+  }
+
+  // Smooth wire glow: line strokes + shadowBlur, no discrete circles
+  // tail is a fraction of path length (capped to ~51px so large elements match nav bar size)
+  function drawDroplet(ctx, pathFn, t, cw, ch, opacity, tail) {
+    ctx.clearRect(0,0,cw,ch);
+    if (opacity < 0.01) return;
+    var N = 60;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Pre-sample points
+    var pts = [];
+    for (var i = 0; i <= N; i++) pts.push(pathFn(t - (1-i/N)*tail));
+
+    // Outer glow halo (shadow pass)
+    ctx.save();
+    ctx.shadowColor = 'rgba(247,246,241,1)';
+    ctx.shadowBlur = 5;
+    for (var i = 1; i <= N; i++) {
+      var frac = i/N, a = frac*frac*opacity*0.32;
+      if (a < 0.003) continue;
+      ctx.beginPath();
+      ctx.moveTo(pts[i-1][0], pts[i-1][1]);
+      ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.lineWidth = 1 + frac*2;
+      ctx.strokeStyle = 'rgba(247,246,241,'+a+')';
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Crisp inner core
+    for (var i = 1; i <= N; i++) {
+      var frac = i/N, a = frac*frac*opacity*0.88;
+      if (a < 0.003) continue;
+      ctx.beginPath();
+      ctx.moveTo(pts[i-1][0], pts[i-1][1]);
+      ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.lineWidth = 0.2 + frac*1.1;
+      ctx.strokeStyle = 'rgba(247,246,241,'+a+')';
+      ctx.stroke();
+    }
+  }
+
+  function attach(el, makePathFn, speed, zIndex, maxTailPx) {
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;top:-'+PAD+'px;left:-'+PAD+'px;pointer-events:none;z-index:'+(zIndex||4)+';';
+    el.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+    var t=0, raf=null, on=false, opacity=0, pathFn=null, cw=0, ch=0, last=null;
+    var sizeChanged = true;
+
+    var ro = new ResizeObserver(function() { sizeChanged = true; });
+    ro.observe(el);
+
+    function rebuild() {
+      if (!sizeChanged) return;
+      var w=el.offsetWidth, h=el.offsetHeight;
+      if (!w||!h) return;
+      sizeChanged = false;
+      cw=w; ch=h;
+      pathFn = makePathFn(el,w,h);
+      canvas.width  = (pathFn && pathFn.canvasW) || w+2*PAD;
+      canvas.height = (pathFn && pathFn.canvasH) || h+2*PAD;
+    }
+
+    function frame(now) {
+      if (!last) last=now;
+      var dt=Math.min(now-last,100); last=now;
+      on ? (opacity=Math.min(1,opacity+0.004*dt)) : (opacity=Math.max(0,opacity-0.003*dt));
+      rebuild();
+      // Maintain constant pixel speed regardless of path length
+      var spd = (pathFn && pathFn.total) ? PIX_PER_MS / pathFn.total : speed;
+      t=(t+spd*dt)%1;
+      if (pathFn) {
+        var capPx = maxTailPx || 51;
+        var tail = Math.min(0.18, capPx / pathFn.total);
+        drawDroplet(ctx,pathFn,t,canvas.width,canvas.height,opacity,tail);
+      }
+      if (on||opacity>0.01) raf=requestAnimationFrame(frame);
+      else { raf=null; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+
+    return {
+      // cw=0;ch=0 forces rebuild on next frame so the path picks up fresh BCR positions
+      start: function(){ sizeChanged=true; on=true;  if(!raf){last=null; raf=requestAnimationFrame(frame);} },
+      stop:  function(){ on=false; if(!raf&&opacity>0.01){last=null; raf=requestAnimationFrame(frame);} }
+    };
+  }
+
+  // Button: 1px CSS border. Canvas positioned from padding edge (1px inside border outer edge).
+  // Traces border center (0.5px inside outer edge on each side).
+  function btnPathFn(el, w, h) {
+    var rect = el.getBoundingClientRect();
+    var p=PAD-0.5, q=rect.width+PAD-1.5, r=rect.height+PAD-1.5;
+    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
+  }
+
+  // Cover image link: no CSS border; outline is box-shadow 0 0 0 1px white (1px spread,
+  // center 0.5px outside element edge). Canvas at -PAD from outer edge (no border offset).
+  function imgPathFn(el, w, h) {
+    var rect = el.getBoundingClientRect();
+    var p=PAD-0.5, q=rect.width+PAD+0.5, r=rect.height+PAD+0.5;
+    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
+  }
+
+
+  var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
+  var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
+
+  // Buttons — glow on hover
+  document.querySelectorAll('a.btn').forEach(function(btn) {
+    btn.style.position = 'relative';
+    btn.style.overflow = 'visible';
+    var a = attach(btn, btnPathFn, SPD);
+    btn.addEventListener('mouseenter', a.start);
+    btn.addEventListener('mouseleave', a.stop);
+  });
+
+
+  // Cover images — glow on hover
+  document.querySelectorAll('.card-image-link').forEach(function(img) {
+    img.style.overflow = 'visible';
+    var a = attach(img, imgPathFn, SPD, 45);
+    new MutationObserver(function() {
+      if (img.classList.contains('preview-active')) a.start(); else a.stop();
+    }).observe(img, { attributes: true, attributeFilter: ['class'] });
+  });
+
+ }
+
+
+
+})();
+</script>
+</body>
+</html>
