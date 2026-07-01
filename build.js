@@ -407,14 +407,13 @@ function renderNav(currentKey = 'home') {
 
 function renderFooter() {
   const year = new Date().getFullYear();
-  const links = SITE_LINKS.map(
+  const links = SITE_LINKS.filter((l) => l.key !== 'home').map(
     (l) => `<li><a href="${escapeHtml(l.href)}"${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`
   ).join('\n      ');
 
   return `<footer>
   <div class="wrap">
     <a class="foot-bird-link" href="/"><img class="foot-bird" src="${BIRD_LOGO}" alt="The New Critic"></a>
-    <p class="foot-tag">${escapeHtml(SITE_TAGLINE)}</p>
     <ul class="foot-links">
       ${links}
     </ul>
@@ -578,11 +577,6 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 
   const sidebarHtml = `
     <aside class="side-col">
-      <a class="side-logo" href="/">
-        <img src="${BIRD_LOGO}" alt="">
-        <span>${escapeHtml(SITE_NAME)}</span>
-      </a>
-      <p class="side-tag">${escapeHtml(SITE_TAGLINE)}</p>
       <form class="subscribe-box" action="${SITE_URL}/subscribe" method="get" target="_blank" rel="noopener">
         <input type="email" name="email" placeholder="Type your email&hellip;" aria-label="Email address" required>
         <button type="submit" class="btn btn--small btn--primary">Subscribe</button>
@@ -620,7 +614,7 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 ${heroPreload}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -713,7 +707,7 @@ function renderPageShell({ currentKey, title, bodyHtml }) {
 <link rel="icon" href="${FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
