@@ -464,10 +464,10 @@ function renderCard(post, { variant = '', dekLength = 110 } = {}) {
   const hasPreview = post.preview && post.image;
   const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
-  const imageHtml = `<a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
+  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
         ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="lazy">` : '<span class="card-image card-image--blank"></span>'}
         ${overlayHtml}
-      </a>`;
+      </a></span>`;
 
   // The feature variant uses a 2-column grid (image+dek share the left
   // column, title+meta the right) so the dek sits directly under the
@@ -506,10 +506,10 @@ function renderPopularItem(post) {
 
   return `
     <article class="card">
-      <a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
+      <span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
         ${imgHtml}
         ${overlayHtml}
-      </a>
+      </a></span>
       <div class="card-text">
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
         <p class="card-meta">${metaLine(post, { showDate: false })}</p>

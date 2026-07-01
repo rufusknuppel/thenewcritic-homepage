@@ -218,7 +218,8 @@ section{ padding: 80px 0; }
 .popular-strip{ padding: 18px 0 28px; }
 .popular-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .popular-row .card{ flex-direction: row; align-items: flex-start; gap: 10px; position: relative; }
-.popular-row .card-image-link{ order: 2; flex: 0 0 90px; margin-bottom: 0; width: 90px; }
+.popular-row .card-image-frame{ order: 2; flex: 0 0 90px; width: 90px; }
+.popular-row .card-image-link{ margin-bottom: 0; width: 90px; }
 .popular-row .card-image,
 .popular-row .card-image--blank{ width: 90px; height: 90px; aspect-ratio: 1/1; }
 .popular-row .card-text{ order: 1; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
@@ -227,6 +228,9 @@ section{ padding: 80px 0; }
 .popular-row .card-meta{ font-size: 0.66rem; }
 /* Image expands to cover the full card on hover */
 .popular-row .card-image-link.preview-active{
+  width: 100%; height: 100%;
+}
+.popular-row .card-image-frame:has(.preview-active){
   position: absolute; inset: 0; width: auto; height: auto;
   flex: none; z-index: 2; margin: 0;
 }
@@ -236,6 +240,7 @@ section{ padding: 80px 0; }
 }
 .popular-row .card-text{ transition: opacity .2s ease; }
 .popular-row .card-image-link.preview-active ~ .card-text{ opacity: 0; }
+.popular-row .card-image-frame:has(.preview-active) ~ .card-text{ opacity: 0; }
 @media (max-width: 860px){ .popular-row{ grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px){ .popular-row{ grid-template-columns: 1fr; } }
 .section-block-head{
@@ -291,7 +296,8 @@ section{ padding: 80px 0; }
 .section-block:last-child{ margin-bottom: 0; }
 .card-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 .card{ display:flex; flex-direction:column; }
-.card-image-link{ display:block; margin-bottom: 14px; }
+.card-image-frame{ margin-bottom: 14px; }
+.card-image-link{ display:block; margin-bottom: 0; }
 .card-image{ width: 100%; aspect-ratio: 4/3; object-fit: cover; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
 .card-text{ display: flex; flex-direction: column; flex: 1; min-width: 0; }
@@ -457,17 +463,119 @@ footer{ padding: 48px 0; text-align:center; }
   text-transform: uppercase;
   line-height: 1;
   flex-shrink: 0;
+  position: relative;
   transition: background .15s ease;
 }
 .preview-card-link:hover{
   background: var(--surface-2);
+}
+.preview-card-link::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0%,
+    transparent 65%,
+    rgba(0,0,0,0.08) 72%,
+    rgba(0,0,0,0.45) 80%,
+    rgba(0,0,0,0.82) 87%,
+    rgba(0,0,0,0.97) 91%,
+    rgba(0,0,0,0.45) 95%,
+    rgba(0,0,0,0.08) 99%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+  animation: glow-travel 5s linear infinite;
+}
+
+/* ---------- ANIMATED BORDER GLOW ---------- */
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes glow-travel {
+  to { --glow-angle: 360deg; }
+}
+
+/* Frame wrapper — pseudo lives here so overflow:hidden on the link doesn't clip it */
+.card-image-frame {
+  display: block;
+  position: relative;
+}
+.card-image-frame::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    rgba(247,246,241,0.07) 0%,
+    rgba(247,246,241,0.07) 65%,
+    rgba(247,246,241,0.15) 72%,
+    rgba(247,246,241,0.40) 80%,
+    rgba(247,246,241,0.80) 87%,
+    #F7F6F1 91%,
+    rgba(247,246,241,0.55) 95%,
+    rgba(247,246,241,0.10) 99%,
+    rgba(247,246,241,0.07) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  animation: glow-travel 7s linear infinite;
+}
+
+/* Button animated border — btn already has border so we overlay the glow */
+.btn {
+  position: relative;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0%,
+    transparent 65%,
+    rgba(0,0,0,0.08) 72%,
+    rgba(0,0,0,0.45) 80%,
+    rgba(0,0,0,0.82) 87%,
+    rgba(0,0,0,0.97) 91%,
+    rgba(0,0,0,0.45) 95%,
+    rgba(0,0,0,0.08) 99%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+  animation: glow-travel 5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-image-frame::before,
+  .btn::before,
+  .preview-card-link::before { animation: none; }
 }
 
 /* ---------- IMAGE HOVER OVERLAY ---------- */
 .card-image-link{
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 0 1px var(--line);
   transition: box-shadow .25s ease;
 }
 .card-image-link.preview-active{
