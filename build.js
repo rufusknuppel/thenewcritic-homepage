@@ -365,12 +365,16 @@ function metaLine(post, { showDate = true } = {}) {
   const md =
     d && !isNaN(d.getTime())
       ? d.toLocaleDateString('en-US', d.getFullYear() < thisYear
-          ? { month: 'short', day: 'numeric', year: 'numeric' }
+          ? { month: 'long', year: 'numeric' }
           : { month: 'short', day: 'numeric' }).toUpperCase()
       : '';
   const parts = [];
   if (showDate && md) parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
-  if (post.author) parts.push(`<span class="meta-author">${escapeHtml(post.author.toUpperCase())}</span>`);
+  if (post.author) {
+    const AUTHOR_SHORT = { 'Josie Barboriak': 'Barboriak' };
+    const displayAuthor = AUTHOR_SHORT[post.author] || post.author;
+    parts.push(`<span class="meta-author">${escapeHtml(displayAuthor.toUpperCase())}</span>`);
+  }
 
   const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
   parts.push(
@@ -500,9 +504,23 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false } = {})
     </article>`;
 }
 
+function popularMeta(post) {
+  const parts = [];
+  if (post.author) {
+    const lastName = post.author.trim().split(/\s+/).pop();
+    parts.push(`<span class="meta-author">${escapeHtml(lastName.toUpperCase())}</span>`);
+  }
+  const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
+  parts.push(`<span class="likes"><img class="likes-bird" src="${BIRD_LOGO}" alt="" aria-hidden="true"><span class="likes-count">${likes}</span></span>`);
+  return parts.join(' <span class="meta-dot">&middot;</span> ');
+}
+
 function renderPopularItem(post) {
   const hasPreview = post.preview && post.image;
-  const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
+  const shortAuthor = post.author
+    ? post.author.trim().split(/\s+/).pop()
+    : '';
+  const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(shortAuthor)}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
   const imgHtml = post.image
     ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="eager">`
@@ -516,7 +534,7 @@ function renderPopularItem(post) {
       </a></span>
       <div class="card-text">
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-        <p class="card-meta">${metaLine(post, { showDate: false })}</p>
+        <p class="card-meta popular-meta">${popularMeta(post)}</p>
       </div>
     </article>`;
 }
@@ -553,11 +571,11 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 
   const popularHtml = popular.length ? `
     <section class="popular-strip reveal" aria-labelledby="popular-heading">
-      <div class="section-block-head">
-        <h2 id="popular-heading">Most Read</h2>
-      </div>
-      <div class="popular-row">
-        ${popular.map(renderPopularItem).join('')}
+      <div class="popular-inner">
+        <h2 id="popular-heading" class="popular-heading">Most<br>Read</h2>
+        <div class="popular-row">
+          ${popular.map(renderPopularItem).join('')}
+        </div>
       </div>
     </section>
   ` : '';
