@@ -154,23 +154,27 @@ const ARCHIVE_API_PAGE_SIZE = 24;
 
 async function fetchFullArchive() {
   const all = [];
-  // Safety cap, not a real limit: a page only ends when the API returns an
-  // empty array. (A short page doesn't mean "last page" — we've seen the
-  // very first page come back shorter than the requested limit.)
   const MAX_PAGES = 50;
-  for (let i = 0; i < MAX_PAGES; i++) {
-    const offset = i * ARCHIVE_API_PAGE_SIZE;
-    const url = `${SITE_URL}/api/v1/archive?sort=new&offset=${offset}&limit=${ARCHIVE_API_PAGE_SIZE}`;
-    const json = await fetchHtml(url);
-    if (!json) break;
-    let page;
-    try {
-      page = JSON.parse(json);
-    } catch {
-      break;
+  const WINDOW = 3; // fetch up to 3 pages concurrently
+  let pageIndex = 0;
+  let done = false;
+
+  while (!done && pageIndex < MAX_PAGES) {
+    const batch = [];
+    for (let w = 0; w < WINDOW && pageIndex + w < MAX_PAGES; w++) {
+      const offset = (pageIndex + w) * ARCHIVE_API_PAGE_SIZE;
+      const url = `${SITE_URL}/api/v1/archive?sort=new&offset=${offset}&limit=${ARCHIVE_API_PAGE_SIZE}`;
+      batch.push(fetchHtml(url));
     }
-    if (!Array.isArray(page) || page.length === 0) break;
-    all.push(...page);
+    const results = await Promise.all(batch);
+    for (const json of results) {
+      if (!json) { done = true; break; }
+      let page;
+      try { page = JSON.parse(json); } catch { done = true; break; }
+      if (!Array.isArray(page) || page.length === 0) { done = true; break; }
+      all.push(...page);
+    }
+    pageIndex += batch.length;
   }
   return all;
 }
@@ -960,8 +964,11 @@ function buildGivePage(rawHtml) {
 }
 
 async function main() {
-  console.log(`Fetching feed: ${FEED_URL}`);
-  const xml = await fetchFeed(FEED_URL);
+  console.log(`Fetching feed and archive in parallel`);
+  const [xml, archive] = await Promise.all([
+    fetchFeed(FEED_URL),
+    fetchFullArchive(),
+  ]);
   const items = parseItems(xml);
   console.log(`Parsed ${items.length} posts from feed.`);
   if (items.length === 0) {
@@ -971,9 +978,6 @@ async function main() {
     .filter((i) => i.title && i.link)
     .map(normalizeRssItem)
     .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
-
-  console.log('Fetching full Substack archive (paginated)');
-  const archive = await fetchFullArchive();
   console.log(`Fetched ${archive.length} total posts from the archive API.`);
 
   const [essaysAll, postscriptAll, contraAll] = SECTIONS.map((s) =>
@@ -1011,29 +1015,6 @@ async function main() {
     console.warn(`From the Archive: couldn't find post(s): ${missing.join(', ')}`);
   }
 
-  let notes;
-  if (ED_NOTES_URLS.length) {
-    console.log(`Fetching ${ED_NOTES_URLS.length} Ed. Notes posts`);
-    const fetched = await Promise.all(
-      ED_NOTES_URLS.map((entry) =>
-        typeof entry === 'string'
-          ? fetchPostByUrl(entry)
-          : Promise.resolve({
-              title: entry.title,
-              subtitle: entry.subtitle || '',
-              link: entry.url,
-              image: '',
-              date: null,
-              author: '',
-              reactionCount: 0,
-            })
-      )
-    );
-    notes = fetched.filter(Boolean).slice(0, NOTES_COUNT);
-  } else {
-    notes = rssPosts.filter((p) => p.link !== hero?.link).slice(0, NOTES_COUNT);
-  }
-
   // Build a preview map from RSS posts (they already have body content).
   const previewByLink = new Map(rssPosts.filter((p) => p.preview).map((p) => [p.link, p.preview]));
 
@@ -1042,11 +1023,34 @@ async function main() {
   const postscriptSlice = postscriptAll.slice(0, SECTIONS[1].cardCount);
   const contraSlice = contraAll.slice(0, SECTIONS[2].cardCount);
 
+  // Ed Notes and first-paragraph fetches are independent — run them in parallel.
+  const edNotesPromise = ED_NOTES_URLS.length
+    ? (console.log(`Fetching ${ED_NOTES_URLS.length} Ed. Notes posts`),
+       Promise.all(
+         ED_NOTES_URLS.map((entry) =>
+           typeof entry === 'string'
+             ? fetchPostByUrl(entry)
+             : Promise.resolve({
+                 title: entry.title,
+                 subtitle: entry.subtitle || '',
+                 link: entry.url,
+                 image: '',
+                 date: null,
+                 author: '',
+                 reactionCount: 0,
+               })
+         )
+       ).then((r) => r.filter(Boolean).slice(0, NOTES_COUNT)))
+    : Promise.resolve(rssPosts.filter((p) => p.link !== hero?.link).slice(0, NOTES_COUNT));
+
+  // First-paragraph candidates: every post visible on homepage that RSS didn't cover.
+  // We must know notes before building the full list, so we wait for both together.
+  const notes = await edNotesPromise;
+
   const homepagePosts = dedupeByLink(
     [hero, ...popular, ...essaysSlice, ...postscriptSlice, ...contraSlice, ...fromArchive, ...notes].filter(Boolean)
   );
 
-  // Fetch first paragraphs for posts not already covered by the RSS feed.
   const toFetch = homepagePosts.filter((p) => p.link && !previewByLink.has(p.link));
   if (toFetch.length) {
     console.log(`Fetching first paragraphs for ${toFetch.length} posts`);
