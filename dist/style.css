@@ -53,7 +53,7 @@ a{ color: inherit; }
 /* ---------- NAV ---------- */
 .site-header{
   position: sticky; top: 0; z-index: 50;
-  height: 232px;
+  height: 191px;
   transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -63,7 +63,7 @@ a{ color: inherit; }
   overflow: visible;
   /* Clip overflowing wordmark to the animated nav box so compositor-driven
      transforms can't outrun the main-thread background height mid-transition. */
-  clip-path: inset(0 0 -138px 0);
+  clip-path: inset(0 0 -97px 0);
   transition: clip-path .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .site-nav::before{
@@ -74,7 +74,7 @@ a{ color: inherit; }
 }
 .site-nav::after{
   content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 232px;
+  height: 191px;
   background: var(--paper);
   z-index: -2;
   transform-origin: top; will-change: transform;
@@ -86,7 +86,7 @@ a{ color: inherit; }
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: var(--line);
   z-index: -1;
-  transform: translateY(231px); will-change: transform;
+  transform: translateY(190px); will-change: transform;
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .site-nav .wrap{
@@ -109,14 +109,14 @@ a{ color: inherit; }
 .bird-frame{
   display: block; width: 20px; height: 22px;
   transform-origin: top center; will-change: transform;
-  transform: translateY(16px) scale(5);
+  transform: translateY(12px) scale(3.5);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), filter .2s ease;
 }
 .wordmark img{ width: 20px; height: auto; display: block; }
 .wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .wordmark-name{
   display: block; will-change: transform;
-  transform: translateY(120px);
+  transform: translateY(83px);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .wordmark:hover .wordmark-tagline{ text-shadow: none; }
@@ -124,7 +124,7 @@ a{ color: inherit; }
   display: block; will-change: transform;
   font-family: var(--body); font-style: italic; font-weight: 400;
   font-size: 0.78rem; color: var(--muted);
-  transform: translateY(120px);
+  transform: translateY(83px);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .nav-links{
@@ -150,7 +150,7 @@ a{ color: inherit; }
 /* ---------- NAV compact state ---------- */
 .site-header.is-compact{ height: 96px; }
 .site-header.is-compact .site-nav{ clip-path: inset(0 0 -2px 0); }
-.site-header.is-compact .site-nav::after{ transform: scaleY(0.41379); } /* 96/232 */
+.site-header.is-compact .site-nav::after{ transform: scaleY(0.50262); } /* 96/191 */
 .site-header.is-compact .nav-edge{ transform: translateY(95px); }
 .site-header.is-compact .bird-frame{ transform: translate(-179px, 26px); }
 .site-header.is-compact .wordmark-name{ transform: translate(-80px, 0); }

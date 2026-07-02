@@ -460,10 +460,15 @@
 <script>
   (function(){
     var header = document.querySelector('.site-header');
-    var THRESHOLD = 1;
+    var COMPACT_AT = 60;
+    var EXPAND_AT = 10;
     var WIDE = 900;
     function setCompact(instant) {
-      var compact = window.innerWidth < WIDE || (window.scrollY || 0) > THRESHOLD;
+      var y = window.scrollY || 0;
+      var compact;
+      if (window.innerWidth < WIDE || y > COMPACT_AT) compact = true;
+      else if (y < EXPAND_AT) compact = false;
+      else compact = header.classList.contains('is-compact');
       if (instant) header.classList.add('no-transition');
       header.classList.toggle('is-compact', compact);
       if (instant) { header.offsetHeight; header.classList.remove('no-transition'); }
