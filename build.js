@@ -698,9 +698,9 @@ ${renderFooter()}
       if (window.innerWidth < WIDE || y > COMPACT_AT) compact = true;
       else if (y < EXPAND_AT) compact = false;
       else compact = header.classList.contains('is-compact');
-      if (instant) header.classList.add('no-transition');
+      if (instant) document.body.classList.add('no-transition');
       header.classList.toggle('is-compact', compact);
-      if (instant) { header.offsetHeight; header.classList.remove('no-transition'); }
+      if (instant) { document.body.offsetHeight; document.body.classList.remove('no-transition'); }
     }
     window.addEventListener('scroll', function(){ setCompact(false); }, { passive: true });
     window.addEventListener('resize', function(){ setCompact(false); }, { passive: true });

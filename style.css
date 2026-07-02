@@ -51,11 +51,17 @@ a{ color: inherit; }
 .wrap--narrow{ max-width: 660px; }
 
 /* ---------- NAV ---------- */
+/* Header keeps a constant 191px flow height; the compact state shifts the
+   page content up with a compositor transform on main/footer instead of
+   animating this height (layout reflow lagged behind the GPU-driven nav
+   visuals on fast scrolls). The lower half of the stuck header is empty in
+   compact state, so let clicks pass through except on real nav content. */
 .site-header{
   position: sticky; top: 0; z-index: 50;
   height: 191px;
-  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
+.site-nav .wrap, .promo-banner{ pointer-events: auto; }
 
 .site-nav{
   position: relative;
@@ -148,15 +154,18 @@ a{ color: inherit; }
 .nav-subscribe{ flex: 0 0 auto; white-space: nowrap; }
 
 /* ---------- NAV compact state ---------- */
-.site-header.is-compact{ height: 96px; }
+main, footer{ transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1); }
+.site-header.is-compact ~ main,
+.site-header.is-compact ~ footer{ transform: translateY(-95px); }
+/* Sticky sidebar offset compensates for the transformed main (181 - 95 = 86). */
+.site-header.is-compact ~ main .side-col{ top: 181px; }
 .site-header.is-compact .site-nav{ clip-path: inset(0 0 -2px 0); }
 .site-header.is-compact .site-nav::after{ transform: scaleY(0.50262); } /* 96/191 */
 .site-header.is-compact .nav-edge{ transform: translateY(95px); }
 .site-header.is-compact .bird-frame{ transform: translate(-179px, 26px); }
 .site-header.is-compact .wordmark-name{ transform: translate(-80px, 0); }
 .site-header.is-compact .wordmark-tagline{ transform: translate(100px, -25px); }
-.site-header.no-transition,
-.site-header.no-transition *{ transition: none !important; }
+body.no-transition *{ transition: none !important; }
 
 /* ---------- PROMO BANNER ---------- */
 .promo-banner{ background: var(--surface-2); border-bottom: 1px solid var(--line); }
@@ -223,7 +232,7 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
-  .site-header, .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after, .nav-edge{ transition: none; }
+  .site-header, .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after, .nav-edge, main, footer{ transition: none; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
