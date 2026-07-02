@@ -68,9 +68,10 @@ a{ color: inherit; }
   z-index: 1;
   overflow: visible;
   /* Clip overflowing wordmark to the animated nav box so compositor-driven
-     transforms can't outrun the main-thread background height mid-transition. */
+     transforms can't outrun the main-thread background height mid-transition.
+     Only the collapse animates; the reveal snaps open instantly (see the
+     is-compact rule) so text flying back down is never clipped mid-flight. */
   clip-path: inset(0 0 -97px 0);
-  transition: clip-path .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .site-nav::before{
   content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -159,7 +160,10 @@ main, footer{ transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1); }
 .site-header.is-compact ~ footer{ transform: translateY(-95px); }
 /* Sticky sidebar offset compensates for the transformed main (181 - 95 = 86). */
 .site-header.is-compact ~ main .side-col{ top: 181px; }
-.site-header.is-compact .site-nav{ clip-path: inset(0 0 -2px 0); }
+.site-header.is-compact .site-nav{
+  clip-path: inset(0 0 -2px 0);
+  transition: clip-path .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .site-header.is-compact .site-nav::after{ transform: scaleY(0.50262); } /* 96/191 */
 .site-header.is-compact .nav-edge{ transform: translateY(95px); }
 .site-header.is-compact .bird-frame{ transform: translate(-179px, 26px); }
@@ -232,7 +236,7 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
-  .site-header, .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after, .nav-edge, main, footer{ transition: none; }
+  .site-header, .site-nav, .site-header.is-compact .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after, .nav-edge, main, footer{ transition: none; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
