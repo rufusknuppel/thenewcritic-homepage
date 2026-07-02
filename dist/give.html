@@ -1,346 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
-<title>Give to The New Critic</title>
+<title>Give — The New Critic</title>
 <meta name="description" content="Support The New Critic, the young American magazine. Subscribe or give a one-time gift to fund the future of letters.">
 <link rel="icon" href="data:image/png;base64,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">
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/source-serif-4-italic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
-<style>
-  /* Self-hosted latin subsets of the Google Fonts variable fonts. */
-  @font-face {
-    font-family: 'Fraunces';
-    font-style: normal;
-    font-weight: 300 900;
-    font-display: swap;
-    src: url(fonts/fraunces-roman.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-  @font-face {
-    font-family: 'Fraunces';
-    font-style: italic;
-    font-weight: 400 700;
-    font-display: swap;
-    src: url(fonts/fraunces-italic.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-  @font-face {
-    font-family: 'Source Serif 4';
-    font-style: normal;
-    font-weight: 300 600;
-    font-display: swap;
-    src: url(fonts/source-serif-4-roman.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-  @font-face {
-    font-family: 'Source Serif 4';
-    font-style: italic;
-    font-weight: 400 500;
-    font-display: swap;
-    src: url(fonts/source-serif-4-italic.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-  @font-face {
-    font-family: 'EB Garamond';
-    font-style: normal;
-    font-weight: 500 600;
-    font-display: swap;
-    src: url(fonts/eb-garamond-roman.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-  @font-face {
-    font-family: 'EB Garamond';
-    font-style: italic;
-    font-weight: 500;
-    font-display: swap;
-    src: url(fonts/eb-garamond-italic.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  :root{
-    --paper: #000000;
-    --surface: #060605;
-    --surface-2: #131310;
-    --white: #F7F6F1;
-    --body-text: #D9D6CC;
-    --muted: #938F86;
-    --faint: #5A574F;
-    --line: rgba(247,246,241,0.14);
-    --line-soft: rgba(247,246,241,0.07);
-    --display: 'Fraunces', serif;
-    --body: 'Source Serif 4', serif;
-    --mono: 'EB Garamond', serif;
-    --max: 1120px;
-  }
-
-  *{ box-sizing: border-box; }
-  html{ scroll-behavior: smooth; }
-  body{
-    margin:0;
-    background: var(--paper);
-    color: var(--body-text);
-    font-family: var(--body);
-    font-size: 1.05rem;
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-  }
-  img, svg{ display:block; max-width:100%; }
-  a{ color: inherit; }
-  ::selection{ background: rgba(247,246,241,0.18); }
-
-  :focus-visible{
-    outline: 2px solid var(--white);
-    outline-offset: 3px;
-  }
-
-  .skip-link{
-    position:absolute; left:-999px; top:0;
-    background: var(--white); color: var(--paper);
-    padding: 0.6em 1em; z-index: 100; font-family: var(--mono); font-size: 0.85rem;
-  }
-  .skip-link:focus{ left: 1em; top: 1em; }
-
-  .wrap{ max-width: var(--max); margin: 0 auto; padding: 0 28px; }
-  .wrap--narrow{ max-width: 660px; }
-
-  /* ---------- NAV ---------- */
-  .site-nav{
-    background: rgba(0,0,0,0.88);
-    backdrop-filter: blur(6px);
-    border-bottom: 1px solid var(--line);
-  }
-  .site-nav .wrap{
-    display:flex; align-items:center; justify-content:space-between;
-    padding-top: 16px; padding-bottom: 16px;
-    gap: 24px;
-  }
-  .wordmark{
-    display:flex; align-items:center; gap: 10px;
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: 1.1rem;
-    letter-spacing: 0.01em;
-    text-decoration:none;
-    white-space:nowrap;
-    color: var(--white);
-    transition: text-shadow .2s ease;
-  }
-  .wordmark:hover,
-  .wordmark[aria-current="page"]{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-  .wordmark img{ width: 20px; height: auto; opacity: 1; transition: filter .2s ease; }
-  .wordmark:hover img,
-  .wordmark[aria-current="page"] img{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
-  .nav-links{
-    list-style:none; display:flex; gap: 26px; margin:0; padding:0;
-    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase;
-  }
-  .nav-links a{
-    text-decoration:none; color: var(--muted);
-    transition: color .15s ease, text-shadow .2s ease;
-  }
-  .nav-links a:hover{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-  .nav-links a[aria-current="page"]{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-  @media (max-width: 720px){ .nav-links{ display:none; } }
-  .nav-right{ display:flex; align-items:center; gap: 28px; }
-  .nav-subscribe{ flex: 0 0 auto; white-space: nowrap; }
-
-  /* ---------- HERO ---------- */
-  .hero{ padding: 80px 0; position: relative; overflow: hidden; }
-  .hero .inner{ position: relative; z-index: 1; }
-  .hero h1{
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: clamp(2rem, 4vw, 2.8rem);
-    line-height: 1.04;
-    margin: 0 0 28px;
-    max-width: 17ch;
-    color: var(--white);
-  }
-
-  .lede-row{
-    display:flex; align-items:flex-end; justify-content:space-between;
-    gap: 28px; flex-wrap: wrap; margin: 0 0 36px;
-  }
-  .hero p.lede{
-    max-width: 56ch;
-    color: var(--muted);
-    font-size: 1.18rem;
-    margin: 0;
-    flex: 1 1 420px;
-  }
-  .lede-cta-col{
-    display:flex; flex-direction:column; align-items:center;
-    gap: 28px; flex: 0 0 auto; margin-bottom: 8px;
-  }
-  .lede-bird{ width: 60px; height: auto; opacity: 1; }
-  .lede-cta{ flex: 0 0 auto; }
-
-  .btn{
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    text-decoration:none;
-    display:inline-flex; align-items:center; gap: 0.5em;
-    padding: 14px 22px;
-    border: 1px solid var(--white);
-    transition: background .15s ease, color .15s ease, border-color .15s ease;
-  }
-  .btn--primary{ background: var(--white); border-color: var(--white); color: var(--paper); }
-  .btn--primary:hover{ background: var(--body-text); border-color: var(--body-text); }
-  .btn--small{ padding: 10px 16px; font-size: 0.74rem; }
-
-  /* ---------- SECTION shell ---------- */
-  section{ padding: 80px 0; }
-  .section-head{ margin-bottom: 40px; }
-  .section-head--center{ text-align: center; }
-  .section-head h2{
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: clamp(1.7rem, 3vw, 2.3rem);
-    margin: 14px 0 0;
-    color: var(--white);
-  }
-  .section-head p{ max-width: 60ch; color: var(--muted); margin: 14px 0 0; }
-
-  .reveal{ opacity:0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.in-view{ opacity:1; transform: translateY(0); }
-  @media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; } }
-
-  /* ---------- LEDGER ---------- */
-  .ledger-grid{
-    display:grid; grid-template-columns: 1fr 1fr; gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-  @media (max-width: 760px){ .ledger-grid{ grid-template-columns: 1fr; } }
-
-  .ledger-card{
-    background: var(--surface); padding: 38px 36px; position:relative;
-    display:flex; flex-direction:column;
-  }
-
-  .ledger-card h3{
-    font-family: var(--display); font-weight: 600; font-size: 1.5rem; margin: 10px 0 4px; color: var(--white);
-  }
-  .ledger-price{
-    font-family: var(--mono); color: var(--white); font-size: 0.95rem; margin-bottom: 18px; display:block;
-  }
-  .ledger-card p{ color: var(--muted); margin: 0 0 26px; }
-  .ledger-card p .highlight{ color: var(--muted); font-style: italic; }
-  .ledger-card .btn{ margin-top: auto; align-self: flex-start; }
-
-
-  /* ---------- DONATIONS ---------- */
-  /* ---------- WAYS TO GIVE (white panel) ---------- */
-  #gifts{ margin-top: -20px; }
-  #gifts .wrap{
-    max-width: 1064px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 56px 48px;
-  }
-  @media (max-width: 560px){ #gifts .wrap{ padding: 44px 24px; } }
-
-  .gift-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 32px; }
-  @media (max-width: 760px){ .gift-grid{ grid-template-columns: 1fr; } }
-  .gift-card{
-    background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--white);
-    padding: 32px 30px;
-    display:flex; flex-direction:column;
-  }
-  .gift-card h3{
-    font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
-    margin: 0 0 14px; color: var(--white);
-  }
-  .gift-card p{ color: var(--muted); margin: 0 0 20px; }
-  .gift-card a.btn{ margin-top: auto; align-self: flex-start; }
-
-  .gift-note{
-    margin-top: 32px;
-    color: var(--muted); font-size: 0.95rem;
-  }
-  .gift-note a{ color: var(--white); text-decoration: none; transition: text-shadow 0s; }
-  .gift-note a:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
-  @media (hover: none) {
-    .gift-note a:hover,
-    .wordmark:hover,
-    .nav-links a:hover,
-    .foot-links a:hover{ text-shadow: none; }
-    .wordmark:hover img,
-    .foot-bird-link:hover .foot-bird{ filter: none; }
-  }
-
-  /* ---------- LETTER ---------- */
-  .letter{ margin-top: -35px; }
-  .letter h2{
-    font-family: var(--display); font-style: italic; font-weight: 500;
-    font-size: clamp(1.6rem, 3vw, 2.1rem); margin: 0 0 36px; color: var(--white);
-  }
-  .letter p{ color: var(--body-text); margin: 0 0 22px; }
-  .letter p:first-of-type::first-letter{
-    font-family: var(--display); font-weight: 600; font-size: 3.4em; float:left;
-    line-height: 0.85; padding-right: 10px; margin-top: 4px; color: var(--white);
-  }
-  .letter .sign{ font-family: var(--display); font-style: italic; color: var(--white); margin-top: 44px; font-size: 1.15rem; }
-
-  /* ---------- SIGN-OFF ---------- */
-  .signatures{
-    display:flex; flex-wrap:wrap; justify-content: center; gap: 48px;
-    margin-top: 80px;
-  }
-  .signer{
-    display:flex; flex-direction:column; align-items:center; text-align:center;
-    gap: 12px; width: 160px;
-  }
-  .signer-sig-wrap{
-    height: 64px; width: 100%;
-    display:flex; align-items:flex-end; justify-content:center;
-  }
-  .signer-sig{ max-width: 118px; max-height: 44px; width:auto; height:auto; opacity: 0.92; filter: brightness(1.05); }
-  .signer-sig--elan{ max-width: 170px; max-height: 30px; }
-  .signer-sig--rufus{ max-width: 112px; max-height: 50px; }
-  .signer-name{ font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.02em; color: var(--white); }
-  .signer-photo{
-    width: 84px; height: 84px; border-radius: 50%;
-    border: 1px solid var(--line);
-    object-fit: cover; object-position: center;
-    filter: grayscale(0.15) contrast(1.02);
-  }
-  @media (max-width: 560px){ .signatures{ gap: 36px; } }
-
-  /* ---------- FOOTER ---------- */
-  footer{ padding: 48px 0; text-align:center; border-top: 1px solid var(--line); }
-  .foot-bird-link{ display:block; }
-  .foot-bird{ width: 26px; margin: 0 auto 12px; opacity: 1; transition: filter .2s ease; }
-  .foot-bird-link:hover .foot-bird{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
-  .foot-tag{ font-family: var(--display); font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0 0 14px; }
-  .foot-links{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap: 18px; margin:0 0 12px; padding:0; font-family: var(--mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.03em; }
-  .foot-links a{ text-decoration:none; color: var(--muted); transition: color .15s ease, text-shadow .2s ease; }
-  .foot-links a:hover{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-  .foot-fine{ font-family: var(--mono); font-size: 0.7rem; color: var(--faint); letter-spacing: 0.02em; margin:0; }
-
-  .site-header{ position: sticky; top: 0; z-index: 50; }
-  .promo-banner{ background: var(--surface-2); border-bottom: 1px solid var(--line); }
-  .promo-banner-inner{ display:flex; align-items:center; justify-content:center; gap: 28px; flex-wrap: wrap; padding: 14px 56px; }
-  .promo-banner p{ margin: 0; color: var(--body-text); font-size: 0.88rem; text-align: left; flex: 1 1 480px; max-width: 760px; }
-  .promo-banner p em{ font-style: italic; color: var(--white); }
-  .promo-banner-actions{ display:flex; align-items:center; gap: 16px; flex: 0 0 auto; }
-  .promo-banner-close{ background: none; border: none; padding: 0 2px; margin: 0; color: var(--muted); font-size: 1.3rem; line-height: 1; cursor: pointer; font-family: var(--body); transition: color .2s ease, text-shadow .2s ease; }
-  .promo-banner-close:hover{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-  @media (hover: none) { .promo-banner-close:hover{ text-shadow: none; } }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<div class="site-header" id="site-header">
+<div class="site-header is-compact is-static" id="site-header">
 <nav class="site-nav">
   <span class="nav-edge" aria-hidden="true"></span>
   <div class="wrap nav-wrap">
@@ -390,6 +66,7 @@
 </div>
 
 <main id="main">
+
 
   <header class="hero" id="top">
     <div class="wrap inner">
@@ -478,9 +155,10 @@
     </div>
   </section>
 
+
 </main>
 
-  <footer>
+<footer>
   <div class="wrap">
     <a class="foot-bird-link" href="/"><img class="foot-bird" src="bird.png" alt="The New Critic"></a>
     <ul class="foot-links">
@@ -513,6 +191,249 @@
     targets.forEach(function(el){ observer.observe(el); });
   })();
 </script>
+<div id="preview-card" role="tooltip" aria-hidden="true"></div>
+<script>
+  (function(){
+    if (window.matchMedia('(hover: none)').matches) return;
+    var card = document.getElementById('preview-card');
+    var timer = null;
+    var activeLink = null;
+    var overCard = false;
+    var scrollTimer = null;
+    var isScrolling = false;
+    window.addEventListener('scroll', function() {
+      isScrolling = true;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function(){ isScrolling = false; }, 200);
+    }, { passive: true });
 
+    function esc(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function show(link) {
+      var text = link.dataset.preview;
+      if (!text) return;
+      activeLink = link;
+      var glowCanvas = card.querySelector('canvas');
+      card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on &#8594;</a>';
+      if (glowCanvas) card.appendChild(glowCanvas);
+      card.setAttribute('aria-hidden', 'false');
+
+      // Absolute positioning — document coordinates so card scrolls with the image.
+      // For popular-row items, anchor to the full .card so the popup spans card width.
+      var anchor = link.closest('.popular-row .card') || link;
+      var rect = anchor.getBoundingClientRect();
+      var scrollY = window.scrollY || window.pageYOffset;
+      var scrollX = window.scrollX || window.pageXOffset;
+      var margin = 8;
+      var vw = document.documentElement.clientWidth;
+
+      card.style.visibility = 'hidden';
+      card.style.left = '-9999px';
+      card.style.top = '-9999px';
+      card.style.width = rect.width + 'px';
+      card.classList.add('preview-card--visible');
+
+      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
+      card.style.left = left + 'px';
+      card.style.top = (rect.bottom + scrollY) + 'px';
+
+      link.classList.add('preview-active');
+      card.style.visibility = '';
+    }
+
+    function hide() {
+      clearTimeout(timer);
+      timer = null;
+      if (activeLink) activeLink.classList.remove('preview-active');
+      activeLink = null;
+      card.classList.remove('preview-card--visible');
+      card.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('mouseover', function(e) {
+      var link = e.target.closest('.card-image-link[data-preview]');
+      if (!link) return;
+      if (link === activeLink) return;
+      clearTimeout(timer);
+      activeLink = link;
+      timer = setTimeout(function(){ show(link); }, 500);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      var link = e.target.closest('.card-image-link[data-preview]');
+      if (!link) return;
+      if (link.contains(e.relatedTarget)) return;
+      if (e.relatedTarget === card || card.contains(e.relatedTarget)) return;
+      if (overCard || isScrolling) return;
+      hide();
+    });
+
+    card.addEventListener('mouseenter', function(){ overCard = true; clearTimeout(timer); });
+    card.addEventListener('mouseleave', function(){ overCard = false; hide(); });
+
+  })();
+</script>
+<script>
+(function(){
+  var PAD = 6; // canvas overbleed — glow is centered on the border line
+
+  function buildPath(pts) {
+    var segs = [], total = 0;
+    for (var i = 0; i < pts.length - 1; i++) {
+      var dx = pts[i+1][0]-pts[i][0], dy = pts[i+1][1]-pts[i][1];
+      var len = Math.sqrt(dx*dx+dy*dy);
+      segs.push([pts[i], pts[i+1], total, total+len]);
+      total += len;
+    }
+    var fn = function(t) {
+      var d = ((t%1)+1)%1 * total;
+      for (var i = 0; i < segs.length; i++) {
+        if (d <= segs[i][3]+1e-6) {
+          var f = segs[i][3]>segs[i][2] ? Math.min(1,(d-segs[i][2])/(segs[i][3]-segs[i][2])) : 0;
+          return [segs[i][0][0]+(segs[i][1][0]-segs[i][0][0])*f,
+                  segs[i][0][1]+(segs[i][1][1]-segs[i][0][1])*f];
+        }
+      }
+      return pts[pts.length-1];
+    };
+    fn.total = total;
+    return fn;
+  }
+
+  // Smooth wire glow: line strokes + shadowBlur, no discrete circles
+  // tail is a fraction of path length (capped to ~51px so large elements match nav bar size)
+  function drawDroplet(ctx, pathFn, t, cw, ch, opacity, tail) {
+    ctx.clearRect(0,0,cw,ch);
+    if (opacity < 0.01) return;
+    var N = 60;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Pre-sample points
+    var pts = [];
+    for (var i = 0; i <= N; i++) pts.push(pathFn(t - (1-i/N)*tail));
+
+    // Outer glow halo (shadow pass)
+    ctx.save();
+    ctx.shadowColor = 'rgba(247,246,241,1)';
+    ctx.shadowBlur = 5;
+    for (var i = 1; i <= N; i++) {
+      var frac = i/N, a = frac*frac*opacity*0.32;
+      if (a < 0.003) continue;
+      ctx.beginPath();
+      ctx.moveTo(pts[i-1][0], pts[i-1][1]);
+      ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.lineWidth = 1 + frac*2;
+      ctx.strokeStyle = 'rgba(247,246,241,'+a+')';
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Crisp inner core
+    for (var i = 1; i <= N; i++) {
+      var frac = i/N, a = frac*frac*opacity*0.88;
+      if (a < 0.003) continue;
+      ctx.beginPath();
+      ctx.moveTo(pts[i-1][0], pts[i-1][1]);
+      ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.lineWidth = 0.2 + frac*1.1;
+      ctx.strokeStyle = 'rgba(247,246,241,'+a+')';
+      ctx.stroke();
+    }
+  }
+
+  function attach(el, makePathFn, speed, zIndex, maxTailPx) {
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;top:-'+PAD+'px;left:-'+PAD+'px;pointer-events:none;z-index:'+(zIndex||4)+';';
+    el.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+    var t=0, raf=null, on=false, opacity=0, pathFn=null, cw=0, ch=0, last=null;
+    var sizeChanged = true;
+
+    var ro = new ResizeObserver(function() { sizeChanged = true; });
+    ro.observe(el);
+
+    function rebuild() {
+      if (!sizeChanged) return;
+      var w=el.offsetWidth, h=el.offsetHeight;
+      if (!w||!h) return;
+      sizeChanged = false;
+      cw=w; ch=h;
+      pathFn = makePathFn(el,w,h);
+      canvas.width  = (pathFn && pathFn.canvasW) || w+2*PAD;
+      canvas.height = (pathFn && pathFn.canvasH) || h+2*PAD;
+    }
+
+    function frame(now) {
+      if (!last) last=now;
+      var dt=Math.min(now-last,100); last=now;
+      on ? (opacity=Math.min(1,opacity+0.004*dt)) : (opacity=Math.max(0,opacity-0.003*dt));
+      rebuild();
+      // Maintain constant pixel speed regardless of path length
+      var spd = (pathFn && pathFn.total) ? PIX_PER_MS / pathFn.total : speed;
+      t=(t+spd*dt)%1;
+      if (pathFn) {
+        var capPx = maxTailPx || 51;
+        var tail = Math.min(0.18, capPx / pathFn.total);
+        drawDroplet(ctx,pathFn,t,canvas.width,canvas.height,opacity,tail);
+      }
+      if (on||opacity>0.01) raf=requestAnimationFrame(frame);
+      else { raf=null; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    }
+
+    return {
+      // cw=0;ch=0 forces rebuild on next frame so the path picks up fresh BCR positions
+      start: function(){ sizeChanged=true; on=true;  if(!raf){last=null; raf=requestAnimationFrame(frame);} },
+      stop:  function(){ on=false; if(!raf&&opacity>0.01){last=null; raf=requestAnimationFrame(frame);} }
+    };
+  }
+
+  // Button: 1px CSS border. Canvas positioned from padding edge (1px inside border outer edge).
+  // Traces border center (0.5px inside outer edge on each side).
+  function btnPathFn(el, w, h) {
+    var rect = el.getBoundingClientRect();
+    var p=PAD-0.5, q=rect.width+PAD-1.5, r=rect.height+PAD-1.5;
+    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
+  }
+
+  // Cover image link: no CSS border; outline is box-shadow 0 0 0 1px white (1px spread,
+  // center 0.5px outside element edge). Canvas at -PAD from outer edge (no border offset).
+  function imgPathFn(el, w, h) {
+    var rect = el.getBoundingClientRect();
+    var p=PAD-0.5, q=rect.width+PAD+0.5, r=rect.height+PAD+0.5;
+    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
+  }
+
+
+  var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
+  var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
+
+  // Buttons — glow on hover
+  document.querySelectorAll('a.btn').forEach(function(btn) {
+    btn.style.position = 'relative';
+    btn.style.overflow = 'visible';
+    var a = attach(btn, btnPathFn, SPD);
+    btn.addEventListener('mouseenter', a.start);
+    btn.addEventListener('mouseleave', a.stop);
+  });
+
+
+  // Cover images — glow on hover
+  document.querySelectorAll('.card-image-link').forEach(function(img) {
+    img.style.overflow = 'visible';
+    var a = attach(img, imgPathFn, SPD, 45);
+    new MutationObserver(function() {
+      if (img.classList.contains('preview-active')) a.start(); else a.stop();
+    }).observe(img, { attributes: true, attributeFilter: ['class'] });
+  });
+
+ }
+
+
+
+})();
+</script>
 </body>
 </html>

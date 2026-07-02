@@ -463,8 +463,10 @@ function renderBanner() {
 // Wraps nav + banner in one sticky unit (item 2) so the banner stays locked
 // under the nav while scrolling, instead of scrolling away on its own —
 // dismissing it just shrinks the sticky unit down to nav-only height.
-function renderHeader(currentKey) {
-  return `<div class="site-header" id="site-header">
+// staticCompact renders the header pre-collapsed with no scroll animation —
+// every page except the homepage uses this (see .is-static in style.css).
+function renderHeader(currentKey, { staticCompact = false } = {}) {
+  return `<div class="site-header${staticCompact ? ' is-compact is-static' : ''}" id="site-header">
 ${renderNav(currentKey)}
 ${renderBanner()}
 </div>`;
@@ -706,6 +708,27 @@ ${renderFooter()}
     window.addEventListener('resize', function(){ setCompact(false); }, { passive: true });
     setCompact(true);
   })();
+</script>
+
+${renderRevealScript()}
+
+${renderPreviewCard()}
+${renderCaterpillarScript()}
+</body>
+</html>`;
+}
+
+function renderPreviewCard() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/preview-card.js'), 'utf8');
+  return `<div id="preview-card" role="tooltip" aria-hidden="true"></div>
+<script>
+${js}
+</script>`;
+}
+// Reveal-on-scroll via IntersectionObserver, shared by the homepage and
+// every renderPageShell page (the Give page uses .reveal sections).
+function renderRevealScript() {
+  return `<script>
   (function(){
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var targets = document.querySelectorAll('.reveal');
@@ -723,19 +746,6 @@ ${renderFooter()}
     }, { threshold: 0.12 });
     targets.forEach(function(el){ observer.observe(el); });
   })();
-</script>
-
-${renderPreviewCard()}
-${renderCaterpillarScript()}
-</body>
-</html>`;
-}
-
-function renderPreviewCard() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/preview-card.js'), 'utf8');
-  return `<div id="preview-card" role="tooltip" aria-hidden="true"></div>
-<script>
-${js}
 </script>`;
 }
 function renderCaterpillarScript() {
@@ -744,14 +754,15 @@ function renderCaterpillarScript() {
 ${js}
 </script>`;
 }
-function renderPageShell({ currentKey, title, bodyHtml }) {
+function renderPageShell({ currentKey, title, description, bodyHtml }) {
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
-<title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>
+<title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
+<meta name="description" content="${escapeHtml(description)}">` : ''}
 <link rel="icon" href="${FAVICON}">
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
@@ -762,7 +773,7 @@ function renderPageShell({ currentKey, title, bodyHtml }) {
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-${renderHeader(currentKey)}
+${renderHeader(currentKey, { staticCompact: true })}
 
 <main id="main">
 ${bodyHtml}
@@ -770,6 +781,7 @@ ${bodyHtml}
 
 ${renderFooter()}
 
+${renderRevealScript()}
 ${renderPreviewCard()}
 ${renderCaterpillarScript()}
 </body>
@@ -967,48 +979,33 @@ function extractFounders(html) {
   return founders;
 }
 
-// give.html is a real, hand-built page (same design tokens as style.css)
-// kept as its own self-contained source file rather than templated through
-// renderPageShell — it has its own embedded <style>. We just rewrite its
-// internal nav/footer links to point at our local pages instead of the
-// live Substack site; subscribe/donate/mailto links stay external.
+// give.html is a real, hand-built page kept as its own source file, but its
+// <main> content is lifted into the shared renderPageShell shell at build
+// time, so the Give page ships the same stylesheet, header, banner, and
+// footer as every other page. Its page-specific styles (hero, ledger,
+// letter, gift cards, signatures) live in style.css under "GIVE PAGE";
+// give.html's own <style>, nav, and footer are discarded here.
 const GIVE_SRC_PATH = path.join(__dirname, 'give.html');
 
-// CSS for give.html's own embedded <style> block — same class names/markup
-// as the promo banner elsewhere, reusing give.html's own design tokens
-// (it already defines --surface-2/--line/--white/--muted/--body).
-const GIVE_PROMO_BANNER_CSS = `
-  .site-header{ position: sticky; top: 0; z-index: 50; }
-  .promo-banner{ background: var(--surface-2); border-bottom: 1px solid var(--line); }
-  .promo-banner-inner{ display:flex; align-items:center; justify-content:center; gap: 28px; flex-wrap: wrap; padding: 14px 56px; }
-  .promo-banner p{ margin: 0; color: var(--body-text); font-size: 0.88rem; text-align: left; flex: 1 1 480px; max-width: 760px; }
-  .promo-banner p em{ font-style: italic; color: var(--white); }
-  .promo-banner-actions{ display:flex; align-items:center; gap: 16px; flex: 0 0 auto; }
-  .promo-banner-close{ background: none; border: none; padding: 0 2px; margin: 0; color: var(--muted); font-size: 1.3rem; line-height: 1; cursor: pointer; font-family: var(--body); transition: color .2s ease, text-shadow .2s ease; }
-  .promo-banner-close:hover{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-  @media (hover: none) { .promo-banner-close:hover{ text-shadow: none; } }
-`;
-
-// Replaces the first occurrence of the block running from `startMarker`
-// through `endMarker` (inclusive) with `replacement`.
-function replaceBlock(html, startMarker, endMarker, replacement) {
-  const start = html.indexOf(startMarker);
-  if (start === -1) return html;
-  const end = html.indexOf(endMarker, start) + endMarker.length;
-  return html.slice(0, start) + replacement + html.slice(end);
-}
-
 function buildGivePage(rawHtml) {
-  let html = rawHtml
-    // The homepage link in the hero (not part of the nav/footer blocks below).
+  const open = '<main id="main">';
+  const start = rawHtml.indexOf(open);
+  const end = rawHtml.indexOf('</main>');
+  if (start === -1 || end === -1) {
+    throw new Error('give.html: <main id="main"> block not found');
+  }
+  const bodyHtml = rawHtml
+    .slice(start + open.length, end)
+    // Homepage links in the hero point at our local homepage, not Substack.
     .replace(/href="https:\/\/www\.thenewcritic\.com\/"/g, 'href="/"');
 
-  // Swap in the exact same nav/footer/banner every other page uses, instead
-  // of give.html's own hand-written (and now out-of-sync) copies.
-  html = replaceBlock(html, '<nav class="site-nav">', '</nav>', renderHeader('give'));
-  html = replaceBlock(html, '<footer>', '</footer>', renderFooter());
-
-  return html.replace('</style>', `${GIVE_PROMO_BANNER_CSS}</style>`);
+  return renderPageShell({
+    currentKey: 'give',
+    title: 'Give',
+    description:
+      'Support The New Critic, the young American magazine. Subscribe or give a one-time gift to fund the future of letters.',
+    bodyHtml,
+  });
 }
 
 async function main() {
