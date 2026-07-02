@@ -641,9 +641,9 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 <link rel="icon" href="${FAVICON}">
 ${heroPreload}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/source-serif-4-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -753,9 +753,9 @@ function renderPageShell({ currentKey, title, bodyHtml }) {
 <meta name="theme-color" content="#000000">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>
 <link rel="icon" href="${FAVICON}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,400..500&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/source-serif-4-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -1144,6 +1144,10 @@ async function main() {
     console.log(`Wrote ${path.join(OUT_DIR, filename)}`);
   }
   fs.copyFileSync(path.join(__dirname, 'style.css'), path.join(OUT_DIR, 'style.css'));
+  fs.mkdirSync(path.join(OUT_DIR, 'fonts'), { recursive: true });
+  for (const f of fs.readdirSync(path.join(__dirname, 'fonts'))) {
+    fs.copyFileSync(path.join(__dirname, 'fonts', f), path.join(OUT_DIR, 'fonts', f));
+  }
   fs.writeFileSync(path.join(OUT_DIR, 'bird.png'), Buffer.from(BIRD_LOGO_B64, 'base64'));
 }
 

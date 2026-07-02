@@ -30,7 +30,8 @@
       "Bash(grep -o \"nav-subscribe.\\\\{0,80\\\\}\" dist/give.html)",
       "Bash(grep -o \"foot-fine.\\\\{0,120\\\\}\" dist/index.html)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git commit -m 'Self-host fonts with preload to eliminate font flash on load *)"
     ]
   }
 }
