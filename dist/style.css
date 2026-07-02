@@ -48,36 +48,62 @@ a{ color: inherit; }
 .site-header{ position: sticky; top: 0; z-index: 50; }
 
 .site-nav{
-  background: rgba(0,0,0,0.88);
-  backdrop-filter: blur(6px);
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+.site-nav::before{
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 96px;
+  background: rgba(0,0,0,0.88); backdrop-filter: blur(6px);
+  z-index: -1;
+}
+.site-nav::after{
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 222px;
+  background: var(--paper);
   border-bottom: 1px solid var(--line);
-  transition: border-bottom-color 0s, box-shadow 0s;
+  z-index: -2;
+  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .site-nav .wrap{
   display:grid; grid-template-columns: 1fr auto 1fr;
   align-items:center;
-  padding-top: 16px; padding-bottom: 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   gap: 24px;
 }
 .nav-links--left{ justify-content: flex-start; }
 .nav-right{ justify-content: flex-end; }
 .wordmark{
-  display:flex; align-items:center; gap: 10px;
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.1rem;
-  letter-spacing: 0.01em;
-  text-decoration:none;
-  white-space:nowrap;
-  color: var(--white);
+  display:flex; flex-direction: column; align-items: center;
+  row-gap: 0;
+  font-family: var(--display); font-weight: 600; font-size: 1.1rem;
+  letter-spacing: 0.01em; text-decoration:none; white-space:nowrap; color: var(--white);
   transition: text-shadow .2s ease;
 }
 .wordmark:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-.wordmark img{
-  width: 20px; height: auto; opacity: 1;
-  transition: filter .2s ease;
+.bird-frame{
+  display: block; width: 20px; height: 22px;
+  transform-origin: top center; will-change: transform;
+  transform: scale(5);
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), filter .2s ease;
 }
-.wordmark:hover img{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
+.wordmark img{ width: 20px; height: auto; display: block; }
+.wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
+.wordmark-name{
+  display: block; will-change: transform;
+  transform: translateY(116px);
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wordmark:hover .wordmark-tagline{ text-shadow: none; }
+.wordmark-tagline{
+  display: block; will-change: transform;
+  font-family: var(--body); font-style: italic; font-weight: 400;
+  font-size: 0.78rem; color: var(--muted);
+  transform: translateY(126px);
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .nav-links{
   list-style:none; display:flex; gap: 26px; margin:0; padding:0;
   font-family: var(--mono); font-size: 0.741rem; letter-spacing: 0.04em; text-transform: uppercase;
@@ -97,6 +123,14 @@ a{ color: inherit; }
 @media (max-width: 860px){ .nav-tagline{ display: none; } }
 .nav-right{ display:flex; align-items:center; gap: 28px; }
 .nav-subscribe{ flex: 0 0 auto; white-space: nowrap; }
+
+/* ---------- NAV compact state ---------- */
+.site-header.is-compact .site-nav::after{ height: 96px; }
+.site-header.is-compact .bird-frame{ transform: translate(-179px, 26px); }
+.site-header.is-compact .wordmark-name{ transform: translate(-80px, 0); }
+.site-header.is-compact .wordmark-tagline{ transform: translate(100px, -25px); }
+.site-header.no-transition,
+.site-header.no-transition *{ transition: none !important; }
 
 /* ---------- PROMO BANNER ---------- */
 .promo-banner{ background: var(--surface-2); border-bottom: 1px solid var(--line); }
@@ -161,7 +195,10 @@ section{ padding: 80px 0; }
 
 .reveal{ opacity:0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
-@media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; }
+  .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after{ transition: none; }
+}
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
 .featured-strip{ padding: 32px 0 0; }

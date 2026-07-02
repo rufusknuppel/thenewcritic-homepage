@@ -399,8 +399,9 @@ function renderNav(currentKey = 'home') {
       ${leftLinks}
     </ul>
     <a class="wordmark" href="/"${currentKey === 'home' ? ' aria-current="page"' : ''}>
-      <img src="${BIRD_LOGO}" alt="" aria-hidden="true">
-      THE NEW CRITIC
+      <span class="bird-frame"><img src="${BIRD_LOGO}" alt="" aria-hidden="true"></span>
+      <span class="wordmark-name">THE NEW CRITIC</span>
+      <em class="wordmark-tagline">The Young American Magazine</em>
     </a>
     <div class="nav-right">
       <ul class="nav-links">
@@ -685,6 +686,20 @@ ${renderHeader()}
 ${renderFooter()}
 
 <script>
+  (function(){
+    var header = document.querySelector('.site-header');
+    var THRESHOLD = 1;
+    var WIDE = 900;
+    function setCompact(instant) {
+      var compact = window.innerWidth < WIDE || (window.scrollY || 0) > THRESHOLD;
+      if (instant) header.classList.add('no-transition');
+      header.classList.toggle('is-compact', compact);
+      if (instant) { header.offsetHeight; header.classList.remove('no-transition'); }
+    }
+    window.addEventListener('scroll', function(){ setCompact(false); }, { passive: true });
+    window.addEventListener('resize', function(){ setCompact(false); }, { passive: true });
+    setCompact(true);
+  })();
   (function(){
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var targets = document.querySelectorAll('.reveal');

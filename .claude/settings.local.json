@@ -28,7 +28,9 @@
       "Bash(grep -n \"GIVE_PROMO_BANNER_CSS = \\\\`\" -A 8 build.js)",
       "Bash(grep -o \"nav-subscribe.\\\\{0,80\\\\}\" dist/index.html)",
       "Bash(grep -o \"nav-subscribe.\\\\{0,80\\\\}\" dist/give.html)",
-      "Bash(grep -o \"foot-fine.\\\\{0,120\\\\}\" dist/index.html)"
+      "Bash(grep -o \"foot-fine.\\\\{0,120\\\\}\" dist/index.html)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
