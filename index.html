@@ -477,6 +477,9 @@
     window.addEventListener('resize', function(){ setCompact(false); }, { passive: true });
     setCompact(true);
   })();
+</script>
+
+<script>
   (function(){
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var targets = document.querySelectorAll('.reveal');

@@ -15,7 +15,7 @@
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<div class="site-header" id="site-header">
+<div class="site-header is-compact is-static" id="site-header">
 <nav class="site-nav">
   <span class="nav-edge" aria-hidden="true"></span>
   <div class="wrap nav-wrap">
@@ -144,6 +144,25 @@
   </div>
 </footer>
 
+<script>
+  (function(){
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var targets = document.querySelectorAll('.reveal');
+    if (prefersReduced || !('IntersectionObserver' in window)) {
+      targets.forEach(function(el){ el.classList.add('in-view'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(function(el){ observer.observe(el); });
+  })();
+</script>
 <div id="preview-card" role="tooltip" aria-hidden="true"></div>
 <script>
   (function(){
