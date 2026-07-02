@@ -394,6 +394,7 @@ function renderNav(currentKey = 'home') {
   const rightLinks = SITE_LINKS.filter(l => rightKeys.includes(l.key)).map(navLink).join('\n      ');
 
   return `<nav class="site-nav">
+  <span class="nav-edge" aria-hidden="true"></span>
   <div class="wrap nav-wrap">
     <ul class="nav-links nav-links--left">
       ${leftLinks}

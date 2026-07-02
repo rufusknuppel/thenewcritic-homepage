@@ -15,7 +15,13 @@
 }
 
 *{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; }
+html{
+  scroll-behavior: smooth;
+  /* The sticky header animates its flow height (232px -> 96px) on scroll.
+     Scroll anchoring "compensates" for that shift by adjusting scrollY,
+     which re-toggles the nav state and oscillates. */
+  overflow-anchor: none;
+}
 body{
   margin:0;
   background: var(--paper);
@@ -45,12 +51,20 @@ a{ color: inherit; }
 .wrap--narrow{ max-width: 660px; }
 
 /* ---------- NAV ---------- */
-.site-header{ position: sticky; top: 0; z-index: 50; }
+.site-header{
+  position: sticky; top: 0; z-index: 50;
+  height: 232px;
+  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 .site-nav{
   position: relative;
   z-index: 1;
   overflow: visible;
+  /* Clip overflowing wordmark to the animated nav box so compositor-driven
+     transforms can't outrun the main-thread background height mid-transition. */
+  clip-path: inset(0 0 -138px 0);
+  transition: clip-path .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .site-nav::before{
   content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -60,11 +74,20 @@ a{ color: inherit; }
 }
 .site-nav::after{
   content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 222px;
+  height: 232px;
   background: var(--paper);
-  border-bottom: 1px solid var(--line);
   z-index: -2;
-  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top; will-change: transform;
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Bottom border line as its own compositor-animated layer so the bar edge
+   keeps pace with the wordmark transforms during fast scrolls. */
+.nav-edge{
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--line);
+  z-index: -1;
+  transform: translateY(231px); will-change: transform;
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .site-nav .wrap{
   display:grid; grid-template-columns: 1fr auto 1fr;
@@ -86,14 +109,14 @@ a{ color: inherit; }
 .bird-frame{
   display: block; width: 20px; height: 22px;
   transform-origin: top center; will-change: transform;
-  transform: scale(5);
+  transform: translateY(16px) scale(5);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), filter .2s ease;
 }
 .wordmark img{ width: 20px; height: auto; display: block; }
 .wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .wordmark-name{
   display: block; will-change: transform;
-  transform: translateY(116px);
+  transform: translateY(120px);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .wordmark:hover .wordmark-tagline{ text-shadow: none; }
@@ -101,7 +124,7 @@ a{ color: inherit; }
   display: block; will-change: transform;
   font-family: var(--body); font-style: italic; font-weight: 400;
   font-size: 0.78rem; color: var(--muted);
-  transform: translateY(126px);
+  transform: translateY(120px);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .nav-links{
@@ -125,7 +148,10 @@ a{ color: inherit; }
 .nav-subscribe{ flex: 0 0 auto; white-space: nowrap; }
 
 /* ---------- NAV compact state ---------- */
-.site-header.is-compact .site-nav::after{ height: 96px; }
+.site-header.is-compact{ height: 96px; }
+.site-header.is-compact .site-nav{ clip-path: inset(0 0 -2px 0); }
+.site-header.is-compact .site-nav::after{ transform: scaleY(0.41379); } /* 96/232 */
+.site-header.is-compact .nav-edge{ transform: translateY(95px); }
 .site-header.is-compact .bird-frame{ transform: translate(-179px, 26px); }
 .site-header.is-compact .wordmark-name{ transform: translate(-80px, 0); }
 .site-header.is-compact .wordmark-tagline{ transform: translate(100px, -25px); }
@@ -197,7 +223,7 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
-  .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after{ transition: none; }
+  .site-header, .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after, .nav-edge{ transition: none; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
