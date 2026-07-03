@@ -154,6 +154,16 @@ a{ color: inherit; }
 }
 .nav-links--left{ justify-content: flex-start; }
 .nav-right{ justify-content: flex-end; }
+/* Tall state: side links and the subscribe button center on the wordmark
+   group's midline (95.5px of the 191px bar); collapsing slides them up to
+   their compact position in step with the wordmark transforms. */
+.nav-links--left, .nav-right{
+  will-change: transform;
+  transform: translateY(47.7px);
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.site-header.is-compact .nav-links--left,
+.site-header.is-compact .nav-right{ transform: translateY(0); }
 .wordmark{
   display:flex; flex-direction: column; align-items: center;
   row-gap: 0;
@@ -165,11 +175,15 @@ a{ color: inherit; }
 .bird-frame{
   display: block; width: 20px; height: 22px;
   transform-origin: top center; will-change: transform;
-  transform: translateY(12px) scale(3.5);
+  /* Tall state: 85px-tall bird, with the bird → wordmark gap matching the
+     wordmark → tagline visual gap (13.3px between glyph edges) and the
+     bird + wordmark + tagline group centered in the 191px bar. */
+  transform: translateY(15px) scale(3.836);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), filter .2s ease;
 }
 .wordmark img{ width: 20px; height: auto; display: block; }
-.wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
+/* Hover glow on the bird is compact-only; the tall-state mark stays matte. */
+.site-header.is-compact .wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .wordmark-name{
   display: block; will-change: transform;
   transform: translateY(83px);
@@ -293,7 +307,7 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
-  .site-header, .site-nav, .site-header.is-compact .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .site-nav::after, .nav-edge, main, footer{ transition: none; }
+  .site-header, .site-nav, .site-header.is-compact .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .nav-links--left, .nav-right, .site-nav::after, .nav-edge, main, footer{ transition: none; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
