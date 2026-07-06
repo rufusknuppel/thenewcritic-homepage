@@ -312,59 +312,125 @@ section{ padding: 80px 0; }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
 .featured-strip{ padding: 32px 0 0; }
-.hero-row{
-  display:flex; align-items:stretch; gap: 36px; padding-bottom: 28px;
-  border-bottom: 1px solid var(--line);
+/* hero-row (the feature card) and the announcement box now stack, with the
+   divider before "Most Read" living on this shared wrapper instead of on
+   either child individually. */
+.hero-block{ padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.hero-row{ padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+/* Text (title/meta/dek/first paragraph) on the left, cover image on the
+   right — image is the larger fluid column so it runs wide enough to
+   extend past the tagline under the tall-state masthead above it. Reflows
+   to image-on-top, text-below on narrow screens.
+   ".card.card--feature" (not just ".card--feature") so this outranks the
+   base ".card{ display:flex }" rule, which shares its specificity and
+   comes later in the file. */
+.card.card--feature{
+  display:grid; grid-template-columns: 38.2% 1fr; column-gap: 36px; align-items: end;
 }
-/* Grid areas so the dek sits directly under the image at the image's own
-   width on desktop ("image" + "dek" share the left column), but reflows
-   to image → title → dek stacked on narrow screens. */
-.card--feature{
-  display:grid; grid-template-columns: 42% 1fr; column-gap: 28px; row-gap: 10px;
-  grid-template-areas: "image text" "dek  text";
-  flex: 1 1 58%; min-width: 0;
-}
-.feature-image-cell{ grid-area: image; min-width: 0; }
+.feature-image-cell{ position: relative; min-width: 0; }
+.card--feature .card-image-frame{ margin-bottom: 0; }
 .card--feature .card-image-link{ display:block; margin-bottom: 0; }
 .card--feature .card-text{
-  grid-area: text; min-width: 0; text-align: left; align-self: start;
-  display:flex; flex-wrap: wrap; align-items: baseline; align-content: flex-start; column-gap: 16px;
+  min-width: 0; text-align: left;
+  display:flex; flex-direction: column;
 }
 .card--feature .card-image,
-.card--feature .card-image--blank{ width: 100%; aspect-ratio: 16/9; }
-/* Subheading sits under the image, sized to the image's own width. */
-.card--feature .card-dek{
-  grid-area: dek; font-size: 0.88rem; margin: 0; text-align: left;
+.card--feature .card-image--blank{ width: 100%; aspect-ratio: 4/3; }
+/* "The Latest" — black pill with a white border, pinned over the top
+   right corner of the cover image, linking to the archive. Glows in sync
+   with the cover image's own hover glow below (same trigger: hovering
+   anywhere in the image cell, including the pill itself). */
+.hero-latest-btn{
+  position: absolute; top: 14px; right: 14px; z-index: 2;
+  background: var(--paper); color: var(--white);
+  border: 1px solid var(--white);
+  padding: 8px 14px;
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+  text-decoration: none; line-height: 1;
+  transition: box-shadow .25s ease;
 }
-/* Date/author/likes sit inline with the title (item 3) instead of on
-   their own line, to save vertical space. */
+/* Same dim + glow hover treatment as the other posts' images (see IMAGE
+   HOVER OVERLAY below), but via a plain :hover instead of the JS preview-
+   popup class — the popup/overlay text would be redundant here since the
+   title and first paragraph are already shown statically beside it. */
+.feature-image-cell:hover .card-image-link{
+  box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
+}
+.feature-image-cell:hover .card-image{
+  filter: grayscale(1) brightness(0.45);
+}
+.feature-image-cell:hover .hero-latest-btn{
+  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
+}
+/* Small courier kicker above the title (see HERO_KICKER in build.js). */
+.card--feature .hero-kicker{
+  font-family: 'Courier New', Courier, monospace; font-size: 0.75rem; font-weight: bold;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  margin: 0 0 10px;
+  transition: color .15s ease, text-shadow .2s ease;
+}
+.card--feature .hero-kicker:hover{
+  color: var(--white);
+  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
+}
 .card--feature .card-title{
-  flex: 0 1 auto; font-size: clamp(1.3rem, 2.4vw, 1.7rem); margin: 10px 0 0; text-align: left;
+  font-size: clamp(2rem, 4vw, 3rem); margin: 0; text-align: left; line-height: 1.1;
 }
-.card--feature .card-meta{ flex: 0 0 auto; }
-@media (max-width: 860px){
-  .hero-row{ flex-direction:column; }
-  .card--feature{ flex-basis: auto; }
+.card--feature .card-meta{ margin-top: 10px; }
+/* Subheading matches the subheading size used in the other card grids.
+   The four gaps below it (meta→dek, dek→divider, divider→paragraph,
+   paragraph→button) are all the same 16px. */
+.card--feature .card-dek{
+  font-size: 0.92rem; margin: 16px 0 0; text-align: left;
 }
+/* First paragraph of the piece (after any paid-subscriber appeal at the
+   top of the post), reused from the same extraction that feeds the
+   hover-preview popup elsewhere (see post.preview in build.js). Font size
+   matches the dek above it; a thin divider separates the two. */
+.card--feature .card-preview{
+  font-size: 0.92rem; color: var(--body-text); line-height: 1.6;
+  margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--line);
+}
+.card--feature .card-preview-cta{ margin-top: 16px; }
 @media (max-width: 640px){
-  .card--feature{
-    grid-template-columns: 1fr;
-    grid-template-areas: "image" "text" "dek";
-    row-gap: 16px;
-  }
+  .card.card--feature{ display:flex; flex-direction: column; align-items: stretch; }
+  .feature-image-cell{ order: -1; margin-bottom: 20px; }
   .card--feature .card-image,
-  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 16/9; }
+  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 4/3; }
 }
 
-/* ---------- ANNOUNCEMENT BOX (sits beside the hero, item 2) ---------- */
+/* ---------- ANNOUNCEMENT BOX (sits below the hero, item 2) ---------- */
 .announcement-box{
-  background: var(--surface); border-right: 1px solid var(--line); border-left: 3px solid var(--white);
-  padding: 28px 32px; flex: 1 1 42%; min-width: 0;
-  display:flex; flex-direction:column; justify-content:center;
+  background: var(--surface);
+  padding: 32px;
+  margin: 0 50px;
+  display:flex; flex-direction:row; align-items:center; gap: 32px;
   transition: box-shadow .25s ease;
 }
 .announcement-box:hover{
   box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
+}
+/* Well-proportioned square, with its own divider (not just a gap)
+   separating it from the text beside it. */
+.announcement-photo{
+  flex: 0 0 200px; width: 200px; height: 200px; object-fit: cover;
+}
+.announcement-text{
+  min-width: 0; flex: 1 1 auto;
+  padding-left: 32px;
+  border-left: 1px solid var(--line);
+}
+/* Same courier-kicker look and size as the hero (see .hero-kicker) applied
+   to the "From the Editors" label here, with the same gray/white-glow-on-
+   hover treatment as the nav links. */
+.announcement-box .eyebrow{
+  font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 0.75rem;
+  color: var(--muted);
+  transition: color .15s ease, text-shadow .2s ease;
+}
+.announcement-box .eyebrow:hover{
+  color: var(--white);
+  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 .announcement-title{
   font-family: var(--display); font-weight: 600; font-size: clamp(1.1rem, 1.8vw, 1.4rem);
@@ -379,9 +445,14 @@ section{ padding: 80px 0; }
   color: var(--body-text); margin: 0 0 14px; font-size: 0.92rem; line-height: 1.55;
   overflow-wrap: break-word;
 }
-.announcement-box .btn{ margin-top: 6px; align-self: flex-start; }
-@media (max-width: 860px){
-  .announcement-box{ flex-basis: auto; }
+.announcement-box .btn{ margin-top: 6px; }
+@media (max-width: 560px){
+  .announcement-box{ flex-direction: column; align-items: stretch; margin: 0 20px; }
+  .announcement-photo{ width: 100%; height: auto; aspect-ratio: 1/1; }
+  .announcement-text{
+    padding-left: 0; padding-top: 20px;
+    border-left: none; border-top: 1px solid var(--line);
+  }
 }
 
 /* ---------- MOST POPULAR strip ---------- */
@@ -861,6 +932,8 @@ footer{ padding: 48px 0; text-align:center; }
   .nav-links a:hover,
   .foot-links a:hover,
   .gift-note a:hover,
+  .hero-kicker:hover,
+  .announcement-box .eyebrow:hover,
   .likes:hover .likes-count{
     text-shadow: none;
   }
@@ -871,6 +944,15 @@ footer{ padding: 48px 0; text-align:center; }
   .wordmark:hover img,
   .foot-bird-link:hover .foot-bird{
     filter: none;
+  }
+  .feature-image-cell:hover .card-image-link{
+    box-shadow: none;
+  }
+  .feature-image-cell:hover .card-image{
+    filter: none;
+  }
+  .feature-image-cell:hover .hero-latest-btn{
+    box-shadow: none;
   }
 }
 

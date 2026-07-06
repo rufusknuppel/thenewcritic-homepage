@@ -95,7 +95,7 @@
       </div>
     </article>
     <article class="card">
-      <span class="card-image-frame"><a class="card-image-link" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener" data-preview="Being the “voice of your generation” is a rather difficult role, especially if you earned the moniker from a piece you now consider a re-packaging of Jonathan Haidt." data-title="Worse Than You Think" data-author="Clare Ashcraft">
+      <span class="card-image-frame"><a class="card-image-link" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener" data-preview="RUFUS Reading your takedown of gen z or your reflections on the friendships you did or didn’t make in college, I could imagine someone our age thinking, “What the hell is this girl talking about? She just needs to get out of her room.” What is your response to that criticism?" data-title="Worse Than You Think" data-author="Clare Ashcraft">
         <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!bK-K!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png" alt="" loading="lazy">
         <div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">Worse Than You Think</span><span class="overlay-author">Clare Ashcraft</span></div>
       </a></span>
@@ -317,10 +317,35 @@
     var overCard = false;
     var scrollTimer = null;
     var isScrolling = false;
+
+    // The card is positioned in document coordinates, but it lives outside
+    // <main> while its anchor lives inside it — and the sticky nav's compact
+    // state applies a compositor transform to <main> (content pull-up) that
+    // shifts the anchor's painted position without a real scroll/reflow.
+    // Recomputing from a fresh rect on every scroll (see listener below)
+    // keeps the card glued to the anchor through that transform instead of
+    // drifting away from it.
+    function reposition() {
+      if (!activeLink) return;
+      var anchor = activeLink.closest('.popular-row .card') || activeLink;
+      var rect = anchor.getBoundingClientRect();
+      var scrollY = window.scrollY || window.pageYOffset;
+      var scrollX = window.scrollX || window.pageXOffset;
+      var margin = 8;
+      var vw = document.documentElement.clientWidth;
+      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
+      card.style.left = left + 'px';
+      card.style.top = (rect.bottom + scrollY) + 'px';
+    }
+
     window.addEventListener('scroll', function() {
       isScrolling = true;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(function(){ isScrolling = false; }, 200);
+      if (card.classList.contains('preview-card--visible')) reposition();
+    }, { passive: true });
+    window.addEventListener('resize', function() {
+      if (card.classList.contains('preview-card--visible')) reposition();
     }, { passive: true });
 
     function esc(s) {
@@ -340,10 +365,6 @@
       // For popular-row items, anchor to the full .card so the popup spans card width.
       var anchor = link.closest('.popular-row .card') || link;
       var rect = anchor.getBoundingClientRect();
-      var scrollY = window.scrollY || window.pageYOffset;
-      var scrollX = window.scrollX || window.pageXOffset;
-      var margin = 8;
-      var vw = document.documentElement.clientWidth;
 
       card.style.visibility = 'hidden';
       card.style.left = '-9999px';
@@ -351,9 +372,7 @@
       card.style.width = rect.width + 'px';
       card.classList.add('preview-card--visible');
 
-      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
-      card.style.left = left + 'px';
-      card.style.top = (rect.bottom + scrollY) + 'px';
+      reposition();
 
       link.classList.add('preview-active');
       card.style.visibility = '';

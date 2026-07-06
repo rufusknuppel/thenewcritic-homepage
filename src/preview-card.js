@@ -6,10 +6,35 @@
     var overCard = false;
     var scrollTimer = null;
     var isScrolling = false;
+
+    // The card is positioned in document coordinates, but it lives outside
+    // <main> while its anchor lives inside it — and the sticky nav's compact
+    // state applies a compositor transform to <main> (content pull-up) that
+    // shifts the anchor's painted position without a real scroll/reflow.
+    // Recomputing from a fresh rect on every scroll (see listener below)
+    // keeps the card glued to the anchor through that transform instead of
+    // drifting away from it.
+    function reposition() {
+      if (!activeLink) return;
+      var anchor = activeLink.closest('.popular-row .card') || activeLink;
+      var rect = anchor.getBoundingClientRect();
+      var scrollY = window.scrollY || window.pageYOffset;
+      var scrollX = window.scrollX || window.pageXOffset;
+      var margin = 8;
+      var vw = document.documentElement.clientWidth;
+      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
+      card.style.left = left + 'px';
+      card.style.top = (rect.bottom + scrollY) + 'px';
+    }
+
     window.addEventListener('scroll', function() {
       isScrolling = true;
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(function(){ isScrolling = false; }, 200);
+      if (card.classList.contains('preview-card--visible')) reposition();
+    }, { passive: true });
+    window.addEventListener('resize', function() {
+      if (card.classList.contains('preview-card--visible')) reposition();
     }, { passive: true });
 
     function esc(s) {
@@ -29,10 +54,6 @@
       // For popular-row items, anchor to the full .card so the popup spans card width.
       var anchor = link.closest('.popular-row .card') || link;
       var rect = anchor.getBoundingClientRect();
-      var scrollY = window.scrollY || window.pageYOffset;
-      var scrollX = window.scrollX || window.pageXOffset;
-      var margin = 8;
-      var vw = document.documentElement.clientWidth;
 
       card.style.visibility = 'hidden';
       card.style.left = '-9999px';
@@ -40,9 +61,7 @@
       card.style.width = rect.width + 'px';
       card.classList.add('preview-card--visible');
 
-      var left = Math.min(Math.max(rect.left + scrollX, margin), vw - rect.width - margin);
-      card.style.left = left + 'px';
-      card.style.top = (rect.bottom + scrollY) + 'px';
+      reposition();
 
       link.classList.add('preview-active');
       card.style.visibility = '';
