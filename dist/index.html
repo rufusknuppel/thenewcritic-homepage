@@ -838,7 +838,7 @@
     // auto margin to its *current* (stale, pre-fit) used value here —
     // circular, same trap as measuring the box's own height — so budget
     // off a fixed minimum gap instead.
-    var CTA_MIN_GAP = 16;
+    var CTA_MIN_GAP = 18;
     var ctaSpace = cta ? cta.getBoundingClientRect().height + CTA_MIN_GAP : 0;
     var gap = parseFloat(getComputedStyle(second).marginTop) || 0;
     var lineHeight = parseFloat(getComputedStyle(first).lineHeight);
