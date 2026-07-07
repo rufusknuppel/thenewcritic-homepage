@@ -347,6 +347,26 @@ section{ padding: 80px 0; }
   min-width: 0; text-align: left;
   display:flex; flex-direction: column;
 }
+/* The paragraph column is boxed like the hover-preview popup below
+   (#preview-card) — same surface color, border, and padding — but with
+   its left border omitted and pulled back across the column gap
+   (margin-left: -column-gap) so it reads as growing directly out of the
+   cover image rather than floating separately beside it. align-self:
+   stretch (overriding the grid's own align-items:start, which still
+   top-anchors the title column) makes it exactly as tall as the image —
+   the line-clamp counts on .card-preview below are sized to roughly fill
+   that height, not the shorter one from before. Glows on hover, in sync
+   with the image (see the :has() rules below) since together they read
+   as one unit. */
+.card--feature .card-text--right{
+  align-self: stretch;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: none;
+  margin-left: -36px;
+  padding: 16px 18px;
+  transition: box-shadow .25s ease;
+}
 .card--feature .card-image,
 .card--feature .card-image--blank{ width: 100%; aspect-ratio: 3.5/3; }
 /* "The Latest" — black pill with a white border, pinned over the top
@@ -365,15 +385,29 @@ section{ padding: 80px 0; }
 /* Same dim + glow hover treatment as the other posts' images (see IMAGE
    HOVER OVERLAY below), but via a plain :hover instead of the JS preview-
    popup class — the popup/overlay text would be redundant here since the
-   title and first paragraph are already shown statically beside it. */
-.feature-image-cell:hover .card-image-link{
+   title and first paragraph are already shown statically beside it.
+   Image and text box read as one connected unit (see .card-text--right
+   above), so hovering either one glows both: the plain descendant
+   selectors handle "hovering the image glows the box" (the box comes
+   after it in the DOM, so a sibling selector could too, but :has() reads
+   the same both directions); :has() handles the reverse, "hovering the
+   box glows the image", which a sibling selector alone can't do since
+   the image comes first in the DOM. */
+.feature-image-cell:hover .card-image-link,
+.card.card--feature:has(.card-text--right:hover) .card-image-link{
   box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.feature-image-cell:hover .card-image{
+.feature-image-cell:hover .card-image,
+.card.card--feature:has(.card-text--right:hover) .card-image{
   filter: grayscale(1) brightness(0.45);
 }
-.feature-image-cell:hover .hero-latest-btn{
+.feature-image-cell:hover .hero-latest-btn,
+.card.card--feature:has(.card-text--right:hover) .hero-latest-btn{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
+}
+.card--feature .card-text--right:hover,
+.card.card--feature:has(.feature-image-cell:hover) .card-text--right{
+  box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
 }
 /* Small courier kicker above the title (see HERO_KICKER in build.js). */
 .card--feature .hero-kicker{
@@ -404,18 +438,29 @@ section{ padding: 80px 0; }
    build-time word-count guess) clips at the actual rendered line for
    whatever column width the visitor has, and supplies its own ellipsis
    flush to that line's end rather than one tacked on wherever a word
-   count happened to land. The 400px max-height on the wrapper is just a
-   backstop for narrower viewports, where the two clamps combined could
-   still in principle run past the (shorter) cover image's height. */
-.card--feature .card-preview-block{ max-height: 400px; overflow: hidden; }
+   count happened to land.
+   .card-text--right is stretched to the cover image's full height (see
+   above), and the opening (lede) paragraph alone is often too short to
+   fill it on its own — a short lede is a normal, deliberate style choice,
+   not something to work around by fetching more paragraphs. The second
+   paragraph almost always has more real text in it than the lede does,
+   so it gets the bigger half of the budget (10 lines vs. 7) to keep
+   pulling from — 17 lines total is the max either can use (measured
+   against the box's actual rendered height) without overflowing. The
+   372px max-height on the wrapper is just a backstop for narrower
+   viewports, where the two clamps combined could still in principle run
+   past the (shorter) cover image's height. */
+.card--feature .card-preview-block{ max-height: 372px; overflow: hidden; }
 .card--feature .card-preview{
-  font-size: 0.92rem; color: var(--body-text); line-height: 1.6; margin: 0;
+  /* A touch smaller than the dek above (0.92rem) now that it sits inside
+     its own boxed column — matches the popup's slightly denser body copy. */
+  font-size: calc(0.92rem - 1.5px); color: var(--body-text); line-height: 1.6; margin: 0;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
-  line-clamp: 11; -webkit-line-clamp: 11;
+  line-clamp: 7; -webkit-line-clamp: 7;
 }
 .card--feature .card-preview + .card-preview{
   margin-top: 12px;
-  line-clamp: 5; -webkit-line-clamp: 5;
+  line-clamp: 10; -webkit-line-clamp: 10;
 }
 /* Opening words of the first paragraph, set like a small-caps lede (see
    wrapLedeWords in build.js) — a magazine-style flourish leading into the
@@ -428,8 +473,17 @@ section{ padding: 80px 0; }
   /* No reordering needed: DOM order (title/dek, image, paragraph) already
      matches natural reading order once stacked. */
   .card.card--feature{ display:flex; flex-direction: column; align-items: stretch; }
-  .feature-image-cell{ margin-bottom: 20px; }
-  .card--feature .card-text--right{ margin-top: 20px; }
+  .feature-image-cell{ margin-bottom: 0; }
+  /* Stacked below the image now instead of beside it, so the box connects
+     along its top edge instead of its left — same idea, rotated 90°.
+     align-self:stretch overrides the desktop grid's align-self:end, which
+     in this flex-column layout would otherwise mean "hug the right edge"
+     instead of "sit at the bottom". */
+  .card--feature .card-text--right{
+    align-self: stretch;
+    margin-left: 0; margin-top: 0;
+    border-left: 1px solid var(--line); border-top: none;
+  }
   .card--feature .card-image,
   .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; }
 }

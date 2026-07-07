@@ -217,7 +217,11 @@ async function fetchFirstParagraph(url) {
 // Returns full, untruncated paragraph text: cutting each paragraph off at
 // the right line — with a real ellipsis flush at that line's end — is a
 // CSS -webkit-line-clamp job (see .card-preview-block in style.css), not a
-// build-time word-count guess.
+// build-time word-count guess. The second paragraph gets the bigger share
+// of that clamp budget (see .card-preview in style.css) specifically so it
+// has room to keep pulling from its own text — which is usually longer
+// than what a single short lede paragraph needs — rather than reaching for
+// a third paragraph as filler.
 async function fetchHeroExtendedPreview(url) {
   const html = await fetchHtml(url);
   if (!html) return [];
@@ -812,8 +816,18 @@ ${renderRevealScript()}
 
 ${renderPreviewCard()}
 ${renderCaterpillarScript()}
+${renderHeroPreviewFitScript()}
 </body>
 </html>`;
+}
+
+// Only the homepage has the hero's .card-text--right box, so this script is
+// included here rather than in the shared renderPageShell.
+function renderHeroPreviewFitScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/hero-preview-fit.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
 }
 
 function renderPreviewCard() {
