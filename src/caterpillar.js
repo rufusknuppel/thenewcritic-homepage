@@ -112,6 +112,21 @@
     };
   }
 
+  // Defers the canvas/ResizeObserver setup in attach() until the element is
+  // actually hovered, instead of paying that cost upfront for every card on
+  // the page (archive.html alone has 80+ of these, nearly all off-screen).
+  function lazyAttach(el, makePathFn, speed, zIndex, maxTailPx) {
+    var inst = null;
+    function ensure() {
+      if (!inst) inst = attach(el, makePathFn, speed, zIndex, maxTailPx);
+      return inst;
+    }
+    return {
+      start: function(){ ensure().start(); },
+      stop: function(){ if (inst) inst.stop(); }
+    };
+  }
+
   // Button: 1px CSS border. Canvas positioned from padding edge (1px inside border outer edge).
   // Traces border center (0.5px inside outer edge on each side).
   function btnPathFn(el, w, h) {
@@ -120,39 +135,32 @@
     return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
   }
 
-  // Cover image link: no CSS border; outline is box-shadow 0 0 0 1px white (1px spread,
-  // center 0.5px outside element edge). Canvas at -PAD from outer edge (no border offset).
-  function imgPathFn(el, w, h) {
-    var rect = el.getBoundingClientRect();
-    var p=PAD-0.5, q=rect.width+PAD+0.5, r=rect.height+PAD+0.5;
-    return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
-  }
-
-
   var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
   var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
 
-  // Buttons — glow on hover
-  document.querySelectorAll('a.btn').forEach(function(btn) {
+  // Subscribe buttons only — glow on hover
+  document.querySelectorAll('a.btn[href*="/subscribe"]').forEach(function(btn) {
     btn.style.position = 'relative';
     btn.style.overflow = 'visible';
-    var a = attach(btn, btnPathFn, SPD);
-    btn.addEventListener('mouseenter', a.start);
-    btn.addEventListener('mouseleave', a.stop);
+    var a = lazyAttach(btn, btnPathFn, SPD);
+    var leaveTimer = null;
+    btn.addEventListener('mouseenter', function(){
+      clearTimeout(leaveTimer);
+      a.start();
+    });
+    // The nav-subscribe button's ancestor (.nav-right) slides 47.7px on a
+    // .2s transform transition whenever the sticky header's compact state
+    // toggles on scroll (see style.css) — that can slide the button out
+    // from under a cursor that never actually moved, firing a real
+    // mouseleave with no mouseenter to follow, which stalls the glow with
+    // no way to restart it. Wait out the transition and only actually stop
+    // if the cursor still isn't over the button once it's settled.
+    btn.addEventListener('mouseleave', function(){
+      clearTimeout(leaveTimer);
+      leaveTimer = setTimeout(function(){
+        if (!btn.matches(':hover')) a.stop();
+      }, 220);
+    });
   });
-
-
-  // Cover images — glow on hover
-  document.querySelectorAll('.card-image-link').forEach(function(img) {
-    img.style.overflow = 'visible';
-    var a = attach(img, imgPathFn, SPD, 45);
-    new MutationObserver(function() {
-      if (img.classList.contains('preview-active')) a.start(); else a.stop();
-    }).observe(img, { attributes: true, attributeFilter: ['class'] });
-  });
-
- }
-
-
 
 })();
