@@ -282,7 +282,7 @@ body.no-transition *{ transition: none !important; }
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
   text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
-.btn:hover::before{ animation-play-state: paused; opacity: 0; }
+.btn[href*="/subscribe"]:hover::before{ animation-play-state: paused; opacity: 0; }
 .btn--small{ padding: 10px 16px; font-size: 0.74rem; }
 
 /* ---------- SECTION shell ---------- */
@@ -535,26 +535,6 @@ section{ padding: 80px 0; }
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
   text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
-.view-all:hover::before{ animation-play-state: paused; opacity: 0; }
-.view-all::before{
-  content: '';
-  position: absolute; inset: -1px; padding: 1px;
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%, transparent 65%,
-    rgba(0,0,0,0.08) 72%, rgba(0,0,0,0.45) 80%,
-    rgba(0,0,0,0.82) 87%, rgba(0,0,0,0.97) 91%,
-    rgba(0,0,0,0.45) 95%, rgba(0,0,0,0.08) 99%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  pointer-events: none; z-index: 0;
-  animation: glow-travel 5s linear infinite;
-  transition: opacity .2s ease;
-}
 
 /* ---------- LAYOUT GRID (sidebar + sections) ---------- */
 .layout-grid{ display:grid; grid-template-columns: 240px 1fr; gap: 56px; padding: 48px 28px; align-items: start; }
@@ -786,34 +766,6 @@ footer{ padding: 48px 0; text-align:center; }
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
   text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
-.preview-card-link:hover::before{ animation-play-state: paused; opacity: 0; }
-.preview-card-link::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  padding: 1px;
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%,
-    transparent 65%,
-    rgba(0,0,0,0.08) 72%,
-    rgba(0,0,0,0.45) 80%,
-    rgba(0,0,0,0.82) 87%,
-    rgba(0,0,0,0.97) 91%,
-    rgba(0,0,0,0.45) 95%,
-    rgba(0,0,0,0.08) 99%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 0;
-  animation: glow-travel 5s linear infinite;
-  transition: opacity .2s ease;
-}
-
 /* ---------- ANIMATED BORDER GLOW ---------- */
 @property --glow-angle {
   syntax: '<angle>';
@@ -830,11 +782,14 @@ footer{ padding: 48px 0; text-align:center; }
   position: relative;
 }
 
-/* Button animated border — btn already has border so we overlay the glow */
-.btn {
+/* Button animated border — btn already has border so we overlay the glow.
+   Subscribe buttons only (see caterpillar.js, which scopes its own hover
+   crawl the same way) — other buttons (Give, Register, etc.) get none of
+   this ambient idle animation. */
+.btn[href*="/subscribe"] {
   position: relative;
 }
-.btn::before {
+.btn[href*="/subscribe"]::before {
   content: '';
   position: absolute;
   inset: -1px;
@@ -862,8 +817,7 @@ footer{ padding: 48px 0; text-align:center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn::before,
-  .preview-card-link::before { animation: none; }
+  .btn[href*="/subscribe"]::before { animation: none; }
 }
 
 /* ---------- IMAGE HOVER OVERLAY ---------- */
