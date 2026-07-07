@@ -681,16 +681,23 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
     : '';
   const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180, eager: true, kicker: HERO_KICKER }) : '';
 
-  const popularHtml = popular.length ? `
-    <section class="popular-strip reveal" aria-labelledby="popular-heading">
-      <div class="popular-inner">
-        <h2 id="popular-heading" class="popular-heading">Most<br>Read</h2>
-        <div class="popular-row">
-          ${popular.map(renderPopularItem).join('')}
+  const belowHeroHtml = `
+    <section class="below-hero-strip reveal"${popular.length ? ' aria-labelledby="popular-heading"' : ''}>
+      <div class="below-hero-row">
+        <div class="below-hero-col below-hero-announcement">
+          ${renderAnnouncement(ANNOUNCEMENT)}
         </div>
+        ${popular.length ? `
+        <div class="below-hero-col most-read-block">
+          <p id="popular-heading" class="popular-heading">Most Read</p>
+          <div class="popular-row">
+            <div class="most-read-col">${popular.slice(0, 2).map(renderPopularItem).join('')}</div>
+            <div class="most-read-col">${popular.slice(2, 4).map(renderPopularItem).join('')}</div>
+          </div>
+        </div>` : ''}
       </div>
     </section>
-  ` : '';
+  `;
 
   const notesHtml = notes.length ? `
     <div class="side-notes">
@@ -758,17 +765,14 @@ ${renderHeader()}
 
   <section class="reveal featured-strip" id="top">
     <div class="wrap">
-      <div class="hero-block">
-        <div class="hero-row">
-          ${heroHtml}
-        </div>
-        ${renderAnnouncement(ANNOUNCEMENT)}
+      <div class="hero-row">
+        ${heroHtml}
       </div>
     </div>
   </section>
 
   <div class="wrap">
-    ${popularHtml}
+    ${belowHeroHtml}
   </div>
 
   <div class="wrap"><div class="section-divider" role="separator"></div></div>

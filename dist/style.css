@@ -312,10 +312,6 @@ section{ padding: 80px 0; }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
 .featured-strip{ padding: 32px 0 0; }
-/* hero-row (the feature card) and the announcement box now stack, with the
-   divider before "Most Read" living on this shared wrapper instead of on
-   either child individually. */
-.hero-block{ padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .hero-row{ padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
 /* Three columns: title/meta/dek on the left, cover image in the middle,
    first paragraph + "Read on" on the right. The outer two text columns
@@ -513,26 +509,41 @@ section{ padding: 80px 0; }
   .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; }
 }
 
-/* ---------- ANNOUNCEMENT BOX (sits below the hero, item 2) ---------- */
+/* ---------- BELOW-HERO ROW (announcement + Most Read, items 2 & 4) ----------
+   One shared row split by a vertical divider: the announcement box on the
+   left, the Most Read grid on the right (itself split into two columns of
+   stacked cards). Replaces the two previously separate, stacked sections. */
+.below-hero-strip{ padding: 28px 0 32px; }
+.below-hero-row{
+  display: grid;
+  grid-template-columns: minmax(0, 300px) 1fr;
+  column-gap: 40px;
+}
+.below-hero-announcement{ min-width: 0; }
+.most-read-block{
+  min-width: 0;
+  padding-left: 40px;
+  border-left: 1px solid var(--line);
+  display: flex; flex-direction: column;
+}
+
+/* Announcement — always stacked (photo above text): this column is never
+   wide enough for the old side-by-side row, so the narrow-viewport stacked
+   treatment is now the only layout. */
 .announcement-box{
-  background: var(--surface);
-  padding: 32px;
-  margin: 0 50px;
-  display:flex; flex-direction:row; align-items:center; gap: 32px;
+  display:flex; flex-direction:column; align-items:stretch;
   transition: box-shadow .25s ease;
 }
 .announcement-box:hover{
   box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
 }
-/* Well-proportioned square, with its own divider (not just a gap)
-   separating it from the text beside it. */
 .announcement-photo{
-  flex: 0 0 200px; width: 200px; height: 200px; object-fit: cover;
+  width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover;
 }
 .announcement-text{
-  min-width: 0; flex: 1 1 auto;
-  padding-left: 32px;
-  border-left: 1px solid var(--line);
+  min-width: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 /* Same courier-kicker look and size as the hero (see .hero-kicker) applied
    to the "From the Editors" label here, with the same gray/white-glow-on-
@@ -548,7 +559,7 @@ section{ padding: 80px 0; }
 }
 .announcement-title{
   font-family: var(--display); font-weight: 600; font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-  color: var(--white); margin: 0 0 14px; line-height: 1.2;
+  color: var(--white); margin: 10px 0 14px; line-height: 1.2;
   transition: text-shadow 0s;
 }
 .announcement-title:hover{
@@ -560,42 +571,34 @@ section{ padding: 80px 0; }
   overflow-wrap: break-word;
 }
 .announcement-box .btn{ margin-top: 6px; }
-@media (max-width: 560px){
-  .announcement-box{ flex-direction: column; align-items: stretch; margin: 0 20px; }
-  .announcement-photo{ width: 100%; height: auto; aspect-ratio: 1/1; }
-  .announcement-text{
-    padding-left: 0; padding-top: 20px;
-    border-left: none; border-top: 1px solid var(--line);
-  }
-}
 
-/* ---------- MOST POPULAR strip ---------- */
+/* ---------- MOST READ (item 4) ---------- */
 .section-divider{ width:100%; height:0; border-top:1px solid var(--line); }
-.popular-strip{
-  padding: 22px 0;
-  box-shadow: 0 0 28px 4px rgba(247,246,241,0.08);
-}
-
-.popular-inner{ display: flex; align-items: center; gap: 28px; }
+/* Small boxed label in the top-right corner of the grid, mono/eyebrow style
+   (same family as .hero-kicker) rather than the old large "Most / Read"
+   heading beside the row. */
 .popular-heading{
-  font-family: var(--display); font-weight: 600; font-size: clamp(1.2rem, 2vw, 1.5rem);
-  color: var(--white); margin: 0; line-height: 1.15;
-  flex: 0 0 auto; padding-top: 4px; padding-right: 28px;
-  border-right: 1px solid var(--line);
-  align-self: stretch; display: flex; align-items: center;
-  writing-mode: horizontal-tb;
-  transition: text-shadow .2s ease;
+  font-family: var(--mono); font-weight: bold; font-size: 0.72rem;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--white);
+  align-self: flex-end;
+  margin: 0 0 20px; display: inline-block;
+  border: 1px solid var(--line); padding: 6px 12px;
+  transition: border-color .15s ease, text-shadow .2s ease;
 }
 .popular-heading:hover{
+  border-color: var(--white);
   text-shadow: 0 0 8px var(--white), 0 0 18px rgba(247,246,241,0.5);
 }
-.popular-row{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; flex: 1 1 0; min-width: 0; }
-.popular-row .card{ flex-direction: row; align-items: flex-start; gap: 10px; position: relative; }
-.popular-row .card-image-frame{ order: 2; flex: 0 0 86px; width: 86px; align-self: center; margin-bottom: 0; }
-.popular-row .card-image-link{ margin-bottom: 0; width: 86px; }
+.popular-row{ display:flex; flex: 1 1 auto; min-height: 0; }
+.most-read-col{ flex: 1 1 0; min-width: 0; display:flex; flex-direction:column; }
+.most-read-col + .most-read-col{ border-left: 1px solid var(--line); margin-left: 24px; padding-left: 24px; }
+.popular-row .card{ flex-direction: column; align-items: stretch; gap: 10px; position: relative; }
+.popular-row .card + .card{ border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; }
+.popular-row .card-image-frame{ width: 100%; margin-bottom: 0; }
+.popular-row .card-image-link{ margin-bottom: 0; width: 100%; display: block; }
 .popular-row .card-image,
-.popular-row .card-image--blank{ width: 86px; height: 86px; aspect-ratio: 1/1; }
-.popular-row .card-text{ order: 1; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.popular-row .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; }
+.popular-row .card-text{ min-width: 0; display: flex; flex-direction: column; }
 .popular-row .card-dek{ display: none; }
 .popular-row .card-title{ font-size: 0.92rem; margin: 0 0 6px; }
 .popular-row .card-meta{ font-size: 0.66rem; }
@@ -614,9 +617,18 @@ section{ padding: 80px 0; }
 .popular-row .card-text{ transition: opacity .2s ease; }
 .popular-row .card-image-link.preview-active ~ .card-text{ opacity: 0; }
 .popular-row .card-image-frame:has(.preview-active) ~ .card-text{ opacity: 0; }
-@media (max-width: 860px){ .popular-row{ grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 860px){ .popular-inner{ flex-direction: column; } }
-@media (max-width: 480px){ .popular-row{ grid-template-columns: 1fr; } }
+@media (max-width: 860px){
+  .below-hero-row{ grid-template-columns: 1fr; row-gap: 28px; }
+  .below-hero-announcement{ max-width: 340px; margin: 0 auto; }
+  .most-read-block{ padding-left: 0; border-left: none; padding-top: 28px; border-top: 1px solid var(--line); }
+}
+@media (max-width: 480px){
+  .popular-row{ flex-direction: column; }
+  .most-read-col + .most-read-col{
+    border-left: none; margin-left: 0; padding-left: 0;
+    border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px;
+  }
+}
 .section-block-head{
   display:flex; align-items:baseline; justify-content:space-between; gap: 18px; margin-bottom: 22px;
   padding-bottom: 10px;
@@ -880,58 +892,10 @@ footer{ padding: 48px 0; text-align:center; }
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
   text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
-/* ---------- ANIMATED BORDER GLOW ---------- */
-@property --glow-angle {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-@keyframes glow-travel {
-  to { --glow-angle: 360deg; }
-}
-
 /* Frame wrapper — pseudo lives here so overflow:hidden on the link doesn't clip it */
 .card-image-frame {
   display: block;
   position: relative;
-}
-
-/* Button animated border — btn already has border so we overlay the glow.
-   Subscribe buttons only (see caterpillar.js, which scopes its own hover
-   crawl the same way) — other buttons (Give, Register, etc.) get none of
-   this ambient idle animation. */
-.btn[href*="/subscribe"] {
-  position: relative;
-}
-.btn[href*="/subscribe"]::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  padding: 1px;
-  background: conic-gradient(
-    from var(--glow-angle),
-    transparent 0%,
-    transparent 65%,
-    rgba(0,0,0,0.08) 72%,
-    rgba(0,0,0,0.45) 80%,
-    rgba(0,0,0,0.82) 87%,
-    rgba(0,0,0,0.97) 91%,
-    rgba(0,0,0,0.45) 95%,
-    rgba(0,0,0,0.08) 99%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 0;
-  animation: glow-travel 5s linear infinite;
-  transition: opacity .2s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .btn[href*="/subscribe"]::before { animation: none; }
 }
 
 /* ---------- IMAGE HOVER OVERLAY ---------- */
