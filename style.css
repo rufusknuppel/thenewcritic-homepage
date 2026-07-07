@@ -317,15 +317,28 @@ section{ padding: 80px 0; }
    either child individually. */
 .hero-block{ padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .hero-row{ padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
-/* Text (title/meta/dek/first paragraph) on the left, cover image on the
-   right — image is the larger fluid column so it runs wide enough to
-   extend past the tagline under the tall-state masthead above it. Reflows
-   to image-on-top, text-below on narrow screens.
+/* Three columns: title/meta/dek on the left, cover image in the middle,
+   first paragraph + "Read on" on the right. The outer two text columns
+   are pinned to 235px — measured from the nav bar directly above (see
+   .nav-links--left / .nav-right), so column 1 lines up under "Essays /
+   Postscript / Contra" and column 3 lines up under "Give / About /
+   Subscribe", both in width and in left/right edge position (both the
+   nav and this card sit inside the same .wrap, so no extra offset math
+   is needed). minmax(0, 235px) lets them shrink together below that on
+   narrower desktop widths instead of forcing an overflow; the cover
+   image (the 1fr track) simply takes whatever's left, so it grows
+   larger now that the text columns are narrower than before.
+   align-items:start anchors the text columns to the top of the image's
+   row rather than centering or bottoming them out.
+   Reflows to a single stacked column, in the same top-to-bottom reading
+   order, on narrow screens.
    ".card.card--feature" (not just ".card--feature") so this outranks the
    base ".card{ display:flex }" rule, which shares its specificity and
    comes later in the file. */
 .card.card--feature{
-  display:grid; grid-template-columns: 38.2% 1fr; column-gap: 36px; align-items: end;
+  display:grid;
+  grid-template-columns: minmax(0, 235px) 1fr minmax(0, 235px);
+  column-gap: 36px; align-items: start;
 }
 .feature-image-cell{ position: relative; min-width: 0; }
 .card--feature .card-image-frame{ margin-bottom: 0; }
@@ -335,7 +348,7 @@ section{ padding: 80px 0; }
   display:flex; flex-direction: column;
 }
 .card--feature .card-image,
-.card--feature .card-image--blank{ width: 100%; aspect-ratio: 4/3; }
+.card--feature .card-image--blank{ width: 100%; aspect-ratio: 3.5/3; }
 /* "The Latest" — black pill with a white border, pinned over the top
    right corner of the cover image, linking to the archive. Glows in sync
    with the cover image's own hover glow below (same trigger: hovering
@@ -377,26 +390,48 @@ section{ padding: 80px 0; }
   font-size: clamp(2rem, 4vw, 3rem); margin: 0; text-align: left; line-height: 1.1;
 }
 .card--feature .card-meta{ margin-top: 10px; }
-/* Subheading matches the subheading size used in the other card grids.
-   The four gaps below it (meta→dek, dek→divider, divider→paragraph,
-   paragraph→button) are all the same 16px. */
+/* Subheading matches the subheading size used in the other card grids. */
 .card--feature .card-dek{
   font-size: 0.92rem; margin: 16px 0 0; text-align: left;
 }
-/* First paragraph of the piece (after any paid-subscriber appeal at the
-   top of the post), reused from the same extraction that feeds the
-   hover-preview popup elsewhere (see post.preview in build.js). Font size
-   matches the dek above it; a thin divider separates the two. */
+/* First two paragraphs of the piece (after any paid-subscriber appeal at
+   the top of the post), reused from the same extraction that feeds the
+   hover-preview popup elsewhere (see previewParagraphs in build.js), now
+   in their own right-hand column beside the image rather than stacked
+   under the dek — so no divider against it, just the same 0.92rem body
+   size. build.js passes full, untruncated text — each paragraph clips
+   itself to a fixed line count via -webkit-line-clamp, which (unlike a
+   build-time word-count guess) clips at the actual rendered line for
+   whatever column width the visitor has, and supplies its own ellipsis
+   flush to that line's end rather than one tacked on wherever a word
+   count happened to land. The 400px max-height on the wrapper is just a
+   backstop for narrower viewports, where the two clamps combined could
+   still in principle run past the (shorter) cover image's height. */
+.card--feature .card-preview-block{ max-height: 400px; overflow: hidden; }
 .card--feature .card-preview{
-  font-size: 0.92rem; color: var(--body-text); line-height: 1.6;
-  margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--line);
+  font-size: 0.92rem; color: var(--body-text); line-height: 1.6; margin: 0;
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+  line-clamp: 11; -webkit-line-clamp: 11;
+}
+.card--feature .card-preview + .card-preview{
+  margin-top: 12px;
+  line-clamp: 5; -webkit-line-clamp: 5;
+}
+/* Opening words of the first paragraph, set like a small-caps lede (see
+   wrapLedeWords in build.js) — a magazine-style flourish leading into the
+   body text, echoing the kicker's letter-spacing above the title. */
+.card--feature .card-preview-lede{
+  text-transform: uppercase; letter-spacing: 0.03em;
 }
 .card--feature .card-preview-cta{ margin-top: 16px; }
 @media (max-width: 640px){
+  /* No reordering needed: DOM order (title/dek, image, paragraph) already
+     matches natural reading order once stacked. */
   .card.card--feature{ display:flex; flex-direction: column; align-items: stretch; }
-  .feature-image-cell{ order: -1; margin-bottom: 20px; }
+  .feature-image-cell{ margin-bottom: 20px; }
+  .card--feature .card-text--right{ margin-top: 20px; }
   .card--feature .card-image,
-  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 4/3; }
+  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; }
 }
 
 /* ---------- ANNOUNCEMENT BOX (sits below the hero, item 2) ---------- */
