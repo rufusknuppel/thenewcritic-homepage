@@ -210,6 +210,22 @@ async function fetchFirstParagraph(url) {
   return firstParagraph(bodyHtml || '');
 }
 
+// The feature/hero card alone shows a second paragraph after the first (see
+// renderCard's 'feature' branch) — one extra fetch of the hero's own post
+// page, keeping the two paragraphs separate (rather than flattened into one
+// block) so the card can render an actual paragraph break between them.
+// Returns full, untruncated paragraph text: cutting each paragraph off at
+// the right line — with a real ellipsis flush at that line's end — is a
+// CSS -webkit-line-clamp job (see .card-preview-block in style.css), not a
+// build-time word-count guess.
+async function fetchHeroExtendedPreview(url) {
+  const html = await fetchHtml(url);
+  if (!html) return [];
+  const preloads = extractPreloads(html);
+  const bodyHtml = preloads && preloads.post && preloads.post.body_html;
+  return extractParagraphs(bodyHtml || '', 2);
+}
+
 function dedupeByLink(posts) {
   const seen = new Set();
   return posts.filter((p) => {
@@ -241,6 +257,17 @@ function escapeHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// Wraps the first `n` words of a paragraph in a span so CSS can style them
+// as a small-caps-style lede (see .card-preview-lede) — a magazine-style
+// flourish on the feature card's opening line, same idea as a drop cap.
+function wrapLedeWords(text, n) {
+  const words = text.split(' ');
+  if (words.length <= n) return escapeHtml(text);
+  const lede = escapeHtml(words.slice(0, n).join(' '));
+  const rest = escapeHtml(words.slice(n).join(' '));
+  return `<span class="card-preview-lede">${lede}</span> ${rest}`;
 }
 
 function stripHtml(html) {
@@ -279,7 +306,10 @@ function looksLikeProse(text) {
   return true;
 }
 
-function firstParagraph(html) {
+// Returns up to `max` real prose paragraphs (raw, untruncated text), in
+// order, skipping the same non-prose noise firstParagraph always has:
+// asides, bios, mastheads, etc.
+function extractParagraphs(html, max) {
   // Remove non-prose block elements so their inner <p> tags don't count.
   const cleaned = (html || '').replace(
     /<(figure|blockquote|h[1-6]|ul|ol|li|aside)[^>]*>[\s\S]*?<\/\1>/gi,
@@ -294,6 +324,7 @@ function firstParagraph(html) {
   // of a multi-paragraph aside, so track open/close state across the
   // whole run and skip every paragraph inside it.
   let insideAside = false;
+  const out = [];
   while ((m = re.exec(cleaned)) !== null) {
     const text = unescapeNumericEntities(stripHtml(m[1]).trim());
     if (!text) continue;
@@ -305,9 +336,17 @@ function firstParagraph(html) {
       if (!text.endsWith('*')) insideAside = true;
       continue;
     }
-    if (looksLikeProse(text)) return truncateWords(text, 100);
+    if (looksLikeProse(text)) {
+      out.push(text);
+      if (out.length >= max) break;
+    }
   }
-  return '';
+  return out;
+}
+
+function firstParagraph(html) {
+  const [p] = extractParagraphs(html, 1);
+  return p ? truncateWords(p, 100) : '';
 }
 
 function truncateWords(text, maxWords) {
@@ -510,15 +549,26 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         ${overlayHtml}
       </a></span>`;
 
-  // The feature variant is a 2-column layout: title/meta/dek/first-
-  // paragraph on the left, cover image on the right (reflows to
-  // image-on-top, text-below on narrow screens — see .card--feature CSS).
+  // The feature variant is a 3-column layout: title/meta/dek on the left,
+  // cover image in the middle, first two paragraphs + "Read on" on the
+  // right (reflows to a single stacked column, in the same reading order,
+  // on narrow screens — see .card--feature CSS). previewParagraphs (set
+  // only on the hero post — see fetchHeroExtendedPreview in main()) is
+  // full, untruncated paragraph text; the CSS line-clamp on .card-preview
+  // does the cutting off, at whichever line it lands on for the actual
+  // rendered column width, and supplies its own ellipsis flush to that
+  // line's end. post.preview alone is the fallback if that fetch didn't
+  // run — same clamp applies to it too, since it's just the first child.
   if (variant === 'feature') {
     const kickerHtml = kicker ? `<p class="hero-kicker">${escapeHtml(kicker)}</p>` : '';
-    const previewText = post.preview
-      ? (post.preview.endsWith('…') ? post.preview : `${post.preview}…`)
+    const previewParas = post.previewParagraphs && post.previewParagraphs.length
+      ? post.previewParagraphs
+      : (post.preview ? [post.preview] : []);
+    const previewHtml = previewParas.length
+      ? `<div class="card-preview-block">${previewParas
+          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLedeWords(p, 3) : escapeHtml(p)}</p>`)
+          .join('')}</div>`
       : '';
-    const previewHtml = previewText ? `<p class="card-preview">${escapeHtml(previewText)}</p>` : '';
     // Same text and style as the "Read on →" link in the hover-preview
     // popup (.preview-card-link), reused verbatim for a matching look.
     const readNowHtml = post.preview
@@ -526,17 +576,19 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
       : '';
     return `
     <article class="${cls}">
-      <div class="card-text">
+      <div class="card-text card-text--left">
         ${kickerHtml}
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
         <p class="card-meta">${metaLine(post)}</p>
         ${dekHtml}
-        ${previewHtml}
-        ${readNowHtml}
       </div>
       <div class="feature-image-cell">
         ${imageHtml}
         <a class="hero-latest-btn" href="/archive.html">The Latest</a>
+      </div>
+      <div class="card-text card-text--right">
+        ${previewHtml}
+        ${readNowHtml}
       </div>
     </article>`;
   }
@@ -1197,6 +1249,11 @@ async function main() {
   for (const p of homepagePosts) {
     const preview = previewByLink.get(p.link);
     if (preview) p.preview = preview;
+  }
+
+  if (hero?.link) {
+    console.log('Fetching hero extended preview (first two paragraphs)');
+    hero.previewParagraphs = await fetchHeroExtendedPreview(hero.link);
   }
 
   const html = renderHomepage({
