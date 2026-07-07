@@ -360,20 +360,20 @@ section{ padding: 80px 0; }
    as one unit. */
 .card--feature .card-text--right{
   align-self: stretch;
-  border: 1px solid var(--line);
+  border: 1px solid var(--white);
   border-left: none;
   margin-left: -36px;
-  padding: 16px 18px;
+  padding: 18px;
   transition: box-shadow .25s ease, border-color .25s ease;
 }
 .card--feature .card-image,
 .card--feature .card-image--blank{ width: 100%; aspect-ratio: 3.5/3; }
 /* "The Latest" — black pill with a white border, pinned over the top
-   right corner of the cover image, linking to the archive. Glows in sync
+   left corner of the cover image, linking to the archive. Glows in sync
    with the cover image's own hover glow below (same trigger: hovering
    anywhere in the image cell, including the pill itself). */
 .hero-latest-btn{
-  position: absolute; top: 14px; right: 14px; z-index: 2;
+  position: absolute; top: 14px; left: 14px; z-index: 2;
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
   padding: 8px 14px;
@@ -403,17 +403,12 @@ section{ padding: 80px 0; }
   content: '';
   position: absolute;
   inset: 0;
-  border: 1px solid transparent;
-  transition: border-color .25s ease;
+  border: 1px solid var(--white);
   pointer-events: none;
 }
 .feature-image-cell:hover .card-image-link,
 .card.card--feature:has(.card-text--right:hover) .card-image-link{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
-.feature-image-cell:hover .card-image-link::after,
-.card.card--feature:has(.card-text--right:hover) .card-image-link::after{
-  border-color: var(--white);
 }
 .feature-image-cell:hover .card-image,
 .card.card--feature:has(.card-text--right:hover) .card-image{
@@ -479,7 +474,7 @@ section{ padding: 80px 0; }
      its own boxed column — matches the popup's slightly denser body copy.
      Full white (not the usual --body-text) so the lightened box's copy
      reads as standing out from the rest of the page. */
-  font-size: calc(0.92rem - 1.9px); color: var(--white); line-height: 1.6; margin: 0;
+  font-size: calc(0.92rem - 0.99px); color: var(--white); line-height: 1.6; margin: 0;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
 }
