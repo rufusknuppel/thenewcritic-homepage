@@ -795,6 +795,7 @@
   // leftover space to a sibling; it has to be measured.
   var box = document.querySelector('.card--feature .card-text--right');
   if (!box) return;
+  var imageCell = document.querySelector('.card--feature .feature-image-cell');
   var block = box.querySelector('.card-preview-block');
   if (!block) return;
   var paras = block.querySelectorAll('.card-preview');
@@ -819,11 +820,26 @@
     // to fill, so the static CSS clamps are all that's needed.
     if (window.innerWidth <= 640) { reset(); return; }
 
+    // Budget off the image cell's own rendered height, not the box's —
+    // the box stretches (align-self: stretch) to match the grid row, but
+    // the row's height is itself influenced by the box's *current*
+    // content (e.g. still at the static-CSS fallback clamp on first run).
+    // Measuring the box would be circular and could inflate the row past
+    // the image by a couple of px. The image cell's height is unaffected
+    // by the box's content, so it's the real source of truth.
     var boxCs = getComputedStyle(box);
-    var innerHeight = box.clientHeight - parseFloat(boxCs.paddingTop) - parseFloat(boxCs.paddingBottom);
-    var ctaSpace = cta
-      ? cta.getBoundingClientRect().height + parseFloat(getComputedStyle(cta).marginTop)
-      : 0;
+    var borderY = (parseFloat(boxCs.borderTopWidth) || 0) + (parseFloat(boxCs.borderBottomWidth) || 0);
+    var targetHeight = imageCell ? imageCell.getBoundingClientRect().height : box.clientHeight;
+    var innerHeight = targetHeight - parseFloat(boxCs.paddingTop) - parseFloat(boxCs.paddingBottom) - borderY;
+    // The CTA's margin-top is CSS `auto` (see style.css) so it always
+    // lands flush at the box's bottom padding, absorbing this fit's
+    // rounding slack as extra breathing room instead of leaving it as
+    // dead space below the button. getComputedStyle would resolve that
+    // auto margin to its *current* (stale, pre-fit) used value here —
+    // circular, same trap as measuring the box's own height — so budget
+    // off a fixed minimum gap instead.
+    var CTA_MIN_GAP = 16;
+    var ctaSpace = cta ? cta.getBoundingClientRect().height + CTA_MIN_GAP : 0;
     var gap = parseFloat(getComputedStyle(second).marginTop) || 0;
     var lineHeight = parseFloat(getComputedStyle(first).lineHeight);
     if (!lineHeight) return;
