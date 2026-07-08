@@ -8,6 +8,10 @@
 const fs = require('fs');
 const path = require('path');
 
+// Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
+// keyed by URL slug — see the field guide at the top of that file.
+const CONTENT_OVERRIDES = require('./content-overrides.js');
+
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
 const SITE_TAGLINE = 'The Young American Magazine';
@@ -39,11 +43,37 @@ const CONTRA_MANUAL_PREVIEWS = new Map([
   [`seem-pretty`, `Singer-songwriter phenom Olivia Rodrigo's revamped website features a collaged e-bedroom setting, replete with pink guitar, pink laptop computer, and diary with pink key and lock. There is a bookshelf which, once clicked, allows one to purchase Rodrigo's CDs. If you press the red bra spilling out of the hand-drawn dresser drawer, the website takes you straight to Rodrigo's online store. In honor of her new album, Instagram released a custom Rodrigo-designed typeface to every one of its 3 billion monthly active users. YouTube provides a custom pink yarn ball cursor anytime you watch one of her music videos. It's a veritable fangirl's wonderland. It seems the entire internet has conspired to promote you seem pretty sad for a girl so in love.`],
 ]);
 
+// Extract the slug from a canonical post URL (/p/<slug>).
+function slugOf(link) {
+  return (link || '').replace(/^.*\/p\//, '').replace(/[?#].*$/, '');
+}
+
 function lookupContraPreview(link) {
-  // Extract the slug from the canonical URL (/p/<slug>).
-  const slug = (link || '').replace(/^.*\/p\//, '').replace(/[?#].*$/, '');
-  const text = CONTRA_MANUAL_PREVIEWS.get(slug);
+  const text = CONTRA_MANUAL_PREVIEWS.get(slugOf(link));
   return text ? truncateWords(text, 100) : '';
+}
+
+// Apply the hand-edited text overrides from content-overrides.js to every
+// post object whose slug has an entry. Runs last in main(), after all the
+// automatic preview fetching, so a manual value always wins. Posts can be
+// duplicated across collections (same link, different objects), so this is
+// called on the raw concatenation, not a deduped list.
+function applyContentOverrides(posts) {
+  for (const p of posts) {
+    const o = CONTENT_OVERRIDES[slugOf(p.link)];
+    if (!o) continue;
+    if (o.title) p.title = o.title;
+    if (o.dek) p.subtitle = o.dek;
+    if (o.author) p.author = o.author;
+    if (o.date) p.metaDate = o.date;
+    if (o.kicker) p.kicker = o.kicker;
+    if (o.preview) {
+      const paras = Array.isArray(o.preview) ? o.preview : [o.preview];
+      p.preview = paras[0];
+      // Only meaningful on the hero card, harmless elsewhere.
+      p.previewParagraphs = paras;
+    }
+  }
 }
 
 // Hand-picked posts for the homepage's "From the Archive" subheading —
@@ -263,15 +293,14 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-// Wraps the first `n` words of a paragraph in a span so CSS can style them
-// as a small-caps-style lede (see .card-preview-lede) — a magazine-style
-// flourish on the feature card's opening line, same idea as a drop cap.
-function wrapLedeWords(text, n) {
-  const words = text.split(' ');
-  if (words.length <= n) return escapeHtml(text);
-  const lede = escapeHtml(words.slice(0, n).join(' '));
-  const rest = escapeHtml(words.slice(n).join(' '));
-  return `<span class="card-preview-lede">${lede}</span> ${rest}`;
+// Wraps the paragraph's first letter in a span so CSS can render it as a
+// two-line drop cap (see .card-preview-dropcap) — a magazine-style flourish
+// on the feature card's opening paragraph. If the paragraph opens with a
+// quotation mark, it drops along with the letter, as is conventional.
+function wrapDropCap(text) {
+  const m = /^(["'“‘]?\w)(.*)$/s.exec(text);
+  if (!m) return escapeHtml(text);
+  return `<span class="card-preview-dropcap">${escapeHtml(m[1])}</span>${escapeHtml(m[2])}`;
 }
 
 function stripHtml(html) {
@@ -428,8 +457,11 @@ function normalizeRssItem(item) {
 function metaLine(post, { showDate = true } = {}) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
-  const md =
-    d && !isNaN(d.getTime())
+  // metaDate is the manual override from content-overrides.js — a display
+  // string used verbatim (uppercased), skipping the date formatting below.
+  const md = post.metaDate
+    ? post.metaDate.toUpperCase()
+    : d && !isNaN(d.getTime())
       ? d.toLocaleDateString('en-US', d.getFullYear() < thisYear
           ? { month: 'long', year: 'numeric' }
           : { month: 'short', day: 'numeric' }).toUpperCase()
@@ -570,7 +602,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
       : (post.preview ? [post.preview] : []);
     const previewHtml = previewParas.length
       ? `<div class="card-preview-block">${previewParas
-          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLedeWords(p, 3) : escapeHtml(p)}</p>`)
+          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : escapeHtml(p)}</p>`)
           .join('')}</div>`
       : '';
     // Same text and style as the "Read on →" link in the hover-preview
@@ -591,6 +623,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         <a class="hero-latest-btn" href="/archive.html">The Latest</a>
       </div>
       <div class="card-text card-text--right">
+        <p class="preview-tagline">${escapeHtml(post.previewTagline || 'from the essay')}</p>
         ${previewHtml}
         ${readNowHtml}
       </div>
@@ -604,41 +637,6 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
         ${dekHtml}
         <p class="card-meta">${metaLine(post)}</p>
-      </div>
-    </article>`;
-}
-
-function popularMeta(post) {
-  const parts = [];
-  if (post.author) {
-    const lastName = post.author.trim().split(/\s+/).pop();
-    parts.push(`<span class="meta-author">${escapeHtml(lastName.toUpperCase())}</span>`);
-  }
-  const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
-  parts.push(`<span class="likes"><img class="likes-bird" src="${BIRD_LOGO}" alt="" aria-hidden="true"><span class="likes-count">${likes}</span></span>`);
-  return parts.join(' <span class="meta-dot">&middot;</span> ');
-}
-
-function renderPopularItem(post) {
-  const hasPreview = post.preview && post.image;
-  const shortAuthor = post.author
-    ? post.author.trim().split(/\s+/).pop()
-    : '';
-  const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(shortAuthor)}"` : '';
-  const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
-  const imgHtml = post.image
-    ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="lazy">`
-    : '<span class="card-image card-image--blank"></span>';
-
-  return `
-    <article class="card">
-      <span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
-        ${imgHtml}
-        ${overlayHtml}
-      </a></span>
-      <div class="card-text">
-        <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-        <p class="card-meta popular-meta">${popularMeta(post)}</p>
       </div>
     </article>`;
 }
@@ -679,10 +677,10 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
   const heroPreload = hero?.image
     ? `<link rel="preload" as="image" href="${escapeHtml(hero.image)}">`
     : '';
-  const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180, eager: true, kicker: HERO_KICKER }) : '';
+  const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180, eager: true, kicker: hero.kicker || HERO_KICKER }) : '';
 
   const belowHeroHtml = `
-    <section class="below-hero-strip reveal"${popular.length ? ' aria-labelledby="popular-heading"' : ''}>
+    <section class="below-hero-strip"${popular.length ? ' aria-labelledby="popular-heading"' : ''}>
       <div class="below-hero-row">
         <div class="below-hero-col below-hero-announcement">
           ${renderAnnouncement(ANNOUNCEMENT)}
@@ -691,8 +689,7 @@ function renderHomepage({ hero, popular, essays, postscript, contra, fromArchive
         <div class="below-hero-col most-read-block">
           <p id="popular-heading" class="popular-heading">Most Read</p>
           <div class="popular-row">
-            <div class="most-read-col">${popular.slice(0, 2).map(renderPopularItem).join('')}</div>
-            <div class="most-read-col">${popular.slice(2, 4).map(renderPopularItem).join('')}</div>
+            ${popular.map((p) => renderCard(p, { dekLength: 70 })).join('')}
           </div>
         </div>` : ''}
       </div>
@@ -829,8 +826,12 @@ ${renderHeroPreviewFitScript()}
 // included here rather than in the shared renderPageShell.
 function renderHeroPreviewFitScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/hero-preview-fit.js'), 'utf8');
+  const titleJs = fs.readFileSync(path.join(__dirname, 'src/hero-title-fit.js'), 'utf8');
   return `<script>
 ${js}
+</script>
+<script>
+${titleJs}
 </script>`;
 }
 
@@ -1208,6 +1209,17 @@ async function main() {
 
   const hero = archivePosts[0] || rssPosts[0];
 
+  // Tagline over the hero's paragraph box, matched to the post's section
+  // (specific tags checked before essays, which is the broadest bucket;
+  // untagged posts — editors' notes and the like — fall through).
+  if (hero) {
+    hero.previewTagline =
+      postscriptAll.some((p) => p.link === hero.link) ? 'from the interview'
+      : contraAll.some((p) => p.link === hero.link) ? 'from the review'
+      : essaysAll.some((p) => p.link === hero.link) ? 'from the essay'
+      : 'from the editors';
+  }
+
   const popular = tagPosts
     .filter((p) => p.link !== hero?.link)
     .sort((a, b) => b.reactionCount - a.reactionCount)
@@ -1273,6 +1285,13 @@ async function main() {
     console.log('Fetching hero extended preview (first two paragraphs)');
     hero.previewParagraphs = await fetchHeroExtendedPreview(hero.link);
   }
+
+  // Hand-edited text overrides win over everything fetched above. Applied
+  // to every collection that reaches a page — the same post can appear as
+  // different objects in several of them, so no deduping here.
+  applyContentOverrides(
+    [hero, ...rssPosts, ...essaysAll, ...postscriptAll, ...contraAll, ...archivePosts, ...notes].filter(Boolean)
+  );
 
   const html = renderHomepage({
     hero,

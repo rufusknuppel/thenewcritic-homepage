@@ -169,27 +169,57 @@ a{ color: inherit; }
   row-gap: 0;
   font-family: var(--display); font-weight: 600; font-size: 1.1rem;
   letter-spacing: 0.01em; text-decoration:none; white-space:nowrap; color: var(--white);
-  transition: text-shadow .2s ease;
 }
-.wordmark:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
+/* Bird sizing/crispness scheme (geometry baseline: bird-geometry.md).
+   The frame keeps its original 20x22 *layout* box (the wordmark stack is
+   built around it) but no longer scales — the img inside is laid out at
+   the full tall-state size (76.72px = 20 x 3.836) and the compact state
+   scales it DOWN to 20px instead of blowing a 20px layout up 3.836x.
+   Rest state is therefore scale(1): a plain, untransformed img that the
+   browser rasterizes natively at any page zoom / DPR, with the 640x709
+   source giving ~4x headroom over even 200% zoom on a 2x display.
+   Downscaling for compact keeps it sharp too (upscaling was what went
+   soft). No will-change anywhere here (deliberately): it pins a
+   compositor texture rasterized at layer-creation zoom that never
+   refreshes after browser zoom changes — the original softness bug.
+   Transitions stay transform-only, so the browser still promotes to the
+   compositor just for the animation's duration and re-rasterizes sharp
+   at rest. */
 .bird-frame{
   display: block; width: 20px; height: 22px;
-  transform-origin: top center; will-change: transform;
+  position: relative;
   /* Tall state: 85px-tall bird, with the bird → wordmark gap matching the
      wordmark → tagline visual gap (13.3px between glyph edges) and the
      bird + wordmark + tagline group centered in the 191px bar. */
-  transform: translateY(15px) scale(3.836);
+  transform: translateY(15px);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), filter .2s ease;
 }
-.wordmark img{ width: 20px; height: auto; display: block; }
+.wordmark img{
+  position: absolute; top: 0; left: 0;
+  width: 76.72px; height: auto; display: block;
+  max-width: none; /* the global img{max-width:100%} reset would clamp this back to the 20px frame */
+  transform-origin: top left;
+  /* Center the 76.72px img on the 20px frame: (76.72 - 20) / 2. */
+  transform: translateX(-28.36px);
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Compact: shrink to exactly 20px wide (20 / 76.72), anchored to the
+   frame's top-left corner — same place the old 20px-layout img sat. */
+.site-header.is-compact .wordmark img{
+  transform: translateX(0) scale(0.26069);
+}
 /* Hover glow on the bird is compact-only; the tall-state mark stays matte. */
 .site-header.is-compact .wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .wordmark-name{
   display: block; will-change: transform;
   transform: translateY(83px);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), text-shadow .2s ease;
 }
-.wordmark:hover .wordmark-tagline{ text-shadow: none; }
+/* Scoped to the name only (not the whole .wordmark link, which also
+   contains the tagline) so the tagline never inherits the glow — no
+   cancel-on-hover rule needed, so there's nothing to flicker as the
+   cursor moves. */
+.wordmark:hover .wordmark-name{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
 .wordmark-tagline{
   display: block; will-change: transform;
   font-family: var(--body); font-style: italic; font-weight: 400;
@@ -307,7 +337,7 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
-  .site-header, .site-nav, .site-header.is-compact .site-nav, .bird-frame, .wordmark-name, .wordmark-tagline, .nav-links--left, .nav-right, .site-nav::after, .nav-edge, main, footer{ transition: none; }
+  .site-header, .site-nav, .site-header.is-compact .site-nav, .bird-frame, .wordmark img, .wordmark-name, .wordmark-tagline, .nav-links--left, .nav-right, .site-nav::after, .nav-edge, main, footer{ transition: none; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
@@ -435,7 +465,14 @@ section{ padding: 80px 0; }
   text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 .card--feature .card-title{
+  /* The clamp is only the no-JS fallback — hero-title-fit.js sets an
+     inline px size: the largest (≤48px) at which no word splits across
+     lines and the title column stays within the cover image's height.
+     overflow-wrap:normal (overriding the base .card-title's break-word)
+     means an over-long word overflows horizontally instead of breaking —
+     which is exactly the signal the fitter detects and sizes away. */
   font-size: clamp(2rem, 4vw, 3rem); margin: 0; text-align: left; line-height: 1.1;
+  overflow-wrap: normal;
 }
 .card--feature .card-meta{ margin-top: 10px; }
 /* Subheading matches the subheading size used in the other card grids. */
@@ -470,7 +507,10 @@ section{ padding: 80px 0; }
      its own boxed column — matches the popup's slightly denser body copy.
      Full white (not the usual --body-text) so the lightened box's copy
      reads as standing out from the rest of the page. */
-  font-size: calc(0.92rem - 0.99px); color: var(--white); line-height: 1.6; margin: 0;
+  /* 14.1px — empirically the largest size that still fits six lines of
+     the second paragraph with ~18px left above the Read on button (at
+     14.15px the sixth line tips over and the fit drops back to five). */
+  font-size: calc(0.92rem - 0.62px); color: var(--white); line-height: 1.6; margin: 0;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
 }
@@ -478,11 +518,31 @@ section{ padding: 80px 0; }
   margin-top: 12px;
   line-clamp: 10; -webkit-line-clamp: 10;
 }
-/* Opening words of the first paragraph, set like a small-caps lede (see
-   wrapLedeWords in build.js) — a magazine-style flourish leading into the
-   body text, echoing the kicker's letter-spacing above the title. */
-.card--feature .card-preview-lede{
-  text-transform: uppercase; letter-spacing: 0.03em;
+/* Two-line drop cap on the opening paragraph (see wrapDropCap in
+   build.js) — floated so the first two text lines wrap around it, sized
+   against the paragraph's own 1.6 line-height (2 lines = 3.2em) with the
+   display face for a proper magazine initial. Floats don't wrap inside
+   display:-webkit-box (the line-clamp display), so the opening paragraph
+   is a normal block instead — it's the one paragraph that usually runs
+   unclamped (hero-preview-fit.js gives it the full budget first, and
+   re-applies -webkit-box inline in the rare case it does need cutting;
+   the drop cap just stacks above the text in that degraded case). */
+.card--feature .card-preview-block .card-preview:first-child{
+  display: block;
+}
+.card--feature .card-preview-dropcap{
+  float: left;
+  font-family: var(--display); font-weight: 600;
+  font-size: 3.2em; line-height: 0.95;
+  padding: 0 8px 0 0;
+  color: var(--white);
+}
+/* "from the essay" / "from the interview" / "from the review" (set per
+   the hero's section tag in build.js) — same italic treatment as the nav
+   bar's tagline. */
+.card--feature .preview-tagline{
+  font-family: var(--body); font-style: italic; font-size: 0.88rem;
+  color: var(--muted); margin: 0 0 12px;
 }
 /* margin-top: auto (not a fixed value) — in the flex column, this
    absorbs whatever's left after the text (including the line-clamp
@@ -532,10 +592,6 @@ section{ padding: 80px 0; }
    treatment is now the only layout. */
 .announcement-box{
   display:flex; flex-direction:column; align-items:stretch;
-  transition: box-shadow .25s ease;
-}
-.announcement-box:hover{
-  box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
 }
 .announcement-photo{
   width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover;
@@ -574,60 +630,49 @@ section{ padding: 80px 0; }
 
 /* ---------- MOST READ (item 4) ---------- */
 .section-divider{ width:100%; height:0; border-top:1px solid var(--line); }
-/* Small boxed label in the top-right corner of the grid, mono/eyebrow style
-   (same family as .hero-kicker) rather than the old large "Most / Read"
-   heading beside the row. */
+/* Same centered-label-with-underline treatment as "Editors' Notes"
+   (.side-notes-label), just a bigger size to suit this more prominent
+   section — not the boxed-button look it had before. */
 .popular-heading{
-  font-family: var(--mono); font-weight: bold; font-size: 0.72rem;
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--white);
-  align-self: flex-end;
-  margin: 0 0 20px; display: inline-block;
-  border: 1px solid var(--line); padding: 6px 12px;
-  transition: border-color .15s ease, text-shadow .2s ease;
+  font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--white);
+  text-align: center;
+  border-bottom: 1px solid var(--white);
+  padding-bottom: 10px; margin: 0 0 22px;
+  transition: text-shadow .2s ease, box-shadow .2s ease;
+  cursor: default;
 }
+/* Border stays solid white always — hovering either the title text or the
+   divider (same box, so either hover target already covers both) adds a
+   glow around the whole thing instead of dimming the border. */
 .popular-heading:hover{
-  border-color: var(--white);
-  text-shadow: 0 0 8px var(--white), 0 0 18px rgba(247,246,241,0.5);
+  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
+  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.popular-row{ display:flex; flex: 1 1 auto; min-height: 0; }
-.most-read-col{ flex: 1 1 0; min-width: 0; display:flex; flex-direction:column; }
-.most-read-col + .most-read-col{ border-left: 1px solid var(--line); margin-left: 24px; padding-left: 24px; }
-.popular-row .card{ flex-direction: column; align-items: stretch; gap: 10px; position: relative; }
-.popular-row .card + .card{ border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; }
-.popular-row .card-image-frame{ width: 100%; margin-bottom: 0; }
-.popular-row .card-image-link{ margin-bottom: 0; width: 100%; display: block; }
+/* Same card anatomy as the Essays/Postscript/Contra grid (.card-grid) —
+   image, title, dek, meta — just a 2-up grid instead of 3-up and scaled
+   down to fit this narrower, shorter section. Hover glow/overlay and the
+   floating preview popup are the shared base behavior (see IMAGE HOVER
+   OVERLAY and IMAGE PREVIEW CARD below) — no section-specific override,
+   same as Essays. */
+.popular-row{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 20px; }
+.popular-row .card{ position: relative; }
+.popular-row .card-image-frame{ margin-bottom: 10px; }
 .popular-row .card-image,
-.popular-row .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; }
-.popular-row .card-text{ min-width: 0; display: flex; flex-direction: column; }
-.popular-row .card-dek{ display: none; }
-.popular-row .card-title{ font-size: 0.92rem; margin: 0 0 6px; }
-.popular-row .card-meta{ font-size: 0.66rem; }
-/* Image expands to cover the full card on hover */
-.popular-row .card-image-link.preview-active{
-  width: 100%; height: 100%;
+.popular-row .card-image--blank{ width: 100%; aspect-ratio: 16/10; }
+.popular-row .card-title{ font-size: 0.88rem; margin: 0 0 6px; }
+.popular-row .card-dek{
+  font-size: 0.76rem; margin: 0 0 6px;
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; -webkit-line-clamp: 2; line-clamp: 2;
 }
-.popular-row .card-image-frame:has(.preview-active){
-  position: absolute; inset: 0; width: auto; height: auto;
-  flex: none; z-index: 2; margin: 0;
-}
-.popular-row .card-image-link.preview-active .card-image,
-.popular-row .card-image-link.preview-active .card-image--blank{
-  width: 100%; height: 100%; aspect-ratio: auto;
-}
-.popular-row .card-text{ transition: opacity .2s ease; }
-.popular-row .card-image-link.preview-active ~ .card-text{ opacity: 0; }
-.popular-row .card-image-frame:has(.preview-active) ~ .card-text{ opacity: 0; }
+.popular-row .card-meta{ font-size: 0.62rem; }
 @media (max-width: 860px){
   .below-hero-row{ grid-template-columns: 1fr; row-gap: 28px; }
   .below-hero-announcement{ max-width: 340px; margin: 0 auto; }
   .most-read-block{ padding-left: 0; border-left: none; padding-top: 28px; border-top: 1px solid var(--line); }
 }
 @media (max-width: 480px){
-  .popular-row{ flex-direction: column; }
-  .most-read-col + .most-read-col{
-    border-left: none; margin-left: 0; padding-left: 0;
-    border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px;
-  }
+  .popular-row{ grid-template-columns: 1fr; }
 }
 .section-block-head{
   display:flex; align-items:baseline; justify-content:space-between; gap: 18px; margin-bottom: 22px;
@@ -689,13 +734,15 @@ section{ padding: 80px 0; }
   text-align: center; color: var(--white);
   border-bottom: 1px solid var(--white);
   padding-bottom: 8px; margin-bottom: 18px;
-  transition: text-shadow 0s, border-color 0s;
+  transition: text-shadow .2s ease, box-shadow .2s ease;
   cursor: default;
 }
+/* Border stays solid white always — hovering either the title text or the
+   divider (same box, so either hover target already covers both) adds a
+   glow around the whole thing instead of dimming the border. */
 .side-notes-label:hover{
   text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
-  border-color: rgba(247,246,241,0.6);
-  transition: text-shadow .2s ease, border-color .2s ease;
+  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 .side-notes ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: 16px; }
 .side-notes li a{
@@ -833,7 +880,9 @@ section{ padding: 80px 0; }
 
 /* ---------- FOOTER ---------- */
 footer{ padding: 48px 0; text-align:center; }
-.foot-bird-link{ display:block; }
+/* inline-block (not block) so the hoverable area is just the bird icon
+   itself, not the full-width line it sits on. */
+.foot-bird-link{ display:inline-block; }
 .foot-bird{ width: 26px; margin: 0 auto 12px; opacity: 1; transition: filter .2s ease; }
 .foot-bird-link:hover .foot-bird{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .foot-tag{ font-family: var(--display); font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0 0 14px; }
@@ -960,14 +1009,20 @@ footer{ padding: 48px 0; text-align:center; }
   .promo-banner-close:hover,
   .meta-date:hover,
   .meta-author:hover,
-  .wordmark:hover,
+  .wordmark:hover .wordmark-name,
   .nav-links a:hover,
   .foot-links a:hover,
   .gift-note a:hover,
   .hero-kicker:hover,
   .announcement-box .eyebrow:hover,
+  .popular-heading:hover,
+  .side-notes-label:hover,
   .likes:hover .likes-count{
     text-shadow: none;
+  }
+  .popular-heading:hover,
+  .side-notes-label:hover{
+    box-shadow: none;
   }
   .likes:hover .likes-bird{
     opacity: 0.7;

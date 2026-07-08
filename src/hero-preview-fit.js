@@ -16,6 +16,7 @@
   if (paras.length < 2) return;
   var first = paras[0], second = paras[1];
   var cta = box.querySelector('.card-preview-cta');
+  var tagline = box.querySelector('.preview-tagline');
 
   function setClamp(el, value) {
     el.style.setProperty('-webkit-line-clamp', value);
@@ -25,6 +26,7 @@
   function reset() {
     setClamp(first, '');
     setClamp(second, '');
+    first.style.display = '';
     second.style.display = '';
   }
 
@@ -54,16 +56,27 @@
     // off a fixed minimum gap instead.
     var CTA_MIN_GAP = 18;
     var ctaSpace = cta ? cta.getBoundingClientRect().height + CTA_MIN_GAP : 0;
+    // The "from the essay" tagline sits above the paragraphs inside the
+    // same box — its rendered height (border/padding included) plus its
+    // margin comes off the paragraphs' budget.
+    var taglineSpace = 0;
+    if (tagline) {
+      var tagCs = getComputedStyle(tagline);
+      taglineSpace = tagline.getBoundingClientRect().height
+        + (parseFloat(tagCs.marginTop) || 0)
+        + (parseFloat(tagCs.marginBottom) || 0);
+    }
     var gap = parseFloat(getComputedStyle(second).marginTop) || 0;
     var lineHeight = parseFloat(getComputedStyle(first).lineHeight);
     if (!lineHeight) return;
-    var budget = innerHeight - ctaSpace;
+    var budget = innerHeight - ctaSpace - taglineSpace;
 
     setClamp(first, 'none');
     var natural1 = first.scrollHeight;
 
     if (natural1 <= budget) {
       // First paragraph reads through in full — no ellipsis on it.
+      first.style.display = ''; // back to block if a resize clamped it before
       var remaining = budget - natural1 - gap;
       var lines2 = Math.floor(remaining / lineHeight);
       if (lines2 <= 0) {
@@ -75,7 +88,11 @@
     } else {
       // First paragraph alone is longer than the box — it fills the whole
       // thing and gets the ellipsis instead; no room left for a second.
+      // The clamp needs display:-webkit-box, which the CSS deliberately
+      // leaves off the first paragraph so its drop cap can float (see
+      // .card-preview:first-child in style.css) — restore it inline here.
       var lines1 = Math.max(1, Math.floor(budget / lineHeight));
+      first.style.display = '-webkit-box';
       setClamp(first, String(lines1));
       second.style.display = 'none';
     }

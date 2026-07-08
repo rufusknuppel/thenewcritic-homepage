@@ -51,5 +51,8 @@ reused, not reinvented:
 
 ## Files
 - `build.js` — fetch + parse + render, all in one file
+- `content-overrides.js` — hand-edited per-post card text (kicker, title,
+  dek, author/date meta, paragraph preview), keyed by post URL slug;
+  overrides whatever the feed provides
 - `style.css` — copied as-is into `dist/` on build
 - `README.md` — deployment walkthrough for Cloudflare Pages
