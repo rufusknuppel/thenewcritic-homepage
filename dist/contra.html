@@ -24,44 +24,20 @@
       <li><a href="/postscript.html">Postscript</a></li>
       <li><a href="/contra.html" aria-current="page">Contra</a></li>
     </ul>
+    <a class="wordmark-name" href="/">THE NEW CRITIC</a>
     <a class="wordmark" href="/">
       <span class="bird-frame"><img src="bird.png" alt="" aria-hidden="true"></span>
-      <span class="wordmark-name">THE NEW CRITIC</span>
-      <em class="wordmark-tagline">The Young American Magazine</em>
     </a>
     <div class="nav-right">
       <ul class="nav-links">
         <li><a href="/give.html">Give</a></li>
       <li><a href="/about.html">About</a></li>
       </ul>
+      <a class="wordmark-tagline" href="/">The Young American Magazine</a>
       <a class="btn btn--small btn--primary nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
     </div>
   </div>
 </nav>
-<div class="promo-banner" id="promo-banner">
-  <div class="wrap promo-banner-inner">
-    <p>Subscribe for $30 / year &mdash; New Critic paid subscribers get access to <em>Postscript</em>, our interview series, <em>Contra</em>, our criticism section, and exclusive New Critic parties.</p>
-    <div class="promo-banner-actions">
-      <a class="btn btn--small btn--primary" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
-      <button class="promo-banner-close" type="button" aria-label="Dismiss">&times;</button>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  var KEY = 'tnc-promo-dismissed';
-  var el = document.getElementById('promo-banner');
-  if (!el) return;
-  try {
-    if (localStorage.getItem(KEY) === '1') { el.remove(); return; }
-  } catch (e) {}
-  var btn = el.querySelector('.promo-banner-close');
-  if (btn) btn.addEventListener('click', function(){
-    el.remove();
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
-  });
-})();
-</script>
 </div>
 
 <main id="main">

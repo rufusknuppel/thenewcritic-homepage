@@ -491,21 +491,22 @@ function renderNav(currentKey = 'home') {
   const leftLinks = SITE_LINKS.filter(l => leftKeys.includes(l.key)).map(navLink).join('\n      ');
   const rightLinks = SITE_LINKS.filter(l => rightKeys.includes(l.key)).map(navLink).join('\n      ');
 
+  const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
   return `<nav class="site-nav">
   <span class="nav-edge" aria-hidden="true"></span>
   <div class="wrap nav-wrap">
     <ul class="nav-links nav-links--left">
       ${leftLinks}
     </ul>
-    <a class="wordmark" href="/"${currentKey === 'home' ? ' aria-current="page"' : ''}>
+    <a class="wordmark-name" href="/"${homeCurrent}>THE NEW CRITIC</a>
+    <a class="wordmark" href="/"${homeCurrent}>
       <span class="bird-frame"><img src="${BIRD_LOGO}" alt="" aria-hidden="true"></span>
-      <span class="wordmark-name">THE NEW CRITIC</span>
-      <em class="wordmark-tagline">The Young American Magazine</em>
     </a>
     <div class="nav-right">
       <ul class="nav-links">
         ${rightLinks}
       </ul>
+      <a class="wordmark-tagline" href="/"${homeCurrent}>The Young American Magazine</a>
       <a class="btn btn--small btn--primary nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
     </div>
   </div>
@@ -529,44 +530,11 @@ function renderFooter() {
 </footer>`;
 }
 
-// Dismissible subscribe banner, shown under the nav on every page.
-// Dismissal is remembered in localStorage so it stays closed across visits.
-function renderBanner() {
-  return `<div class="promo-banner" id="promo-banner">
-  <div class="wrap promo-banner-inner">
-    <p>Subscribe for $30 / year &mdash; New Critic paid subscribers get access to <em>Postscript</em>, our interview series, <em>Contra</em>, our criticism section, and exclusive New Critic parties.</p>
-    <div class="promo-banner-actions">
-      <a class="btn btn--small btn--primary" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
-      <button class="promo-banner-close" type="button" aria-label="Dismiss">&times;</button>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  var KEY = 'tnc-promo-dismissed';
-  var el = document.getElementById('promo-banner');
-  if (!el) return;
-  try {
-    if (localStorage.getItem(KEY) === '1') { el.remove(); return; }
-  } catch (e) {}
-  var btn = el.querySelector('.promo-banner-close');
-  if (btn) btn.addEventListener('click', function(){
-    el.remove();
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
-  });
-})();
-</script>`;
-}
-
-// Wraps nav + banner in one sticky unit (item 2) so the banner stays locked
-// under the nav while scrolling, instead of scrolling away on its own —
-// dismissing it just shrinks the sticky unit down to nav-only height.
 // staticCompact renders the header pre-collapsed with no scroll animation —
 // every page except the homepage uses this (see .is-static in style.css).
 function renderHeader(currentKey, { staticCompact = false } = {}) {
   return `<div class="site-header${staticCompact ? ' is-compact is-static' : ''}" id="site-header">
 ${renderNav(currentKey)}
-${renderBanner()}
 </div>`;
 }
 
@@ -617,10 +585,10 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
         <p class="card-meta">${metaLine(post)}</p>
         ${dekHtml}
+        <a class="hero-latest-btn" href="/archive.html">The Latest</a>
       </div>
       <div class="feature-image-cell">
         ${imageHtml}
-        <a class="hero-latest-btn" href="/archive.html">The Latest</a>
       </div>
       <div class="card-text card-text--right">
         <p class="preview-tagline">${escapeHtml(post.previewTagline || 'from the essay')}</p>

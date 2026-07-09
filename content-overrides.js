@@ -39,6 +39,8 @@ module.exports = {
     preview: [
       'Maybe you have heard of Freya India. She is a frequent guest on podcasts hosted by middle-aged men, her interviews are clipped into Reels and TikToks and reposted all over the internet, and she has over 54,000 subscribers on Substack.',
       'India paints a dystopian, conservative picture of the gen z woman, psychologically damaged by social media, porn, godlessness, decadence, and divorce. India, investigating the source of her own problems, applies her critique to the culture at large. Girls in general, she contends, feel like India once did — lonely, insecure, and scared.',
+      'India, hailing from Essex, England, is only 26. She’s a contributing writer at The Free Press and a contributing “Gen Z voice” for Jonathan Haidt’s After Babel. Now she’s written a mass-market book aptly titled Girls: The Commodification of Everything.',
+      'Fellow mass cultural critics have been quick to anoint her.',
     ],
   },
 };

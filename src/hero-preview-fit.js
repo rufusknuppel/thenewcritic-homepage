@@ -1,20 +1,22 @@
 (function(){
   // Sequential fill: show the first paragraph in full (no ellipsis) if it
   // fits in the box; only if it's too long to fit does IT get clamped (with
-  // an ellipsis) to use up the whole box, with the second paragraph hidden.
-  // Otherwise the second paragraph gets whatever's left over, clamped to
-  // that with its own ellipsis if it runs long. Static CSS clamps on
-  // .card-preview (see style.css) are just the no-JS fallback — this is
-  // the real fit, since no CSS mechanism lets one clamped box hand its
-  // leftover space to a sibling; it has to be measured.
+  // an ellipsis) to use up the whole box, with every paragraph after it
+  // hidden. Otherwise each following paragraph gets whatever's left over
+  // after the ones before it, in order, clamped to that with its own
+  // ellipsis if it runs long — and once one paragraph doesn't fully fit,
+  // every paragraph after it is hidden rather than clamped to 0 lines.
+  // Static CSS clamps on .card-preview (see style.css) are just the no-JS
+  // fallback — this is the real fit, since no CSS mechanism lets one
+  // clamped box hand its leftover space to a sibling; it has to be measured.
   var box = document.querySelector('.card--feature .card-text--right');
   if (!box) return;
   var imageCell = document.querySelector('.card--feature .feature-image-cell');
   var block = box.querySelector('.card-preview-block');
   if (!block) return;
-  var paras = block.querySelectorAll('.card-preview');
-  if (paras.length < 2) return;
-  var first = paras[0], second = paras[1];
+  var paras = Array.prototype.slice.call(block.querySelectorAll('.card-preview'));
+  if (!paras.length) return;
+  var first = paras[0];
   var cta = box.querySelector('.card-preview-cta');
   var tagline = box.querySelector('.preview-tagline');
 
@@ -24,10 +26,10 @@
   }
 
   function reset() {
-    setClamp(first, '');
-    setClamp(second, '');
-    first.style.display = '';
-    second.style.display = '';
+    paras.forEach(function(p){
+      setClamp(p, '');
+      p.style.display = '';
+    });
   }
 
   function fit() {
@@ -66,7 +68,10 @@
         + (parseFloat(tagCs.marginTop) || 0)
         + (parseFloat(tagCs.marginBottom) || 0);
     }
-    var gap = parseFloat(getComputedStyle(second).marginTop) || 0;
+    // Every paragraph after the first shares the same margin-top (see the
+    // .card-preview + .card-preview rule in style.css), so one measurement
+    // covers the gap ahead of any of them.
+    var gap = paras.length > 1 ? (parseFloat(getComputedStyle(paras[1]).marginTop) || 0) : 0;
     var lineHeight = parseFloat(getComputedStyle(first).lineHeight);
     if (!lineHeight) return;
     var budget = innerHeight - ctaSpace - taglineSpace;
@@ -74,27 +79,51 @@
     setClamp(first, 'none');
     var natural1 = first.scrollHeight;
 
+    var remaining; // -1 means "no room left, hide everything after this point"
     if (natural1 <= budget) {
       // First paragraph reads through in full — no ellipsis on it.
       first.style.display = ''; // back to block if a resize clamped it before
-      var remaining = budget - natural1 - gap;
-      var lines2 = Math.floor(remaining / lineHeight);
-      if (lines2 <= 0) {
-        second.style.display = 'none';
-      } else {
-        second.style.display = '';
-        setClamp(second, String(lines2));
-      }
+      remaining = budget - natural1;
     } else {
       // First paragraph alone is longer than the box — it fills the whole
-      // thing and gets the ellipsis instead; no room left for a second.
+      // thing and gets the ellipsis instead; no room left for the rest.
       // The clamp needs display:-webkit-box, which the CSS deliberately
       // leaves off the first paragraph so its drop cap can float (see
       // .card-preview:first-child in style.css) — restore it inline here.
       var lines1 = Math.max(1, Math.floor(budget / lineHeight));
       first.style.display = '-webkit-box';
       setClamp(first, String(lines1));
-      second.style.display = 'none';
+      remaining = -1;
+    }
+
+    for (var i = 1; i < paras.length; i++) {
+      var p = paras[i];
+      if (remaining === -1) {
+        p.style.display = 'none';
+        continue;
+      }
+      var avail = remaining - gap;
+      var lines = Math.floor(avail / lineHeight);
+      if (lines <= 0) {
+        p.style.display = 'none';
+        remaining = -1;
+        continue;
+      }
+      setClamp(p, 'none');
+      var naturalP = p.scrollHeight;
+      if (naturalP <= avail) {
+        // This paragraph reads through in full; whatever's left carries
+        // over to the next one.
+        p.style.display = '';
+        setClamp(p, '');
+        remaining = avail - naturalP;
+      } else {
+        // Cut off here — this paragraph takes the rest of the budget and
+        // gets its own ellipsis; nothing after it can fit.
+        p.style.display = '';
+        setClamp(p, String(lines));
+        remaining = -1;
+      }
     }
   }
 

@@ -31,22 +31,6 @@
   src: url(fonts/source-serif-4-italic.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-@font-face {
-  font-family: 'EB Garamond';
-  font-style: normal;
-  font-weight: 500 600;
-  font-display: swap;
-  src: url(fonts/eb-garamond-roman.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'EB Garamond';
-  font-style: italic;
-  font-weight: 500;
-  font-display: swap;
-  src: url(fonts/eb-garamond-italic.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
 :root{
   --paper: #000000;
   --surface: #060605;
@@ -59,7 +43,7 @@
   --line-soft: rgba(247,246,241,0.07);
   --display: 'Fraunces', serif;
   --body: 'Source Serif 4', serif;
-  --mono: 'Fraunces', serif;
+  --mono: 'Courier New', Courier, monospace;
   --max: 1600px;
 }
 
@@ -74,7 +58,7 @@ html{
 body{
   margin:0;
   background: var(--paper);
-  color: var(--body-text);
+  color: var(--white);
   font-family: var(--body);
   font-size: 1.05rem;
   line-height: 1.65;
@@ -96,23 +80,23 @@ a{ color: inherit; }
 }
 .skip-link:focus{ left: 1em; top: 1em; }
 
-.wrap{ max-width: var(--max); margin: 0 auto; padding: 0 64px; }
+.wrap{ max-width: var(--max); margin: 0 auto; padding: 0 74px; }
 .wrap--narrow{ max-width: 660px; }
-@media (max-width: 860px){ .wrap{ padding: 0 32px; } }
-@media (max-width: 480px){ .wrap{ padding: 0 20px; } }
+@media (max-width: 860px){ .wrap{ padding: 0 42px; } }
+@media (max-width: 480px){ .wrap{ padding: 0 30px; } }
 
 /* ---------- NAV ---------- */
-/* Header keeps a constant 191px flow height; the compact state shifts the
+/* Header keeps a constant 151px flow height; the compact state shifts the
    page content up with a compositor transform on main/footer instead of
    animating this height (layout reflow lagged behind the GPU-driven nav
    visuals on fast scrolls). The lower half of the stuck header is empty in
    compact state, so let clicks pass through except on real nav content. */
 .site-header{
   position: sticky; top: 0; z-index: 50;
-  height: 191px;
+  height: 151px;
   pointer-events: none;
 }
-.site-nav .wrap, .promo-banner{ pointer-events: auto; }
+.site-nav .wrap{ pointer-events: auto; }
 
 .site-nav{
   position: relative;
@@ -132,7 +116,7 @@ a{ color: inherit; }
 }
 .site-nav::after{
   content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 191px;
+  height: 151px;
   background: var(--paper);
   z-index: -2;
   transform-origin: top; will-change: transform;
@@ -144,45 +128,60 @@ a{ color: inherit; }
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: var(--line);
   z-index: -1;
-  transform: translateY(190px); will-change: transform;
+  transform: translateY(150px); will-change: transform;
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* Three named columns, always present at every scroll state: "left" and
+   "right" each host two overlapping occupants (the Essays/Postscript/
+   Contra or Give/About links, and the sliding wordmark-name/tagline text)
+   so the two can cross-fade/slide over the same footprint instead of
+   needing viewport-relative math to travel between two different grid
+   cells. "center" holds the bird alone. The row's own height is explicit
+   (rather than auto, sized off whichever occupant is tallest) so
+   align-items:center reliably centers everything on the *true* bar
+   midline in both states, and animates in step with the bar's own height
+   change instead of needing separate translateY hacks. */
 .site-nav .wrap{
   display:grid; grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: "left center right";
   align-items:center;
+  height: 151px;
   padding-top: 12px;
   padding-bottom: 12px;
   gap: 24px;
+  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-links--left{ justify-content: flex-start; }
-.nav-right{ justify-content: flex-end; }
-/* Tall state: side links and the subscribe button center on the wordmark
-   group's midline (95.5px of the 191px bar); collapsing slides them up to
-   their compact position in step with the wordmark transforms. */
-.nav-links--left, .nav-right{
-  will-change: transform;
-  transform: translateY(47.7px);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+.site-header.is-compact .site-nav .wrap{ height: 96px; }
+.nav-links--left{ grid-area: left; justify-self: start; }
+.nav-right{ grid-area: right; }
+/* Hidden in the tall state (the wordmark's name/tagline sit in their place
+   instead — see .wordmark-name/.wordmark-tagline below) and revealed once
+   the nav compacts. */
+.nav-links--left,
+.nav-right .nav-links{
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
 }
 .site-header.is-compact .nav-links--left,
-.site-header.is-compact .nav-right{ transform: translateY(0); }
-.wordmark{
-  display:flex; flex-direction: column; align-items: center;
-  row-gap: 0;
-  font-family: var(--display); font-weight: 600; font-size: 1.1rem;
-  letter-spacing: 0.01em; text-decoration:none; white-space:nowrap; color: var(--white);
+.site-header.is-compact .nav-right .nav-links{
+  opacity: 1;
+  pointer-events: auto;
 }
-/* Bird sizing/crispness scheme (geometry baseline: bird-geometry.md).
-   The frame keeps its original 20x22 *layout* box (the wordmark stack is
-   built around it) but no longer scales — the img inside is laid out at
-   the full tall-state size (76.72px = 20 x 3.836) and the compact state
-   scales it DOWN to 20px instead of blowing a 20px layout up 3.836x.
-   Rest state is therefore scale(1): a plain, untransformed img that the
-   browser rasterizes natively at any page zoom / DPR, with the 640x709
-   source giving ~4x headroom over even 200% zoom on a 2x display.
-   Downscaling for compact keeps it sharp too (upscaling was what went
-   soft). No will-change anywhere here (deliberately): it pins a
-   compositor texture rasterized at layer-creation zoom that never
+.wordmark{ grid-area: center; display: block; }
+/* Bird sizing/crispness scheme (geometry baseline: bird-geometry.md — the
+   bird stands alone, centered in its own grid column, rather than stacked
+   above the name/tagline, but the tall-state size matches that baseline
+   again: 76.72px = 20 x 3.836). The frame keeps its original 20x22
+   *layout* box (the row's own height centers it via align-items:center)
+   but no longer scales — the img inside is laid out at the full
+   tall-state size and the compact state scales it UP slightly (to
+   21.5px, ~7.5% bigger than a plain 1:1 20px) instead of blowing a 20px
+   layout up 3.836x. Rest state is therefore scale(1): a plain,
+   untransformed img that the browser rasterizes natively at any page
+   zoom / DPR, with the 640x709 source giving ~8x headroom over even 200%
+   zoom on a 2x display. No will-change anywhere here (deliberately): it
+   pins a compositor texture rasterized at layer-creation zoom that never
    refreshes after browser zoom changes — the original softness bug.
    Transitions stay transform-only, so the browser still promotes to the
    compositor just for the animation's duration and re-rasterizes sharp
@@ -190,43 +189,65 @@ a{ color: inherit; }
 .bird-frame{
   display: block; width: 20px; height: 22px;
   position: relative;
-  /* Tall state: 85px-tall bird, with the bird → wordmark gap matching the
-     wordmark → tagline visual gap (13.3px between glyph edges) and the
-     bird + wordmark + tagline group centered in the 191px bar. */
-  transform: translateY(15px);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), filter .2s ease;
+  transition: filter .2s ease;
 }
 .wordmark img{
   position: absolute; top: 0; left: 0;
   width: 76.72px; height: auto; display: block;
   max-width: none; /* the global img{max-width:100%} reset would clamp this back to the 20px frame */
   transform-origin: top left;
-  /* Center the 76.72px img on the 20px frame: (76.72 - 20) / 2. */
-  transform: translateX(-28.36px);
+  /* Center the 76.72px x 84.98px img on the 20x22 frame:
+     ((76.72 - 20) / 2, (84.98 - 22) / 2). */
+  transform: translate(-28.36px, -31.49px);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Compact: shrink to exactly 20px wide (20 / 76.72), anchored to the
-   frame's top-left corner — same place the old 20px-layout img sat. */
+/* Compact: grow to 21.5px wide (~7.5% over the 20px frame — "slightly
+   larger" per spec), centered on the frame so the growth is symmetric:
+   ((20 - 21.5) / 2, (22 - 23.82) / 2). */
 .site-header.is-compact .wordmark img{
-  transform: translateX(0) scale(0.26069);
+  transform: translate(-0.75px, -0.91px) scale(0.28024);
 }
-/* Hover glow on the bird is compact-only; the tall-state mark stays matte. */
-.site-header.is-compact .wordmark:hover .bird-frame{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .wordmark-name{
-  display: block; will-change: transform;
-  transform: translateY(83px);
+  grid-area: left; justify-self: start;
+  display: block; text-decoration: none; white-space: nowrap;
+  font-family: var(--display); font-weight: 600; font-size: 1.1rem;
+  letter-spacing: 0.01em; color: var(--white);
+  transform: translateX(0);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .wordmark-tagline{
-  display: block; will-change: transform;
-  font-family: var(--body); font-style: italic; font-weight: 400;
-  font-size: 0.78rem; color: var(--muted);
-  transform: translateY(83px);
+  display: block; text-decoration: none; white-space: nowrap;
+  font-family: var(--display); font-style: italic; font-weight: 400;
+  font-size: 1.1rem; color: var(--white);
+  transform: translateX(0);
   transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Compact: slide both in toward the bird at the bar's center, revealing
+   the Essays/Postscript/Contra and Give/About links now exposed at the
+   edges they slid away from. The travel distance is a fixed px amount
+   (tuned at a ~1400px-wide reference viewport, like the aspect-ratio
+   tuning elsewhere in this file) rather than derived from the viewport,
+   since the two occupy 1fr tracks whose width isn't knowable in pure CSS. */
+.site-header.is-compact .wordmark-name{
+  transform: translateX(453px);
+}
+.site-header.is-compact .wordmark-tagline{
+  transform: translateX(-241px);
+}
+/* Below ~900px the header is permanently compact (see the JS WIDE
+   threshold) and the 1fr side tracks are far narrower than the reference
+   viewport above — the fixed slide amounts would overshoot and collide
+   with the real Essays/Postscript/Contra and Give/About links. Simplest
+   safe fallback: drop the sliding name/tagline at that point and let the
+   now-permanently-revealed links speak for themselves either side of the
+   bird, same as the rest of the site's narrow-viewport simplifications. */
+@media (max-width: 900px){
+  .wordmark-name,
+  .wordmark-tagline{ display: none; }
 }
 .nav-links{
   list-style:none; display:flex; gap: 26px; margin:0; padding:0;
-  font-family: var(--mono); font-size: 0.741rem; letter-spacing: 0.04em; text-transform: uppercase;
+  font-family: var(--mono); font-weight: 700; font-size: 0.741rem; letter-spacing: 0.04em; text-transform: uppercase;
 }
 .nav-links a{
   text-decoration:none; color: var(--muted);
@@ -237,28 +258,34 @@ a{ color: inherit; }
 @media (max-width: 720px){ .nav-links{ display:none; } }
 .nav-tagline{
   font-family: var(--body); font-style: italic; font-size: 0.88rem;
-  color: var(--muted); white-space: nowrap; margin: 0;
+  color: var(--white); white-space: nowrap; margin: 0;
   position: relative; top: -14px;
 }
 @media (max-width: 860px){ .nav-tagline{ display: none; } }
-.nav-right{ display:flex; align-items:center; gap: 28px; }
-.nav-subscribe{ flex: 0 0 auto; white-space: nowrap; }
+/* Grid (not flex) so the give/about links and the tagline can occupy the
+   same first column, overlapping — same trick as .nav-links--left /
+   .wordmark-name on the other side — with Subscribe in its own column so
+   it's never covered by either occupant. */
+.nav-right{
+  display:grid; grid-template-columns: auto auto;
+  align-items:center; justify-content: flex-end; gap: 28px;
+}
+.nav-right .nav-links{ grid-row: 1; grid-column: 1; justify-self: end; }
+.wordmark-tagline{ grid-row: 1; grid-column: 1; justify-self: end; }
+.nav-subscribe{ grid-row: 1; grid-column: 2; white-space: nowrap; }
 
 /* ---------- NAV compact state ---------- */
 main, footer{ transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1); }
 .site-header.is-compact ~ main,
-.site-header.is-compact ~ footer{ transform: translateY(-95px); }
-/* Sticky sidebar offset compensates for the transformed main (181 - 95 = 86). */
-.site-header.is-compact ~ main .side-col{ top: 181px; }
+.site-header.is-compact ~ footer{ transform: translateY(-55px); }
+/* Sticky sidebar offset compensates for the transformed main (141 - 55 = 86). */
+.site-header.is-compact ~ main .side-col{ top: 141px; }
 .site-header.is-compact .site-nav{
   clip-path: inset(0 0 -2px 0);
   transition: clip-path .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.site-header.is-compact .site-nav::after{ transform: scaleY(0.50262); } /* 96/191 */
+.site-header.is-compact .site-nav::after{ transform: scaleY(0.63576); } /* 96/151 */
 .site-header.is-compact .nav-edge{ transform: translateY(95px); }
-.site-header.is-compact .bird-frame{ transform: translate(-179px, 26px); }
-.site-header.is-compact .wordmark-name{ transform: translate(-80px, 0); }
-.site-header.is-compact .wordmark-tagline{ transform: translate(100px, -25px); }
 body.no-transition *{ transition: none !important; }
 
 /* Every page except the homepage renders the header pre-collapsed
@@ -269,45 +296,21 @@ body.no-transition *{ transition: none !important; }
 .site-header.is-static ~ footer{ transform: none; }
 .site-header.is-static ~ main .side-col{ top: 86px; }
 
-/* ---------- PROMO BANNER ---------- */
-.promo-banner{ background: var(--surface-2); border-bottom: 1px solid var(--line); }
-.promo-banner-inner{
-  display:flex; align-items:center; justify-content:center;
-  gap: 28px; flex-wrap: wrap;
-  padding: 14px 56px;
-}
-.promo-banner p{
-  margin: 0; color: var(--body-text); font-size: 0.88rem; text-align: left;
-  flex: 1 1 480px; max-width: 760px;
-}
-.promo-banner p em{ font-style: italic; color: var(--white); }
-.promo-banner-actions{ display:flex; align-items:center; gap: 16px; flex: 0 0 auto; }
-.promo-banner-close{
-  background: none; border: none; padding: 0 2px; margin: 0;
-  color: var(--muted); font-size: 1.3rem; line-height: 1; cursor: pointer;
-  font-family: var(--body);
-  transition: color 0s, text-shadow 0s;
-}
-.promo-banner-close:hover{
-  color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
-  transition: color .2s ease, text-shadow .2s ease;
-}
-
 .btn{
   font-family: var(--mono);
+  font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   text-decoration:none;
-  display:inline-flex; align-items:center; gap: 0.5em;
+  display:inline-flex; align-items:center; justify-content:center; gap: 0.5em;
   padding: 14px 22px;
   border: 1px solid var(--white);
-  transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .2s ease, text-shadow .2s ease;
+  transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .2s ease;
 }
 .btn--primary{ background: transparent; border-color: var(--white); color: var(--white); }
 .btn:hover{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 .btn[href*="/subscribe"]:hover::before{ animation-play-state: paused; opacity: 0; }
 .btn--small{ padding: 10px 16px; font-size: 0.74rem; }
@@ -317,7 +320,7 @@ section{ padding: 80px 0; }
 .section-head{ margin-bottom: 40px; }
 .section-head--center{ text-align: center; }
 .eyebrow{
-  font-family: var(--mono); font-size: 0.722rem; letter-spacing: 0.04em;
+  font-family: var(--mono); font-weight: 700; font-size: 0.722rem; letter-spacing: 0.04em;
   text-transform: uppercase; color: var(--muted); margin: 0 0 14px;
 }
 .section-head h2{
@@ -328,7 +331,7 @@ section{ padding: 80px 0; }
   color: var(--white);
 }
 .section-head:first-child h2{ margin-top: 0; }
-.section-head p{ max-width: 60ch; color: var(--muted); margin: 14px 0 0; }
+.section-head p{ max-width: 60ch; color: var(--white); margin: 14px 0 0; }
 
 .reveal{ opacity:0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
@@ -412,17 +415,22 @@ section{ padding: 80px 0; }
 .card--feature .card-image,
 .card--feature .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
 /* "The Latest" — black pill with a white border, linking to the archive.
-   Bottom-centered (rather than top-left, its old spot) so it always sits
-   in the untouched center strip and is never covered by either side
-   panel once they fade in on hover. */
+   Lives inside the left (title/dek) column now, pinned to its bottom-left
+   corner via margin-top:auto in that flex column, so it only appears once
+   the column itself fades in on hover — and glows only when the pill
+   itself is hovered, not just whenever the card is. */
 .hero-latest-btn{
-  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 4;
+  align-self: flex-start;
+  margin-top: auto;
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
   padding: 8px 14px;
-  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+  font-family: var(--mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
   text-decoration: none; line-height: 1;
   transition: box-shadow .25s ease;
+}
+.hero-latest-btn:hover{
+  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 /* A ring drawn as an ::after (rather than an inset box-shadow, which the
    opaque child img paints over and hides, or an outline, which some
@@ -437,6 +445,11 @@ section{ padding: 80px 0; }
   inset: 0;
   border: 1px solid var(--white);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.card.card--feature:hover .card-image-link::after{
+  opacity: 1;
 }
 /* Hovering anywhere in the card (image or either panel — :hover bubbles
    to this ancestor from any descendant) dims the image and glows its
@@ -448,19 +461,15 @@ section{ padding: 80px 0; }
 .card.card--feature:hover .card-image{
   filter: grayscale(1) brightness(0.5);
 }
-.card.card--feature:hover .hero-latest-btn{
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
 /* Small courier kicker above the title (see HERO_KICKER in build.js). */
 .card--feature .hero-kicker{
-  font-family: 'Courier New', Courier, monospace; font-size: 0.75rem; font-weight: bold;
+  font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
-  transition: color .15s ease, text-shadow .2s ease;
+  transition: color .15s ease;
 }
 .card--feature .hero-kicker:hover{
   color: var(--white);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 .card--feature .card-title{
   /* The clamp is only the no-JS fallback — hero-title-fit.js sets an
@@ -477,36 +486,33 @@ section{ padding: 80px 0; }
 .card--feature .card-dek{
   font-size: 0.92rem; margin: 16px 0 0; text-align: left;
 }
-/* First two paragraphs of the piece (after any paid-subscriber appeal at
-   the top of the post), reused from the same extraction that feeds the
-   hover-preview popup elsewhere (see previewParagraphs in build.js), now
-   in their own right-hand column beside the image rather than stacked
+/* Paragraphs of the piece (after any paid-subscriber appeal at the top of
+   the post), reused from the same extraction that feeds the hover-preview
+   popup elsewhere (see previewParagraphs in build.js — content-overrides.js
+   can also supply extra paragraphs beyond the two that get auto-fetched),
+   now in their own right-hand column beside the image rather than stacked
    under the dek — so no divider against it, just the same 0.92rem body
    size. build.js passes full, untruncated text — each paragraph clips
-   itself to a fixed line count via -webkit-line-clamp, which (unlike a
-   build-time word-count guess) clips at the actual rendered line for
-   whatever column width the visitor has, and supplies its own ellipsis
-   flush to that line's end rather than one tacked on wherever a word
-   count happened to land.
-   .card-text--right is stretched to the cover image's full height (see
-   above), and the opening (lede) paragraph alone is often too short to
-   fill it on its own — a short lede is a normal, deliberate style choice,
-   not something to work around by fetching more paragraphs. The second
-   paragraph almost always has more real text in it than the lede does,
-   so it gets the bigger half of the budget (10 lines vs. 7) to keep
-   pulling from — 17 lines total is the max either can use (measured
-   against the box's actual rendered height) without overflowing. The
-   372px max-height on the wrapper is just a backstop for narrower
-   viewports, where the two clamps combined could still in principle run
-   past the (shorter) cover image's height. */
-.card--feature .card-preview-block{ max-height: 372px; overflow: hidden; }
+   itself via -webkit-line-clamp, which (unlike a build-time word-count
+   guess) clips at the actual rendered line for whatever column width the
+   visitor has, and supplies its own ellipsis flush to that line's end
+   rather than one tacked on wherever a word count happened to land.
+   hero-preview-fit.js is what actually decides, per paragraph, how many
+   lines (if any) it gets, sequentially handing whatever budget is left
+   from one paragraph to the next until the box's real height (measured
+   off the cover image) runs out — the static -webkit-line-clamp values in
+   this file are only the no-JS fallback. The max-height below is only a
+   backstop for that no-JS case (where every paragraph's static fallback
+   clamp could still, in principle, combine to run longer than any real
+   cover image gets) — sized comfortably above the tallest this column
+   can legitimately reach (the image cell's height at the widest
+   supported layout), so it never clips a fit the script already made. */
+.card--feature .card-preview-block{ max-height: 900px; overflow: hidden; }
 .card--feature .card-preview{
   /* Sized to the box's own space rather than matched to the dek — the
      actual line count that fits is computed live by hero-preview-fit.js
      off the rendered box height, so this only sets how big the text
-     reads, not how many lines show. Full white (not the usual
-     --body-text) so the lightened box's copy stands out from the rest
-     of the page. */
+     reads, not how many lines show. */
   font-size: calc(0.92rem - 0.62px); color: var(--white); line-height: 1.6; margin: 0;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
@@ -535,11 +541,17 @@ section{ padding: 80px 0; }
   color: var(--white);
 }
 /* "from the essay" / "from the interview" / "from the review" (set per
-   the hero's section tag in build.js) — same italic treatment as the nav
-   bar's tagline. */
+   the hero's section tag in build.js) — same courier-kicker treatment as
+   .hero-kicker (family, weight, size, letter-spacing, margin) so column 3
+   opens with the same visual weight and spacing as column 1's kicker. */
 .card--feature .preview-tagline{
-  font-family: var(--body); font-style: italic; font-size: 0.88rem;
-  color: var(--muted); margin: 0 0 12px;
+  font-family: var(--mono); font-weight: 700; font-size: 0.75rem;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  margin: 0 0 10px;
+  transition: color .15s ease;
+}
+.card--feature .preview-tagline:hover{
+  color: var(--white);
 }
 /* margin-top: auto (not a fixed value) — in the flex column, this
    absorbs whatever's left after the text (including the line-clamp
@@ -611,25 +623,19 @@ section{ padding: 80px 0; }
    to the "From the Editors" label here, with the same gray/white-glow-on-
    hover treatment as the nav links. */
 .announcement-box .eyebrow{
-  font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 0.75rem;
+  font-family: var(--mono); font-weight: 700; font-size: 0.75rem;
   color: var(--muted);
-  transition: color .15s ease, text-shadow .2s ease;
+  transition: color .15s ease;
 }
 .announcement-box .eyebrow:hover{
   color: var(--white);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 .announcement-title{
   font-family: var(--display); font-weight: 600; font-size: clamp(1.1rem, 1.8vw, 1.4rem);
   color: var(--white); margin: 10px 0 14px; line-height: 1.2;
-  transition: text-shadow 0s;
-}
-.announcement-title:hover{
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
-  transition: text-shadow .2s ease;
 }
 .announcement-box p{
-  color: var(--body-text); margin: 0 0 14px; font-size: 0.92rem; line-height: 1.55;
+  color: var(--white); margin: 0 0 14px; font-size: 0.92rem; line-height: 1.55;
   overflow-wrap: break-word;
 }
 .announcement-box .btn{ margin-top: 6px; }
@@ -645,14 +651,13 @@ section{ padding: 80px 0; }
   text-align: center;
   border-bottom: 1px solid var(--white);
   padding-bottom: 10px; margin: 0 0 22px;
-  transition: text-shadow .2s ease, box-shadow .2s ease;
+  transition: box-shadow .2s ease;
   cursor: default;
 }
 /* Border stays solid white always — hovering either the title text or the
    divider (same box, so either hover target already covers both) adds a
    glow around the whole thing instead of dimming the border. */
 .popular-heading:hover{
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 /* Same card anatomy as the Essays/Postscript/Contra grid (.card-grid) —
@@ -688,29 +693,27 @@ section{ padding: 80px 0; }
 .section-block-title{ display: flex; align-items: baseline; gap: 14px; min-width: 0; }
 .section-tagline{
   font-family: var(--body); font-style: italic; font-size: 0.88rem;
-  color: var(--muted); white-space: nowrap;
+  color: var(--white); white-space: nowrap;
 }
 .section-block-head h2{
   font-family: var(--display); font-weight: 600; font-size: clamp(1.2rem, 2vw, 1.5rem);
   margin: 0; color: var(--white);
 }
-.section-block-head h2 a{ text-decoration: none; transition: text-shadow 0s; }
-.section-block-head h2 a:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
+.section-block-head h2 a{ text-decoration: none; }
 .view-all{
   display: inline-flex; align-items: center; align-self: flex-end; white-space: nowrap;
   padding: 7px 12px;
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
   text-decoration: none;
-  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+  font-family: var(--mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
   flex-shrink: 0;
   position: relative;
-  transition: background .15s ease, box-shadow .2s ease, text-shadow .2s ease;
+  transition: background .15s ease, box-shadow .2s ease;
 }
 .view-all:hover{
   background: var(--surface-2);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 
 /* ---------- LAYOUT GRID (sidebar + sections) ---------- */
@@ -740,26 +743,25 @@ section{ padding: 80px 0; }
   text-align: center; color: var(--white);
   border-bottom: 1px solid var(--white);
   padding-bottom: 8px; margin-bottom: 18px;
-  transition: text-shadow .2s ease, box-shadow .2s ease;
+  transition: box-shadow .2s ease;
   cursor: default;
 }
 /* Border stays solid white always — hovering either the title text or the
    divider (same box, so either hover target already covers both) adds a
    glow around the whole thing instead of dimming the border. */
 .side-notes-label:hover{
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 .side-notes ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: 16px; }
 .side-notes li a{
   font-family: var(--display); font-size: 0.95rem; color: var(--body-text); text-decoration:none;
-  transition: color 0s, text-shadow 0s;
+  transition: color 0s;
 }
 .side-notes li a:hover{
-  color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
-  transition: color .2s ease, text-shadow .2s ease;
+  color: var(--white);
+  transition: color .2s ease;
 }
-.note-dek{ font-size: 0.82rem; color: var(--muted); margin: 4px 0 0; }
+.note-dek{ font-size: 0.82rem; color: var(--white); margin: 4px 0 0; }
 @media (max-width: 860px){
   .layout-grid{ grid-template-columns: 1fr; }
   .side-col{ position: static; order: 2; }
@@ -779,24 +781,22 @@ section{ padding: 80px 0; }
   font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0 0 8px; color: var(--white);
   overflow-wrap: break-word;
 }
-.card-title a{ text-decoration:none; transition: text-shadow 0s; }
-.card-title a:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
-.card-dek{ color: var(--muted); font-size: 0.92rem; margin: 0 0 10px; overflow-wrap: break-word; }
+.card-title a{ text-decoration:none; }
+.card-dek{ color: var(--white); font-size: 0.92rem; margin: 0 0 10px; overflow-wrap: break-word; }
 
 .card-meta{
-  font-family: var(--mono); font-size: 0.684rem; letter-spacing: 0.03em; text-transform: uppercase;
-  color: var(--faint); margin: 0; min-width: 0;
+  font-family: var(--mono); font-weight: 700; font-size: 0.684rem; letter-spacing: 0.03em; text-transform: uppercase;
+  color: var(--muted); margin: 0; min-width: 0;
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
 }
-.meta-dot{ color: var(--faint); }
+.meta-dot{ color: var(--muted); }
 
 .meta-date, .meta-author{
-  transition: color 0s, text-shadow 0s;
+  transition: color 0s;
 }
 .meta-date:hover, .meta-author:hover{
   color: var(--white);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
-  transition: color .2s ease, text-shadow .2s ease;
+  transition: color .2s ease;
 }
 
 .likes{ display: inline-flex; align-items: center; gap: 5px; }
@@ -805,7 +805,7 @@ section{ padding: 80px 0; }
   filter: brightness(1) drop-shadow(0 0 0 transparent);
   transition: filter 0s, opacity 0s;
 }
-.likes-count{ transition: color 0s, text-shadow 0s; }
+.likes-count{ transition: color 0s; }
 .likes:hover .likes-bird{
   opacity: 1;
   filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white));
@@ -813,8 +813,7 @@ section{ padding: 80px 0; }
 }
 .likes:hover .likes-count{
   color: var(--white);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
-  transition: color .2s ease, text-shadow .2s ease;
+  transition: color .2s ease;
 }
 @media (max-width: 860px){ .card-grid{ grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px){ .card-grid{ grid-template-columns: 1fr; } }
@@ -843,11 +842,10 @@ section{ padding: 80px 0; }
   background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--white);
   padding: 32px 36px;
 }
-.about-card p{ color: var(--body-text); margin: 0 0 18px; }
-.about-card p a{ color: var(--white); text-decoration: none; transition: text-shadow 0s; }
-.about-card p a:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
+.about-card p{ color: var(--white); margin: 0 0 18px; }
+.about-card p a{ color: var(--white); text-decoration: none; }
 .about-card .btn{ margin-top: 8px; }
-.about-card ul{ margin: 0 0 24px; padding-left: 1.4em; color: var(--body-text); }
+.about-card ul{ margin: 0 0 24px; padding-left: 1.4em; color: var(--white); }
 .about-card li{ margin-bottom: 6px; }
 
 /* Name above the medallion, role below (item 5). */
@@ -856,9 +854,8 @@ section{ padding: 80px 0; }
 }
 .editor{
   display:flex; flex-direction:column; align-items:center; gap: 10px; width: 130px; text-align:center;
-  text-decoration: none; transition: text-shadow 0s;
+  text-decoration: none;
 }
-.editor:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
 .editor-name{ font-family: var(--mono); font-size: 0.808rem; letter-spacing: 0.02em; color: var(--white); }
 .editor-photo{
   width: 84px; height: 84px; border-radius: 50%;
@@ -872,16 +869,15 @@ section{ padding: 80px 0; }
   text-transform: uppercase; letter-spacing: 0.04em;
 }
 
-.prose{ padding-bottom: 80px; color: var(--body-text); }
+.prose{ padding-bottom: 80px; color: var(--white); }
 .prose p{ margin: 0 0 22px; }
 .prose h1, .prose h2, .prose h3{ font-family: var(--display); font-weight: 600; color: var(--white); margin: 36px 0 16px; }
-.prose a{ color: var(--white); text-decoration: none; transition: text-shadow 0s; }
-.prose a:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
+.prose a{ color: var(--white); text-decoration: none; }
 .prose ul, .prose ol{ margin: 0 0 22px; padding-left: 1.4em; }
 .prose li{ margin-bottom: 6px; }
 .prose img{ max-width: 100%; height: auto; border: 1px solid var(--line); margin: 16px 0; }
 .prose figure{ margin: 24px 0; }
-.prose blockquote{ border-left: 3px solid var(--white); margin: 24px 0; padding-left: 20px; color: var(--muted); }
+.prose blockquote{ border-left: 3px solid var(--white); margin: 24px 0; padding-left: 20px; color: var(--white); }
 .prose strong{ color: var(--white); }
 
 /* ---------- FOOTER ---------- */
@@ -893,9 +889,9 @@ footer{ padding: 48px 0; text-align:center; }
 .foot-bird-link:hover .foot-bird{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
 .foot-tag{ font-family: var(--display); font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0 0 14px; }
 .foot-links{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap: 18px; margin:0 0 12px; padding:0; font-family: var(--mono); font-size: 0.722rem; text-transform: uppercase; letter-spacing: 0.03em; }
-.foot-links a{ text-decoration:none; color: var(--muted); transition: color .15s ease, text-shadow .2s ease; }
-.foot-links a:hover{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-.foot-fine{ font-family: var(--mono); font-size: 0.665rem; color: var(--faint); letter-spacing: 0.02em; margin:0; }
+.foot-links a{ text-decoration:none; color: var(--muted); transition: color .15s ease; }
+.foot-links a:hover{ color: var(--white); }
+.foot-fine{ font-family: var(--mono); font-weight: 700; font-size: 0.665rem; color: var(--muted); letter-spacing: 0.02em; margin:0; }
 
 /* ---------- IMAGE PREVIEW CARD ---------- */
 #preview-card{
@@ -910,7 +906,7 @@ footer{ padding: 48px 0; text-align:center; }
   font-family: var(--body);
   font-size: 0.88rem;
   line-height: 1.6;
-  color: var(--body-text);
+  color: var(--white);
   pointer-events: none;
   opacity: 0;
   transition: opacity .25s ease, box-shadow .25s ease;
@@ -934,18 +930,18 @@ footer{ padding: 48px 0; text-align:center; }
   border: 1px solid var(--white);
   text-decoration: none;
   font-family: var(--mono);
+  font-weight: 700;
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   line-height: 1;
   flex-shrink: 0;
   position: relative;
-  transition: background .15s ease, box-shadow .2s ease, text-shadow .2s ease;
+  transition: background .15s ease, box-shadow .2s ease;
 }
 .preview-card-link:hover{
   background: var(--surface-2);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-  text-shadow: 0 0 5px var(--white), 0 0 9px var(--white);
 }
 /* Frame wrapper — pseudo lives here so overflow:hidden on the link doesn't clip it */
 .card-image-frame {
@@ -993,6 +989,7 @@ footer{ padding: 48px 0; text-align:center; }
 }
 .overlay-author{
   font-family: var(--mono);
+  font-weight: 700;
   font-size: 0.66rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1005,25 +1002,6 @@ footer{ padding: 48px 0; text-align:center; }
    taps elsewhere. Devices with no real pointer hover capability never get
    these effects in the first place, sidestepping the stuck state entirely. */
 @media (hover: none) {
-  .card-title a:hover,
-  .section-block-head h2 a:hover,
-  .popular-item-text h4:hover,
-  .side-notes li a:hover,
-  .prose a:hover,
-  .about-card p a:hover,
-  .editor:hover,
-  .promo-banner-close:hover,
-  .meta-date:hover,
-  .meta-author:hover,
-  .foot-links a:hover,
-  .gift-note a:hover,
-  .hero-kicker:hover,
-  .announcement-box .eyebrow:hover,
-  .popular-heading:hover,
-  .side-notes-label:hover,
-  .likes:hover .likes-count{
-    text-shadow: none;
-  }
   .popular-heading:hover,
   .side-notes-label:hover{
     box-shadow: none;
@@ -1032,7 +1010,6 @@ footer{ padding: 48px 0; text-align:center; }
     opacity: 0.7;
     filter: none;
   }
-  .wordmark:hover img,
   .foot-bird-link:hover .foot-bird{
     filter: none;
   }
@@ -1041,9 +1018,6 @@ footer{ padding: 48px 0; text-align:center; }
   }
   .card.card--feature:hover .card-image{
     filter: none;
-  }
-  .card.card--feature:hover .hero-latest-btn{
-    box-shadow: none;
   }
   /* No reliable hover on touch to reveal the side panels (see the
      full-width hero image rules above) — show them unconditionally
@@ -1076,7 +1050,7 @@ footer{ padding: 48px 0; text-align:center; }
 }
 .hero p.lede{
   max-width: 56ch;
-  color: var(--muted);
+  color: var(--white);
   font-size: 1.18rem;
   margin: 0;
   flex: 1 1 420px;
@@ -1104,8 +1078,8 @@ footer{ padding: 48px 0; text-align:center; }
 .ledger-price{
   font-family: var(--mono); color: var(--white); font-size: 0.95rem; margin-bottom: 18px; display:block;
 }
-.ledger-card p{ color: var(--muted); margin: 0 0 26px; }
-.ledger-card p .highlight{ color: var(--muted); font-style: italic; }
+.ledger-card p{ color: var(--white); margin: 0 0 26px; }
+.ledger-card p .highlight{ color: var(--white); font-style: italic; }
 .ledger-card .btn{ margin-top: auto; align-self: flex-start; }
 
 #gifts{ margin-top: -20px; }
@@ -1127,21 +1101,20 @@ footer{ padding: 48px 0; text-align:center; }
   font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
   margin: 0 0 14px; color: var(--white);
 }
-.gift-card p{ color: var(--muted); margin: 0 0 20px; }
+.gift-card p{ color: var(--white); margin: 0 0 20px; }
 .gift-card a.btn{ margin-top: auto; align-self: flex-start; }
 .gift-note{
   margin-top: 32px;
-  color: var(--muted); font-size: 0.95rem;
+  color: var(--white); font-size: 0.95rem;
 }
-.gift-note a{ color: var(--white); text-decoration: none; transition: text-shadow 0s; }
-.gift-note a:hover{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); transition: text-shadow .2s ease; }
+.gift-note a{ color: var(--white); text-decoration: none; }
 
 .letter{ margin-top: -35px; }
 .letter h2{
   font-family: var(--display); font-style: italic; font-weight: 500;
   font-size: clamp(1.6rem, 3vw, 2.1rem); margin: 0 0 36px; color: var(--white);
 }
-.letter p{ color: var(--body-text); margin: 0 0 22px; }
+.letter p{ color: var(--white); margin: 0 0 22px; }
 .letter p:first-of-type::first-letter{
   font-family: var(--display); font-weight: 600; font-size: 3.4em; float:left;
   line-height: 0.85; padding-right: 10px; margin-top: 4px; color: var(--white);
