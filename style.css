@@ -60,7 +60,7 @@
   --display: 'Fraunces', serif;
   --body: 'Source Serif 4', serif;
   --mono: 'Fraunces', serif;
-  --max: 1120px;
+  --max: 1600px;
 }
 
 *{ box-sizing: border-box; }
@@ -96,8 +96,10 @@ a{ color: inherit; }
 }
 .skip-link:focus{ left: 1em; top: 1em; }
 
-.wrap{ max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+.wrap{ max-width: var(--max); margin: 0 auto; padding: 0 64px; }
 .wrap--narrow{ max-width: 660px; }
+@media (max-width: 860px){ .wrap{ padding: 0 32px; } }
+@media (max-width: 480px){ .wrap{ padding: 0 20px; } }
 
 /* ---------- NAV ---------- */
 /* Header keeps a constant 191px flow height; the compact state shifts the
@@ -213,13 +215,8 @@ a{ color: inherit; }
 .wordmark-name{
   display: block; will-change: transform;
   transform: translateY(83px);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1), text-shadow .2s ease;
+  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Scoped to the name only (not the whole .wordmark link, which also
-   contains the tagline) so the tagline never inherits the glow — no
-   cancel-on-hover rule needed, so there's nothing to flicker as the
-   cursor moves. */
-.wordmark:hover .wordmark-name{ text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
 .wordmark-tagline{
   display: block; will-change: transform;
   font-family: var(--body); font-style: italic; font-weight: 400;
@@ -233,10 +230,10 @@ a{ color: inherit; }
 }
 .nav-links a{
   text-decoration:none; color: var(--muted);
-  transition: color .15s ease, text-shadow .2s ease;
+  transition: color .15s ease;
 }
-.nav-links a:hover{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
-.nav-links a[aria-current="page"]{ color: var(--white); text-shadow: 0 0 5px var(--white), 0 0 9px var(--white); }
+.nav-links a:hover{ color: var(--white); }
+.nav-links a[aria-current="page"]{ color: var(--white); }
 @media (max-width: 720px){ .nav-links{ display:none; } }
 .nav-tagline{
   font-family: var(--body); font-style: italic; font-size: 0.88rem;
@@ -361,45 +358,65 @@ section{ padding: 80px 0; }
    ".card.card--feature" (not just ".card--feature") so this outranks the
    base ".card{ display:flex }" rule, which shares its specificity and
    comes later in the file. */
+/* Experimental hover-reveal layout: the cover image spans the card's full
+   width at a fixed widescreen ratio (in place of the old three-column
+   grid, where the two text columns ate a fixed 235px off each side). The
+   title/dek and paragraph columns are absolutely positioned over its left
+   and right edges instead, invisible until the card is hovered — see the
+   :hover rule below — so the artwork is the default, uncluttered view and
+   the text reads as a drawer that slides into it. Column width is a vw
+   value (clamped for very narrow/wide viewports) rather than a fixed px,
+   so the untouched strip left down the middle stays the same proportion
+   of the image at any viewport instead of shrinking on narrow screens. */
 .card.card--feature{
-  display:grid;
-  grid-template-columns: minmax(0, 235px) 1fr minmax(0, 235px);
-  column-gap: 36px; align-items: start;
+  position: relative;
+  display: block;
 }
-.feature-image-cell{ position: relative; min-width: 0; }
-.card--feature .card-image-frame{ margin-bottom: 0; }
-.card--feature .card-image-link{ display:block; margin-bottom: 0; }
+/* 2.17 (nudged up from 21/10 = 2.1) trims roughly 20px off the rendered
+   height at typical wrap widths — aspect-ratio can't express a flat px
+   offset directly, so this is tuned to that ballpark rather than exact
+   at every viewport. */
+.feature-image-cell{ position: relative; overflow: hidden; aspect-ratio: 2.17; }
+.card--feature .card-image-frame{ margin-bottom: 0; height: 100%; }
+.card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; }
 .card--feature .card-text{
   min-width: 0; text-align: left;
   display:flex; flex-direction: column;
 }
-/* The paragraph column is boxed like the hover-preview popup below
-   (#preview-card) — same surface color, border, and padding — but with
-   its left border omitted and pulled back across the column gap
-   (margin-left: -column-gap) so it reads as growing directly out of the
-   cover image rather than floating separately beside it. align-self:
-   stretch (overriding the grid's own align-items:start, which still
-   top-anchors the title column) makes it exactly as tall as the image —
-   the line-clamp counts on .card-preview below are sized to roughly fill
-   that height, not the shorter one from before. Glows on hover, in sync
-   with the image (see the :has() rules below) since together they read
-   as one unit. */
+/* Both side panels: pinned to the image's full height (top:0;bottom:0 of
+   the position:relative card, whose own height is set by the image, the
+   only in-flow child), scrim background, white border — all faded to
+   invisible at rest and faded in together with a matching glow on hover
+   (see .card.card--feature:hover below), so "appearing" and "glowing"
+   happen as one motion rather than two. */
+.card--feature .card-text--left,
 .card--feature .card-text--right{
-  align-self: stretch;
+  position: absolute; top: 0; bottom: 0;
+  width: clamp(240px, 24vw, 380px);
+  padding: 24px; z-index: 3;
+  background: var(--paper);
   border: 1px solid var(--white);
-  border-left: none;
-  margin-left: -36px;
-  padding: 18px;
-  transition: box-shadow .25s ease, border-color .25s ease;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease, box-shadow .3s ease;
+  overflow: hidden;
+}
+.card--feature .card-text--left{ left: 0; }
+.card--feature .card-text--right{ right: 0; }
+.card.card--feature:hover .card-text--left,
+.card.card--feature:hover .card-text--right{
+  opacity: 1;
+  pointer-events: auto;
+  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 .card--feature .card-image,
-.card--feature .card-image--blank{ width: 100%; aspect-ratio: 3.5/3; }
-/* "The Latest" — black pill with a white border, pinned over the top
-   left corner of the cover image, linking to the archive. Glows in sync
-   with the cover image's own hover glow below (same trigger: hovering
-   anywhere in the image cell, including the pill itself). */
+.card--feature .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+/* "The Latest" — black pill with a white border, linking to the archive.
+   Bottom-centered (rather than top-left, its old spot) so it always sits
+   in the untouched center strip and is never covered by either side
+   panel once they fade in on hover. */
 .hero-latest-btn{
-  position: absolute; top: 14px; left: 14px; z-index: 2;
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 4;
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
   padding: 8px 14px;
@@ -407,17 +424,6 @@ section{ padding: 80px 0; }
   text-decoration: none; line-height: 1;
   transition: box-shadow .25s ease;
 }
-/* Same dim + glow hover treatment as the other posts' images (see IMAGE
-   HOVER OVERLAY below), but via a plain :hover instead of the JS preview-
-   popup class — the popup/overlay text would be redundant here since the
-   title and first paragraph are already shown statically beside it.
-   Image and text box read as one connected unit (see .card-text--right
-   above), so hovering either one glows both: the plain descendant
-   selectors handle "hovering the image glows the box" (the box comes
-   after it in the DOM, so a sibling selector could too, but :has() reads
-   the same both directions); :has() handles the reverse, "hovering the
-   box glows the image", which a sibling selector alone can't do since
-   the image comes first in the DOM. */
 /* A ring drawn as an ::after (rather than an inset box-shadow, which the
    opaque child img paints over and hides, or an outline, which some
    browsers won't render with a negative offset inside overflow:hidden)
@@ -432,25 +438,17 @@ section{ padding: 80px 0; }
   border: 1px solid var(--white);
   pointer-events: none;
 }
-.feature-image-cell:hover .card-image-link,
-.card.card--feature:has(.card-text--right:hover) .card-image-link{
+/* Hovering anywhere in the card (image or either panel — :hover bubbles
+   to this ancestor from any descendant) dims the image and glows its
+   ring and the pill together with the two panels above, so the whole
+   card reads as one hover target. */
+.card.card--feature:hover .card-image-link{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.feature-image-cell:hover .card-image,
-.card.card--feature:has(.card-text--right:hover) .card-image{
-  filter: grayscale(1) brightness(0.45);
+.card.card--feature:hover .card-image{
+  filter: grayscale(1) brightness(0.5);
 }
-.feature-image-cell:hover .hero-latest-btn,
-.card.card--feature:has(.card-text--right:hover) .hero-latest-btn{
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
-.card--feature .card-text--right:hover,
-.card.card--feature:has(.feature-image-cell:hover) .card-text--right{
-  /* The box already has its own 1px gray border — recolor it to white on
-     hover instead of layering a separate white box-shadow ring outside
-     it (which read as white wrapping around the gray line rather than
-     the border itself lighting up). */
-  border-color: var(--white);
+.card.card--feature:hover .hero-latest-btn{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 /* Small courier kicker above the title (see HERO_KICKER in build.js). */
@@ -503,13 +501,12 @@ section{ padding: 80px 0; }
    past the (shorter) cover image's height. */
 .card--feature .card-preview-block{ max-height: 372px; overflow: hidden; }
 .card--feature .card-preview{
-  /* A touch smaller than the dek above (0.92rem) now that it sits inside
-     its own boxed column — matches the popup's slightly denser body copy.
-     Full white (not the usual --body-text) so the lightened box's copy
-     reads as standing out from the rest of the page. */
-  /* 14.1px — empirically the largest size that still fits six lines of
-     the second paragraph with ~18px left above the Read on button (at
-     14.15px the sixth line tips over and the fit drops back to five). */
+  /* Sized to the box's own space rather than matched to the dek — the
+     actual line count that fits is computed live by hero-preview-fit.js
+     off the rendered box height, so this only sets how big the text
+     reads, not how many lines show. Full white (not the usual
+     --body-text) so the lightened box's copy stands out from the rest
+     of the page. */
   font-size: calc(0.92rem - 0.62px); color: var(--white); line-height: 1.6; margin: 0;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
@@ -551,22 +548,31 @@ section{ padding: 80px 0; }
    the box's own bottom padding rather than floating above dead space. */
 .card--feature .card-preview-cta{ margin-top: auto; }
 @media (max-width: 640px){
-  /* No reordering needed: DOM order (title/dek, image, paragraph) already
-     matches natural reading order once stacked. */
+  /* Below this width there's no room for overlay panels wide enough to
+     read comfortably, so drop the hover-reveal effect entirely: stack
+     title/dek, image, then paragraph in normal reading order, all
+     statically visible, same as the rest of the site's card layouts. */
   .card.card--feature{ display:flex; flex-direction: column; align-items: stretch; }
-  .feature-image-cell{ margin-bottom: 0; }
-  /* Stacked below the image now instead of beside it, so the box connects
-     along its top edge instead of its left — same idea, rotated 90°.
-     align-self:stretch overrides the desktop grid's align-self:end, which
-     in this flex-column layout would otherwise mean "hug the right edge"
-     instead of "sit at the bottom". */
+  .feature-image-cell{ margin-bottom: 0; aspect-ratio: 3.5/3; }
+  .card--feature .card-text--left,
+  .card--feature .card-text--right{
+    position: static;
+    width: auto;
+    opacity: 1;
+    pointer-events: auto;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
   .card--feature .card-text--right{
     align-self: stretch;
-    margin-left: 0; margin-top: 0;
-    border-left: 1px solid var(--line); border-top: none;
+    margin-top: 18px;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
   }
   .card--feature .card-image,
-  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; }
+  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; object-fit: cover; }
 }
 
 /* ---------- BELOW-HERO ROW (announcement + Most Read, items 2 & 4) ----------
@@ -1009,8 +1015,6 @@ footer{ padding: 48px 0; text-align:center; }
   .promo-banner-close:hover,
   .meta-date:hover,
   .meta-author:hover,
-  .wordmark:hover .wordmark-name,
-  .nav-links a:hover,
   .foot-links a:hover,
   .gift-note a:hover,
   .hero-kicker:hover,
@@ -1032,14 +1036,23 @@ footer{ padding: 48px 0; text-align:center; }
   .foot-bird-link:hover .foot-bird{
     filter: none;
   }
-  .feature-image-cell:hover .card-image-link{
+  .card.card--feature:hover .card-image-link{
     box-shadow: none;
   }
-  .feature-image-cell:hover .card-image{
+  .card.card--feature:hover .card-image{
     filter: none;
   }
-  .feature-image-cell:hover .hero-latest-btn{
+  .card.card--feature:hover .hero-latest-btn{
     box-shadow: none;
+  }
+  /* No reliable hover on touch to reveal the side panels (see the
+     full-width hero image rules above) — show them unconditionally
+     instead of trapping the title and preview text behind a gesture
+     that may never fire. */
+  .card--feature .card-text--left,
+  .card--feature .card-text--right{
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
