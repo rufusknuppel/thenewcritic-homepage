@@ -98,6 +98,11 @@ function applyContentOverrides(posts) {
 // current top post — not derived from feed data.
 const HERO_KICKER = 'To Phone or Not';
 
+// The archive mosaic's posts (see renderArchiveMosaic), hand-picked by
+// slug, in cell order: [tall left card, wide top-right card, first small
+// square, second small square].
+const ARCHIVE_ROW_SLUGS = ['curtis-yarvin-jr', 'pdoom', 'freak-show', 'end-times'];
+
 // The arrow glyph in every "Read on →" link renders in the display face
 // (Fraunces) rather than inheriting the mono/courier font around it — see
 // .cta-arrow in style.css. Shared so every call site (and preview-card.js,
@@ -215,24 +220,20 @@ async function fetchFirstParagraph(url) {
   return firstParagraph(bodyHtml || '');
 }
 
-// The feature/hero card alone shows a second paragraph after the first (see
-// renderCard's 'feature' branch) — one extra fetch of the hero's own post
-// page, keeping the two paragraphs separate (rather than flattened into one
-// block) so the card can render an actual paragraph break between them.
-// Returns full, untruncated paragraph text: cutting each paragraph off at
-// the right line — with a real ellipsis flush at that line's end — is a
-// CSS -webkit-line-clamp job (see .card-preview-block in style.css), not a
-// build-time word-count guess. The second paragraph gets the bigger share
-// of that clamp budget (see .card-preview in style.css) specifically so it
-// has room to keep pulling from its own text — which is usually longer
-// than what a single short lede paragraph needs — rather than reaching for
-// a third paragraph as filler.
-async function fetchHeroExtendedPreview(url) {
+// Multi-paragraph preview for the hero (2 paragraphs) and the duo/trio row
+// cards (3 — see the row-posts fetch in main()) — one extra fetch of the
+// post's own page, keeping the paragraphs separate (rather than flattened
+// into one block) so the card can render actual paragraph breaks between
+// them. Returns full, untruncated paragraph text: cutting each paragraph
+// off at the right line — with a real ellipsis flush at that line's end —
+// is a line-clamp job (hero-preview-fit.js for the hero, duo-panel-fit.js
+// for the row panels), not a build-time word-count guess.
+async function fetchExtendedPreview(url, max) {
   const html = await fetchHtml(url);
   if (!html) return [];
   const preloads = extractPreloads(html);
   const bodyHtml = preloads && preloads.post && preloads.post.body_html;
-  return extractParagraphs(bodyHtml || '', 2);
+  return extractParagraphs(bodyHtml || '', max);
 }
 
 function dedupeByLink(posts) {
@@ -494,7 +495,7 @@ function renderFooter() {
     <ul class="foot-links">
       ${links}
     </ul>
-    <p class="foot-fine">&copy; ${year} The New Critic &middot; est. May 2025 &middot; editors@thenewcritic.com</p>
+    <p class="foot-fine"><span class="foot-fine-item">&copy; ${year} The New Critic</span> &middot; <span class="foot-fine-item">est. May 2025</span> &middot; <span class="foot-fine-item">editors@thenewcritic.com</span></p>
   </div>
 </footer>`;
 }
@@ -549,7 +550,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
   // cover image in the middle, first two paragraphs + "Read on" on the
   // right (reflows to a single stacked column, in the same reading order,
   // on narrow screens — see .card--feature CSS). previewParagraphs (set
-  // only on the hero post — see fetchHeroExtendedPreview in main()) is
+  // only on the hero post — see fetchExtendedPreview in main()) is
   // full, untruncated paragraph text; the CSS line-clamp on .card-preview
   // does the cutting off, at whichever line it lands on for the actual
   // rendered column width, and supplies its own ellipsis flush to that
@@ -601,29 +602,42 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     </article>`;
 }
 
-// One card — not two — holding both essays side by side, sized as a unit
-// to match the hero's own dimensions (see .card--duo in style.css). Each
-// half gets the hero card's hover-reveal mechanic (image always visible,
-// text panel hidden until hover), but as a single panel per half — title
-// block anchored to the top, "Essays" and "Read on" pinned to the bottom
-// corners, any leftover space in between left empty — rather than the
-// hero's two side-by-side columns, since each half is only a quarter of
-// the hero's width. Takes the post's own .kicker (set per-slug in
-// content-overrides.js), unlike the hero which falls back to HERO_KICKER.
-function renderDuoCard(essays) {
-  if (!essays.length) return '';
-  const halves = essays.map((post, i) => {
-    const kickerHtml = post.kicker ? `<p class="hero-kicker">${escapeHtml(post.kicker)}</p>` : '';
-    const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, 140))}</p>` : '';
-    const previewHtml = post.preview
-      ? `<div class="card-preview-block"><p class="card-preview">${wrapDropCap(post.preview)}</p></div>`
-      : '';
-    const readNowHtml = post.preview
-      ? `<a class="card-preview-cta preview-card-link duo-readon-btn" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
-      : '';
-    const dividerHtml = i > 0 ? '<div class="duo-half-divider" role="separator"></div>' : '';
-    return `${dividerHtml}
-      <div class="duo-half">
+// One card — not several — holding a row of posts side by side, divider-
+// separated (see .card--duo in style.css). Each cell gets the hero card's
+// hover-reveal mechanic (image always visible, text panel hidden until
+// hover), but as a single panel per cell — title block anchored to the
+// top, section button and "Read on" pinned to the bottom corners, any
+// leftover space in between left empty — rather than the hero's two
+// side-by-side columns, since each cell is far narrower than the hero.
+// Takes the post's own .kicker (set per-slug in content-overrides.js),
+// unlike the hero which falls back to HERO_KICKER. tag/btnLabel/btnHref
+// point the row at its section (essays by default; the postscript row
+// passes its own), and extraClass carries the row's aspect modifier
+// (e.g. card--trio for the 1:2 portrait postscript row).
+// One cell of a homepage row: the post's image with the hover-reveal panel
+// over it. A post's own .previewTagline (set per-section in main() for the
+// archive mosaic, the way the hero's is) wins over the row-wide tag.
+// halfClass carries a placement modifier for the mosaic's shaped cells
+// (archive-tall / archive-wide).
+function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
+  const kickerHtml = post.kicker ? `<p class="hero-kicker">${escapeHtml(post.kicker)}</p>` : '';
+  const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, 140))}</p>` : '';
+  // Full, untruncated paragraphs (several of them where the row-posts
+  // fetch in main() ran) — duo-panel-fit.js decides at render time how
+  // many lines each panel actually has room for and clamps there, with
+  // the line-clamp display's own ellipsis.
+  const previewParas = post.previewParagraphs && post.previewParagraphs.length
+    ? post.previewParagraphs
+    : (post.preview ? [post.preview] : []);
+  const previewHtml = previewParas.length
+    ? `<div class="card-preview-block">${previewParas
+        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : escapeHtml(p)}</p>`)
+        .join('')}</div>`
+    : '';
+  const readNowHtml = previewParas.length
+    ? `<a class="card-preview-cta preview-card-link duo-readon-btn" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
+    : '';
+  return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="lazy">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
@@ -633,18 +647,52 @@ function renderDuoCard(essays) {
             <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             <p class="card-meta">${metaLine(post)}</p>
             ${dekHtml}
-            <p class="preview-tagline">From the Essay</p>
             <div class="duo-quote-divider"></div>
+            <p class="preview-tagline">${escapeHtml(post.previewTagline || tag)}</p>
             ${previewHtml}
           </div>
-          <a class="hero-latest-btn duo-essays-btn" href="/essays.html">Essays</a>
+          <a class="hero-latest-btn duo-essays-btn" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
           ${readNowHtml}
         </div>
       </div>`;
-  }).join('');
+}
+
+const DUO_DIVIDER = '<div class="duo-half-divider" role="separator"></div>';
+
+function renderDuoCard(posts, opts = {}) {
+  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = '/essays.html', extraClass = '' } = opts;
+  if (!posts.length) return '';
+  const halves = posts
+    .map((post) => renderDuoHalf(post, { tag, btnLabel, btnHref }))
+    .join(`\n      ${DUO_DIVIDER}\n      `);
   return `
-    <article class="card card--duo">
+    <article class="card card--duo${extraClass ? ` ${extraClass}` : ''}">
       ${halves}
+    </article>`;
+}
+
+// The archive mosaic: four cells that close up into one hero-width block —
+// a 1:2 tall card on the left at a third of the width, and the remaining
+// two thirds split into a 2:1 landscape on top with two squares beneath
+// it. With those ratios the left card's height always equals the right
+// stack's exactly (see the .card--archive rules in style.css for the
+// arithmetic). Cell order: [tall, wide, square, square].
+function renderArchiveMosaic(posts, opts) {
+  if (posts.length < 4) return '';
+  const half = (p, cls) => renderDuoHalf(p, opts, cls);
+  return `
+    <article class="card card--duo card--archive">
+      ${half(posts[0], 'archive-tall')}
+      ${DUO_DIVIDER}
+      <div class="archive-right">
+        ${half(posts[1], 'archive-wide')}
+        <div class="duo-half-divider duo-divider--h" role="separator"></div>
+        <div class="archive-pair">
+          ${half(posts[2])}
+          ${DUO_DIVIDER}
+          ${half(posts[3])}
+        </div>
+      </div>
     </article>`;
 }
 
@@ -654,17 +702,47 @@ function renderDuoCard(essays) {
 // renderListPage/renderArchivePage below are still live — the essays/
 // postscript/contra/archive pages are unaffected.
 
-function renderHomepage({ hero, essays = [] }) {
+function renderHomepage({ hero, essays = [], postscripts = [], contras = [], archives = [] }) {
   const heroPreload = hero?.image
     ? `<link rel="preload" as="image" href="${escapeHtml(hero.image)}">`
     : '';
   const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180, eager: true, kicker: hero.kicker || HERO_KICKER }) : '';
 
-  // The two most recent essays (the hero itself excluded), as one combined
-  // card matching the hero's own dimensions — see renderDuoCard.
-  const duoHtml = essays.length ? `
+  // The most recent essays (the hero itself excluded), two per row, each
+  // row one combined card — see renderDuoCard. Below them, one row of the
+  // three most recent postscripts as 1:2 portrait cells (card--trio), one
+  // row of the four most recent contras as squares (card--quad), and the
+  // hand-picked archive mosaic (see renderArchiveMosaic / ARCHIVE_ROW_SLUGS).
+  const duoRows = [];
+  for (let i = 0; i < essays.length; i += 2) {
+    duoRows.push(renderDuoCard(essays.slice(i, i + 2)));
+  }
+  if (postscripts.length) {
+    duoRows.push(renderDuoCard(postscripts, {
+      tag: 'From the Interview',
+      btnLabel: 'Postscript',
+      btnHref: '/postscript.html',
+      extraClass: 'card--trio',
+    }));
+  }
+  if (contras.length) {
+    duoRows.push(renderDuoCard(contras, {
+      tag: 'From the Review',
+      btnLabel: 'Contra',
+      btnHref: '/contra.html',
+      extraClass: 'card--quad',
+    }));
+  }
+  if (archives.length >= 4) {
+    duoRows.push(renderArchiveMosaic(archives, {
+      tag: 'From the Essay',
+      btnLabel: 'From the Archive',
+      btnHref: '/archive.html',
+    }));
+  }
+  const duoHtml = duoRows.length ? `
   <div class="wrap">
-    ${renderDuoCard(essays)}
+    ${duoRows.join('\n')}
   </div>` : '';
 
   return `<!doctype html>
@@ -708,7 +786,7 @@ ${renderRevealScript()}
 
 ${renderCaterpillarScript()}
 ${renderHeroPreviewFitScript()}
-${renderDuoHeightFitScript()}
+${renderDuoPanelFitScript()}
 </body>
 </html>`;
 }
@@ -726,10 +804,10 @@ ${titleJs}
 </script>`;
 }
 
-// Only the homepage has the duo-strip, so this lives alongside the other
-// homepage-only scripts rather than in the shared renderPageShell.
-function renderDuoHeightFitScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/duo-height-fit.js'), 'utf8');
+// Only the homepage has the duo/trio/quad row panels, so this lives with
+// the other homepage-only scripts rather than in the shared renderPageShell.
+function renderDuoPanelFitScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
@@ -1156,7 +1234,49 @@ async function main() {
 
   if (hero?.link) {
     console.log('Fetching hero extended preview (first two paragraphs)');
-    hero.previewParagraphs = await fetchHeroExtendedPreview(hero.link);
+    hero.previewParagraphs = await fetchExtendedPreview(hero.link, 2);
+  }
+
+  // The homepage rows below the hero (hero itself excluded from each):
+  // four most recent essays (two duo rows), three most recent postscripts
+  // (the trio row), four most recent contras (the quad row) — see
+  // renderDuoCard / renderHomepage's duoHtml.
+  const heroEssays = essaysSlice.filter((p) => p.link !== hero?.link).slice(0, 4);
+  const heroPostscripts = postscriptAll.filter((p) => p.link !== hero?.link).slice(0, 3);
+  const heroContras = contraAll.filter((p) => p.link !== hero?.link).slice(0, 4);
+
+  // The archive mosaic's four hand-picked posts, in cell order: tall left
+  // card, wide top-right card, then the two small squares beneath it.
+  const heroArchive = ARCHIVE_ROW_SLUGS
+    .map((slug) => archivePosts.find((p) => slugOf(p.link) === slug))
+    .filter(Boolean);
+  for (const p of heroArchive) {
+    // Same section-matched tag logic as the hero's own (the visible text is
+    // uppercased by CSS either way). archivePosts objects are distinct from
+    // the contraAll ones, so the manual contra previews get re-applied here.
+    p.previewTagline =
+      postscriptAll.some((q) => q.link === p.link) ? 'From the Interview'
+      : contraAll.some((q) => q.link === p.link) ? 'From the Review'
+      : essaysAll.some((q) => q.link === p.link) ? 'From the Essay'
+      : 'From the Editors';
+    const manual = lookupContraPreview(p.link);
+    if (manual) p.preview = manual;
+  }
+
+  // The essay/postscript/archive row panels show as much of the piece as
+  // fits their box (duo-panel-fit.js clamps at the rendered line), so pull
+  // several full paragraphs for them, same as the hero. Contra posts are
+  // skipped — their preserved-text Substack blocks defeat the extractor
+  // (that's what the hand-written CONTRA_MANUAL_PREVIEWS single paragraphs
+  // are for; a contra post in the mosaic keeps its manual paragraph too,
+  // since the extractor returns nothing for it).
+  const rowPosts = dedupeByLink([...heroEssays, ...heroPostscripts, ...heroArchive]);
+  if (rowPosts.length) {
+    console.log(`Fetching extended previews for ${rowPosts.length} row posts`);
+    const extended = await Promise.all(rowPosts.map((p) => fetchExtendedPreview(p.link, 3)));
+    rowPosts.forEach((p, i) => {
+      if (extended[i] && extended[i].length) p.previewParagraphs = extended[i];
+    });
   }
 
   // Hand-edited text overrides win over everything fetched above. Applied
@@ -1166,11 +1286,7 @@ async function main() {
     [hero, ...rssPosts, ...essaysAll, ...postscriptAll, ...contraAll, ...archivePosts].filter(Boolean)
   );
 
-  // Two most recent essays, hero excluded — the duo card below the hero
-  // (see renderDuoCard / renderHomepage's duoHtml).
-  const heroEssays = essaysSlice.filter((p) => p.link !== hero?.link).slice(0, 2);
-
-  const html = renderHomepage({ hero, essays: heroEssays });
+  const html = renderHomepage({ hero, essays: heroEssays, postscripts: heroPostscripts, contras: heroContras, archives: heroArchive });
 
   console.log('Reading give.html');
   const giveSrc = fs.readFileSync(GIVE_SRC_PATH, 'utf8');

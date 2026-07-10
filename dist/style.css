@@ -76,7 +76,7 @@ a{ color: inherit; }
 .skip-link{
   position:absolute; left:-999px; top:0;
   background: var(--white); color: var(--paper);
-  padding: 0.6em 1em; z-index: 100; font-family: var(--mono); font-size: 0.808rem;
+  padding: 0.6em 1em; z-index: 100; font-family: var(--mono); font-weight: 575; font-size: 0.808rem;
 }
 .skip-link:focus{ left: 1em; top: 1em; }
 
@@ -94,7 +94,7 @@ a{ color: inherit; }
    max-width:900px block). */
 .site-header{
   position: fixed; top: 0; left: 0; z-index: 50;
-  width: 210px; height: 100vh;
+  width: 180px; height: 100vh;
   background: var(--paper);
   border-right: 1px solid var(--line);
 }
@@ -123,8 +123,8 @@ a{ color: inherit; }
 .wordmark img{ width: 100%; height: auto; display: block; }
 .nav-links{
   list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 22px;
-  font-family: var(--mono); font-weight: 700; font-size: 0.8rem;
+  display: flex; flex-direction: column; gap: 14px;
+  font-family: var(--mono); font-weight: 575; font-size: 0.8rem;
   letter-spacing: 0.04em; text-transform: uppercase;
 }
 .nav-links a{
@@ -139,10 +139,13 @@ a{ color: inherit; }
 }
 .nav-subscribe{ width: 100%; }
 .nav-tagline{
-  font-family: var(--body); font-style: italic; font-weight: 400; font-size: 0.75rem;
-  color: var(--white); margin: 0; line-height: 1.4; text-align: center; width: 100%;
+  font-family: var(--mono); font-weight: 575; font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: var(--muted); margin: 0; line-height: 1.5; text-align: center; width: 100%;
+  transition: color .15s ease;
 }
-main, footer{ margin-left: 210px; }
+.nav-tagline:hover{ color: var(--white); }
+main, footer{ margin-left: 180px; }
 
 /* Below 900px the sidebar can't fit alongside readable content widths —
    collapse to a static, in-flow top bar instead (same breakpoint the rest
@@ -168,7 +171,7 @@ main, footer{ margin-left: 210px; }
 
 .btn{
   font-family: var(--mono);
-  font-weight: 700;
+  font-weight: 575;
   font-size: 0.82rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -190,7 +193,7 @@ section{ padding: 80px 0; }
 .section-head{ margin-bottom: 40px; }
 .section-head--center{ text-align: center; }
 .eyebrow{
-  font-family: var(--mono); font-weight: 700; font-size: 0.722rem; letter-spacing: 0.04em;
+  font-family: var(--mono); font-weight: 575; font-size: 0.722rem; letter-spacing: 0.04em;
   text-transform: uppercase; color: var(--muted); margin: 0 0 14px;
 }
 .section-head h2{
@@ -233,18 +236,28 @@ section{ padding: 80px 0; }
    overrode it despite its higher selector specificity (the cascade
    applies per-property, not per-rule). */
 .card.card--duo{ display: flex; flex-direction: row; align-items: stretch; margin-bottom: 24px; }
-@media (max-width: 860px){ .card.card--duo{ margin-bottom: 20px; } }
-@media (max-width: 480px){ .card.card--duo{ margin-bottom: 16px; flex-direction: column; } }
+/* Divider between duo rows — same padding-above/margin-below rhythm as the
+   hero's own divider (.hero-row). The last row has no border of its own;
+   the footer's border-top is the divider above it. */
+.card.card--duo:not(:last-child){ border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+@media (max-width: 860px){
+  .card.card--duo{ margin-bottom: 20px; }
+  .card.card--duo:not(:last-child){ padding-bottom: 20px; }
+}
+@media (max-width: 480px){
+  .card.card--duo{ margin-bottom: 16px; flex-direction: column; }
+  .card.card--duo:not(:last-child){ padding-bottom: 16px; }
+}
 
 .duo-half{ position: relative; flex: 1 1 0; min-width: 0; }
 @media (max-width: 480px){
-  /* flex:1 1 0 only works out to a square-ish box in the row layout above,
-     where it's sizing along the width axis and height comes from the JS
-     fit. Stacked into a column, flex:1 1 0 would size along the height
-     axis instead — with basis 0 and no fixed-height container to grow
-     into, each half would collapse to 0 and overflow:hidden would clip
-     its image entirely. flex:0 0 auto lets height come from content (the
-     image) instead. */
+  /* flex:1 1 0 only works out to a square box in the row layout above,
+     where it's sizing along the width axis and height comes from the
+     aspect-ratio. Stacked into a column, flex:1 1 0 would size along the
+     height axis instead — with basis 0 and no fixed-height container to
+     grow into, each half would collapse to 0 and overflow:hidden would
+     clip its image entirely. flex:0 0 auto lets height come from content
+     (the image) instead. */
   .duo-half{ flex: 0 0 auto; }
 }
 
@@ -255,21 +268,18 @@ section{ padding: 80px 0; }
 @media (max-width: 860px){ .duo-half-divider{ margin: 0 20px; } }
 @media (max-width: 480px){ .duo-half-divider{ width: auto; height: 1px; margin: 16px 0; } }
 
-/* aspect-ratio:1/1 is only the no-JS fallback — duo-height-fit.js sets an
-   inline height on .duo-card-image matching the hero image's own rendered
-   height (their widths differ — half vs. full — so a shared aspect-ratio
-   alone can't produce a shared height), which overrides this once it runs. */
-/* width:100% is load-bearing, not decorative — once duo-height-fit.js
-   sets an explicit inline height, aspect-ratio only stays inert if width
-   is ALSO already definite. Without it, a block box with auto width and
-   an explicit height re-derives width from aspect-ratio (per the CSS
-   sizing spec's ratio transfer), squashing it back down to a square
-   regardless of the JS-set height. */
+/* Perfect squares — each image cell is exactly as tall as its own half is
+   wide (the old duo-height-fit.js hero-height match was dropped for this). */
 /* Two classes to outrank the shared .card-image-frame{margin-bottom:14px}
    rule (same specificity, declared later in the file), which would
    otherwise leave a 14px gap under an image that's supposed to fill the
    half exactly. */
 .duo-half .duo-card-image{ position: relative; overflow: hidden; width: 100%; aspect-ratio: 1/1; margin-bottom: 0; }
+/* The postscript row (three cells across instead of two) is 1:2 portrait
+   rather than square — three classes so it outranks the square rule above
+   regardless of source order. Everything else about the row (dividers,
+   panels, buttons, padding) is shared with the essay rows. */
+.card--trio .duo-half .duo-card-image{ aspect-ratio: 1/2; }
 .card--duo .card-image-link{ display: block; margin-bottom: 0; height: 100%; }
 .duo-card-image .card-image--blank{ background: var(--surface); }
 
@@ -302,11 +312,53 @@ section{ padding: 80px 0; }
    the file, which would win the position property and leave this button
    sitting in normal flow instead of pinned to the corner. */
 .duo-panel .duo-readon-btn{ position: absolute; right: 24px; bottom: 24px; }
-/* Thin rule between the tagline and the pull-quote below it — the
-   tagline's own bottom margin is zeroed so the gap above and below the
-   divider reads as one equal measure instead of 10px stacked on 14px. */
-.duo-panel-top .preview-tagline{ margin-bottom: 0; }
+/* Thin rule between the dek above and the "From the Essay" tagline +
+   pull-quote below it (the tagline sits under the divider, opening the
+   quote block the way the kicker opens the title block). */
 .duo-quote-divider{ height: 1px; background: var(--line); margin: 14px 0; }
+/* ---------- ARCHIVE MOSAIC (card--archive) ----------
+   Four cells closing into one block: a 1:2 tall card on the left, and the
+   right side a 2:1 landscape over two 1:1 squares. The geometry closes
+   exactly at every width because of the ratios: with gutter g (24px) each
+   side of a 1px divider, D = 2g+1, left width X = (W - D/2)/3 makes
+   right width Wr = W - X - D, and then
+   left height 2X = Wr/2 + D + (Wr - D)/2 — the landscape plus the
+   divider plus the squares. */
+.card--archive .archive-tall{ flex: 0 0 calc((100% - 24.5px) / 3); }
+.card--archive .archive-tall .duo-card-image{ aspect-ratio: 1/2; }
+.archive-right{ flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.card--archive .archive-wide .duo-card-image{ aspect-ratio: 2/1; }
+/* Horizontal counterpart of .duo-half-divider, same gutter rhythm. */
+.card--archive .duo-divider--h{ width: auto; height: 1px; margin: 24px 0; }
+.archive-pair{ display: flex; flex-direction: row; }
+@media (max-width: 860px){
+  .card--archive .archive-tall{ flex-basis: calc((100% - 20.5px) / 3); }
+  .card--archive .duo-divider--h{ margin: 20px 0; }
+}
+@media (max-width: 480px){
+  /* The row stacks into a column (see .card.card--duo above) — the tall
+     cell's width-third basis would become a height-third there, so it
+     sizes from content like the other stacked halves. */
+  .card--archive .archive-tall{ flex: 0 0 auto; }
+  .card--archive .duo-divider--h{ margin: 16px 0; }
+  .archive-pair{ flex-direction: column; }
+}
+/* The tall card and the two squares sit at roughly the trio's cell width,
+   so they share its title size; the wide landscape keeps the full duo
+   size from the shared rule above. */
+.card--archive .archive-tall .card-title,
+.card--archive .archive-pair .card-title{ font-size: clamp(1.4rem, 2.6vw, 2.25rem); }
+
+/* A clamped opening paragraph can't keep its floated drop cap (floats
+   don't wrap inside the -webkit-box line-clamp display) — duo-panel-fit.js
+   adds this class when it clamps, turning the cap back into a plain first
+   letter so the paragraph reads normally instead of stacking a giant
+   letter above itself. */
+.duo-panel .card-preview--clamped .card-preview-dropcap{
+  float: none;
+  font-family: inherit; font-weight: inherit; font-size: inherit;
+  line-height: inherit; padding: 0;
+}
 /* Experimental hover-reveal layout: the cover image spans the card's full
    width at a fixed widescreen ratio (in place of the old three-column
    grid, where the two text columns ate a fixed 235px off each side). The
@@ -321,12 +373,14 @@ section{ padding: 80px 0; }
   position: relative;
   display: block;
 }
-/* 2.17 (nudged up from 21/10 = 2.1) trims roughly 20px off the rendered
-   height at typical wrap widths — aspect-ratio can't express a flat px
-   offset directly, so this is tuned to that ballpark rather than exact
-   at every viewport. */
-.feature-image-cell{ position: relative; overflow: hidden; aspect-ratio: 2.17; }
-.card--feature .card-image-frame{ margin-bottom: 0; height: 100%; }
+/* Height is the old 2.17 widescreen ratio plus a flat 200px. aspect-ratio
+   can't express "ratio + offset", but a percentage padding-bottom resolves
+   against the box's own width, so calc(100%/2.17 + 200px) gives exactly
+   width/2.17 + 200px at every viewport. The cell's content height is 0
+   with this trick, so the frame is pulled out of flow and pinned over the
+   whole padded box (inset:0) instead of relying on height:100%. */
+.feature-image-cell{ position: relative; overflow: hidden; padding-bottom: calc(100% / 2.17 + 200px); }
+.card--feature .card-image-frame{ position: absolute; inset: 0; margin-bottom: 0; }
 .card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; }
 .card--feature .card-text{
   min-width: 0; text-align: left;
@@ -373,7 +427,7 @@ section{ padding: 80px 0; }
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
   padding: 8px 14px;
-  font-family: var(--mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+  font-family: var(--mono); font-weight: 575; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
   text-decoration: none; line-height: 1;
   transition: box-shadow .25s ease;
 }
@@ -419,7 +473,7 @@ section{ padding: 80px 0; }
    for the duo cards, the per-post kicker overrides in content-overrides.js). */
 .card--feature .hero-kicker,
 .card--duo .hero-kicker{
-  font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
+  font-family: var(--mono); font-size: 0.75rem; font-weight: 575;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
   transition: color .15s ease;
@@ -443,6 +497,30 @@ section{ padding: 80px 0; }
   font-size: clamp(2rem, 4vw, 3rem); margin: 0; text-align: left; line-height: 1.1;
   overflow-wrap: normal;
 }
+/* Trio/quad cells are barely a third/quarter of the wrap wide — at the
+   hero/duo title size a word like "Commodification" overflows the column
+   (overflow-wrap: normal above means long words spill instead of
+   breaking), so the narrower the cell, the smaller its titles. */
+.card--trio .duo-panel .card-title{ font-size: clamp(1.4rem, 2.6vw, 2.25rem); }
+/* Quad titles also clamp to two lines (with the line-clamp ellipsis) — a
+   long contra title ("You Seem Pretty Tame for a Girl in Revolt") would
+   otherwise spend the whole square on itself and the fitter would cut
+   everything after it, meta included. */
+.card--quad .duo-panel .card-title{
+  font-size: clamp(1.15rem, 1.7vw, 1.35rem);
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+  line-clamp: 2; -webkit-line-clamp: 2;
+}
+/* Quad panels show kicker/title/meta plus the dek in a smaller size — the
+   review quote block (divider, "From the Review", preview text) is hidden
+   outright; these squares have no room to excerpt anything meaningfully. */
+/* Tighter dek margin than the shared 16px — combined with the smaller
+   title above, it buys the worst case (two-line title + two-line meta)
+   enough room for at least one dek line in every square. */
+.card--quad .duo-panel .card-dek{ font-size: 0.8rem; margin-top: 8px; }
+.card--quad .duo-panel .duo-quote-divider,
+.card--quad .duo-panel .preview-tagline,
+.card--quad .duo-panel .card-preview-block{ display: none; }
 .card--feature .card-meta,
 .card--duo .card-meta{ margin-top: 10px; }
 /* Subheading matches the subheading size used in the other card grids. */
@@ -518,7 +596,7 @@ section{ padding: 80px 0; }
    Duo cards reuse it verbatim for their fixed "From the Essay" tag. */
 .card--feature .preview-tagline,
 .card--duo .preview-tagline{
-  font-family: var(--mono); font-weight: 700; font-size: 0.75rem;
+  font-family: var(--mono); font-weight: 575; font-size: 0.75rem;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
   transition: color .15s ease;
@@ -541,7 +619,11 @@ section{ padding: 80px 0; }
      title/dek, image, then paragraph in normal reading order, all
      statically visible, same as the rest of the site's card layouts. */
   .card.card--feature{ display:flex; flex-direction: column; align-items: stretch; }
-  .feature-image-cell{ margin-bottom: 0; aspect-ratio: 3.5/3; }
+  /* padding-bottom:0 undoes the desktop padding-box height trick — here
+     the cell sizes from its aspect-ratio again, with the frame back in
+     normal flow filling it. */
+  .feature-image-cell{ margin-bottom: 0; padding-bottom: 0; aspect-ratio: 3.5/3; }
+  .card--feature .card-image-frame{ position: relative; inset: auto; height: 100%; }
   .card--feature .card-text--left,
   .card--feature .card-text--right{
     position: static;
@@ -618,7 +700,8 @@ section{ padding: 80px 0; }
 .card-dek{ color: var(--white); font-size: 0.92rem; margin: 0 0 10px; overflow-wrap: break-word; }
 
 .card-meta{
-  font-family: var(--mono); font-weight: 700; font-size: 0.684rem; letter-spacing: 0.03em; text-transform: uppercase;
+  /* Same size as the kickers (.hero-kicker / .preview-tagline). */
+  font-family: var(--mono); font-weight: 575; font-size: 0.75rem; letter-spacing: 0.03em; text-transform: uppercase;
   color: var(--muted); margin: 0; min-width: 0;
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
 }
@@ -684,7 +767,7 @@ section{ padding: 80px 0; }
   display: flex; flex-direction: column;
   background: var(--paper);
   border: 1px solid var(--line);
-  padding: 22px;
+  padding: 24px;
   overflow: hidden;
   transition: opacity .3s ease;
 }
@@ -751,7 +834,7 @@ section{ padding: 80px 0; }
   display:flex; flex-direction:column; align-items:center; gap: 10px; width: 130px; text-align:center;
   text-decoration: none;
 }
-.editor-name{ font-family: var(--mono); font-size: 0.808rem; letter-spacing: 0.02em; color: var(--white); }
+.editor-name{ font-family: var(--mono); font-weight: 575; font-size: 0.808rem; letter-spacing: 0.02em; color: var(--white); }
 .editor-photo{
   width: 84px; height: 84px; border-radius: 50%;
   border: 1px solid var(--line);
@@ -760,7 +843,7 @@ section{ padding: 80px 0; }
 }
 .editor-photo--placeholder{ background: var(--surface-2); }
 .editor-role{
-  font-family: var(--mono); font-size: 0.665rem; color: var(--muted);
+  font-family: var(--mono); font-weight: 575; font-size: 0.665rem; color: var(--muted);
   text-transform: uppercase; letter-spacing: 0.04em;
 }
 
@@ -776,17 +859,20 @@ section{ padding: 80px 0; }
 .prose strong{ color: var(--white); }
 
 /* ---------- FOOTER ---------- */
-footer{ padding: 48px 0; text-align:center; }
+footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
 /* inline-block (not block) so the hoverable area is just the bird icon
    itself, not the full-width line it sits on. */
 .foot-bird-link{ display:inline-block; }
-.foot-bird{ width: 26px; margin: 0 auto 12px; opacity: 1; transition: filter .2s ease; }
-.foot-bird-link:hover .foot-bird{ filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white)); }
-.foot-tag{ font-family: var(--display); font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0 0 14px; }
-.foot-links{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap: 18px; margin:0 0 12px; padding:0; font-family: var(--mono); font-size: 0.722rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.foot-bird{ width: 26px; margin: 0 auto 8px; opacity: 1; }
+.foot-tag{ font-family: var(--display); font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0 0 10px; }
+.foot-links{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap: 14px; margin:0 0 8px; padding:0; font-family: var(--mono); font-weight: 575; font-size: 0.722rem; text-transform: uppercase; letter-spacing: 0.03em; }
 .foot-links a{ text-decoration:none; color: var(--muted); transition: color .15s ease; }
 .foot-links a:hover{ color: var(--white); }
-.foot-fine{ font-family: var(--mono); font-weight: 700; font-size: 0.665rem; color: var(--muted); letter-spacing: 0.02em; margin:0; }
+.foot-fine{ font-family: var(--mono); font-weight: 575; font-size: 0.665rem; color: var(--muted); letter-spacing: 0.02em; margin:0; }
+/* Each segment of the bottom line (©, est., email) lights up on its own
+   hover, same treatment as the link row above it. */
+.foot-fine-item{ transition: color .15s ease; }
+.foot-fine-item:hover{ color: var(--white); }
 
 /* ---------- IMAGE PREVIEW CARD ---------- */
 #preview-card{
@@ -825,7 +911,7 @@ footer{ padding: 48px 0; text-align:center; }
   border: 1px solid var(--white);
   text-decoration: none;
   font-family: var(--mono);
-  font-weight: 700;
+  font-weight: 575;
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -839,8 +925,10 @@ footer{ padding: 48px 0; text-align:center; }
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 /* The arrow in every "Read on →" link (site-wide) renders in the display
-   face rather than inheriting the mono/courier font around it. */
-.cta-arrow{ font-family: var(--display); }
+   face rather than inheriting the mono/courier font around it. The
+   margin-left is the visible gap after "Read on" — the link is
+   inline-flex, which discards the literal space in the markup. */
+.cta-arrow{ font-family: var(--display); margin-left: 0.4em; }
 /* Frame wrapper — pseudo lives here so overflow:hidden on the link doesn't clip it */
 .card-image-frame {
   display: block;
@@ -887,7 +975,7 @@ footer{ padding: 48px 0; text-align:center; }
 }
 .overlay-author{
   font-family: var(--mono);
-  font-weight: 700;
+  font-weight: 575;
   font-size: 0.66rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -902,9 +990,6 @@ footer{ padding: 48px 0; text-align:center; }
 @media (hover: none) {
   .likes:hover .likes-bird{
     opacity: 0.7;
-    filter: none;
-  }
-  .foot-bird-link:hover .foot-bird{
     filter: none;
   }
   .card.card--feature:hover .card-image-link{
@@ -970,7 +1055,7 @@ footer{ padding: 48px 0; text-align:center; }
   font-family: var(--display); font-weight: 600; font-size: 1.5rem; margin: 10px 0 4px; color: var(--white);
 }
 .ledger-price{
-  font-family: var(--mono); color: var(--white); font-size: 0.95rem; margin-bottom: 18px; display:block;
+  font-family: var(--mono); font-weight: 575; color: var(--white); font-size: 0.95rem; margin-bottom: 18px; display:block;
 }
 .ledger-card p{ color: var(--white); margin: 0 0 26px; }
 .ledger-card p .highlight{ color: var(--white); font-style: italic; }
@@ -992,7 +1077,7 @@ footer{ padding: 48px 0; text-align:center; }
   display:flex; flex-direction:column;
 }
 .gift-card h3{
-  font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
+  font-family: var(--mono); font-weight: 575; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase;
   margin: 0 0 14px; color: var(--white);
 }
 .gift-card p{ color: var(--white); margin: 0 0 20px; }
@@ -1030,7 +1115,7 @@ footer{ padding: 48px 0; text-align:center; }
 .signer-sig{ max-width: 118px; max-height: 44px; width:auto; height:auto; opacity: 0.92; filter: brightness(1.05); }
 .signer-sig--elan{ max-width: 170px; max-height: 30px; }
 .signer-sig--rufus{ max-width: 112px; max-height: 50px; }
-.signer-name{ font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.02em; color: var(--white); }
+.signer-name{ font-family: var(--mono); font-weight: 575; font-size: 0.85rem; letter-spacing: 0.02em; color: var(--white); }
 .signer-photo{
   width: 84px; height: 84px; border-radius: 50%;
   border: 1px solid var(--line);

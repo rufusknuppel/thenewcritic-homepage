@@ -138,9 +138,16 @@
   var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
   var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
 
-  // Subscribe buttons only — glow on hover
-  document.querySelectorAll('a.btn[href*="/subscribe"]').forEach(function(btn) {
-    btn.style.position = 'relative';
+  // Every button on the page — .btn (Subscribe and the Give page's CTAs),
+  // the black pill buttons (The Latest / Essays), and the "Read on" links
+  // (hero, duo panels, hover popup) — glows on hover. Note the popup's own
+  // "Read on" is re-created per show() in preview-card.js, after this ran,
+  // so only buttons present at load are wired up.
+  document.querySelectorAll('a.btn, .hero-latest-btn, .preview-card-link').forEach(function(btn) {
+    // Corner-pinned buttons (.duo-essays-btn/.duo-readon-btn) are already
+    // position:absolute — inline 'relative' would yank them out of their
+    // corners, and absolute anchors the canvas just as well.
+    if (getComputedStyle(btn).position === 'static') btn.style.position = 'relative';
     btn.style.overflow = 'visible';
     var a = lazyAttach(btn, btnPathFn, SPD);
     var leaveTimer = null;

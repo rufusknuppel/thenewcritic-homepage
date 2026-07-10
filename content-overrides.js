@@ -10,7 +10,8 @@
 //
 //   kicker:  the small courier header above the title (e.g. 'To Phone or
 //            Not'). Rendered while the post is the hero card, or one of
-//            the two homepage duo cards below it.
+//            the homepage row cards below it (essay squares, postscript
+//            trio, contra quad).
 //   title:   the card's headline.
 //   dek:     the subheading under the title (Substack calls it the subtitle).
 //   author:  the byline in the meta line, shown uppercase.
@@ -37,6 +38,19 @@ module.exports = {
   },
   'the-blackpill': {
     kicker: 'Internet Terrorists',
+  },
+  // Contra quad kickers — the section of culture each review covers.
+  'you-seem-pretty-tame-for-a-girl-in': {
+    kicker: 'Music',
+  },
+  'terms-of-service': {
+    kicker: 'Movies',
+  },
+  'snug-as-a-gun': {
+    kicker: 'Books',
+  },
+  'ugly-fleshy-flap': {
+    kicker: 'Music',
   },
   'the-commodification-of-freya-india': {
     kicker: 'The Girl Behind Girls',
