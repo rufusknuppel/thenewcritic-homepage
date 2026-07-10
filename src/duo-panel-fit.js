@@ -41,6 +41,36 @@
     return true;
   }
 
+  // Contra squares (.card--quad) show the kicker and the meta line (date ·
+  // author · likes) right under the title — a long author name or a wide
+  // date can push the meta onto a second line, which the fitter below would
+  // then read as extra height eating into the dek's budget. Shrinking both
+  // the kicker and the meta together (they're already the same font-size —
+  // see .card-meta's comment in style.css) keeps the meta on one line and
+  // its kicker visually matched, rather than just the meta on its own.
+  function fitQuadMeta(panel) {
+    if (!panel.closest('.card--quad')) return;
+    var meta = panel.querySelector('.card-meta');
+    var kicker = panel.querySelector('.hero-kicker');
+    if (!meta) return;
+    meta.style.fontSize = '';
+    if (kicker) kicker.style.fontSize = '';
+
+    function wraps() {
+      var kids = [].filter.call(meta.children, function(k){ return getComputedStyle(k).display !== 'none'; });
+      if (kids.length < 2) return false;
+      var top = kids[0].getBoundingClientRect().top;
+      return kids.some(function(k){ return Math.abs(k.getBoundingClientRect().top - top) > 1; });
+    }
+
+    var size = 12; // px, matches .card-meta/.hero-kicker's shared 0.75rem
+    while (wraps() && size > 9) {
+      size -= 0.5;
+      meta.style.fontSize = size + 'px';
+      if (kicker) kicker.style.fontSize = size + 'px';
+    }
+  }
+
   function fit(panel) {
     var topBox = panel.querySelector('.duo-panel-top');
     var btn = panel.querySelector('.duo-essays-btn') || panel.querySelector('.duo-readon-btn');
@@ -50,6 +80,10 @@
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     var paras = topBox.querySelectorAll('.card-preview');
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
+
+    // Runs regardless of layout (static or absolute) — an overflowing meta
+    // line is a font-size problem, not a space-budget one.
+    fitQuadMeta(panel);
 
     // In the static fallback layout (touch devices / narrow viewports) the
     // panel flows under the image and the buttons sit in flow too — nothing

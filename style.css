@@ -123,7 +123,7 @@ a{ color: inherit; }
 .wordmark img{ width: 100%; height: auto; display: block; }
 .nav-links{
   list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 14px;
+  display: flex; flex-direction: column; gap: 8px;
   font-family: var(--mono); font-weight: 575; font-size: 0.8rem;
   letter-spacing: 0.04em; text-transform: uppercase;
 }
@@ -220,9 +220,20 @@ section{ padding: 80px 0; }
    margin-bottom matches padding-bottom exactly (same 24/20/16 values) so
    the gap above the essay cards, up to the divider, is that same measure
    too — not the old, unrelated 28px. */
-.hero-row{ padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
-@media (max-width: 860px){ .hero-row{ padding-bottom: 20px; margin-bottom: 20px; } }
-@media (max-width: 480px){ .hero-row{ padding-bottom: 16px; margin-bottom: 16px; } }
+.hero-row{ padding-bottom: 24px; }
+@media (max-width: 860px){ .hero-row{ padding-bottom: 20px; } }
+@media (max-width: 480px){ .hero-row{ padding-bottom: 16px; } }
+
+/* Full-bleed section dividers — siblings of .wrap (inside <main>, which has
+   no max-width of its own, only the fixed-sidebar margin-left), so the line
+   stretches the whole content column instead of stopping at .wrap's own
+   max-width/padding the way the hero's and each duo row's own border used
+   to. Sits between hero/Essays/Postscript/Contra/Archive; margin-bottom
+   supplies the same gap below the line each of those used to get from its
+   own margin-bottom. */
+.row-divider{ border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+@media (max-width: 860px){ .row-divider{ margin-bottom: 20px; } }
+@media (max-width: 480px){ .row-divider{ margin-bottom: 16px; } }
 
 /* ---------- DUO CARD (two essays, one card sized like the hero) ----------
    One .card--duo article — not two separate cards — holding both essay
@@ -311,7 +322,11 @@ section{ padding: 80px 0; }
    position: relative } — same specificity otherwise, declared later in
    the file, which would win the position property and leave this button
    sitting in normal flow instead of pinned to the corner. */
-.duo-panel .duo-readon-btn{ position: absolute; right: 24px; bottom: 24px; }
+/* padding-top/bottom pinned to match .duo-essays-btn's (.hero-latest-btn)
+   8px exactly — .preview-card-link's own base padding is 7px, one pixel
+   short each side, which otherwise left the two corner buttons 2px
+   different in height despite sharing font-size/line-height/border. */
+.duo-panel .duo-readon-btn{ position: absolute; right: 24px; bottom: 24px; padding-top: 8px; padding-bottom: 8px; }
 /* Thin rule between the dek above and the "From the Essay" tagline +
    pull-quote below it (the tagline sits under the divider, opening the
    quote block the way the kicker opens the title block). */
@@ -470,9 +485,14 @@ section{ padding: 80px 0; }
   filter: grayscale(1) brightness(0.5);
 }
 /* Small courier kicker above the title (see HERO_KICKER in build.js and,
-   for the duo cards, the per-post kicker overrides in content-overrides.js). */
+   for the duo cards, the per-post kicker overrides in content-overrides.js).
+   inline-block (rather than the <p> default of block) shrinks the element
+   to the text's own width, so :hover only fires over the letters
+   themselves — a block-width kicker would keep firing on hover anywhere
+   in the empty space beside the short label. */
 .card--feature .hero-kicker,
 .card--duo .hero-kicker{
+  display: inline-block;
   font-family: var(--mono); font-size: 0.75rem; font-weight: 575;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
@@ -596,6 +616,7 @@ section{ padding: 80px 0; }
    Duo cards reuse it verbatim for their fixed "From the Essay" tag. */
 .card--feature .preview-tagline,
 .card--duo .preview-tagline{
+  display: inline-block;
   font-family: var(--mono); font-weight: 575; font-size: 0.75rem;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
@@ -716,16 +737,15 @@ section{ padding: 80px 0; }
 }
 
 .likes{ display: inline-flex; align-items: center; gap: 5px; }
+/* Gray at rest, white on hover — a plain opacity fade, no drop-shadow glow. */
 .likes-bird{
   width: 13px; height: auto; opacity: 0.7;
-  filter: brightness(1) drop-shadow(0 0 0 transparent);
-  transition: filter 0s, opacity 0s;
+  transition: opacity 0s;
 }
 .likes-count{ transition: color 0s; }
 .likes:hover .likes-bird{
   opacity: 1;
-  filter: brightness(1.6) drop-shadow(0 0 5px var(--white)) drop-shadow(0 0 9px var(--white));
-  transition: filter .2s ease, opacity .2s ease;
+  transition: opacity .2s ease;
 }
 .likes:hover .likes-count{
   color: var(--white);
@@ -990,7 +1010,6 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
 @media (hover: none) {
   .likes:hover .likes-bird{
     opacity: 0.7;
-    filter: none;
   }
   .card.card--feature:hover .card-image-link{
     box-shadow: none;

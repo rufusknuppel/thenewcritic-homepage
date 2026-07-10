@@ -20,6 +20,10 @@
 //   preview: the paragraph preview — shown on the hero card and in the
 //            hover popups. A string, or an array of strings to fill the
 //            hero card with multiple paragraphs.
+//   focal:   CSS object-position for the cover image crop (e.g. 'center
+//            20%' or 'center top'), for when the default centered crop
+//            cuts off a face — most useful on the tall 1:2 portrait cells
+//            (the postscript row, the archive mosaic's tall card).
 //
 // Template:
 //
@@ -30,6 +34,7 @@
 //     author: '',
 //     date: '',
 //     preview: '',
+//     focal: '',
 //   },
 
 module.exports = {

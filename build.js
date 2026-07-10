@@ -46,10 +46,11 @@ function cardLayoutAt(i) {
   return CARD_LAYOUT_PATTERN[i % CARD_LAYOUT_PATTERN.length];
 }
 
-// Manual first-paragraph overrides for Contra posts. These use a preserved-
-// text Substack block that has no <p> tags, so the auto-extractor finds
-// nothing. Each entry is [titleKeyword, firstParagraph] — the keyword is
-// matched case-insensitively against the post's title.
+// Manual first-paragraph overrides for Contra posts — hand-picked opening
+// text that wins over whatever the auto-extractor pulls (historically it
+// pulled nothing for Contra, whose preserved-text credits block swallowed
+// the opening paragraph; that's fixed in extractParagraphs, but these
+// hand edits still take precedence where present).
 // Keyed by URL slug (the part after /p/) — more stable than title matching.
 const CONTRA_MANUAL_PREVIEWS = new Map([
   [`contra`, `The critic has two roles: to worship excellence and to wage war on its behalf.`],
@@ -85,6 +86,7 @@ function applyContentOverrides(posts) {
     if (o.author) p.author = o.author;
     if (o.date) p.metaDate = o.date;
     if (o.kicker) p.kicker = o.kicker;
+    if (o.focal) p.focal = o.focal;
     if (o.preview) {
       const paras = Array.isArray(o.preview) ? o.preview : [o.preview];
       p.preview = paras[0];
@@ -124,6 +126,7 @@ const SITE_LINKS = [
   { key: 'essays', label: 'Essays', href: '/essays.html' },
   { key: 'postscript', label: 'Postscript', href: '/postscript.html' },
   { key: 'contra', label: 'Contra', href: '/contra.html' },
+  { key: 'archive', label: 'Archive', href: '/archive.html' },
   { key: 'give', label: 'Give', href: '/give.html' },
   { key: 'about', label: 'About', href: '/about.html' },
 ];
@@ -269,6 +272,14 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+// Crops default to a centered object-position, which cuts off faces sitting
+// off-center (common in tall 1:2 portrait crops). A post's `focal` override
+// (see content-overrides.js) sets object-position directly, e.g. 'center 20%'
+// to keep a face nearer the top of the frame.
+function focalStyle(post) {
+  return post.focal ? ` style="object-position: ${escapeHtml(post.focal)}"` : '';
+}
+
 // Wraps the paragraph's first letter in a span so CSS can render it as a
 // two-line drop cap (see .card-preview-dropcap) — a magazine-style flourish
 // on the feature card's opening paragraph. If the paragraph opens with a
@@ -280,7 +291,16 @@ function wrapDropCap(text) {
 }
 
 function stripHtml(html) {
-  return unescapeXml((html || '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+  // Every tag (opening or closing) is replaced with a space so adjacent
+  // block/paragraph boundaries stay word-separated — but that also inserts
+  // a stray space wherever an inline tag like <em>/<strong> hugs the word
+  // before it or a punctuation mark after it (e.g. "the <em>Free Press</em>."
+  // -> "the  Free Press ." before cleanup), so a trailing space-before-
+  // punctuation is stripped once the run of tags collapses to single spaces.
+  return unescapeXml((html || '').replace(/<[^>]*>/g, ' '))
+    .replace(/\s+/g, ' ')
+    .replace(/ +([.,!?;:])/g, '$1')
+    .trim();
 }
 
 // Unescape numeric HTML entities that survive after stripHtml (e.g. &#8220; &#x2014;).
@@ -293,20 +313,45 @@ function unescapeNumericEntities(text) {
     .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
 }
 
-// Patterns that identify non-essay paragraphs: author bios, editorial notices,
-// contest announcements, etc. These appear before the actual essay text.
+// Patterns that identify non-essay paragraphs: author bios, Postscript
+// framing boilerplate, interview-transcript lines. Every pattern is
+// anchored to the paragraph's opening shape — an unanchored keyword
+// (the old /\d+-year-old/, /studied|attended/, /writes (at|for)/) also
+// matched real prose that merely mentions an age, a school, or another
+// writer mid-sentence, silently skipping the piece's actual opening
+// paragraph so a later one showed up on cards as if it were the first.
 const BIO_PATTERNS = [
-  /\b\d+-year-old\b/i,
-  /\bis (a|an) (writer|editor|journalist|poet|critic|essayist|contributor)\b/i,
-  /\b(studied|attended) (at )?(the )?\w/i,
-  /\bwrites (at|for)\b/i,
-  /\bhas written for\b/i,
+  // The bio's copula, in the first sentence: "Clare Ashcraft is a proud,
+  // 22-year-old Ohioan…" / "Theodore Gary is a 22-year-old graduate…".
+  // [^.!?] bounds keep both sides inside that sentence, so prose whose
+  // LATER clauses mention someone's age isn't touched.
+  /^[^.!?]{0,60}\bis an? [^.!?]{0,24}\d+-year-old\b/i,
+  // Same copula shape for age-less bios: "Josie Barboriak is a writer…".
+  /^\S+(?: \S+){0,5} is an? (writer|editor|journalist|poet|critic|essayist|contributor)\b/i,
+  // Postscript editorial framing before the interview proper.
+  /^What follows is a conversation\b/i,
+  /^In the following conversation\b/i,
+  // "Our conversation — on the unwritten rules of…, is below." /
+  // "Our conversation has been edited for length and clarity."
+  /^Our conversation\b/i,
+  // Interview-transcript lines: an all-caps speaker name opening the
+  // paragraph ("ELAN How did you find out…" / "TESSA Your career is…").
+  /^[A-Z]{3,} [A-Z“”"‘’']/,
   // Substack "preserved spacing" block placeholder text
   /\bText within this block will maintain/i,
 ];
 
 function looksLikeProse(text) {
-  if (text.length < 80) return false;
+  // A sentence ends in terminal punctuation (with closing quotes/brackets
+  // allowed after it). This is what rejects labels ("CONTRA"), signature
+  // lines ("Rufus Knuppel, founding editor"), bare links ("Read more"),
+  // and quote attributions ("Jonathan Haidt:") — by shape, not length.
+  // There used to be a minimum-length floor here doing that job, but it
+  // was a proxy with false positives: it nearly rejected the 79-char
+  // Contra manifesto opener, and it silently dropped short real
+  // paragraphs ("Fellow mass cultural critics have been quick to anoint
+  // her.") out of multi-paragraph previews.
+  if (!/[.!?…]['"”’)\]]*$/.test(text)) return false;
   // Editorial notices often start with * or contain embedded * announcement markers.
   if (text.startsWith('*') || /\s\*[A-Z]/.test(text)) return false;
   // Paragraphs opening with a run of all-caps words are mastheads or section headers.
@@ -320,31 +365,60 @@ function looksLikeProse(text) {
 // asides, bios, mastheads, etc.
 function extractParagraphs(html, max) {
   // Remove non-prose block elements so their inner <p> tags don't count.
+  // <pre> is in the list for Contra posts' preserved-text credits block
+  // ("REVIEWED / Obsession / directed by…") — and it must not reach the
+  // <p> regex below at all: <p[^>]*> would match "<pre class=…>" too, and
+  // since </pre> is not </p>, the lazy body would swallow everything up to
+  // the NEXT real </p> — the review's opening paragraph included — leaving
+  // one merged blob that starts "REVIEWED…" and fails the all-caps check.
+  // That's what made every Contra post extract as nothing.
   const cleaned = (html || '').replace(
-    /<(figure|blockquote|h[1-6]|ul|ol|li|aside)[^>]*>[\s\S]*?<\/\1>/gi,
+    /<(figure|blockquote|h[1-6]|ul|ol|li|aside|pre)[^>]*>[\s\S]*?<\/\1>/gi,
     ' '
   );
-  const re = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+  // (?=[\s>]) so only a real <p> tag matches — not <pre>, <picture>, <path>.
+  // The tag's own attributes are captured too: Substack marks button
+  // paragraphs ("Subscribe", "Register now!") with class="button-wrapper",
+  // and "Register now!" ends in real sentence punctuation, so markup is
+  // the only reliable tell for those.
+  const re = /<p(?=[\s>])([^>]*)>([\s\S]*?)<\/p>/gi;
   let m;
-  // Substack renders editorial asides (party invites, paid-subscriber
-  // appeals, "Register now" CTAs, etc.) as a run of separate <p> tags
-  // bracketed by a leading "*" on the first and a trailing "*" on the
-  // last. A single startsWith('*') check only catches the first paragraph
-  // of a multi-paragraph aside, so track open/close state across the
-  // whole run and skip every paragraph inside it.
-  let insideAside = false;
+  // Substack posts bracket runs of paragraphs in *…* (leading "*" on the
+  // first, trailing "*" on the last) for two very different things:
+  // housekeeping asides (party invites, paid-subscriber appeals, contest
+  // reminders) — junk — and, on Postscript posts, the piece's real
+  // essayistic intro, which is simply italicized. Treating every starred
+  // run as junk skipped whole intros and made cards open on a transcript
+  // line ("ELAN How did you find out…") several paragraphs in. So a run is
+  // skipped only when its opening paragraph reads like housekeeping
+  // (ASIDE_JUNK); otherwise the stars are treated as italics and the run's
+  // paragraphs flow through the normal prose filter with the markers
+  // stripped. A run that opens AND closes in one paragraph is a
+  // self-contained editorial note ("*The quoted interviews in this essay
+  // are paraphrased…*") — always skipped.
+  // Keyed to the housekeeping phrases the openers actually use — not bare
+  // /subscri/ or /register/, which also live in real prose ("she has over
+  // 54,000 subscribers on Substack", a singer's vocal register).
+  const ASIDE_JUNK = /paid subscri|\bcontest\b|celebrate our readers|you can access/i;
+  let insideJunkAside = false;
   const out = [];
   while ((m = re.exec(cleaned)) !== null) {
-    const text = unescapeNumericEntities(stripHtml(m[1]).trim());
+    if (/button-wrapper/.test(m[1])) continue;
+    let text = unescapeNumericEntities(stripHtml(m[2]).trim());
     if (!text) continue;
-    if (insideAside) {
-      if (text.endsWith('*')) insideAside = false;
+    if (insideJunkAside) {
+      if (text.endsWith('*')) insideJunkAside = false;
       continue;
     }
     if (text.startsWith('*')) {
-      if (!text.endsWith('*')) insideAside = true;
-      continue;
+      if (text.endsWith('*') && text.length > 1) continue;
+      if (ASIDE_JUNK.test(text)) {
+        insideJunkAside = true;
+        continue;
+      }
+      // Italicized intro run — fall through to the prose filter.
     }
+    text = text.replace(/^\*+/, '').replace(/\*+$/, '').trim();
     if (looksLikeProse(text)) {
       out.push(text);
       if (out.length >= max) break;
@@ -410,7 +484,11 @@ function parseItems(xml) {
       dateDisplay = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    return { title, link, pubDate, dateObj: d, dateDisplay, excerpt, preview, image, creator };
+    // bodyHtml is the raw post body from the feed (content:encoded, or the
+    // description when that's absent) — kept so main() can re-extract
+    // paragraphs from the feed as a fallback when the post-page fetch
+    // yields none (see the hero preview fallback there).
+    return { title, link, pubDate, dateObj: d, dateDisplay, excerpt, preview, image, creator, bodyHtml: excerptSource };
   });
 }
 
@@ -462,7 +540,7 @@ function renderNav(currentKey = 'home') {
   function navLink(l) {
     return `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
   }
-  const linkKeys = ['essays', 'postscript', 'contra', 'give', 'about'];
+  const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'give', 'about'];
   const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ');
 
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
@@ -524,7 +602,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     <article class="${cls}">
       <div class="card-box">
         <span class="card-image-frame card-box-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
+          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="card-text card-box-text">
           <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
@@ -542,7 +620,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
   const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
   const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
-        ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
+        ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
         ${overlayHtml}
       </a></span>`;
 
@@ -639,7 +717,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
     : '';
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt="" loading="lazy">` : '<span class="card-image card-image--blank"></span>'}
+          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} loading="lazy">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -713,12 +791,21 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
   // three most recent postscripts as 1:2 portrait cells (card--trio), one
   // row of the four most recent contras as squares (card--quad), and the
   // hand-picked archive mosaic (see renderArchiveMosaic / ARCHIVE_ROW_SLUGS).
-  const duoRows = [];
+  // Each section is its own block, wrapped in its own .wrap — a
+  // .row-divider sits between blocks *outside* any .wrap, so that line
+  // stretches the full width of the content column (edge to edge of the
+  // viewport, past the .wrap's own max-width/padding) rather than stopping
+  // at the wrap's centered content width the way the essay-row-to-essay-row
+  // divider inside a block still does (see .card.card--duo:not(:last-child)
+  // in style.css, unaffected — multiple essay rows share one block/.wrap).
+  const essayRows = [];
   for (let i = 0; i < essays.length; i += 2) {
-    duoRows.push(renderDuoCard(essays.slice(i, i + 2)));
+    essayRows.push(renderDuoCard(essays.slice(i, i + 2)));
   }
+  const blocks = [];
+  if (essayRows.length) blocks.push(essayRows.join('\n'));
   if (postscripts.length) {
-    duoRows.push(renderDuoCard(postscripts, {
+    blocks.push(renderDuoCard(postscripts, {
       tag: 'From the Interview',
       btnLabel: 'Postscript',
       btnHref: '/postscript.html',
@@ -726,7 +813,7 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
     }));
   }
   if (contras.length) {
-    duoRows.push(renderDuoCard(contras, {
+    blocks.push(renderDuoCard(contras, {
       tag: 'From the Review',
       btnLabel: 'Contra',
       btnHref: '/contra.html',
@@ -734,16 +821,18 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
     }));
   }
   if (archives.length >= 4) {
-    duoRows.push(renderArchiveMosaic(archives, {
+    blocks.push(renderArchiveMosaic(archives, {
       tag: 'From the Essay',
       btnLabel: 'From the Archive',
       btnHref: '/archive.html',
     }));
   }
-  const duoHtml = duoRows.length ? `
+  const duoHtml = blocks
+    .map((block, i) => `
   <div class="wrap">
-    ${duoRows.join('\n')}
-  </div>` : '';
+    ${block}
+  </div>${i < blocks.length - 1 ? '\n  <div class="row-divider"></div>' : ''}`)
+    .join('\n');
 
   return `<!doctype html>
 <html lang="en">
@@ -776,6 +865,7 @@ ${renderHeader()}
     </div>
   </section>
 
+  ${blocks.length ? '<div class="row-divider"></div>' : ''}
   ${duoHtml}
 
 </main>
@@ -1039,8 +1129,7 @@ function renderArchivePage(posts) {
       }).join('')}
     </div>
   </div>`;
-  // No currentKey — the archive page isn't in the nav (item 11), so nothing is marked current.
-  return renderPageShell({ currentKey: null, title: 'Archive', bodyHtml });
+  return renderPageShell({ currentKey: 'archive', title: 'Archive', bodyHtml });
 }
 
 // Extracts the three founders' name + headshot photo + signature + Substack
@@ -1206,6 +1295,14 @@ async function main() {
   // Build a preview map from RSS posts (they already have body content).
   const previewByLink = new Map(rssPosts.filter((p) => p.preview).map((p) => [p.link, p.preview]));
 
+  // Raw feed bodies, for re-extracting paragraphs when a post-page fetch
+  // comes back empty (paywalled posts whose free preview is thin, or a
+  // fetch that failed outright) — the feed's content:encoded carries the
+  // same free-preview paragraphs and needs no extra request.
+  const rssBodyByLink = new Map(
+    items.filter((i) => i.link && i.bodyHtml).map((i) => [i.link, i.bodyHtml])
+  );
+
   // The first N posts of each tag list double as their list page's lead
   // cards (essays.html/postscript.html/contra.html) — same array
   // references as essaysAll/postscriptAll/contraAll (slice() copies the
@@ -1235,6 +1332,10 @@ async function main() {
   if (hero?.link) {
     console.log('Fetching hero extended preview (first two paragraphs)');
     hero.previewParagraphs = await fetchExtendedPreview(hero.link, 2);
+    if (!hero.previewParagraphs.length && rssBodyByLink.has(hero.link)) {
+      console.log('Hero post page gave no paragraphs — falling back to the RSS feed body');
+      hero.previewParagraphs = extractParagraphs(rssBodyByLink.get(hero.link), 2);
+    }
   }
 
   // The homepage rows below the hero (hero itself excluded from each):
@@ -1265,17 +1366,24 @@ async function main() {
 
   // The essay/postscript/archive row panels show as much of the piece as
   // fits their box (duo-panel-fit.js clamps at the rendered line), so pull
-  // several full paragraphs for them, same as the hero. Contra posts are
-  // skipped — their preserved-text Substack blocks defeat the extractor
-  // (that's what the hand-written CONTRA_MANUAL_PREVIEWS single paragraphs
-  // are for; a contra post in the mosaic keeps its manual paragraph too,
-  // since the extractor returns nothing for it).
+  // several full paragraphs for them, same as the hero. The contra quad is
+  // left out only because it shows no preview text at all (kicker/title/
+  // meta/dek — see the .card--quad rules in style.css); the extractor
+  // itself handles Contra fine now, and CONTRA_MANUAL_PREVIEWS entries
+  // remain as hand edits that win where present.
   const rowPosts = dedupeByLink([...heroEssays, ...heroPostscripts, ...heroArchive]);
   if (rowPosts.length) {
     console.log(`Fetching extended previews for ${rowPosts.length} row posts`);
     const extended = await Promise.all(rowPosts.map((p) => fetchExtendedPreview(p.link, 3)));
     rowPosts.forEach((p, i) => {
-      if (extended[i] && extended[i].length) p.previewParagraphs = extended[i];
+      if (extended[i] && extended[i].length) {
+        p.previewParagraphs = extended[i];
+      } else if (rssBodyByLink.has(p.link)) {
+        // Same fallback as the hero's — recent posts still in the feed can
+        // recover their free-preview paragraphs from content:encoded.
+        const fromFeed = extractParagraphs(rssBodyByLink.get(p.link), 3);
+        if (fromFeed.length) p.previewParagraphs = fromFeed;
+      }
     });
   }
 
@@ -1326,4 +1434,13 @@ if (require.main === module) {
   });
 }
 
-module.exports = { parseItems, renderHomepage };
+module.exports = {
+  parseItems,
+  renderHomepage,
+  // Extraction pipeline, exported for audit scripts/tests.
+  extractParagraphs,
+  extractPreloads,
+  looksLikeProse,
+  stripHtml,
+  fetchHtml,
+};
