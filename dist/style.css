@@ -80,174 +80,52 @@ a{ color: inherit; }
 }
 .skip-link:focus{ left: 1em; top: 1em; }
 
-.wrap{ max-width: var(--max); margin: 0 auto; padding: 0 74px; }
+.wrap{ max-width: var(--max); margin: 0 auto; padding: 0 24px; }
 .wrap--narrow{ max-width: 660px; }
-@media (max-width: 860px){ .wrap{ padding: 0 42px; } }
-@media (max-width: 480px){ .wrap{ padding: 0 30px; } }
+@media (max-width: 860px){ .wrap{ padding: 0 20px; } }
+@media (max-width: 480px){ .wrap{ padding: 0 16px; } }
 
 /* ---------- NAV ---------- */
-/* Header keeps a constant 151px flow height; the compact state shifts the
-   page content up with a compositor transform on main/footer instead of
-   animating this height (layout reflow lagged behind the GPU-driven nav
-   visuals on fast scrolls). The lower half of the stuck header is empty in
-   compact state, so let clicks pass through except on real nav content. */
+/* Fixed, full-height left sidebar: three stacked clusters (brand / links /
+   bird+subscribe+tagline), the last pinned to the bottom via margin-top:
+   auto. main/footer are pushed right by the same width (see below) so the
+   sidebar never overlaps content. Below 900px there's no room for a
+   sidebar, so it collapses to an ordinary top bar in flow (see the
+   max-width:900px block). */
 .site-header{
-  position: sticky; top: 0; z-index: 50;
-  height: 151px;
-  pointer-events: none;
-}
-.site-nav .wrap{ pointer-events: auto; }
-
-.site-nav{
-  position: relative;
-  z-index: 1;
-  overflow: visible;
-  /* Clip overflowing wordmark to the animated nav box so compositor-driven
-     transforms can't outrun the main-thread background height mid-transition.
-     Only the collapse animates; the reveal snaps open instantly (see the
-     is-compact rule) so text flying back down is never clipped mid-flight. */
-  clip-path: inset(0 0 -97px 0);
-}
-.site-nav::before{
-  content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 96px;
-  background: rgba(0,0,0,0.88); backdrop-filter: blur(6px);
-  z-index: -1;
-}
-.site-nav::after{
-  content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 151px;
+  position: fixed; top: 0; left: 0; z-index: 50;
+  width: 210px; height: 100vh;
   background: var(--paper);
-  z-index: -2;
-  transform-origin: top; will-change: transform;
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-right: 1px solid var(--line);
 }
-/* Bottom border line as its own compositor-animated layer so the bar edge
-   keeps pace with the wordmark transforms during fast scrolls. */
-.nav-edge{
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: var(--line);
-  z-index: -1;
-  transform: translateY(150px); will-change: transform;
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
+.site-nav{
+  display: flex; flex-direction: column;
+  height: 100%;
+  padding: 40px 24px;
 }
-/* Three named columns, always present at every scroll state: "left" and
-   "right" each host two overlapping occupants (the Essays/Postscript/
-   Contra or Give/About links, and the sliding wordmark-name/tagline text)
-   so the two can cross-fade/slide over the same footprint instead of
-   needing viewport-relative math to travel between two different grid
-   cells. "center" holds the bird alone. The row's own height is explicit
-   (rather than auto, sized off whichever occupant is tallest) so
-   align-items:center reliably centers everything on the *true* bar
-   midline in both states, and animates in step with the bar's own height
-   change instead of needing separate translateY hacks. */
-.site-nav .wrap{
-  display:grid; grid-template-columns: 1fr auto 1fr;
-  grid-template-areas: "left center right";
-  align-items:center;
-  height: 151px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  gap: 24px;
-  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
+/* margin-top pulls the brand up flush with the hero cover image's top
+   edge (16px = .site-nav's 40px padding-top minus .featured-strip's 24px
+   padding-top) without touching .site-nav's own padding. */
+.nav-top{ position: relative; margin-top: -16px; margin-bottom: 32px; }
+.nav-brand{
+  display: block; text-decoration: none;
+  font-family: var(--display); font-weight: 600; font-size: 1.3rem;
+  line-height: 1.25; letter-spacing: 0.01em; color: var(--white);
 }
-.site-header.is-compact .site-nav .wrap{ height: 96px; }
-.nav-links--left{ grid-area: left; justify-self: start; }
-.nav-right{ grid-area: right; }
-/* Hidden in the tall state (the wordmark's name/tagline sit in their place
-   instead — see .wordmark-name/.wordmark-tagline below) and revealed once
-   the nav compacts. */
-.nav-links--left,
-.nav-right .nav-links{
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s ease;
+/* Frame's own right edge flush with the content edge (same edge
+   .nav-subscribe's right edge sits on, since .nav-top stretches to the
+   same content width via the column flex's default align-items:stretch). */
+.wordmark{
+  position: absolute; top: 50%; right: 0;
+  transform: translateY(-50%);
 }
-.site-header.is-compact .nav-links--left,
-.site-header.is-compact .nav-right .nav-links{
-  opacity: 1;
-  pointer-events: auto;
-}
-.wordmark{ grid-area: center; display: block; }
-/* Bird sizing/crispness scheme (geometry baseline: bird-geometry.md — the
-   bird stands alone, centered in its own grid column, rather than stacked
-   above the name/tagline, but the tall-state size matches that baseline
-   again: 76.72px = 20 x 3.836). The frame keeps its original 20x22
-   *layout* box (the row's own height centers it via align-items:center)
-   but no longer scales — the img inside is laid out at the full
-   tall-state size and the compact state scales it UP slightly (to
-   21.5px, ~7.5% bigger than a plain 1:1 20px) instead of blowing a 20px
-   layout up 3.836x. Rest state is therefore scale(1): a plain,
-   untransformed img that the browser rasterizes natively at any page
-   zoom / DPR, with the 640x709 source giving ~8x headroom over even 200%
-   zoom on a 2x display. No will-change anywhere here (deliberately): it
-   pins a compositor texture rasterized at layer-creation zoom that never
-   refreshes after browser zoom changes — the original softness bug.
-   Transitions stay transform-only, so the browser still promotes to the
-   compositor just for the animation's duration and re-rasterizes sharp
-   at rest. */
-.bird-frame{
-  display: block; width: 20px; height: 22px;
-  position: relative;
-  transition: filter .2s ease;
-}
-.wordmark img{
-  position: absolute; top: 0; left: 0;
-  width: 76.72px; height: auto; display: block;
-  max-width: none; /* the global img{max-width:100%} reset would clamp this back to the 20px frame */
-  transform-origin: top left;
-  /* Center the 76.72px x 84.98px img on the 20x22 frame:
-     ((76.72 - 20) / 2, (84.98 - 22) / 2). */
-  transform: translate(-28.36px, -31.49px);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-/* Compact: grow to 21.5px wide (~7.5% over the 20px frame — "slightly
-   larger" per spec), centered on the frame so the growth is symmetric:
-   ((20 - 21.5) / 2, (22 - 23.82) / 2). */
-.site-header.is-compact .wordmark img{
-  transform: translate(-0.75px, -0.91px) scale(0.28024);
-}
-.wordmark-name{
-  grid-area: left; justify-self: start;
-  display: block; text-decoration: none; white-space: nowrap;
-  font-family: var(--display); font-weight: 600; font-size: 1.1rem;
-  letter-spacing: 0.01em; color: var(--white);
-  transform: translateX(0);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.wordmark-tagline{
-  display: block; text-decoration: none; white-space: nowrap;
-  font-family: var(--display); font-style: italic; font-weight: 400;
-  font-size: 1.1rem; color: var(--white);
-  transform: translateX(0);
-  transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-/* Compact: slide both in toward the bird at the bar's center, revealing
-   the Essays/Postscript/Contra and Give/About links now exposed at the
-   edges they slid away from. The travel distance is a fixed px amount
-   (tuned at a ~1400px-wide reference viewport, like the aspect-ratio
-   tuning elsewhere in this file) rather than derived from the viewport,
-   since the two occupy 1fr tracks whose width isn't knowable in pure CSS. */
-.site-header.is-compact .wordmark-name{
-  transform: translateX(453px);
-}
-.site-header.is-compact .wordmark-tagline{
-  transform: translateX(-241px);
-}
-/* Below ~900px the header is permanently compact (see the JS WIDE
-   threshold) and the 1fr side tracks are far narrower than the reference
-   viewport above — the fixed slide amounts would overshoot and collide
-   with the real Essays/Postscript/Contra and Give/About links. Simplest
-   safe fallback: drop the sliding name/tagline at that point and let the
-   now-permanently-revealed links speak for themselves either side of the
-   bird, same as the rest of the site's narrow-viewport simplifications. */
-@media (max-width: 900px){
-  .wordmark-name,
-  .wordmark-tagline{ display: none; }
-}
+.bird-frame{ display: block; width: 60.685625px; }
+.wordmark img{ width: 100%; height: auto; display: block; }
 .nav-links{
-  list-style:none; display:flex; gap: 26px; margin:0; padding:0;
-  font-family: var(--mono); font-weight: 700; font-size: 0.741rem; letter-spacing: 0.04em; text-transform: uppercase;
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 22px;
+  font-family: var(--mono); font-weight: 700; font-size: 0.8rem;
+  letter-spacing: 0.04em; text-transform: uppercase;
 }
 .nav-links a{
   text-decoration:none; color: var(--muted);
@@ -255,46 +133,38 @@ a{ color: inherit; }
 }
 .nav-links a:hover{ color: var(--white); }
 .nav-links a[aria-current="page"]{ color: var(--white); }
-@media (max-width: 720px){ .nav-links{ display:none; } }
+.nav-bottom{
+  margin-top: auto;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 16px;
+}
+.nav-subscribe{ width: 100%; }
 .nav-tagline{
-  font-family: var(--body); font-style: italic; font-size: 0.88rem;
-  color: var(--white); white-space: nowrap; margin: 0;
-  position: relative; top: -14px;
+  font-family: var(--body); font-style: italic; font-weight: 400; font-size: 0.75rem;
+  color: var(--white); margin: 0; line-height: 1.4; text-align: center; width: 100%;
 }
-@media (max-width: 860px){ .nav-tagline{ display: none; } }
-/* Grid (not flex) so the give/about links and the tagline can occupy the
-   same first column, overlapping — same trick as .nav-links--left /
-   .wordmark-name on the other side — with Subscribe in its own column so
-   it's never covered by either occupant. */
-.nav-right{
-  display:grid; grid-template-columns: auto auto;
-  align-items:center; justify-content: flex-end; gap: 28px;
-}
-.nav-right .nav-links{ grid-row: 1; grid-column: 1; justify-self: end; }
-.wordmark-tagline{ grid-row: 1; grid-column: 1; justify-self: end; }
-.nav-subscribe{ grid-row: 1; grid-column: 2; white-space: nowrap; }
+main, footer{ margin-left: 210px; }
 
-/* ---------- NAV compact state ---------- */
-main, footer{ transition: transform .2s cubic-bezier(0.4, 0, 0.2, 1); }
-.site-header.is-compact ~ main,
-.site-header.is-compact ~ footer{ transform: translateY(-55px); }
-/* Sticky sidebar offset compensates for the transformed main (141 - 55 = 86). */
-.site-header.is-compact ~ main .side-col{ top: 141px; }
-.site-header.is-compact .site-nav{
-  clip-path: inset(0 0 -2px 0);
-  transition: clip-path .2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Below 900px the sidebar can't fit alongside readable content widths —
+   collapse to a static, in-flow top bar instead (same breakpoint the rest
+   of the site treats as "narrow/tablet and below"). */
+@media (max-width: 900px){
+  .site-header{
+    position: static; width: auto; height: auto;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
+  .site-nav{
+    flex-direction: row; align-items: center; justify-content: space-between;
+    height: auto; padding: 16px 24px; gap: 20px;
+  }
+  .nav-top{ margin-bottom: 0; display: flex; align-items: center; gap: 12px; }
+  .wordmark{ position: static; transform: none; }
+  .nav-links{ flex-direction: row; margin: 0; gap: 20px; }
+  .nav-bottom{ flex-direction: row; align-items: center; gap: 14px; margin-top: 0; }
+  .nav-subscribe{ width: auto; }
+  .nav-tagline{ display: none; }
+  main, footer{ margin-left: 0; }
 }
-.site-header.is-compact .site-nav::after{ transform: scaleY(0.63576); } /* 96/151 */
-.site-header.is-compact .nav-edge{ transform: translateY(95px); }
-body.no-transition *{ transition: none !important; }
-
-/* Every page except the homepage renders the header pre-collapsed
-   (is-compact is-static): the compact bar is the only state, laid out at
-   its natural flow height with no scroll animation and no content pull-up. */
-.site-header.is-static{ height: auto; }
-.site-header.is-static ~ main,
-.site-header.is-static ~ footer{ transform: none; }
-.site-header.is-static ~ main .side-col{ top: 86px; }
+@media (max-width: 720px){ .nav-links{ display: none; } }
 
 .btn{
   font-family: var(--mono);
@@ -337,30 +207,11 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
-  .site-header, .site-nav, .site-header.is-compact .site-nav, .bird-frame, .wordmark img, .wordmark-name, .wordmark-tagline, .nav-links--left, .nav-right, .site-nav::after, .nav-edge, main, footer{ transition: none; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
-.featured-strip{ padding: 32px 0 0; }
+.featured-strip{ padding: 24px 0 0; }
 .hero-row{ padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
-/* Three columns: title/meta/dek on the left, cover image in the middle,
-   first paragraph + "Read on" on the right. The outer two text columns
-   are pinned to 235px — measured from the nav bar directly above (see
-   .nav-links--left / .nav-right), so column 1 lines up under "Essays /
-   Postscript / Contra" and column 3 lines up under "Give / About /
-   Subscribe", both in width and in left/right edge position (both the
-   nav and this card sit inside the same .wrap, so no extra offset math
-   is needed). minmax(0, 235px) lets them shrink together below that on
-   narrower desktop widths instead of forcing an overflow; the cover
-   image (the 1fr track) simply takes whatever's left, so it grows
-   larger now that the text columns are narrower than before.
-   align-items:start anchors the text columns to the top of the image's
-   row rather than centering or bottoming them out.
-   Reflows to a single stacked column, in the same top-to-bottom reading
-   order, on narrow screens.
-   ".card.card--feature" (not just ".card--feature") so this outranks the
-   base ".card{ display:flex }" rule, which shares its specificity and
-   comes later in the file. */
 /* Experimental hover-reveal layout: the cover image spans the card's full
    width at a fixed widescreen ratio (in place of the old three-column
    grid, where the two text columns ate a fixed 235px off each side). The
@@ -719,7 +570,7 @@ section{ padding: 80px 0; }
 /* ---------- LAYOUT GRID (sidebar + sections) ---------- */
 .layout-grid{ display:grid; grid-template-columns: 240px 1fr; gap: 56px; padding: 48px 28px; align-items: start; }
 .layout-grid > *{ min-width: 0; }
-.side-col{ position: sticky; top: 86px; }
+.side-col{ position: sticky; top: 32px; }
 .side-logo{
   display:flex; align-items:center; gap: 10px; text-decoration:none; color: var(--white);
   font-family: var(--display); font-weight: 600; font-size: 1rem; margin-bottom: 8px;

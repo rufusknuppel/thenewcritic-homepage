@@ -148,13 +148,8 @@
       clearTimeout(leaveTimer);
       a.start();
     });
-    // The nav-subscribe button's ancestor (.nav-right) slides 47.7px on a
-    // .2s transform transition whenever the sticky header's compact state
-    // toggles on scroll (see style.css) — that can slide the button out
-    // from under a cursor that never actually moved, firing a real
-    // mouseleave with no mouseenter to follow, which stalls the glow with
-    // no way to restart it. Wait out the transition and only actually stop
-    // if the cursor still isn't over the button once it's settled.
+    // Debounce real mouseleaves briefly so a stray leave/enter pair (e.g.
+    // from a layout shift) doesn't stall the glow with no way to restart it.
     btn.addEventListener('mouseleave', function(){
       clearTimeout(leaveTimer);
       leaveTimer = setTimeout(function(){

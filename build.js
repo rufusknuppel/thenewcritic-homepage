@@ -486,29 +486,23 @@ function renderNav(currentKey = 'home') {
   function navLink(l) {
     return `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
   }
-  const leftKeys = ['essays', 'postscript', 'contra'];
-  const rightKeys = ['give', 'about'];
-  const leftLinks = SITE_LINKS.filter(l => leftKeys.includes(l.key)).map(navLink).join('\n      ');
-  const rightLinks = SITE_LINKS.filter(l => rightKeys.includes(l.key)).map(navLink).join('\n      ');
+  const linkKeys = ['essays', 'postscript', 'contra', 'give', 'about'];
+  const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ');
 
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
   return `<nav class="site-nav">
-  <span class="nav-edge" aria-hidden="true"></span>
-  <div class="wrap nav-wrap">
-    <ul class="nav-links nav-links--left">
-      ${leftLinks}
-    </ul>
-    <a class="wordmark-name" href="/"${homeCurrent}>THE NEW CRITIC</a>
+  <div class="nav-top">
+    <a class="nav-brand" href="/"${homeCurrent}>THE<br>NEW<br>CRITIC</a>
     <a class="wordmark" href="/"${homeCurrent}>
       <span class="bird-frame"><img src="${BIRD_LOGO}" alt="" aria-hidden="true"></span>
     </a>
-    <div class="nav-right">
-      <ul class="nav-links">
-        ${rightLinks}
-      </ul>
-      <a class="wordmark-tagline" href="/"${homeCurrent}>The Young American Magazine</a>
-      <a class="btn btn--small btn--primary nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
-    </div>
+  </div>
+  <ul class="nav-links">
+    ${links}
+  </ul>
+  <div class="nav-bottom">
+    <p class="nav-tagline">The Young<br>American Magazine</p>
+    <a class="btn btn--small btn--primary nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
   </div>
 </nav>`;
 }
@@ -530,10 +524,8 @@ function renderFooter() {
 </footer>`;
 }
 
-// staticCompact renders the header pre-collapsed with no scroll animation —
-// every page except the homepage uses this (see .is-static in style.css).
-function renderHeader(currentKey, { staticCompact = false } = {}) {
-  return `<div class="site-header${staticCompact ? ' is-compact is-static' : ''}" id="site-header">
+function renderHeader(currentKey) {
+  return `<div class="site-header" id="site-header">
 ${renderNav(currentKey)}
 </div>`;
 }
@@ -759,28 +751,6 @@ ${renderHeader()}
 
 ${renderFooter()}
 
-<script>
-  (function(){
-    var header = document.querySelector('.site-header');
-    var COMPACT_AT = 60;
-    var EXPAND_AT = 10;
-    var WIDE = 900;
-    function setCompact(instant) {
-      var y = window.scrollY || 0;
-      var compact;
-      if (window.innerWidth < WIDE || y > COMPACT_AT) compact = true;
-      else if (y < EXPAND_AT) compact = false;
-      else compact = header.classList.contains('is-compact');
-      if (instant) document.body.classList.add('no-transition');
-      header.classList.toggle('is-compact', compact);
-      if (instant) { document.body.offsetHeight; document.body.classList.remove('no-transition'); }
-    }
-    window.addEventListener('scroll', function(){ setCompact(false); }, { passive: true });
-    window.addEventListener('resize', function(){ setCompact(false); }, { passive: true });
-    setCompact(true);
-  })();
-</script>
-
 ${renderRevealScript()}
 
 ${renderPreviewCard()}
@@ -858,7 +828,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml }) {
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-${renderHeader(currentKey, { staticCompact: true })}
+${renderHeader(currentKey)}
 
 <main id="main">
 ${bodyHtml}
