@@ -9,7 +9,8 @@
 // pulled from the feed is used instead. All values are plain text, not HTML.
 //
 //   kicker:  the small courier header above the title (e.g. 'To Phone or
-//            Not'). Only rendered while the post is the hero card.
+//            Not'). Rendered while the post is the hero card, or one of
+//            the two homepage duo cards below it.
 //   title:   the card's headline.
 //   dek:     the subheading under the title (Substack calls it the subtitle).
 //   author:  the byline in the meta line, shown uppercase.
@@ -33,6 +34,9 @@
 module.exports = {
   'luddite-club': {
     kicker: 'To Phone or Not',
+  },
+  'the-blackpill': {
+    kicker: 'Internet Terrorists',
   },
   'the-commodification-of-freya-india': {
     kicker: 'The Girl Behind Girls',

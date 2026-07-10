@@ -214,7 +214,7 @@
       if (!text) return;
       activeLink = link;
       var glowCanvas = card.querySelector('canvas');
-      card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on &#8594;</a>';
+      card.innerHTML = '<span>' + esc(text) + '</span><a class="preview-card-link" href="' + esc(link.href) + '" rel="noopener" tabindex="0">Read on <span class="cta-arrow">&#8594;</span></a>';
       if (glowCanvas) card.appendChild(glowCanvas);
       card.setAttribute('aria-hidden', 'false');
 

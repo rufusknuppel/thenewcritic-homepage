@@ -211,7 +211,102 @@ section{ padding: 80px 0; }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
 .featured-strip{ padding: 24px 0 0; }
-.hero-row{ padding-bottom: 28px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+/* padding-bottom matches .wrap's own horizontal padding (24/20/16px, see
+   the media queries below) so the gap under the cover image, down to the
+   divider, is identical to the gap beside it, out to the nav.
+   margin-bottom matches padding-bottom exactly (same 24/20/16 values) so
+   the gap above the essay cards, up to the divider, is that same measure
+   too — not the old, unrelated 28px. */
+.hero-row{ padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+@media (max-width: 860px){ .hero-row{ padding-bottom: 20px; margin-bottom: 20px; } }
+@media (max-width: 480px){ .hero-row{ padding-bottom: 16px; margin-bottom: 16px; } }
+
+/* ---------- DUO CARD (two essays, one card sized like the hero) ----------
+   One .card--duo article — not two separate cards — holding both essay
+   halves side by side, so its overall footprint (both halves plus the
+   divider between them) matches the hero image's own width and height as
+   a single unit, the same way the hero itself is one article containing
+   its image and panels. */
+/* flex-direction:row is explicit, not the flex default left implicit —
+   the base .card{flex-direction:column} rule elsewhere would otherwise
+   still win for this one property, since .card.card--duo never
+   overrode it despite its higher selector specificity (the cascade
+   applies per-property, not per-rule). */
+.card.card--duo{ display: flex; flex-direction: row; align-items: stretch; margin-bottom: 24px; }
+@media (max-width: 860px){ .card.card--duo{ margin-bottom: 20px; } }
+@media (max-width: 480px){ .card.card--duo{ margin-bottom: 16px; flex-direction: column; } }
+
+.duo-half{ position: relative; flex: 1 1 0; min-width: 0; }
+@media (max-width: 480px){
+  /* flex:1 1 0 only works out to a square-ish box in the row layout above,
+     where it's sizing along the width axis and height comes from the JS
+     fit. Stacked into a column, flex:1 1 0 would size along the height
+     axis instead — with basis 0 and no fixed-height container to grow
+     into, each half would collapse to 0 and overflow:hidden would clip
+     its image entirely. flex:0 0 auto lets height come from content (the
+     image) instead. */
+  .duo-half{ flex: 0 0 auto; }
+}
+
+/* The gap on either side of the divider (24/20/16px) matches .wrap's own
+   horizontal padding — same rhythm as the hero's own image-to-divider
+   spacing. */
+.duo-half-divider{ width: 1px; flex-shrink: 0; background: var(--line); margin: 0 24px; }
+@media (max-width: 860px){ .duo-half-divider{ margin: 0 20px; } }
+@media (max-width: 480px){ .duo-half-divider{ width: auto; height: 1px; margin: 16px 0; } }
+
+/* aspect-ratio:1/1 is only the no-JS fallback — duo-height-fit.js sets an
+   inline height on .duo-card-image matching the hero image's own rendered
+   height (their widths differ — half vs. full — so a shared aspect-ratio
+   alone can't produce a shared height), which overrides this once it runs. */
+/* width:100% is load-bearing, not decorative — once duo-height-fit.js
+   sets an explicit inline height, aspect-ratio only stays inert if width
+   is ALSO already definite. Without it, a block box with auto width and
+   an explicit height re-derives width from aspect-ratio (per the CSS
+   sizing spec's ratio transfer), squashing it back down to a square
+   regardless of the JS-set height. */
+/* Two classes to outrank the shared .card-image-frame{margin-bottom:14px}
+   rule (same specificity, declared later in the file), which would
+   otherwise leave a 14px gap under an image that's supposed to fill the
+   half exactly. */
+.duo-half .duo-card-image{ position: relative; overflow: hidden; width: 100%; aspect-ratio: 1/1; margin-bottom: 0; }
+.card--duo .card-image-link{ display: block; margin-bottom: 0; height: 100%; }
+.duo-card-image .card-image--blank{ background: var(--surface); }
+
+/* Same hover-reveal mechanic as the hero card (.card--feature below) —
+   image always visible, text invisible until hover, then fades in with a
+   glow — but each half gets a single panel (title block anchored to the
+   top, both buttons pinned to the bottom corners, empty space in between
+   left alone) rather than the hero's two side-by-side columns, since each
+   half is only a quarter of the hero's width. Triggered by hovering the
+   half itself, not the whole two-essay card, so revealing one essay's
+   text doesn't also reveal the other's. */
+.duo-panel{
+  position: absolute; inset: 0; z-index: 3;
+  padding: 24px;
+  background: var(--paper);
+  border: 1px solid var(--white);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease, box-shadow .3s ease;
+  overflow: hidden;
+}
+.duo-half:hover .duo-panel{
+  opacity: 1;
+  pointer-events: auto;
+  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
+}
+.duo-essays-btn{ position: absolute; left: 24px; bottom: 24px; }
+/* .duo-panel qualifier (two classes) to outrank .preview-card-link{
+   position: relative } — same specificity otherwise, declared later in
+   the file, which would win the position property and leave this button
+   sitting in normal flow instead of pinned to the corner. */
+.duo-panel .duo-readon-btn{ position: absolute; right: 24px; bottom: 24px; }
+/* Thin rule between the tagline and the pull-quote below it — the
+   tagline's own bottom margin is zeroed so the gap above and below the
+   divider reads as one equal measure instead of 10px stacked on 14px. */
+.duo-panel-top .preview-tagline{ margin-bottom: 0; }
+.duo-quote-divider{ height: 1px; background: var(--line); margin: 14px 0; }
 /* Experimental hover-reveal layout: the cover image spans the card's full
    width at a fixed widescreen ratio (in place of the old three-column
    grid, where the two text columns ate a fixed 235px off each side). The
@@ -264,7 +359,9 @@ section{ padding: 80px 0; }
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
 .card--feature .card-image,
-.card--feature .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+.card--feature .card-image--blank,
+.card--duo .card-image,
+.card--duo .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
 /* "The Latest" — black pill with a white border, linking to the archive.
    Lives inside the left (title/dek) column now, pinned to its bottom-left
    corner via margin-top:auto in that flex column, so it only appears once
@@ -290,7 +387,8 @@ section{ padding: 80px 0; }
    its own border sits flush with the link's edge, same as the box's
    real border. Sized via inset:0 rather than width/height so it always
    matches the link exactly regardless of the image's aspect ratio. */
-.card--feature .card-image-link::after{
+.card--feature .card-image-link::after,
+.card--duo .card-image-link::after{
   content: '';
   position: absolute;
   inset: 0;
@@ -299,42 +397,57 @@ section{ padding: 80px 0; }
   opacity: 0;
   transition: opacity .3s ease;
 }
-.card.card--feature:hover .card-image-link::after{
+.card.card--feature:hover .card-image-link::after,
+.duo-half:hover .card-image-link::after{
   opacity: 1;
 }
 /* Hovering anywhere in the card (image or either panel — :hover bubbles
    to this ancestor from any descendant) dims the image and glows its
    ring and the pill together with the two panels above, so the whole
-   card reads as one hover target. */
-.card.card--feature:hover .card-image-link{
+   card reads as one hover target. Duo halves hover independently instead
+   (see .duo-half:hover .duo-panel above), so only that half's own image
+   dims when hovered. */
+.card.card--feature:hover .card-image-link,
+.duo-half:hover .card-image-link{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.card.card--feature:hover .card-image{
+.card.card--feature:hover .card-image,
+.duo-half:hover .card-image{
   filter: grayscale(1) brightness(0.5);
 }
-/* Small courier kicker above the title (see HERO_KICKER in build.js). */
-.card--feature .hero-kicker{
+/* Small courier kicker above the title (see HERO_KICKER in build.js and,
+   for the duo cards, the per-post kicker overrides in content-overrides.js). */
+.card--feature .hero-kicker,
+.card--duo .hero-kicker{
   font-family: var(--mono); font-size: 0.75rem; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
   transition: color .15s ease;
 }
-.card--feature .hero-kicker:hover{
+.card--feature .hero-kicker:hover,
+.card--duo .hero-kicker:hover{
   color: var(--white);
 }
-.card--feature .card-title{
-  /* The clamp is only the no-JS fallback — hero-title-fit.js sets an
-     inline px size: the largest (≤48px) at which no word splits across
-     lines and the title column stays within the cover image's height.
-     overflow-wrap:normal (overriding the base .card-title's break-word)
-     means an over-long word overflows horizontally instead of breaking —
-     which is exactly the signal the fitter detects and sizes away. */
+/* Same font size for the duo cards' title/meta/dek as the hero's — the
+   duo panels get no hero-title-fit.js run (that JS only targets
+   .card--feature), so they just use the static clamp directly. */
+.card--feature .card-title,
+.card--duo .card-title{
+  /* The clamp is only the no-JS fallback for .card--feature —
+     hero-title-fit.js sets an inline px size there: the largest (≤48px)
+     at which no word splits across lines and the title column stays
+     within the cover image's height. overflow-wrap:normal (overriding
+     the base .card-title's break-word) means an over-long word overflows
+     horizontally instead of breaking — which is exactly the signal the
+     fitter detects and sizes away. */
   font-size: clamp(2rem, 4vw, 3rem); margin: 0; text-align: left; line-height: 1.1;
   overflow-wrap: normal;
 }
-.card--feature .card-meta{ margin-top: 10px; }
+.card--feature .card-meta,
+.card--duo .card-meta{ margin-top: 10px; }
 /* Subheading matches the subheading size used in the other card grids. */
-.card--feature .card-dek{
+.card--feature .card-dek,
+.card--duo .card-dek{
   font-size: 0.92rem; margin: 16px 0 0; text-align: left;
 }
 /* Paragraphs of the piece (after any paid-subscriber appeal at the top of
@@ -358,8 +471,10 @@ section{ padding: 80px 0; }
    cover image gets) — sized comfortably above the tallest this column
    can legitimately reach (the image cell's height at the widest
    supported layout), so it never clips a fit the script already made. */
-.card--feature .card-preview-block{ max-height: 900px; overflow: hidden; }
-.card--feature .card-preview{
+.card--feature .card-preview-block,
+.card--duo .card-preview-block{ max-height: 900px; overflow: hidden; }
+.card--feature .card-preview,
+.card--duo .card-preview{
   /* Sized to the box's own space rather than matched to the dek — the
      actual line count that fits is computed live by hero-preview-fit.js
      off the rendered box height, so this only sets how big the text
@@ -368,7 +483,8 @@ section{ padding: 80px 0; }
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
 }
-.card--feature .card-preview + .card-preview{
+.card--feature .card-preview + .card-preview,
+.card--duo .card-preview + .card-preview{
   margin-top: 12px;
   line-clamp: 10; -webkit-line-clamp: 10;
 }
@@ -380,11 +496,15 @@ section{ padding: 80px 0; }
    is a normal block instead — it's the one paragraph that usually runs
    unclamped (hero-preview-fit.js gives it the full budget first, and
    re-applies -webkit-box inline in the rare case it does need cutting;
-   the drop cap just stacks above the text in that degraded case). */
-.card--feature .card-preview-block .card-preview:first-child{
+   the drop cap just stacks above the text in that degraded case). Duo
+   cards get no such JS fit — the static fallback clamp is all they ever
+   use, which is fine since their boxes size to content, not a fixed rect. */
+.card--feature .card-preview-block .card-preview:first-child,
+.card--duo .card-preview-block .card-preview:first-child{
   display: block;
 }
-.card--feature .card-preview-dropcap{
+.card--feature .card-preview-dropcap,
+.card--duo .card-preview-dropcap{
   float: left;
   font-family: var(--display); font-weight: 600;
   font-size: 3.2em; line-height: 0.95;
@@ -394,21 +514,26 @@ section{ padding: 80px 0; }
 /* "from the essay" / "from the interview" / "from the review" (set per
    the hero's section tag in build.js) — same courier-kicker treatment as
    .hero-kicker (family, weight, size, letter-spacing, margin) so column 3
-   opens with the same visual weight and spacing as column 1's kicker. */
-.card--feature .preview-tagline{
+   opens with the same visual weight and spacing as column 1's kicker.
+   Duo cards reuse it verbatim for their fixed "From the Essay" tag. */
+.card--feature .preview-tagline,
+.card--duo .preview-tagline{
   font-family: var(--mono); font-weight: 700; font-size: 0.75rem;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
   transition: color .15s ease;
 }
-.card--feature .preview-tagline:hover{
+.card--feature .preview-tagline:hover,
+.card--duo .preview-tagline:hover{
   color: var(--white);
 }
 /* margin-top: auto (not a fixed value) — in the flex column, this
    absorbs whatever's left after the text (including the line-clamp
    fit's rounding slack, see hero-preview-fit.js) as extra breathing
    room above the button, so the button itself always lands flush at
-   the box's own bottom padding rather than floating above dead space. */
+   the box's own bottom padding rather than floating above dead space.
+   Duo's own CTA (.duo-readon-btn) is pinned via position:absolute instead
+   — see style rules near .duo-panel above — so it doesn't need this. */
 .card--feature .card-preview-cta{ margin-top: auto; }
 @media (max-width: 640px){
   /* Below this width there's no room for overlay panels wide enough to
@@ -438,190 +563,47 @@ section{ padding: 80px 0; }
   .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; object-fit: cover; }
 }
 
-/* ---------- BELOW-HERO ROW (announcement + Most Read, items 2 & 4) ----------
-   One shared row split by a vertical divider: the announcement box on the
-   left, the Most Read grid on the right (itself split into two columns of
-   stacked cards). Replaces the two previously separate, stacked sections. */
-.below-hero-strip{ padding: 28px 0 32px; }
-.below-hero-row{
-  display: grid;
-  grid-template-columns: minmax(0, 300px) 1fr;
-  column-gap: 40px;
-}
-.below-hero-announcement{ min-width: 0; }
-.most-read-block{
-  min-width: 0;
-  padding-left: 40px;
-  border-left: 1px solid var(--line);
-  display: flex; flex-direction: column;
-}
-
-/* Announcement — always stacked (photo above text): this column is never
-   wide enough for the old side-by-side row, so the narrow-viewport stacked
-   treatment is now the only layout. */
-.announcement-box{
-  display:flex; flex-direction:column; align-items:stretch;
-}
-.announcement-photo{
-  width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover;
-}
-.announcement-text{
-  min-width: 0;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-/* Same courier-kicker look and size as the hero (see .hero-kicker) applied
-   to the "From the Editors" label here, with the same gray/white-glow-on-
-   hover treatment as the nav links. */
-.announcement-box .eyebrow{
-  font-family: var(--mono); font-weight: 700; font-size: 0.75rem;
-  color: var(--muted);
-  transition: color .15s ease;
-}
-.announcement-box .eyebrow:hover{
-  color: var(--white);
-}
-.announcement-title{
-  font-family: var(--display); font-weight: 600; font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-  color: var(--white); margin: 10px 0 14px; line-height: 1.2;
-}
-.announcement-box p{
-  color: var(--white); margin: 0 0 14px; font-size: 0.92rem; line-height: 1.55;
-  overflow-wrap: break-word;
-}
-.announcement-box .btn{ margin-top: 6px; }
-
-/* ---------- MOST READ (item 4) ---------- */
-.section-divider{ width:100%; height:0; border-top:1px solid var(--line); }
-/* Same centered-label-with-underline treatment as "Editors' Notes"
-   (.side-notes-label), just a bigger size to suit this more prominent
-   section — not the boxed-button look it had before. */
-.popular-heading{
-  font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.04em;
-  text-transform: uppercase; color: var(--white);
-  text-align: center;
-  border-bottom: 1px solid var(--white);
-  padding-bottom: 10px; margin: 0 0 22px;
-  transition: box-shadow .2s ease;
-  cursor: default;
-}
-/* Border stays solid white always — hovering either the title text or the
-   divider (same box, so either hover target already covers both) adds a
-   glow around the whole thing instead of dimming the border. */
-.popular-heading:hover{
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
-/* Same card anatomy as the Essays/Postscript/Contra grid (.card-grid) —
-   image, title, dek, meta — just a 2-up grid instead of 3-up and scaled
-   down to fit this narrower, shorter section. Hover glow/overlay and the
-   floating preview popup are the shared base behavior (see IMAGE HOVER
-   OVERLAY and IMAGE PREVIEW CARD below) — no section-specific override,
-   same as Essays. */
-.popular-row{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 20px; }
-.popular-row .card{ position: relative; }
-.popular-row .card-image-frame{ margin-bottom: 10px; }
-.popular-row .card-image,
-.popular-row .card-image--blank{ width: 100%; aspect-ratio: 16/10; }
-.popular-row .card-title{ font-size: 0.88rem; margin: 0 0 6px; }
-.popular-row .card-dek{
-  font-size: 0.76rem; margin: 0 0 6px;
-  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; -webkit-line-clamp: 2; line-clamp: 2;
-}
-.popular-row .card-meta{ font-size: 0.62rem; }
-@media (max-width: 860px){
-  .below-hero-row{ grid-template-columns: 1fr; row-gap: 28px; }
-  .below-hero-announcement{ max-width: 340px; margin: 0 auto; }
-  .most-read-block{ padding-left: 0; border-left: none; padding-top: 28px; border-top: 1px solid var(--line); }
-}
-@media (max-width: 480px){
-  .popular-row{ grid-template-columns: 1fr; }
-}
-.section-block-head{
-  display:flex; align-items:baseline; justify-content:space-between; gap: 18px; margin-bottom: 22px;
-  padding-bottom: 10px;
-  position: relative; overflow: visible;
-}
-.section-block-title{ display: flex; align-items: baseline; gap: 14px; min-width: 0; }
-.section-tagline{
-  font-family: var(--body); font-style: italic; font-size: 0.88rem;
-  color: var(--white); white-space: nowrap;
-}
-.section-block-head h2{
-  font-family: var(--display); font-weight: 600; font-size: clamp(1.2rem, 2vw, 1.5rem);
-  margin: 0; color: var(--white);
-}
-.section-block-head h2 a{ text-decoration: none; }
-.view-all{
-  display: inline-flex; align-items: center; align-self: flex-end; white-space: nowrap;
-  padding: 7px 12px;
-  background: var(--paper); color: var(--white);
-  border: 1px solid var(--white);
-  text-decoration: none;
-  font-family: var(--mono); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
-  flex-shrink: 0;
-  position: relative;
-  transition: background .15s ease, box-shadow .2s ease;
-}
-.view-all:hover{
-  background: var(--surface-2);
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
-
-/* ---------- LAYOUT GRID (sidebar + sections) ---------- */
-.layout-grid{ display:grid; grid-template-columns: 240px 1fr; gap: 56px; padding: 48px 28px; align-items: start; }
-.layout-grid > *{ min-width: 0; }
-.side-col{ position: sticky; top: 32px; }
-.side-logo{
-  display:flex; align-items:center; gap: 10px; text-decoration:none; color: var(--white);
-  font-family: var(--display); font-weight: 600; font-size: 1rem; margin-bottom: 8px;
-}
-.side-logo img{ width: 18px; height: auto; }
-.side-tag{ font-family: var(--mono); font-size: 0.703rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); margin: 0 0 22px; }
-.subscribe-box{ display:flex; gap: 8px; margin-bottom: 36px; }
-.subscribe-box input{
-  flex: 1 1 auto; min-width: 0; background: var(--surface); border: 1px solid var(--line); color: var(--white);
-  font-family: var(--body); font-size: 0.88rem; padding: 10px 12px;
-}
-.subscribe-box input::placeholder{ color: var(--faint); }
-.subscribe-box .btn{ flex: 0 0 auto; padding: 10px 16px; }
-.side-pitch{
-  font-family: var(--display); font-weight: 600; font-size: 0.95rem; line-height: 1.4;
-  color: var(--white); margin: 36px 0 14px;
-}
-.side-subscribe{ margin-top: 27px; margin-bottom: 32px; }
-.side-notes{ margin-top: 62px; }
-.side-notes-label{
-  text-align: center; color: var(--white);
-  border-bottom: 1px solid var(--white);
-  padding-bottom: 8px; margin-bottom: 18px;
-  transition: box-shadow .2s ease;
-  cursor: default;
-}
-/* Border stays solid white always — hovering either the title text or the
-   divider (same box, so either hover target already covers both) adds a
-   glow around the whole thing instead of dimming the border. */
-.side-notes-label:hover{
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
-.side-notes ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: 16px; }
-.side-notes li a{
-  font-family: var(--display); font-size: 0.95rem; color: var(--body-text); text-decoration:none;
-  transition: color 0s;
-}
-.side-notes li a:hover{
-  color: var(--white);
-  transition: color .2s ease;
-}
-.note-dek{ font-size: 0.82rem; color: var(--white); margin: 4px 0 0; }
-@media (max-width: 860px){
-  .layout-grid{ grid-template-columns: 1fr; }
-  .side-col{ position: static; order: 2; }
+/* Same reasoning as the hero's own fallback above and the box card's
+   (hover:none) fallback below — on touch devices, or once the layout has
+   already stacked to one column, there's no hover to reveal a duo panel,
+   so make it permanently visible instead. */
+@media (max-width: 640px), (hover: none){
+  .duo-panel{
+    position: static; opacity: 1; pointer-events: auto;
+    background: none; border: none; box-shadow: none;
+    padding: 14px 0 0;
+  }
+  /* .duo-panel qualifier again to outrank .preview-card-link{position:
+     relative} at this breakpoint too (see the comment near
+     .duo-panel .duo-readon-btn above). */
+  .duo-panel .duo-essays-btn,
+  .duo-panel .duo-readon-btn{ position: static; display: inline-block; margin-top: 12px; }
+  .duo-essays-btn{ margin-right: 10px; }
 }
 
 /* ---------- SECTION BLOCKS + CARDS ---------- */
-.section-block{ padding: 0; margin-bottom: 56px; }
-.section-block:last-child{ margin-bottom: 0; }
-.card-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+/* (Still used by the essays/postscript/contra list pages and the archive
+   page — see renderListPage/renderArchivePage/renderCard in build.js. The
+   homepage itself no longer renders any of these; it was scrapped down to
+   just the hero for a from-scratch redesign.) */
+
+/* Mosaic grid: 12 columns so cards can mix 2/3/4-across sizes in one row
+   (see CARD_LAYOUT_PATTERN in build.js — a "lg" card at span 6 plus two
+   "sm" cards at span 3 fill one row, three "md" cards at span 4 fill the
+   next). The 1px gap sits on the grid's own --line background; each direct
+   card child paints an opaque --paper background over its own cell, so
+   only the gutters between cards show through — a hairline divider with no
+   nth-child math needed for the irregular column spans. */
+.card-grid{
+  display:grid; grid-template-columns: repeat(12, 1fr);
+  gap: 1px; background: var(--line);
+  align-items: start;
+}
+.card-grid > .card{ background: var(--paper); padding: 24px; grid-column: span 4; }
+.card-grid > .card--lg{ grid-column: span 6; }
+.card-grid > .card--md{ grid-column: span 4; }
+.card-grid > .card--sm{ grid-column: span 3; }
+.card-grid > .card--box{ padding: 0; }
 .card{ display:flex; flex-direction:column; }
 .card-image-frame{ margin-bottom: 14px; }
 .card-image-link{ display:block; margin-bottom: 0; }
@@ -666,11 +648,73 @@ section{ padding: 80px 0; }
   color: var(--white);
   transition: color .2s ease;
 }
-@media (max-width: 860px){ .card-grid{ grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px){ .card-grid{ grid-template-columns: 1fr; } }
 
-/* ---------- FROM THE ARCHIVE ---------- */
-.archive-strip{ padding: 48px 0 80px; }
+/* Per-page aspect ratio for the essays/postscript/contra grids (hero
+   excluded — it keeps its own 2.17 widescreen ratio). Applies to both the
+   plain image cards and the box card's hidden image layer below. */
+.card-grid--essays .card-image,
+.card-grid--essays .card-image--blank{ aspect-ratio: 3/2; }
+.card-grid--postscript .card-image,
+.card-grid--postscript .card-image--blank{ aspect-ratio: 3/4; }
+.card-grid--contra .card-image,
+.card-grid--contra .card-image--blank{ aspect-ratio: 1/1; }
+
+/* ---------- BOX CARD (text box by default, image on hover) ---------- */
+/* Mirrors the hero card's box-reveal mechanic in reverse: there the image
+   is always visible and the text panel fades in on hover; here the text
+   panel is always visible (opaque, stacked over the hidden image) and
+   fades OUT on hover so the image underneath appears. */
+.card-box{ position: relative; overflow: hidden; aspect-ratio: 4/3; }
+.card-box-image{ position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity .3s ease; }
+.card-box-image .card-image-link{ display: block; height: 100%; }
+.card--box .card-box-image .card-image,
+.card--box .card-box-image .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+.card--box:hover .card-box-image{ opacity: 1; }
+.card-box-image .card-image-link::after{
+  content: '';
+  position: absolute; inset: 0;
+  border: 1px solid var(--white);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.card--box:hover .card-box-image .card-image-link::after{ opacity: 1; }
+.card-box-text{
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 22px;
+  overflow: hidden;
+  transition: opacity .3s ease;
+}
+.card--box:hover .card-box-text{ opacity: 0; pointer-events: none; }
+
+.card-grid--essays .card-box{ aspect-ratio: 3/2; }
+.card-grid--postscript .card-box{ aspect-ratio: 3/4; }
+.card-grid--contra .card-box{ aspect-ratio: 1/1; }
+
+/* Below the hero's own no-hover breakpoint, box cards fall back to the
+   same always-visible image + caption look as the rest of the grid —
+   there's no hover to reveal anything on touch devices. */
+@media (max-width: 640px), (hover: none){
+  .card-box{ aspect-ratio: auto; overflow: visible; }
+  /* Two classes to outrank the shared .card-image-frame{position:relative}
+     rule (same specificity, declared later in the file) that would
+     otherwise win this tie and leave the layer positioned. */
+  .card--box .card-box-image{ position: static; inset: auto; opacity: 1; }
+  .card-box-text{
+    position: static; opacity: 1; pointer-events: auto;
+    background: none; border: none; padding: 14px 0 0;
+  }
+}
+
+@media (max-width: 860px){
+  .card-grid > .card{ grid-column: span 6; }
+}
+@media (max-width: 480px){
+  .card-grid > .card{ grid-column: span 12; }
+}
 
 /* ---------- LIST / ABOUT / ARCHIVE PAGES ---------- */
 .page-head{ padding: 56px 0 40px; }
@@ -794,6 +838,9 @@ footer{ padding: 48px 0; text-align:center; }
   background: var(--surface-2);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
+/* The arrow in every "Read on →" link (site-wide) renders in the display
+   face rather than inheriting the mono/courier font around it. */
+.cta-arrow{ font-family: var(--display); }
 /* Frame wrapper — pseudo lives here so overflow:hidden on the link doesn't clip it */
 .card-image-frame {
   display: block;
@@ -853,10 +900,6 @@ footer{ padding: 48px 0; text-align:center; }
    taps elsewhere. Devices with no real pointer hover capability never get
    these effects in the first place, sidestepping the stuck state entirely. */
 @media (hover: none) {
-  .popular-heading:hover,
-  .side-notes-label:hover{
-    box-shadow: none;
-  }
   .likes:hover .likes-bird{
     opacity: 0.7;
     filter: none;
