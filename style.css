@@ -296,12 +296,14 @@ section{ padding: 80px 0; }
 
 /* Same hover-reveal mechanic as the hero card (.card--feature below) —
    image always visible, text invisible until hover, then fades in with a
-   glow — but each half gets a single panel (title block anchored to the
-   top, both buttons pinned to the bottom corners, empty space in between
-   left alone) rather than the hero's two side-by-side columns, since each
-   half is only a quarter of the hero's width. Triggered by hovering the
-   half itself, not the whole two-essay card, so revealing one essay's
-   text doesn't also reveal the other's. */
+   glow — but each half gets a single panel, four corners pinned (topic
+   kicker top-left, section button top-right, date+likes bottom-left,
+   "Read on" bottom-right — see .card-category-btn/.card-meta--stats
+   below), title/dek/byline block and empty space left alone in between,
+   rather than the hero's two side-by-side columns, since each half is
+   only a quarter of the hero's width. Triggered by hovering the half
+   itself, not the whole two-essay card, so revealing one essay's text
+   doesn't also reveal the other's. */
 .duo-panel{
   position: absolute; inset: 0; z-index: 3;
   padding: 24px;
@@ -317,16 +319,17 @@ section{ padding: 80px 0; }
   pointer-events: auto;
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.duo-essays-btn{ position: absolute; left: 24px; bottom: 24px; }
-/* .duo-panel qualifier (two classes) to outrank .preview-card-link{
-   position: relative } — same specificity otherwise, declared later in
-   the file, which would win the position property and leave this button
-   sitting in normal flow instead of pinned to the corner. */
-/* padding-top/bottom pinned to match .duo-essays-btn's (.hero-latest-btn)
+/* padding-top/bottom pinned to match .card-category-btn's (.hero-latest-btn)
    8px exactly — .preview-card-link's own base padding is 7px, one pixel
    short each side, which otherwise left the two corner buttons 2px
    different in height despite sharing font-size/line-height/border. */
 .duo-panel .duo-readon-btn{ position: absolute; right: 24px; bottom: 24px; padding-top: 8px; padding-bottom: 8px; }
+/* Date + likes, pinned to the corner the section button (.card-category-btn)
+   vacated when it moved up to mirror the kicker — see the comment there.
+   Plain text, not a button: no border, muted like the kicker/meta voice
+   elsewhere. The author (metaLine's other half) stays inline under the
+   dek instead — see .card-meta--byline. */
+.card-meta--stats{ position: absolute; left: 24px; bottom: 24px; }
 /* Thin rule between the dek above and the "From the Essay" tagline +
    pull-quote below it (the tagline sits under the divider, opening the
    quote block the way the kicker opens the title block). */
@@ -431,14 +434,11 @@ section{ padding: 80px 0; }
 .card--feature .card-image--blank,
 .card--duo .card-image,
 .card--duo .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
-/* "The Latest" — black pill with a white border, linking to the archive.
-   Lives inside the left (title/dek) column now, pinned to its bottom-left
-   corner via margin-top:auto in that flex column, so it only appears once
-   the column itself fades in on hover — and glows only when the pill
-   itself is hovered, not just whenever the card is. */
+/* "The Latest"/"Essays"/"Postscript"/"Contra"/"From the Archive" — the
+   current section, as a black pill with a white border. Only fades in
+   with the rest of the column/panel on hover — and glows only when the
+   pill itself is hovered, not just whenever the card is. */
 .hero-latest-btn{
-  align-self: flex-start;
-  margin-top: auto;
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
   padding: 8px 14px;
@@ -446,9 +446,21 @@ section{ padding: 80px 0; }
   text-decoration: none; line-height: 1;
   transition: box-shadow .25s ease;
 }
+/* Pinned to the top-right corner — .card-text--left (hero) and .duo-panel
+   (duo/trio/quad) are both already positioned ancestors. Mirrors the
+   topic kicker at top-left: same border/padding/type, opposite corner. */
+.card-category-btn{ position: absolute; top: 24px; right: 24px; }
 .hero-latest-btn:hover{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
+/* Hero only: "The Latest" sits bottom-left of its own column instead of
+   mirroring the kicker up top, with the date/likes stats sliding over to
+   bottom-right of that same column to make room — a swap unique to the
+   hero (the row panels below keep the top-right/bottom-left split above).
+   Two-class specificity beats the shared base rules regardless of source
+   order, so no !important needed. */
+.card--feature .card-category-btn{ top: auto; right: auto; bottom: 24px; left: 24px; }
+.card--feature .card-meta--stats{ left: auto; right: 24px; }
 /* A ring drawn as an ::after (rather than an inset box-shadow, which the
    opaque child img paints over and hides, or an outline, which some
    browsers won't render with a negative offset inside overflow:hidden)
@@ -495,21 +507,20 @@ section{ padding: 80px 0; }
    line box's leading opens a ~6px gap above the kicker, breaking the
    panel's square 24px inset. (The hero's flex columns blockify their
    children, which is why the same inline-block never showed a gap there.) */
+/* Styled as a button — same border/padding/type as .hero-latest-btn —
+   but deliberately NOT one: it's a <p>, not a link, it keeps no hover
+   glow, and caterpillar.js's selector (a.btn, .hero-latest-btn,
+   .preview-card-link) doesn't match it, so no border-tracing crawl.
+   width:fit-content shrinks the box to the label. */
 .card--feature .hero-kicker,
 .card--duo .hero-kicker{
   display: block; width: fit-content;
-  font-family: var(--mono); font-size: 0.75rem; font-weight: 575;
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
-  /* Top margin, not bottom: the kicker now sits UNDER the title (title,
-     kicker, dek, meta), and leaving its bottom at 0 lets the dek's own
-     16px top margin set that gap identically in the hero's flex column
-     (margins add) and the duo panels' block wrapper (margins collapse). */
-  margin: 8px 0 0;
-  transition: color .15s ease;
-}
-.card--feature .hero-kicker:hover,
-.card--duo .hero-kicker:hover{
-  color: var(--white);
+  background: var(--paper); color: var(--white);
+  border: 1px solid var(--white);
+  padding: 8px 14px;
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 575;
+  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+  margin: 0 0 14px;
 }
 /* Same font size for the duo cards' title/meta/dek as the hero's — the
    duo panels get no hero-title-fit.js run (that JS only targets
@@ -540,22 +551,22 @@ section{ padding: 80px 0; }
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 2; -webkit-line-clamp: 2;
 }
-/* Quad panels show kicker/title/meta plus the dek in a smaller size — the
+/* Quad panels show kicker/title/dek plus the date+likes corner (no
+   author — see taglineSection in build.js) in a smaller dek size — the
    review quote block (divider, "From the Review", preview text) is hidden
    outright; these squares have no room to excerpt anything meaningfully. */
-/* Tighter dek margin than the shared 16px — combined with the smaller
-   title above, it buys the worst case (two-line title + two-line meta)
-   enough room for at least one dek line in every square. */
-.card--quad .duo-panel .card-dek{ font-size: 0.8rem; margin-top: 8px; }
+.card--quad .duo-panel .card-dek{ font-size: 0.8rem; }
 .card--quad .duo-panel .duo-quote-divider,
 .card--quad .duo-panel .preview-tagline,
 .card--quad .duo-panel .card-preview-block{ display: none; }
 .card--feature .card-meta,
 .card--duo .card-meta{ margin-top: 10px; }
-/* Subheading matches the subheading size used in the other card grids. */
+/* Subheading matches the subheading size used in the other card grids.
+   No top margin — .card-title-divider between title and dek now owns
+   that gap. */
 .card--feature .card-dek,
 .card--duo .card-dek{
-  font-size: 0.92rem; margin: 16px 0 0; text-align: left;
+  font-size: 0.92rem; margin: 0; text-align: left;
 }
 /* Paragraphs of the piece (after any paid-subscriber appeal at the top of
    the post), reused from the same extraction that feeds the hover-preview
@@ -676,6 +687,12 @@ section{ padding: 80px 0; }
   }
   .card--feature .card-image,
   .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; object-fit: cover; }
+  /* The two corner-pinned elements drop into normal flow along with
+     everything else once .card-text--left itself goes static above —
+     an absolute position here would otherwise escape it for the next
+     positioned ancestor up (.card.card--feature). */
+  .card--feature .card-category-btn,
+  .card--feature .card-meta--stats{ position: static; margin-top: 12px; }
 }
 
 /* Same reasoning as the hero's own fallback above and the box card's
@@ -694,6 +711,7 @@ section{ padding: 80px 0; }
   .duo-panel .duo-essays-btn,
   .duo-panel .duo-readon-btn{ position: static; display: inline-block; margin-top: 12px; }
   .duo-essays-btn{ margin-right: 10px; }
+  .duo-panel .card-meta--stats{ position: static; margin-top: 12px; }
 }
 
 /* ---------- SECTION BLOCKS + CARDS ---------- */
@@ -726,14 +744,20 @@ section{ padding: 80px 0; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
 .card-text{ display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .card-title{
-  font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0 0 8px; color: var(--white);
+  font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0; color: var(--white);
   overflow-wrap: break-word;
 }
 .card-title a{ text-decoration:none; }
-/* Subheadings site-wide read in the courier voice, italicized — distinct
-   from both the Fraunces title above and the Source Serif body text. */
+/* Site-wide rule under every title, dek to meta — see .card-title-divider
+   for the markup. Owns the gap on both sides (title/dek margins that
+   would otherwise sit against it are zeroed), so it's a fixed 14px
+   regardless of which variant's font sizes surround it. */
+.card-title-divider{ height: 1px; background: var(--line); margin: 14px 0; }
+/* Subheadings site-wide: italic Source Serif in a light gray — a step
+   dimmer than the white body text below, a step brighter than the muted
+   courier kicker/meta, so all three voices read apart. */
 .card-dek{
-  color: var(--white); font-family: var(--mono); font-style: italic;
+  color: var(--body-text); font-family: var(--body); font-style: italic;
   font-size: 0.92rem; margin: 0 0 10px; overflow-wrap: break-word;
 }
 
