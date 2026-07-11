@@ -523,7 +523,22 @@ function normalizeRssItem(item) {
   };
 }
 
-function metaLine(post, { showDate = true } = {}) {
+// Shortened byline for authors whose full name doesn't fit the courier
+// meta voice as comfortably. Shared by metaLine's author span and the
+// essay row/hero's tagline-as-author substitution (see renderCard/
+// renderDuoHalf) so both read the same shortened, uppercased form.
+const AUTHOR_SHORT = { 'Josie Barboriak': 'Barboriak' };
+function authorDisplay(post) {
+  if (!post.author) return '';
+  return (AUTHOR_SHORT[post.author] || post.author).toUpperCase();
+}
+
+// include picks which of date/author/likes render, in that order — the
+// hero and duo panels (see renderCard/renderDuoHalf) split the one meta
+// line the box/grid cards still show in full into two: the author stays
+// inline under the dek, date+likes moved to their own line pinned to the
+// panel's bottom-left corner.
+function metaLine(post, { include = ['date', 'author', 'likes'] } = {}) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
   // metaDate is the manual override from content-overrides.js — a display
@@ -536,19 +551,32 @@ function metaLine(post, { showDate = true } = {}) {
           : { month: 'short', day: 'numeric' }).toUpperCase()
       : '';
   const parts = [];
-  if (showDate && md) parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
-  if (post.author) {
-    const AUTHOR_SHORT = { 'Josie Barboriak': 'Barboriak' };
-    const displayAuthor = AUTHOR_SHORT[post.author] || post.author;
-    parts.push(`<span class="meta-author">${escapeHtml(displayAuthor.toUpperCase())}</span>`);
+  if (include.includes('date') && md) parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
+  if (include.includes('author') && post.author) {
+    parts.push(`<span class="meta-author">${escapeHtml(authorDisplay(post))}</span>`);
   }
 
-  const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
-  parts.push(
-    `<span class="likes"><img class="likes-bird" src="${BIRD_LOGO}" alt="" aria-hidden="true"><span class="likes-count">${likes}</span></span>`
-  );
+  if (include.includes('likes')) {
+    const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
+    parts.push(
+      `<span class="likes"><img class="likes-bird" src="${BIRD_LOGO}" alt="" aria-hidden="true"><span class="likes-count">${likes}</span></span>`
+    );
+  }
 
   return parts.join(' <span class="meta-dot">&middot;</span> ');
+}
+
+// Which of essay/postscript/contra a tagline belongs to, read off the
+// tagline text itself (post.previewTagline for the hero/archive-mosaic
+// posts — set per-post in main() from their real section; the row's own
+// `tag` param for the essay/postscript/contra rows, where every post in
+// one row shares a section). 'other' covers untagged posts (editors'
+// notes), which keep the plain byline instead of either treatment below.
+function taglineSection(taglineText) {
+  if (/essay/i.test(taglineText)) return 'essay';
+  if (/interview/i.test(taglineText)) return 'postscript';
+  if (/review/i.test(taglineText)) return 'contra';
+  return 'other';
 }
 
 function renderNav(currentKey = 'home') {
@@ -613,6 +641,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         </a></span>
         <div class="card-text card-box-text">
           <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+          <div class="card-title-divider"></div>
           ${dekHtml}
           <p class="card-meta">${metaLine(post)}</p>
         </div>
@@ -656,20 +685,34 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     const readNowHtml = post.preview
       ? `<a class="card-preview-cta preview-card-link" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
       : '';
+    // The tagline reads the post's own section (see taglineSection): essay
+    // posts swap the "from the essay" label for the author's name outright
+    // (no separate byline needed once the tagline slot carries it);
+    // postscript/contra keep their section label but drop the author
+    // everywhere — only the untagged "from the editors" fallback still
+    // gets the plain byline under the dek.
+    const effectiveTag = post.previewTagline || 'from the essay';
+    const section = taglineSection(effectiveTag);
+    const taglineText = section === 'essay' && post.author ? authorDisplay(post) : effectiveTag;
+    const authorHtml = post.author && section === 'other'
+      ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
+      : '';
     return `
     <article class="${cls}">
       <div class="card-text card-text--left">
-        <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
         ${kickerHtml}
+        <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+        <div class="card-title-divider"></div>
         ${dekHtml}
-        <p class="card-meta">${metaLine(post)}</p>
-        <a class="hero-latest-btn" href="/archive.html">The Latest</a>
+        ${authorHtml}
+        <a class="hero-latest-btn card-category-btn" href="/archive.html">The Latest</a>
+        <p class="card-meta card-meta--stats">${metaLine(post, { include: ['date', 'likes'] })}</p>
       </div>
       <div class="feature-image-cell">
         ${imageHtml}
       </div>
       <div class="card-text card-text--right">
-        <p class="preview-tagline">${escapeHtml(post.previewTagline || 'from the essay')}</p>
+        <p class="preview-tagline">${escapeHtml(taglineText)}</p>
         ${previewHtml}
         ${readNowHtml}
       </div>
@@ -681,6 +724,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
       ${imageHtml}
       <div class="card-text">
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+        <div class="card-title-divider"></div>
         ${dekHtml}
         <p class="card-meta">${metaLine(post)}</p>
       </div>
@@ -690,10 +734,12 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
 // One card — not several — holding a row of posts side by side, divider-
 // separated (see .card--duo in style.css). Each cell gets the hero card's
 // hover-reveal mechanic (image always visible, text panel hidden until
-// hover), but as a single panel per cell — title block anchored to the
-// top, section button and "Read on" pinned to the bottom corners, any
-// leftover space in between left empty — rather than the hero's two
-// side-by-side columns, since each cell is far narrower than the hero.
+// hover), but as a single panel per cell, four corners pinned: the topic
+// kicker top-left (in flow, not absolute — see .hero-kicker in style.css)
+// and the section button top-right mirror each other, date+likes sit
+// bottom-left and "Read on" bottom-right, with the title/dek/byline block
+// and any leftover space in between left alone — rather than the hero's
+// two side-by-side columns, since each cell is far narrower than the hero.
 // Takes the post's own .kicker (set per-slug in content-overrides.js),
 // unlike the hero which falls back to HERO_KICKER. tag/btnLabel/btnHref
 // point the row at its section (essays by default; the postscript row
@@ -725,21 +771,33 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   const readNowHtml = previewParas.length
     ? `<a class="card-preview-cta preview-card-link duo-readon-btn" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
     : '';
+  // See the matching comment in renderCard's feature variant: essay rows
+  // swap their tagline for the author's name and drop the byline (the
+  // tagline slot now carries it); postscript/contra keep "From the
+  // Interview"/"From the Review" but never show the author at all.
+  const effectiveTag = post.previewTagline || tag;
+  const section = taglineSection(effectiveTag);
+  const taglineText = section === 'essay' && post.author ? authorDisplay(post) : effectiveTag;
+  const authorHtml = post.author && section === 'other'
+    ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
+    : '';
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             ${kickerHtml}
+            <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+            <div class="card-title-divider"></div>
             ${dekHtml}
-            <p class="card-meta">${metaLine(post)}</p>
+            ${authorHtml}
             <div class="duo-quote-divider"></div>
-            <p class="preview-tagline">${escapeHtml(post.previewTagline || tag)}</p>
+            <p class="preview-tagline">${escapeHtml(taglineText)}</p>
             ${previewHtml}
           </div>
-          <a class="hero-latest-btn duo-essays-btn" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
+          <a class="hero-latest-btn duo-essays-btn card-category-btn" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
+          <p class="card-meta card-meta--stats">${metaLine(post, { include: ['date', 'likes'] })}</p>
           ${readNowHtml}
         </div>
       </div>`;
@@ -896,11 +954,19 @@ ${renderDuoPanelFitScript()}
 function renderHeroPreviewFitScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/hero-preview-fit.js'), 'utf8');
   const titleJs = fs.readFileSync(path.join(__dirname, 'src/hero-title-fit.js'), 'utf8');
+  // Loaded after hero-title-fit.js — both register on the same
+  // document.fonts.ready promise, and callbacks fire in registration
+  // order, so the title's final size settles before the dek fitter reads
+  // where it ends.
+  const dekJs = fs.readFileSync(path.join(__dirname, 'src/hero-dek-fit.js'), 'utf8');
   return `<script>
 ${js}
 </script>
 <script>
 ${titleJs}
+</script>
+<script>
+${dekJs}
 </script>`;
 }
 

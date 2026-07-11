@@ -41,51 +41,20 @@
     return true;
   }
 
-  // Contra squares (.card--quad) show the meta line (date · author ·
-  // likes) with the title — a long author name can push the meta onto a
-  // second line, which the fitter below would then read as extra height
-  // eating into the dek's budget. Only the author's name shrinks (the
-  // widest, most variable part); the date, the likes, and the kicker all
-  // hold their shared 12px so the line still reads as one piece.
-  function fitQuadMeta(panel) {
-    if (!panel.closest('.card--quad')) return;
-    var meta = panel.querySelector('.card-meta');
-    if (!meta) return;
-    var author = meta.querySelector('.meta-author');
-    if (!author) return;
-    author.style.fontSize = '';
-
-    // "On one line" can't be read off matching tops anymore: once the
-    // author is smaller than its siblings, baseline alignment staggers the
-    // tops even within a single line. Wrapped means some child STARTS
-    // below the first child's bottom.
-    function wraps() {
-      var kids = [].filter.call(meta.children, function(k){ return getComputedStyle(k).display !== 'none'; });
-      if (kids.length < 2) return false;
-      var firstBottom = kids[0].getBoundingClientRect().bottom;
-      return kids.some(function(k){ return k.getBoundingClientRect().top >= firstBottom - 2; });
-    }
-
-    var size = 12; // px, matches .card-meta's 0.75rem
-    while (wraps() && size > 9) {
-      size -= 0.5;
-      author.style.fontSize = size + 'px';
-    }
-  }
-
   function fit(panel) {
     var topBox = panel.querySelector('.duo-panel-top');
-    var btn = panel.querySelector('.duo-essays-btn') || panel.querySelector('.duo-readon-btn');
+    // The section button (.duo-essays-btn) sits at the top corner now —
+    // it no longer marks where the bottom content zone ends. The bottom
+    // row is whichever of the read-on link and the date/likes stats line
+    // is present (stats is always rendered; read-on only when there's a
+    // preview excerpt to link to).
+    var btn = panel.querySelector('.duo-readon-btn') || panel.querySelector('.card-meta--stats');
     if (!topBox || !btn) return;
 
     // Reset any previous fit so a refit measures the natural layout.
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     var paras = topBox.querySelectorAll('.card-preview');
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
-
-    // Runs regardless of layout (static or absolute) — an overflowing meta
-    // line is a font-size problem, not a space-budget one.
-    fitQuadMeta(panel);
 
     // In the static fallback layout (touch devices / narrow viewports) the
     // panel flows under the image and the buttons sit in flow too — nothing
@@ -100,14 +69,15 @@
     });
 
     var limit = btn.getBoundingClientRect().top - 12;
-    // The meta line sits BELOW the dek now (title, kicker, dek, meta), so
-    // the bottom-up cut would reach it first — but a byline shouldn't be
-    // traded away for dek lines. Priority runs title > meta > dek: the
-    // DEK alone fits against a limit with the meta's height reserved out
-    // of it (so it clamps a line early and the meta rides in the space
+    // The byline (author only — date/likes moved out to .card-meta--stats,
+    // pinned bottom-left outside topBox) sits right below the dek — the
+    // bottom-up cut would reach it first, but a byline shouldn't be traded
+    // away for dek lines. Priority runs title > byline > dek: the DEK
+    // alone fits against a limit with the byline's height reserved out of
+    // it (so it clamps a line early and the byline rides in the space
     // that saves); the title and kicker keep the full limit — a reserve
     // big enough to evict the title would defeat the whole panel.
-    var meta = topBox.querySelector('.card-meta');
+    var meta = topBox.querySelector('.card-meta--byline');
     var metaSpace = 0;
     if (meta && getComputedStyle(meta).display !== 'none') {
       metaSpace = meta.getBoundingClientRect().height
