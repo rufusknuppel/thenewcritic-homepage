@@ -110,7 +110,7 @@ a{ color: inherit; }
 .nav-brand{
   display: block; text-decoration: none;
   font-family: var(--display); font-weight: 600; font-size: 1.3rem;
-  line-height: 1.25; letter-spacing: 0.01em; color: var(--white);
+  line-height: 1.25; letter-spacing: 0.035em; color: var(--white);
 }
 /* Frame's own right edge flush with the content edge (same edge
    .nav-subscribe's right edge sits on, since .nav-top stretches to the
@@ -139,7 +139,7 @@ a{ color: inherit; }
 }
 .nav-subscribe{ width: 100%; }
 .nav-tagline{
-  font-family: var(--mono); font-weight: 575; font-size: 0.65rem;
+  font-family: var(--mono); font-weight: 575; font-style: italic; font-size: 0.65rem;
   letter-spacing: 0.04em;
   color: var(--muted); margin: 0; line-height: 1.5; text-align: center; width: 100%;
   transition: color .15s ease;
@@ -486,16 +486,25 @@ section{ padding: 80px 0; }
 }
 /* Small courier kicker above the title (see HERO_KICKER in build.js and,
    for the duo cards, the per-post kicker overrides in content-overrides.js).
-   inline-block (rather than the <p> default of block) shrinks the element
-   to the text's own width, so :hover only fires over the letters
+   width:fit-content (rather than the <p> default full width) shrinks the
+   element to the text's own width, so :hover only fires over the letters
    themselves — a block-width kicker would keep firing on hover anywhere
-   in the empty space beside the short label. */
+   in the empty space beside the short label. Kept display:block (not
+   inline-block): inside the duo/trio/quad panels' .duo-panel-top block
+   wrapper, an inline-block rides the wrapper's text baseline and its
+   line box's leading opens a ~6px gap above the kicker, breaking the
+   panel's square 24px inset. (The hero's flex columns blockify their
+   children, which is why the same inline-block never showed a gap there.) */
 .card--feature .hero-kicker,
 .card--duo .hero-kicker{
-  display: inline-block;
+  display: block; width: fit-content;
   font-family: var(--mono); font-size: 0.75rem; font-weight: 575;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
-  margin: 0 0 10px;
+  /* Top margin, not bottom: the kicker now sits UNDER the title (title,
+     kicker, dek, meta), and leaving its bottom at 0 lets the dek's own
+     16px top margin set that gap identically in the hero's flex column
+     (margins add) and the duo panels' block wrapper (margins collapse). */
+  margin: 8px 0 0;
   transition: color .15s ease;
 }
 .card--feature .hero-kicker:hover,
@@ -614,9 +623,12 @@ section{ padding: 80px 0; }
    .hero-kicker (family, weight, size, letter-spacing, margin) so column 3
    opens with the same visual weight and spacing as column 1's kicker.
    Duo cards reuse it verbatim for their fixed "From the Essay" tag. */
+/* block + fit-content, not inline-block, for the same reason as
+   .hero-kicker above — no baseline leading above it inside
+   .duo-panel-top. */
 .card--feature .preview-tagline,
 .card--duo .preview-tagline{
-  display: inline-block;
+  display: block; width: fit-content;
   font-family: var(--mono); font-weight: 575; font-size: 0.75rem;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
@@ -718,7 +730,12 @@ section{ padding: 80px 0; }
   overflow-wrap: break-word;
 }
 .card-title a{ text-decoration:none; }
-.card-dek{ color: var(--white); font-size: 0.92rem; margin: 0 0 10px; overflow-wrap: break-word; }
+/* Subheadings site-wide read in the courier voice, italicized — distinct
+   from both the Fraunces title above and the Source Serif body text. */
+.card-dek{
+  color: var(--white); font-family: var(--mono); font-style: italic;
+  font-size: 0.92rem; margin: 0 0 10px; overflow-wrap: break-word;
+}
 
 .card-meta{
   /* Same size as the kickers (.hero-kicker / .preview-tagline). */
@@ -838,7 +855,10 @@ section{ padding: 80px 0; }
 
 .about-card{
   background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--white);
-  padding: 32px 36px;
+  /* 24px square, same interior inset as the rest of the card system (the
+     old 32px 36px was borrowed from the give page's ledger cards, which
+     keep their own padding as part of that page's design-match). */
+  padding: 24px;
 }
 .about-card p{ color: var(--white); margin: 0 0 18px; }
 .about-card p a{ color: var(--white); text-decoration: none; }
@@ -880,14 +900,8 @@ section{ padding: 80px 0; }
 
 /* ---------- FOOTER ---------- */
 footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
-/* inline-block (not block) so the hoverable area is just the bird icon
-   itself, not the full-width line it sits on. */
-.foot-bird-link{ display:inline-block; }
-.foot-bird{ width: 26px; margin: 0 auto 8px; opacity: 1; }
-.foot-tag{ font-family: var(--display); font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0 0 10px; }
-.foot-links{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap: 14px; margin:0 0 8px; padding:0; font-family: var(--mono); font-weight: 575; font-size: 0.722rem; text-transform: uppercase; letter-spacing: 0.03em; }
-.foot-links a{ text-decoration:none; color: var(--muted); transition: color .15s ease; }
-.foot-links a:hover{ color: var(--white); }
+/* Footer is just the fine-print line now — the bird and the link list
+   were removed (their .foot-bird/.foot-links rules with them). */
 .foot-fine{ font-family: var(--mono); font-weight: 575; font-size: 0.665rem; color: var(--muted); letter-spacing: 0.02em; margin:0; }
 /* Each segment of the bottom line (©, est., email) lights up on its own
    hover, same treatment as the link row above it. */
@@ -903,7 +917,9 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   background: var(--surface);
   border: 1px solid var(--line);
   border-top: none;
-  padding: 16px 18px;
+  /* 24px square, same interior inset as every other card/panel (duo
+     panels, hero side panels, grid cards, box overlays). */
+  padding: 24px;
   font-family: var(--body);
   font-size: 0.88rem;
   line-height: 1.6;
@@ -976,7 +992,8 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 14px 16px;
+  /* 24px square, matching the rest of the card system's interior inset. */
+  padding: 24px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 60%);
   opacity: 0;
   transition: opacity .25s ease;
