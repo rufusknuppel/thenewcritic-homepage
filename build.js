@@ -295,12 +295,24 @@ function stripHtml(html) {
   // block/paragraph boundaries stay word-separated — but that also inserts
   // a stray space wherever an inline tag like <em>/<strong> hugs the word
   // before it or a punctuation mark after it (e.g. "the <em>Free Press</em>."
-  // -> "the  Free Press ." before cleanup), so a trailing space-before-
-  // punctuation is stripped once the run of tags collapses to single spaces.
-  return unescapeXml((html || '').replace(/<[^>]*>/g, ' '))
-    .replace(/\s+/g, ' ')
-    .replace(/ +([.,!?;:])/g, '$1')
-    .trim();
+  // -> "the  Free Press ." before cleanup) — see tidyInlineSpaces below.
+  return tidyInlineSpaces(
+    unescapeXml((html || '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ')
+  ).trim();
+}
+
+// Collapse the stray spaces left where an inline tag hugged punctuation —
+// before .,!?;: and closing quotes/brackets, after opening ones. Called at
+// the end of stripHtml, and AGAIN after unescapeNumericEntities in
+// extractParagraphs: in RSS bodies the curly quotes arrive as numeric
+// entities (&#8220;), invisible to these patterns until unescaped.
+// ’ is excluded because it legitimately opens elided words ("love ’em",
+// "’90s"); straight quotes because they don't distinguish opening from
+// closing.
+function tidyInlineSpaces(text) {
+  return text
+    .replace(/ +([.,!?;:”)\]])/g, '$1')
+    .replace(/([“‘(\[]) +/g, '$1');
 }
 
 // Unescape numeric HTML entities that survive after stripHtml (e.g. &#8220; &#x2014;).
@@ -404,7 +416,10 @@ function extractParagraphs(html, max) {
   const out = [];
   while ((m = re.exec(cleaned)) !== null) {
     if (/button-wrapper/.test(m[1])) continue;
-    let text = unescapeNumericEntities(stripHtml(m[2]).trim());
+    // tidyInlineSpaces runs a second time here because unescaping can
+    // surface punctuation (curly quotes as &#8220;) that stripHtml's own
+    // pass couldn't see yet.
+    let text = tidyInlineSpaces(unescapeNumericEntities(stripHtml(m[2]).trim()));
     if (!text) continue;
     if (insideJunkAside) {
       if (text.endsWith('*')) insideJunkAside = false;
@@ -563,16 +578,8 @@ function renderNav(currentKey = 'home') {
 
 function renderFooter() {
   const year = new Date().getFullYear();
-  const links = SITE_LINKS.filter((l) => l.key !== 'home').map(
-    (l) => `<li><a href="${escapeHtml(l.href)}"${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`
-  ).join('\n      ');
-
   return `<footer>
   <div class="wrap">
-    <a class="foot-bird-link" href="/"><img class="foot-bird" src="${BIRD_LOGO}" alt="The New Critic"></a>
-    <ul class="foot-links">
-      ${links}
-    </ul>
     <p class="foot-fine"><span class="foot-fine-item">&copy; ${year} The New Critic</span> &middot; <span class="foot-fine-item">est. May 2025</span> &middot; <span class="foot-fine-item">editors@thenewcritic.com</span></p>
   </div>
 </footer>`;
@@ -652,10 +659,10 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     return `
     <article class="${cls}">
       <div class="card-text card-text--left">
-        ${kickerHtml}
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-        <p class="card-meta">${metaLine(post)}</p>
+        ${kickerHtml}
         ${dekHtml}
+        <p class="card-meta">${metaLine(post)}</p>
         <a class="hero-latest-btn" href="/archive.html">The Latest</a>
       </div>
       <div class="feature-image-cell">
@@ -699,7 +706,10 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
 // (archive-tall / archive-wide).
 function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   const kickerHtml = post.kicker ? `<p class="hero-kicker">${escapeHtml(post.kicker)}</p>` : '';
-  const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, 140))}</p>` : '';
+  // Full, untruncated subtitle — duo-panel-fit.js clamps it to the lines
+  // the panel actually has room for. A build-time character cut here (the
+  // old truncate(…, 140)) ellipsized deks short of space the panel had.
+  const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>` : '';
   // Full, untruncated paragraphs (several of them where the row-posts
   // fetch in main() ran) — duo-panel-fit.js decides at render time how
   // many lines each panel actually has room for and clamps there, with
@@ -717,14 +727,14 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
     : '';
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} loading="lazy">` : '<span class="card-image card-image--blank"></span>'}
+          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
-            ${kickerHtml}
             <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-            <p class="card-meta">${metaLine(post)}</p>
+            ${kickerHtml}
             ${dekHtml}
+            <p class="card-meta">${metaLine(post)}</p>
             <div class="duo-quote-divider"></div>
             <p class="preview-tagline">${escapeHtml(post.previewTagline || tag)}</p>
             ${previewHtml}
@@ -939,6 +949,15 @@ function renderCaterpillarScript() {
 ${js}
 </script>`;
 }
+// Clamps box-card deks so the meta line never intrudes into the box's own
+// bottom padding (see src/box-fit.js). Shell-wide: pages without box cards
+// (about, give) hit the early return and it's a no-op.
+function renderBoxFitScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/box-fit.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
 function renderPageShell({ currentKey, title, description, bodyHtml }) {
   return `<!doctype html>
 <html lang="en">
@@ -968,6 +987,7 @@ ${renderFooter()}
 
 ${renderRevealScript()}
 ${renderPreviewCard()}
+${renderBoxFitScript()}
 ${renderCaterpillarScript()}
 </body>
 </html>`;

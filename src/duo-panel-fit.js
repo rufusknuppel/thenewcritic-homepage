@@ -41,33 +41,35 @@
     return true;
   }
 
-  // Contra squares (.card--quad) show the kicker and the meta line (date ·
-  // author · likes) right under the title — a long author name or a wide
-  // date can push the meta onto a second line, which the fitter below would
-  // then read as extra height eating into the dek's budget. Shrinking both
-  // the kicker and the meta together (they're already the same font-size —
-  // see .card-meta's comment in style.css) keeps the meta on one line and
-  // its kicker visually matched, rather than just the meta on its own.
+  // Contra squares (.card--quad) show the meta line (date · author ·
+  // likes) with the title — a long author name can push the meta onto a
+  // second line, which the fitter below would then read as extra height
+  // eating into the dek's budget. Only the author's name shrinks (the
+  // widest, most variable part); the date, the likes, and the kicker all
+  // hold their shared 12px so the line still reads as one piece.
   function fitQuadMeta(panel) {
     if (!panel.closest('.card--quad')) return;
     var meta = panel.querySelector('.card-meta');
-    var kicker = panel.querySelector('.hero-kicker');
     if (!meta) return;
-    meta.style.fontSize = '';
-    if (kicker) kicker.style.fontSize = '';
+    var author = meta.querySelector('.meta-author');
+    if (!author) return;
+    author.style.fontSize = '';
 
+    // "On one line" can't be read off matching tops anymore: once the
+    // author is smaller than its siblings, baseline alignment staggers the
+    // tops even within a single line. Wrapped means some child STARTS
+    // below the first child's bottom.
     function wraps() {
       var kids = [].filter.call(meta.children, function(k){ return getComputedStyle(k).display !== 'none'; });
       if (kids.length < 2) return false;
-      var top = kids[0].getBoundingClientRect().top;
-      return kids.some(function(k){ return Math.abs(k.getBoundingClientRect().top - top) > 1; });
+      var firstBottom = kids[0].getBoundingClientRect().bottom;
+      return kids.some(function(k){ return k.getBoundingClientRect().top >= firstBottom - 2; });
     }
 
-    var size = 12; // px, matches .card-meta/.hero-kicker's shared 0.75rem
+    var size = 12; // px, matches .card-meta's 0.75rem
     while (wraps() && size > 9) {
       size -= 0.5;
-      meta.style.fontSize = size + 'px';
-      if (kicker) kicker.style.fontSize = size + 'px';
+      author.style.fontSize = size + 'px';
     }
   }
 
@@ -98,23 +100,44 @@
     });
 
     var limit = btn.getBoundingClientRect().top - 12;
+    // The meta line sits BELOW the dek now (title, kicker, dek, meta), so
+    // the bottom-up cut would reach it first — but a byline shouldn't be
+    // traded away for dek lines. Priority runs title > meta > dek: the
+    // DEK alone fits against a limit with the meta's height reserved out
+    // of it (so it clamps a line early and the meta rides in the space
+    // that saves); the title and kicker keep the full limit — a reserve
+    // big enough to evict the title would defeat the whole panel.
+    var meta = topBox.querySelector('.card-meta');
+    var metaSpace = 0;
+    if (meta && getComputedStyle(meta).display !== 'none') {
+      metaSpace = meta.getBoundingClientRect().height
+        + (parseFloat(getComputedStyle(meta).marginTop) || 0);
+    }
     var cutting = false;
     [].forEach.call(topBox.children, function(el){
-      if (cutting) { el.style.display = 'none'; return; }
       if (getComputedStyle(el).display === 'none') return;
+      if (cutting) {
+        if (el !== meta) { el.style.display = 'none'; return; }
+        // The meta survives the cut — its space was reserved. Only if it
+        // still crosses the real limit (a panel too small for even the
+        // title + meta) does it hide like everything else.
+        if (el.getBoundingClientRect().bottom > limit) el.style.display = 'none';
+        return;
+      }
+      var lim = el.classList.contains('card-dek') ? limit - metaSpace : limit;
       if (el.classList.contains('card-preview-block')) {
         var parasCut = false;
         [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
           if (parasCut) { p.style.display = 'none'; return; }
-          if (p.getBoundingClientRect().bottom <= limit) return;
+          if (p.getBoundingClientRect().bottom <= lim) return;
           parasCut = true;
-          clampToFit(p, limit);
+          clampToFit(p, lim);
         });
-      } else if (el.getBoundingClientRect().bottom > limit) {
+      } else if (el.getBoundingClientRect().bottom > lim) {
         cutting = true;
         // The dek is running text — give it however many lines fit rather
         // than dropping the whole thing. Hard blocks just hide.
-        if (!el.classList.contains('card-dek') || !clampToFit(el, limit)) {
+        if (!el.classList.contains('card-dek') || !clampToFit(el, lim)) {
           el.style.display = 'none';
         }
       }
