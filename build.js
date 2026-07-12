@@ -239,6 +239,17 @@ async function fetchExtendedPreview(url, max) {
   return extractParagraphs(bodyHtml || '', max);
 }
 
+// Like Promise.all(items.map(fn)) but `size` at a time — the section pages
+// pull previews for every post in every section, and firing ~75 requests
+// at Substack in one burst is the kind of thing that gets throttled.
+async function mapBatched(items, size, fn) {
+  const out = [];
+  for (let i = 0; i < items.length; i += size) {
+    out.push(...(await Promise.all(items.slice(i, i + size).map(fn))));
+  }
+  return out;
+}
+
 function dedupeByLink(posts) {
   const seen = new Set();
   return posts.filter((p) => {
@@ -284,10 +295,38 @@ function focalStyle(post) {
 // two-line drop cap (see .card-preview-dropcap) — a magazine-style flourish
 // on the feature card's opening paragraph. If the paragraph opens with a
 // quotation mark, it drops along with the letter, as is conventional.
+// Substack italics survive extraction as control-char markers (see
+// extractParagraphs), inert everywhere plain text goes and swapped back
+// for real <em> tags only here, after HTML-escaping the text around them.
+const EM_OPEN = '\u0001';
+const EM_CLOSE = '\u0002';
+
+function stripEmMarkers(text) {
+  return (text || '').replace(/[\u0001\u0002]/g, '');
+}
+
+function emHtml(text) {
+  let html = escapeHtml(text).replace(/\u0001/g, '<em>').replace(/\u0002/g, '</em>');
+  // A truncation (truncateWords) can cut a paragraph off mid-italic,
+  // leaving an unclosed <em> — balance it rather than leaning on the
+  // browser's auto-close.
+  const opens = (html.match(/<em>/g) || []).length;
+  const closes = (html.match(/<\/em>/g) || []).length;
+  if (opens > closes) html += '</em>'.repeat(opens - closes);
+  return html;
+}
+
 function wrapDropCap(text) {
-  const m = /^(["'“‘]?\w)(.*)$/s.exec(text);
-  if (!m) return escapeHtml(text);
-  return `<span class="card-preview-dropcap">${escapeHtml(m[1])}</span>${escapeHtml(m[2])}`;
+  // A transcript line opens on an all-caps speaker label ("ELAN KLUGER
+  // Let's begin…") — a giant initial "E" followed by "LAN KLUGER" would
+  // read as gibberish, so those paragraphs keep a plain opening.
+  if (/^[A-Z]{2,}\b/.test(text)) return emHtml(text);
+  // A leading italics marker (a paragraph opening mid-<em>) is captured
+  // apart from the cap letter and re-opened after it — the cap itself
+  // renders in the display face either way.
+  const m = /^(\u0001?)(["'“‘]?\w)([\s\S]*)$/.exec(text);
+  if (!m) return emHtml(text);
+  return `<span class="card-preview-dropcap">${escapeHtml(m[2])}</span>${emHtml(m[1] + m[3])}`;
 }
 
 function stripHtml(html) {
@@ -334,18 +373,41 @@ function unescapeNumericEntities(text) {
 // paragraph so a later one showed up on cards as if it were the first.
 const BIO_PATTERNS = [
   // The bio's copula, in the first sentence: "Clare Ashcraft is a proud,
-  // 22-year-old Ohioan…" / "Theodore Gary is a 22-year-old graduate…".
-  // [^.!?] bounds keep both sides inside that sentence, so prose whose
-  // LATER clauses mention someone's age isn't touched.
-  /^[^.!?]{0,60}\bis an? [^.!?]{0,24}\d+-year-old\b/i,
+  // 22-year-old Ohioan…" / "Theodore Gary is a 22-year-old graduate…" /
+  // "John Coleman is the 22-year-old president…" / "Grace Caplan is
+  // 21-year-old senior…" (sic, no article) / "Daniel Sandoval is the
+  // pseudonym of a 21-year-old undergraduate…". [^.!?] bounds keep both
+  // sides inside that sentence, so prose whose LATER clauses mention
+  // someone's age isn't touched.
+  /^[^.!?]{0,60}\bis (?:an? |the )?[^.!?]{0,24}\d+-year-old\b/i,
   // Same copula shape for age-less bios: "Josie Barboriak is a writer…".
-  /^\S+(?: \S+){0,5} is an? (writer|editor|journalist|poet|critic|essayist|contributor)\b/i,
+  /^\S+(?: \S+){0,5} is (?:an?|the) (writer|editor|journalist|poet|critic|essayist|contributor)\b/i,
+  // Interview-subject placement bios: "Charlotte is from New York City and
+  // the editor-in-chief of The Dartmouth…". A short name-shaped opener
+  // bounds it — real prose opening on a place ("Mecosta, Michigan is
+  // almost inaccessible…") doesn't fit the "is from" shape.
+  /^\S+(?: \S+){0,3} is from\b/i,
   // Postscript editorial framing before the interview proper.
   /^What follows is a conversation\b/i,
   /^In the following conversation\b/i,
   // "Our conversation — on the unwritten rules of…, is below." /
-  // "Our conversation has been edited for length and clarity."
-  /^Our conversation\b/i,
+  // "Our conversation has been edited for length and clarity." /
+  // "This conversation has been edited…" / "This interview has been edited…"
+  /^(Our|This) (conversation|interview)\b/i,
+  // The two paragraphs of Postscript's paid-subscription appeal. They sit
+  // mid-run inside the starred intro (whose opener is real framing, not
+  // ASIDE_JUNK), so the run flows through this filter paragraph by
+  // paragraph and these two need their own anchored shapes:
+  // "Our essays are always online and always free, but we rely on
+  // individual donors to support the magazine." and "Postscript, our
+  // interview series, can be accessed with a paid subscription. The $30
+  // annual rate…".
+  /^Our essays are always online\b/i,
+  /^[^.!?]{0,60}\bcan be accessed with a paid subscription\b/i,
+  // "If you read The New Critic and take delight or solace in our project,
+  // please consider a paid subscription to this flesh-and-blood gen z
+  // magazine." — the plea's closing paragraph, phrased sentence-first.
+  /^[^.!?]{0,80}\bplease consider a paid subscription\b/i,
   // Interview-transcript lines: an all-caps speaker name opening the
   // paragraph ("ELAN How did you find out…" / "TESSA Your career is…").
   /^[A-Z]{3,} [A-Z“”"‘’']/,
@@ -363,7 +425,14 @@ function looksLikeProse(text) {
   // Contra manifesto opener, and it silently dropped short real
   // paragraphs ("Fellow mass cultural critics have been quick to anoint
   // her.") out of multi-paragraph previews.
-  if (!/[.!?…]['"”’)\]]*$/.test(text)) return false;
+  // A long paragraph ending in ':' is prose introducing a quote (e.g. "...a
+  // portrait that Stevie told me forms a pretty accurate picture of
+  // Yarvin's psychology):" ahead of a New Yorker blockquote in the Curtis
+  // Yarvin Jr. postscript) rather than a short label/attribution — the
+  // length cutoff is generous enough to clear any real attribution line
+  // ("Jonathan Haidt:") while still catching genuine intro paragraphs.
+  const endsWithColon = /:['"”’)\]]*$/.test(text);
+  if (!/[.!?…]['"”’)\]]*$/.test(text) && !(endsWithColon && text.length > 80)) return false;
   // Editorial notices often start with * or contain embedded * announcement markers.
   if (text.startsWith('*') || /\s\*[A-Z]/.test(text)) return false;
   // Paragraphs opening with a run of all-caps words are mastheads or section headers.
@@ -411,35 +480,88 @@ function extractParagraphs(html, max) {
   // Keyed to the housekeeping phrases the openers actually use — not bare
   // /subscri/ or /register/, which also live in real prose ("she has over
   // 54,000 subscribers on Substack", a singer's vocal register).
-  const ASIDE_JUNK = /paid subscri|\bcontest\b|celebrate our readers|you can access/i;
+  const ASIDE_JUNK = /paid subscri|\bcontest\b|celebrate our readers|you can access|individual donors/i;
   let insideJunkAside = false;
   const out = [];
+  // Interview-transcript lines ("ELAN KLUGER Let's begin…") are filtered
+  // out of prose previews (see BIO_PATTERNS), but some Postscript posts
+  // are transcript all the way down — no essayistic intro, no "Below we
+  // discuss" line — and a card with no excerpt at all is worse than one
+  // that opens on the conversation itself. Collect the transcript lines
+  // that would otherwise pass the prose check, as a fallback used only
+  // when no real prose survives.
+  const TRANSCRIPT_LINE = /^[A-Z]{3,} [A-Z“”"‘’']/;
+  const transcript = [];
   while ((m = re.exec(cleaned)) !== null) {
     if (/button-wrapper/.test(m[1])) continue;
+    // The post's own <em>/<i> italics ride through the tag-stripping as
+    // control-char markers (emHtml swaps them back for real <em> at
+    // render time). Replaced with markers — not spaces, like every other
+    // tag — so an italic hugging its neighbors ("the <em>Free Press</em>.")
+    // doesn't grow stray spaces either.
+    const marked = m[2].replace(/<(\/?)(?:em|i)\b[^>]*>/gi, (_, close) =>
+      close ? EM_CLOSE : EM_OPEN
+    );
     // tidyInlineSpaces runs a second time here because unescaping can
     // surface punctuation (curly quotes as &#8220;) that stripHtml's own
     // pass couldn't see yet.
-    let text = tidyInlineSpaces(unescapeNumericEntities(stripHtml(m[2]).trim()));
+    let text = tidyInlineSpaces(unescapeNumericEntities(stripHtml(marked).trim()));
+    // Clean up marker noise. Substack nests spans inside its italics
+    // (<em><span>Obsession</span></em>) and stripHtml turns those inner
+    // tags into spaces, leaving them INSIDE the markers ("\u0001 Obsession
+    // \u0002.") — where a trailing one is a break opportunity that lets
+    // the period after the italic wrap to a line of its own, and where
+    // tidyInlineSpaces can't see the " ." it would normally collapse.
+    // Hoist boundary whitespace out of the markers first; then an
+    // "italic" wrapping only whitespace becomes that whitespace, and
+    // back-to-back runs ("</em> <em>") merge — both would otherwise
+    // render as empty or fragmented <em> tags. Then re-tidy, which also
+    // recollapses the doubled spaces hoisting leaves behind.
+    text = text
+      .replace(/\u0001\s+/g, ' \u0001')
+      .replace(/\s+\u0002/g, '\u0002 ')
+      .replace(/\u0001(\s*)\u0002/g, '$1')
+      .replace(/\u0002(\s*)\u0001/g, '$1');
+    text = tidyInlineSpaces(text.replace(/\s{2,}/g, ' ')).trim();
     if (!text) continue;
+    // Every shape test below runs against the marker-free copy — a
+    // paragraph that opens or closes inside an italic would otherwise
+    // slip every ^- and $-anchored pattern.
+    let plain = stripEmMarkers(text);
+    if (!plain) continue;
     if (insideJunkAside) {
-      if (text.endsWith('*')) insideJunkAside = false;
+      if (plain.endsWith('*')) insideJunkAside = false;
       continue;
     }
-    if (text.startsWith('*')) {
-      if (text.endsWith('*') && text.length > 1) continue;
-      if (ASIDE_JUNK.test(text)) {
+    if (plain.startsWith('*')) {
+      if (plain.endsWith('*') && plain.length > 1) continue;
+      if (ASIDE_JUNK.test(plain)) {
         insideJunkAside = true;
         continue;
       }
       // Italicized intro run — fall through to the prose filter.
     }
-    text = text.replace(/^\*+/, '').replace(/\*+$/, '').trim();
-    if (looksLikeProse(text)) {
+    // Strip the run's star markers from the kept text too — they can sit
+    // just inside an italics marker ("<em>*What follows…"), so the marker
+    // itself survives while the stars go.
+    text = text
+      .replace(/^([\u0001\u0002]*)\*+/, '$1')
+      .replace(/\*+([\u0001\u0002]*)$/, '$1')
+      .trim();
+    plain = plain.replace(/^\*+/, '').replace(/\*+$/, '').trim();
+    if (looksLikeProse(plain)) {
       out.push(text);
       if (out.length >= max) break;
+    } else if (
+      !out.length &&
+      transcript.length < max &&
+      TRANSCRIPT_LINE.test(plain) &&
+      /[.!?…]['"”’)\]]*$/.test(plain)
+    ) {
+      transcript.push(text);
     }
   }
-  return out;
+  return out.length ? out : transcript;
 }
 
 function firstParagraph(html) {
@@ -653,7 +775,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
   // hover-preview popup — which would just repeat that same text — is
   // suppressed there.
   const hasPreview = post.preview && post.image && variant !== 'feature';
-  const previewAttr = hasPreview ? ` data-preview="${escapeHtml(post.preview)}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
+  const previewAttr = hasPreview ? ` data-preview="${escapeHtml(stripEmMarkers(post.preview))}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
   const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
         ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
@@ -677,7 +799,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
       : (post.preview ? [post.preview] : []);
     const previewHtml = previewParas.length
       ? `<div class="card-preview-block">${previewParas
-          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : escapeHtml(p)}</p>`)
+          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : emHtml(p)}</p>`)
           .join('')}</div>`
       : '';
     // Same text and style as the "Read on →" link in the hover-preview
@@ -706,13 +828,15 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         ${dekHtml}
         ${authorHtml}
         <a class="hero-latest-btn card-category-btn" href="/archive.html">The Latest</a>
-        <p class="card-meta card-meta--stats">${metaLine(post, { include: ['date', 'likes'] })}</p>
       </div>
       <div class="feature-image-cell">
         ${imageHtml}
       </div>
       <div class="card-text card-text--right">
-        <p class="preview-tagline">${escapeHtml(taglineText)}</p>
+        <div class="preview-tagline-row">
+          <p class="preview-tagline">${escapeHtml(taglineText)}</p>
+          <p class="card-meta card-meta--stats">${metaLine(post, { include: ['date', 'likes'] })}</p>
+        </div>
         ${previewHtml}
         ${readNowHtml}
       </div>
@@ -751,7 +875,6 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
 function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
-  const kickerHtml = post.kicker ? `<p class="hero-kicker">${escapeHtml(post.kicker)}</p>` : '';
   // Full, untruncated subtitle — duo-panel-fit.js clamps it to the lines
   // the panel actually has room for. A build-time character cut here (the
   // old truncate(…, 140)) ellipsized deks short of space the panel had.
@@ -765,40 +888,58 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
     ? `<div class="card-preview-block">${previewParas
-        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : escapeHtml(p)}</p>`)
+        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
   const readNowHtml = previewParas.length
-    ? `<a class="card-preview-cta preview-card-link duo-readon-btn" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
+    ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
     : '';
-  // See the matching comment in renderCard's feature variant: essay rows
-  // swap their tagline for the author's name and drop the byline (the
-  // tagline slot now carries it); postscript/contra keep "From the
-  // Interview"/"From the Review" but never show the author at all.
+  // Essay cards show no tagline over the excerpt at all — the author (which
+  // used to stand in for "From the Essay" there) lives in the header band's
+  // own box now. Postscript/contra keep "From the Interview"/"From the
+  // Review" and never show the author.
   const effectiveTag = post.previewTagline || tag;
   const section = taglineSection(effectiveTag);
-  const taglineText = section === 'essay' && post.author ? authorDisplay(post) : effectiveTag;
+  const taglineHtml = section === 'essay' ? '' : `<p class="preview-tagline">${escapeHtml(effectiveTag)}</p>`;
   const authorHtml = post.author && section === 'other'
     ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
     : '';
+  // Essay cards carry the author as a band box of its own, left of the
+  // date/likes box. (No .hero-latest-btn/.preview-card-link classes on any
+  // band link — the corners are plain gray courier boxes whose outline
+  // glows white on hover, not caterpillar buttons.)
+  const authorBoxHtml = section === 'essay' && post.author
+    ? `<p class="card-meta pc pc-right">${escapeHtml(authorDisplay(post))}</p>`
+    : '';
+  // Header/footer bands: full-width strips whose horizontal rule runs edge
+  // to edge across the panel, with the courier corners sitting in boxes
+  // closed off by vertical rules (see .panel-band in style.css). Top-left
+  // kicker, top-right [author +] date+likes, bottom-left the section link,
+  // bottom-right Read on.
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
+          <div class="panel-band panel-band--top">
+            ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
+            ${authorBoxHtml}
+            ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
+            <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
+          </div>
           <div class="duo-panel-top">
-            ${kickerHtml}
             <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             <div class="card-title-divider"></div>
             ${dekHtml}
             ${authorHtml}
-            <div class="duo-quote-divider"></div>
-            <p class="preview-tagline">${escapeHtml(taglineText)}</p>
+            ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
+            ${taglineHtml}
             ${previewHtml}
           </div>
-          <a class="hero-latest-btn duo-essays-btn card-category-btn" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
-          <p class="card-meta card-meta--stats">${metaLine(post, { include: ['date', 'likes'] })}</p>
-          ${readNowHtml}
+          <div class="panel-band panel-band--bottom">
+            <a class="duo-essays-btn card-category-btn pc pc-left" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
+            ${readNowHtml}
+          </div>
         </div>
       </div>`;
 }
@@ -806,11 +947,17 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
 const DUO_DIVIDER = '<div class="duo-half-divider" role="separator"></div>';
 
 function renderDuoCard(posts, opts = {}) {
-  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = '/essays.html', extraClass = '' } = opts;
+  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = '/essays.html', extraClass = '', padTo = 0 } = opts;
   if (!posts.length) return '';
-  const halves = posts
-    .map((post) => renderDuoHalf(post, { tag, btnLabel, btnHref }))
-    .join(`\n      ${DUO_DIVIDER}\n      `);
+  const cells = posts.map((post) => renderDuoHalf(post, { tag, btnLabel, btnHref }));
+  // A short last row (the section pages render every post, so their post
+  // count rarely divides by the row width) gets empty filler cells — the
+  // real cells keep the same flex width they'd have in a full row instead
+  // of stretching across the leftover space.
+  for (let i = posts.length; i < padTo; i++) {
+    cells.push('<div class="duo-half duo-half--ghost" aria-hidden="true"></div>');
+  }
+  const halves = cells.join(`\n      ${DUO_DIVIDER}\n      `);
   return `
     <article class="card card--duo${extraClass ? ` ${extraClass}` : ''}">
       ${halves}
@@ -970,8 +1117,10 @@ ${dekJs}
 </script>`;
 }
 
-// Only the homepage has the duo/trio/quad row panels, so this lives with
-// the other homepage-only scripts rather than in the shared renderPageShell.
+// The duo/trio/quad row panels live on the homepage and the essays/
+// postscript/contra pages (see renderListPage's extraScripts) — the other
+// shell pages (about, give, archive) have none, so this stays out of
+// renderPageShell's fixed script set.
 function renderDuoPanelFitScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8');
   return `<script>
@@ -979,13 +1128,6 @@ ${js}
 </script>`;
 }
 
-function renderPreviewCard() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/preview-card.js'), 'utf8');
-  return `<div id="preview-card" role="tooltip" aria-hidden="true"></div>
-<script>
-${js}
-</script>`;
-}
 // Reveal-on-scroll via IntersectionObserver, shared by the homepage and
 // every renderPageShell page (the Give page uses .reveal sections).
 function renderRevealScript() {
@@ -1015,16 +1157,7 @@ function renderCaterpillarScript() {
 ${js}
 </script>`;
 }
-// Clamps box-card deks so the meta line never intrudes into the box's own
-// bottom padding (see src/box-fit.js). Shell-wide: pages without box cards
-// (about, give) hit the early return and it's a no-op.
-function renderBoxFitScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/box-fit.js'), 'utf8');
-  return `<script>
-${js}
-</script>`;
-}
-function renderPageShell({ currentKey, title, description, bodyHtml }) {
+function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1052,28 +1185,41 @@ ${bodyHtml}
 ${renderFooter()}
 
 ${renderRevealScript()}
-${renderPreviewCard()}
-${renderBoxFitScript()}
-${renderCaterpillarScript()}
+${renderCaterpillarScript()}${extraScripts ? `\n${extraScripts}` : ''}
 </body>
 </html>`;
 }
 
+// Each section page renders every one of its posts with the same
+// hover-panel cells as its homepage row (see renderDuoCard/renderDuoHalf):
+// essays as two-across squares, postscript as three-across 1:2 portraits
+// (card--trio), contra as three-across small squares (card--quad styling —
+// same look as the homepage's quad row, one cell fewer per row).
+const LIST_ROWS = {
+  essays: { perRow: 2, extraClass: '', tag: 'From the Essay', btnLabel: 'Essays', btnHref: '/essays.html' },
+  postscript: { perRow: 3, extraClass: 'card--trio', tag: 'From the Interview', btnLabel: 'Postscript', btnHref: '/postscript.html' },
+  // card--quad-open lifts the homepage quad's hide-the-excerpt rules —
+  // these cells are a third wider than the homepage's four-across squares,
+  // wide enough to open on the review's first paragraph (see style.css).
+  contra: { perRow: 3, extraClass: 'card--quad card--quad-open', tag: 'From the Review', btnLabel: 'Contra', btnHref: '/contra.html' },
+};
+
 function renderListPage({ currentKey, label, posts }) {
-  const gridCls = ['essays', 'postscript', 'contra'].includes(currentKey) ? ` card-grid--${currentKey}` : '';
+  const cfg = LIST_ROWS[currentKey];
+  const rows = [];
+  for (let i = 0; i < posts.length; i += cfg.perRow) {
+    rows.push(renderDuoCard(posts.slice(i, i + cfg.perRow), { ...cfg, padTo: cfg.perRow }));
+  }
   const bodyHtml = `
-  <div class="wrap">
-    <header class="page-head">
-      <h1>${escapeHtml(label)}</h1>
-    </header>
-    <div class="card-grid page-grid${gridCls}">
-      ${posts.map((p, i) => {
-        const layout = cardLayoutAt(i);
-        return renderCard(p, { variant: layout.variant, span: layout.span });
-      }).join('')}
-    </div>
+  <div class="wrap page-rows">
+    ${rows.join('\n')}
   </div>`;
-  return renderPageShell({ currentKey, title: label, bodyHtml });
+  return renderPageShell({
+    currentKey,
+    title: label,
+    bodyHtml,
+    extraScripts: renderDuoPanelFitScript(),
+  });
 }
 
 
@@ -1202,20 +1348,99 @@ function renderAboutPage(founders) {
   return renderPageShell({ currentKey: 'about', title: 'About', bodyHtml });
 }
 
-function renderArchivePage(posts) {
-  const bodyHtml = `
-  <div class="wrap">
-    <header class="page-head">
-      <h1>From the Archive</h1>
-    </header>
-    <div class="card-grid page-grid">
-      ${posts.map((p, i) => {
-        const layout = cardLayoutAt(i);
-        return renderCard(p, { variant: layout.variant, span: layout.span });
-      }).join('')}
+// The archive is a ledger: one full-bleed courier-gray line per post under
+// a Title/Author/Date/Kicker/Section column head, every row a click target
+// that folds out a card (cover image left, dek + preview + Read on right —
+// the same look as the row panels elsewhere). Row text goes white on hover
+// and stays white while its card is open; the open row's bounding
+// dividers go white with it (see the .arch-ledger rules in style.css and
+// src/ledger.js for the toggle).
+function renderLedgerRow(post) {
+  const previewParas =
+    post.previewParagraphs && post.previewParagraphs.length
+      ? post.previewParagraphs
+      : post.preview
+        ? [post.preview]
+        : [];
+  const previewBlock = previewParas.length
+    ? `<div class="card-preview-block">${previewParas
+        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : emHtml(p)}</p>`)
+        .join('')}</div>`
+    : '';
+  const dekHtml = post.subtitle
+    ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>`
+    : '';
+  const d = post.date;
+  const dateStr =
+    d && !isNaN(d.getTime())
+      ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : post.metaDate || '';
+  const readNowHtml = `<a class="card-preview-cta preview-card-link arch-ledger-readon" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`;
+  // Sort keys for the column-head controls (see src/ledger.js): author and
+  // section lowercased for a case-blind alphabetical order, the date as a
+  // plain epoch number.
+  const sortAttrs =
+    ` data-author="${escapeHtml((post.author || '').toLowerCase())}"` +
+    ` data-date="${d && !isNaN(d.getTime()) ? d.getTime() : 0}"` +
+    ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"`;
+  return `
+  <div class="arch-ledger-item"${sortAttrs}>
+    <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
+      <span class="arch-ledger-cell lc-title">${escapeHtml(post.title)}</span>
+      <span class="arch-ledger-cell lc-author">${escapeHtml(post.author || '')}</span>
+      <span class="arch-ledger-cell lc-date">${escapeHtml(dateStr)}</span>
+      <span class="arch-ledger-cell lc-kicker">${escapeHtml(post.kicker || '')}</span>
+      <span class="arch-ledger-cell lc-section">${escapeHtml(post.sectionLabel || '')}</span>
+    </div>
+    <div class="arch-ledger-card arch-ledger-grid" hidden>
+      <span class="arch-ledger-card-image"><a href="${escapeHtml(post.link)}" rel="noopener">
+        ${post.image ? `<img src="${escapeHtml(post.image)}" alt="" loading="lazy" decoding="async"${focalStyle(post)}>` : '<span class="card-image--blank"></span>'}
+      </a></span>
+      <div class="arch-ledger-card-text">
+        ${dekHtml}
+        ${dekHtml && previewBlock ? '<div class="arch-ledger-card-divider"></div>' : ''}
+        ${previewBlock}
+        ${readNowHtml}
+      </div>
     </div>
   </div>`;
-  return renderPageShell({ currentKey: 'archive', title: 'Archive', bodyHtml });
+}
+
+function renderLedgerScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/ledger.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+// Column-head sort control: a stacked up/down arrow pair after the label.
+// Up = ascending (A–Z, oldest first), down = descending; the active
+// direction holds white (see src/ledger.js).
+function sortArrows(key, label) {
+  return `<span class="arch-sort-arrows">
+        <button class="arch-sort" type="button" data-key="${key}" data-dir="asc" aria-label="Sort by ${label} ascending">&#9650;</button>
+        <button class="arch-sort" type="button" data-key="${key}" data-dir="desc" aria-label="Sort by ${label} descending">&#9660;</button>
+      </span>`;
+}
+
+function renderArchivePage(posts) {
+  const bodyHtml = `
+  <section class="arch-ledger">
+    <div class="arch-ledger-head arch-ledger-grid">
+      <span class="arch-ledger-cell lc-title">Title <button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button></span>
+      <span class="arch-ledger-cell lc-author">Author ${sortArrows('author', 'author')}</span>
+      <span class="arch-ledger-cell lc-date">Date ${sortArrows('date', 'date')}</span>
+      <span class="arch-ledger-cell lc-kicker">Kicker</span>
+      <span class="arch-ledger-cell lc-section">Section ${sortArrows('section', 'section')}</span>
+    </div>
+    ${posts.map(renderLedgerRow).join('')}
+  </section>`;
+  return renderPageShell({
+    currentKey: 'archive',
+    title: 'Archive',
+    bodyHtml,
+    extraScripts: renderLedgerScript(),
+  });
 }
 
 // Extracts the three founders' name + headshot photo + signature + Substack
@@ -1450,27 +1675,49 @@ async function main() {
     if (manual) p.preview = manual;
   }
 
-  // The essay/postscript/archive row panels show as much of the piece as
-  // fits their box (duo-panel-fit.js clamps at the rendered line), so pull
-  // several full paragraphs for them, same as the hero. The contra quad is
-  // left out only because it shows no preview text at all (kicker/title/
-  // meta/dek — see the .card--quad rules in style.css); the extractor
-  // itself handles Contra fine now, and CONTRA_MANUAL_PREVIEWS entries
-  // remain as hand edits that win where present.
-  const rowPosts = dedupeByLink([...heroEssays, ...heroPostscripts, ...heroArchive]);
+  // Section column for the archive ledger (see renderLedgerRow) — same
+  // membership checks as the tagline logic above, as a bare column label.
+  for (const p of archivePosts) {
+    p.sectionLabel =
+      postscriptAll.some((q) => q.link === p.link) ? 'Postscript'
+      : contraAll.some((q) => q.link === p.link) ? 'Contra'
+      : essaysAll.some((q) => q.link === p.link) ? 'Essays'
+      : 'Editors';
+  }
+
+  // The row panels — on the homepage rows AND the essays/postscript/contra
+  // pages, which render every section post with the same hover cells (see
+  // renderListPage) — show as much of the piece as fits their box
+  // (duo-panel-fit.js clamps at the rendered line), so pull several full
+  // paragraphs for each, same as the hero. Contra quads hide the preview
+  // block itself (see .card--quad in style.css) but still need a preview
+  // for the "Read on" button to render; CONTRA_MANUAL_PREVIEWS entries
+  // remain as hand edits that win where present. archivePosts rides along
+  // for the ledger's fold-out cards (every post, including untagged ones).
+  const rowPostGroups = [heroEssays, heroPostscripts, heroArchive, essaysAll, postscriptAll, contraAll, archivePosts];
+  const rowPosts = dedupeByLink(rowPostGroups.flat());
   if (rowPosts.length) {
     console.log(`Fetching extended previews for ${rowPosts.length} row posts`);
-    const extended = await Promise.all(rowPosts.map((p) => fetchExtendedPreview(p.link, 3)));
+    const extended = await mapBatched(rowPosts, 10, (p) => fetchExtendedPreview(p.link, 3));
+    const parasByLink = new Map();
     rowPosts.forEach((p, i) => {
-      if (extended[i] && extended[i].length) {
-        p.previewParagraphs = extended[i];
-      } else if (rssBodyByLink.has(p.link)) {
+      let paras = extended[i];
+      if ((!paras || !paras.length) && rssBodyByLink.has(p.link)) {
         // Same fallback as the hero's — recent posts still in the feed can
         // recover their free-preview paragraphs from content:encoded.
-        const fromFeed = extractParagraphs(rssBodyByLink.get(p.link), 3);
-        if (fromFeed.length) p.previewParagraphs = fromFeed;
+        paras = extractParagraphs(rssBodyByLink.get(p.link), 3);
       }
+      if (paras && paras.length) parasByLink.set(p.link, paras);
     });
+    // The same post appears as distinct objects across collections (the
+    // archive mosaic's picks come from archivePosts; the section pages
+    // render the essaysAll/postscriptAll/contraAll objects) — dedupeByLink
+    // fetched each link once, so attach the result to every copy by link
+    // rather than only to the object that survived the dedupe.
+    for (const p of rowPostGroups.flat()) {
+      const paras = parasByLink.get(p.link);
+      if (paras) p.previewParagraphs = paras;
+    }
   }
 
   // Hand-edited text overrides win over everything fetched above. Applied
