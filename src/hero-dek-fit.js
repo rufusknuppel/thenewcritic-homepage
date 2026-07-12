@@ -10,8 +10,8 @@
   if (!box) return;
   var dek = box.querySelector('.card-dek');
   if (!dek) return;
-  var cornerEls = [box.querySelector('.card-category-btn'), box.querySelector('.card-meta--stats')]
-    .filter(Boolean);
+  // The floor is the footer band now (the corner buttons moved into it).
+  var band = document.querySelector('.card--feature .panel-band--bottom');
 
   function setClamp(el, value) {
     el.style.setProperty('-webkit-line-clamp', value);
@@ -29,13 +29,8 @@
     // in style.css) — no fixed corner zone to clamp against there.
     if (window.innerWidth <= 640) return;
 
-    var limit = Infinity;
-    cornerEls.forEach(function(el){
-      if (getComputedStyle(el).display === 'none') return;
-      limit = Math.min(limit, el.getBoundingClientRect().top);
-    });
-    if (!isFinite(limit)) return;
-    limit -= 16;
+    if (!band) return;
+    var limit = band.getBoundingClientRect().top - 16;
 
     var r = dek.getBoundingClientRect();
     if (r.bottom <= limit) return;

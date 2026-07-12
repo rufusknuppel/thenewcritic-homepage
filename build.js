@@ -316,17 +316,13 @@ function emHtml(text) {
   return html;
 }
 
-function wrapDropCap(text) {
-  // A transcript line opens on an all-caps speaker label ("ELAN KLUGER
-  // Let's begin…") — a giant initial "E" followed by "LAN KLUGER" would
-  // read as gibberish, so those paragraphs keep a plain opening.
-  if (/^[A-Z]{2,}\b/.test(text)) return emHtml(text);
-  // A leading italics marker (a paragraph opening mid-<em>) is captured
-  // apart from the cap letter and re-opened after it — the cap itself
-  // renders in the display face either way.
-  const m = /^(\u0001?)(["'“‘]?\w)([\s\S]*)$/.exec(text);
+function wrapLeadWords(text) {
+  // Opening flourish on a card's first preview paragraph: its first three
+  // words set in caps (.card-preview-lead uppercases them) — the successor
+  // to the old two-line drop cap, which never survived line-clamping well.
+  const m = /^((?:\S+\s+){0,2}\S+)([\s\S]*)$/.exec(text);
   if (!m) return emHtml(text);
-  return `<span class="card-preview-dropcap">${escapeHtml(m[2])}</span>${emHtml(m[1] + m[3])}`;
+  return `<span class="card-preview-lead">${emHtml(m[1])}</span>${emHtml(m[2])}`;
 }
 
 function stripHtml(html) {
@@ -793,51 +789,56 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
   // line's end. post.preview alone is the fallback if that fetch didn't
   // run — same clamp applies to it too, since it's just the first child.
   if (variant === 'feature') {
-    const kickerHtml = kicker ? `<p class="hero-kicker">${escapeHtml(kicker)}</p>` : '';
     const previewParas = post.previewParagraphs && post.previewParagraphs.length
       ? post.previewParagraphs
       : (post.preview ? [post.preview] : []);
     const previewHtml = previewParas.length
       ? `<div class="card-preview-block">${previewParas
-          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : emHtml(p)}</p>`)
+          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
           .join('')}</div>`
       : '';
-    // Same text and style as the "Read on →" link in the hover-preview
-    // popup (.preview-card-link), reused verbatim for a matching look.
     const readNowHtml = post.preview
-      ? `<a class="card-preview-cta preview-card-link" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
+      ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
       : '';
-    // The tagline reads the post's own section (see taglineSection): essay
-    // posts swap the "from the essay" label for the author's name outright
-    // (no separate byline needed once the tagline slot carries it);
-    // postscript/contra keep their section label but drop the author
-    // everywhere — only the untagged "from the editors" fallback still
-    // gets the plain byline under the dek.
+    // Same band routing as renderDuoHalf: essays put the author in a
+    // header-band box; untagged editors' notes keep a byline under the
+    // dek; postscript/contra show no author at all.
     const effectiveTag = post.previewTagline || 'from the essay';
     const section = taglineSection(effectiveTag);
-    const taglineText = section === 'essay' && post.author ? authorDisplay(post) : effectiveTag;
+    const authorBoxHtml = section === 'essay' && post.author
+      ? `<p class="card-meta pc pc-right">${escapeHtml(authorDisplay(post))}</p>`
+      : '';
     const authorHtml = post.author && section === 'other'
       ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
       : '';
+    // The hero wears the same band chrome as the row panels — kicker and
+    // author/date/likes in the header band, The Latest and Read on in the
+    // footer band, both full-width strips that fade in with the columns —
+    // with the title/rule/eyebrow formation in the left column and the
+    // excerpt (single flow, not two-column: the column is too narrow) on
+    // the right.
     return `
     <article class="${cls}">
+      <div class="panel-band panel-band--top">
+        ${kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(kicker)}</p>` : ''}
+        ${authorBoxHtml}
+        ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
+        <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
+      </div>
       <div class="card-text card-text--left">
-        ${kickerHtml}
         <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
         <div class="card-title-divider"></div>
         ${dekHtml}
         ${authorHtml}
-        <a class="hero-latest-btn card-category-btn" href="/archive.html">The Latest</a>
       </div>
       <div class="feature-image-cell">
         ${imageHtml}
       </div>
       <div class="card-text card-text--right">
-        <div class="preview-tagline-row">
-          <p class="preview-tagline">${escapeHtml(taglineText)}</p>
-          <p class="card-meta card-meta--stats">${metaLine(post, { include: ['date', 'likes'] })}</p>
-        </div>
         ${previewHtml}
+      </div>
+      <div class="panel-band panel-band--bottom">
+        <a class="duo-essays-btn card-category-btn pc pc-left" href="/archive.html">The Latest</a>
         ${readNowHtml}
       </div>
     </article>`;
@@ -888,19 +889,20 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
     ? `<div class="card-preview-block">${previewParas
-        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : emHtml(p)}</p>`)
+        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
   const readNowHtml = previewParas.length
     ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
     : '';
-  // Essay cards show no tagline over the excerpt at all — the author (which
-  // used to stand in for "From the Essay" there) lives in the header band's
-  // own box now. Postscript/contra keep "From the Interview"/"From the
-  // Review" and never show the author.
+  // No taglines over the excerpt in these cards at all — the section name
+  // lives in the footer band's box, the author (for essays) in the header
+  // band's; a "From the Interview" line above the quote was one element of
+  // vertical clutter too many. The section classification still routes the
+  // author: essays band-box it, editors'-note cards byline it below the
+  // title, postscript/contra never show it.
   const effectiveTag = post.previewTagline || tag;
   const section = taglineSection(effectiveTag);
-  const taglineHtml = section === 'essay' ? '' : `<p class="preview-tagline">${escapeHtml(effectiveTag)}</p>`;
   const authorHtml = post.author && section === 'other'
     ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
     : '';
@@ -929,11 +931,10 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
           </div>
           <div class="duo-panel-top">
             <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-            <div class="card-title-divider"></div>
+            ${dekHtml ? '<div class="card-title-divider"></div>' : ''}
             ${dekHtml}
             ${authorHtml}
             ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
-            ${taglineHtml}
             ${previewHtml}
           </div>
           <div class="panel-band panel-band--bottom">
@@ -1060,8 +1061,9 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
 <link rel="icon" href="favicon.png">
 ${heroPreload}
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/source-serif-4-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -1168,8 +1170,9 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 <link rel="icon" href="favicon.png">
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/source-serif-4-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -1364,7 +1367,7 @@ function renderLedgerRow(post) {
         : [];
   const previewBlock = previewParas.length
     ? `<div class="card-preview-block">${previewParas
-        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapDropCap(p) : emHtml(p)}</p>`)
+        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
   const dekHtml = post.subtitle
@@ -1375,7 +1378,7 @@ function renderLedgerRow(post) {
     d && !isNaN(d.getTime())
       ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       : post.metaDate || '';
-  const readNowHtml = `<a class="card-preview-cta preview-card-link arch-ledger-readon" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`;
+  const readNowHtml = `<a class="card-preview-cta arch-ledger-readon pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`;
   // Sort keys for the column-head controls (see src/ledger.js): author and
   // section lowercased for a case-blind alphabetical order, the date as a
   // plain epoch number.
@@ -1400,7 +1403,9 @@ function renderLedgerRow(post) {
         ${dekHtml}
         ${dekHtml && previewBlock ? '<div class="arch-ledger-card-divider"></div>' : ''}
         ${previewBlock}
-        ${readNowHtml}
+        <div class="panel-band panel-band--bottom">
+          ${readNowHtml}
+        </div>
       </div>
     </div>
   </div>`;

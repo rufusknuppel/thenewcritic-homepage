@@ -21,6 +21,7 @@
     el.style.lineClamp = '';
     el.classList.remove('card-preview--clamped');
     el.classList.remove('card-preview--capped');
+    el.classList.remove('card-preview-block--cut');
   }
 
   // Clamps el to however many of its lines end above `limit`. Returns true
@@ -31,31 +32,11 @@
     var lh = parseFloat(getComputedStyle(el).lineHeight) || 22;
     var lines = Math.floor((limit - r.top) / lh);
     if (lines < 1) { el.style.display = 'none'; return false; }
-    // lines >= 2 because the floated cap is itself two lines tall — a
-    // one-line cut would slice through the cap glyph; the -webkit-box
-    // path below flattens the cap to a plain letter instead, which a
-    // single line can hold.
-    if (lines >= 2 && el.querySelector('.card-preview-dropcap')) {
-      // -webkit-line-clamp needs display:-webkit-box, and floats don't
-      // wrap inside that display — clamping the opening paragraph that
-      // way would cost it its drop cap. Cut by max-height instead: the
-      // paragraph stays a normal block (the float keeps working) and the
-      // cut still lands on a line boundary; the ellipsis the line-clamp
-      // display would have drawn comes from a corner-pinned ::after
-      // instead (see .card-preview--capped in style.css).
-      el.style.maxHeight = (lines * lh) + 'px';
-      el.style.overflow = 'hidden';
-      el.classList.add('card-preview--capped');
-      return true;
-    }
     el.style.display = '-webkit-box';
     el.style.webkitBoxOrient = 'vertical';
     el.style.overflow = 'hidden';
     el.style.webkitLineClamp = String(lines);
     el.style.lineClamp = String(lines);
-    // Clamping loses the floated drop cap (floats don't wrap inside the
-    // -webkit-box display) — this class turns the cap back into a plain
-    // first letter instead (see style.css).
     el.classList.add('card-preview--clamped');
     return true;
   }
@@ -75,6 +56,9 @@
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
+    topBox.style.marginTop = '';
+    var oldEllipsis = topBox.querySelector('.preview-ellipsis');
+    if (oldEllipsis) oldEllipsis.parentNode.removeChild(oldEllipsis);
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
 
@@ -92,17 +76,19 @@
 
     var limit = band.getBoundingClientRect().top - 14;
 
-    // The title outranks everything: if it crosses the floor it clamps to
-    // the lines that fit rather than vanishing.
-    if (title && title.getBoundingClientRect().bottom > limit) {
-      clampToFit(title, limit);
+    // The title outranks the dek wherever the dek sits: if the dek comes
+    // first in the column, everything from its bottom edge down through
+    // the title's natural bottom is reserved out of the dek's own budget
+    // (so the dek yields lines and the title rides up); when the dek sits
+    // below the title — the current order — that distance is negative and
+    // the reserve clamps to 0, leaving the dek to fit in whatever the
+    // title left over. The byline's height is reserved either way.
+    var dek = topBox.querySelector('.card-dek');
+    var reserve = 0;
+    if (dek && title && getComputedStyle(dek).display !== 'none') {
+      reserve = Math.max(0,
+        title.getBoundingClientRect().bottom - dek.getBoundingClientRect().bottom);
     }
-
-    // The byline (author only) sits right below the dek — the bottom-up
-    // cut would reach it first, but the byline outranks the dek: the DEK
-    // alone fits against a limit with the byline's height reserved out of
-    // it (so it clamps a line early and the byline rides in the space
-    // that saves).
     var metaSpace = 0;
     if (meta && getComputedStyle(meta).display !== 'none') {
       metaSpace = meta.getBoundingClientRect().height
@@ -111,10 +97,27 @@
     var cutting = false;
     [].forEach.call(topBox.children, function(el){
       if (getComputedStyle(el).display === 'none') return;
-      // The title was already fitted above — a clamped title's
-      // padding-bottom can leave its border box a hair past the limit,
-      // and the generic branch below would hide it for that.
-      if (el === title) return;
+      if (el === dek) {
+        // Clamping (or even hiding) the dek to protect the title is not a
+        // cut — everything after it shifts up and keeps its shot.
+        var dekLim = limit - reserve - metaSpace;
+        if (el.getBoundingClientRect().bottom > dekLim && !clampToFit(el, dekLim)) {
+          // Dek gone entirely — the rule between it and the title would
+          // sit orphaned against the quote divider below.
+          var tdiv = topBox.querySelector('.card-title-divider');
+          if (tdiv) tdiv.style.display = 'none';
+        }
+        return;
+      }
+      if (el === title) {
+        // Last resort, after the dek above has already yielded: a title
+        // that still crosses the floor clamps to the lines that fit
+        // rather than vanishing. Checked here (not via the generic branch
+        // below) so a clamped title's padding-bottom sitting a hair past
+        // the limit never hides it outright.
+        if (el.getBoundingClientRect().bottom > limit) clampToFit(el, limit);
+        return;
+      }
       if (cutting) {
         if (el === meta) {
           // The byline survives the cut — its space was reserved. Only if
@@ -126,24 +129,94 @@
         el.style.display = 'none';
         return;
       }
-      var lim = el.classList.contains('card-dek') ? limit - metaSpace : limit;
       if (el.classList.contains('card-preview-block')) {
+        if (getComputedStyle(el).columnCount === '2') {
+          // Two-column essay excerpt: line-clamping individual paragraphs
+          // can't work across column flow, so the block fits as one unit —
+          // capped at a whole-line multiple of its own height so both
+          // columns cut on a line boundary; overflow text spills into
+          // clipped phantom columns past the second.
+          //
+          // The block's budget stops GAP_BOTTOM above the footer band —
+          // 16px of box gap puts the last line's INK the same ~24px from
+          // the band rule as the first line's ink sits from the quote
+          // divider (whose 20px margin + the line's own leading make up
+          // the difference) — and the line-quantization remainder shifts
+          // the whole column DOWN instead of pooling here, so the header
+          // gap is a floor, never less.
+          var firstP = el.querySelector('.card-preview');
+          var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
+          var bandTop = limit + 14;
+          var GAP_BOTTOM = 16;
+          var budget = bandTop - GAP_BOTTOM - el.getBoundingClientRect().top;
+          var blockLines = Math.floor(budget / plh);
+          if (blockLines < 1) { el.style.display = 'none'; return; }
+          el.style.maxHeight = (blockLines * plh) + 'px';
+          el.style.overflow = 'hidden';
+          // Cut text spills into clipped phantom columns, widening the
+          // scrollable area — that's the tell that an ellipsis is owed.
+          var isCut = el.scrollWidth > el.clientWidth + 1;
+          el.classList.toggle('card-preview-block--cut', isCut);
+          // Anchor the column to the footer: whatever the block doesn't
+          // use — the line remainder on cut panels, whole unused lines on
+          // short ones like a fully-fitting excerpt — shifts the column
+          // down so the block always ends GAP_BOTTOM above the band. The
+          // header gap absorbs all of it (its padding is the minimum).
+          var anchorShift = (bandTop - GAP_BOTTOM) - el.getBoundingClientRect().bottom;
+          if (anchorShift > 0) topBox.style.marginTop = anchorShift + 'px';
+          if (isCut) {
+            // Attach the ellipsis to the last visible word: find the
+            // bottom-most, right-most text fragment still inside the
+            // block's visible box and pin a span just past its edge.
+            var blockR = el.getBoundingClientRect();
+            var bestR = null;
+            var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+            var tn;
+            while ((tn = walker.nextNode())) {
+              var rng = document.createRange();
+              rng.selectNodeContents(tn);
+              var rs = rng.getClientRects();
+              for (var ri = 0; ri < rs.length; ri++) {
+                var rr = rs[ri];
+                if (rr.width < 2 || rr.height < 4) continue;
+                if (rr.bottom > blockR.bottom + 2 || rr.right > blockR.right + 2) continue;
+                if (!bestR
+                    || rr.bottom > bestR.bottom + 1
+                    || (Math.abs(rr.bottom - bestR.bottom) <= 1 && rr.right > bestR.right)) {
+                  bestR = rr;
+                }
+              }
+            }
+            if (bestR) {
+              var dots = document.createElement('span');
+              dots.className = 'preview-ellipsis';
+              dots.textContent = '\u2026';
+              el.appendChild(dots);
+              // Keep the span inside the block: a full-width last line
+              // would otherwise push it past the overflow clip.
+              var dotsLeft = Math.min(
+                bestR.right - blockR.left + 1,
+                el.clientWidth - dots.getBoundingClientRect().width - 1
+              );
+              dots.style.left = dotsLeft + 'px';
+              dots.style.top = (bestR.top - blockR.top) + 'px';
+            }
+          }
+          return;
+        }
         var parasCut = false;
         [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
           if (parasCut) { p.style.display = 'none'; return; }
-          if (p.getBoundingClientRect().bottom <= lim) return;
+          if (p.getBoundingClientRect().bottom <= limit) return;
           parasCut = true;
-          clampToFit(p, lim);
+          clampToFit(p, limit);
         });
-      } else if (el.getBoundingClientRect().bottom > lim) {
+      } else if (el.getBoundingClientRect().bottom > limit) {
         cutting = true;
-        // The dek is running text — give it however many lines fit
-        // rather than dropping the whole thing. Hard blocks just hide.
-        if (!el.classList.contains('card-dek') || !clampToFit(el, lim)) {
-          el.style.display = 'none';
-        }
+        el.style.display = 'none';
       }
     });
+
   }
 
   function fitAll() {
