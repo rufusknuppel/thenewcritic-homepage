@@ -442,6 +442,18 @@ section{ padding: 80px 0; }
    right-side group (author box and/or date+likes) pinned right — only
    the group's first box pushes, so the boxes inside it stay adjacent. */
 :is(.duo-panel, .card--feature) .panel-band .pc-left{ border-right: 1px solid var(--line); }
+/* The top band's kicker box keeps the cover chip's exact look — white
+   text, 1px white outline drawn on the shared lines (panel border, band
+   rule, the box's own right rule gone transparent — same outline trick
+   as a.pc:hover below) — so opening the hover card doesn't change that
+   corner at all: the chip appears to stay put while the rest of the band
+   fades in around it. */
+:is(.duo-panel, .card--feature) .panel-band--top .pc-left{
+  color: var(--white);
+  outline: 1px solid var(--white);
+  outline-offset: 0;
+  border-right-color: transparent;
+}
 /* The outermost boxes pad 24px on BOTH sides: the outer 24 lands their
    text exactly on the central column's margins, and the matching inner
    24 keeps the text horizontally centered in its box. Interior boxes of
@@ -694,8 +706,10 @@ section{ padding: 80px 0; }
   /* At line-height 1.1 the last line's descenders ("Hurry", "Girl") hang
      below the line box, and this clamp's overflow:hidden — unlike the
      unclamped duo/trio titles — cuts that ink off. The padding gives it
-     room; line-clamp still removes any third line outright, so nothing
-     else shows through. */
+     room. line-clamp does NOT remove a third line, though — it only draws
+     the ellipsis, and the clipped line's cap tops paint up into this same
+     padding strip. The fitter deletes that overflow text for real (see
+     the title truncation at the end of fit() in duo-panel-fit.js). */
   padding-bottom: 0.15em;
 }
 .card--quad .duo-panel .duo-quote-divider,
@@ -778,7 +792,10 @@ section{ padding: 80px 0; }
 /* orphans/widows 1: browsers default to 2, which refuses to strand a
    paragraph's single line at a column's bottom — the whole paragraph
    jumped to the next column instead, leaving an empty line slot in the
-   first. The ledger look wants every slot filled. */
+   first. The ledger look wants every slot filled; orphan endings are
+   avoided by the fitter instead, which shortens the block until no
+   column's bottom line is a paragraph's stranded opener (see
+   pickColumnHeight in duo-panel-fit.js / ledger.js). */
 .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview-block .card-preview,
 .arch-ledger-card .card-preview-block .card-preview{
@@ -889,6 +906,29 @@ section{ padding: 80px 0; }
 .card-grid > .card--box{ padding: 0; }
 .card{ display:flex; flex-direction:column; }
 .card-image-frame{ margin-bottom: 14px; }
+/* ---------- COVER KICKER ----------
+   The hover band's kicker box made permanent: pinned to every cover
+   image's top-left corner, but full-strength — white text in a white 1px
+   outline on black, where the band corners sit muted gray on hairline
+   rules. Its border-box coincides EXACTLY with the band kicker box that
+   replaces it on hover, line for line: the 1px border stands where the
+   panel's own border (top/left), the band's border-bottom rule (bottom)
+   and the box's border-right rule (right) will be, and the 24px side
+   padding matches the band's outermost-box padding (.pc-left above), so
+   the text doesn't move either — a seamless swap. Decorative
+   (aria-hidden in the markup): the panel's band kicker is the accessible
+   copy. pointer-events:none keeps the image link beneath it clickable. */
+.cover-kicker{
+  position: absolute; top: 0; left: 0; z-index: 2;
+  display: inline-flex; align-items: center;
+  padding: 11px 24px 9px;
+  font-family: var(--mono); font-weight: 575; font-size: var(--mono-size);
+  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+  color: var(--white);
+  background: var(--paper);
+  border: 1px solid var(--white);
+  pointer-events: none;
+}
 .card-image-link{ display:block; margin-bottom: 0; }
 .card-image{ width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
@@ -1532,7 +1572,16 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   margin-left: auto;
   padding-left: 24px; padding-right: 24px;
 }
-.arch-ledger-card-text .panel-band--bottom .pc:hover{
+/* The Art credit box in the band's bottom-left corner — closed off by
+   its own right rule, outermost-box 24s, mirroring the Read on box
+   opposite. */
+.arch-ledger-card-text .panel-band--bottom .pc-left{
+  border-right: 1px solid var(--line);
+  padding-left: 24px; padding-right: 24px;
+}
+/* Links only (Read on) — the static Art credit box doesn't light up as
+   if it were a button. */
+.arch-ledger-card-text .panel-band--bottom a.pc:hover{
   color: var(--white);
   outline: 1px solid var(--white);
   outline-offset: 0;
