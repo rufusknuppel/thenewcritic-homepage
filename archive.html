@@ -43,7 +43,10 @@
 
   <section class="arch-ledger">
     <div class="arch-ledger-head arch-ledger-grid">
-      <span class="arch-ledger-cell lc-title">Title <button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button></span>
+      <span class="arch-ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title <span class="arch-sort-arrows">
+        <button class="arch-sort" type="button" data-key="title" data-dir="asc" aria-label="Sort by title ascending">&#9650;</button>
+        <button class="arch-sort" type="button" data-key="title" data-dir="desc" aria-label="Sort by title descending">&#9660;</button>
+      </span></span>
       <span class="arch-ledger-cell lc-author">Author <span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="author" data-dir="asc" aria-label="Sort by author ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="author" data-dir="desc" aria-label="Sort by author descending">&#9660;</button>
@@ -52,14 +55,17 @@
         <button class="arch-sort" type="button" data-key="date" data-dir="asc" aria-label="Sort by date ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="date" data-dir="desc" aria-label="Sort by date descending">&#9660;</button>
       </span></span>
-      <span class="arch-ledger-cell lc-kicker">Kicker</span>
+      <span class="arch-ledger-cell lc-kicker">Tag <span class="arch-sort-arrows">
+        <button class="arch-sort" type="button" data-key="kicker" data-dir="asc" aria-label="Sort by tag ascending">&#9650;</button>
+        <button class="arch-sort" type="button" data-key="kicker" data-dir="desc" aria-label="Sort by tag descending">&#9660;</button>
+      </span></span>
       <span class="arch-ledger-cell lc-section">Section <span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="section" data-dir="asc" aria-label="Sort by section ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="section" data-dir="desc" aria-label="Sort by section descending">&#9660;</button>
       </span></span>
     </div>
     
-  <div class="arch-ledger-item" data-author="theodore gary" data-date="1783700989199" data-section="contra">
+  <div class="arch-ledger-item" data-title="behaving badly" data-author="theodore gary" data-date="1783700989199" data-kicker="" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Behaving Badly</span>
       <span class="arch-ledger-cell lc-author">Theodore Gary</span>
@@ -81,7 +87,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="freya india" data-date="1783456553559" data-section="postscript">
+  <div class="arch-ledger-item" data-title="the commodification of freya india" data-author="freya india" data-date="1783456553559" data-kicker="the girl behind girls" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Commodification of Freya India</span>
       <span class="arch-ledger-cell lc-author">Freya India</span>
@@ -103,7 +109,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="madeline" data-date="1782862197624" data-section="essays">
+  <div class="arch-ledger-item" data-title="luddite club" data-author="madeline" data-date="1782862197624" data-kicker="to phone or not" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Luddite Club</span>
       <span class="arch-ledger-cell lc-author">madeline</span>
@@ -125,7 +131,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1782514848844" data-section="editors">
+  <div class="arch-ledger-item" data-title="changing of the guard" data-author="the new critic" data-date="1782514848844" data-kicker="" data-section="editors">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Changing of the Guard</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -147,7 +153,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="tessa augsberger" data-date="1782322230385" data-section="contra">
+  <div class="arch-ledger-item" data-title="you seem pretty tame for a girl in revolt" data-author="tessa augsberger" data-date="1782322230385" data-kicker="music" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">You Seem Pretty Tame for a Girl in Revolt</span>
       <span class="arch-ledger-cell lc-author">Tessa Augsberger</span>
@@ -169,7 +175,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="jacob zucker" data-date="1781823026496" data-section="essays">
+  <div class="arch-ledger-item" data-title="the blackpill" data-author="jacob zucker" data-date="1781823026496" data-kicker="internet terrorists" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Blackpill</span>
       <span class="arch-ledger-cell lc-author">Jacob Zucker</span>
@@ -191,7 +197,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="nadav" data-date="1781303384067" data-section="contra">
+  <div class="arch-ledger-item" data-title="terms of service" data-author="nadav" data-date="1781303384067" data-kicker="movies" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Terms of Service</span>
       <span class="arch-ledger-cell lc-author">Nadav</span>
@@ -213,7 +219,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="max parness" data-date="1781236429557" data-section="contra">
+  <div class="arch-ledger-item" data-title="snug as a gun" data-author="max parness" data-date="1781236429557" data-kicker="books" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Snug as a Gun</span>
       <span class="arch-ledger-cell lc-author">Max Parness</span>
@@ -235,7 +241,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="rufus knuppel" data-date="1781144249366" data-section="contra">
+  <div class="arch-ledger-item" data-title="ugly fleshy flap" data-author="rufus knuppel" data-date="1781144249366" data-kicker="music" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Ugly Fleshy Flap</span>
       <span class="arch-ledger-cell lc-author">Rufus Knuppel</span>
@@ -257,7 +263,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="isabel mehta" data-date="1781056462813" data-section="contra">
+  <div class="arch-ledger-item" data-title="now the story, please" data-author="isabel mehta" data-date="1781056462813" data-kicker="" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Now the Story, Please</span>
       <span class="arch-ledger-cell lc-author">Isabel Mehta</span>
@@ -279,7 +285,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1780940528879" data-section="contra">
+  <div class="arch-ledger-item" data-title="young mann in a hurry" data-author="elan kluger" data-date="1780940528879" data-kicker="" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Young Mann in a Hurry</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -301,7 +307,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1780884022038" data-section="contra">
+  <div class="arch-ledger-item" data-title="contra!" data-author="the new critic" data-date="1780884022038" data-kicker="" data-section="contra">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Contra!</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -323,7 +329,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="mana afsari" data-date="1780618565213" data-section="postscript">
+  <div class="arch-ledger-item" data-title="last girl at the beginning of history" data-author="mana afsari" data-date="1780618565213" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Last Girl at the Beginning of History</span>
       <span class="arch-ledger-cell lc-author">Mana Afsari</span>
@@ -345,7 +351,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="benjamin samuels" data-date="1780423681894" data-section="essays">
+  <div class="arch-ledger-item" data-title="what was college for?" data-author="benjamin samuels" data-date="1780423681894" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">What Was College For?</span>
       <span class="arch-ledger-cell lc-author">Benjamin Samuels</span>
@@ -367,7 +373,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1780173528024" data-section="postscript">
+  <div class="arch-ledger-item" data-title="voluntary oasis" data-author="the new critic" data-date="1780173528024" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Voluntary Oasis</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -389,7 +395,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="samuel rigg" data-date="1779998933931" data-section="essays">
+  <div class="arch-ledger-item" data-title="american berserk" data-author="samuel rigg" data-date="1779998933931" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">American Berserk</span>
       <span class="arch-ledger-cell lc-author">Samuel Rigg</span>
@@ -411,7 +417,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="declan" data-date="1779824522490" data-section="essays">
+  <div class="arch-ledger-item" data-title="not new york" data-author="declan" data-date="1779824522490" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Not New York</span>
       <span class="arch-ledger-cell lc-author">Declan</span>
@@ -433,7 +439,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="clare ashcraft" data-date="1779488197363" data-section="postscript">
+  <div class="arch-ledger-item" data-title="worse than you think" data-author="clare ashcraft" data-date="1779488197363" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Worse Than You Think</span>
       <span class="arch-ledger-cell lc-author">Clare Ashcraft</span>
@@ -455,7 +461,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="clare ashcraft" data-date="1779412507725" data-section="essays">
+  <div class="arch-ledger-item" data-title="collegiate value" data-author="clare ashcraft" data-date="1779412507725" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Collegiate Value</span>
       <span class="arch-ledger-cell lc-author">Clare Ashcraft</span>
@@ -477,7 +483,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="sarah miller" data-date="1779211693969" data-section="essays">
+  <div class="arch-ledger-item" data-title="the girls who watch girls" data-author="sarah miller" data-date="1779211693969" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Girls Who Watch Girls</span>
       <span class="arch-ledger-cell lc-author">Sarah Miller</span>
@@ -499,7 +505,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1778880805439" data-section="postscript">
+  <div class="arch-ledger-item" data-title="bridge over troubled water" data-author="the new critic" data-date="1778880805439" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Bridge over Troubled Water</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -513,15 +519,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 15 | Owen Yingling on AI at UChicago, the art of the polemic, and everything of any significance</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Owen is likely</span> the heavyweight champion of our young generation’s polemicists — his previous essays have taken on the decline of literary fiction, the confessional-essay-industrial complex, and the absence of the Great Millenial Novel.</p><p class="card-preview">Now Owen — an assistant editor of <em>The New Critic</em> and a junior at UChicago studying Philosophy <em>—</em> has taken on the one great specter to rule them all: AI<em>.</em> Below we discuss why we should punish students more for cheating, dusty intellectualism, UChicago mythos, stern hands, 1920s Paris, Wikipedia, scenesters, Scott Alexander, internet criticism, modernism, LessWrong, how not to produce great art, the Bridgewater interview process, Saint-John Perse, removing oneself from literary endeavors, and the impossibility of grad school.</p><p class="card-preview">In short, we cover everything of any significance.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/bridge-over-troubled-water" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1778711284486" data-section="editors">
+  <div class="arch-ledger-item" data-title="is gen z afraid of risk, or just more aware?" data-author="the new critic" data-date="1778711284486" data-kicker="" data-section="editors">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Is Gen Z afraid of risk, or just more aware?</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -536,14 +542,14 @@
       <div class="arch-ledger-card-text">
         <p class="card-dek">The editors of The New Critic report on their generation’s Risk-geist.</p>
         <div class="arch-ledger-card-divider"></div>
-        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">The editors of</span> The New Critic report on their generation’s Risk-geist.</p></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead"><em>This article originally</em></span> appeared in Issue 14: Risk. Subscribe to the print magazine to get future issues delivered to your door.</em></p><p class="card-preview">A schism has emerged among members of the commentariat: Some pronounce Gen Z the biggest bunch of degenerate risk-takers in history (tales of the apathetic youth with nothing to lose abound), while others, thick with worry, proclaim Gen Z to be wholly risk-averse (shut-ins all, unwilling to talk on the phone, ask people out, or drink even a sip of alcohol).</p><p class="card-preview">As the editors of the Gen Z magazine <em>The New Critic</em>, our inbox is full of a certain kind of pitch, one that decries a crumbling economy, metaphysical malaise, and institutional collapse. These essays speak of a polycrisis and Gen Z’s uniquely unstable future, with uncertainty as their crowning abstraction. In the face of such an unparseable future, young people face a dilemma: Which risks should we take, if any at all?</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://asteriskmag.substack.com/cp/197596620" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1778635447772" data-section="editors">
+  <div class="arch-ledger-item" data-title="what was college for?”" data-author="the new critic" data-date="1778635447772" data-kicker="" data-section="editors">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">“What Was College For?”</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -557,15 +563,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Introducing a $1,000 New Critic contest</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">On thousands of</span> elm-dappled quads this spring, hordes of proud parents and gowned graduates will gather under party tents. Programs will rustle, beads of sweat will drip from scented armpits to damp belly-buttons, and commencement ceremonies will debut a new crop of students to the real world. Come June (God willing), we three founding editors will be seated among such a throng, awaiting our diplomas on the green at Dartmouth College. Considering the occasion, our college president, an honorary speaker, the valedictorian, and others shall be called upon to make remarks.</p><p class="card-preview">The commencement address, as a genre, demands grand statements and moral mandates: What should the world expect of a young adult? What should a young adult expect of the world? What were the tuition and toil really worth? But most often in these speeches, the soporific reigns. (What sort of person is valedictorian, anyway?) The most interesting part of any graduation ends up on the periphery — the badly-behaved child destroying fresh turf, the gossipers loitering in the mid-morning sun, the feverish couple fucking in the library stacks.</p><p class="card-preview">Yes, rarely do graduation speakers do as they should — scandalize the settled, agitate the ossified, and invigorate that rollicking mass of youth destined for embourgeoisement. Therefore, <em>The New Critic</em> seeks a commencement address of its own. An address that would make siblings scream, grandmothers gape, and fathers faint. An address worthy of equal quantities boos, frowns, and applause. An address that would make the evening news. An address that would prompt the audio technician to cut the mic.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/what-was-college-for" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1777571466733" data-section="postscript">
+  <div class="arch-ledger-item" data-title="pathological nostalgia" data-author="elan kluger" data-date="1777571466733" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Pathological Nostalgia</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -579,15 +585,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 14 | Aitan Avgar and Milo Tasman on socialist Zionist summer camp</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Israeli Jews have</span> the army. American Jews have summer camp.</p><p class="card-preview">Last Saturday, April 25, <em>The New Critic</em> published my essay “Notes on Camp.” In it, I wrote about my friends Milo and Aitan, comrades of mine for many years, who deemed my view of the socialist Zionist summer camp we attended too jaded. Milo and Aitan stuck around Tavor longer than I:</p><p class="card-preview">Writing about Tavor was like sending a little piece of my soul out into the world, and so Sunday evening, seated on Dartmouth’s wide open space — aptly called “The Green” — I called my old camp pals to reminisce. We spoke about the state of socialist Zionism in America today, the questions of my essay, and, of course, camp romance.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/pathological-nostalgia" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1777151026559" data-section="essays">
+  <div class="arch-ledger-item" data-title="notes on camp" data-author="elan kluger" data-date="1777151026559" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Notes on Camp</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -609,7 +615,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="ryan merrifield" data-date="1776700915369" data-section="essays">
+  <div class="arch-ledger-item" data-title="pee: $1" data-author="ryan merrifield" data-date="1776700915369" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">PEE: $1</span>
       <span class="arch-ledger-cell lc-author">Ryan Merrifield</span>
@@ -631,7 +637,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1776287893296" data-section="postscript">
+  <div class="arch-ledger-item" data-title="curtis yarvin jr." data-author="elan kluger" data-date="1776287893296" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Curtis Yarvin Jr.</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -653,7 +659,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="james milstead" data-date="1776120824498" data-section="essays">
+  <div class="arch-ledger-item" data-title="commute cursed by god" data-author="james milstead" data-date="1776120824498" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Commute Cursed by God</span>
       <span class="arch-ledger-cell lc-author">James Milstead</span>
@@ -675,7 +681,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="theodore gary" data-date="1775845690107" data-section="essays">
+  <div class="arch-ledger-item" data-title="couch burning season" data-author="theodore gary" data-date="1775845690107" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Couch Burning Season</span>
       <span class="arch-ledger-cell lc-author">Theodore Gary</span>
@@ -697,7 +703,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1775599332261" data-section="postscript">
+  <div class="arch-ledger-item" data-title="veritas" data-author="the new critic" data-date="1775599332261" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Veritas</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -711,15 +717,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 12 | Isabel Mehta on the humanities at Harvard</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Below we discuss</span> what it was like studying English at Harvard University in the early 2020s and the trade-offs of postgraduate life. Isabel graduated in May 2024 and is an Assistant Editor of <em>The New Critic.</em></p><p class="card-preview">That was something that people would say to me a lot, “It’s a good thing you studied the humanities. When you’re a consultant, you’ll need to be good at writing.” But what I cared about was the aesthetic experience of studying the humanities. No one said, “I study math because it’s beautiful.” Some people definitely do, but in Nathan Heller’s article, it didn’t seem like students cared too much about beauty, which was something I cared about.</p><p class="card-preview">I do think that the reason why I was so drawn to especially book one of <em>Confessions</em> was, and I don’t think this is an exaggeration to say, that I thought, at that time in my life, I was falling short of my own potential, not because I had done anything terribly morally wrong, but because I didn’t feel particularly successful or important. I wasn’t doing very well in my classes; I wasn’t a particularly great athlete; mentally, I struggled; and so I felt like a failure. There’s this line in <em>Confessions</em> where Augustine lists all these things that are wrong with him, and then he goes, “Moreover, they are good, and they all together constitute myself.” I interpreted it as he had done wrong but that he ultimately may not be able to change, and that may just be who he is, and that’s okay. That’s what I felt like he was saying — “It’s okay.” No one in my life at the time was really telling me, “It’s okay.”</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/veritas" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="isabel mehta" data-date="1775168079963" data-section="essays">
+  <div class="arch-ledger-item" data-title="beauty, the last taboo" data-author="isabel mehta" data-date="1775168079963" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Beauty, The Last Taboo</span>
       <span class="arch-ledger-cell lc-author">Isabel Mehta</span>
@@ -741,7 +747,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="will diana" data-date="1774981725161" data-section="essays">
+  <div class="arch-ledger-item" data-title="monitoring the monitoring" data-author="will diana" data-date="1774981725161" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Monitoring the Monitoring</span>
       <span class="arch-ledger-cell lc-author">Will Diana</span>
@@ -763,7 +769,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1774411060692" data-section="editors">
+  <div class="arch-ledger-item" data-title="the new critic secession" data-author="the new critic" data-date="1774411060692" data-kicker="" data-section="editors">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The New Critic Secession</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -785,7 +791,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="josie barboriak" data-date="1774132977886" data-section="postscript">
+  <div class="arch-ledger-item" data-title="showing your work" data-author="josie barboriak" data-date="1774132977886" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Showing Your Work</span>
       <span class="arch-ledger-cell lc-author">Josie Barboriak</span>
@@ -799,15 +805,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 11 | Josie Barboriak on the critic and her publics</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Below we discuss</span> <em>The Magic Mountain</em>, crushing on Markiplier, having CIA in the family, <em>Mating</em>, and the irony and attractiveness of critics.</p><p class="card-preview">JOSIE …I have a bone to pick with how everything I’ve read by Merve Emre is described as ironic. Like, it’s all irony. It’s irony all the way down.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/showing-your-work" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="josie barboriak" data-date="1773864131529" data-section="essays">
+  <div class="arch-ledger-item" data-title="good reading, good thinking, good writing" data-author="josie barboriak" data-date="1773864131529" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Good Reading, Good Thinking, Good Writing</span>
       <span class="arch-ledger-cell lc-author">Josie Barboriak</span>
@@ -829,7 +835,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="sarah miller" data-date="1773430309699" data-section="postscript">
+  <div class="arch-ledger-item" data-title="naked journalism" data-author="sarah miller" data-date="1773430309699" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Naked Journalism</span>
       <span class="arch-ledger-cell lc-author">Sarah Miller</span>
@@ -843,15 +849,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 10 | Sarah Miller and Charlotte Hampton on covering campus politics and editing student newspapers</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Below we discuss</span> Charlotte’s 2024 arrest while covering Hanover’s encampment for <em>The Dartmouth</em>, the journalist’s exploitative and indexical urges, and the seriousness and salaciousness of running a campus newspaper.</p><p class="card-preview">They formed a line of protesters opposite this line of police officers and the College called in state troopers as well, which also escalated the situation because there were guns and massive armed vehicles. I talked with the editor-in-chief at the time, Emily Fagell, about what we wanted to do about this escalation — because they were telling everyone to get off the Green — and we decided that I would be the one reporter who stuck around with my photographer, Alesandra Gonzales. The school’s communications department also had a rep there, and she told me it was fine for me to be on the Green with her, so I was part of this small group of journalists — national journalists, too — there was a <em>Boston Globe</em> reporter there and a <em>Valley News</em> reporter, our local paper. My photographer at some point was lying down on the ground filming a history professor, Annelise Orleck, be brutalized by the police, and when Gonzales stood up, she got too close to the police officers, and they started to take her. Because she was my photographer, and she was younger than me, and she was my reporter, I said to the police, <em>Don’t take her, she’s a member of the press</em>, and that’s when they took me, too, because I was moving forward or engaging with them.</p><p class="card-preview">So we were both arrested despite the fact that we were wearing press identification — we were very clearly identifiable as press — and, yeah, we were taken to jail in zip ties. We were taken to the station, and we got our mugshots taken, and I used a prison bathroom, which has no mirror, and no seat, and no soap — evocative little details that live in my brain — and our editor came and picked us up and paid our bail, which was 40 bucks a piece, or 20 bucks a piece, I can’t remember.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/naked-journalism" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="sarah miller" data-date="1773267169554" data-section="essays">
+  <div class="arch-ledger-item" data-title="chasing the story" data-author="sarah miller" data-date="1773267169554" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Chasing the Story</span>
       <span class="arch-ledger-cell lc-author">Sarah Miller</span>
@@ -873,7 +879,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1773144217895" data-section="editors">
+  <div class="arch-ledger-item" data-title="p.s. the new new critic" data-author="the new critic" data-date="1773144217895" data-kicker="" data-section="editors">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">P.S. The New New Critic</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -887,15 +893,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Unveiling our grand plan</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Despite the grousing</span> from out-of-age commentators about “The Death of X” and “The End of Y,” there are young Americans advancing the yoke of tradition into the muddy battleground of the future, we who smoke from the hookah of experience and imbibe the intoxicants of struggle and youth.</p><p class="card-preview">Amidst the great whorl of consternation regarding our generation, <em>The New Critic</em> is a flesh-and-blood gen z magazine. We publish writers who are too young to remember the fall of the Twin Towers and old enough to have borne witness to the nativity of ChatGPT. We publish <em>The New Critic</em> for our friends and our peers, and we ask our writers to answer ever greater questions about their experiences, their traditions, and their selves.</p><p class="card-preview">Paid subscribers can expect a weekly installment of Postscript, our conversation series — free subscribers be tantalized. Below are the nine conversations we have published thus far.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/ps-the-new-new-critic" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="cathy li" data-date="1772679780084" data-section="essays">
+  <div class="arch-ledger-item" data-title="the manifesto is dead! the manifesto is dead!" data-author="cathy li" data-date="1772679780084" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">THE MANIFESTO IS DEAD! THE MANIFESTO IS DEAD!</span>
       <span class="arch-ledger-cell lc-author">Cathy Li</span>
@@ -917,7 +923,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="ramsey alsheikh" data-date="1772679726565" data-section="postscript">
+  <div class="arch-ledger-item" data-title="the manifesto with no name" data-author="ramsey alsheikh" data-date="1772679726565" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Manifesto with No Name</span>
       <span class="arch-ledger-cell lc-author">Ramsey Alsheikh</span>
@@ -939,7 +945,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="theodore gary" data-date="1772046279993" data-section="essays">
+  <div class="arch-ledger-item" data-title="freak show" data-author="theodore gary" data-date="1772046279993" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Freak Show</span>
       <span class="arch-ledger-cell lc-author">Theodore Gary</span>
@@ -961,7 +967,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="theodore gary" data-date="1772046000000" data-section="postscript">
+  <div class="arch-ledger-item" data-title="holy fool" data-author="theodore gary" data-date="1772046000000" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Holy Fool</span>
       <span class="arch-ledger-cell lc-author">Theodore Gary</span>
@@ -975,15 +981,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 8 | Theodore Gary on Joshua Block, Dostoevsky, middle school boys, and authenticity</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Below we discuss</span> WorldofTShirts’s campus visit to the University of Illinois, the origins of Michael DeCoste, middle school boys, and the end times of streaming.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/holy-fool" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="will diana" data-date="1771452079222" data-section="essays">
+  <div class="arch-ledger-item" data-title="experience is psychosis" data-author="will diana" data-date="1771452079222" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Experience Is Psychosis</span>
       <span class="arch-ledger-cell lc-author">Will Diana</span>
@@ -1005,7 +1011,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="will diana" data-date="1771452000000" data-section="postscript">
+  <div class="arch-ledger-item" data-title="strangle your idols" data-author="will diana" data-date="1771452000000" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Strangle Your Idols</span>
       <span class="arch-ledger-cell lc-author">Will Diana</span>
@@ -1019,15 +1025,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 7 | Will Diana on lunar nightmares, faraway lands, and Covid psychosis</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Below we examine</span> the origin and future of the author’s writing, the shadow world of Covid in 2020, Will’s fantasies of trekking across the globe, and his recurring dream about the moon of Ganymede.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/strangle-your-idols" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="rufus knuppel" data-date="1771038762421" data-section="essays">
+  <div class="arch-ledger-item" data-title="p(doom)" data-author="rufus knuppel" data-date="1771038762421" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">p(doom)</span>
       <span class="arch-ledger-cell lc-author">Rufus Knuppel</span>
@@ -1049,7 +1055,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="nadav" data-date="1769706286981" data-section="essays">
+  <div class="arch-ledger-item" data-title="a cruel joke is still a joke" data-author="nadav" data-date="1769706286981" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">A Cruel Joke Is Still a Joke</span>
       <span class="arch-ledger-cell lc-author">Nadav</span>
@@ -1071,7 +1077,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="grace caplan" data-date="1767839377748" data-section="essays">
+  <div class="arch-ledger-item" data-title="imagematic life" data-author="grace caplan" data-date="1767839377748" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Imagematic Life</span>
       <span class="arch-ledger-cell lc-author">Grace Caplan</span>
@@ -1093,7 +1099,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="the new critic" data-date="1767243806169" data-section="postscript">
+  <div class="arch-ledger-item" data-title="what troubled you in 2025?" data-author="the new critic" data-date="1767243806169" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">What Troubled You in 2025?</span>
       <span class="arch-ledger-cell lc-author">The New Critic</span>
@@ -1107,15 +1113,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 6 | An end of year symposium</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">I think about</span> this year — the days and days and days — and what did it yield? Many nights simply wondering: What, exactly, is happening? The more I make a home in my mind, the more I lose touch with the pragmatic rhythm of society. Yet the closer I exist on this social, integrated energy wave, sometimes the farther I feel from my soul. Can reading save me? Can people save me? Maybe, almost. I have a hunch that the last sliver of hope in a life well-lived — both in the head and in the world — requires real conviction. It’s something I am searching for. The question that troubled me most this year, which often kept me up at night, was whether or not one day I will find it. Whether or not one day my values will be strong enough to disentangle appearance from reality. It seems bleak but it is far from that. These questions are the keys to the universe, the answers to which I really have no business knowing. If I could guess, I think it is going to be about people. Yet for now, as Rilke says, I must settle with loving the questions themselves, and the way in which sometimes, in the middle of the night, the faint shimmer of an answer makes itself known.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/what-troubled-you-in-2025" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1767155788271" data-section="postscript">
+  <div class="arch-ledger-item" data-title="the crazy train" data-author="elan kluger" data-date="1767155788271" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Crazy Train</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -1129,15 +1135,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 5 | Matthew Adelstein, Noah Birnbaum, and Amos Wollen on effective altruism</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">I am not</span> an effective altruist. Effective altruism is defined below as a “movement that’s just broadly trying to do good, as effectively as you possibly can,” a movement which thinks of altruism as a question of calculations. Matthew Adelstein, author of the prominent blog Bentham’s Bulldog calls EA, “the purest form of altruism,” as it is interested in what is maximally effective in saving lives and reducing harm, not in the kind of altruism that makes you feel good about yourself.</p><p class="card-preview">I am not an effective altruist but I admire the movement greatly. I meet people across religions — Catholics, Jews, Protestants, Muslims — and rarely do I feel affronted or moved by their moral seriousness. Those religions require a tithe — giving away a certain percentage of their annual income — but few do so. They have elegant rhetoric and beautiful buildings but their actions rarely match up.</p><p class="card-preview">The same is not true of EA. While few admire their rhetoric — calculations of efficiency are less than elegant — and they do not have many buildings to speak of, members of EA do what they say they will do: they give away their money. They spend a great deal of time thinking about how they will give away their money and then they do. I admire them for that.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/the-crazy-train" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="zayd vlach" data-date="1765836936266" data-section="essays">
+  <div class="arch-ledger-item" data-title="end times" data-author="zayd vlach" data-date="1765836936266" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">End Times</span>
       <span class="arch-ledger-cell lc-author">Zayd Vlach</span>
@@ -1159,7 +1165,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="will diana" data-date="1765197550351" data-section="essays">
+  <div class="arch-ledger-item" data-title="finding a scene among the corporate and the damned" data-author="will diana" data-date="1765197550351" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Finding a Scene among the Corporate and the Damned</span>
       <span class="arch-ledger-cell lc-author">Will Diana</span>
@@ -1181,7 +1187,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="everett yum" data-date="1764681357402" data-section="essays">
+  <div class="arch-ledger-item" data-title="in defense of the personal essay" data-author="everett yum" data-date="1764681357402" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">In Defense of the Personal Essay</span>
       <span class="arch-ledger-cell lc-author">Everett Yum</span>
@@ -1203,7 +1209,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="daniel sandoval" data-date="1762796127367" data-section="essays">
+  <div class="arch-ledger-item" data-title="great and wonderful days" data-author="daniel sandoval" data-date="1762796127367" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Great and Wonderful Days</span>
       <span class="arch-ledger-cell lc-author">Daniel Sandoval</span>
@@ -1225,7 +1231,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="bentham's bulldog" data-date="1762463655387" data-section="essays">
+  <div class="arch-ledger-item" data-title="becoming shrimp-pilled" data-author="bentham's bulldog" data-date="1762463655387" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Becoming Shrimp-Pilled</span>
       <span class="arch-ledger-cell lc-author">Bentham's Bulldog</span>
@@ -1247,7 +1253,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="sagar castleman" data-date="1761596848231" data-section="essays">
+  <div class="arch-ledger-item" data-title="some absolutely original thing" data-author="sagar castleman" data-date="1761596848231" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Some Absolutely Original Thing</span>
       <span class="arch-ledger-cell lc-author">Sagar Castleman</span>
@@ -1269,7 +1275,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1761237173503" data-section="postscript">
+  <div class="arch-ledger-item" data-title="beyond pain" data-author="elan kluger" data-date="1761237173503" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Beyond Pain</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -1283,15 +1289,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 4 | Bond Almand IV on cycling and the Pan-American world record</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">I started following</span> Bond Almand IV in the same way many other Dartmouth students did: via his thorough, vivid, and thrilling journal entries as he completed his record-breaking Pan-American route, a 14,000-mile cycling journey from Northwest Alaska to Southern Argentina, in 75 days. Almand broke the previous world record by almost nine days, a record that had been established by an athlete with a whole team to change his tires, cook him food, and provide other aid. Almand was self-supported.</p><p class="card-preview">I spoke with Bond about his motivations, hallucinations, writing, and pain.</p><p class="card-preview">Senior fall, I attempt it my first time and I get halfway 72 miles in, and am feeling alright, but it is the middle of the night, and I’ve never done an endurance event through the night. I turn around and start climbing back up the mountains, and I fall into really deep sleep deprivation and just can’t really understand what’s happening to my body and start having crazy hallucinations.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="theodore gary" data-date="1760390605486" data-section="essays">
+  <div class="arch-ledger-item" data-title="blue guys" data-author="theodore gary" data-date="1760390605486" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Blue Guys</span>
       <span class="arch-ledger-cell lc-author">Theodore Gary</span>
@@ -1313,7 +1319,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="jonas rosenthal" data-date="1759749993357" data-section="essays">
+  <div class="arch-ledger-item" data-title="plaster books in a concrete prison" data-author="jonas rosenthal" data-date="1759749993357" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Plaster Books in a Concrete Prison</span>
       <span class="arch-ledger-cell lc-author">Jonas Rosenthal</span>
@@ -1335,7 +1341,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="owen yingling" data-date="1759160781943" data-section="essays">
+  <div class="arch-ledger-item" data-title="against the confessional essay" data-author="owen yingling" data-date="1759160781943" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Against the Confessional Essay</span>
       <span class="arch-ledger-cell lc-author">Owen Yingling</span>
@@ -1357,7 +1363,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="will diana" data-date="1758580891442" data-section="essays">
+  <div class="arch-ledger-item" data-title="in the beak of the heron" data-author="will diana" data-date="1758580891442" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">In the Beak of the Heron</span>
       <span class="arch-ledger-cell lc-author">Will Diana</span>
@@ -1379,7 +1385,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="josie barboriak" data-date="1758286144979" data-section="essays">
+  <div class="arch-ledger-item" data-title="nietzsche in friendship" data-author="josie barboriak" data-date="1758286144979" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Nietzsche in Friendship</span>
       <span class="arch-ledger-cell lc-author">Josie Barboriak</span>
@@ -1401,7 +1407,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1758112243006" data-section="essays">
+  <div class="arch-ledger-item" data-title="all of russell's men" data-author="elan kluger" data-date="1758112243006" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">All of Russell's Men</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -1423,7 +1429,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="john coleman" data-date="1757947180746" data-section="essays">
+  <div class="arch-ledger-item" data-title="the lesson of charlie kirk" data-author="john coleman" data-date="1757947180746" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Lesson of Charlie Kirk</span>
       <span class="arch-ledger-cell lc-author">John Coleman</span>
@@ -1445,7 +1451,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="isabel mehta" data-date="1756913064511" data-section="essays">
+  <div class="arch-ledger-item" data-title="the vagueness of her discontent" data-author="isabel mehta" data-date="1756913064511" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Vagueness of Her Discontent</span>
       <span class="arch-ledger-cell lc-author">Isabel Mehta</span>
@@ -1467,7 +1473,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="tessa augsberger" data-date="1755890013560" data-section="postscript">
+  <div class="arch-ledger-item" data-title="learning the machine" data-author="tessa augsberger" data-date="1755890013560" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Learning the Machine</span>
       <span class="arch-ledger-cell lc-author">Tessa Augsberger</span>
@@ -1481,15 +1487,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 3 | Rhea Madhogarhia on machine learning and AI interns</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">TESSA AUGSBERGER Tell</span> me a little bit about your job.</p><p class="card-preview">RHEA MADHOGARHIA I [was] a machine learning engineering intern at Reddit…[working on] the search recommendation and relevance team. So when you go to Reddit and you look at that little magnifying glass in the corner and tap it, you’re using our product.</p><p class="card-preview">AUGSBERGER Did you have any hesitations coming into the job before you accepted?</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/learning-the-machine-an-interview" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="toni ꩜" data-date="1755536568061" data-section="essays">
+  <div class="arch-ledger-item" data-title="we ate the gods" data-author="toni ꩜" data-date="1755536568061" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">We Ate the Gods</span>
       <span class="arch-ledger-cell lc-author">toni ꩜</span>
@@ -1511,7 +1517,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="arden yum" data-date="1754352773226" data-section="essays">
+  <div class="arch-ledger-item" data-title="living well" data-author="arden yum" data-date="1754352773226" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Living Well</span>
       <span class="arch-ledger-cell lc-author">Arden Yum</span>
@@ -1533,7 +1539,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="clare ashcraft" data-date="1753740674525" data-section="essays">
+  <div class="arch-ledger-item" data-title="the loss of reciprocity" data-author="clare ashcraft" data-date="1753740674525" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Loss of Reciprocity</span>
       <span class="arch-ledger-cell lc-author">Clare Ashcraft</span>
@@ -1555,7 +1561,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1753483189349" data-section="postscript">
+  <div class="arch-ledger-item" data-title="the college combinator" data-author="elan kluger" data-date="1753483189349" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The College Combinator</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -1569,15 +1575,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 2 | Danylo Borodchuk on Y Combinator and dropping out of college</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">ELAN KLUGER Was</span> Dartmouth helpful in getting you into entrepreneurship?</p><p class="card-preview">DANYLO BORODCHUK That’s a great question. I actually recently attended a gathering with several Dartmouth alumni who are also YC founders, along with Jeff Crowe, a prominent investor. We reflected on our shared experiences, particularly exploring the factors that contributed to our entrepreneurial journeys. Interestingly, there was a near-unanimous consensus: Dartmouth, as valuable as it is academically, provided very limited preparation specifically for the realities of entrepreneurship and the unique demands of Silicon Valley. Almost every YC founder I spoke with agreed — “Dartmouth did not equip us for Silicon Valley.”</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/the-college-combinator-an-interview" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="dylan partner" data-date="1753114641745" data-section="essays">
+  <div class="arch-ledger-item" data-title="those halcyon days" data-author="dylan partner" data-date="1753114641745" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Those Halcyon Days</span>
       <span class="arch-ledger-cell lc-author">Dylan Partner</span>
@@ -1599,7 +1605,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="benjamin samuels" data-date="1752860297789" data-section="essays">
+  <div class="arch-ledger-item" data-title="the youth" data-author="benjamin samuels" data-date="1752860297789" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Youth</span>
       <span class="arch-ledger-cell lc-author">Benjamin Samuels</span>
@@ -1621,7 +1627,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="milla ben-ezra" data-date="1752270456640" data-section="essays">
+  <div class="arch-ledger-item" data-title="the disappearing act" data-author="milla ben-ezra" data-date="1752270456640" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Disappearing Act</span>
       <span class="arch-ledger-cell lc-author">Milla Ben-Ezra</span>
@@ -1643,7 +1649,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="tessa augsberger" data-date="1752096845787" data-section="essays">
+  <div class="arch-ledger-item" data-title="in need of daydreams" data-author="tessa augsberger" data-date="1752096845787" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">In Need of Daydreams</span>
       <span class="arch-ledger-cell lc-author">Tessa Augsberger</span>
@@ -1665,7 +1671,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="george porteous" data-date="1750954859644" data-section="essays">
+  <div class="arch-ledger-item" data-title="the attention seekers" data-author="george porteous" data-date="1750954859644" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Attention Seekers</span>
       <span class="arch-ledger-cell lc-author">George Porteous</span>
@@ -1687,7 +1693,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="rufus knuppel" data-date="1750354157570" data-section="essays">
+  <div class="arch-ledger-item" data-title="true impressions of our education, pt. ii" data-author="rufus knuppel" data-date="1750354157570" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">True Impressions of Our Education, Pt. II</span>
       <span class="arch-ledger-cell lc-author">Rufus Knuppel</span>
@@ -1709,7 +1715,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="elan kluger" data-date="1750268787954" data-section="essays">
+  <div class="arch-ledger-item" data-title="true impressions of our education, pt. i" data-author="elan kluger" data-date="1750268787954" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">True Impressions of Our Education, Pt. I</span>
       <span class="arch-ledger-cell lc-author">Elan Kluger</span>
@@ -1731,7 +1737,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="brendilou armstrong" data-date="1749743827454" data-section="essays">
+  <div class="arch-ledger-item" data-title="from my perch in the sandhills" data-author="brendilou armstrong" data-date="1749743827454" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">From My Perch in the Sandhills</span>
       <span class="arch-ledger-cell lc-author">Brendilou Armstrong</span>
@@ -1753,7 +1759,7 @@
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="benjamin samuels" data-date="1749232465609" data-section="essays">
+  <div class="arch-ledger-item" data-title="the abbey in kalamazoo" data-author="benjamin samuels" data-date="1749232465609" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">The Abbey in Kalamazoo</span>
       <span class="arch-ledger-cell lc-author">Benjamin Samuels</span>
@@ -1768,14 +1774,14 @@
       <div class="arch-ledger-card-text">
         <p class="card-dek">“Then for no reason at all he looked up and saw loose branches floating in the air, pebbles whizzing like bullets against the window, and the rain falling upside-down.”</p>
         <div class="arch-ledger-card-divider"></div>
-        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">“Then for no</span> reason at all he looked up and saw loose branches floating in the air, pebbles whizzing like bullets against the window, and the rain falling upside-down.”</p></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Just south of</span> Kalamazoo, MI is a small monastery home to six monks. The monastery is named for St. Gregory, an early advocate of monasticism, and follows the thousand-year-old Rule of St. Benedict. The Rule has over a hundred chapters, each regulating a different aspect of monastic life, from meals and clothes to friendship.</p><p class="card-preview">St. Gregory’s Abbey follows most of these prescriptions. The monks rise every day at 4:30 for the first prayer, called Matins. They sing three or four psalms together, then go back to sleep for a couple hours, then pray again, then eat breakfast and begin the day. They hold seven prayers in a day at roughly three hour intervals — during which past monks would garden and raise animals.</p><p class="card-preview">But now the monastery is aging, and most of the monks are too old for physical work. The livestock is gone and the garden has been abandoned. The woods have been parceled out to various contractors. In their free time, the monks solicit and record the donations that now keep the Abbey alive.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/the-abbey-in-kalamazoo" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="eva murillo" data-date="1747677192080" data-section="essays">
+  <div class="arch-ledger-item" data-title="from the mouth of the flytrap" data-author="eva murillo" data-date="1747677192080" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">From the Mouth of the Flytrap</span>
       <span class="arch-ledger-cell lc-author">Eva Murillo</span>
@@ -1790,14 +1796,14 @@
       <div class="arch-ledger-card-text">
         <p class="card-dek">“I was the Venus flytrap, and my vaginismus was telling me something about myself that I didn’t know.”</p>
         <div class="arch-ledger-card-divider"></div>
-        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">“I was the</span> Venus flytrap, and my vaginismus was telling me something about myself that I didn’t know.”</p></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">“I have something</span> called vaginismus. My vagina’s like a Venus flytrap.”</p><p class="card-preview">I hadn’t heard about vaginismus before watching the first season of <em>Sex Education</em> in 2019. I was fifteen and just dipping my toe into the world of awkward teenage sex. Watching Lily struggle with sexual pain despite her readiness and excitement for penetration scared me — I remember thinking, “God, I hope that’s never me.”</p><p class="card-preview">The first time I had penetrative sex was post-pandemic. I was seventeen and had already done everything else with my long-term boyfriend at the time (parents and Covid had gotten in the way of the “real thing” — apparently giving head in a basement with your boyfriend’s parents upstairs is less consequential than fucking). My boyfriend, let’s call him Adam, had coerced his parents into leaving him alone for the afternoon. The whole thing was very ceremonious. Adam’s bed was made, his stuffed animals hidden. I’d worn a pretty dress and shaved my entire body. There was a fuss about condoms and lube, but then he carried me upstairs like a bride and my anxiety disappeared. We followed all the steps like a ritual — makeout, clothes off, foreplay. Then the moment of truth.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/from-the-mouth-of-the-flytrap" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="ramsey alsheikh" data-date="1746731809593" data-section="postscript">
+  <div class="arch-ledger-item" data-title="two-state friendship" data-author="ramsey alsheikh" data-date="1746731809593" data-kicker="" data-section="postscript">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Two-State Friendship</span>
       <span class="arch-ledger-cell lc-author">Ramsey Alsheikh</span>
@@ -1811,15 +1817,15 @@
       </a></span>
       <div class="arch-ledger-card-text">
         <p class="card-dek">Postscript No. 1 | Ramsey Alsheikh and Elan Kluger on Israel-Palestine</p>
-        
-        
+        <div class="arch-ledger-card-divider"></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">ELAN KLUGER Let’s</span> begin with how we got to know each other.</p><p class="card-preview">RAMSEY ALSHEIKH The first time I met you was in Arabic class.</p><p class="card-preview">KLUGER Before. I was thinking about this. At orientation when we went around to different departments. The Jewish Studies program was advertising their new class on Israel-Palestine and I was flipping through the syllabus and you walked over. I was looking at Benny Morris’s book on the syllabus. I said I like him and you said I hate him and that was the only interaction we had.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/two-state-friendship" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
       </div>
     </div>
   </div>
-  <div class="arch-ledger-item" data-author="rufus knuppel" data-date="1746458758394" data-section="essays">
+  <div class="arch-ledger-item" data-title="pulling the veil from the void" data-author="rufus knuppel" data-date="1746458758394" data-kicker="" data-section="essays">
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
       <span class="arch-ledger-cell lc-title">Pulling the Veil from the Void</span>
       <span class="arch-ledger-cell lc-author">Rufus Knuppel</span>
@@ -1834,7 +1840,7 @@
       <div class="arch-ledger-card-text">
         <p class="card-dek">“Your phone, that hunk of rare earth metals and electricity, certainly does not need you…”</p>
         <div class="arch-ledger-card-divider"></div>
-        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">“Your phone, that</span> hunk of rare earth metals and electricity, certainly does not need you…”</p></div>
+        <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">While I was</span> a toddler in the summer of 2007, burying myself in sand at the beach, lines were forming outside of Apple stores, rows of buyers giddy to get their hands on an iPhone. Eighteen years on, ninety percent of Americans own a smartphone. But the diagnosis is bad. The smartphone makes us sick. It rots our brains away. It deprives us of our beings.</p><p class="card-preview">I recently watched Steve Jobs’s ten-minute introduction to the iPhone on my computer, disturbed. “Every once in a while,” he begins, “a revolutionary product comes along that changes everything.” Steve Jobs, the silicone, entrepreneurial titan, is dead, but his smartphone revolution lives on. The devices in our pockets today are far from the primitive, original iPhones — their App-Store-less interfaces, their grainy cameras, their square-in-circle home buttons. The smartphone is the vital accessory of modern life. But the Jobs speech, which has nearly 50 million views, unsettled me not for its clairvoyance, nor its inevitability. The keynote has an air of gleeful solemnity; Jobs wears black and speaks gravely, as if seeing the future; the announcement unfurls, the presentation spins, the crowd cheers. But all the while I had the sick feeling that I had found the precise moment, like a cursed home video of a tragic death, when our humanity began to shrivel away.</p><p class="card-preview">Nearly two decades later, the comments agreed with me: “This is when society died…the worst thing to happen to humanity…the start of the end.” We all seem agreed that our smartphones are bad. We check our screen-times and get a little nauseous. We say things like, <em>yeah, I should probably look at my phone less</em>, and, <em>yeah, I’ve been trying this thing where I don’t go on my phone before bed</em>. There exists mass consensus that our phones are evil, yet we all own one despite it.</p></div>
         <div class="panel-band panel-band--bottom">
           <a class="card-preview-cta arch-ledger-readon pc pc-right" href="https://www.thenewcritic.com/p/pulling-the-veil-from-the-void" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
         </div>
@@ -2057,21 +2063,91 @@
   // columns (same rules as the essay panels): the block is capped at a
   // whole-line multiple ending GAP_BOTTOM above the footer band, the
   // line remainder shifts the column down (top padding is the minimum),
-  // and a cut gets an ellipsis attached to the last visible word.
+  // and a cut ends at its last whole word with the ellipsis joined onto
+  // it inline (see truncateToWord — same approach as duo-panel-fit.js).
+  var TRAIL_PUNCT = /[\s.,;:!?'"‘’“”()\[\]…—–-]+$/;
+
+  function removeAfter(root, node) {
+    var n = node;
+    while (n && n !== root) {
+      while (n.nextSibling) n.parentNode.removeChild(n.nextSibling);
+      n = n.parentNode;
+    }
+  }
+
+  function truncateToWord(el) {
+    if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+    var blockR = el.getBoundingClientRect();
+    var EPS = 2;
+    function fits(r) {
+      return r.bottom <= blockR.bottom + EPS && r.right <= blockR.right + EPS;
+    }
+    var nodes = [];
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    var n;
+    while ((n = w.nextNode())) nodes.push(n);
+    var cutNode = null, cutEnd = -1;
+    for (var i = nodes.length - 1; i >= 0 && !cutNode; i--) {
+      var t = nodes[i].textContent;
+      var re = /\S+/g, m, best = -1;
+      while ((m = re.exec(t))) {
+        var rng = document.createRange();
+        rng.setStart(nodes[i], m.index);
+        rng.setEnd(nodes[i], m.index + m[0].length);
+        var rs = rng.getClientRects();
+        var ok = !!rs.length;
+        for (var j = 0; j < rs.length; j++) {
+          if (rs[j].width < 1) continue;
+          if (!fits(rs[j])) { ok = false; break; }
+        }
+        if (ok) best = m.index + m[0].length;
+      }
+      if (best > -1) { cutNode = nodes[i]; cutEnd = best; }
+    }
+    if (!cutNode) return;
+    removeAfter(el, cutNode);
+    cutNode.textContent = cutNode.textContent.slice(0, cutEnd);
+    var guard = 30;
+    while (guard-- > 0 && cutNode) {
+      cutNode.textContent = cutNode.textContent.replace(TRAIL_PUNCT, '') + '…';
+      var er = document.createRange();
+      er.setStart(cutNode, cutNode.textContent.length - 1);
+      er.setEnd(cutNode, cutNode.textContent.length);
+      if (fits(er.getBoundingClientRect())) return;
+      var rest = cutNode.textContent.slice(0, -1).replace(TRAIL_PUNCT, '').replace(/\S+$/, '');
+      if (rest.trim()) {
+        cutNode.textContent = rest;
+      } else {
+        var w2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+        var n2, prev = null;
+        while ((n2 = w2.nextNode())) {
+          if (n2 === cutNode) break;
+          if (n2.textContent.trim()) prev = n2;
+        }
+        cutNode.parentNode.removeChild(cutNode);
+        cutNode = prev;
+        if (cutNode) removeAfter(el, cutNode);
+      }
+    }
+  }
+
   function fitCard(card) {
     var text = card.querySelector('.arch-ledger-card-text');
     if (!text || card.hidden) return;
     var band = text.querySelector('.panel-band--bottom');
+    // Restore a previous fit's truncation before anything is measured (or
+    // queried — the paragraphs below must be the fresh nodes).
+    var block0 = text.querySelector('.card-preview-block');
+    if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
     var paras = text.querySelectorAll('.card-preview');
     text.style.paddingTop = '';
-    var oldE = text.querySelector('.preview-ellipsis');
-    if (oldE) oldE.parentNode.removeChild(oldE);
     [].forEach.call(text.children, function(el){
       if (el === band) return;
       el.style.display = '';
       el.style.maxHeight = '';
+      el.style.height = '';
+      el.style.columnFill = '';
       el.style.overflow = '';
-      el.classList.remove('card-preview-block--cut');
     });
     [].forEach.call(paras, function(p){
       p.style.display = '';
@@ -2108,7 +2184,6 @@
         el.style.maxHeight = (blockLines * plh) + 'px';
         el.style.overflow = 'hidden';
         var isCut = el.scrollWidth > el.clientWidth + 1;
-        el.classList.toggle('card-preview-block--cut', isCut);
         // Anchor to the footer band: leftover space (line remainder or
         // whole unused lines) raises the top padding above its minimum.
         var anchorShift = limit - el.getBoundingClientRect().bottom;
@@ -2117,37 +2192,12 @@
           text.style.paddingTop = (basePad + anchorShift) + 'px';
         }
         if (isCut) {
-          var blockR = el.getBoundingClientRect();
-          var bestR = null;
-          var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-          var tn;
-          while ((tn = walker.nextNode())) {
-            var rng = document.createRange();
-            rng.selectNodeContents(tn);
-            var rs = rng.getClientRects();
-            for (var ri = 0; ri < rs.length; ri++) {
-              var rr = rs[ri];
-              if (rr.width < 2 || rr.height < 4) continue;
-              if (rr.bottom > blockR.bottom + 2 || rr.right > blockR.right + 2) continue;
-              if (!bestR
-                  || rr.bottom > bestR.bottom + 1
-                  || (Math.abs(rr.bottom - bestR.bottom) <= 1 && rr.right > bestR.right)) {
-                bestR = rr;
-              }
-            }
-          }
-          if (bestR) {
-            var dots = document.createElement('span');
-            dots.className = 'preview-ellipsis';
-            dots.textContent = '\u2026';
-            el.appendChild(dots);
-            var dotsLeft = Math.min(
-              bestR.right - blockR.left + 1,
-              el.clientWidth - dots.getBoundingClientRect().width - 1
-            );
-            dots.style.left = dotsLeft + 'px';
-            dots.style.top = (bestR.top - blockR.top) + 'px';
-          }
+          // Freeze the sequential fill so deleting the clipped tail can't
+          // re-balance the visible columns, then end the text at its last
+          // whole word with the ellipsis joined right onto it.
+          el.style.height = (blockLines * plh) + 'px';
+          el.style.columnFill = 'auto';
+          truncateToWord(el);
         }
         return;
       }

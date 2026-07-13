@@ -41,7 +41,8 @@
 
 <main id="main">
 
-  <div class="wrap page-rows">
+  <div class="page-rows">
+  <div class="wrap">
     
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half">
@@ -122,7 +123,10 @@
         </div>
       </div>
     </article>
-
+  </div>
+  <div class="row-divider"></div>
+  <div class="wrap">
+    
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">
@@ -202,7 +206,10 @@
         </div>
       </div>
     </article>
-
+  </div>
+  <div class="row-divider"></div>
+  <div class="wrap">
+    
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">
@@ -258,6 +265,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--ghost" aria-hidden="true"></div>
     </article>
+  </div>
   </div>
 </main>
 
@@ -475,12 +483,91 @@
   function resetClamp(el) {
     el.style.overflow = '';
     el.style.maxHeight = '';
+    el.style.height = '';
+    el.style.columnFill = '';
     el.style.webkitBoxOrient = '';
     el.style.webkitLineClamp = '';
     el.style.lineClamp = '';
     el.classList.remove('card-preview--clamped');
     el.classList.remove('card-preview--capped');
-    el.classList.remove('card-preview-block--cut');
+  }
+
+  var TRAIL_PUNCT = /[\s.,;:!?'"‘’“”()\[\]…—–-]+$/;
+
+  function removeAfter(root, node) {
+    var n = node;
+    while (n && n !== root) {
+      while (n.nextSibling) n.parentNode.removeChild(n.nextSibling);
+      n = n.parentNode;
+    }
+  }
+
+  // Truncates a capped two-column block to its last fully-visible word and
+  // joins the ellipsis straight onto that word's final letter (trailing
+  // punctuation stripped) — inline, part of the text flow, never overlaid.
+  // The caller freezes the block first (explicit height + column-fill:auto)
+  // so deleting the clipped tail can't re-balance the visible columns; the
+  // pristine markup is stashed on the element for the next refit.
+  function truncateToWord(el) {
+    if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+    var blockR = el.getBoundingClientRect();
+    var EPS = 2;
+    function fits(r) {
+      return r.bottom <= blockR.bottom + EPS && r.right <= blockR.right + EPS;
+    }
+    // Walk the text nodes back to front for the last one holding a word
+    // whose every fragment sits inside the visible box (clipped text lives
+    // below the height cap or out in the phantom overflow columns).
+    var nodes = [];
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    var n;
+    while ((n = w.nextNode())) nodes.push(n);
+    var cutNode = null, cutEnd = -1;
+    for (var i = nodes.length - 1; i >= 0 && !cutNode; i--) {
+      var text = nodes[i].textContent;
+      var re = /\S+/g, m, best = -1;
+      while ((m = re.exec(text))) {
+        var rng = document.createRange();
+        rng.setStart(nodes[i], m.index);
+        rng.setEnd(nodes[i], m.index + m[0].length);
+        var rs = rng.getClientRects();
+        var ok = !!rs.length;
+        for (var j = 0; j < rs.length; j++) {
+          if (rs[j].width < 1) continue;
+          if (!fits(rs[j])) { ok = false; break; }
+        }
+        if (ok) best = m.index + m[0].length;
+      }
+      if (best > -1) { cutNode = nodes[i]; cutEnd = best; }
+    }
+    if (!cutNode) return;
+    removeAfter(el, cutNode);
+    cutNode.textContent = cutNode.textContent.slice(0, cutEnd);
+    // Append the ellipsis and confirm it landed in view — on a full last
+    // line it wraps out of the visible box, so back off a word and retry.
+    var guard = 30;
+    while (guard-- > 0 && cutNode) {
+      cutNode.textContent = cutNode.textContent.replace(TRAIL_PUNCT, '') + '…';
+      var er = document.createRange();
+      er.setStart(cutNode, cutNode.textContent.length - 1);
+      er.setEnd(cutNode, cutNode.textContent.length);
+      if (fits(er.getBoundingClientRect())) return;
+      var t = cutNode.textContent.slice(0, -1).replace(TRAIL_PUNCT, '').replace(/\S+$/, '');
+      if (t.trim()) {
+        cutNode.textContent = t;
+      } else {
+        // This node emptied out — retreat to the previous text node.
+        var w2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+        var n2, prev = null;
+        while ((n2 = w2.nextNode())) {
+          if (n2 === cutNode) break;
+          if (n2.textContent.trim()) prev = n2;
+        }
+        cutNode.parentNode.removeChild(cutNode);
+        cutNode = prev;
+        if (cutNode) removeAfter(el, cutNode);
+      }
+    }
   }
 
   // Clamps el to however many of its lines end above `limit`. Returns true
@@ -512,12 +599,15 @@
     if (!topBox || !band) return;
     var title = topBox.querySelector('.card-title');
     var meta = topBox.querySelector('.card-meta--byline');
+
+    // Restore a previous fit's truncation before anything is measured (or
+    // queried — the paragraphs below must be the fresh nodes).
+    var block0 = topBox.querySelector('.card-preview-block');
+    if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
     topBox.style.marginTop = '';
-    var oldEllipsis = topBox.querySelector('.preview-ellipsis');
-    if (oldEllipsis) oldEllipsis.parentNode.removeChild(oldEllipsis);
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
 
@@ -609,13 +699,19 @@
           var GAP_BOTTOM = 16;
           var budget = bandTop - GAP_BOTTOM - el.getBoundingClientRect().top;
           var blockLines = Math.floor(budget / plh);
-          if (blockLines < 1) { el.style.display = 'none'; return; }
+          if (blockLines < 1) {
+            // No room for even one line — the quote divider above would
+            // sit orphaned over nothing.
+            el.style.display = 'none';
+            var qd2 = topBox.querySelector('.duo-quote-divider');
+            if (qd2) qd2.style.display = 'none';
+            return;
+          }
           el.style.maxHeight = (blockLines * plh) + 'px';
           el.style.overflow = 'hidden';
           // Cut text spills into clipped phantom columns, widening the
           // scrollable area — that's the tell that an ellipsis is owed.
           var isCut = el.scrollWidth > el.clientWidth + 1;
-          el.classList.toggle('card-preview-block--cut', isCut);
           // Anchor the column to the footer: whatever the block doesn't
           // use — the line remainder on cut panels, whole unused lines on
           // short ones like a fully-fitting excerpt — shifts the column
@@ -624,52 +720,42 @@
           var anchorShift = (bandTop - GAP_BOTTOM) - el.getBoundingClientRect().bottom;
           if (anchorShift > 0) topBox.style.marginTop = anchorShift + 'px';
           if (isCut) {
-            // Attach the ellipsis to the last visible word: find the
-            // bottom-most, right-most text fragment still inside the
-            // block's visible box and pin a span just past its edge.
-            var blockR = el.getBoundingClientRect();
-            var bestR = null;
-            var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-            var tn;
-            while ((tn = walker.nextNode())) {
-              var rng = document.createRange();
-              rng.selectNodeContents(tn);
-              var rs = rng.getClientRects();
-              for (var ri = 0; ri < rs.length; ri++) {
-                var rr = rs[ri];
-                if (rr.width < 2 || rr.height < 4) continue;
-                if (rr.bottom > blockR.bottom + 2 || rr.right > blockR.right + 2) continue;
-                if (!bestR
-                    || rr.bottom > bestR.bottom + 1
-                    || (Math.abs(rr.bottom - bestR.bottom) <= 1 && rr.right > bestR.right)) {
-                  bestR = rr;
-                }
-              }
-            }
-            if (bestR) {
-              var dots = document.createElement('span');
-              dots.className = 'preview-ellipsis';
-              dots.textContent = '\u2026';
-              el.appendChild(dots);
-              // Keep the span inside the block: a full-width last line
-              // would otherwise push it past the overflow clip.
-              var dotsLeft = Math.min(
-                bestR.right - blockR.left + 1,
-                el.clientWidth - dots.getBoundingClientRect().width - 1
-              );
-              dots.style.left = dotsLeft + 'px';
-              dots.style.top = (bestR.top - blockR.top) + 'px';
-            }
+            // Freeze the sequential fill (an explicit height plus
+            // column-fill:auto) so deleting the clipped tail from the DOM
+            // can't re-balance the visible columns, then end the text at
+            // its last whole word with the ellipsis joined right onto it.
+            el.style.height = (blockLines * plh) + 'px';
+            el.style.columnFill = 'auto';
+            truncateToWord(el);
           }
           return;
         }
+        // Single-column preview (trio/quad/mosaic squares): paragraphs
+        // clamp at the rendered line, then the block anchors to the
+        // footer band the same way the essays' two-column blocks do —
+        // its last line ends GAP_BOTTOM above the band, and the line
+        // remainder (or whole unused lines) shifts the column down, the
+        // header gap being the minimum.
+        var scGap = 16;
+        var scLimit = (limit + 14) - scGap;
         var parasCut = false;
+        var lastVisible = null;
         [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
           if (parasCut) { p.style.display = 'none'; return; }
-          if (p.getBoundingClientRect().bottom <= limit) return;
+          if (p.getBoundingClientRect().bottom <= scLimit) { lastVisible = p; return; }
           parasCut = true;
-          clampToFit(p, limit);
+          if (clampToFit(p, scLimit)) lastVisible = p;
         });
+        if (lastVisible) {
+          var scShift = scLimit - lastVisible.getBoundingClientRect().bottom;
+          if (scShift > 0) topBox.style.marginTop = scShift + 'px';
+        } else {
+          // Every paragraph died — hide the empty block and the quote
+          // divider that would otherwise sit orphaned above it.
+          el.style.display = 'none';
+          var qd = topBox.querySelector('.duo-quote-divider');
+          if (qd) qd.style.display = 'none';
+        }
       } else if (el.getBoundingClientRect().bottom > limit) {
         cutting = true;
         el.style.display = 'none';
