@@ -83,6 +83,60 @@
     }
   }
 
+  // Reads the rendered line boxes of the two-column block and reports, per
+  // column, whether the bottom line slot is occupied (…Full) and whether
+  // the line sitting in it is an orphan — a paragraph's opening line
+  // stranded at the column's foot while its body carries on past the
+  // break. Same helper as duo-panel-fit.js.
+  function columnFill(el, plh) {
+    var r = el.getBoundingClientRect();
+    var midX = (r.left + r.right) / 2;
+    var slotTop = r.bottom - plh;
+    var st = { leftFull: false, rightFull: false, leftOrphan: false, rightOrphan: false };
+    [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
+      var rng = document.createRange();
+      rng.selectNodeContents(p);
+      var rs = rng.getClientRects();
+      var rects = [];
+      for (var i = 0; i < rs.length; i++) if (rs[i].width >= 1) rects.push(rs[i]);
+      if (!rects.length) return;
+      var first = rects[0];
+      var continues = false;
+      for (var j = 0; j < rects.length; j++) {
+        if (Math.abs(rects[j].top - first.top) > plh / 2) { continues = true; break; }
+      }
+      rects.forEach(function(rc){
+        if (rc.left >= r.right - 1) return;
+        if ((rc.top + rc.bottom) / 2 < slotTop) return;
+        var isFirstLine = continues && Math.abs(rc.top - first.top) < plh / 2;
+        if ((rc.left + rc.right) / 2 >= midX) {
+          st.rightFull = true;
+          if (isFirstLine) st.rightOrphan = true;
+        } else {
+          st.leftFull = true;
+          if (isFirstLine) st.leftOrphan = true;
+        }
+      });
+    });
+    return st;
+  }
+
+  // Tallest height (in lines) at which both columns run full — top line
+  // against the divider, bottom line against the footer gap — with
+  // neither column ending in an orphan. 0 when no height fills both
+  // columns (content too short). Same helper as duo-panel-fit.js.
+  function pickColumnHeight(el, plh, maxLines) {
+    var firstFull = 0;
+    for (var k = maxLines; k >= 1; k--) {
+      el.style.height = (k * plh) + 'px';
+      var st = columnFill(el, plh);
+      if (!st.leftFull || !st.rightFull) continue;
+      if (!firstFull) firstFull = k;
+      if (!st.leftOrphan && !st.rightOrphan) return k;
+    }
+    return firstFull;
+  }
+
   function fitCard(card) {
     var text = card.querySelector('.arch-ledger-card-text');
     if (!text || card.hidden) return;
@@ -128,29 +182,38 @@
       if (getComputedStyle(el).display === 'none') return;
       if (cutting) { el.style.display = 'none'; return; }
       if (el.classList.contains('card-preview-block')) {
+        // Two-column excerpt, sized by pickColumnHeight: both columns run
+        // full from the divider line down to the footer line, grids
+        // aligned, neither column ending in an orphan. Sequential fill
+        // against an explicit height makes "both columns full" a property
+        // the height alone controls — and deleting the clipped tail later
+        // can't re-balance what shows.
         var firstP = el.querySelector('.card-preview');
         var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
         var budget = limit - el.getBoundingClientRect().top;
-        var blockLines = Math.floor(budget / plh);
-        if (blockLines < 1) { el.style.display = 'none'; return; }
-        el.style.maxHeight = (blockLines * plh) + 'px';
+        var maxLines = Math.floor(budget / plh);
+        if (maxLines < 1) { el.style.display = 'none'; return; }
         el.style.overflow = 'hidden';
-        var isCut = el.scrollWidth > el.clientWidth + 1;
-        // Anchor to the footer band: leftover space (line remainder or
-        // whole unused lines) raises the top padding above its minimum.
+        el.style.columnFill = 'auto';
+        var blockLines = pickColumnHeight(el, plh, maxLines);
+        if (blockLines) {
+          el.style.height = (blockLines * plh) + 'px';
+        } else {
+          // Content too short to floor both columns at any height — let
+          // it balance naturally and just anchor what there is.
+          el.style.height = '';
+          el.style.columnFill = '';
+          el.style.maxHeight = (maxLines * plh) + 'px';
+        }
+        // Anchor to the footer band: whatever the block doesn't use —
+        // lines the fitter gave back, plus the line remainder — raises
+        // the top padding above its minimum.
         var anchorShift = limit - el.getBoundingClientRect().bottom;
         if (anchorShift > 0) {
           var basePad = parseFloat(getComputedStyle(text).paddingTop) || 0;
           text.style.paddingTop = (basePad + anchorShift) + 'px';
         }
-        if (isCut) {
-          // Freeze the sequential fill so deleting the clipped tail can't
-          // re-balance the visible columns, then end the text at its last
-          // whole word with the ellipsis joined right onto it.
-          el.style.height = (blockLines * plh) + 'px';
-          el.style.columnFill = 'auto';
-          truncateToWord(el);
-        }
+        if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
         return;
       }
       if (el.getBoundingClientRect().bottom > limit) {

@@ -223,6 +223,36 @@ async function fetchFirstParagraph(url) {
   return firstParagraph(bodyHtml || '');
 }
 
+// The artist credit lives in the post body: the cover image appears there
+// as a <figure> whose <figcaption> is the artist's name ("Kit Knuppel").
+// Every CDN variant of the same upload shares its S3 image uuid, so the
+// cover's figure is found by that uuid rather than by URL equality (the
+// body's srcset variants and the cover_image field are all different
+// URLs). When no figure carries the cover's uuid — some posts' cover is a
+// separate re-upload of the same art — the body's FIRST figure stands in:
+// the lede art always opens the piece here. Posts with no figures at all
+// (cover set only as metadata) have no caption to pull — empty string.
+function extractCoverArtist(bodyHtml, coverUrl) {
+  const id = /images(?:%2F|\/)([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})/i.exec(coverUrl || '');
+  if (!id || !bodyHtml) return '';
+  const figures = bodyHtml.match(/<figure[\s\S]*?<\/figure>/gi) || [];
+  const fig = figures.find((f) => f.toLowerCase().includes(id[1].toLowerCase())) || figures[0];
+  if (!fig) return '';
+  const cap = /<figcaption[^>]*>([\s\S]*?)<\/figcaption>/i.exec(fig);
+  return cap ? artistFromCaption(unescapeNumericEntities(stripHtml(cap[1]))) : '';
+}
+
+// Captions run "Title, Artist" — portraits title with the sitter's own
+// name ("Isabel Mehta, Kit Knuppel"), quoted titles can hold commas of
+// their own ("“Sketch of Yarvin by his assistant, Stevie Miller,” Werner
+// Zagrebbi"), some add a medium ("Untitled, oil on canvas, Sarah
+// Alshreef") — or the caption is the bare artist. Strip the quoted spans
+// and the artist is whatever follows the last comma.
+function artistFromCaption(caption) {
+  const parts = caption.replace(/[“"][^“”"]*[”"]/g, '').split(',');
+  return parts[parts.length - 1].trim();
+}
+
 // Multi-paragraph preview for the hero (2 paragraphs) and the duo/trio row
 // cards (3 — see the row-posts fetch in main()) — one extra fetch of the
 // post's own page, keeping the paragraphs separate (rather than flattened
@@ -230,13 +260,18 @@ async function fetchFirstParagraph(url) {
 // them. Returns full, untruncated paragraph text: cutting each paragraph
 // off at the right line — with a real ellipsis flush at that line's end —
 // is a line-clamp job (duo-panel-fit.js, which fits the hero panel and the
-// row panels alike), not a build-time word-count guess.
+// row panels alike), not a build-time word-count guess. The same fetch
+// also carries out the cover artist credit (see extractCoverArtist).
 async function fetchExtendedPreview(url, max) {
   const html = await fetchHtml(url);
-  if (!html) return [];
+  if (!html) return { paragraphs: [], artist: '' };
   const preloads = extractPreloads(html);
-  const bodyHtml = preloads && preloads.post && preloads.post.body_html;
-  return extractParagraphs(bodyHtml || '', max);
+  const post = preloads && preloads.post;
+  const bodyHtml = (post && post.body_html) || '';
+  return {
+    paragraphs: extractParagraphs(bodyHtml, max),
+    artist: extractCoverArtist(bodyHtml, (post && post.cover_image) || ''),
+  };
 }
 
 // Like Promise.all(items.map(fn)) but `size` at a time — the section pages
@@ -737,6 +772,27 @@ ${renderNav(currentKey)}
 </div>`;
 }
 
+// Persistent kicker chip pinned to every cover image's top-left corner —
+// the hover band's kicker box made permanent: same courier-box dimensions,
+// but full-strength (white text in a white 1px outline on black) where the
+// band corners are muted gray on hairline rules. Decorative (aria-hidden):
+// the panel's own band kicker is the accessible one, and the opaque panel
+// covers this chip whenever it's up (see .cover-kicker in style.css).
+function coverKickerHtml(kicker) {
+  return kicker ? `<span class="cover-kicker" aria-hidden="true">${escapeHtml(kicker)}</span>` : '';
+}
+
+// The artist credit as a footer-band box ("ART: KIT KNUPPEL"): on the
+// hover cards an interior box of the right group, left of Read on
+// (duo-panel-fit.js hides it when the band's boxes outgrow a narrow
+// panel rather than let it displace Read on); on the archive fold-out a
+// left-corner box of its own.
+function artBoxHtml(post, side = 'right') {
+  return post.coverArtist
+    ? `<p class="card-meta pc pc-${side} pc-art">Art: ${escapeHtml(post.coverArtist)}</p>`
+    : '';
+}
+
 function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker = '', span = '' } = {}) {
   const classes = ['card'];
   if (variant) classes.push(`card--${variant}`);
@@ -820,7 +876,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     return `
     <article class="${cls}">
       <div class="feature-image-cell">
-        ${imageHtml}
+        ${imageHtml}${coverKickerHtml(kicker)}
       </div>
       <div class="duo-panel">
         <div class="panel-band panel-band--top">
@@ -839,7 +895,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
         </div>
         <div class="panel-band panel-band--bottom">
           <a class="duo-essays-btn card-category-btn pc pc-left" href="/archive.html">The Latest</a>
-          ${readNowHtml}
+          ${artBoxHtml(post)}${readNowHtml}
         </div>
       </div>
     </article>`;
@@ -922,7 +978,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
-        </a></span>
+        </a>${coverKickerHtml(post.kicker)}</span>
         <div class="duo-panel">
           <div class="panel-band panel-band--top">
             ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
@@ -940,7 +996,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
           </div>
           <div class="panel-band panel-band--bottom">
             <a class="duo-essays-btn card-category-btn pc pc-left" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
-            ${readNowHtml}
+            ${artBoxHtml(post)}${readNowHtml}
           </div>
         </div>
       </div>`;
@@ -1397,7 +1453,7 @@ function renderLedgerRow(post) {
         ${dekHtml && previewBlock ? '<div class="arch-ledger-card-divider"></div>' : ''}
         ${previewBlock}
         <div class="panel-band panel-band--bottom">
-          ${readNowHtml}
+          ${artBoxHtml(post, 'left')}${readNowHtml}
         </div>
       </div>
     </div>
@@ -1640,7 +1696,9 @@ async function main() {
 
   if (hero?.link) {
     console.log('Fetching hero extended preview (first two paragraphs)');
-    hero.previewParagraphs = await fetchExtendedPreview(hero.link, 2);
+    const heroExtended = await fetchExtendedPreview(hero.link, 2);
+    hero.previewParagraphs = heroExtended.paragraphs;
+    if (heroExtended.artist) hero.coverArtist = heroExtended.artist;
     if (!hero.previewParagraphs.length && rssBodyByLink.has(hero.link)) {
       console.log('Hero post page gave no paragraphs — falling back to the RSS feed body');
       hero.previewParagraphs = extractParagraphs(rssBodyByLink.get(hero.link), 2);
@@ -1698,8 +1756,10 @@ async function main() {
     console.log(`Fetching extended previews for ${rowPosts.length} row posts`);
     const extended = await mapBatched(rowPosts, 10, (p) => fetchExtendedPreview(p.link, 3));
     const parasByLink = new Map();
+    const artistByLink = new Map();
     rowPosts.forEach((p, i) => {
-      let paras = extended[i];
+      let paras = extended[i].paragraphs;
+      if (extended[i].artist) artistByLink.set(p.link, extended[i].artist);
       if ((!paras || !paras.length) && rssBodyByLink.has(p.link)) {
         // Same fallback as the hero's — recent posts still in the feed can
         // recover their free-preview paragraphs from content:encoded.
@@ -1707,6 +1767,7 @@ async function main() {
       }
       if (paras && paras.length) parasByLink.set(p.link, paras);
     });
+    console.log(`Cover artist credit found for ${artistByLink.size} of ${rowPosts.length} row posts`);
     // The same post appears as distinct objects across collections (the
     // archive mosaic's picks come from archivePosts; the section pages
     // render the essaysAll/postscriptAll/contraAll objects) — dedupeByLink
@@ -1715,8 +1776,11 @@ async function main() {
     for (const p of rowPostGroups.flat()) {
       const paras = parasByLink.get(p.link);
       if (paras) p.previewParagraphs = paras;
+      const artist = artistByLink.get(p.link);
+      if (artist) p.coverArtist = artist;
     }
   }
+
 
   // Hand-edited text overrides win over everything fetched above. Applied
   // to every collection that reaches a page — the same post can appear as
