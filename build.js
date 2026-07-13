@@ -229,8 +229,8 @@ async function fetchFirstParagraph(url) {
 // into one block) so the card can render actual paragraph breaks between
 // them. Returns full, untruncated paragraph text: cutting each paragraph
 // off at the right line — with a real ellipsis flush at that line's end —
-// is a line-clamp job (hero-preview-fit.js for the hero, duo-panel-fit.js
-// for the row panels), not a build-time word-count guess.
+// is a line-clamp job (duo-panel-fit.js, which fits the hero panel and the
+// row panels alike), not a build-time word-count guess.
 async function fetchExtendedPreview(url, max) {
   const html = await fetchHtml(url);
   if (!html) return [];
@@ -811,35 +811,36 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     const authorHtml = post.author && section === 'other'
       ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
       : '';
-    // The hero wears the same band chrome as the row panels — kicker and
-    // author/date/likes in the header band, The Latest and Read on in the
-    // footer band, both full-width strips that fade in with the columns —
-    // with the title/rule/eyebrow formation in the left column and the
-    // excerpt (single flow, not two-column: the column is too narrow) on
-    // the right.
+    // The hero wears one duo panel — the exact panel formation of the
+    // row cells (header band with kicker/author/date/likes; title, rule,
+    // eyebrow dek, quote divider, excerpt; footer band with The Latest
+    // and Read on) — as a 1:2 portrait column pinned to the cover image's
+    // left edge, the Postscript trio look (see .card--feature .duo-panel
+    // in style.css). duo-panel-fit.js fits it like any other panel.
     return `
     <article class="${cls}">
-      <div class="panel-band panel-band--top">
-        ${kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(kicker)}</p>` : ''}
-        ${authorBoxHtml}
-        ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
-        <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
-      </div>
-      <div class="card-text card-text--left">
-        <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-        <div class="card-title-divider"></div>
-        ${dekHtml}
-        ${authorHtml}
-      </div>
       <div class="feature-image-cell">
         ${imageHtml}
       </div>
-      <div class="card-text card-text--right">
-        ${previewHtml}
-      </div>
-      <div class="panel-band panel-band--bottom">
-        <a class="duo-essays-btn card-category-btn pc pc-left" href="/archive.html">The Latest</a>
-        ${readNowHtml}
+      <div class="duo-panel">
+        <div class="panel-band panel-band--top">
+          ${kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(kicker)}</p>` : ''}
+          ${authorBoxHtml}
+          ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
+          <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
+        </div>
+        <div class="duo-panel-top">
+          <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+          ${dekHtml ? '<div class="card-title-divider"></div>' : ''}
+          ${dekHtml}
+          ${authorHtml}
+          ${previewHtml ? '<div class="duo-quote-divider"></div>' : ''}
+          ${previewHtml}
+        </div>
+        <div class="panel-band panel-band--bottom">
+          <a class="duo-essays-btn card-category-btn pc pc-left" href="/archive.html">The Latest</a>
+          ${readNowHtml}
+        </div>
       </div>
     </article>`;
   }
@@ -1007,19 +1008,19 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
   // three most recent postscripts as 1:2 portrait cells (card--trio), one
   // row of the four most recent contras as squares (card--quad), and the
   // hand-picked archive mosaic (see renderArchiveMosaic / ARCHIVE_ROW_SLUGS).
-  // Each section is its own block, wrapped in its own .wrap — a
-  // .row-divider sits between blocks *outside* any .wrap, so that line
-  // stretches the full width of the content column (edge to edge of the
-  // viewport, past the .wrap's own max-width/padding) rather than stopping
-  // at the wrap's centered content width the way the essay-row-to-essay-row
-  // divider inside a block still does (see .card.card--duo:not(:last-child)
-  // in style.css, unaffected — multiple essay rows share one block/.wrap).
+  // Every row is its own block, wrapped in its own .wrap — a .row-divider
+  // sits between blocks *outside* any .wrap, so every line between rows of
+  // cover images stretches the full width of the content column (edge to
+  // edge, past the .wrap's own max-width/padding). Each essay row is a
+  // separate block for exactly that reason: the old shared-block layout
+  // drew per-cell divider segments between essay rows that broke at the
+  // gutters instead of running edge to edge.
   const essayRows = [];
   for (let i = 0; i < essays.length; i += 2) {
     essayRows.push(renderDuoCard(essays.slice(i, i + 2)));
   }
   const blocks = [];
-  if (essayRows.length) blocks.push(essayRows.join('\n'));
+  essayRows.forEach((row) => blocks.push(row));
   if (postscripts.length) {
     blocks.push(renderDuoCard(postscripts, {
       tag: 'From the Interview',
@@ -1092,31 +1093,9 @@ ${renderFooter()}
 ${renderRevealScript()}
 
 ${renderCaterpillarScript()}
-${renderHeroPreviewFitScript()}
 ${renderDuoPanelFitScript()}
 </body>
 </html>`;
-}
-
-// Only the homepage has the hero's .card-text--right box, so this script is
-// included here rather than in the shared renderPageShell.
-function renderHeroPreviewFitScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/hero-preview-fit.js'), 'utf8');
-  const titleJs = fs.readFileSync(path.join(__dirname, 'src/hero-title-fit.js'), 'utf8');
-  // Loaded after hero-title-fit.js — both register on the same
-  // document.fonts.ready promise, and callbacks fire in registration
-  // order, so the title's final size settles before the dek fitter reads
-  // where it ends.
-  const dekJs = fs.readFileSync(path.join(__dirname, 'src/hero-dek-fit.js'), 'utf8');
-  return `<script>
-${js}
-</script>
-<script>
-${titleJs}
-</script>
-<script>
-${dekJs}
-</script>`;
 }
 
 // The duo/trio/quad row panels live on the homepage and the essays/
@@ -1213,9 +1192,19 @@ function renderListPage({ currentKey, label, posts }) {
   for (let i = 0; i < posts.length; i += cfg.perRow) {
     rows.push(renderDuoCard(posts.slice(i, i + cfg.perRow), { ...cfg, padTo: cfg.perRow }));
   }
+  // Same structure as the homepage blocks: one .wrap per row with a
+  // full-bleed .row-divider between rows, so every line between cover
+  // images runs edge to edge. .page-rows is now the outer sleeve carrying
+  // the page's top/bottom insets.
   const bodyHtml = `
-  <div class="wrap page-rows">
-    ${rows.join('\n')}
+  <div class="page-rows">
+${rows
+    .map(
+      (row, i) => `  <div class="wrap">
+    ${row}
+  </div>${i < rows.length - 1 ? '\n  <div class="row-divider"></div>' : ''}`
+    )
+    .join('\n')}
   </div>`;
   return renderPageShell({
     currentKey,
@@ -1383,8 +1372,12 @@ function renderLedgerRow(post) {
   // section lowercased for a case-blind alphabetical order, the date as a
   // plain epoch number.
   const sortAttrs =
+    // Leading quotes/punctuation stripped so “Quoted” titles don't sort
+    // ahead of the alphabet.
+    ` data-title="${escapeHtml((post.title || '').toLowerCase().replace(/^[^\p{L}\p{N}]+/u, ''))}"` +
     ` data-author="${escapeHtml((post.author || '').toLowerCase())}"` +
     ` data-date="${d && !isNaN(d.getTime()) ? d.getTime() : 0}"` +
+    ` data-kicker="${escapeHtml((post.kicker || '').toLowerCase())}"` +
     ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"`;
   return `
   <div class="arch-ledger-item"${sortAttrs}>
@@ -1432,10 +1425,10 @@ function renderArchivePage(posts) {
   const bodyHtml = `
   <section class="arch-ledger">
     <div class="arch-ledger-head arch-ledger-grid">
-      <span class="arch-ledger-cell lc-title">Title <button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button></span>
+      <span class="arch-ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span>
       <span class="arch-ledger-cell lc-author">Author ${sortArrows('author', 'author')}</span>
       <span class="arch-ledger-cell lc-date">Date ${sortArrows('date', 'date')}</span>
-      <span class="arch-ledger-cell lc-kicker">Kicker</span>
+      <span class="arch-ledger-cell lc-kicker">Tag ${sortArrows('kicker', 'tag')}</span>
       <span class="arch-ledger-cell lc-section">Section ${sortArrows('section', 'section')}</span>
     </div>
     ${posts.map(renderLedgerRow).join('')}

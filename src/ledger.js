@@ -15,21 +15,91 @@
   // columns (same rules as the essay panels): the block is capped at a
   // whole-line multiple ending GAP_BOTTOM above the footer band, the
   // line remainder shifts the column down (top padding is the minimum),
-  // and a cut gets an ellipsis attached to the last visible word.
+  // and a cut ends at its last whole word with the ellipsis joined onto
+  // it inline (see truncateToWord — same approach as duo-panel-fit.js).
+  var TRAIL_PUNCT = /[\s.,;:!?'"‘’“”()\[\]…—–-]+$/;
+
+  function removeAfter(root, node) {
+    var n = node;
+    while (n && n !== root) {
+      while (n.nextSibling) n.parentNode.removeChild(n.nextSibling);
+      n = n.parentNode;
+    }
+  }
+
+  function truncateToWord(el) {
+    if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+    var blockR = el.getBoundingClientRect();
+    var EPS = 2;
+    function fits(r) {
+      return r.bottom <= blockR.bottom + EPS && r.right <= blockR.right + EPS;
+    }
+    var nodes = [];
+    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    var n;
+    while ((n = w.nextNode())) nodes.push(n);
+    var cutNode = null, cutEnd = -1;
+    for (var i = nodes.length - 1; i >= 0 && !cutNode; i--) {
+      var t = nodes[i].textContent;
+      var re = /\S+/g, m, best = -1;
+      while ((m = re.exec(t))) {
+        var rng = document.createRange();
+        rng.setStart(nodes[i], m.index);
+        rng.setEnd(nodes[i], m.index + m[0].length);
+        var rs = rng.getClientRects();
+        var ok = !!rs.length;
+        for (var j = 0; j < rs.length; j++) {
+          if (rs[j].width < 1) continue;
+          if (!fits(rs[j])) { ok = false; break; }
+        }
+        if (ok) best = m.index + m[0].length;
+      }
+      if (best > -1) { cutNode = nodes[i]; cutEnd = best; }
+    }
+    if (!cutNode) return;
+    removeAfter(el, cutNode);
+    cutNode.textContent = cutNode.textContent.slice(0, cutEnd);
+    var guard = 30;
+    while (guard-- > 0 && cutNode) {
+      cutNode.textContent = cutNode.textContent.replace(TRAIL_PUNCT, '') + '…';
+      var er = document.createRange();
+      er.setStart(cutNode, cutNode.textContent.length - 1);
+      er.setEnd(cutNode, cutNode.textContent.length);
+      if (fits(er.getBoundingClientRect())) return;
+      var rest = cutNode.textContent.slice(0, -1).replace(TRAIL_PUNCT, '').replace(/\S+$/, '');
+      if (rest.trim()) {
+        cutNode.textContent = rest;
+      } else {
+        var w2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+        var n2, prev = null;
+        while ((n2 = w2.nextNode())) {
+          if (n2 === cutNode) break;
+          if (n2.textContent.trim()) prev = n2;
+        }
+        cutNode.parentNode.removeChild(cutNode);
+        cutNode = prev;
+        if (cutNode) removeAfter(el, cutNode);
+      }
+    }
+  }
+
   function fitCard(card) {
     var text = card.querySelector('.arch-ledger-card-text');
     if (!text || card.hidden) return;
     var band = text.querySelector('.panel-band--bottom');
+    // Restore a previous fit's truncation before anything is measured (or
+    // queried — the paragraphs below must be the fresh nodes).
+    var block0 = text.querySelector('.card-preview-block');
+    if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
     var paras = text.querySelectorAll('.card-preview');
     text.style.paddingTop = '';
-    var oldE = text.querySelector('.preview-ellipsis');
-    if (oldE) oldE.parentNode.removeChild(oldE);
     [].forEach.call(text.children, function(el){
       if (el === band) return;
       el.style.display = '';
       el.style.maxHeight = '';
+      el.style.height = '';
+      el.style.columnFill = '';
       el.style.overflow = '';
-      el.classList.remove('card-preview-block--cut');
     });
     [].forEach.call(paras, function(p){
       p.style.display = '';
@@ -66,7 +136,6 @@
         el.style.maxHeight = (blockLines * plh) + 'px';
         el.style.overflow = 'hidden';
         var isCut = el.scrollWidth > el.clientWidth + 1;
-        el.classList.toggle('card-preview-block--cut', isCut);
         // Anchor to the footer band: leftover space (line remainder or
         // whole unused lines) raises the top padding above its minimum.
         var anchorShift = limit - el.getBoundingClientRect().bottom;
@@ -75,37 +144,12 @@
           text.style.paddingTop = (basePad + anchorShift) + 'px';
         }
         if (isCut) {
-          var blockR = el.getBoundingClientRect();
-          var bestR = null;
-          var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-          var tn;
-          while ((tn = walker.nextNode())) {
-            var rng = document.createRange();
-            rng.selectNodeContents(tn);
-            var rs = rng.getClientRects();
-            for (var ri = 0; ri < rs.length; ri++) {
-              var rr = rs[ri];
-              if (rr.width < 2 || rr.height < 4) continue;
-              if (rr.bottom > blockR.bottom + 2 || rr.right > blockR.right + 2) continue;
-              if (!bestR
-                  || rr.bottom > bestR.bottom + 1
-                  || (Math.abs(rr.bottom - bestR.bottom) <= 1 && rr.right > bestR.right)) {
-                bestR = rr;
-              }
-            }
-          }
-          if (bestR) {
-            var dots = document.createElement('span');
-            dots.className = 'preview-ellipsis';
-            dots.textContent = '\u2026';
-            el.appendChild(dots);
-            var dotsLeft = Math.min(
-              bestR.right - blockR.left + 1,
-              el.clientWidth - dots.getBoundingClientRect().width - 1
-            );
-            dots.style.left = dotsLeft + 'px';
-            dots.style.top = (bestR.top - blockR.top) + 'px';
-          }
+          // Freeze the sequential fill so deleting the clipped tail can't
+          // re-balance the visible columns, then end the text at its last
+          // whole word with the ellipsis joined right onto it.
+          el.style.height = (blockLines * plh) + 'px';
+          el.style.columnFill = 'auto';
+          truncateToWord(el);
         }
         return;
       }
