@@ -582,11 +582,14 @@ section{ padding: 80px 0; }
 .card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; }
 /* The hero's hover panel: one duo panel — the same box the trio cells
    wear (background, white border, bands, padding all from the shared
-   .duo-panel rules above) — as a 1:2 portrait column pinned to the cover
-   image's left edge: full image height (the card's height IS the
-   image's), the width matched to it by the Postscript aspect ratio.
-   Revealed by hovering anywhere in the card rather than the duo halves'
-   own per-half trigger. */
+   .duo-panel rules above) — pinned to the cover image's left edge at
+   full image height (the card's height IS the image's). Its width is
+   the essay squares' own: duo-panel-fit.js copies a .duo-half's
+   measured width onto it (inline width + aspect-ratio:auto — the
+   inline width would otherwise flip the ratio into computing height
+   and overrun the hero's foot). The 1:2 ratio below is only the no-JS
+   fallback. Revealed by hovering anywhere in the card rather than the
+   duo halves' own per-half trigger. */
 .card--feature .duo-panel{
   inset: auto; top: 0; bottom: 0;
   left: 0;
@@ -766,13 +769,16 @@ section{ padding: 80px 0; }
   margin-top: 18px;
   line-clamp: 10; -webkit-line-clamp: 10;
 }
-/* Essay panels (the two-across squares — not the trio/quad/mosaic cells,
-   whose columns would be too narrow) run their excerpt in two columns.
+/* Essay panels (the two-across squares) and the hero panel — which
+   borrows the squares' own width (see duo-panel-fit.js) — run their
+   excerpt in two columns; not the trio/quad/mosaic cells, whose columns
+   would be too narrow.
    The paragraphs drop their -webkit-box clamp display: it fragments
    poorly across columns, and the fitter caps the whole block at a
    line-multiple max-height instead so the columns cut on a clean line
    boundary (see the two-column branch in duo-panel-fit.js). */
 .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block,
+.card--feature .duo-panel .card-preview-block,
 .card--archive .archive-wide .duo-panel .card-preview-block,
 .arch-ledger-card .card-preview-block{
   column-count: 2;
@@ -783,6 +789,7 @@ section{ padding: 80px 0; }
    it inline (see truncateToWord in duo-panel-fit.js / ledger.js) — no
    overlaid span, so no extra rules needed here. */
 .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview,
+.card--feature .duo-panel .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview,
 .arch-ledger-card .card-preview-block .card-preview{
   display: block;
@@ -797,6 +804,7 @@ section{ padding: 80px 0; }
    column's bottom line is a paragraph's stranded opener (see
    pickColumnHeight in duo-panel-fit.js / ledger.js). */
 .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block .card-preview,
+.card--feature .duo-panel .card-preview-block .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview-block .card-preview,
 .arch-ledger-card .card-preview-block .card-preview{
   orphans: 1;
@@ -808,6 +816,7 @@ section{ padding: 80px 0; }
    sync with the left's. Fragment margins at a column's top are
    discarded, so a paragraph opening column two starts on the grid. */
 .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview + .card-preview,
+.card--feature .duo-panel .card-preview + .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview + .card-preview,
 .arch-ledger-card .card-preview-block .card-preview + .card-preview{
   margin-top: 1.6em;
@@ -869,8 +878,10 @@ section{ padding: 80px 0; }
      panel loses its side padding too, so the dividers' edge-to-edge
      bleed margins reset with it. Essay excerpts drop back to one column
      with the static clamp. */
-  .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block{ column-count: auto; }
-  .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview{
+  .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block,
+  .card--feature .duo-panel .card-preview-block{ column-count: auto; }
+  .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview,
+  .card--feature .duo-panel .card-preview{
     display: -webkit-box; overflow: hidden;
     line-clamp: 7; -webkit-line-clamp: 7;
   }
@@ -1543,6 +1554,11 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
    gap to the cover image's rule, the -24 right bleed reaches the card
    border. */
 .arch-ledger-card-divider{ height: 1px; background: var(--line); margin: 13px -24px 17px -20px; }
+/* The same rule again above the dek, so the dek sits banded between the
+   two with equal 13px padding on each side. Margin-top 0: the card's own
+   24px top padding is the space above, and the fitter's anchor shift
+   lands there too. */
+.arch-ledger-card-divider--top{ margin-top: 0; margin-bottom: 13px; }
 /* The fold-out's footer band: pinned to the text column's bottom,
    bleeding right over the card's padding so its rule and the Read on
    box's edge reach the card border — the updated footer look. The image

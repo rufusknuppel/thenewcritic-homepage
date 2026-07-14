@@ -149,7 +149,7 @@
           </div>
           <div class="panel-band panel-band--bottom">
             <a class="duo-essays-btn card-category-btn pc pc-left" href="/postscript.html">Postscript</a>
-            <p class="card-meta pc pc-right pc-art">Art: Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
           </div>
         </div>
       </div>
@@ -170,12 +170,12 @@
             <div class="card-title-divider"></div>
             <p class="card-dek">Postscript No. 15 | Owen Yingling on AI at UChicago, the art of the polemic, and everything of any significance</p>
             
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Owen is likely</span> the heavyweight champion of our young generation’s polemicists — his previous essays have taken on the decline of literary fiction, the confessional-essay-industrial complex, and the absence of the Great Millenial Novel.</p><p class="card-preview">Now Owen — an assistant editor of <em>The New Critic</em> and a junior at UChicago studying Philosophy <em>—</em> has taken on the one great specter to rule them all: AI<em>.</em> Below we discuss why we should punish students more for cheating, dusty intellectualism, UChicago mythos, stern hands, 1920s Paris, Wikipedia, scenesters, Scott Alexander, internet criticism, modernism, LessWrong, how not to produce great art, the Bridgewater interview process, Saint-John Perse, removing oneself from literary endeavors, and the impossibility of grad school.</p><p class="card-preview">In short, we cover everything of any significance.</p></div>
+            
+            
           </div>
           <div class="panel-band panel-band--bottom">
             <a class="duo-essays-btn card-category-btn pc pc-left" href="/postscript.html">Postscript</a>
-            <p class="card-meta pc pc-right pc-art">Art: Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/bridge-over-troubled-water" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            
           </div>
         </div>
       </div>
@@ -279,12 +279,12 @@
             <div class="card-title-divider"></div>
             <p class="card-dek">Postscript No. 11 | Josie Barboriak on the critic and her publics</p>
             
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Below we discuss</span> <em>The Magic Mountain</em>, crushing on Markiplier, having CIA in the family, <em>Mating</em>, and the irony and attractiveness of critics.</p><p class="card-preview">JOSIE …I have a bone to pick with how everything I’ve read by Merve Emre is described as ironic. Like, it’s all irony. It’s irony all the way down.</p></div>
+            
+            
           </div>
           <div class="panel-band panel-band--bottom">
             <a class="duo-essays-btn card-category-btn pc pc-left" href="/postscript.html">Postscript</a>
-            <p class="card-meta pc pc-right pc-art">Art: Sarah Getraer</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/showing-your-work" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            
           </div>
         </div>
       </div>
@@ -982,6 +982,26 @@
     topBox.style.marginTop = '';
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
+
+    // The hero panel takes the same width as the square essay cards
+    // below — a duo half's measured width (same wrap, same gutters), so
+    // the hero column lines up with the grid instead of following its
+    // own ratio. Height stays the cover image's (the top/bottom insets);
+    // aspect-ratio goes to auto or the inline width would recompute the
+    // height from it and run the panel past the hero's foot. The CSS 1:2
+    // ratio remains only as the no-JS fallback. Width must land before
+    // any other measuring: every line wrap below depends on it, and the
+    // art-box guard right after decides against the new width like it
+    // does for the essay cards.
+    panel.style.width = '';
+    panel.style.aspectRatio = '';
+    if (panel.closest('.card--feature') && getComputedStyle(panel).position === 'absolute') {
+      var half = document.querySelector('.duo-half');
+      if (half) {
+        panel.style.width = half.getBoundingClientRect().width + 'px';
+        panel.style.aspectRatio = 'auto';
+      }
+    }
 
     // The footer band's Art box (the cover credit's hover counterpart)
     // yields when the band's boxes outgrow a narrow panel — they never

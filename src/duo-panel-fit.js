@@ -208,6 +208,26 @@
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
 
+    // The hero panel takes the same width as the square essay cards
+    // below — a duo half's measured width (same wrap, same gutters), so
+    // the hero column lines up with the grid instead of following its
+    // own ratio. Height stays the cover image's (the top/bottom insets);
+    // aspect-ratio goes to auto or the inline width would recompute the
+    // height from it and run the panel past the hero's foot. The CSS 1:2
+    // ratio remains only as the no-JS fallback. Width must land before
+    // any other measuring: every line wrap below depends on it, and the
+    // art-box guard right after decides against the new width like it
+    // does for the essay cards.
+    panel.style.width = '';
+    panel.style.aspectRatio = '';
+    if (panel.closest('.card--feature') && getComputedStyle(panel).position === 'absolute') {
+      var half = document.querySelector('.duo-half');
+      if (half) {
+        panel.style.width = half.getBoundingClientRect().width + 'px';
+        panel.style.aspectRatio = 'auto';
+      }
+    }
+
     // The footer band's Art box (the cover credit's hover counterpart)
     // yields when the band's boxes outgrow a narrow panel — they never
     // wrap or shrink, they overflow, and scrollWidth is the tell. Checked

@@ -139,11 +139,32 @@ async function fetchFeed(url) {
   return res.text();
 }
 
+// Courtesy retries: Substack rate-limits bursts (429 Too Many Requests),
+// and a build that shrugs those off silently publishes a degraded site —
+// cards without excerpts or artist credits (exactly what happened when
+// several full builds ran back to back). Waits out Retry-After, or a
+// growing pause, before each of two more attempts; still returns null
+// when the response stays bad (callers count those — see
+// failedPageFetches below).
 async function fetchHtml(url) {
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-  if (!res.ok) return null;
-  return res.text();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (res.ok) return res.text();
+    // Retrying only helps transient statuses; a plain 404/403 is final.
+    if (res.status !== 429 && res.status < 500) return null;
+    const retryAfter = Number(res.headers.get('retry-after')) * 1000;
+    const wait = Math.min(retryAfter || (attempt + 1) * 5000, 30000);
+    await new Promise((r) => setTimeout(r, wait));
+  }
+  return null;
 }
+
+// Post pages that never came back despite the retries — checked after the
+// preview pass in main(): a few just lose their excerpt/credit (warned),
+// but past a quarter of the posts the build aborts nonzero instead, so a
+// scheduled deploy keeps the previous complete site rather than shipping
+// a gutted one.
+let failedPageFetches = 0;
 
 function extractPreloads(html) {
   const m = /window\._preloads\s*=\s*JSON\.parse\("([\s\S]*?)"\)<\/script>/.exec(html);
@@ -217,7 +238,7 @@ function fetchTagPostsFrom(archive, slug) {
 
 async function fetchFirstParagraph(url) {
   const html = await fetchHtml(url);
-  if (!html) return '';
+  if (!html) { failedPageFetches++; return ''; }
   const preloads = extractPreloads(html);
   const bodyHtml = preloads && preloads.post && preloads.post.body_html;
   return firstParagraph(bodyHtml || '');
@@ -264,7 +285,7 @@ function artistFromCaption(caption) {
 // also carries out the cover artist credit (see extractCoverArtist).
 async function fetchExtendedPreview(url, max) {
   const html = await fetchHtml(url);
-  if (!html) return { paragraphs: [], artist: '' };
+  if (!html) { failedPageFetches++; return { paragraphs: [], artist: '' }; }
   const preloads = extractPreloads(html);
   const post = preloads && preloads.post;
   const bodyHtml = (post && post.body_html) || '';
@@ -1449,6 +1470,7 @@ function renderLedgerRow(post) {
         ${post.image ? `<img src="${escapeHtml(post.image)}" alt="" loading="lazy" decoding="async"${focalStyle(post)}>` : '<span class="card-image--blank"></span>'}
       </a></span>
       <div class="arch-ledger-card-text">
+        ${dekHtml ? '<div class="arch-ledger-card-divider arch-ledger-card-divider--top"></div>' : ''}
         ${dekHtml}
         ${dekHtml && previewBlock ? '<div class="arch-ledger-card-divider"></div>' : ''}
         ${previewBlock}
@@ -1695,13 +1717,15 @@ async function main() {
   }
 
   if (hero?.link) {
-    console.log('Fetching hero extended preview (first two paragraphs)');
-    const heroExtended = await fetchExtendedPreview(hero.link, 2);
+    // Three paragraphs, same as the row posts below — the hero panel runs
+    // the essays' two-column excerpt now and eats text at the same rate.
+    console.log('Fetching hero extended preview (first three paragraphs)');
+    const heroExtended = await fetchExtendedPreview(hero.link, 3);
     hero.previewParagraphs = heroExtended.paragraphs;
     if (heroExtended.artist) hero.coverArtist = heroExtended.artist;
     if (!hero.previewParagraphs.length && rssBodyByLink.has(hero.link)) {
       console.log('Hero post page gave no paragraphs — falling back to the RSS feed body');
-      hero.previewParagraphs = extractParagraphs(rssBodyByLink.get(hero.link), 2);
+      hero.previewParagraphs = extractParagraphs(rssBodyByLink.get(hero.link), 3);
     }
   }
 
@@ -1778,6 +1802,19 @@ async function main() {
       if (paras) p.previewParagraphs = paras;
       const artist = artistByLink.get(p.link);
       if (artist) p.coverArtist = artist;
+    }
+  }
+
+  // Every failure here already survived fetchHtml's retries. A few are
+  // tolerable (those cards fall back to feed excerpts or lose their
+  // credit); past a quarter of the posts the site would be visibly
+  // gutted — abort nonzero so a scheduled deploy keeps the previous
+  // complete build instead.
+  if (failedPageFetches) {
+    console.warn(`WARNING: ${failedPageFetches} post pages failed to fetch after retries — their cards lose excerpts/credits`);
+    if (failedPageFetches > rowPosts.length / 4) {
+      console.error('Too many failed post fetches (rate limit?) — aborting build');
+      process.exit(1);
     }
   }
 
