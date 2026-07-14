@@ -1424,9 +1424,15 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   color: var(--muted);
 }
 /* The head labels ride flex so they sit vertically centered against the
-   taller sort-arrow stacks (and the shuffle button) sharing their row. */
+   taller sort-arrow stacks (and the shuffle button) sharing their row.
+   The flex lives on the .cell-text wrapper (see renderLedgerRow — every
+   ledger cell's content sits in one so the rule-draw effect below can
+   fade text without fading the cell's own divider pseudo). */
 .arch-ledger-head .arch-ledger-cell{
   display: flex; align-items: center;
+}
+.arch-ledger-head .cell-text{
+  display: flex; align-items: center; min-width: 0;
 }
 /* Sort (stacked up/down arrows) and shuffle controls in the column head —
    courier gray like the labels, white on hover, the active sort direction
@@ -1470,6 +1476,61 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
 .arch-ledger-row:hover,
 .arch-ledger-row:focus-visible{ color: var(--white); outline: none; }
 .arch-ledger-item.open .arch-ledger-row{ color: var(--white); }
+
+/* Scroll-driven ruling (archive only): src/ledger.js tags the column head
+   and every item .rule-draw when IntersectionObserver is available and
+   motion is allowed (no-JS and reduced-motion loads keep the static
+   borders above), then flips .in-view as they enter the viewport. Each
+   row's sequence: its top hairline draws left-to-right, the column
+   dividers drop down through the row just behind the sweep, and the text
+   fades up last. --rule-delay staggers rows that enter together, so on
+   first load the whole grid — horizontals and verticals — rules itself
+   downward from the head. */
+.arch-ledger-item.rule-draw{ position: relative; }
+/* :not(.open) keeps this from outranking .arch-ledger-item.open's white
+   outline below (same specificity, later in the sheet — it would win). */
+.arch-ledger-item.rule-draw:not(.open){ border-top-color: transparent; }
+.arch-ledger-item.rule-draw::before{
+  content: '';
+  position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .6s cubic-bezier(.25, .1, .25, 1) var(--rule-delay, 0s);
+}
+.arch-ledger-item.rule-draw.in-view::before{ transform: scaleX(1); }
+/* Vertical dividers under the effect: the cell's real border-right goes
+   transparent (holding its 1px of layout) and a pseudo draws down in its
+   place. The pseudo sits at right:0 — inside the padding box, 1px left of
+   the border strip — because the cell's overflow:hidden would clip
+   anything past the padding edge; head and row cells shift together, so
+   every vertical line in the ledger stays continuous. Fading the cell
+   itself would take the pseudo with it, which is why the text rides the
+   .cell-text wrapper below instead. */
+.rule-draw .arch-ledger-cell{
+  position: relative;
+  border-right-color: transparent;
+}
+.rule-draw .arch-ledger-cell::after{
+  content: '';
+  position: absolute; top: 0; bottom: 0; right: 0; width: 1px;
+  background: var(--line);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform .35s ease calc(var(--rule-delay, 0s) + 0.25s);
+}
+.rule-draw .arch-ledger-cell:last-child::after{ content: none; }
+.rule-draw.in-view .arch-ledger-cell::after{ transform: scaleY(1); }
+.rule-draw .cell-text{
+  opacity: 0;
+  transition: opacity .5s ease calc(var(--rule-delay, 0s) + 0.3s);
+}
+.rule-draw.in-view .cell-text{ opacity: 1; }
+/* An open item outlines itself in white and the sibling rule below it goes
+   transparent (border machinery above); the drawn pseudo-rules would paint
+   gray over both edges of that frame, so they stand down too. */
+.arch-ledger-item.rule-draw.open::before,
+.arch-ledger-item.open + .arch-ledger-item.rule-draw::before{ display: none; }
 
 .arch-ledger-card{
   /* Column geometry comes from .arch-ledger-grid (the card shares the
