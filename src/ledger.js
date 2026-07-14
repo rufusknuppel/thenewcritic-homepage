@@ -261,8 +261,13 @@
   // and data-dir. Sorting just re-appends the item nodes in order; the
   // column head is the container's first child and never moves.
   var sortBtns = ledger.querySelectorAll('.arch-sort');
+  // Assigned by the rule-draw block below (stays null when the effect is
+  // off — reduced motion / no IntersectionObserver): every reorder
+  // re-runs the full drawing cascade over the fresh order.
+  var resetRuling = null;
   function reorder(arr) {
     arr.forEach(function(it){ ledger.appendChild(it); });
+    if (resetRuling) resetRuling();
   }
   function clearActive() {
     [].forEach.call(sortBtns, function(b){ b.classList.remove('active'); });
@@ -318,8 +323,8 @@
   // parser-blocking at the end of body, so the class lands before first
   // paint. Targets entering together (the initial screenful, or a batch
   // scrolled into view) are staggered top-to-bottom via --rule-delay, so
-  // the ledger rules itself downward. Sorting/shuffling re-appends nodes
-  // but never removes the in-view class, so rows don't redraw on reorder.
+  // the ledger rules itself downward. Every reorder (sort or shuffle)
+  // re-runs the whole cascade over the fresh order via resetRuling.
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!prefersReduced && 'IntersectionObserver' in window) {
     var head = ledger.querySelector('.arch-ledger-head');
@@ -361,7 +366,10 @@
     // moves into the viewport.
     function drawVisible() {
       if (!rulePending.length) {
-        clearInterval(rulePollTimer);
+        if (rulePollTimer != null) {
+          clearInterval(rulePollTimer);
+          rulePollTimer = null;
+        }
         ruleObserver.disconnect();
         return;
       }
@@ -370,7 +378,53 @@
         return r.bottom > 0 && r.top < window.innerHeight;
       }));
     }
-    var rulePollTimer = setInterval(drawVisible, 400);
+    var rulePollTimer = null;
+    function ensurePolling() {
+      if (rulePollTimer == null) rulePollTimer = setInterval(drawVisible, 400);
+    }
+    // Reorders replay the effect in full — every row, divider, and text
+    // fade, head included. Removing .in-view alone would *transition*
+    // everything back over 0.6s and the immediate redraw would cancel it
+    // to a visible no-op, so targets flip through .rule-reset (transitions
+    // off) and a forced style flush to snap to the undrawn state first;
+    // everything re-pends, so rows below the fold redraw on scroll too.
+    resetRuling = function(){
+      revealTargets.forEach(function(it){
+        it.classList.add('rule-reset');
+        it.classList.remove('in-view');
+        it.style.removeProperty('--rule-delay');
+      });
+      void ledger.offsetWidth;
+      revealTargets.forEach(function(it){ it.classList.remove('rule-reset'); });
+      rulePending = revealTargets.slice();
+      ruleObserver.disconnect();
+      rulePending.forEach(function(it){ ruleObserver.observe(it); });
+      ensurePolling();
+      drawVisible();
+    };
+    ensurePolling();
     drawVisible();
+    // Arriving back at the page replays the ruling too: a back/forward
+    // restore (pageshow with persisted) brings the DOM back fully drawn
+    // without re-running scripts, and a load in a hidden tab runs the
+    // cascade unseen — in both cases re-rule when the page is actually
+    // in front of the reader. onVisible dedupes itself, so repeated
+    // traversals can't stack listeners.
+    function onVisible() {
+      if (document.visibilityState !== 'visible') return;
+      document.removeEventListener('visibilitychange', onVisible);
+      resetRuling();
+    }
+    window.addEventListener('pageshow', function(e){
+      if (!e.persisted) return;
+      if (document.visibilityState === 'hidden') {
+        document.addEventListener('visibilitychange', onVisible);
+      } else {
+        resetRuling();
+      }
+    });
+    if (document.visibilityState === 'hidden') {
+      document.addEventListener('visibilitychange', onVisible);
+    }
   }
 })();

@@ -1430,7 +1430,18 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
    fade text without fading the cell's own divider pseudo). */
 .arch-ledger-head .arch-ledger-cell{
   display: flex; align-items: center;
+  transition: color .15s ease, text-shadow .2s ease;
 }
+/* Column titles glow under the cursor — the band boxes' glow family, cast
+   by the letters themselves. The color lands via inheritance so the sort
+   arrows and shuffle (own explicit colors and hover whitening) ignore it;
+   text-shadow inherits too, so they shed that below. */
+.arch-ledger-head .arch-ledger-cell:hover{
+  color: var(--white);
+  text-shadow: 0 0 14px rgba(247,246,241,0.45);
+}
+.arch-ledger-head .arch-sort,
+.arch-ledger-head .arch-shuffle{ text-shadow: none; }
 .arch-ledger-head .cell-text{
   display: flex; align-items: center; min-width: 0;
 }
@@ -1526,6 +1537,13 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   transition: opacity .5s ease calc(var(--rule-delay, 0s) + 0.3s);
 }
 .rule-draw.in-view .cell-text{ opacity: 1; }
+/* A reorder (sort/shuffle) replays the whole cascade: ledger.js flips
+   every target through .rule-reset — transitions off — so removing
+   .in-view snaps rules and text back to undrawn instead of animating
+   out, then draws them in again from the top. */
+.rule-reset::before,
+.rule-reset .arch-ledger-cell::after,
+.rule-reset .cell-text{ transition: none !important; }
 /* An open item outlines itself in white and the sibling rule below it goes
    transparent (border machinery above); the drawn pseudo-rules would paint
    gray over both edges of that frame, so they stand down too. */
