@@ -308,4 +308,69 @@
       clearActive();
     });
   }
+
+  // Scroll-driven ruling: as items enter the viewport their top hairline
+  // draws in left-to-right, the column dividers drop down through the row
+  // behind it, and the text fades up last (see the .rule-draw styles).
+  // The column head joins the set so the whole grid draws in on first
+  // load. The class is added here rather than in the build markup so a
+  // no-JS load keeps its plain static borders; this script is
+  // parser-blocking at the end of body, so the class lands before first
+  // paint. Targets entering together (the initial screenful, or a batch
+  // scrolled into view) are staggered top-to-bottom via --rule-delay, so
+  // the ledger rules itself downward. Sorting/shuffling re-appends nodes
+  // but never removes the in-view class, so rows don't redraw on reorder.
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    var head = ledger.querySelector('.arch-ledger-head');
+    var revealTargets = (head ? [head] : []).concat(items);
+    revealTargets.forEach(function(it){ it.classList.add('rule-draw'); });
+    var rulePending = revealTargets.slice();
+    function drawIn(list) {
+      list.sort(function(a, b){
+        return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+      });
+      list.forEach(function(it, i){
+        it.style.setProperty('--rule-delay', (i * 70) + 'ms');
+        it.classList.add('in-view');
+        var idx = rulePending.indexOf(it);
+        if (idx !== -1) rulePending.splice(idx, 1);
+      });
+    }
+    var ruleObserver = new IntersectionObserver(function(entries){
+      drawIn(entries.filter(function(e){
+        return e.isIntersecting && !e.target.classList.contains('in-view');
+      }).map(function(e){ return e.target; }));
+      entries.forEach(function(e){
+        if (e.target.classList.contains('in-view')) ruleObserver.unobserve(e.target);
+      });
+    }, { threshold: 0 });
+    rulePending.forEach(function(it){ ruleObserver.observe(it); });
+    // The observer is only the fast path: in some environments (rendering
+    // pipelines that suspend or throttle — observer callbacks and even
+    // scroll events are frame-coupled) it delivers late or never, and a
+    // scroll effect must degrade to a skipped animation, never to a
+    // ledger stuck blank. Timers keep running everywhere, so a poller
+    // measures the pending rows directly and draws whatever has entered
+    // the viewport; the immediate first call covers the screenful the
+    // page opens on without waiting for anything (this script is
+    // parser-blocking at the end of body, so layout is ready — and the
+    // rect reads commit the undrawn .rule-draw state before .in-view
+    // lands, which is what lets the transitions run instead of snapping
+    // in). The poller also catches unseen rows that a sort or shuffle
+    // moves into the viewport.
+    function drawVisible() {
+      if (!rulePending.length) {
+        clearInterval(rulePollTimer);
+        ruleObserver.disconnect();
+        return;
+      }
+      drawIn(rulePending.filter(function(it){
+        var r = it.getBoundingClientRect();
+        return r.bottom > 0 && r.top < window.innerHeight;
+      }));
+    }
+    var rulePollTimer = setInterval(drawVisible, 400);
+    drawVisible();
+  }
 })();

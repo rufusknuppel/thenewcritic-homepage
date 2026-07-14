@@ -1459,11 +1459,11 @@ function renderLedgerRow(post) {
   return `
   <div class="arch-ledger-item"${sortAttrs}>
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
-      <span class="arch-ledger-cell lc-title">${escapeHtml(post.title)}</span>
-      <span class="arch-ledger-cell lc-author">${escapeHtml(post.author || '')}</span>
-      <span class="arch-ledger-cell lc-date">${escapeHtml(dateStr)}</span>
-      <span class="arch-ledger-cell lc-kicker">${escapeHtml(post.kicker || '')}</span>
-      <span class="arch-ledger-cell lc-section">${escapeHtml(post.sectionLabel || '')}</span>
+      <span class="arch-ledger-cell lc-title"><span class="cell-text">${escapeHtml(post.title)}</span></span>
+      <span class="arch-ledger-cell lc-author"><span class="cell-text">${escapeHtml(post.author || '')}</span></span>
+      <span class="arch-ledger-cell lc-date"><span class="cell-text">${escapeHtml(dateStr)}</span></span>
+      <span class="arch-ledger-cell lc-kicker"><span class="cell-text">${escapeHtml(post.kicker || '')}</span></span>
+      <span class="arch-ledger-cell lc-section"><span class="cell-text">${escapeHtml(post.sectionLabel || '')}</span></span>
     </div>
     <div class="arch-ledger-card arch-ledger-grid" hidden>
       <span class="arch-ledger-card-image"><a href="${escapeHtml(post.link)}" rel="noopener">
@@ -1503,11 +1503,11 @@ function renderArchivePage(posts) {
   const bodyHtml = `
   <section class="arch-ledger">
     <div class="arch-ledger-head arch-ledger-grid">
-      <span class="arch-ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span>
-      <span class="arch-ledger-cell lc-author">Author ${sortArrows('author', 'author')}</span>
-      <span class="arch-ledger-cell lc-date">Date ${sortArrows('date', 'date')}</span>
-      <span class="arch-ledger-cell lc-kicker">Tag ${sortArrows('kicker', 'tag')}</span>
-      <span class="arch-ledger-cell lc-section">Section ${sortArrows('section', 'section')}</span>
+      <span class="arch-ledger-cell lc-title"><span class="cell-text"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span></span>
+      <span class="arch-ledger-cell lc-author"><span class="cell-text">Author ${sortArrows('author', 'author')}</span></span>
+      <span class="arch-ledger-cell lc-date"><span class="cell-text">Date ${sortArrows('date', 'date')}</span></span>
+      <span class="arch-ledger-cell lc-kicker"><span class="cell-text">Tag ${sortArrows('kicker', 'tag')}</span></span>
+      <span class="arch-ledger-cell lc-section"><span class="cell-text">Section ${sortArrows('section', 'section')}</span></span>
     </div>
     ${posts.map(renderLedgerRow).join('')}
   </section>`;
