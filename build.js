@@ -793,16 +793,6 @@ ${renderNav(currentKey)}
 </div>`;
 }
 
-// Persistent kicker chip pinned to every cover image's top-left corner —
-// the hover band's kicker box made permanent: same courier-box dimensions,
-// but full-strength (white text in a white 1px outline on black) where the
-// band corners are muted gray on hairline rules. Decorative (aria-hidden):
-// the panel's own band kicker is the accessible one, and the opaque panel
-// covers this chip whenever it's up (see .cover-kicker in style.css).
-function coverKickerHtml(kicker) {
-  return kicker ? `<span class="cover-kicker" aria-hidden="true">${escapeHtml(kicker)}</span>` : '';
-}
-
 // The artist credit as a footer-band box ("ART: KIT KNUPPEL"): on the
 // hover cards an interior box of the right group, left of Read on
 // (duo-panel-fit.js hides it when the band's boxes outgrow a narrow
@@ -897,7 +887,7 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
     return `
     <article class="${cls}">
       <div class="feature-image-cell">
-        ${imageHtml}${coverKickerHtml(kicker)}
+        ${imageHtml}
       </div>
       <div class="duo-panel">
         <div class="panel-band panel-band--top">
@@ -999,7 +989,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
-        </a>${coverKickerHtml(post.kicker)}</span>
+        </a></span>
         <div class="duo-panel">
           <div class="panel-band panel-band--top">
             ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
@@ -1171,6 +1161,7 @@ ${renderRevealScript()}
 
 ${renderCaterpillarScript()}
 ${renderDuoPanelFitScript()}
+${renderCoverCascadeScript()}
 </body>
 </html>`;
 }
@@ -1181,6 +1172,18 @@ ${renderDuoPanelFitScript()}
 // renderPageShell's fixed script set.
 function renderDuoPanelFitScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+// Tile-cascade reveal for cover images — ships with the homepage and the
+// essays/postscript/contra pages (renderListPage); archive, give, and
+// about stay out. src/cover-cascade.js selects the hero and every
+// duo/trio/quad row cell, playing each as it enters the viewport with
+// its image loaded.
+function renderCoverCascadeScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/cover-cascade.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
@@ -1287,7 +1290,7 @@ ${rows
     currentKey,
     title: label,
     bodyHtml,
-    extraScripts: renderDuoPanelFitScript(),
+    extraScripts: renderDuoPanelFitScript() + renderCoverCascadeScript(),
   });
 }
 
