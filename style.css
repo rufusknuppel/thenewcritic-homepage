@@ -242,6 +242,25 @@ section{ padding: 80px 0; }
 .reveal.in-view{ opacity:1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce){
   .reveal{ opacity:1; transform:none; }
+  /* The hover cards' and archive fold-out's per-open ruling and the page
+     dividers' scroll-in draw (see the panel-band block, the
+     .arch-ledger-card block, and .line-draw) hold still too. */
+  :is(.duo-panel, .card--feature) .panel-band--top::after,
+  :is(.duo-panel, .card--feature) .panel-band--bottom::before,
+  :is(.duo-panel, .card--feature) .panel-band .pc-left::after,
+  :is(.duo-panel, .card--feature) .panel-band .pc-right::before,
+  .duo-panel .card-title-divider,
+  .duo-panel .duo-quote-divider,
+  .arch-ledger-card .arch-ledger-card-divider,
+  .arch-ledger-card-text .panel-band--bottom::before,
+  .arch-ledger-card-text .panel-band--bottom .pc-left::after,
+  .arch-ledger-card-text .panel-band--bottom .pc-right::before,
+  .line-draw{ transform: none !important; transition: none !important; }
+  .duo-panel .panel-band .pc,
+  .duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider),
+  .arch-ledger-card .card-dek,
+  .arch-ledger-card .card-preview-block,
+  .arch-ledger-card-text .panel-band--bottom .pc{ opacity: 1 !important; transition: none !important; }
 }
 
 /* ---------- FEATURED STRIP (latest piece) ---------- */
@@ -263,9 +282,36 @@ section{ padding: 80px 0; }
    to. Sits between hero/Essays/Postscript/Contra/Archive; margin-bottom
    supplies the same gap below the line each of those used to get from its
    own margin-bottom. */
-.row-divider{ border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+/* height/background rather than the old border-bottom (identical 1px of
+   layout) so .line-draw below can scale-animate the element itself. */
+.row-divider{ height: 1px; background: var(--line); margin-bottom: 24px; }
 @media (max-width: 860px){ .row-divider{ margin-bottom: 20px; } }
 @media (max-width: 480px){ .row-divider{ margin-bottom: 16px; } }
+/* Scroll-in ruling for the page's gray lines (homepage and the essays/
+   postscript/contra pages — the archive ledger has its own version):
+   cover-cascade.js tags every .row-divider, .duo-half-divider and
+   .duo-divider--h with .line-draw when the effect can run (no-JS and
+   reduced-motion loads keep plain static lines), then flips .in-view
+   staggered as they enter the viewport, poller-driven like everything
+   else there. Horizontals sweep left-to-right; the vertical cell
+   dividers drop downward. */
+.line-draw{
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.duo-half-divider.line-draw{
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+}
+.line-draw.in-view{
+  transform: none;
+  transition: transform .6s cubic-bezier(.25, .1, .25, 1) var(--line-delay, 0s);
+}
+@media (max-width: 480px){
+  /* Stacked single-column layout: the cell dividers turn horizontal and
+     the choreography stops mattering — lines just show. */
+  .line-draw{ transform: none; transition: none; }
+}
 
 /* ---------- DUO CARD (two essays, one card sized like the hero) ----------
    One .card--duo article — not two separate cards — holding both essay
@@ -388,8 +434,27 @@ section{ padding: 80px 0; }
   display: flex; align-items: stretch;
   background: var(--paper);
 }
-:is(.duo-panel, .card--feature) .panel-band--top{ top: 0; border-bottom: 1px solid var(--line); }
-:is(.duo-panel, .card--feature) .panel-band--bottom{ bottom: 0; border-top: 1px solid var(--line); }
+/* The bands' horizontal rules and the corner boxes' vertical rules
+   (below) draw themselves in each time the card opens — the archive
+   ledger's ruling, played per-hover. Same mechanics as the ledger: a
+   border can't scale-animate, so each real border goes transparent
+   (keeping its 1px of layout) and a pseudo draws over that exact strip;
+   rest state carries NO transition, so un-hovering snaps everything back
+   instantly, re-armed for the next open (the hover state's own
+   transition, with its stagger of delays, is what animates — see the
+   :hover block after the panel dividers below). */
+:is(.duo-panel, .card--feature) .panel-band--top{ top: 0; border-bottom: 1px solid transparent; }
+:is(.duo-panel, .card--feature) .panel-band--bottom{ bottom: 0; border-top: 1px solid transparent; }
+:is(.duo-panel, .card--feature) .panel-band--top::after,
+:is(.duo-panel, .card--feature) .panel-band--bottom::before{
+  content: '';
+  position: absolute; left: 0; right: 0; height: 1px;
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+:is(.duo-panel, .card--feature) .panel-band--top::after{ bottom: -1px; }
+:is(.duo-panel, .card--feature) .panel-band--bottom::before{ top: -1px; }
 /* Shared corner-box look — beats the button styling the section link
    (.hero-latest-btn) and Read on (.preview-card-link) carry elsewhere. */
 :is(.duo-panel, .card--feature) .panel-band .pc{
@@ -440,20 +505,26 @@ section{ padding: 80px 0; }
 }
 /* The vertical rules closing each corner box; margin-left:auto keeps the
    right-side group (author box and/or date+likes) pinned right — only
-   the group's first box pushes, so the boxes inside it stay adjacent. */
-:is(.duo-panel, .card--feature) .panel-band .pc-left{ border-right: 1px solid var(--line); }
-/* The top band's kicker box keeps the cover chip's exact look — white
-   text, 1px white outline drawn on the shared lines (panel border, band
-   rule, the box's own right rule gone transparent — same outline trick
-   as a.pc:hover below) — so opening the hover card doesn't change that
-   corner at all: the chip appears to stay put while the rest of the band
-   fades in around it. */
-:is(.duo-panel, .card--feature) .panel-band--top .pc-left{
-  color: var(--white);
-  outline: 1px solid var(--white);
-  outline-offset: 0;
-  border-right-color: transparent;
+   the group's first box pushes, so the boxes inside it stay adjacent.
+   Real borders transparent + pseudo lines over them, for the per-hover
+   ruling (see the band comment above): pc-left's right rule rides its
+   ::after, pc-right's left rule its ::before, each drawing downward. */
+:is(.duo-panel, .card--feature) .panel-band .pc-left{ border-right: 1px solid transparent; position: relative; }
+:is(.duo-panel, .card--feature) .panel-band .pc-left::after,
+:is(.duo-panel, .card--feature) .panel-band .pc-right::before{
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  background: var(--line);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
 }
+:is(.duo-panel, .card--feature) .panel-band .pc-left::after{ right: -1px; }
+:is(.duo-panel, .card--feature) .panel-band .pc-right::before{ left: -1px; }
+/* The linked corners' hover outline (a.pc:hover above) already blanks its
+   own borders; the pseudo rules stand down with them so the white outline
+   isn't shadowed by a gray line on its inner side. */
+:is(.duo-panel, .card--feature) .panel-band a.pc:hover::after,
+:is(.duo-panel, .card--feature) .panel-band a.pc:hover::before{ background: transparent; }
 /* The outermost boxes pad 24px on BOTH sides: the outer 24 lands their
    text exactly on the central column's margins, and the matching inner
    24 keeps the text horizontally centered in its box. Interior boxes of
@@ -462,8 +533,66 @@ section{ padding: 80px 0; }
    and only the right group's last box touches the right edge. */
 :is(.duo-panel, .card--feature) .panel-band .pc-left{ padding-left: 24px; padding-right: 24px; }
 :is(.duo-panel, .card--feature) .panel-band .pc-right:last-child{ padding-left: 24px; padding-right: 24px; }
-:is(.duo-panel, .card--feature) .panel-band .pc-right{ border-left: 1px solid var(--line); margin-left: auto; }
+:is(.duo-panel, .card--feature) .panel-band .pc-right{ border-left: 1px solid transparent; margin-left: auto; position: relative; }
 :is(.duo-panel, .card--feature) .panel-band .pc-right ~ .pc-right{ margin-left: 0; }
+/* The panel's interior rules join the per-hover ruling too (they're
+   plain 1px divs, so they scale directly — no pseudo swap needed). */
+.duo-panel .card-title-divider,
+.duo-panel .duo-quote-divider{
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+/* The open-card ruling itself: opening a hover card draws its lines in
+   the ledger's order — the header band's rule sweeps across first, the
+   corner boxes' vertical rules drop down through the bands, then the
+   title divider, the quote divider, and last the footer band's rule.
+   Only this hover state carries transitions (the rest states above have
+   none), so closing the card resets everything instantly for the next
+   open. The panel itself is still fading in (opacity .3s) under the
+   first of these delays, so the earliest line starts just as the card
+   becomes legible. */
+:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band--top::after{
+  transform: scaleX(1);
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .05s;
+}
+:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band .pc-left::after,
+:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band .pc-right::before{
+  transform: scaleY(1);
+  transition: transform .35s ease .2s;
+}
+:is(.duo-half, .card.card--feature):hover .duo-panel .card-title-divider{
+  transform: scaleX(1);
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .3s;
+}
+:is(.duo-half, .card.card--feature):hover .duo-panel .duo-quote-divider{
+  transform: scaleX(1);
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .42s;
+}
+:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band--bottom::before{
+  transform: scaleX(1);
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .54s;
+}
+/* Text joins the ruling the way the archive's rows do: everything rests
+   invisible (again with no transition, so closing resets instantly) and
+   fades up a beat behind its lines — band box text behind the band
+   rules and verticals, the title first in the column, the rest of the
+   column's text after its dividers. The color transition rides along in
+   each list so the boxes' hover-whitening isn't lost while open. */
+.duo-panel .panel-band .pc{ opacity: 0; }
+.duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider){ opacity: 0; }
+:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band .pc{
+  opacity: 1;
+  transition: opacity .4s ease .3s, color .15s ease;
+}
+:is(.duo-half, .card.card--feature):hover .duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider):not(.card-title){
+  opacity: 1;
+  transition: opacity .45s ease .46s;
+}
+/* The title leads the column, right behind the header band's text. */
+:is(.duo-half, .card.card--feature):hover .duo-panel .duo-panel-top > .card-title{
+  opacity: 1;
+  transition: opacity .45s ease .24s;
+}
 /* Date + likes now sit inline beside the tagline that opens the excerpt
    (.preview-tagline-row below), not pinned to a corner — the corner they
    used to occupy is the section button's (.card-category-btn) again. The
@@ -579,7 +708,11 @@ section{ padding: 80px 0; }
    whole padded box (inset:0) instead of relying on height:100%. */
 .feature-image-cell{ position: relative; overflow: hidden; padding-bottom: calc(100% / 2.17 + 200px); }
 .card--feature .card-image-frame{ position: absolute; inset: 0; margin-bottom: 0; }
-.card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; }
+/* Explicit black background: with object-fit:contain above, whatever the
+   image's own aspect ratio doesn't fill (the pillarbox columns) shows
+   this rather than relying on incidental transparency down to the page
+   background. */
+.card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; background: var(--paper); }
 /* The hero's hover panel: one duo panel — the same box the trio cells
    wear (background, white border, bands, padding all from the shared
    .duo-panel rules above) — pinned to the cover image's left edge at
@@ -600,10 +733,18 @@ section{ padding: 80px 0; }
   pointer-events: auto;
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.card--feature .card-image,
-.card--feature .card-image--blank,
 .card--duo .card-image,
 .card--duo .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
+/* The hero's own image sits centered at its natural proportions rather
+   than being cropped edge to edge — object-fit:contain instead of cover,
+   so the full picture is always visible, letterboxed by two black
+   columns (the frame's own background, see .card--feature
+   .card-image-link below) filling whatever the image's own aspect ratio
+   leaves over in the hero's much wider box. cover-cascade.js reads this
+   same object-fit off the element and swaps its tile math (min-scale
+   instead of max-scale) to match — see buildOverlay's `fit` variable. */
+.card--feature .card-image,
+.card--feature .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; }
 /* "The Latest"/"Essays"/"Postscript"/"Contra"/"From the Archive" — the
    current section, as a black pill with a white border. Only fades in
    with the rest of the column/panel on hover — and glows only when the
@@ -622,13 +763,16 @@ section{ padding: 80px 0; }
 .hero-latest-btn:hover{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-/* A ring drawn as an ::after (rather than an inset box-shadow, which the
-   opaque child img paints over and hides, or an outline, which some
-   browsers won't render with a negative offset inside overflow:hidden)
-   — a generated box is guaranteed to paint above the img sibling, and
-   its own border sits flush with the link's edge, same as the box's
-   real border. Sized via inset:0 rather than width/height so it always
-   matches the link exactly regardless of the image's aspect ratio. */
+/* A complete white outline framing every cover image — drawn as an
+   ::after (rather than an inset box-shadow, which the opaque child img
+   paints over and hides, or an outline, which some browsers won't render
+   with a negative offset inside overflow:hidden) so a generated box is
+   guaranteed to paint above the img sibling, its own border sitting
+   flush with the link's edge. Sized via inset:0 rather than width/height
+   so it always matches the link exactly regardless of the image's
+   aspect ratio. Always on (not hover-gated) — the frame the tile cascade
+   fills, present from the moment a cover's cell exists through to the
+   settled image, hover or not. */
 .card--feature .card-image-link::after,
 .card--duo .card-image-link::after{
   content: '';
@@ -636,13 +780,130 @@ section{ padding: 80px 0; }
   inset: 0;
   border: 1px solid var(--white);
   pointer-events: none;
+}
+
+/* ---------- COVER TILE-CASCADE ----------
+   Reveal effect for cover images on the homepage and the essays/
+   postscript/contra pages (see src/cover-cascade.js): only one cover
+   plays at a time, in document order — each frame's completion triggers
+   the next. A transient overlay grid of square tiles appears over the
+   playing cover, each tile a small window onto one shared background
+   image (explicit background-size/position computed once per frame,
+   reproducing the img's own object-fit:cover crop — see buildOverlay),
+   flipping over into place as it trickles diagonally from the top-left,
+   then the overlay dissolves leaving the untouched image. The real image
+   hides only while .tiling is on the frame (set after the overlay is
+   fully built, so a script failure just shows the plain cover), and
+   reduced-motion/no-JS loads never enter the effect at all. Tile
+   geometry and per-tile delays are inline from the script. */
+.tile-cascade{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* Keep tiles out of the outer 1px border strip: edge tiles span to the
+     very edge, and their image pixels under (and antialiased against)
+     the 1px trace line made the outline read thicker/dirtier the moment
+     the crisp static border took over — the end-of-cascade shudder. With
+     the ring clipped, the strip stays clean black until the droplets
+     draw it white, and the final swap to the real border is
+     pixel-identical. (Clip the overlay, not the geometry: tile positions
+     and background offsets stay exact.) */
+  clip-path: inset(1px);
+}
+/* Each tile starts folded shut on its own axis (invisible) and unfolds
+   to land face-up, like a card turning to show the image: half the tiles
+   open around their vertical centerline (horizontal flip), half — the
+   .tile-v ones, dealt at random by the script — around their horizontal
+   one (vertical flip). The flips are 2D scales, not 3D rotations: at
+   20px a real perspective flip is indistinguishable, and scale
+   transforms animate on the compositor without allocating thousands of
+   3D render surfaces — this is what keeps a ~1800-tile pass smooth.
+   .in lands per-tile, one diagonal at a time, chained by the script
+   (revealChain in cover-cascade.js) rather than all at once — see the
+   comment there for why. */
+.tile-cascade-cell{
+  position: absolute;
+  overflow: hidden;
   opacity: 0;
-  transition: opacity .3s ease;
+  transform: scaleX(0);
+  /* .77s/.6s — settled at 15% under the original 1.2s/.9s after a 30%
+     cut proved too brisk; keeps the tail tight without rushing the
+     flips. DUR in cover-cascade.js (and the fold-out cascade's in
+     src/ledger.js) is sized to this. */
+  transition: transform .77s cubic-bezier(.22, .61, .36, 1), opacity .6s ease;
 }
-.card.card--feature:hover .card-image-link::after,
-.duo-half:hover .card-image-link::after{
+.tile-cascade-cell.tile-v{
+  transform: scaleY(0);
+}
+.tile-cascade-cell.in{
   opacity: 1;
+  transform: scale(1);
 }
+/* Every cover's cascade flourish (see buildCoverTrace in
+   cover-cascade.js): two droplets race out from the top-left corner —
+   one across the top and down the right edge, one down the left and
+   across the bottom — meeting at the bottom-right exactly as the last
+   tile settles. Each is a pair of SVG paths sharing the same geometry:
+   .trace-line is the permanent white left behind, .trace-comet a short
+   bright glowing head riding the draw front — the Subscribe button's
+   caterpillar droplet, rebuilt in SVG rather than borrowing
+   caterpillar.js's canvas machinery, which is built for an indefinitely
+   looping hover glow rather than a one-shot line that has to finish,
+   permanently drawn, at an exact moment. Sits above the tiles (z-index)
+   so it's visible over them the whole time it draws. */
+.cover-trace{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+.cover-trace path{
+  fill: none;
+  stroke: var(--white);
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+/* Exactly the static outline it hands off to: the ::after border is 1px
+   drawn just inside the box edge, so the trace path runs 0.5px inside
+   (the centerline of that 1px strip — see buildCoverTrace) and strokes
+   1px. A centered-on-the-edge or wider stroke antialiases into a
+   thinner-looking gray line and sits half outside the box; this one
+   covers the border's exact pixels, same position, thickness, and
+   color, so the swap at the end is invisible. */
+.cover-trace .trace-line{
+  stroke-width: 1px;
+}
+.cover-trace .trace-comet{
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 5px rgba(247,246,241,1)) drop-shadow(0 0 1.5px rgba(247,246,241,0.9));
+}
+/* Covers stay dark until their cascade begins, and stay inert for the
+   whole trickle, not just its first frame: the script tags every
+   participating frame .cover-pending before first paint (no-JS and
+   reduced-motion loads never get the class) and only lifts it once the
+   tiles finish and the real image is what's showing (see finish() in
+   cover-cascade.js). While pending, no hover panel — so nothing hints at
+   a cover that isn't fully there yet. */
+.cover-pending img.card-image{ visibility: hidden; }
+/* One :has() level up outranks .duo-half:hover .duo-panel and
+   .card.card--feature:hover .duo-panel above. */
+.duo-half:has(.cover-pending):hover .duo-panel,
+.card.card--feature:has(.cover-pending):hover .duo-panel{
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: none;
+}
+.card-image-frame.tiling .card-image-link img{ visibility: hidden; }
+/* No empty white outlines at first launch: a cover's static outline
+   stays down for its whole pending life — waiting its turn AND while its
+   cascade runs (cover-pending spans both; see finish() in
+   cover-cascade.js). The droplet trace draws that same rectangle live
+   during the cascade, and the static border takes over the instant the
+   trace finishes — cover-pending lifts at exactly that moment, so
+   there's no gap between "hand-traced" and "always there". */
+.card-image-frame.cover-pending .card-image-link::after{ opacity: 0; }
 /* Hovering anywhere in the card (image or either panel — :hover bubbles
    to this ancestor from any descendant) dims the image and glows its
    ring and the pill together with the two panels above, so the whole
@@ -857,7 +1118,7 @@ section{ padding: 80px 0; }
   .feature-image-cell{ margin-bottom: 0; padding-bottom: 0; aspect-ratio: 3.5/3; }
   .card--feature .card-image-frame{ position: relative; inset: auto; height: 100%; }
   .card--feature .card-image,
-  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; object-fit: cover; }
+  .card--feature .card-image--blank{ width: 100%; height: auto; aspect-ratio: 3.5/3; object-fit: contain; }
 }
 
 /* Same reasoning as the hero's own fallback above and the box card's
@@ -890,6 +1151,17 @@ section{ padding: 80px 0; }
   .duo-panel .duo-quote-divider{ margin-left: 0; margin-right: 0; }
   :is(.duo-panel, .card--feature) .panel-band--top{ margin-bottom: 12px; }
   :is(.duo-panel, .card--feature) .panel-band--bottom{ margin-top: 12px; }
+  /* Statically-visible panels have no "open" moment, so the per-hover
+     ruling never fires — its lines just stand fully drawn and its text
+     fully visible. */
+  :is(.duo-panel, .card--feature) .panel-band--top::after,
+  :is(.duo-panel, .card--feature) .panel-band--bottom::before,
+  :is(.duo-panel, .card--feature) .panel-band .pc-left::after,
+  :is(.duo-panel, .card--feature) .panel-band .pc-right::before,
+  .duo-panel .card-title-divider,
+  .duo-panel .duo-quote-divider{ transform: none; transition: none; }
+  .duo-panel .panel-band .pc,
+  .duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider){ opacity: 1; }
 }
 
 /* ---------- SECTION BLOCKS + CARDS ---------- */
@@ -917,29 +1189,6 @@ section{ padding: 80px 0; }
 .card-grid > .card--box{ padding: 0; }
 .card{ display:flex; flex-direction:column; }
 .card-image-frame{ margin-bottom: 14px; }
-/* ---------- COVER KICKER ----------
-   The hover band's kicker box made permanent: pinned to every cover
-   image's top-left corner, but full-strength — white text in a white 1px
-   outline on black, where the band corners sit muted gray on hairline
-   rules. Its border-box coincides EXACTLY with the band kicker box that
-   replaces it on hover, line for line: the 1px border stands where the
-   panel's own border (top/left), the band's border-bottom rule (bottom)
-   and the box's border-right rule (right) will be, and the 24px side
-   padding matches the band's outermost-box padding (.pc-left above), so
-   the text doesn't move either — a seamless swap. Decorative
-   (aria-hidden in the markup): the panel's band kicker is the accessible
-   copy. pointer-events:none keeps the image link beneath it clickable. */
-.cover-kicker{
-  position: absolute; top: 0; left: 0; z-index: 2;
-  display: inline-flex; align-items: center;
-  padding: 11px 24px 9px;
-  font-family: var(--mono); font-weight: 575; font-size: var(--mono-size);
-  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
-  color: var(--white);
-  background: var(--paper);
-  border: 1px solid var(--white);
-  pointer-events: none;
-}
 .card-image-link{ display:block; margin-bottom: 0; }
 .card-image{ width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
@@ -1601,6 +1850,16 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
 .arch-ledger-card-image .card-image--blank{
   display: block; width: 100%; height: 100%; object-fit: cover;
 }
+/* The fold-out's cover arrives as the same tile cascade the other pages'
+   covers play (shared .tile-cascade styles; built by src/ledger.js on
+   open — no droplet trace here, that belongs to the standing cover
+   frames). These mirror the cover pages' hide rules for the archive's
+   own image markup: dark while waiting (a lazy image may still be
+   loading) and while the tiles stand in. (No overflow clipping needed:
+   tiles only ever scale DOWN inside their own cells — and clipping here
+   would cut off the ::after edge rule's glow above.) */
+.arch-ledger-card-image.cover-pending img,
+.arch-ledger-card-image.tiling img{ visibility: hidden; }
 .arch-ledger-card-text{
   grid-column: 3 / -1;
   /* Absolutely bound to its grid area: the image's 16:9 alone sets the
@@ -1683,6 +1942,72 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   border-color: transparent;
   box-shadow: 0 0 10px rgba(247,246,241,0.35);
 }
+/* The fold-out opens with the hover cards' ruling: lines draw in ledger
+   order, text fades up behind them. Same border-to-pseudo swap as the
+   panels (borders can't scale-animate; transparent borders keep their
+   1px of layout). The animated states hang off .card-in, which
+   src/ledger.js adds one forced reflow AFTER un-hiding the card — a
+   subtree coming out of display:none renders straight at its final
+   styles, so transitions keyed to the open state alone would never run.
+   Rest states carry no transition: closing resets instantly. */
+.arch-ledger-card .arch-ledger-card-divider{ transform: scaleX(0); transform-origin: 0 50%; }
+.arch-ledger-card .card-dek,
+.arch-ledger-card .card-preview-block,
+.arch-ledger-card-text .panel-band--bottom .pc{ opacity: 0; }
+.arch-ledger-card-text .panel-band--bottom{ border-top-color: transparent; }
+.arch-ledger-card-text .panel-band--bottom::before{
+  content: '';
+  position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+.arch-ledger-card-text .panel-band--bottom .pc-left{ border-right-color: transparent; position: relative; }
+.arch-ledger-card-text .panel-band--bottom .pc-right{ border-left-color: transparent; position: relative; }
+.arch-ledger-card-text .panel-band--bottom .pc-left::after,
+.arch-ledger-card-text .panel-band--bottom .pc-right::before{
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  background: var(--line);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+}
+.arch-ledger-card-text .panel-band--bottom .pc-left::after{ right: -1px; }
+.arch-ledger-card-text .panel-band--bottom .pc-right::before{ left: -1px; }
+/* The Read on link's hover outline blanks its borders; its pseudo rule
+   stands down with them (same as the panels'). */
+.arch-ledger-card-text .panel-band--bottom a.pc:hover::before,
+.arch-ledger-card-text .panel-band--bottom a.pc:hover::after{ background: transparent; }
+/* The open choreography. */
+.arch-ledger-card.card-in .arch-ledger-card-divider--top{
+  transform: none;
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .05s;
+}
+.arch-ledger-card.card-in .card-dek{
+  opacity: 1;
+  transition: opacity .4s ease .2s;
+}
+.arch-ledger-card.card-in .arch-ledger-card-divider:not(.arch-ledger-card-divider--top){
+  transform: none;
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .32s;
+}
+.arch-ledger-card.card-in .card-preview-block{
+  opacity: 1;
+  transition: opacity .45s ease .44s;
+}
+.arch-ledger-card.card-in .panel-band--bottom::before{
+  transform: scaleX(1);
+  transition: transform .45s cubic-bezier(.25, .1, .25, 1) .52s;
+}
+.arch-ledger-card.card-in .panel-band--bottom .pc-left::after,
+.arch-ledger-card.card-in .panel-band--bottom .pc-right::before{
+  transform: scaleY(1);
+  transition: transform .35s ease .64s;
+}
+.arch-ledger-card.card-in .panel-band--bottom .pc{
+  opacity: 1;
+  transition: opacity .4s ease .7s, color .15s ease;
+}
 
 @media (max-width: 860px){
   .arch-ledger-grid{
@@ -1712,8 +2037,19 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   .arch-ledger-card-image{ grid-column: auto; margin: 0; aspect-ratio: auto; }
   .arch-ledger-card-image::after{ display: none; }
   .arch-ledger-card-text{ grid-column: auto; position: relative; inset: auto; padding: 0; }
-  /* Stacked: the band flows after the text instead of pinning. */
-  .arch-ledger-card-text .panel-band--bottom{ position: static; margin-top: 14px; }
+  /* Stacked: the band flows after the text instead of pinning. Its
+     open-ruling pseudos would anchor to the wrong ancestor from a static
+     box, so the ruling stands down here — lines drawn, text visible. */
+  .arch-ledger-card-text .panel-band--bottom{ position: static; margin-top: 14px; border-top-color: var(--line); }
+  .arch-ledger-card-text .panel-band--bottom::before,
+  .arch-ledger-card-text .panel-band--bottom .pc-left::after,
+  .arch-ledger-card-text .panel-band--bottom .pc-right::before{ display: none; }
+  .arch-ledger-card-text .panel-band--bottom .pc-left{ border-right-color: var(--line); }
+  .arch-ledger-card-text .panel-band--bottom .pc-right{ border-left-color: var(--line); }
+  .arch-ledger-card .arch-ledger-card-divider{ transform: none; transition: none; }
+  .arch-ledger-card .card-dek,
+  .arch-ledger-card .card-preview-block,
+  .arch-ledger-card-text .panel-band--bottom .pc{ opacity: 1; transition: none; }
   .arch-ledger-card .card-preview-block{ column-count: auto; }
   .arch-ledger-card-image a{ position: static; }
   .arch-ledger-card-image img,
