@@ -1142,7 +1142,7 @@ ${renderHeader()}
 
 <main id="main">
 
-  <section class="reveal featured-strip" id="top">
+  <section class="featured-strip" id="top">
     <div class="wrap">
       <div class="hero-row">
         ${heroHtml}
@@ -1161,7 +1161,7 @@ ${renderRevealScript()}
 
 ${renderCaterpillarScript()}
 ${renderDuoPanelFitScript()}
-${renderCoverCascadeScript()}
+${renderLineDrawScript()}
 </body>
 </html>`;
 }
@@ -1177,13 +1177,12 @@ ${js}
 </script>`;
 }
 
-// Tile-cascade reveal for cover images — ships with the homepage and the
-// essays/postscript/contra pages (renderListPage); archive, give, and
-// about stay out. src/cover-cascade.js selects the hero and every
-// duo/trio/quad row cell, playing each as it enters the viewport with
-// its image loaded.
-function renderCoverCascadeScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/cover-cascade.js'), 'utf8');
+// The page-ruling line draw — the ledger effect on the page's gray
+// dividers — ships with the homepage and the essays/postscript/contra
+// pages (renderListPage); archive (which has the ledger itself), give,
+// and about stay out. See src/line-draw.js.
+function renderLineDrawScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/line-draw.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
@@ -1290,7 +1289,7 @@ ${rows
     currentKey,
     title: label,
     bodyHtml,
-    extraScripts: renderDuoPanelFitScript() + renderCoverCascadeScript(),
+    extraScripts: renderDuoPanelFitScript() + renderLineDrawScript(),
   });
 }
 

@@ -223,137 +223,18 @@
     });
   }
 
-  // ---- Fold-out cover cascade ----
-  // The expanded card's cover image arrives as the same tile cascade the
-  // covers on the homepage/essays/postscript/contra play (shared
-  // .tile-cascade styles; the grid/diagonal-chain mechanics are a
-  // single-frame cut of src/cover-cascade.js's buildOverlay) — minus the
-  // droplet outline-trace, which belongs to the standing cover frames.
-  // Constants match that script's, so the two cascades read as one
-  // effect.
-  var TILE = 20, CHAIN_STEP = 20, TILE_JITTER = 170, CASCADE_DUR = 850;
-  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function cascadeFinish(box) {
-    var wasTiling = box.classList.contains('tiling');
-    box.classList.remove('tiling');
-    box.classList.remove('cover-pending');
-    clearTimeout(box.__chainTimer);
-    clearTimeout(box.__tileTimer);
-    var overlay = box.querySelector('.tile-cascade');
-    if (overlay) overlay.parentNode.removeChild(overlay);
-    return wasTiling;
-  }
-  // object-fit:cover's positioning math for one axis (see the same
-  // helper in cover-cascade.js).
-  function axisOffset(token, containerSize, imageSize) {
-    token = (token || '50%').trim();
-    if (token.charAt(token.length - 1) === '%') {
-      return (imageSize - containerSize) * (parseFloat(token) / 100);
-    }
-    return parseFloat(token) || 0;
-  }
-  function cascadeImage(box) {
-    var img = box.querySelector('img');
-    if (!img) {
-      box.classList.remove('cover-pending'); // blank cover: nothing to play
-      return;
-    }
-    if (!img.complete || !img.naturalWidth) {
-      // Lazy image still arriving — play when it lands, if the card is
-      // still open (cover-pending is stripped on close, gating this).
-      img.addEventListener('load', function(){
-        if (box.classList.contains('cover-pending')) cascadeImage(box);
-      }, { once: true });
-      return;
-    }
-    clearTimeout(box.__chainTimer);
-    clearTimeout(box.__tileTimer);
-    var old = box.querySelector('.tile-cascade');
-    if (old) old.parentNode.removeChild(old);
-    var fw = box.clientWidth, fh = box.clientHeight;
-    if (!fw || !fh) {
-      cascadeFinish(box);
-      return;
-    }
-    var cols = Math.max(2, Math.round(fw / TILE));
-    var rows = Math.max(2, Math.round(fh / (fw / cols)));
-    var src = (img.currentSrc || img.src).replace(/['"()\s]/g, function(ch){
-      return '%' + ch.charCodeAt(0).toString(16);
-    });
-    var scale = Math.max(fw / img.naturalWidth, fh / img.naturalHeight); // archive covers are object-fit:cover
-    var bgW = img.naturalWidth * scale, bgH = img.naturalHeight * scale;
-    var opParts = getComputedStyle(img).objectPosition.split(/\s+/);
-    var offX = axisOffset(opParts[0], fw, bgW);
-    var offY = axisOffset(opParts[1], fh, bgH);
-    var baseBg = "background-image:url('" + src + "');" +
-      'background-size:' + bgW + 'px ' + bgH + 'px;background-repeat:no-repeat;';
-    var html = '';
-    var diagonals = rows - 1 + cols - 1 + 1;
-    for (var r = 0; r < rows; r++) {
-      for (var c = 0; c < cols; c++) {
-        var x0 = Math.round(c * fw / cols), x1 = Math.round((c + 1) * fw / cols);
-        var y0 = Math.round(r * fh / rows), y1 = Math.round((r + 1) * fh / rows);
-        html += '<div class="tile-cascade-cell' + (Math.random() < 0.5 ? ' tile-v' : '') + '"' +
-          ' data-d="' + (r + c) + '"' +
-          ' style="left:' + x0 + 'px;top:' + y0 + 'px;' +
-          'width:' + (x1 - x0) + 'px;height:' + (y1 - y0) + 'px;' + baseBg +
-          'background-position:' + (-(offX + x0)) + 'px ' + (-(offY + y0)) + 'px;' +
-          'transition-delay:' + Math.round(Math.random() * TILE_JITTER) + 'ms"></div>';
-      }
-    }
-    var overlay = document.createElement('div');
-    overlay.className = 'tile-cascade';
-    overlay.innerHTML = html;
-    box.appendChild(overlay);
-    box.classList.add('tiling');
-    var byDiagonal = [];
-    [].forEach.call(overlay.children, function(cell){
-      var d = +cell.dataset.d;
-      (byDiagonal[d] || (byDiagonal[d] = [])).push(cell);
-    });
-    function revealChain(i) {
-      var cells = byDiagonal[i];
-      if (cells) cells.forEach(function(cell){ cell.classList.add('in'); });
-      if (i + 1 < diagonals) {
-        box.__chainTimer = setTimeout(function(){ revealChain(i + 1); }, CHAIN_STEP);
-      }
-    }
-    void overlay.offsetWidth; // commit the folded state so transitions run
-    revealChain(0);
-    box.__tileTimer = setTimeout(function(){
-      // Crossfade ending, same as the cover pages' cascades: the tiles'
-      // background slices can differ from the real image by sub-pixel
-      // sampling, so a hard swap lands that difference in one frame — a
-      // shudder. Reveal the image underneath, dissolve the overlay,
-      // then remove it.
-      box.classList.remove('tiling');
-      box.classList.remove('cover-pending');
-      overlay.style.transition = 'opacity 160ms linear';
-      overlay.style.opacity = '0';
-      box.__tileTimer = setTimeout(function(){ cascadeFinish(box); }, 200);
-    }, diagonals * CHAIN_STEP + TILE_JITTER + CASCADE_DUR);
-  }
-
   function setOpen(item, open) {
     var row = item.querySelector('.arch-ledger-row');
     var card = item.querySelector('.arch-ledger-card');
     item.classList.toggle('open', open);
-    var imgBox = card ? card.querySelector('.arch-ledger-card-image') : null;
     if (card) {
       card.hidden = !open;
       // Rearm the fold-out's open ruling (see .card-in in style.css) on
-      // every close so the next open replays it — and tear down any
-      // cover cascade still running (also strips cover-pending, which
-      // gates a lazy image's deferred start).
+      // every close so the next open replays it.
       card.classList.remove('card-in');
-      if (imgBox) cascadeFinish(imgBox);
     }
     if (row) row.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (card && open) {
-      // Dark until its cascade starts (mirrors the cover pages'
-      // hidden-until-initiated rule) — skipped entirely under reduced
-      // motion, where the image just shows.
-      if (imgBox && !reducedMotion) imgBox.classList.add('cover-pending');
       fitCard(card);
       // One forced reflow between un-hiding and .card-in: a subtree
       // fresh out of display:none renders straight at its final styles,
@@ -363,7 +244,6 @@
       // fitCard ever stops forcing one.)
       void card.offsetWidth;
       card.classList.add('card-in');
-      if (imgBox && !reducedMotion) cascadeImage(imgBox);
     }
   }
 

@@ -289,7 +289,7 @@ section{ padding: 80px 0; }
 @media (max-width: 480px){ .row-divider{ margin-bottom: 16px; } }
 /* Scroll-in ruling for the page's gray lines (homepage and the essays/
    postscript/contra pages — the archive ledger has its own version):
-   cover-cascade.js tags every .row-divider, .duo-half-divider and
+   line-draw.js tags every .row-divider, .duo-half-divider and
    .duo-divider--h with .line-draw when the effect can run (no-JS and
    reduced-motion loads keep plain static lines), then flips .in-view
    staggered as they enter the viewport, poller-driven like everything
@@ -551,24 +551,24 @@ section{ padding: 80px 0; }
    open. The panel itself is still fading in (opacity .3s) under the
    first of these delays, so the earliest line starts just as the card
    becomes legible. */
-:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band--top::after{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band--top::after{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .05s;
 }
-:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band .pc-left::after,
-:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band .pc-right::before{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band .pc-left::after,
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band .pc-right::before{
   transform: scaleY(1);
   transition: transform .35s ease .2s;
 }
-:is(.duo-half, .card.card--feature):hover .duo-panel .card-title-divider{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .card-title-divider{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .3s;
 }
-:is(.duo-half, .card.card--feature):hover .duo-panel .duo-quote-divider{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .duo-quote-divider{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .42s;
 }
-:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band--bottom::before{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band--bottom::before{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .54s;
 }
@@ -580,16 +580,16 @@ section{ padding: 80px 0; }
    each list so the boxes' hover-whitening isn't lost while open. */
 .duo-panel .panel-band .pc{ opacity: 0; }
 .duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider){ opacity: 0; }
-:is(.duo-half, .card.card--feature):hover .duo-panel .panel-band .pc{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band .pc{
   opacity: 1;
   transition: opacity .4s ease .3s, color .15s ease;
 }
-:is(.duo-half, .card.card--feature):hover .duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider):not(.card-title){
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .duo-panel-top > :not(.card-title-divider):not(.duo-quote-divider):not(.card-title){
   opacity: 1;
   transition: opacity .45s ease .46s;
 }
 /* The title leads the column, right behind the header band's text. */
-:is(.duo-half, .card.card--feature):hover .duo-panel .duo-panel-top > .card-title{
+:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .duo-panel-top > .card-title{
   opacity: 1;
   transition: opacity .45s ease .24s;
 }
@@ -707,12 +707,20 @@ section{ padding: 80px 0; }
    with this trick, so the frame is pulled out of flow and pinned over the
    whole padded box (inset:0) instead of relying on height:100%. */
 .feature-image-cell{ position: relative; overflow: hidden; padding-bottom: calc(100% / 2.17 + 200px); }
-.card--feature .card-image-frame{ position: absolute; inset: 0; margin-bottom: 0; }
+/* Flex row so the link below can shrink to the image's own proportions
+   and sit centered — the same place object-fit:contain already painted
+   the picture, but now the LINK BOX ends at the picture's edges, which
+   is what scopes the hover ring/dim/panel trigger to the image itself
+   (see fitHeroLink in duo-panel-fit.js, which sets the link's
+   aspect-ratio from the loaded image). */
+.card--feature .card-image-frame{ position: absolute; inset: 0; margin-bottom: 0; display: flex; justify-content: center; }
 /* Explicit black background: with object-fit:contain above, whatever the
-   image's own aspect ratio doesn't fill (the pillarbox columns) shows
-   this rather than relying on incidental transparency down to the page
-   background. */
-.card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; background: var(--paper); }
+   image's own aspect ratio doesn't fill shows this rather than relying
+   on incidental transparency down to the page background. width:100% is
+   the no-JS state (hover zone falls back to the whole frame);
+   fitHeroLink narrows it to the image's contain-box, max-width capping
+   an image wider than the frame at today's full-width behavior. */
+.card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; width: 100%; max-width: 100%; background: var(--paper); }
 /* The hero's hover panel: one duo panel — the same box the trio cells
    wear (background, white border, bands, padding all from the shared
    .duo-panel rules above) — pinned to the cover image's left edge at
@@ -720,15 +728,19 @@ section{ padding: 80px 0; }
    the essay squares' own: duo-panel-fit.js copies a .duo-half's
    measured width onto it (inline width + aspect-ratio:auto — the
    inline width would otherwise flip the ratio into computing height
-   and overrun the hero's foot). The 1:2 ratio below is only the no-JS
-   fallback. Revealed by hovering anywhere in the card rather than the
-   duo halves' own per-half trigger. */
+   and overrun the hero's foot), and its left is the image's own left
+   edge (inline, from the fitted link box — left:0 below is the no-JS
+   fallback along with the 1:2 ratio). Revealed like the duo halves':
+   by pointing at the image itself (the link box IS the image now — see
+   fitHeroLink) or at the open panel, so crossing from picture to panel
+   never closes it — NOT by the card's full-width strip, whose pillarbox
+   margins shouldn't read as hover targets. */
 .card--feature .duo-panel{
   inset: auto; top: 0; bottom: 0;
   left: 0;
   aspect-ratio: 1 / 2;
 }
-.card.card--feature:hover .duo-panel{
+.card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .duo-panel{
   opacity: 1;
   pointer-events: auto;
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
@@ -740,9 +752,7 @@ section{ padding: 80px 0; }
    so the full picture is always visible, letterboxed by two black
    columns (the frame's own background, see .card--feature
    .card-image-link below) filling whatever the image's own aspect ratio
-   leaves over in the hero's much wider box. cover-cascade.js reads this
-   same object-fit off the element and swaps its tile math (min-scale
-   instead of max-scale) to match — see buildOverlay's `fit` variable. */
+   leaves over in the hero's much wider box. */
 .card--feature .card-image,
 .card--feature .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; }
 /* "The Latest"/"Essays"/"Postscript"/"Contra"/"From the Archive" — the
@@ -763,16 +773,16 @@ section{ padding: 80px 0; }
 .hero-latest-btn:hover{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-/* A complete white outline framing every cover image — drawn as an
-   ::after (rather than an inset box-shadow, which the opaque child img
-   paints over and hides, or an outline, which some browsers won't render
-   with a negative offset inside overflow:hidden) so a generated box is
+/* A white outline framing a HOVERED cover image — drawn as an ::after
+   (rather than an inset box-shadow, which the opaque child img paints
+   over and hides, or an outline, which some browsers won't render with
+   a negative offset inside overflow:hidden) so a generated box is
    guaranteed to paint above the img sibling, its own border sitting
    flush with the link's edge. Sized via inset:0 rather than width/height
    so it always matches the link exactly regardless of the image's
-   aspect ratio. Always on (not hover-gated) — the frame the tile cascade
-   fills, present from the moment a cover's cell exists through to the
-   settled image, hover or not. */
+   aspect ratio. Hover-only: covers rest borderless, and the ring fades
+   up with the rest of the hover state (each duo half hovers
+   independently, like its panel). */
 .card--feature .card-image-link::after,
 .card--duo .card-image-link::after{
   content: '';
@@ -780,141 +790,24 @@ section{ padding: 80px 0; }
   inset: 0;
   border: 1px solid var(--white);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image-link::after,
+.duo-half:hover .card-image-link::after{
+  opacity: 1;
 }
 
-/* ---------- COVER TILE-CASCADE ----------
-   Reveal effect for cover images on the homepage and the essays/
-   postscript/contra pages (see src/cover-cascade.js): only one cover
-   plays at a time, in document order — each frame's completion triggers
-   the next. A transient overlay grid of square tiles appears over the
-   playing cover, each tile a small window onto one shared background
-   image (explicit background-size/position computed once per frame,
-   reproducing the img's own object-fit:cover crop — see buildOverlay),
-   flipping over into place as it trickles diagonally from the top-left,
-   then the overlay dissolves leaving the untouched image. The real image
-   hides only while .tiling is on the frame (set after the overlay is
-   fully built, so a script failure just shows the plain cover), and
-   reduced-motion/no-JS loads never enter the effect at all. Tile
-   geometry and per-tile delays are inline from the script. */
-.tile-cascade{
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  /* Keep tiles out of the outer 1px border strip: edge tiles span to the
-     very edge, and their image pixels under (and antialiased against)
-     the 1px trace line made the outline read thicker/dirtier the moment
-     the crisp static border took over — the end-of-cascade shudder. With
-     the ring clipped, the strip stays clean black until the droplets
-     draw it white, and the final swap to the real border is
-     pixel-identical. (Clip the overlay, not the geometry: tile positions
-     and background offsets stay exact.) */
-  clip-path: inset(1px);
-}
-/* Each tile starts folded shut on its own axis (invisible) and unfolds
-   to land face-up, like a card turning to show the image: half the tiles
-   open around their vertical centerline (horizontal flip), half — the
-   .tile-v ones, dealt at random by the script — around their horizontal
-   one (vertical flip). The flips are 2D scales, not 3D rotations: at
-   20px a real perspective flip is indistinguishable, and scale
-   transforms animate on the compositor without allocating thousands of
-   3D render surfaces — this is what keeps a ~1800-tile pass smooth.
-   .in lands per-tile, one diagonal at a time, chained by the script
-   (revealChain in cover-cascade.js) rather than all at once — see the
-   comment there for why. */
-.tile-cascade-cell{
-  position: absolute;
-  overflow: hidden;
-  opacity: 0;
-  transform: scaleX(0);
-  /* .77s/.6s — settled at 15% under the original 1.2s/.9s after a 30%
-     cut proved too brisk; keeps the tail tight without rushing the
-     flips. DUR in cover-cascade.js (and the fold-out cascade's in
-     src/ledger.js) is sized to this. */
-  transition: transform .77s cubic-bezier(.22, .61, .36, 1), opacity .6s ease;
-}
-.tile-cascade-cell.tile-v{
-  transform: scaleY(0);
-}
-.tile-cascade-cell.in{
-  opacity: 1;
-  transform: scale(1);
-}
-/* Every cover's cascade flourish (see buildCoverTrace in
-   cover-cascade.js): two droplets race out from the top-left corner —
-   one across the top and down the right edge, one down the left and
-   across the bottom — meeting at the bottom-right exactly as the last
-   tile settles. Each is a pair of SVG paths sharing the same geometry:
-   .trace-line is the permanent white left behind, .trace-comet a short
-   bright glowing head riding the draw front — the Subscribe button's
-   caterpillar droplet, rebuilt in SVG rather than borrowing
-   caterpillar.js's canvas machinery, which is built for an indefinitely
-   looping hover glow rather than a one-shot line that has to finish,
-   permanently drawn, at an exact moment. Sits above the tiles (z-index)
-   so it's visible over them the whole time it draws. */
-.cover-trace{
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  overflow: visible;
-}
-.cover-trace path{
-  fill: none;
-  stroke: var(--white);
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-}
-/* Exactly the static outline it hands off to: the ::after border is 1px
-   drawn just inside the box edge, so the trace path runs 0.5px inside
-   (the centerline of that 1px strip — see buildCoverTrace) and strokes
-   1px. A centered-on-the-edge or wider stroke antialiases into a
-   thinner-looking gray line and sits half outside the box; this one
-   covers the border's exact pixels, same position, thickness, and
-   color, so the swap at the end is invisible. */
-.cover-trace .trace-line{
-  stroke-width: 1px;
-}
-.cover-trace .trace-comet{
-  stroke-width: 3px;
-  filter: drop-shadow(0 0 5px rgba(247,246,241,1)) drop-shadow(0 0 1.5px rgba(247,246,241,0.9));
-}
-/* Covers stay dark until their cascade begins, and stay inert for the
-   whole trickle, not just its first frame: the script tags every
-   participating frame .cover-pending before first paint (no-JS and
-   reduced-motion loads never get the class) and only lifts it once the
-   tiles finish and the real image is what's showing (see finish() in
-   cover-cascade.js). While pending, no hover panel — so nothing hints at
-   a cover that isn't fully there yet. */
-.cover-pending img.card-image{ visibility: hidden; }
-/* One :has() level up outranks .duo-half:hover .duo-panel and
-   .card.card--feature:hover .duo-panel above. */
-.duo-half:has(.cover-pending):hover .duo-panel,
-.card.card--feature:has(.cover-pending):hover .duo-panel{
-  opacity: 0;
-  pointer-events: none;
-  box-shadow: none;
-}
-.card-image-frame.tiling .card-image-link img{ visibility: hidden; }
-/* No empty white outlines at first launch: a cover's static outline
-   stays down for its whole pending life — waiting its turn AND while its
-   cascade runs (cover-pending spans both; see finish() in
-   cover-cascade.js). The droplet trace draws that same rectangle live
-   during the cascade, and the static border takes over the instant the
-   trace finishes — cover-pending lifts at exactly that moment, so
-   there's no gap between "hand-traced" and "always there". */
-.card-image-frame.cover-pending .card-image-link::after{ opacity: 0; }
-/* Hovering anywhere in the card (image or either panel — :hover bubbles
-   to this ancestor from any descendant) dims the image and glows its
-   ring and the pill together with the two panels above, so the whole
-   card reads as one hover target. Duo halves hover independently instead
-   (see .duo-half:hover .duo-panel above), so only that half's own image
-   dims when hovered. */
-.card.card--feature:hover .card-image-link,
+/* Pointing at the picture (or holding the open panel, which sits over
+   it) dims the image and glows its ring together with the panel above,
+   so image and panel read as one hover target that begins and ends at
+   the image's own edges — the hero's pillarbox margins are dead space,
+   exactly like the page background beside a duo half. */
+.card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image-link,
 .duo-half:hover .card-image-link{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.card.card--feature:hover .card-image,
+.card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image,
 .duo-half:hover .card-image{
   filter: grayscale(1) brightness(0.5);
 }
@@ -1500,10 +1393,10 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   .likes:hover .likes-bird{
     opacity: 0.7;
   }
-  .card.card--feature:hover .card-image-link{
+  .card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image-link{
     box-shadow: none;
   }
-  .card.card--feature:hover .card-image{
+  .card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image{
     filter: none;
   }
 }
@@ -1850,16 +1743,6 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
 .arch-ledger-card-image .card-image--blank{
   display: block; width: 100%; height: 100%; object-fit: cover;
 }
-/* The fold-out's cover arrives as the same tile cascade the other pages'
-   covers play (shared .tile-cascade styles; built by src/ledger.js on
-   open — no droplet trace here, that belongs to the standing cover
-   frames). These mirror the cover pages' hide rules for the archive's
-   own image markup: dark while waiting (a lazy image may still be
-   loading) and while the tiles stand in. (No overflow clipping needed:
-   tiles only ever scale DOWN inside their own cells — and clipping here
-   would cut off the ::after edge rule's glow above.) */
-.arch-ledger-card-image.cover-pending img,
-.arch-ledger-card-image.tiling img{ visibility: hidden; }
 .arch-ledger-card-text{
   grid-column: 3 / -1;
   /* Absolutely bound to its grid area: the image's 16:9 alone sets the

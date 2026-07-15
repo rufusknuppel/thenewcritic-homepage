@@ -13,6 +13,30 @@
   var panels = document.querySelectorAll('.duo-panel');
   if (!panels.length) return;
 
+  // The hero's hover zone is the picture itself: the link is sized to
+  // the image's exact contain-box — height is the frame's, width follows
+  // the image's own ratio, centered by the frame's flex row (see
+  // .card--feature .card-image-frame in style.css) — so the hover ring,
+  // the dim, and the panel trigger all begin and end at the image's real
+  // edges instead of the pillarbox columns. object-fit:contain painted
+  // the picture in this exact spot already; only the LINK BOX changes.
+  // No-JS keeps the full-width link (hover zone falls back to the whole
+  // frame), and the static/mobile layout resets to it.
+  var heroLink = document.querySelector('.card--feature .card-image-link');
+  function fitHeroLink() {
+    if (!heroLink) return;
+    var img = heroLink.querySelector('img.card-image');
+    var frame = heroLink.parentNode;
+    if (!img || getComputedStyle(frame).position !== 'absolute') {
+      heroLink.style.aspectRatio = '';
+      heroLink.style.width = '';
+      return;
+    }
+    if (!img.naturalWidth) return; // the load listener below refits
+    heroLink.style.aspectRatio = img.naturalWidth + ' / ' + img.naturalHeight;
+    heroLink.style.width = 'auto';
+  }
+
   function resetClamp(el) {
     el.style.overflow = '';
     el.style.maxHeight = '';
@@ -220,11 +244,22 @@
     // does for the essay cards.
     panel.style.width = '';
     panel.style.aspectRatio = '';
-    if (panel.closest('.card--feature') && getComputedStyle(panel).position === 'absolute') {
+    panel.style.left = '';
+    var heroCard = panel.closest('.card--feature');
+    if (heroCard && getComputedStyle(panel).position === 'absolute') {
       var half = document.querySelector('.duo-half');
       if (half) {
         panel.style.width = half.getBoundingClientRect().width + 'px';
         panel.style.aspectRatio = 'auto';
+      }
+      // Pin to the image's left edge, not the card's: the fitted link
+      // (see fitHeroLink above — it runs before any panel fits) IS the
+      // image box, so its offset from the card is the pillarbox width.
+      var link = heroCard.querySelector('.card-image-link');
+      if (link) {
+        var inset = link.getBoundingClientRect().left
+          - heroCard.getBoundingClientRect().left;
+        if (inset > 0) panel.style.left = inset + 'px';
       }
     }
 
@@ -447,9 +482,17 @@
   }
 
   function fitAll() {
+    fitHeroLink(); // before the panels: the hero panel pins to the fitted link
     [].forEach.call(panels, fit);
   }
 
+  (function(){
+    if (!heroLink) return;
+    var img = heroLink.querySelector('img.card-image');
+    // A hero image landing after first run changes the link box (and the
+    // panel pinned to it) — refit everything once it arrives.
+    if (img && !img.complete) img.addEventListener('load', fitAll, { once: true });
+  })();
   fitAll();
   // Fonts landing after first paint change every line's height — refit.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
