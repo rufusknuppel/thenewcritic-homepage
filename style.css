@@ -298,7 +298,8 @@ section{ padding: 80px 0; }
 }
 .duo-half-divider.line-draw,
 .hero-flank-divider.line-draw,
-.col-flank.line-draw{
+.col-flank.line-draw,
+.mission-vr.line-draw{
   transform: scaleY(0);
   transform-origin: 50% 0;
 }
@@ -1493,16 +1494,20 @@ a.col-list-row:hover .col-list-right{ color: var(--white); }
 body.mission-body{ min-height: 100vh; display: flex; flex-direction: column; }
 body.mission-body main{ flex: 1 0 auto; display: flex; }
 .mission-page{ flex: 1; display: flex; }
-/* The frame column: holds the card at the top and carries the single gray
-   rule on its right edge. No top/bottom padding, so the border runs from
-   the page's top edge (like the dividers on other pages) down to the
-   column's foot — which the sticky footer plants on the footer rule, so
-   the two meet flush. 24px left = the card's standard gap off the nav;
-   24px top = its gap off the page top; 24px right = the gutter between the
-   card and the rule. */
+/* A card column: 24px on all sides, so cards sit the standard gap off the
+   nav/top and the last card ends 24px above the footer rule. The vertical
+   rules between columns are their own elements (.mission-vr below), not
+   borders, so they can join the line-draw ruling. */
 .mission-col{
-  padding: 24px 24px 0 24px;
-  border-right: 1px solid var(--line);
+  padding: 24px;
+}
+/* The vertical rules between/after the columns: flex siblings of the
+   columns, stretched to the page's full height by the flex row — from the
+   page's top edge down to the footer rule the sticky footer pins them
+   against. They sweep in with the page ruling (see the .line-draw list). */
+.mission-vr{
+  width: 1px; flex-shrink: 0;
+  background: var(--line);
 }
 /* The card itself: the contra page's cell width — a 3-across cell of the
    content column, (min(1600, viewport − sidebar) − wrap padding − two 49px
@@ -1525,14 +1530,21 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   border-color: var(--white);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
+/* The double column (Give + the letter): its cards span two cells plus the
+   49px gutter-and-rule between them. */
+.mission-col--double .mission-card{
+  width: calc(2 * ((min(1600px, 100vw - 180px) - 146px) / 3) + 49px);
+}
 /* Below 900px the sidebar collapses to a top bar and main loses its 180px
    inset, so the cell math drops the sidebar term (contra stays 3-across
    until it stacks at 480, where the square fills the column too). */
 @media (max-width: 900px){
   .mission-card{ width: calc((min(1600px, 100vw) - 146px) / 3); }
+  .mission-col--double .mission-card{ width: calc(2 * ((min(1600px, 100vw) - 146px) / 3) + 49px); }
 }
 @media (max-width: 480px){
-  .mission-card{ width: 100%; }
+  .mission-card,
+  .mission-col--double .mission-card{ width: 100%; }
 }
 /* Typography lifted from the trio hover panel: big Lora title over its
    edge-bleeding rule, courier eyebrow dek over the quote rule, serif body
@@ -1564,7 +1576,24 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   transition: border-color .15s ease;
 }
 .mission-card .card-preview a:hover{ border-color: var(--white); }
-/* Wider-than-tall card (Contact): a 2:1 landscape instead of the square. */
+/* Links inside a dek (the Contact card's email) — same treatment, in the
+   dek's own muted courier, whitening with its underline on hover. */
+.mission-card .card-dek a{
+  color: inherit; text-decoration: none;
+  border-bottom: 1px solid var(--faint);
+  transition: color .15s ease, border-color .15s ease;
+}
+.mission-card .card-dek a:hover{ color: var(--white); border-color: var(--white); }
+/* Three-column body text (the Give pitch, the letter) — the essay panels'
+   excerpt formation widened to the double cards' span: paragraph gap of
+   exactly one line so the columns share a baseline grid, orphans/widows
+   free like the panels. */
+.mission-cols{ column-count: 3; column-gap: 24px; }
+.mission-cols .card-preview{ orphans: 1; widows: 1; }
+/* The signatures sit under their own rule at the letter's foot — the
+   divider's 20px bottom margin is the gap, replacing .col-signers' own
+   44px letter-page inset. */
+.mission-card .duo-quote-divider + .col-signers{ margin-top: 0; }
 /* Horizontal rule between stacked cards in a column — the row counterpart
    of the columns' own vertical dividers, bled 24px each side to meet them,
    with 24px of air above and below (the 49px gutter rhythm). */
@@ -1578,24 +1607,22 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
 }
 .mission-list li{ margin-bottom: 4px; }
 .mission-list li:last-child{ margin-bottom: 0; }
-/* Header/footer bands, the hover cards' strips made permanent: a rule
-   across the card, with courier boxes pinned into the corners and closed
-   off by their own vertical rules — bled to the card's edges by negative
-   margins that cancel the 24px padding, so the rule runs border to border
-   and the boxes sit flush in the corners. */
+/* Header/footer bands, the hover cards' strips made permanent: courier
+   boxes pinned into the corners, closed off by their own vertical rules,
+   over/under the band's horizontal rule — which is its own element
+   (.mission-band-rule, emitted next to the band in build.js) rather than a
+   border, so it sweeps in with the page ruling. Negative margins bleed
+   band and rule to the card's edges past the 24px padding. */
 .mission-band{ display: flex; }
-/* Top band: rule along the bottom, a label box in the top-left corner and
-   (where present) a courier box in the top-right. */
-.mission-band--top{
-  margin: -24px -24px 0;
-  border-bottom: 1px solid var(--line);
-}
-/* Bottom band: pinned to the card foot (auto top margin eats the slack in
-   a card taller than its content), rule along the top, boxes in the
-   corners; wraps if two long buttons can't share the card's width. */
+.mission-band--top{ margin: -24px -24px 0; }
+.mission-band-rule{ height: 1px; background: var(--line); }
+/* The 20px bottom margin is the gap down to the card's content. */
+.mission-band-rule--top{ margin: 0 -24px 20px; }
+/* A fixed 24px of air between the body text above and the footer rule —
+   the card's own padding rhythm. */
+.mission-band-rule--bottom{ margin: 24px -24px 0; }
 .mission-band--bottom{
-  margin: auto -24px -24px;
-  border-top: 1px solid var(--line);
+  margin: 0 -24px -24px;
   flex-wrap: wrap;
 }
 .mission-band-box{
@@ -1603,29 +1630,40 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
   line-height: 1; white-space: nowrap;
   padding: 11px 14px 9px;
-  transition: color .15s ease, box-shadow .2s ease;
+  transition: color .15s ease;
 }
-/* Each box is closed off from the band's open span by a vertical rule: a
-   left box on its right, a right box on its left. The right box's auto left
-   margin pins it to the far corner (and, alone, holds the left corner open). */
-.mission-band-box--left{ border-right: 1px solid var(--line); }
-.mission-band-box--right{ margin-left: auto; border-left: 1px solid var(--line); }
+/* Corner boxes are closed off by their own vertical rules (a left box on
+   its right, a right box on its left), and — like the hover cards' corner
+   boxes — carry 24px side padding so their text aligns with the card's
+   inner column margins. The right box's auto left margin pins it to the
+   far corner. */
+.mission-band-box--left{
+  border-right: 1px solid var(--line);
+  padding-left: 24px; padding-right: 24px;
+}
+.mission-band-box--right{
+  margin-left: auto;
+  border-left: 1px solid var(--line);
+  padding-left: 24px; padding-right: 24px;
+}
 /* A split footer (the Give buttons): two equal halves side by side with a
-   divider between them. Labels wrap rather than overflow, since two long
-   button texts can't sit on one line at the card's width. */
+   divider between them. Labels wrap rather than overflow when two long
+   button texts can't share one line. */
 .mission-band--split .mission-band-box{
   flex: 1 1 0; min-width: 0;
   white-space: normal; text-align: center;
+  padding-left: 24px; padding-right: 24px;
 }
 .mission-band--split .mission-band-box + .mission-band-box{ border-left: 1px solid var(--line); }
-/* Text in every band box whitens and glows on hover; link boxes (Subscribe,
-   the Give buttons) also take the Read-on button's white outline. */
-.mission-band-box:hover{ color: var(--white); box-shadow: 0 0 10px rgba(247,246,241,0.35); }
+/* Text in every band box whitens on hover — no glow; link boxes
+   (Subscribe, the Give buttons) also take the Read-on button's white
+   outline, their gray rules going transparent under it. */
+.mission-band-box:hover{ color: var(--white); }
 a.mission-band-box{ text-decoration: none; }
-a.mission-band-box:hover{ outline: 1px solid var(--white); outline-offset: 0; }
-/* The dek opens the column a beat below the header strip, the way the
-   hover panels open their column under the header band. */
-.mission-band--top + .card-dek{ margin-top: 20px; }
+a.mission-band-box:hover{
+  outline: 1px solid var(--white); outline-offset: 0;
+  border-color: transparent;
+}
 /* Masthead card: the About page's editor medallions, two columns of four —
    circle headshot, courier name, courier-muted role, matching the mission
    cards' own type. */
@@ -1633,10 +1671,13 @@ a.mission-band-box:hover{ outline: 1px solid var(--white); outline-offset: 0; }
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 22px 16px;
 }
+/* gap covers photo→name; the role hugs its name (negative margin against
+   the shared gap nets ~2px) so the pair reads as one label. */
 .mission-person{
   display: flex; flex-direction: column; align-items: center; text-align: center;
   gap: 8px; text-decoration: none;
 }
+.mission-person-role{ margin-top: -6px; }
 .mission-person-photo{
   width: 68px; height: 68px; border-radius: 50%;
   border: 1px solid var(--line);

@@ -1469,35 +1469,30 @@ function renderMissionPage(founders = []) {
     })
     .join('\n        ');
 
+  // Band strips: boxes over their own rule element (a real element rather
+  // than a border, so it joins the line-draw ruling with everything else).
+  const bandTop = (boxes) => `<div class="mission-band mission-band--top">
+          ${boxes}
+        </div>
+        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>`;
+  const bandBottom = (boxes, extraClass = '') => `<div class="mission-band-rule mission-band-rule--bottom" role="separator"></div>
+        <div class="mission-band mission-band--bottom${extraClass}">
+          ${boxes}
+        </div>`;
+  const vr = '<span class="mission-vr" role="separator"></span>';
+
   const bodyHtml = `
   <div class="mission-page">
     <div class="mission-col">
       <article class="mission-card">
+        ${bandTop('<span class="mission-band-box mission-band-box--left">About</span>')}
         <p class="card-dek">The Young American Magazine</p>
         <div class="duo-quote-divider"></div>
         <p class="card-preview">The New Critic publishes essays, interviews, and criticism by and for generation z.</p>
       </article>
       ${hr}
       <article class="mission-card">
-        <p class="card-dek">Contact</p>
-        <div class="duo-quote-divider"></div>
-        <p class="card-preview">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-      </article>
-      ${hr}
-      <article class="mission-card">
-        <p class="card-dek">Masthead</p>
-        <div class="duo-quote-divider"></div>
-        <div class="mission-people">
-        ${mastheadHtml}
-        </div>
-      </article>
-    </div>
-    <div class="mission-col">
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">Subscribe</span>
-          <span class="mission-band-box mission-band-box--right">$30 / year</span>
-        </div>
+        ${bandTop('<span class="mission-band-box mission-band-box--left">Subscribe</span>\n          <span class="mission-band-box mission-band-box--right">$30 / year</span>')}
         <p class="card-dek">Hundreds of New Critic readers are paid subscribers.</p>
         <div class="duo-quote-divider"></div>
         <p class="card-preview">For $30 a year, paid subscribers get access to:</p>
@@ -1506,34 +1501,50 @@ function renderMissionPage(founders = []) {
           <li>Contra, our criticism section</li>
           <li>Exclusive New Critic parties</li>
         </ul>
-        <div class="mission-band mission-band--bottom">
-          <a class="mission-band-box mission-band-box--right" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
+        ${bandBottom(`<a class="mission-band-box mission-band-box--right" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`)}
+      </article>
+      ${hr}
+      <article class="mission-card">
+        ${bandTop('<span class="mission-band-box mission-band-box--left">Masthead</span>')}
+        <div class="mission-people">
+        ${mastheadHtml}
         </div>
       </article>
       ${hr}
       <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">Give</span>
-          <span class="mission-band-box mission-band-box--right">$300 Lifetime Subscription</span>
-        </div>
+        ${bandTop('<span class="mission-band-box mission-band-box--left">Contact</span>')}
+        <p class="card-dek">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+      </article>
+    </div>
+    ${vr}
+    <div class="mission-col mission-col--double">
+      <article class="mission-card">
+        ${bandTop('<span class="mission-band-box mission-band-box--left">Give</span>\n          <span class="mission-band-box mission-band-box--right">$300 Lifetime Subscription</span>')}
         <p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
         <div class="duo-quote-divider"></div>
-        <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
-        <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
-        <p class="card-preview">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-        <div class="mission-band mission-band--bottom mission-band--split">
-          <a class="mission-band-box" href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Give through Fractured Atlas</a>
-          <a class="mission-band-box" href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Give instantly through Stripe</a>
+        <div class="mission-cols">
+          <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
+          <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
+          <p class="card-preview">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+        </div>
+        ${bandBottom(`<a class="mission-band-box" href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Give through Fractured Atlas</a>
+          <a class="mission-band-box" href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Give instantly through Stripe</a>`, ' mission-band--split')}
+      </article>
+      ${hr}
+      <article class="mission-card">
+        ${bandTop('<span class="mission-band-box mission-band-box--left">From the Founding Editors</span>')}
+        <p class="card-dek">A letter to our readers</p>
+        <div class="duo-quote-divider"></div>
+        <div class="mission-cols">
+        ${GIVE_LETTER.map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : escapeHtml(p)}</p>`).join('\n        ')}
+        </div>
+        <div class="duo-quote-divider"></div>
+        <div class="col-signers">
+${renderSignersHtml(founders)}
         </div>
       </article>
     </div>
-    <div class="mission-col">
-      <article class="mission-card">
-        <p class="card-dek">A letter to our readers from the founding editors</p>
-        <div class="duo-quote-divider"></div>
-        ${GIVE_LETTER.map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : escapeHtml(p)}</p>`).join('\n        ')}
-      </article>
-    </div>
+    ${vr}
   </div>`;
   return renderPageShell({
     currentKey: 'mission',
@@ -1541,6 +1552,7 @@ function renderMissionPage(founders = []) {
     description: 'The mission of The New Critic.',
     bodyHtml,
     bodyClass: 'mission-body',
+    extraScripts: renderLineDrawScript(),
   });
 }
 
@@ -1745,12 +1757,13 @@ const GIVE_LINKS = {
   stripe: 'https://donate.stripe.com/00w00i0rufwc8KFf9S7AI01',
 };
 
-function renderGivePage(founders) {
-  // The letter's signatures: each founder's written signature over their
-  // courier name, linked to their Substack. Per-signature size modifiers
-  // keep the three hands optically even (the images' ink boxes differ).
+// The founders' letter signatures: each written signature over its courier
+// name, linked to the founder's Substack — used by the Give page's letter
+// section and the mission page's letter card. Per-signature size modifiers
+// keep the three hands optically even (the images' ink boxes differ).
+function renderSignersHtml(founders) {
   const SIG_MODS = { 'Elan Kluger': ' col-sig--elan', 'Rufus Knuppel': ' col-sig--rufus' };
-  const signers = founders
+  return founders
     .filter((f) => f.sig)
     .map(
       (f) => `            <a class="col-signer" href="${escapeHtml(f.href || SITE_URL)}" rel="noopener" target="_blank">
@@ -1759,6 +1772,10 @@ function renderGivePage(founders) {
             </a>`
     )
     .join('\n');
+}
+
+function renderGivePage(founders) {
+  const signers = renderSignersHtml(founders);
 
   const head = `${colHead('Support')}
           <h1 class="card-title">Give to The New Critic</h1>

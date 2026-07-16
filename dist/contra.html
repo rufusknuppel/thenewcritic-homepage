@@ -969,7 +969,14 @@
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
   var lines = [].slice.call(
-    document.querySelectorAll('.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, .col-flank, .col-rule')
+    document.querySelectorAll(
+      '.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, ' +
+      '.col-flank, .col-rule, ' +
+      // The mission page's ruling: the vertical rules between its card
+      // columns, the horizontal rules between stacked cards, every card's
+      // band rules, and the quote rules inside the cards.
+      '.mission-vr, .mission-hr, .mission-band-rule, .mission-page .duo-quote-divider'
+    )
   );
   if (!lines.length) return;
   lines.forEach(function(l){ l.classList.add('line-draw'); });
@@ -1003,7 +1010,14 @@
     });
   }
   lineTimer = setInterval(drawLines, 400);
-  drawLines();
+  // The first pass waits for the UNDRAWN state to paint: this script runs
+  // pre-paint (parser-blocking at the end of body), so tagging .line-draw
+  // and flipping .in-view in the same tick would compute both classes in
+  // one style pass — no transition, and the load-time lines snap in fully
+  // drawn instead of sweeping. Two rAFs land the flip after the first
+  // painted frame; the poller above is the backstop where rAF is throttled
+  // (hidden tabs — whose visibilitychange replay below also covers them).
+  requestAnimationFrame(function(){ requestAnimationFrame(drawLines); });
 
   // Return visits redraw the ruling (same rules as the archive ledger):
   // replay on a back/forward restore — the restored DOM arrives with the
@@ -1015,7 +1029,10 @@
     lines.forEach(function(l){ l.classList.remove('in-view'); });
     pendingLines = lines.slice();
     if (lineTimer == null) lineTimer = setInterval(drawLines, 400);
-    drawLines();
+    // Same deferral as the initial pass: the stripped (undrawn) state must
+    // paint before in-view returns, or the remove/re-add collapses into
+    // one style pass and the replay never animates.
+    requestAnimationFrame(function(){ requestAnimationFrame(drawLines); });
   }
   function onVisible() {
     if (document.visibilityState !== 'visible') return;
