@@ -15,7 +15,7 @@
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
   var lines = [].slice.call(
-    document.querySelectorAll('.row-divider, .duo-half-divider, .duo-divider--h')
+    document.querySelectorAll('.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, .col-flank, .col-rule')
   );
   if (!lines.length) return;
   lines.forEach(function(l){ l.classList.add('line-draw'); });
@@ -30,8 +30,14 @@
       return;
     }
     var hits = pendingLines.filter(function(l){
+      // getBoundingClientRect follows the pending scale transform — a
+      // scaleY(0) vertical divider collapses to a point at its own top
+      // edge, and the first divider on a section page tops out at exactly
+      // y:0 (its negative margin runs it to the page edge), where a
+      // transformed bottom of 0 would never pass. offsetHeight is layout
+      // height, transform-free.
       var r = l.getBoundingClientRect();
-      return r.bottom > 0 && r.top < window.innerHeight;
+      return r.top + l.offsetHeight > 0 && r.top < window.innerHeight;
     });
     hits.sort(function(a, b){
       return a.getBoundingClientRect().top - b.getBoundingClientRect().top;

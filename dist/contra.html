@@ -9,6 +9,7 @@
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/lora-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -31,6 +32,7 @@
       <li><a href="/archive.html">Archive</a></li>
       <li><a href="/give.html">Give</a></li>
       <li><a href="/about.html">About</a></li>
+      <li><a href="/mission.html">Mission</a></li>
   </ul>
   <div class="nav-bottom">
     <p class="nav-tagline">The Young<br>American Magazine</p>
@@ -51,7 +53,7 @@
         </a></span>
         <div class="duo-panel">
           <div class="panel-band panel-band--top">
-            
+            <p class="hero-kicker pc pc-left">Movies</p>
             
             <p class="card-meta pc pc-right"><span class="meta-date">JUL 10</span></p>
             <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">17</span></span></p>
@@ -186,7 +188,7 @@
         </a></span>
         <div class="duo-panel">
           <div class="panel-band panel-band--top">
-            
+            <p class="hero-kicker pc pc-left">Theater</p>
             
             <p class="card-meta pc pc-right"><span class="meta-date">JUN 9</span></p>
             <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">14</span></span></p>
@@ -217,7 +219,7 @@
         </a></span>
         <div class="duo-panel">
           <div class="panel-band panel-band--top">
-            
+            <p class="hero-kicker pc pc-left">Books</p>
             
             <p class="card-meta pc pc-right"><span class="meta-date">JUN 8</span></p>
             <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">24</span></span></p>
@@ -243,7 +245,7 @@
         </a></span>
         <div class="duo-panel">
           <div class="panel-band panel-band--top">
-            
+            <p class="hero-kicker pc pc-left">The New Critic's Criticism</p>
             
             <p class="card-meta pc pc-right"><span class="meta-date">JUN 7</span></p>
             <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">40</span></span></p>
@@ -275,25 +277,6 @@
   </div>
 </footer>
 
-<script>
-  (function(){
-    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var targets = document.querySelectorAll('.reveal');
-    if (prefersReduced || !('IntersectionObserver' in window)) {
-      targets.forEach(function(el){ el.classList.add('in-view'); });
-      return;
-    }
-    var observer = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    targets.forEach(function(el){ observer.observe(el); });
-  })();
-</script>
 <script>
 (function(){
   var PAD = 6; // canvas overbleed — glow is centered on the border line
@@ -699,33 +682,30 @@
     [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
 
-    // The hero panel takes the same width as the square essay cards
-    // below — a duo half's measured width (same wrap, same gutters), so
-    // the hero column lines up with the grid instead of following its
-    // own ratio. Height stays the cover image's (the top/bottom insets);
-    // aspect-ratio goes to auto or the inline width would recompute the
-    // height from it and run the panel past the hero's foot. The CSS 1:2
-    // ratio remains only as the no-JS fallback. Width must land before
-    // any other measuring: every line wrap below depends on it, and the
-    // art-box guard right after decides against the new width like it
-    // does for the essay cards.
+    // The hero panel covers the cover image's exact box — the fitted
+    // link (see fitHeroLink above — it runs before any panel fits) IS
+    // the image's contain-box, so the panel takes its width and left
+    // edge outright: hover ring, dim, glow and panel all share one
+    // rectangle, exactly like a duo half's. Height stays the card's
+    // (top/bottom insets), which is the image's own — the hero image
+    // pillarboxes left/right, never top/bottom. aspect-ratio goes to
+    // auto or the inline width would recompute the height from it and
+    // run the panel past the hero's foot; the CSS 1:2 ratio remains
+    // only as the no-JS fallback. Width must land before any other
+    // measuring: every line wrap below depends on it, and the art-box
+    // guard right after decides against the new width like it does for
+    // the essay cards.
     panel.style.width = '';
     panel.style.aspectRatio = '';
     panel.style.left = '';
     var heroCard = panel.closest('.card--feature');
     if (heroCard && getComputedStyle(panel).position === 'absolute') {
-      var half = document.querySelector('.duo-half');
-      if (half) {
-        panel.style.width = half.getBoundingClientRect().width + 'px';
-        panel.style.aspectRatio = 'auto';
-      }
-      // Pin to the image's left edge, not the card's: the fitted link
-      // (see fitHeroLink above — it runs before any panel fits) IS the
-      // image box, so its offset from the card is the pillarbox width.
       var link = heroCard.querySelector('.card-image-link');
       if (link) {
-        var inset = link.getBoundingClientRect().left
-          - heroCard.getBoundingClientRect().left;
+        var linkR = link.getBoundingClientRect();
+        panel.style.width = linkR.width + 'px';
+        panel.style.aspectRatio = 'auto';
+        var inset = linkR.left - heroCard.getBoundingClientRect().left;
         if (inset > 0) panel.style.left = inset + 'px';
       }
     }
@@ -989,7 +969,7 @@
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
   var lines = [].slice.call(
-    document.querySelectorAll('.row-divider, .duo-half-divider, .duo-divider--h')
+    document.querySelectorAll('.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, .col-flank, .col-rule')
   );
   if (!lines.length) return;
   lines.forEach(function(l){ l.classList.add('line-draw'); });
@@ -1004,8 +984,14 @@
       return;
     }
     var hits = pendingLines.filter(function(l){
+      // getBoundingClientRect follows the pending scale transform — a
+      // scaleY(0) vertical divider collapses to a point at its own top
+      // edge, and the first divider on a section page tops out at exactly
+      // y:0 (its negative margin runs it to the page edge), where a
+      // transformed bottom of 0 would never pass. offsetHeight is layout
+      // height, transform-free.
       var r = l.getBoundingClientRect();
-      return r.bottom > 0 && r.top < window.innerHeight;
+      return r.top + l.offsetHeight > 0 && r.top < window.innerHeight;
     });
     hits.sort(function(a, b){
       return a.getBoundingClientRect().top - b.getBoundingClientRect().top;

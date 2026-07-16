@@ -129,6 +129,7 @@ const SITE_LINKS = [
   { key: 'archive', label: 'Archive', href: '/archive.html' },
   { key: 'give', label: 'Give', href: '/give.html' },
   { key: 'about', label: 'About', href: '/about.html' },
+  { key: 'mission', label: 'Mission', href: '/mission.html' },
 ];
 
 async function fetchFeed(url) {
@@ -460,6 +461,14 @@ const BIO_PATTERNS = [
   // please consider a paid subscription to this flesh-and-blood gen z
   // magazine." — the plea's closing paragraph, phrased sentence-first.
   /^[^.!?]{0,80}\bplease consider a paid subscription\b/i,
+  // Event-post housekeeping (Change My Mind's live-debate announcement) —
+  // unstarred, so the ASIDE_JUNK run filter never sees it and each
+  // paragraph needs its own anchored opener: "A ticket is required to
+  // guarantee entry, and a paid subscription to The New Critic is
+  // necessary to register." and "If you’re not yet a paid subscriber,
+  // you can become one below. For $30 a year…".
+  /^A ticket is required\b/i,
+  /^If you(?:’|')re not yet a paid subscriber\b/i,
   // Interview-transcript lines: an all-caps speaker name opening the
   // paragraph ("ELAN How did you find out…" / "TESSA Your career is…").
   /^[A-Z]{3,} [A-Z“”"‘’']/,
@@ -757,7 +766,7 @@ function renderNav(currentKey = 'home') {
   function navLink(l) {
     return `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
   }
-  const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'give', 'about'];
+  const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'give', 'about', 'mission'];
   const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ');
 
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
@@ -840,10 +849,18 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
   const hasPreview = post.preview && post.image && variant !== 'feature';
   const previewAttr = hasPreview ? ` data-preview="${escapeHtml(stripEmMarkers(post.preview))}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
   const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
-  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
+  // The hero's flanking rules: one vertical divider on each side of the
+  // cover image, flex siblings of the link inside the centering frame so
+  // they ride the fitted image's real edges at the standard gutter (see
+  // .hero-flank-divider in style.css). Spans, not divs — the frame is a
+  // <span> and a block element would end it at parse time.
+  const flankHtml = variant === 'feature'
+    ? '<span class="hero-flank-divider" role="separator"></span>'
+    : '';
+  const imageHtml = `<span class="card-image-frame">${flankHtml}<a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
         ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
         ${overlayHtml}
-      </a></span>`;
+      </a>${flankHtml}</span>`;
 
   // The feature variant is a 3-column layout: title/meta/dek on the left,
   // cover image in the middle, first two paragraphs + "Read on" on the
@@ -1131,6 +1148,7 @@ ${heroPreload}
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/lora-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -1157,8 +1175,6 @@ ${renderHeader()}
 
 ${renderFooter()}
 
-${renderRevealScript()}
-
 ${renderCaterpillarScript()}
 ${renderDuoPanelFitScript()}
 ${renderLineDrawScript()}
@@ -1178,9 +1194,10 @@ ${js}
 }
 
 // The page-ruling line draw — the ledger effect on the page's gray
-// dividers — ships with the homepage and the essays/postscript/contra
-// pages (renderListPage); archive (which has the ledger itself), give,
-// and about stay out. See src/line-draw.js.
+// dividers — ships with the homepage, the essays/postscript/contra pages
+// (renderListPage), and the give/about column pages (their flanking
+// rules and section rules join it); archive has the ledger itself. See
+// src/line-draw.js.
 function renderLineDrawScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/line-draw.js'), 'utf8');
   return `<script>
@@ -1188,36 +1205,13 @@ ${js}
 </script>`;
 }
 
-// Reveal-on-scroll via IntersectionObserver, shared by the homepage and
-// every renderPageShell page (the Give page uses .reveal sections).
-function renderRevealScript() {
-  return `<script>
-  (function(){
-    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var targets = document.querySelectorAll('.reveal');
-    if (prefersReduced || !('IntersectionObserver' in window)) {
-      targets.forEach(function(el){ el.classList.add('in-view'); });
-      return;
-    }
-    var observer = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    targets.forEach(function(el){ observer.observe(el); });
-  })();
-</script>`;
-}
 function renderCaterpillarScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/caterpillar.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
 }
-function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '' }) {
+function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1230,10 +1224,11 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/lora-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body${bodyClass ? ` class="${bodyClass}"` : ''}>
 
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -1245,7 +1240,6 @@ ${bodyHtml}
 
 ${renderFooter()}
 
-${renderRevealScript()}
 ${renderCaterpillarScript()}${extraScripts ? `\n${extraScripts}` : ''}
 </body>
 </html>`;
@@ -1304,9 +1298,9 @@ const ABOUT_CARD = {
   perks: ['Postscript, our interview series', 'Contra, our criticism section', 'Exclusive New Critic parties'],
 };
 
-// The masthead (item 5) — founding editors get their real photo + Substack
-// link (filled in from give.html's signer blocks below); assistant editors
-// get an empty placeholder medallion until photos are supplied.
+// The masthead, rendered as a ledger-style ruled list on the About column
+// page — founding editors link out via give.html's signer blocks, the
+// rest via ADDITIONAL_PEOPLE_PHOTOS below.
 const ABOUT_PEOPLE = [
   { name: 'Tessa Augsberger', role: 'Founding Editor' },
   { name: 'Elan Kluger', role: 'Founding Editor' },
@@ -1319,16 +1313,9 @@ const ABOUT_PEOPLE = [
   { name: 'Milla Ben-Ezra', role: 'Founder' },
 ];
 
-function copyPersonPhoto(relPath) {
-  const base = path.basename(relPath);
-  const destDir = path.join(OUT_DIR, 'people');
-  fs.mkdirSync(destDir, { recursive: true });
-  fs.copyFileSync(path.join(__dirname, relPath), path.join(destDir, base));
-  return `/people/${base}`;
-}
-
-// Photos supplied directly (not scraped from give.html, since these two
-// aren't founders) — local files in assets/people/.
+// Substack links for the non-founder masthead (the founders' come from
+// give.html's signer blocks). The photo paths are kept for reference —
+// the ledger-list About page no longer renders headshots.
 const ADDITIONAL_PEOPLE_PHOTOS = {
   'Will Diana': {
     src: 'assets/people/will-diana.jpg',
@@ -1356,67 +1343,205 @@ const ADDITIONAL_PEOPLE_PHOTOS = {
   },
 };
 
-function renderAboutCard(card) {
-  return `
-    <div class="about-card">
-      <p>${escapeHtml(card.intro)}</p>
-      <p>${escapeHtml(card.pitchBefore)}<a href="mailto:${escapeHtml(card.pitchEmail)}">${escapeHtml(card.pitchEmail)}</a>.</p>
-      <p>${escapeHtml(card.subscriberLine)}</p>
-      <p>${escapeHtml(card.accessIntro)}</p>
-      <ul>
-        ${card.perks.map((p) => `<li>${escapeHtml(p)}</li>`).join('')}
-      </ul>
-      <a class="btn btn--small btn--primary" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
-    </div>`;
+// ---------- COLUMN PAGES (Give / About) ----------
+// One long centered column of text — as wide as the essay squares —
+// between two fields of black, a gray vertical rule on each side: the
+// hero's own framing carried to a full page (see .col-page in style.css;
+// the flanks join the line-draw ruling). Everything inside wears the
+// hover cards' look: courier kicker chips, Fraunces titles over their
+// edge-to-edge rule, courier eyebrow deks, excerpt-style body text,
+// full-bleed section rules, and ledger-style rows for lists.
+function renderColumnPage({ currentKey, title, description, sections }) {
+  const bodyHtml = `
+  <div class="wrap">
+    <div class="col-page">
+      <span class="col-flank" role="separator"></span>
+      <div class="col-column">
+${sections.map((s) => `        <section class="col-sec">\n${s}\n        </section>`).join('\n        <div class="col-rule" role="separator"></div>\n')}
+      </div>
+      <span class="col-flank" role="separator"></span>
+    </div>
+  </div>`;
+  return renderPageShell({
+    currentKey,
+    title,
+    description,
+    bodyHtml,
+    extraScripts: renderLineDrawScript(),
+  });
 }
 
-// Name above the photo, role below (item 5) — the opposite order from a
-// typical byline, but that's what was asked for here.
-function renderAboutMedallions(people) {
-  return `
-    <div class="editors-grid">
-      ${people
-        .map((p) => {
-          const tag = p.href ? 'a' : 'div';
-          const hrefAttr = p.href ? ` href="${escapeHtml(p.href)}" rel="noopener" target="_blank"` : '';
-          const photoHtml = p.photo
-            ? `<img class="editor-photo" src="${escapeHtml(p.photo)}" alt="${escapeHtml(p.name)}">`
-            : `<div class="editor-photo editor-photo--placeholder" aria-hidden="true"></div>`;
-          return `<${tag} class="editor"${hrefAttr}>
-            <div class="editor-name">${escapeHtml(p.name)}</div>
-            ${photoHtml}
-            <div class="editor-role">${escapeHtml(p.role)}</div>
-          </${tag}>`;
-        })
-        .join('')}
-    </div>`;
+// A section's header strip: kicker chip left and, optionally, a courier
+// note (a price, a date-like aside) right — the hover cards' header band
+// formation.
+function colHead(kicker, note = '') {
+  return `          <div class="col-head">
+            <p class="hero-kicker">${escapeHtml(kicker)}</p>${note ? `
+            <p class="col-note">${escapeHtml(note)}</p>` : ''}
+          </div>`;
+}
+
+// Ledger-style rows (masthead, perks): full-bleed ruled lines, courier
+// gray, whitening on hover where linked — the archive ledger in
+// miniature.
+function colList(rows) {
+  return `          <div class="col-list">
+${rows
+    .map((r) => {
+      const tag = r.href ? 'a' : 'div';
+      const hrefAttr = r.href ? ` href="${escapeHtml(r.href)}" rel="noopener" target="_blank"` : '';
+      return `            <${tag} class="col-list-row"${hrefAttr}><span>${escapeHtml(r.left)}</span>${r.right ? `<span class="col-list-right">${escapeHtml(r.right)}</span>` : ''}</${tag}>`;
+    })
+    .join('\n')}
+          </div>`;
 }
 
 function renderAboutPage(founders) {
   const founderLookup = new Map(founders.map((f) => [f.name, f]));
-  const people = ABOUT_PEOPLE.map((p) => {
-    const extra = ADDITIONAL_PEOPLE_PHOTOS[p.name];
-    const photo = extra?.src ? copyPersonPhoto(extra.src) : undefined;
-    return { ...p, ...founderLookup.get(p.name), ...(extra && { ...extra, photo }) };
-  });
+  const people = ABOUT_PEOPLE.map((p) => ({
+    ...p,
+    href: founderLookup.get(p.name)?.href || ADDITIONAL_PEOPLE_PHOTOS[p.name]?.href,
+  }));
 
-  // Title positioned the same as Contra's (item 4) — full-width .wrap,
-  // not the narrower .wrap--narrow used for plain prose pages.
+  const head = `${colHead('About')}
+          <h1 class="card-title">The Young American Magazine</h1>
+          <div class="card-title-divider"></div>
+          <p class="card-dek">${escapeHtml(ABOUT_CARD.intro)}</p>`;
+
+  const subs = `${colHead('Subscriptions', '$30 / year')}
+          <p class="card-preview">${escapeHtml(ABOUT_CARD.subscriberLine)} ${escapeHtml(ABOUT_CARD.accessIntro)}</p>
+${colList(ABOUT_CARD.perks.map((p) => ({ left: p })))}
+          <p class="col-cta"><a class="hero-latest-btn" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></p>`;
+
+  const masthead = `${colHead('Masthead')}
+${colList(people.map((p) => ({ left: p.name, right: p.role, href: p.href })))}`;
+
+  const contact = `${colHead('Contact')}
+          <p class="card-preview">${escapeHtml(ABOUT_CARD.pitchBefore)}<a href="mailto:${escapeHtml(ABOUT_CARD.pitchEmail)}">${escapeHtml(ABOUT_CARD.pitchEmail)}</a>.</p>`;
+
+  return renderColumnPage({
+    currentKey: 'about',
+    title: 'About',
+    description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
+    sections: [head, subs, masthead, contact],
+  });
+}
+
+// Mission page — for now, a single standalone square card in the top-left
+// of the content area (the sidebar nav and footer stay). The card wears
+// the trio hover card's skin — the panel's black fill, white border and
+// glow — made permanent (no hover), with no header/footer bands: just the
+// dek and body over their rule, and squared to the contra page's cell
+// width. It sits flush into the top-left corner, the standard 24px off the
+// nav and the top; a gray rule runs down its right side from the top of
+// the page to the footer rule (the mission-body sticky-footer makes the
+// column fill that full height). See .mission-* in style.css.
+function renderMissionPage(founders = []) {
+  const hr = '<div class="mission-hr" role="separator"></div>';
+
+  // The masthead card's medallions: the About people minus the Founder
+  // (Milla), in two columns of four. Founders' headshots come from
+  // give.html's signer blocks (written out in main), the rest from
+  // assets/people/ (ADDITIONAL_PEOPLE_PHOTOS). Same resolution the old
+  // About page used.
+  const founderLookup = new Map(founders.map((f) => [f.name, f]));
+  const mastheadPeople = ABOUT_PEOPLE
+    .filter((p) => p.role !== 'Founder')
+    .map((p) => {
+      const extra = ADDITIONAL_PEOPLE_PHOTOS[p.name];
+      const founder = founderLookup.get(p.name);
+      const photo = founder?.photo || (extra?.src ? copyPersonPhoto(extra.src) : undefined);
+      const href = founder?.href || extra?.href;
+      return { ...p, photo, href };
+    });
+  const mastheadHtml = mastheadPeople
+    .map((p) => {
+      const tag = p.href ? 'a' : 'div';
+      const hrefAttr = p.href ? ` href="${escapeHtml(p.href)}" rel="noopener" target="_blank"` : '';
+      const photoHtml = p.photo
+        ? `<img class="mission-person-photo" src="${escapeHtml(p.photo)}" alt="${escapeHtml(p.name)}" loading="lazy">`
+        : '<span class="mission-person-photo mission-person-photo--blank" aria-hidden="true"></span>';
+      return `<${tag} class="mission-person"${hrefAttr}>
+          ${photoHtml}
+          <span class="mission-person-name">${escapeHtml(p.name)}</span>
+          <span class="mission-person-role">${escapeHtml(p.role)}</span>
+        </${tag}>`;
+    })
+    .join('\n        ');
+
   const bodyHtml = `
-  <div class="wrap">
-    <header class="page-head">
-      <h1>About</h1>
-    </header>
-    <div class="about-layout">
-      <div class="about-left">
-        ${renderAboutCard(ABOUT_CARD)}
-      </div>
-      <div class="about-right">
-        ${renderAboutMedallions(people)}
-      </div>
+  <div class="mission-page">
+    <div class="mission-col">
+      <article class="mission-card">
+        <p class="card-dek">The Young American Magazine</p>
+        <div class="duo-quote-divider"></div>
+        <p class="card-preview">The New Critic publishes essays, interviews, and criticism by and for generation z.</p>
+      </article>
+      ${hr}
+      <article class="mission-card">
+        <p class="card-dek">Contact</p>
+        <div class="duo-quote-divider"></div>
+        <p class="card-preview">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+      </article>
+      ${hr}
+      <article class="mission-card">
+        <p class="card-dek">Masthead</p>
+        <div class="duo-quote-divider"></div>
+        <div class="mission-people">
+        ${mastheadHtml}
+        </div>
+      </article>
+    </div>
+    <div class="mission-col">
+      <article class="mission-card">
+        <div class="mission-band mission-band--top">
+          <span class="mission-band-box mission-band-box--left">Subscribe</span>
+          <span class="mission-band-box mission-band-box--right">$30 / year</span>
+        </div>
+        <p class="card-dek">Hundreds of New Critic readers are paid subscribers.</p>
+        <div class="duo-quote-divider"></div>
+        <p class="card-preview">For $30 a year, paid subscribers get access to:</p>
+        <ul class="mission-list">
+          <li>Postscript, our interview series</li>
+          <li>Contra, our criticism section</li>
+          <li>Exclusive New Critic parties</li>
+        </ul>
+        <div class="mission-band mission-band--bottom">
+          <a class="mission-band-box mission-band-box--right" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
+        </div>
+      </article>
+      ${hr}
+      <article class="mission-card">
+        <div class="mission-band mission-band--top">
+          <span class="mission-band-box mission-band-box--left">Give</span>
+          <span class="mission-band-box mission-band-box--right">$300 Lifetime Subscription</span>
+        </div>
+        <p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
+        <div class="duo-quote-divider"></div>
+        <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
+        <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
+        <p class="card-preview">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+        <div class="mission-band mission-band--bottom mission-band--split">
+          <a class="mission-band-box" href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Give through Fractured Atlas</a>
+          <a class="mission-band-box" href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Give instantly through Stripe</a>
+        </div>
+      </article>
+    </div>
+    <div class="mission-col">
+      <article class="mission-card">
+        <p class="card-dek">A letter to our readers from the founding editors</p>
+        <div class="duo-quote-divider"></div>
+        ${GIVE_LETTER.map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : escapeHtml(p)}</p>`).join('\n        ')}
+      </article>
     </div>
   </div>`;
-  return renderPageShell({ currentKey: 'about', title: 'About', bodyHtml });
+  return renderPageShell({
+    currentKey: 'mission',
+    title: 'Mission',
+    description: 'The mission of The New Critic.',
+    bodyHtml,
+    bodyClass: 'mission-body',
+  });
 }
 
 // The archive is a ledger: one full-bleed courier-gray line per post under
@@ -1567,6 +1692,16 @@ function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+// Copies a local asset (the non-founder headshots in assets/people/) into
+// OUT_DIR/people, returning its site-relative URL.
+function copyPersonPhoto(relPath) {
+  const base = path.basename(relPath);
+  const destDir = path.join(OUT_DIR, 'people');
+  fs.mkdirSync(destDir, { recursive: true });
+  fs.copyFileSync(path.join(__dirname, relPath), path.join(destDir, base));
+  return `/people/${base}`;
+}
+
 // Decodes an inline `data:image/...;base64,...` URI and writes it to a real
 // file under OUT_DIR, returning the site-relative URL to reference it by.
 function writeDataUriImage(dataUri, destRelPath) {
@@ -1578,58 +1713,83 @@ function writeDataUriImage(dataUri, destRelPath) {
   return `/${destRelPath}`;
 }
 
-// give.html is a real, hand-built page kept as its own source file, but its
-// <main> content is lifted into the shared renderPageShell shell at build
-// time, so the Give page ships the same stylesheet, header, banner, and
-// footer as every other page. Its page-specific styles (hero, ledger,
-// letter, gift cards, signatures) live in style.css under "GIVE PAGE";
-// give.html's own <style>, nav, and footer are discarded here.
+// give.html — the original hand-built Give page — survives only as an
+// asset source now: the founders' signature images and Substack links are
+// extracted from its .signer blocks (see extractFounders / loadFounders in
+// main). The page itself is rendered fresh as a column page below.
 const GIVE_SRC_PATH = path.join(__dirname, 'give.html');
 
-function buildGivePage(rawHtml) {
-  const open = '<main id="main">';
-  const start = rawHtml.indexOf(open);
-  const end = rawHtml.indexOf('</main>');
-  if (start === -1 || end === -1) {
-    throw new Error('give.html: <main id="main"> block not found');
-  }
-  let bodyHtml = rawHtml
-    .slice(start + open.length, end)
-    // Homepage links in the hero point at our local homepage, not Substack.
-    .replace(/href="https:\/\/www\.thenewcritic\.com\/"/g, 'href="/"');
+// The Give page's copy, lifted verbatim from the original hand-authored
+// give.html and re-set in the column formation.
+const GIVE_LEDE =
+  'The New Critic is the young American magazine. We find and support the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.';
+const GIVE_SUBSCRIPTION =
+  'The most common way readers support The New Critic. Paid subscribers get access to Postscript, our interview series, Contra, our criticism section, and exclusive New Critic parties.';
+const GIVE_DONATION =
+  'Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.';
+const GIVE_TAX_NOTE =
+  'We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.';
+const GIVE_CHECK_BEFORE =
+  'If you are interested in writing a check, donating more than $5,000, or have other questions, email ';
+const GIVE_LETTER = [
+  'In this era of investment in technological innovation and big ideas, The New Critic believes the same approach to risk should be applied to the world of letters.',
+  'We operate in a different sector than the tech sphere — ours is the bazaar of rhetoric, emotion, and ideas — and our mission is not tied to any bottom line. Rather, our magazine is the product of one long conversation, a lasting friendship between our editors, and a dogged pursuit of excellence in the name of beauty and freedom, that liberty to act according to what activates the mind and invigorates the body.',
+  'The New Critic is a venture capital firm for writing. We invest resources in the intrepid thinkers, writers, and ideas of our generation.',
+  'Cynics see the internet as a scourge on the intellect, a blight that rots our appetite for reading and mutilates our attention. But we believe in the digital as the accelerant of communication, the medium that will allow our generation of writers to be among the greatest that have ever lived.',
+  'With a year of notches on our editorial belt, we now have our ambitions and wits about us. We have built up our arsenal of scouts, sharpened our eye for potential, developed our talent, and expanded our public. We are the foremost experts at identifying the extraordinary among our peers, offering talented writers the range, platform, and connections they need to pursue the writing life.',
+  'But our venture firm needs capital. The internet is only as good, as disciplined, as exciting as we make it. By giving to The New Critic, you are investing in young writers before embitteredness, intimidation, and embourgeoisement can overtake their ideals. You are allowing The New Critic to be a patron, to pay our writers more competitive rates, send them on more ambitious assignments, and create the material conditions required for their work.',
+  'With our sights set on these ruthless ends, we ask believers in our project to pledge their faith.',
+];
+const GIVE_LINKS = {
+  fracturedAtlas: 'https://fundraising.fracturedatlas.org/the-new-critic',
+  stripe: 'https://donate.stripe.com/00w00i0rufwc8KFf9S7AI01',
+};
 
-  // give.html embeds its lede bird, signatures, and headshots as inline
-  // base64 (it's a hand-authored source file, not generated) — that bloats
-  // this page's HTML and, since About reuses the same founder photos,
-  // duplicates the bytes there too. Write each one out to a real file once
-  // so both pages just reference a cacheable, lazy-loadable URL instead.
-  const founders = extractFounders(rawHtml);
-  for (const f of founders) {
-    const slug = slugify(f.name);
-    if (f.photoDataUri) {
-      const ext = f.photoDataUri.startsWith('data:image/png') ? 'png' : 'jpg';
-      f.photo = writeDataUriImage(f.photoDataUri, `people/${slug}.${ext}`);
-      bodyHtml = bodyHtml.replace(f.photoDataUri, f.photo);
-    }
-    if (f.sigDataUri) {
-      const sigUrl = writeDataUriImage(f.sigDataUri, `people/${slug}-sig.png`);
-      bodyHtml = bodyHtml.replace(f.sigDataUri, sigUrl);
-    }
-  }
-  const ledeMatch = /<img class="lede-bird" src="(data:image\/[a-z]+;base64,[^"]+)"/.exec(bodyHtml);
-  if (ledeMatch) {
-    const ledeUrl = writeDataUriImage(ledeMatch[1], 'lede-bird.png');
-    bodyHtml = bodyHtml.replace(ledeMatch[1], ledeUrl);
-  }
+function renderGivePage(founders) {
+  // The letter's signatures: each founder's written signature over their
+  // courier name, linked to their Substack. Per-signature size modifiers
+  // keep the three hands optically even (the images' ink boxes differ).
+  const SIG_MODS = { 'Elan Kluger': ' col-sig--elan', 'Rufus Knuppel': ' col-sig--rufus' };
+  const signers = founders
+    .filter((f) => f.sig)
+    .map(
+      (f) => `            <a class="col-signer" href="${escapeHtml(f.href || SITE_URL)}" rel="noopener" target="_blank">
+              <span class="col-sig-wrap"><img class="col-sig${SIG_MODS[f.name] || ''}" src="${escapeHtml(f.sig)}" alt="${escapeHtml(f.name)}’s signature" loading="lazy"></span>
+              <span class="col-signer-name">${escapeHtml(f.name)}</span>
+            </a>`
+    )
+    .join('\n');
 
-  const html = renderPageShell({
+  const head = `${colHead('Support')}
+          <h1 class="card-title">Give to The New Critic</h1>
+          <div class="card-title-divider"></div>
+          <p class="card-dek">${escapeHtml(GIVE_LEDE)}</p>`;
+
+  const subs = `${colHead('Paid Subscriptions', '$30 / year')}
+          <p class="card-preview">${escapeHtml(GIVE_SUBSCRIPTION)}</p>
+          <p class="col-cta"><a class="hero-latest-btn" href="${SITE_URL}/subscribe" rel="noopener">Become a paid subscriber</a></p>`;
+
+  const donations = `${colHead('Donations', '$300 lifetime subscription')}
+          <p class="card-preview">${escapeHtml(GIVE_DONATION)}</p>
+          <p class="card-preview">${escapeHtml(GIVE_TAX_NOTE)}</p>
+          <p class="col-cta"><a class="hero-latest-btn" href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Give through Fractured Atlas</a><a class="hero-latest-btn" href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Give instantly through Stripe</a></p>
+          <p class="card-preview">${escapeHtml(GIVE_CHECK_BEFORE)}<a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>`;
+
+  const letter = `${colHead('A Letter')}
+          <h2 class="card-title">From the Founding Editors</h2>
+          <div class="card-title-divider"></div>
+${GIVE_LETTER.map((p, i) => `          <p class="card-preview">${i === 0 ? wrapLeadWords(p) : escapeHtml(p)}</p>`).join('\n')}
+          <div class="col-signers">
+${signers}
+          </div>`;
+
+  return renderColumnPage({
     currentKey: 'give',
     title: 'Give',
     description:
       'Support The New Critic, the young American magazine. Subscribe or give a one-time gift to fund the future of letters.',
-    bodyHtml,
+    sections: [head, subs, donations, letter],
   });
-  return { html, founders };
 }
 
 async function main() {
@@ -1830,19 +1990,32 @@ async function main() {
 
   const html = renderHomepage({ hero, essays: heroEssays, postscripts: heroPostscripts, contras: heroContras, archives: heroArchive });
 
+  // give.html is only mined for assets now (see GIVE_SRC_PATH): the
+  // founders' Substack links and signature images, the latter written out
+  // from their inline base64 to real cacheable files.
   console.log('Reading give.html');
   const giveSrc = fs.readFileSync(GIVE_SRC_PATH, 'utf8');
-  const { html: giveHtml, founders } = buildGivePage(giveSrc);
+  const founders = extractFounders(giveSrc);
+  for (const f of founders) {
+    if (f.sigDataUri) f.sig = writeDataUriImage(f.sigDataUri, `people/${slugify(f.name)}-sig.png`);
+    // Founder headshots (for the mission page masthead card) — same inline
+    // base64 → real file treatment as the signatures.
+    if (f.photoDataUri) {
+      const ext = f.photoDataUri.startsWith('data:image/png') ? 'png' : 'jpg';
+      f.photo = writeDataUriImage(f.photoDataUri, `people/${slugify(f.name)}.${ext}`);
+    }
+  }
 
   const archivePool = archivePosts;
 
   const pages = {
     'index.html': html,
-    'give.html': giveHtml,
+    'give.html': renderGivePage(founders),
     'essays.html': renderListPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
     'postscript.html': renderListPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
     'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll }),
     'about.html': renderAboutPage(founders),
+    'mission.html': renderMissionPage(founders),
     'archive.html': renderArchivePage(archivePool),
   };
 
