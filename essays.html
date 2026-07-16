@@ -56,7 +56,7 @@
             
             <p class="card-meta pc pc-right">ALEX BRONZINI-VENDER</p>
             <p class="card-meta pc pc-right"><span class="meta-date">JUL 13</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">62</span></span></p>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">63</span></span></p>
           </div>
           <div class="duo-panel-top">
             <h3 class="card-title"><a href="https://www.thenewcritic.com/p/manifest-man" rel="noopener">Manifest Man</a></h3>
@@ -424,7 +424,7 @@
             <p class="hero-kicker pc pc-left">Evil and Sublimity</p>
             <p class="card-meta pc pc-right">ISABEL MEHTA</p>
             <p class="card-meta pc pc-right"><span class="meta-date">APR 2</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">46</span></span></p>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">47</span></span></p>
           </div>
           <div class="duo-panel-top">
             <h3 class="card-title"><a href="https://www.thenewcritic.com/p/beauty-the-last-taboo" rel="noopener">Beauty, The Last Taboo</a></h3>
@@ -2202,7 +2202,14 @@
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
   var lines = [].slice.call(
-    document.querySelectorAll('.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, .col-flank, .col-rule')
+    document.querySelectorAll(
+      '.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, ' +
+      '.col-flank, .col-rule, ' +
+      // The mission page's ruling: the vertical rules between its card
+      // columns, the horizontal rules between stacked cards, every card's
+      // band rules, and the quote rules inside the cards.
+      '.mission-vr, .mission-hr, .mission-band-rule, .mission-page .duo-quote-divider'
+    )
   );
   if (!lines.length) return;
   lines.forEach(function(l){ l.classList.add('line-draw'); });
@@ -2236,7 +2243,14 @@
     });
   }
   lineTimer = setInterval(drawLines, 400);
-  drawLines();
+  // The first pass waits for the UNDRAWN state to paint: this script runs
+  // pre-paint (parser-blocking at the end of body), so tagging .line-draw
+  // and flipping .in-view in the same tick would compute both classes in
+  // one style pass — no transition, and the load-time lines snap in fully
+  // drawn instead of sweeping. Two rAFs land the flip after the first
+  // painted frame; the poller above is the backstop where rAF is throttled
+  // (hidden tabs — whose visibilitychange replay below also covers them).
+  requestAnimationFrame(function(){ requestAnimationFrame(drawLines); });
 
   // Return visits redraw the ruling (same rules as the archive ledger):
   // replay on a back/forward restore — the restored DOM arrives with the
@@ -2248,7 +2262,10 @@
     lines.forEach(function(l){ l.classList.remove('in-view'); });
     pendingLines = lines.slice();
     if (lineTimer == null) lineTimer = setInterval(drawLines, 400);
-    drawLines();
+    // Same deferral as the initial pass: the stripped (undrawn) state must
+    // paint before in-view returns, or the remove/re-add collapses into
+    // one style pass and the replay never animates.
+    requestAnimationFrame(function(){ requestAnimationFrame(drawLines); });
   }
   function onVisible() {
     if (document.visibilityState !== 'visible') return;
