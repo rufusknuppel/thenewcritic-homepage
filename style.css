@@ -1506,6 +1506,9 @@ a.mission-person:hover .mission-person-photo{ border-color: var(--white); }
 main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transparent; }
 .arch-ledger-row{
   font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
+  /* All caps like the column head above — same tracking as the site's
+     other uppercase label runs. */
+  letter-spacing: 0.03em; text-transform: uppercase;
   color: var(--muted);
   cursor: pointer;
   transition: color .15s ease;
@@ -1614,11 +1617,17 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   margin: 0 0 0 -24px;
   aspect-ratio: 16 / 9;
 }
-/* White glowing rule down the cover image's right edge, standing in the
-   gap between the image and the text column. */
+/* White glowing rule down the cover image's right edge — ON the edge,
+   overlapping the image's last pixel column, the same x the rows'
+   Author|Date divider occupies. z-index lifts it above the absolutely-
+   positioned image link beside it: with both on z-index:auto the paint
+   order fell to tree-order resolution, and the rule's 1px core ended up
+   under the image — only its glow escaped past the edge, reading as a
+   displaced line a few px right of the row divider above. */
 .arch-ledger-card-image::after{
   content: '';
   position: absolute; top: 0; bottom: 0; right: 0; width: 1px;
+  z-index: 1;
   background: var(--white);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
