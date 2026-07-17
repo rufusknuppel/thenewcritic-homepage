@@ -1418,9 +1418,13 @@ function renderLedgerRow(post) {
     ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>`
     : '';
   const d = post.date;
+  // Current-year dates drop the year — "Jul 15" — while older posts keep
+  // it so the ledger still dates its back catalog unambiguously.
   const dateStr =
     d && !isNaN(d.getTime())
-      ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      ? d.toLocaleDateString('en-US', d.getFullYear() === new Date().getFullYear()
+          ? { month: 'short', day: 'numeric' }
+          : { month: 'short', day: 'numeric', year: 'numeric' })
       : post.metaDate || '';
   const readNowHtml = `<a class="card-preview-cta arch-ledger-readon pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`;
   // Sort keys for the column-head controls (see src/ledger.js): author and
