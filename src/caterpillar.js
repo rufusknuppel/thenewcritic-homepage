@@ -138,12 +138,10 @@
   var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
   var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
 
-  // Every button on the page — .btn (Subscribe and the Give page's CTAs),
-  // the black pill buttons (The Latest / Essays), and the "Read on" links
-  // (hero, duo panels, hover popup) — glows on hover. Note the popup's own
-  // "Read on" is re-created per show() in preview-card.js, after this ran,
-  // so only buttons present at load are wired up.
-  document.querySelectorAll('a.btn, .hero-latest-btn, .preview-card-link').forEach(function(btn) {
+  // Every .btn link on the page (the nav's Subscribe) gets the crawl.
+  // (The old .hero-latest-btn pills and the hover popup's Read on are
+  // gone from the site.)
+  document.querySelectorAll('a.btn').forEach(function(btn) {
     // Corner-pinned buttons (.duo-essays-btn/.duo-readon-btn) are already
     // position:absolute — inline 'relative' would yank them out of their
     // corners, and absolute anchors the canvas just as well.

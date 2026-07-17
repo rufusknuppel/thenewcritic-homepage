@@ -20,9 +20,8 @@
 <div class="site-header" id="site-header">
 <nav class="site-nav">
   <div class="nav-top">
-    <a class="nav-brand" href="/">THE<br>NEW<br>CRITIC</a>
-    <a class="wordmark" href="/">
-      <span class="bird-frame"><img src="bird.png" alt="" aria-hidden="true"></span>
+    <a class="wordmark" href="/" aria-label="The New Critic — home">
+      <span class="bird-frame"><img src="bird-mark.png" alt="The New Critic"></span>
     </a>
   </div>
   <ul class="nav-links">
@@ -30,9 +29,7 @@
       <li><a href="/postscript.html">Postscript</a></li>
       <li><a href="/contra.html">Contra</a></li>
       <li><a href="/archive.html">Archive</a></li>
-      <li><a href="/give.html">Give</a></li>
       <li><a href="/about.html">About</a></li>
-      <li><a href="/mission.html">Mission</a></li>
   </ul>
   <div class="nav-bottom">
     <p class="nav-tagline">The Young<br>American Magazine</p>
@@ -196,7 +193,7 @@
             <p class="hero-kicker pc pc-left">Where All The Postgrads Don't Go</p>
             <p class="card-meta pc pc-right">DECLAN REXER</p>
             <p class="card-meta pc pc-right"><span class="meta-date">MAY 26</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">90</span></span></p>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><img class="likes-bird" src="bird.png" alt="" aria-hidden="true"><span class="likes-count">91</span></span></p>
           </div>
           <div class="duo-panel-top">
             <h3 class="card-title"><a href="https://www.thenewcritic.com/p/not-new-york" rel="noopener">Not New York</a></h3>
@@ -1651,12 +1648,10 @@
   var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
   var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
 
-  // Every button on the page — .btn (Subscribe and the Give page's CTAs),
-  // the black pill buttons (The Latest / Essays), and the "Read on" links
-  // (hero, duo panels, hover popup) — glows on hover. Note the popup's own
-  // "Read on" is re-created per show() in preview-card.js, after this ran,
-  // so only buttons present at load are wired up.
-  document.querySelectorAll('a.btn, .hero-latest-btn, .preview-card-link').forEach(function(btn) {
+  // Every .btn link on the page (the nav's Subscribe) gets the crawl.
+  // (The old .hero-latest-btn pills and the hover popup's Read on are
+  // gone from the site.)
+  document.querySelectorAll('a.btn').forEach(function(btn) {
     // Corner-pinned buttons (.duo-essays-btn/.duo-readon-btn) are already
     // position:absolute — inline 'relative' would yank them out of their
     // corners, and absolute anchors the canvas just as well.
@@ -1752,8 +1747,15 @@
     if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
     var blockR = el.getBoundingClientRect();
     var EPS = 2;
+    // Word rects come from the FONT-METRIC box, which for EB Garamond
+    // (~1.18em) overhangs the 1.1 line box by a few px — a fixed 2px
+    // bottom tolerance read every last line as clipped and cut it (titles
+    // lost whole lines to it). A quarter line-height absorbs the metric
+    // overhang while a genuinely clipped line — a full line-height past
+    // the box — still fails by a mile.
+    var lineTol = (parseFloat(getComputedStyle(el).lineHeight) || 24) * 0.25;
     function fits(r) {
-      return r.bottom <= blockR.bottom + EPS && r.right <= blockR.right + EPS;
+      return r.bottom <= blockR.bottom + lineTol && r.right <= blockR.right + EPS;
     }
     // Walk the text nodes back to front for the last one holding a word
     // whose every fragment sits inside the visible box (clipped text lives
@@ -2130,9 +2132,13 @@
     // So remove the overflow text for real: cut the title to its last
     // visible word with the ellipsis joined on inline — truncateToWord
     // stashes the pristine markup, restored at the top of every refit.
-    if (title && getComputedStyle(title).display !== 'none'
-        && title.scrollHeight > title.clientHeight + 1) {
-      truncateToWord(title);
+    // The threshold is half a LINE, not a pixel or two: EB Garamond's
+    // font-metric box (~1.18em) overhangs the 1.1 line box, so every
+    // fitting multi-line title "overflows" by a few px of glyph metrics —
+    // only a real extra line (a full line-height of overflow) should cut.
+    if (title && getComputedStyle(title).display !== 'none') {
+      var titleLh = parseFloat(getComputedStyle(title).lineHeight) || 24;
+      if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
     }
 
     // Homepage contra quads (no excerpt — .card--quad-open, the contra
@@ -2203,9 +2209,8 @@
   if (prefersReduced) return;
   var lines = [].slice.call(
     document.querySelectorAll(
-      '.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, ' +
-      '.col-flank, .col-rule, ' +
-      // The mission page's ruling: the vertical rules between its card
+      '.row-divider, .duo-half-divider, .duo-divider--h, ' +
+      // The About page's ruling: the vertical rules between its card
       // columns, the horizontal rules between stacked cards, every card's
       // band rules, and the quote rules inside the cards.
       '.mission-vr, .mission-hr, .mission-band-rule, .mission-page .duo-quote-divider'

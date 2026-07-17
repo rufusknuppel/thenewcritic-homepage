@@ -69,8 +69,15 @@
     if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
     var blockR = el.getBoundingClientRect();
     var EPS = 2;
+    // Word rects come from the FONT-METRIC box, which for EB Garamond
+    // (~1.18em) overhangs the 1.1 line box by a few px — a fixed 2px
+    // bottom tolerance read every last line as clipped and cut it (titles
+    // lost whole lines to it). A quarter line-height absorbs the metric
+    // overhang while a genuinely clipped line — a full line-height past
+    // the box — still fails by a mile.
+    var lineTol = (parseFloat(getComputedStyle(el).lineHeight) || 24) * 0.25;
     function fits(r) {
-      return r.bottom <= blockR.bottom + EPS && r.right <= blockR.right + EPS;
+      return r.bottom <= blockR.bottom + lineTol && r.right <= blockR.right + EPS;
     }
     // Walk the text nodes back to front for the last one holding a word
     // whose every fragment sits inside the visible box (clipped text lives
@@ -447,9 +454,13 @@
     // So remove the overflow text for real: cut the title to its last
     // visible word with the ellipsis joined on inline — truncateToWord
     // stashes the pristine markup, restored at the top of every refit.
-    if (title && getComputedStyle(title).display !== 'none'
-        && title.scrollHeight > title.clientHeight + 1) {
-      truncateToWord(title);
+    // The threshold is half a LINE, not a pixel or two: EB Garamond's
+    // font-metric box (~1.18em) overhangs the 1.1 line box, so every
+    // fitting multi-line title "overflows" by a few px of glyph metrics —
+    // only a real extra line (a full line-height of overflow) should cut.
+    if (title && getComputedStyle(title).display !== 'none') {
+      var titleLh = parseFloat(getComputedStyle(title).lineHeight) || 24;
+      if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
     }
 
     // Homepage contra quads (no excerpt — .card--quad-open, the contra

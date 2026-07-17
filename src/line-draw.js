@@ -16,9 +16,8 @@
   if (prefersReduced) return;
   var lines = [].slice.call(
     document.querySelectorAll(
-      '.row-divider, .duo-half-divider, .duo-divider--h, .hero-flank-divider, ' +
-      '.col-flank, .col-rule, ' +
-      // The mission page's ruling: the vertical rules between its card
+      '.row-divider, .duo-half-divider, .duo-divider--h, ' +
+      // The About page's ruling: the vertical rules between its card
       // columns, the horizontal rules between stacked cards, every card's
       // band rules, and the quote rules inside the cards.
       '.mission-vr, .mission-hr, .mission-band-rule, .mission-page .duo-quote-divider'

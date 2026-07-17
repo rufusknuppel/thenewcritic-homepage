@@ -127,9 +127,7 @@ const SITE_LINKS = [
   { key: 'postscript', label: 'Postscript', href: '/postscript.html' },
   { key: 'contra', label: 'Contra', href: '/contra.html' },
   { key: 'archive', label: 'Archive', href: '/archive.html' },
-  { key: 'give', label: 'Give', href: '/give.html' },
   { key: 'about', label: 'About', href: '/about.html' },
-  { key: 'mission', label: 'Mission', href: '/mission.html' },
 ];
 
 async function fetchFeed(url) {
@@ -766,15 +764,14 @@ function renderNav(currentKey = 'home') {
   function navLink(l) {
     return `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
   }
-  const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'give', 'about', 'mission'];
+  const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'about'];
   const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ');
 
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
   return `<nav class="site-nav">
   <div class="nav-top">
-    <a class="nav-brand" href="/"${homeCurrent}>THE<br>NEW<br>CRITIC</a>
-    <a class="wordmark" href="/"${homeCurrent}>
-      <span class="bird-frame"><img src="${BIRD_LOGO}" alt="" aria-hidden="true"></span>
+    <a class="wordmark" href="/"${homeCurrent} aria-label="The New Critic — home">
+      <span class="bird-frame"><img src="bird-mark.png" alt="The New Critic"></span>
     </a>
   </div>
   <ul class="nav-links">
@@ -813,96 +810,50 @@ function artBoxHtml(post, side = 'right') {
     : '';
 }
 
-function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker = '', span = '' } = {}) {
-  const classes = ['card'];
-  if (variant) classes.push(`card--${variant}`);
-  if (span) classes.push(`card--${span}`);
-  const cls = classes.join(' ');
+// The hero card (the old renderCard's one surviving variant — the box and
+// plain-card variants died with the homepage grid). A 3-column layout:
+// cover image across the card, one duo panel over it. previewParagraphs
+// (set only on the hero post — see fetchExtendedPreview in main()) is
+// full, untruncated paragraph text; the CSS line-clamp on .card-preview
+// does the cutting off at the rendered line. post.preview alone is the
+// fallback if that fetch didn't run.
+function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) {
   const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, dekLength))}</p>` : '';
   const imgAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
-
-  // Box variant: text (title/dek/meta) sits in an always-visible opaque
-  // box; the cover image is a hidden full-bleed layer behind it that only
-  // fades in on hover (the hero card's box-reveal mechanic, in reverse —
-  // see .card-box in style.css). No hover-preview popup here since the
-  // box already shows the card's text at rest.
-  if (variant === 'box') {
-    return `
-    <article class="${cls}">
-      <div class="card-box">
-        <span class="card-image-frame card-box-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
-        </a></span>
-        <div class="card-text card-box-text">
-          <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-          <div class="card-title-divider"></div>
-          ${dekHtml}
-          <p class="card-meta">${metaLine(post)}</p>
-        </div>
-      </div>
-    </article>`;
-  }
-
-  // The feature card shows the first paragraph inline (see below), so the
-  // hover-preview popup — which would just repeat that same text — is
-  // suppressed there.
-  const hasPreview = post.preview && post.image && variant !== 'feature';
-  const previewAttr = hasPreview ? ` data-preview="${escapeHtml(stripEmMarkers(post.preview))}" data-title="${escapeHtml(post.title)}" data-author="${escapeHtml(post.author || '')}"` : '';
-  const overlayHtml = hasPreview ? `<div class="card-image-overlay" aria-hidden="true"><span class="overlay-title">${escapeHtml(post.title)}</span><span class="overlay-author">${escapeHtml(post.author || '')}</span></div>` : '';
-  // The hero's flanking rules: one vertical divider on each side of the
-  // cover image, flex siblings of the link inside the centering frame so
-  // they ride the fitted image's real edges at the standard gutter (see
-  // .hero-flank-divider in style.css). Spans, not divs — the frame is a
-  // <span> and a block element would end it at parse time.
-  const flankHtml = variant === 'feature'
-    ? '<span class="hero-flank-divider" role="separator"></span>'
-    : '';
-  const imageHtml = `<span class="card-image-frame">${flankHtml}<a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener"${previewAttr}>
+  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
         ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
-        ${overlayHtml}
-      </a>${flankHtml}</span>`;
+      </a></span>`;
 
-  // The feature variant is a 3-column layout: title/meta/dek on the left,
-  // cover image in the middle, first two paragraphs + "Read on" on the
-  // right (reflows to a single stacked column, in the same reading order,
-  // on narrow screens — see .card--feature CSS). previewParagraphs (set
-  // only on the hero post — see fetchExtendedPreview in main()) is
-  // full, untruncated paragraph text; the CSS line-clamp on .card-preview
-  // does the cutting off, at whichever line it lands on for the actual
-  // rendered column width, and supplies its own ellipsis flush to that
-  // line's end. post.preview alone is the fallback if that fetch didn't
-  // run — same clamp applies to it too, since it's just the first child.
-  if (variant === 'feature') {
-    const previewParas = post.previewParagraphs && post.previewParagraphs.length
-      ? post.previewParagraphs
-      : (post.preview ? [post.preview] : []);
-    const previewHtml = previewParas.length
-      ? `<div class="card-preview-block">${previewParas
-          .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
-          .join('')}</div>`
-      : '';
-    const readNowHtml = post.preview
-      ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
-      : '';
-    // Same band routing as renderDuoHalf: essays put the author in a
-    // header-band box; untagged editors' notes keep a byline under the
-    // dek; postscript/contra show no author at all.
-    const effectiveTag = post.previewTagline || 'from the essay';
-    const section = taglineSection(effectiveTag);
-    const authorBoxHtml = section === 'essay' && post.author
-      ? `<p class="card-meta pc pc-right">${escapeHtml(authorDisplay(post))}</p>`
-      : '';
-    const authorHtml = post.author && section === 'other'
-      ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
-      : '';
-    // The hero wears one duo panel — the exact panel formation of the
-    // row cells (header band with kicker/author/date/likes; title, rule,
-    // eyebrow dek, quote divider, excerpt; footer band with The Latest
-    // and Read on) — as a 1:2 portrait column pinned to the cover image's
-    // left edge, the Postscript trio look (see .card--feature .duo-panel
-    // in style.css). duo-panel-fit.js fits it like any other panel.
-    return `
-    <article class="${cls}">
+  const previewParas = post.previewParagraphs && post.previewParagraphs.length
+    ? post.previewParagraphs
+    : (post.preview ? [post.preview] : []);
+  const previewHtml = previewParas.length
+    ? `<div class="card-preview-block">${previewParas
+        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
+        .join('')}</div>`
+    : '';
+  const readNowHtml = post.preview
+    ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
+    : '';
+  // Same band routing as renderDuoHalf: essays put the author in a
+  // header-band box; untagged editors' notes keep a byline under the
+  // dek; postscript/contra show no author at all.
+  const effectiveTag = post.previewTagline || 'from the essay';
+  const section = taglineSection(effectiveTag);
+  const authorBoxHtml = section === 'essay' && post.author
+    ? `<p class="card-meta pc pc-right">${escapeHtml(authorDisplay(post))}</p>`
+    : '';
+  const authorHtml = post.author && section === 'other'
+    ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
+    : '';
+  // The hero wears one duo panel — the exact panel formation of the
+  // row cells (header band with kicker/author/date/likes; title, rule,
+  // eyebrow dek, quote divider, excerpt; footer band with The Latest
+  // and Read on) — as a 1:2 portrait column pinned to the cover image's
+  // left edge, the Postscript trio look (see .card--feature .duo-panel
+  // in style.css). duo-panel-fit.js fits it like any other panel.
+  return `
+    <article class="card card--feature">
       <div class="feature-image-cell">
         ${imageHtml}
       </div>
@@ -925,18 +876,6 @@ function renderCard(post, { variant = '', dekLength = 110, eager = false, kicker
           <a class="duo-essays-btn card-category-btn pc pc-left" href="/archive.html">The Latest</a>
           ${artBoxHtml(post)}${readNowHtml}
         </div>
-      </div>
-    </article>`;
-  }
-
-  return `
-    <article class="${cls}">
-      ${imageHtml}
-      <div class="card-text">
-        <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-        <div class="card-title-divider"></div>
-        ${dekHtml}
-        <p class="card-meta">${metaLine(post)}</p>
       </div>
     </article>`;
 }
@@ -1085,7 +1024,7 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
   const heroPreload = hero?.image
     ? `<link rel="preload" as="image" href="${escapeHtml(hero.image)}">`
     : '';
-  const heroHtml = hero ? renderCard(hero, { variant: 'feature', dekLength: 180, eager: true, kicker: hero.kicker || HERO_KICKER }) : '';
+  const heroHtml = hero ? renderCard(hero, { dekLength: 180, eager: true, kicker: hero.kicker || HERO_KICKER }) : '';
 
   // The most recent essays (the hero itself excluded), two per row, each
   // row one combined card — see renderDuoCard. Below them, one row of the
@@ -1288,19 +1227,9 @@ ${rows
 }
 
 
-// Static About-page copy (item 5) — hand-set, not scraped.
-const ABOUT_CARD = {
-  intro: 'The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.',
-  pitchBefore: 'To pitch, submit, or place an inquiry, email ',
-  pitchEmail: 'editors@thenewcritic.com',
-  subscriberLine: 'Hundreds of New Critic readers are paid subscribers.',
-  accessIntro: 'For $30 a year, paid subscribers get access to:',
-  perks: ['Postscript, our interview series', 'Contra, our criticism section', 'Exclusive New Critic parties'],
-};
-
-// The masthead, rendered as a ledger-style ruled list on the About column
-// page — founding editors link out via give.html's signer blocks, the
-// rest via ADDITIONAL_PEOPLE_PHOTOS below.
+// The masthead, rendered as medallions on the About page's Masthead card —
+// founding editors link out via give.html's signer blocks, the rest via
+// ADDITIONAL_PEOPLE_PHOTOS below.
 const ABOUT_PEOPLE = [
   { name: 'Tessa Augsberger', role: 'Founding Editor' },
   { name: 'Elan Kluger', role: 'Founding Editor' },
@@ -1343,100 +1272,12 @@ const ADDITIONAL_PEOPLE_PHOTOS = {
   },
 };
 
-// ---------- COLUMN PAGES (Give / About) ----------
-// One long centered column of text — as wide as the essay squares —
-// between two fields of black, a gray vertical rule on each side: the
-// hero's own framing carried to a full page (see .col-page in style.css;
-// the flanks join the line-draw ruling). Everything inside wears the
-// hover cards' look: courier kicker chips, Fraunces titles over their
-// edge-to-edge rule, courier eyebrow deks, excerpt-style body text,
-// full-bleed section rules, and ledger-style rows for lists.
-function renderColumnPage({ currentKey, title, description, sections }) {
-  const bodyHtml = `
-  <div class="wrap">
-    <div class="col-page">
-      <span class="col-flank" role="separator"></span>
-      <div class="col-column">
-${sections.map((s) => `        <section class="col-sec">\n${s}\n        </section>`).join('\n        <div class="col-rule" role="separator"></div>\n')}
-      </div>
-      <span class="col-flank" role="separator"></span>
-    </div>
-  </div>`;
-  return renderPageShell({
-    currentKey,
-    title,
-    description,
-    bodyHtml,
-    extraScripts: renderLineDrawScript(),
-  });
-}
-
-// A section's header strip: kicker chip left and, optionally, a courier
-// note (a price, a date-like aside) right — the hover cards' header band
-// formation.
-function colHead(kicker, note = '') {
-  return `          <div class="col-head">
-            <p class="hero-kicker">${escapeHtml(kicker)}</p>${note ? `
-            <p class="col-note">${escapeHtml(note)}</p>` : ''}
-          </div>`;
-}
-
-// Ledger-style rows (masthead, perks): full-bleed ruled lines, courier
-// gray, whitening on hover where linked — the archive ledger in
-// miniature.
-function colList(rows) {
-  return `          <div class="col-list">
-${rows
-    .map((r) => {
-      const tag = r.href ? 'a' : 'div';
-      const hrefAttr = r.href ? ` href="${escapeHtml(r.href)}" rel="noopener" target="_blank"` : '';
-      return `            <${tag} class="col-list-row"${hrefAttr}><span>${escapeHtml(r.left)}</span>${r.right ? `<span class="col-list-right">${escapeHtml(r.right)}</span>` : ''}</${tag}>`;
-    })
-    .join('\n')}
-          </div>`;
-}
-
-function renderAboutPage(founders) {
-  const founderLookup = new Map(founders.map((f) => [f.name, f]));
-  const people = ABOUT_PEOPLE.map((p) => ({
-    ...p,
-    href: founderLookup.get(p.name)?.href || ADDITIONAL_PEOPLE_PHOTOS[p.name]?.href,
-  }));
-
-  const head = `${colHead('About')}
-          <h1 class="card-title">The Young American Magazine</h1>
-          <div class="card-title-divider"></div>
-          <p class="card-dek">${escapeHtml(ABOUT_CARD.intro)}</p>`;
-
-  const subs = `${colHead('Subscriptions', '$30 / year')}
-          <p class="card-preview">${escapeHtml(ABOUT_CARD.subscriberLine)} ${escapeHtml(ABOUT_CARD.accessIntro)}</p>
-${colList(ABOUT_CARD.perks.map((p) => ({ left: p })))}
-          <p class="col-cta"><a class="hero-latest-btn" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></p>`;
-
-  const masthead = `${colHead('Masthead')}
-${colList(people.map((p) => ({ left: p.name, right: p.role, href: p.href })))}`;
-
-  const contact = `${colHead('Contact')}
-          <p class="card-preview">${escapeHtml(ABOUT_CARD.pitchBefore)}<a href="mailto:${escapeHtml(ABOUT_CARD.pitchEmail)}">${escapeHtml(ABOUT_CARD.pitchEmail)}</a>.</p>`;
-
-  return renderColumnPage({
-    currentKey: 'about',
-    title: 'About',
-    description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
-    sections: [head, subs, masthead, contact],
-  });
-}
-
-// Mission page — for now, a single standalone square card in the top-left
-// of the content area (the sidebar nav and footer stay). The card wears
-// the trio hover card's skin — the panel's black fill, white border and
-// glow — made permanent (no hover), with no header/footer bands: just the
-// dek and body over their rule, and squared to the contra page's cell
-// width. It sits flush into the top-left corner, the standard 24px off the
-// nav and the top; a gray rule runs down its right side from the top of
-// the page to the footer rule (the mission-body sticky-footer makes the
-// column fill that full height). See .mission-* in style.css.
-function renderMissionPage(founders = []) {
+// The About page (née Mission): a card grid in the hover cards' skin —
+// left column About/Subscribe/Masthead/Contact, a double-width right
+// column with Give over the founders' letter, every rule joining the
+// line-draw ledger effect on load. See .mission-* in style.css (the
+// class names keep the page's working name).
+function renderAboutPage(founders = []) {
   const hr = '<div class="mission-hr" role="separator"></div>';
 
   // The masthead card's medallions: the About people minus the Founder
@@ -1493,6 +1334,7 @@ function renderMissionPage(founders = []) {
       ${hr}
       <article class="mission-card">
         ${bandTop('<span class="mission-band-box mission-band-box--left">Subscribe</span>\n          <span class="mission-band-box mission-band-box--right">$30 / year</span>')}
+        <p class="card-dek">Sign up for our free newsletter or become a paying member.</p>
         <p class="card-dek">Hundreds of New Critic readers are paid subscribers.</p>
         <div class="duo-quote-divider"></div>
         <p class="card-preview">For $30 a year, paid subscribers get access to:</p>
@@ -1513,7 +1355,7 @@ function renderMissionPage(founders = []) {
       ${hr}
       <article class="mission-card">
         ${bandTop('<span class="mission-band-box mission-band-box--left">Contact</span>')}
-        <p class="card-dek">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+        <p class="card-preview">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
       </article>
     </div>
     ${vr}
@@ -1547,9 +1389,9 @@ ${renderSignersHtml(founders)}
     ${vr}
   </div>`;
   return renderPageShell({
-    currentKey: 'mission',
-    title: 'Mission',
-    description: 'The mission of The New Critic.',
+    currentKey: 'about',
+    title: 'About',
+    description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
     bodyHtml,
     bodyClass: 'mission-body',
     extraScripts: renderLineDrawScript(),
@@ -1726,23 +1568,13 @@ function writeDataUriImage(dataUri, destRelPath) {
 }
 
 // give.html — the original hand-built Give page — survives only as an
-// asset source now: the founders' signature images and Substack links are
-// extracted from its .signer blocks (see extractFounders / loadFounders in
-// main). The page itself is rendered fresh as a column page below.
+// asset source: the founders' signature images and Substack links are
+// extracted from its .signer blocks in main(). The Give content itself
+// lives on the About page's Give card.
 const GIVE_SRC_PATH = path.join(__dirname, 'give.html');
 
-// The Give page's copy, lifted verbatim from the original hand-authored
-// give.html and re-set in the column formation.
-const GIVE_LEDE =
-  'The New Critic is the young American magazine. We find and support the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.';
-const GIVE_SUBSCRIPTION =
-  'The most common way readers support The New Critic. Paid subscribers get access to Postscript, our interview series, Contra, our criticism section, and exclusive New Critic parties.';
-const GIVE_DONATION =
-  'Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.';
-const GIVE_TAX_NOTE =
-  'We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.';
-const GIVE_CHECK_BEFORE =
-  'If you are interested in writing a check, donating more than $5,000, or have other questions, email ';
+// The founders' letter, lifted verbatim from the original hand-authored
+// give.html — the About page's letter card.
 const GIVE_LETTER = [
   'In this era of investment in technological innovation and big ideas, The New Critic believes the same approach to risk should be applied to the world of letters.',
   'We operate in a different sector than the tech sphere — ours is the bazaar of rhetoric, emotion, and ideas — and our mission is not tied to any bottom line. Rather, our magazine is the product of one long conversation, a lasting friendship between our editors, and a dogged pursuit of excellence in the name of beauty and freedom, that liberty to act according to what activates the mind and invigorates the body.',
@@ -1758,9 +1590,9 @@ const GIVE_LINKS = {
 };
 
 // The founders' letter signatures: each written signature over its courier
-// name, linked to the founder's Substack — used by the Give page's letter
-// section and the mission page's letter card. Per-signature size modifiers
-// keep the three hands optically even (the images' ink boxes differ).
+// name, linked to the founder's Substack — the About page's letter card.
+// Per-signature size modifiers keep the three hands optically even (the
+// images' ink boxes differ).
 function renderSignersHtml(founders) {
   const SIG_MODS = { 'Elan Kluger': ' col-sig--elan', 'Rufus Knuppel': ' col-sig--rufus' };
   return founders
@@ -1772,41 +1604,6 @@ function renderSignersHtml(founders) {
             </a>`
     )
     .join('\n');
-}
-
-function renderGivePage(founders) {
-  const signers = renderSignersHtml(founders);
-
-  const head = `${colHead('Support')}
-          <h1 class="card-title">Give to The New Critic</h1>
-          <div class="card-title-divider"></div>
-          <p class="card-dek">${escapeHtml(GIVE_LEDE)}</p>`;
-
-  const subs = `${colHead('Paid Subscriptions', '$30 / year')}
-          <p class="card-preview">${escapeHtml(GIVE_SUBSCRIPTION)}</p>
-          <p class="col-cta"><a class="hero-latest-btn" href="${SITE_URL}/subscribe" rel="noopener">Become a paid subscriber</a></p>`;
-
-  const donations = `${colHead('Donations', '$300 lifetime subscription')}
-          <p class="card-preview">${escapeHtml(GIVE_DONATION)}</p>
-          <p class="card-preview">${escapeHtml(GIVE_TAX_NOTE)}</p>
-          <p class="col-cta"><a class="hero-latest-btn" href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Give through Fractured Atlas</a><a class="hero-latest-btn" href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Give instantly through Stripe</a></p>
-          <p class="card-preview">${escapeHtml(GIVE_CHECK_BEFORE)}<a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>`;
-
-  const letter = `${colHead('A Letter')}
-          <h2 class="card-title">From the Founding Editors</h2>
-          <div class="card-title-divider"></div>
-${GIVE_LETTER.map((p, i) => `          <p class="card-preview">${i === 0 ? wrapLeadWords(p) : escapeHtml(p)}</p>`).join('\n')}
-          <div class="col-signers">
-${signers}
-          </div>`;
-
-  return renderColumnPage({
-    currentKey: 'give',
-    title: 'Give',
-    description:
-      'Support The New Critic, the young American magazine. Subscribe or give a one-time gift to fund the future of letters.',
-    sections: [head, subs, donations, letter],
-  });
 }
 
 async function main() {
@@ -2027,12 +1824,10 @@ async function main() {
 
   const pages = {
     'index.html': html,
-    'give.html': renderGivePage(founders),
     'essays.html': renderListPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
     'postscript.html': renderListPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
     'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll }),
     'about.html': renderAboutPage(founders),
-    'mission.html': renderMissionPage(founders),
     'archive.html': renderArchivePage(archivePool),
   };
 
@@ -2047,8 +1842,11 @@ async function main() {
     fs.copyFileSync(path.join(__dirname, 'fonts', f), path.join(OUT_DIR, 'fonts', f));
   }
   fs.writeFileSync(path.join(OUT_DIR, 'bird.png'), Buffer.from(BIRD_LOGO_B64, 'base64'));
+  // The nav wordmark: the hand-drawn framed bird (white ink on
+  // transparency, extracted from "Bird logo.png" in the repo root — see
+  // assets/bird-mark.png). The old bird.png stays for the likes glyph.
+  fs.copyFileSync(path.join(__dirname, 'assets/bird-mark.png'), path.join(OUT_DIR, 'bird-mark.png'));
   fs.writeFileSync(path.join(OUT_DIR, 'favicon.png'), Buffer.from(FAVICON_B64, 'base64'));
-  fs.copyFileSync(path.join(__dirname, 'assets/changing-of-guard.png'), path.join(OUT_DIR, 'changing-of-guard.png'));
 }
 
 if (require.main === module) {
