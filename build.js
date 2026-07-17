@@ -1335,9 +1335,8 @@ function renderAboutPage(founders = []) {
       <article class="mission-card">
         ${bandTop('<span class="mission-band-box mission-band-box--left">Subscribe</span>\n          <span class="mission-band-box mission-band-box--right">$30 / year</span>')}
         <p class="card-dek">Sign up for our free newsletter or become a paying member.</p>
-        <p class="card-dek">Hundreds of New Critic readers are paid subscribers.</p>
         <div class="duo-quote-divider"></div>
-        <p class="card-preview">For $30 a year, paid subscribers get access to:</p>
+        <p class="card-preview">Hundreds of New Critic readers are paid subscribers. For $30 a year, paid subscribers get access to:</p>
         <ul class="mission-list">
           <li>Postscript, our interview series</li>
           <li>Contra, our criticism section</li>
