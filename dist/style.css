@@ -79,6 +79,9 @@
   --body-text: #D9D6CC;
   --muted: #938F86;
   --faint: #5A574F;
+  /* The likes heart's one spot of color on an otherwise black-and-white
+     site — a plain warm red, not tied to any brand palette. */
+  --like-red: #E2483E;
   --line: rgba(247,246,241,0.14);
   --line-soft: rgba(247,246,241,0.07);
   --display: 'Fraunces', serif;
@@ -94,9 +97,9 @@
      arrows and shuffle) keep their own icon sizing. */
   --mono-size: 0.72rem;
   /* The muted/gray mono text (everything that isn't a white button or
-     active state) runs 1pt larger and 25 weight units heavier than the
-     white mono text, to hold its own at lower contrast against black. */
-  --mono-size-muted: calc(var(--mono-size) + 1pt);
+     active state) runs larger (12.2px) and 25 weight units heavier than
+     the white mono text, to hold its own at lower contrast against black. */
+  --mono-size-muted: 0.7625rem;
   --max: 1600px;
 }
 
@@ -232,10 +235,10 @@ main, footer{ margin-left: 180px; }
 .btn[href*="/subscribe"]:hover::before{ animation-play-state: paused; opacity: 0; }
 /* "Small" now only tightens the padding — the type stays at the one
    site-wide courier size. */
-/* Same optical vertical as the cards' band boxes (10.5 top / 9.5 bottom
+/* Same optical vertical as the cards' band boxes (10.1 top / 9.9 bottom
    recenters the caps' ink, whose descender zone is empty at line-height
    1); 14px sides match the band boxes' own inset. */
-.btn--small{ padding: 10.5px 14px 9.5px; }
+.btn--small{ padding: 10.1px 14px 9.9px; }
 
 /* ---------- SECTION shell ---------- */
 section{ padding: 80px 0; }
@@ -471,10 +474,10 @@ section{ padding: 80px 0; }
   /* Asymmetric on purpose: the corner text is caps in a line-height:1
      box, and the font's empty descender zone below the baseline makes
      centered ink ride high — the extra top pixel re-centers the caps
-     optically. Re-balanced for the muted mono size/weight bump (12.85px/
+     optically. Re-balanced for the muted mono size/weight bump (12.2px/
      475 vs the white mono's 11.52px/400) — the bigger, heavier caps need
      less top-heavy correction to land center. */
-  padding: 10.5px 14px 9.5px;
+  padding: 10.1px 14px 9.9px;
   font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
   color: var(--muted);
@@ -492,13 +495,12 @@ section{ padding: 80px 0; }
    a single white line too. */
 :is(.duo-panel, .card--feature) .panel-band .pc:hover{ color: var(--white); }
 /* Sized to the corner text's cap height — at its natural 13px width the
-   bird ran the stats box (and with it the whole top band) 2px taller
+   heart ran the stats box (and with it the whole top band) 2px taller
    than the bottom band, skewing the content centering between them. */
-:is(.duo-panel, .card--feature) .panel-band .likes-bird{ height: 11.5px; width: auto; }
-/* The likes bird rides the box hover too — it's a white PNG dimmed to
-   read gray at rest (see .likes-bird), so hovering the box brightens it
-   in step with the number beside it. */
-:is(.duo-panel, .card--feature) .panel-band .pc:hover .likes-bird{ opacity: 1; transition: opacity .15s ease; }
+:is(.duo-panel, .card--feature) .panel-band .likes-heart{ height: 11.5px; width: auto; }
+/* The likes heart rides the box hover too, reddening in step with the
+   number beside it, same as the plain .likes:hover treatment. */
+:is(.duo-panel, .card--feature) .panel-band .pc:hover .likes-heart{ fill: var(--like-red); transition: fill .15s ease; }
 :is(.duo-panel, .card--feature) .panel-band a.pc:hover{
   outline: 1px solid var(--white);
   outline-offset: 0;
@@ -800,31 +802,6 @@ section{ padding: 80px 0; }
 .duo-half:hover .card-image{
   filter: grayscale(1) brightness(0.5);
 }
-/* Small courier kicker above the title (see HERO_KICKER in build.js and,
-   for the duo cards, the per-post kicker overrides in content-overrides.js).
-   width:fit-content (rather than the <p> default full width) shrinks the
-   element to the text's own width, so :hover only fires over the letters
-   themselves — a block-width kicker would keep firing on hover anywhere
-   in the empty space beside the short label. Kept display:block (not
-   inline-block): inside the duo/trio/quad panels' .duo-panel-top block
-   wrapper, an inline-block rides the wrapper's text baseline and its
-   line box's leading opens a ~6px gap above the kicker, breaking the
-   panel's square 24px inset. (The hero's flex columns blockify their
-   children, which is why the same inline-block never showed a gap there.) */
-/* Styled as a button — black pill, white border, courier — but
-   deliberately NOT one: it's a <p>, not a link, it keeps no hover glow,
-   and caterpillar.js's selector (a.btn) doesn't match it, so no
-   border-tracing crawl. width:fit-content shrinks the box to the label. */
-.card--feature .hero-kicker,
-.card--duo .hero-kicker{
-  display: block; width: fit-content;
-  background: var(--paper); color: var(--white);
-  border: 1px solid var(--white);
-  padding: 8px 14px;
-  font-family: var(--mono); font-size: var(--mono-size); font-weight: 400;
-  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
-  margin: 0 0 14px;
-}
 .card--feature .card-title,
 .card--duo .card-title{
   /* One size for the hero panel and the essay halves alike — the hero's
@@ -1089,15 +1066,15 @@ section{ padding: 80px 0; }
 }
 
 .likes{ display: inline-flex; align-items: center; gap: 5px; }
-/* Gray at rest, white on hover — a plain opacity fade, no drop-shadow glow. */
-.likes-bird{
-  width: 13px; height: auto; opacity: 0.7;
-  transition: opacity 0s;
+/* Gray at rest, red on hover — a filled heart, color swap not opacity. */
+.likes-heart{
+  width: 13px; height: 13px; fill: var(--muted);
+  transition: fill 0s;
 }
 .likes-count{ transition: color 0s; }
-.likes:hover .likes-bird{
-  opacity: 1;
-  transition: opacity .2s ease;
+.likes:hover .likes-heart{
+  fill: var(--like-red);
+  transition: fill .2s ease;
 }
 .likes:hover .likes-count{
   color: var(--white);
@@ -1152,8 +1129,8 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
    taps elsewhere. Devices with no real pointer hover capability never get
    these effects in the first place, sidestepping the stuck state entirely. */
 @media (hover: none) {
-  .likes:hover .likes-bird{
-    opacity: 0.7;
+  .likes:hover .likes-heart{
+    fill: var(--muted);
   }
   .card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image{
     filter: none;
@@ -1250,15 +1227,6 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   .mission-card,
   .mission-col--double .mission-card{ width: 100%; }
 }
-/* Typography lifted from the trio hover panel: big Lora title over its
-   edge-bleeding rule, courier eyebrow dek over the quote rule, serif body
-   — the panels' own cuts. */
-.mission-card .card-title{
-  font-family: var(--title); font-weight: 400;
-  font-size: clamp(1.7rem, 3.4vw, 2.55rem); line-height: 1.1;
-  margin: 0; color: var(--white); overflow-wrap: normal;
-}
-.mission-card .card-title-divider{ height: 1px; background: var(--line); margin: 10px -24px 15px; }
 .mission-card .card-dek{
   font-family: var(--mono); font-style: normal; font-weight: 475;
   font-size: var(--mono-size-muted); letter-spacing: 0.04em; line-height: 1.5;
@@ -1338,8 +1306,8 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
   line-height: 1; white-space: nowrap;
-  /* Re-balanced 10.5/9.5 split — see .panel-band .pc's comment. */
-  padding: 10.5px 14px 9.5px;
+  /* Re-balanced 10.1/9.9 split — see .panel-band .pc's comment. */
+  padding: 10.1px 14px 9.9px;
   transition: color .15s ease;
 }
 /* Corner boxes are closed off by their own vertical rules (a left box on
@@ -1689,8 +1657,8 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   display: inline-flex; align-items: center;
   flex-shrink: 0; white-space: nowrap;
   margin: 0; background: none; border: 0;
-  /* Re-balanced 10.5/9.5 split — see .panel-band .pc's comment. */
-  padding: 10.5px 14px 9.5px;
+  /* Re-balanced 10.1/9.9 split — see .panel-band .pc's comment. */
+  padding: 10.1px 14px 9.9px;
   font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
   color: var(--muted);
