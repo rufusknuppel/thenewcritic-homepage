@@ -83,11 +83,10 @@
   --line-soft: rgba(247,246,241,0.07);
   --display: 'Fraunces', serif;
   --body: 'Newsreader', 'Source Serif 4', serif;
-  /* Titles: Lora — a softer, rounder old-style serif (ball terminals,
-     lower contrast) than the Newsreader body, so headlines read less
-     pointy. Newsreader stays as the fallback while Lora loads/if it
-     fails. */
-  --title: 'Lora', 'Newsreader', 'Source Serif 4', serif;
+  /* Titles: EB Garamond — the old-style garalde already loaded for the
+     courier-adjacent label work, soft and round at display sizes. Lora →
+     Newsreader stay as fallbacks while it loads/if it fails. */
+  --title: 'EB Garamond', 'Lora', 'Newsreader', serif;
   --mono: 'Courier New', Courier, monospace;
   /* One courier size site-wide — every mono text element (nav, band
      corners, eyebrows, kickers, metas, taglines, ledger rows, fine
@@ -131,7 +130,6 @@ a{ color: inherit; }
 .skip-link:focus{ left: 1em; top: 1em; }
 
 .wrap{ max-width: var(--max); margin: 0 auto; padding: 0 24px; }
-.wrap--narrow{ max-width: 660px; }
 @media (max-width: 860px){ .wrap{ padding: 0 20px; } }
 @media (max-width: 480px){ .wrap{ padding: 0 16px; } }
 
@@ -148,28 +146,19 @@ a{ color: inherit; }
   background: var(--paper);
   border-right: 1px solid var(--line);
 }
+/* 24px insets all around — the site's standard gutter, which also puts
+   the mark's top at y:24, flush with the hero cover image and the page
+   rules (no more 40px padding + negative-margin correction). */
 .site-nav{
   display: flex; flex-direction: column;
   height: 100%;
-  padding: 40px 24px;
+  padding: 24px;
 }
-/* margin-top pulls the brand up flush with the hero cover image's top
-   edge (16px = .site-nav's 40px padding-top minus .featured-strip's 24px
-   padding-top) without touching .site-nav's own padding. */
-.nav-top{ position: relative; margin-top: -16px; margin-bottom: 32px; }
-.nav-brand{
-  display: block; text-decoration: none;
-  font-family: var(--display); font-weight: 600; font-size: 1.3rem;
-  line-height: 1.25; letter-spacing: 0.035em; color: var(--white);
-}
-/* Frame's own right edge flush with the content edge (same edge
-   .nav-subscribe's right edge sits on, since .nav-top stretches to the
-   same content width via the column flex's default align-items:stretch). */
-.wordmark{
-  position: absolute; top: 50%; right: 0;
-  transform: translateY(-50%);
-}
-.bird-frame{ display: block; width: 60.685625px; }
+.nav-top{ position: relative; margin-bottom: 24px; }
+/* The framed-bird mark IS the brand now — no wordmark text. It fills the
+   nav's content column (the same width the subscribe button spans). */
+.wordmark{ display: block; }
+.bird-frame{ display: block; width: 100%; }
 .wordmark img{ width: 100%; height: auto; display: block; }
 .nav-links{
   list-style: none; margin: 0; padding: 0;
@@ -185,11 +174,11 @@ a{ color: inherit; }
 .nav-links a[aria-current="page"]{ color: var(--white); }
 .nav-bottom{
   margin-top: auto;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 16px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 24px;
 }
 .nav-subscribe{ width: 100%; }
 .nav-tagline{
-  font-family: var(--mono); font-weight: 575; font-style: italic; font-size: var(--mono-size);
+  font-family: var(--mono); font-weight: 575; font-size: var(--mono-size);
   letter-spacing: 0.04em;
   color: var(--muted); margin: 0; line-height: 1.5; text-align: center; width: 100%;
   transition: color .15s ease;
@@ -209,8 +198,9 @@ main, footer{ margin-left: 180px; }
     flex-direction: row; align-items: center; justify-content: space-between;
     height: auto; padding: 16px 24px; gap: 20px;
   }
-  .nav-top{ margin-bottom: 0; display: flex; align-items: center; gap: 12px; }
-  .wordmark{ position: static; transform: none; }
+  .nav-top{ margin-top: 0; margin-bottom: 0; display: flex; align-items: center; }
+  /* Compact mark in the top bar — full column width would swallow the bar. */
+  .bird-frame{ width: 52px; }
   .nav-links{ flex-direction: row; margin: 0; gap: 20px; }
   .nav-bottom{ flex-direction: row; align-items: center; gap: 14px; margin-top: 0; }
   .nav-subscribe{ width: auto; }
@@ -238,7 +228,10 @@ main, footer{ margin-left: 180px; }
 .btn[href*="/subscribe"]:hover::before{ animation-play-state: paused; opacity: 0; }
 /* "Small" now only tightens the padding — the type stays at the one
    site-wide courier size. */
-.btn--small{ padding: 10px 16px; }
+/* Same optical vertical as the cards' band boxes (11 top / 9 bottom
+   recenters the caps' ink, whose descender zone is empty at line-height
+   1); 14px sides match the band boxes' own inset. */
+.btn--small{ padding: 11px 14px 9px; }
 
 /* ---------- SECTION shell ---------- */
 section{ padding: 80px 0; }
@@ -297,8 +290,6 @@ section{ padding: 80px 0; }
   transform-origin: 0 50%;
 }
 .duo-half-divider.line-draw,
-.hero-flank-divider.line-draw,
-.col-flank.line-draw,
 .mission-vr.line-draw{
   transform: scaleY(0);
   transform-origin: 50% 0;
@@ -461,8 +452,7 @@ section{ padding: 80px 0; }
 }
 :is(.duo-panel, .card--feature) .panel-band--top::after{ bottom: -1px; }
 :is(.duo-panel, .card--feature) .panel-band--bottom::before{ top: -1px; }
-/* Shared corner-box look — beats the button styling the section link
-   (.hero-latest-btn) and Read on (.preview-card-link) carry elsewhere. */
+/* Shared corner-box look for every band box. */
 :is(.duo-panel, .card--feature) .panel-band .pc{
   position: static;
   /* inset:auto matters: caterpillar.js sets inline position:relative on
@@ -635,7 +625,11 @@ section{ padding: 80px 0; }
    under its ink while the small dek carries ≈4px above its caps — these
    land both ink-to-line gaps at ≈12px, tighter than the ≈18px section
    gaps so the pair still reads as one unit. */
-.duo-panel .card-title-divider{ margin: 10px -24px 15px; }
+/* Margins re-tuned for EB Garamond, whose descenders hang ~4px below the
+   1.1 line box (Newsreader's sat inside it): 16px of box gap puts the
+   title's INK ≈12px off the rule, and 12px below leaves the dek's caps
+   ≈15px under it — the pair still reads as one unit. */
+.duo-panel .card-title-divider{ margin: 16px -24px 12px; }
 /* ---------- ARCHIVE MOSAIC (card--archive) ----------
    Four cells closing into one block: a 1:2 tall card on the left, and the
    right side a 2:1 landscape over two 1:1 squares. The geometry closes
@@ -680,7 +674,7 @@ section{ padding: 80px 0; }
   font-size: clamp(1.19rem, 2.21vw, 1.91rem);
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 2; -webkit-line-clamp: 2;
-  padding-bottom: 0.15em;
+  padding-bottom: 0.2em;
 }
 
 /* Experimental hover-reveal layout: the cover image spans the card's full
@@ -722,23 +716,6 @@ section{ padding: 80px 0; }
    fitHeroLink narrows it to the image's contain-box, max-width capping
    an image wider than the frame at today's full-width behavior. */
 .card--feature .card-image-link{ display:block; margin-bottom: 0; height: 100%; width: 100%; max-width: 100%; background: var(--paper); }
-/* The page's column ruling carried through the hero row: one vertical
-   rule on each side of the cover image, flex siblings of the link (see
-   renderCard's feature branch in build.js) so they sit against the
-   fitted image's real edges at the duo cells' own gutter — 24px between
-   line and picture — and stretch-plus-negative-margin runs them past
-   the image's top and bottom, to the page edge above and the row rule
-   below, like every other cell divider. Symmetric flanks, so the
-   centered image stays centered. */
-.hero-flank-divider{ width: 1px; flex-shrink: 0; background: var(--line); margin: -24px 24px; }
-@media (max-width: 860px){
-  .hero-flank-divider{ margin: -20px 20px; }
-}
-/* The static/stacked hero (≤640px, see the .card.card--feature fallback
-   below) has no pillarboxes left to rule off. */
-@media (max-width: 640px){
-  .hero-flank-divider{ display: none; }
-}
 /* The hero's hover panel: one duo panel — the same box the trio cells
    wear (background, white border, bands, padding all from the shared
    .duo-panel rules above) — covering the cover image's exact box at
@@ -773,24 +750,9 @@ section{ padding: 80px 0; }
    leaves over in the hero's much wider box. */
 .card--feature .card-image,
 .card--feature .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; }
-/* "The Latest"/"Essays"/"Postscript"/"Contra"/"From the Archive" — the
-   current section, as a black pill with a white border. Only fades in
-   with the rest of the column/panel on hover — and glows only when the
-   pill itself is hovered, not just whenever the card is. */
-.hero-latest-btn{
-  background: var(--paper); color: var(--white);
-  border: 1px solid var(--white);
-  padding: 8px 14px;
-  font-family: var(--mono); font-weight: 575; font-size: var(--mono-size); letter-spacing: 0.04em; text-transform: uppercase;
-  text-decoration: none; line-height: 1;
-  transition: box-shadow .25s ease;
-}
 /* Pinned to the bottom-left corner — .duo-panel (hero and duo/trio/quad
    alike) is an already positioned ancestor. */
 .card-category-btn{ position: absolute; left: 24px; bottom: 24px; }
-.hero-latest-btn:hover{
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
 /* A white outline framing a HOVERED cover image — drawn as an ::after
    (rather than an inset box-shadow, which the opaque child img paints
    over and hides, or an outline, which some browsers won't render with
@@ -843,14 +805,12 @@ section{ padding: 80px 0; }
    line box's leading opens a ~6px gap above the kicker, breaking the
    panel's square 24px inset. (The hero's flex columns blockify their
    children, which is why the same inline-block never showed a gap there.) */
-/* Styled as a button — same border/padding/type as .hero-latest-btn —
-   but deliberately NOT one: it's a <p>, not a link, it keeps no hover
-   glow, and caterpillar.js's selector (a.btn, .hero-latest-btn,
-   .preview-card-link) doesn't match it, so no border-tracing crawl.
-   width:fit-content shrinks the box to the label. */
+/* Styled as a button — black pill, white border, courier — but
+   deliberately NOT one: it's a <p>, not a link, it keeps no hover glow,
+   and caterpillar.js's selector (a.btn) doesn't match it, so no
+   border-tracing crawl. width:fit-content shrinks the box to the label. */
 .card--feature .hero-kicker,
-.card--duo .hero-kicker,
-.col-page .hero-kicker{
+.card--duo .hero-kicker{
   display: block; width: fit-content;
   background: var(--paper); color: var(--white);
   border: 1px solid var(--white);
@@ -860,11 +820,9 @@ section{ padding: 80px 0; }
   margin: 0 0 14px;
 }
 .card--feature .card-title,
-.card--duo .card-title,
-.col-page .card-title{
-  /* One size for the hero panel, the essay halves, and the give/about
-     column pages' titles alike — the hero's centered square is
-     essay-panel territory now, no hero-title-fit.js.
+.card--duo .card-title{
+  /* One size for the hero panel and the essay halves alike — the hero's
+     centered square is essay-panel territory now, no hero-title-fit.js.
      overflow-wrap:normal (overriding the base .card-title's break-word)
      means an over-long word overflows horizontally instead of breaking. */
   font-size: clamp(1.7rem, 3.4vw, 2.55rem); margin: 0; text-align: left; line-height: 1.1;
@@ -891,7 +849,7 @@ section{ padding: 80px 0; }
      the ellipsis, and the clipped line's cap tops paint up into this same
      padding strip. The fitter deletes that overflow text for real (see
      the title truncation at the end of fit() in duo-panel-fit.js). */
-  padding-bottom: 0.15em;
+  padding-bottom: 0.2em;
 }
 .card--quad .duo-panel .duo-quote-divider,
 .card--quad .duo-panel .preview-tagline,
@@ -1079,35 +1037,14 @@ section{ padding: 80px 0; }
   .duo-panel .duo-quote-divider{ transform: none; transition: none; }
 }
 
-/* ---------- SECTION BLOCKS + CARDS ---------- */
-/* (Still used by the essays/postscript/contra list pages and the archive
-   page — see renderListPage/renderArchivePage/renderCard in build.js. The
-   homepage itself no longer renders any of these; it was scrapped down to
-   just the hero for a from-scratch redesign.) */
-
-/* Mosaic grid: 12 columns so cards can mix 2/3/4-across sizes in one row
-   (see CARD_LAYOUT_PATTERN in build.js — a "lg" card at span 6 plus two
-   "sm" cards at span 3 fill one row, three "md" cards at span 4 fill the
-   next). The 1px gap sits on the grid's own --line background; each direct
-   card child paints an opaque --paper background over its own cell, so
-   only the gutters between cards show through — a hairline divider with no
-   nth-child math needed for the irregular column spans. */
-.card-grid{
-  display:grid; grid-template-columns: repeat(12, 1fr);
-  gap: 1px; background: var(--line);
-  align-items: start;
-}
-.card-grid > .card{ background: var(--paper); padding: 24px; grid-column: span 4; }
-.card-grid > .card--lg{ grid-column: span 6; }
-.card-grid > .card--md{ grid-column: span 4; }
-.card-grid > .card--sm{ grid-column: span 3; }
-.card-grid > .card--box{ padding: 0; }
+/* ---------- CARD PRIMITIVES ----------
+   The base card/image/title/dek/meta cuts shared by the hero, the duo/
+   trio/quad cells, and the archive fold-outs. */
 .card{ display:flex; flex-direction:column; }
 .card-image-frame{ margin-bottom: 14px; }
 .card-image-link{ display:block; margin-bottom: 0; }
 .card-image{ width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
-.card-text{ display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .card-title{
   /* Same Newsreader as the body text, in the body's own regular weight —
      titles differentiate by size alone. Fraunces stays for the nav brand
@@ -1161,59 +1098,6 @@ section{ padding: 80px 0; }
   transition: color .2s ease;
 }
 
-/* ---------- BOX CARD (text box by default, image on hover) ---------- */
-/* Mirrors the hero card's box-reveal mechanic in reverse: there the image
-   is always visible and the text panel fades in on hover; here the text
-   panel is always visible (opaque, stacked over the hidden image) and
-   fades OUT on hover so the image underneath appears. */
-.card-box{ position: relative; overflow: hidden; aspect-ratio: 4/3; }
-.card-box-image{ position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity .3s ease; }
-.card-box-image .card-image-link{ display: block; height: 100%; }
-.card--box .card-box-image .card-image,
-.card--box .card-box-image .card-image--blank{ width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
-.card--box:hover .card-box-image{ opacity: 1; }
-.card-box-image .card-image-link::after{
-  content: '';
-  position: absolute; inset: 0;
-  border: 1px solid var(--white);
-  opacity: 0;
-  transition: opacity .3s ease;
-  pointer-events: none;
-}
-.card--box:hover .card-box-image .card-image-link::after{ opacity: 1; }
-.card-box-text{
-  position: absolute; inset: 0; z-index: 2;
-  display: flex; flex-direction: column;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  padding: 24px;
-  overflow: hidden;
-  transition: opacity .3s ease;
-}
-.card--box:hover .card-box-text{ opacity: 0; pointer-events: none; }
-
-/* Below the hero's own no-hover breakpoint, box cards fall back to the
-   same always-visible image + caption look as the rest of the grid —
-   there's no hover to reveal anything on touch devices. */
-@media (max-width: 640px), (hover: none){
-  .card-box{ aspect-ratio: auto; overflow: visible; }
-  /* Two classes to outrank the shared .card-image-frame{position:relative}
-     rule (same specificity, declared later in the file) that would
-     otherwise win this tie and leave the layer positioned. */
-  .card--box .card-box-image{ position: static; inset: auto; opacity: 1; }
-  .card-box-text{
-    position: static; opacity: 1; pointer-events: auto;
-    background: none; border: none; padding: 14px 0 0;
-  }
-}
-
-@media (max-width: 860px){
-  .card-grid > .card{ grid-column: span 6; }
-}
-@media (max-width: 480px){
-  .card-grid > .card{ grid-column: span 12; }
-}
-
 /* ---------- LIST / ARCHIVE PAGES ---------- */
 /* Section pages (essays/postscript/contra) — rows of duo cells rather than
    a .page-grid, no page title above them: the 24px top inset matches the
@@ -1225,10 +1109,6 @@ section{ padding: 80px 0; }
    first row's extend up through the top inset to the top of the page. */
 .page-rows{ padding-top: 24px; padding-bottom: 0; }
 
-.prose figure{ margin: 24px 0; }
-.prose blockquote{ border-left: 3px solid var(--white); margin: 24px 0; padding-left: 20px; color: var(--white); }
-.prose strong{ color: var(--white); }
-
 /* ---------- FOOTER ---------- */
 footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
 /* Footer is just the fine-print line now — the bird and the link list
@@ -1239,58 +1119,6 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
 .foot-fine-item{ transition: color .15s ease; }
 .foot-fine-item:hover{ color: var(--white); }
 
-/* ---------- IMAGE PREVIEW CARD ---------- */
-#preview-card{
-  position: absolute;
-  top: 0; left: 0;
-  /* width set dynamically by JS */
-  z-index: 40;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-top: none;
-  /* 24px square, same interior inset as every other card/panel (duo
-     panels, hero side panels, grid cards, box overlays). */
-  padding: 24px;
-  font-family: var(--body);
-  font-size: 0.88rem;
-  line-height: 1.6;
-  color: var(--white);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .25s ease, box-shadow .25s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-#preview-card.preview-card--visible{
-  opacity: 1;
-  pointer-events: auto;
-  box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
-}
-.preview-card-link{
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-end;
-  white-space: nowrap;
-  padding: 7px 12px;
-  background: var(--paper);
-  color: var(--white);
-  border: 1px solid var(--white);
-  text-decoration: none;
-  font-family: var(--mono);
-  font-weight: 575;
-  font-size: var(--mono-size);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1;
-  flex-shrink: 0;
-  position: relative;
-  transition: background .15s ease, box-shadow .2s ease;
-}
-.preview-card-link:hover{
-  background: var(--surface-2);
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
 /* The arrow in every "Read on →" link (site-wide) renders in the display
    face rather than inheriting the mono/courier font around it. The
    margin-left is the visible gap after "Read on" — the link is
@@ -1301,53 +1129,15 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   display: block;
   position: relative;
 }
-
-/* ---------- IMAGE HOVER OVERLAY ---------- */
+/* The image link contains its hover ring/glow; the image itself carries
+   the dim transition the cover hover choreography drives. */
 .card-image-link{
   position: relative;
   overflow: hidden;
   transition: box-shadow .25s ease;
 }
-.card-image-link.preview-active{
-  box-shadow: 0 0 0 1px var(--white), 0 0 14px 3px rgba(247,246,241,0.3);
-}
 .card-image{
   transition: filter .25s ease;
-}
-.card-image-link.preview-active .card-image{
-  filter: grayscale(1) brightness(0.45);
-}
-.card-image-overlay{
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  /* 24px square, matching the rest of the card system's interior inset. */
-  padding: 24px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 60%);
-  opacity: 0;
-  transition: opacity .25s ease;
-  pointer-events: none;
-}
-.card-image-link.preview-active .card-image-overlay{
-  opacity: 1;
-}
-.overlay-title{
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: clamp(0.82rem, 1.1vw, 0.98rem);
-  color: var(--white);
-  line-height: 1.25;
-  margin-bottom: 4px;
-}
-.overlay-author{
-  font-family: var(--mono);
-  font-weight: 575;
-  font-size: var(--mono-size);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 /* ---------- TOUCH-DEVICE HOVER GUARD ---------- */
@@ -1364,104 +1154,9 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   }
 }
 
-/* ---------- COLUMN PAGES (Give / About) ----------
-   One long centered column of text between two fields of black — the
-   hero's own framing carried to a full page: the column is exactly as
-   wide as the essay squares (the duo halves' (100% − 49px)/2 of the
-   wrap), and a gray vertical rule flanks it on each side at the standard
-   24px gutter, running from the page's top edge down through the bottom
-   inset to the footer's border (the same stretch-plus-negative-margin
-   trick as .hero-flank-divider / .duo-half-divider). The flanks and the
-   full-bleed section rules join the line-draw ruling — the pages' one
-   on-load animation. Everything inside wears the hover cards' look; the
-   kicker chips and titles reuse the panels' own rules (see the .col-page
-   additions to .hero-kicker and the duo title sizing), and the rest is
-   restated here with the panels' exact values. */
-.col-page{ display: flex; justify-content: center; padding: 24px 0; }
-.col-flank{ width: 1px; flex-shrink: 0; background: var(--line); margin: -24px 24px; }
-.col-column{ width: calc((100% - 49px) / 2); min-width: 0; }
-@media (max-width: 860px){
-  .col-flank{ margin: -20px 20px; }
-  .col-page{ padding: 20px 0; }
-}
-/* Below the two-across breakpoint the column takes the full wrap and the
-   flanking rules stand down with the pillarbox black they framed. */
-@media (max-width: 640px){
-  .col-flank{ display: none; }
-  .col-column{ width: 100%; }
-}
-/* Section header strip: kicker chip left, courier note (price etc.)
-   right — the hover cards' header band formation. */
-.col-head{
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; margin: 0 0 14px;
-}
-.col-head .hero-kicker{ margin: 0; }
-.col-sec{ padding: 0; }
-/* Full-bleed rule between sections — 24px past the column on each side,
-   ending exactly on the flanking verticals, like the panels' dividers
-   ending on their borders. */
-.col-rule{ height: 1px; background: var(--line); margin: 34px -24px; }
-/* The title rule bleeds to the flanks the way the panels' bleeds to
-   their border (the base .card-title-divider stops at the text edge). */
-.col-page .card-title-divider{ margin: 10px -24px 15px; }
-/* Courier eyebrow dek, the panels' own cut (see .duo-panel .card-dek). */
-.col-page .card-dek{
-  font-family: var(--mono);
-  font-style: normal;
-  font-weight: 575;
-  font-size: var(--mono-size);
-  letter-spacing: 0.04em;
-  line-height: 1.5;
-  color: var(--muted);
-  margin: 0;
-}
-/* The courier note beside a kicker chip (a price, an aside). */
-.col-note{
-  font-family: var(--mono); font-weight: 575; font-size: var(--mono-size);
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
-  margin: 0; text-align: right;
-}
-/* Body text in the excerpt's own cut — unclamped: these are reading
-   pages, not boxes to fit. */
-.col-page .card-preview{
-  font-size: calc(0.97rem - 0.62px); color: var(--white); line-height: 1.6;
-  margin: 0 0 1.6em;
-}
-.col-page .card-preview:last-child{ margin-bottom: 0; }
-.col-page .card-preview a,
-.col-page .card-dek a{
-  color: var(--white); text-decoration: none;
-  border-bottom: 1px solid var(--faint);
-  transition: border-color .15s ease;
-}
-.col-page .card-preview a:hover,
-.col-page .card-dek a:hover{ border-color: var(--white); }
-/* CTA row: the panels' black bordered-box buttons (.hero-latest-btn),
-   side by side. */
-.col-cta{ display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0 0; }
-.col-cta .hero-latest-btn{ display: inline-block; }
-/* Text resuming under a CTA row gets its own paragraph gap back. */
-.col-cta + .card-preview{ margin-top: 1.6em; }
-/* Ledger-style rows (masthead, perk list): full-bleed ruled courier
-   lines, whitening on hover where linked — the archive ledger in
-   miniature. Rows bleed to the flanks like every other rule here. */
-.col-list{ margin: 22px 0 0; }
-.col-list-row{
-  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  margin: 0 -24px; padding: 11px 24px 9px;
-  border-top: 1px solid var(--line);
-  font-family: var(--mono); font-weight: 575; font-size: var(--mono-size);
-  letter-spacing: 0.04em; text-transform: uppercase;
-  color: var(--muted); text-decoration: none;
-  transition: color .15s ease;
-}
-.col-list-row:last-child{ border-bottom: 1px solid var(--line); }
-a.col-list-row:hover{ color: var(--white); }
-.col-list-right{ color: var(--faint); text-align: right; flex-shrink: 0; }
-a.col-list-row:hover .col-list-right{ color: var(--white); }
-/* The letter's signatures: written signature over the courier name,
-   three across. Per-hand size modifiers keep the ink optically even. */
+/* The founders' letter signatures (the About page's letter card): written
+   signature over the courier name, three across. Per-hand size modifiers
+   keep the ink optically even. */
 .col-signers{
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: 36px 48px; margin-top: 44px;
@@ -1481,7 +1176,7 @@ a.col-list-row:hover .col-list-right{ color: var(--white); }
 }
 .col-signer:hover .col-signer-name{ color: var(--white); }
 
-/* ---------- MISSION PAGE ----------
+/* ---------- ABOUT PAGE (the .mission-* classes keep its working name) ----------
    A single standalone square card in the top-left of the content area (nav
    + footer stay from the page shell). It wears the trio hover card's look
    with the hover state made permanent: the panel's black fill, white
@@ -1517,7 +1212,10 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
    treatment: a gray outline like the sidebar divider at rest, going white
    with the panels' glow on hover. */
 .mission-card{
-  width: calc((min(1600px, 100vw - 180px) - 146px) / 3);
+  /* The contra cell width plus 50px — the left column runs a little wider
+     than a bare 3-across cell, and the double column below gives the same
+     50px back, so the page's total width still closes exactly. */
+  width: calc((min(1600px, 100vw - 180px) - 146px) / 3 + 50px);
   max-width: 100%;
   padding: 24px;
   background: var(--paper);
@@ -1530,17 +1228,17 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   border-color: var(--white);
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-/* The double column (Give + the letter): its cards span two cells plus the
-   49px gutter-and-rule between them. */
+/* The double column (Give + the letter): two cells plus the 49px
+   gutter-and-rule between them, minus the 50px the left column gained. */
 .mission-col--double .mission-card{
-  width: calc(2 * ((min(1600px, 100vw - 180px) - 146px) / 3) + 49px);
+  width: calc(2 * ((min(1600px, 100vw - 180px) - 146px) / 3) - 1px);
 }
 /* Below 900px the sidebar collapses to a top bar and main loses its 180px
    inset, so the cell math drops the sidebar term (contra stays 3-across
    until it stacks at 480, where the square fills the column too). */
 @media (max-width: 900px){
-  .mission-card{ width: calc((min(1600px, 100vw) - 146px) / 3); }
-  .mission-col--double .mission-card{ width: calc(2 * ((min(1600px, 100vw) - 146px) / 3) + 49px); }
+  .mission-card{ width: calc((min(1600px, 100vw) - 146px) / 3 + 50px); }
+  .mission-col--double .mission-card{ width: calc(2 * ((min(1600px, 100vw) - 146px) / 3) - 1px); }
 }
 @media (max-width: 480px){
   .mission-card,
@@ -1548,7 +1246,7 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
 }
 /* Typography lifted from the trio hover panel: big Lora title over its
    edge-bleeding rule, courier eyebrow dek over the quote rule, serif body
-   — the same cuts .col-page restates for Give/About. */
+   — the panels' own cuts. */
 .mission-card .card-title{
   font-family: var(--title); font-weight: 400;
   font-size: clamp(1.7rem, 3.4vw, 2.55rem); line-height: 1.1;
@@ -1560,6 +1258,9 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   font-size: var(--mono-size); letter-spacing: 0.04em; line-height: 1.5;
   color: var(--muted); margin: 0;
 }
+/* Stacked dek lines (Subscribe's sign-up line over its subscriber count)
+   read as one block with a small breath between. */
+.mission-card .card-dek + .card-dek{ margin-top: 8px; }
 .mission-card .duo-quote-divider{ margin: 16px -24px 20px; }
 .mission-card .card-preview{
   font-family: var(--body);
@@ -1584,11 +1285,11 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   transition: color .15s ease, border-color .15s ease;
 }
 .mission-card .card-dek a:hover{ color: var(--white); border-color: var(--white); }
-/* Three-column body text (the Give pitch, the letter) — the essay panels'
-   excerpt formation widened to the double cards' span: paragraph gap of
-   exactly one line so the columns share a baseline grid, orphans/widows
-   free like the panels. */
-.mission-cols{ column-count: 3; column-gap: 24px; }
+/* Two-column body text (the Give pitch, the letter) — the essay panels'
+   excerpt formation at the double cards' span: paragraph gap of exactly
+   one line so the columns share a baseline grid, orphans/widows free
+   like the panels. */
+.mission-cols{ column-count: 2; column-gap: 24px; }
 .mission-cols .card-preview{ orphans: 1; widows: 1; }
 /* The signatures sit under their own rule at the letter's foot — the
    divider's 20px bottom margin is the gap, replacing .col-signers' own
@@ -1616,8 +1317,10 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
 .mission-band{ display: flex; }
 .mission-band--top{ margin: -24px -24px 0; }
 .mission-band-rule{ height: 1px; background: var(--line); }
-/* The 20px bottom margin is the gap down to the card's content. */
-.mission-band-rule--top{ margin: 0 -24px 20px; }
+/* The 24px bottom margin is the gap down to the card's content — the
+   same inset as the card's own padding, so header rule and side/foot
+   gaps all read on one rhythm. */
+.mission-band-rule--top{ margin: 0 -24px 24px; }
 /* A fixed 24px of air between the body text above and the footer rule —
    the card's own padding rhythm. */
 .mission-band-rule--bottom{ margin: 24px -24px 0; }
@@ -1669,7 +1372,7 @@ a.mission-band-box:hover{
    cards' own type. */
 .mission-people{
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: 22px 16px;
+  gap: 24px;
 }
 /* gap covers photo→name; the role hugs its name (negative margin against
    the shared gap nets ~2px) so the pair reads as one label. */
