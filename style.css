@@ -86,19 +86,27 @@
   --line-soft: rgba(247,246,241,0.07);
   --display: 'Fraunces', serif;
   --body: 'Newsreader', 'Source Serif 4', serif;
-  /* Titles: EB Garamond — the old-style garalde already loaded for the
-     courier-adjacent label work, soft and round at display sizes. Lora →
-     Newsreader stay as fallbacks while it loads/if it fails. */
-  --title: 'EB Garamond', 'Lora', 'Newsreader', serif;
-  --mono: 'EB Garamond', 'Newsreader', 'Source Serif 4', serif;
+  /* Titles: the same system Helvetica stack as the labels — one grotesk
+     voice for titles and label furniture alike, set apart from the
+     Newsreader body by size and color rather than family. */
+  --title: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* Labels/buttons/deks: Helvetica — the system grotesk, no webfont to
+     host. A clean sans voice against the two serifs; the neo-grotesque
+     everyone's eye skips past, which is the point of a label face. On
+     macOS/iOS this is Helvetica Neue; Windows/Linux fall back to
+     Arial/its metric clones. Everything runs at Regular (400) — the
+     grey/white hierarchy is carried by color and size alone. */
+  --mono: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* One courier size site-wide — every mono text element (nav, band
      corners, eyebrows, kickers, metas, taglines, ledger rows, fine
      print) reads at this size. Pure glyph buttons (the ledger's sort
-     arrows and shuffle) keep their own icon sizing. */
+     arrows and shuffle) keep their own icon sizing. Helvetica's cap
+     height (~714/1000em) matches the old monos', so the original
+     pre-Cutive sizes come back. */
   --mono-size: 0.72rem;
   /* The muted/gray mono text (everything that isn't a white button or
-     active state) runs larger (12.2px) and 25 weight units heavier than
-     the white mono text, to hold its own at lower contrast against black. */
+     active state) runs larger than the white mono text, to hold its
+     own at lower contrast against black. */
   --mono-size-muted: 0.7625rem;
   --max: 1600px;
 }
@@ -170,7 +178,7 @@ a{ color: inherit; }
 .nav-links{
   list-style: none; margin: 0; padding: 0;
   display: flex; flex-direction: column; gap: 8px;
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase;
 }
 .nav-links a{
@@ -185,7 +193,7 @@ a{ color: inherit; }
 }
 .nav-subscribe{ width: 100%; }
 .nav-tagline{
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em;
   color: var(--muted); margin: 0; line-height: 1.5; text-align: center; width: 100%;
   transition: color .15s ease;
@@ -218,7 +226,7 @@ main, footer{ margin-left: 180px; }
 
 .btn{
   font-family: var(--mono);
-  font-weight: 475;
+  font-weight: 400;
   font-size: var(--mono-size-muted);
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -235,10 +243,10 @@ main, footer{ margin-left: 180px; }
 .btn[href*="/subscribe"]:hover::before{ animation-play-state: paused; opacity: 0; }
 /* "Small" now only tightens the padding — the type stays at the one
    site-wide courier size. */
-/* Same optical vertical as the cards' band boxes (10.1 top / 9.9 bottom
+/* Same optical vertical as the cards' band boxes (10.35 top / 9.65 bottom
    recenters the caps' ink, whose descender zone is empty at line-height
    1); 14px sides match the band boxes' own inset. */
-.btn--small{ padding: 10.1px 14px 9.9px; }
+.btn--small{ padding: 10.35px 14px 9.65px; }
 
 /* ---------- SECTION shell ---------- */
 section{ padding: 80px 0; }
@@ -474,11 +482,11 @@ section{ padding: 80px 0; }
   /* Asymmetric on purpose: the corner text is caps in a line-height:1
      box, and the font's empty descender zone below the baseline makes
      centered ink ride high — the extra top pixel re-centers the caps
-     optically. Re-balanced for the muted mono size/weight bump (12.2px/
-     475 vs the white mono's 11.52px/400) — the bigger, heavier caps need
-     less top-heavy correction to land center. */
-  padding: 10.1px 14px 9.9px;
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+     optically. Re-balanced for the muted mono size bump (12.2px vs the
+     white mono's 11.52px) — the bigger caps need less top-heavy
+     correction to land center. */
+  padding: 10.35px 14px 9.65px;
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
   color: var(--muted);
   width: auto;
@@ -621,7 +629,7 @@ section{ padding: 80px 0; }
      weight, and tracking all match the header/footer boxes. */
   font-family: var(--mono);
   font-style: normal;
-  font-weight: 475;
+  font-weight: 400;
   font-size: var(--mono-size-muted);
   letter-spacing: 0.04em;
   line-height: 1.5;
@@ -633,11 +641,12 @@ section{ padding: 80px 0; }
    under its ink while the small dek carries ≈4px above its caps — these
    land both ink-to-line gaps at ≈12px, tighter than the ≈18px section
    gaps so the pair still reads as one unit. */
-/* Margins re-tuned for EB Garamond, whose descenders hang ~4px below the
-   1.1 line box (Newsreader's sat inside it): 16px of box gap puts the
-   title's INK ≈12px off the rule, and 12px below leaves the dek's caps
-   ≈15px under it — the pair still reads as one unit. */
-.duo-panel .card-title-divider{ margin: 16px -24px 12px; }
+/* Margins re-tuned for Helvetica, whose descenders sit inside the 1.1
+   line box (EB Garamond's hung ~4px below it, which the old 16px top
+   margin absorbed): 12.5px of box gap puts the title's INK ≈12px off
+   the rule, and 13px below leaves the dek's caps ≈15px under it — the
+   pair still reads as one unit. */
+.duo-panel .card-title-divider{ margin: 12.5px -24px 13px; }
 /* ---------- ARCHIVE MOSAIC (card--archive) ----------
    Four cells closing into one block: a 1:2 tall card on the left, and the
    right side a 2:1 landscape over two 1:1 squares. The geometry closes
@@ -679,10 +688,10 @@ section{ padding: 80px 0; }
    clamp with the descender padding (see .card--quad .card-title above
    for why both exist). */
 .card--archive .archive-pair .card-title{
-  font-size: clamp(1.19rem, 2.21vw, 1.91rem);
+  font-size: clamp(1.01rem, 1.88vw, 1.62rem);
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 2; -webkit-line-clamp: 2;
-  padding-bottom: 0.2em;
+  padding-bottom: 0.15em;
 }
 
 /* Experimental hover-reveal layout: the cover image spans the card's full
@@ -808,21 +817,21 @@ section{ padding: 80px 0; }
      centered square is essay-panel territory now, no hero-title-fit.js.
      overflow-wrap:normal (overriding the base .card-title's break-word)
      means an over-long word overflows horizontally instead of breaking. */
-  font-size: clamp(1.7rem, 3.4vw, 2.55rem); margin: 0; text-align: left; line-height: 1.1;
+  font-size: clamp(1.45rem, 2.9vw, 2.17rem); margin: 0; text-align: left; line-height: 1.1;
   overflow-wrap: normal;
 }
 /* Trio bumped up to the hero/essay size — the narrower column still fits
    it (overflow-wrap: normal above means an over-long word spills rather
    than breaking, so nothing wraps awkwardly). */
 .card--trio .duo-panel .card-title,
-.card--feature .duo-panel .card-title{ font-size: clamp(1.7rem, 3.4vw, 2.55rem); }
+.card--feature .duo-panel .card-title{ font-size: clamp(1.45rem, 2.9vw, 2.17rem); }
 /* Quad bumped up to the old trio size. Quad titles also clamp to two
    lines (with the line-clamp ellipsis) — a long contra title ("You Seem
    Pretty Tame for a Girl in Revolt") would otherwise spend the whole
    square on itself and the fitter would cut everything after it, meta
    included. */
 .card--quad .duo-panel .card-title{
-  font-size: clamp(1.19rem, 2.21vw, 1.91rem);
+  font-size: clamp(1.01rem, 1.88vw, 1.62rem);
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 2; -webkit-line-clamp: 2;
   /* At line-height 1.1 the last line's descenders ("Hurry", "Girl") hang
@@ -832,7 +841,7 @@ section{ padding: 80px 0; }
      the ellipsis, and the clipped line's cap tops paint up into this same
      padding strip. The fitter deletes that overflow text for real (see
      the title truncation at the end of fit() in duo-panel-fit.js). */
-  padding-bottom: 0.2em;
+  padding-bottom: 0.15em;
 }
 .card--quad .duo-panel .duo-quote-divider,
 .card--quad .duo-panel .preview-tagline,
@@ -955,7 +964,7 @@ section{ padding: 80px 0; }
 .card--feature .preview-tagline,
 .card--duo .preview-tagline{
   display: block; width: fit-content;
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 10px;
   transition: color .15s ease;
@@ -1032,7 +1041,7 @@ section{ padding: 80px 0; }
   /* Same Newsreader as the body text, in the body's own regular weight —
      titles differentiate by size alone. Fraunces stays for the nav brand
      and arrows; EB Garamond stays declared as a one-line alternative. */
-  font-family: var(--title); font-weight: 400; font-size: 1.05rem; margin: 0; color: var(--white);
+  font-family: var(--title); font-weight: 400; font-size: 0.89rem; margin: 0; color: var(--white);
   overflow-wrap: break-word;
 }
 .card-title a{ text-decoration:none; }
@@ -1051,7 +1060,7 @@ section{ padding: 80px 0; }
 
 .card-meta{
   /* Same size as the kickers (.hero-kicker / .preview-tagline). */
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted); letter-spacing: 0.03em; text-transform: uppercase;
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted); letter-spacing: 0.03em; text-transform: uppercase;
   color: var(--muted); margin: 0; min-width: 0;
   display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
 }
@@ -1096,7 +1105,7 @@ section{ padding: 80px 0; }
 footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
 /* Footer is just the fine-print line now — the bird and the link list
    were removed (their .foot-bird/.foot-links rules with them). */
-.foot-fine{ font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted); color: var(--muted); letter-spacing: 0.02em; margin:0; }
+.foot-fine{ font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted); color: var(--muted); letter-spacing: 0.02em; margin:0; }
 /* Each segment of the bottom line (©, est., email) lights up on its own
    hover, same treatment as the link row above it. */
 .foot-fine-item{ transition: color .15s ease; }
@@ -1153,11 +1162,9 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
 .col-sig--elan{ max-width: 150px; max-height: 30px; }
 .col-sig--rufus{ max-width: 112px; max-height: 50px; }
 .col-signer-name{
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
-  transition: color .15s ease;
+  font-family: var(--body); font-weight: 400; font-size: calc(0.97rem - 0.62px);
+  color: var(--white);
 }
-.col-signer:hover .col-signer-name{ color: var(--white); }
 
 /* ---------- ABOUT PAGE (the .mission-* classes keep its working name) ----------
    A single standalone square card in the top-left of the content area (nav
@@ -1228,7 +1235,7 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   .mission-col--double .mission-card{ width: 100%; }
 }
 .mission-card .card-dek{
-  font-family: var(--mono); font-style: normal; font-weight: 475;
+  font-family: var(--mono); font-style: normal; font-weight: 400;
   font-size: var(--mono-size-muted); letter-spacing: 0.04em; line-height: 1.5;
   color: var(--muted); margin: 0;
 }
@@ -1241,6 +1248,11 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   font-size: calc(0.97rem - 0.62px); color: var(--white); line-height: 1.6;
   margin: 0; display: block;
 }
+/* When body text is the card's last content (About, Contact), pull the
+   last line's half-leading (~6px at 14.9px/1.6) back out of the bottom
+   gap so the text's INK ends 24px off the card edge — the same gap the
+   header rule keeps above, equal air on both sides. */
+.mission-card > .card-preview:last-child{ margin-bottom: -6px; }
 /* Consecutive body paragraphs (the letter card) get a one-line gap. */
 .mission-card .card-preview + .card-preview{ margin-top: 1.6em; }
 /* Inline links in body text (the email, Contact/Give) — underlined in the
@@ -1291,10 +1303,11 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
 .mission-band{ display: flex; }
 .mission-band--top{ margin: -24px -24px 0; }
 .mission-band-rule{ height: 1px; background: var(--line); }
-/* The 24px bottom margin is the gap down to the card's content — the
-   same inset as the card's own padding, so header rule and side/foot
-   gaps all read on one rhythm. */
-.mission-band-rule--top{ margin: 0 -24px 24px; }
+/* The bottom margin is the gap down to the card's content — 22px of box
+   gap lands the dek's INK 24px under the rule (the dek's line-height
+   leading eats the other 2), so header rule and side/foot gaps all read
+   on the card's 24px rhythm. */
+.mission-band-rule--top{ margin: 0 -24px 22px; }
 /* A fixed 24px of air between the body text above and the footer rule —
    the card's own padding rhythm. */
 .mission-band-rule--bottom{ margin: 24px -24px 0; }
@@ -1303,11 +1316,11 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   flex-wrap: wrap;
 }
 .mission-band-box{
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
   line-height: 1; white-space: nowrap;
-  /* Re-balanced 10.1/9.9 split — see .panel-band .pc's comment. */
-  padding: 10.1px 14px 9.9px;
+  /* Re-balanced 10.35/9.65 split — see .panel-band .pc's comment. */
+  padding: 10.35px 14px 9.65px;
   transition: color .15s ease;
 }
 /* Corner boxes are closed off by their own vertical rules (a left box on
@@ -1324,15 +1337,25 @@ body.mission-body main{ flex: 1 0 auto; display: flex; }
   border-left: 1px solid var(--line);
   padding-left: 24px; padding-right: 24px;
 }
-/* A split footer (the Give buttons): two equal halves side by side with a
-   divider between them. Labels wrap rather than overflow when two long
-   button texts can't share one line. */
+/* A split footer (the Give buttons): built like the top bands' corner
+   pair — a left box closed off by its own right rule, a right box closed
+   off by its left rule, and open band between them. Each label sits
+   flush with the card's 24px inner column margin. Labels may wrap
+   rather than overflow when the band gets narrow. */
 .mission-band--split .mission-band-box{
-  flex: 1 1 0; min-width: 0;
-  white-space: normal; text-align: center;
+  min-width: 0;
+  white-space: normal;
   padding-left: 24px; padding-right: 24px;
 }
-.mission-band--split .mission-band-box + .mission-band-box{ border-left: 1px solid var(--line); }
+.mission-band--split .mission-band-box:first-child{
+  text-align: left;
+  border-right: 1px solid var(--line);
+}
+.mission-band--split .mission-band-box:last-child{
+  text-align: right;
+  margin-left: auto;
+  border-left: 1px solid var(--line);
+}
 /* Text in every band box whitens on hover — no glow; link boxes
    (Subscribe, the Give buttons) also take the Read-on button's white
    outline, their gray rules going transparent under it. */
@@ -1364,12 +1387,12 @@ a.mission-band-box:hover{
 }
 .mission-person-photo--blank{ background: var(--surface-2); }
 .mission-person-name{
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
-  letter-spacing: 0.02em; color: var(--white); line-height: 1.3;
+  font-family: var(--body); font-weight: 400; font-size: calc(0.97rem - 0.62px);
+  color: var(--white); line-height: 1.3;
   transition: color .15s ease;
 }
 .mission-person-role{
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
   line-height: 1.3;
 }
@@ -1411,17 +1434,18 @@ a.mission-person:hover .mission-person-photo{ border-color: var(--white); }
   padding-right: 0;
 }
 /* Item rows run at the hover cards' band-box height: text on a
-   line-height:1 box with the bands' own 11/9 optical padding, so each
-   row stands as tall as a panel header. The column head above keeps its
+   line-height:1 box with a 10.1/9.9 optical padding split (measured to
+   dead-center Helvetica's mixed-case ink in the row), so each row
+   stands as tall as a panel header. The column head above keeps its
    roomier 13/13. */
 .arch-ledger-row .arch-ledger-cell{
-  padding-top: 11px;
-  padding-bottom: 9px;
+  padding-top: 10.1px;
+  padding-bottom: 9.9px;
   line-height: 1;
 }
 .arch-ledger-head{
   /* Same courier treatment as the card metas/kickers site-wide. */
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.03em; text-transform: uppercase;
   color: var(--muted);
 }
@@ -1481,7 +1505,7 @@ a.mission-person:hover .mission-person-photo{ border-color: var(--white); }
 .arch-ledger-item.open + .arch-ledger-item{ border-top-color: transparent; }
 main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transparent; }
 .arch-ledger-row{
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   color: var(--muted);
   cursor: pointer;
   transition: color .15s ease;
@@ -1624,7 +1648,7 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
      title of its own (the row above carries it). */
   font-family: var(--mono);
   font-style: normal;
-  font-weight: 475;
+  font-weight: 400;
   font-size: var(--mono-size-muted);
   letter-spacing: 0.04em;
   line-height: 1.5;
@@ -1657,9 +1681,9 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   display: inline-flex; align-items: center;
   flex-shrink: 0; white-space: nowrap;
   margin: 0; background: none; border: 0;
-  /* Re-balanced 10.1/9.9 split — see .panel-band .pc's comment. */
-  padding: 10.1px 14px 9.9px;
-  font-family: var(--mono); font-weight: 475; font-size: var(--mono-size-muted);
+  /* Re-balanced 10.35/9.65 split — see .panel-band .pc's comment. */
+  padding: 10.35px 14px 9.65px;
+  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
   letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
   color: var(--muted);
   text-decoration: none;
@@ -1746,7 +1770,7 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
     gap: 16px; padding: 0 20px;
   }
   :is(.arch-ledger-head, .arch-ledger-row) .arch-ledger-cell{ padding: 12px 16px 12px 0; }
-  .arch-ledger-row .arch-ledger-cell{ padding-top: 11px; padding-bottom: 9px; }
+  .arch-ledger-row .arch-ledger-cell{ padding-top: 10.1px; padding-bottom: 9.9px; }
   :is(.arch-ledger-head, .arch-ledger-row) .arch-ledger-cell:last-child{ padding-right: 0; }
   /* Outspecifies the head cells' display:flex rule above. */
   .arch-ledger-grid .lc-kicker{ display: none; }
