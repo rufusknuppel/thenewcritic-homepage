@@ -15,8 +15,11 @@
 //   focal   — CSS object-position for the cover crop, e.g. 'center 20%'
 
 module.exports = {
+  'manifest-man': {
+    kicker: 'Rationalist Workshop',
+  },
   'change-my-mind': {
-    kicker: 'A Betrayal as Political Awakening?',
+    kicker: 'Political Betrayal',
     author: 'Shabbos Kestenbaum',
   },
   'behaving-badly': {
@@ -24,7 +27,7 @@ module.exports = {
     author: 'Theodore Gary',
   },
   'the-commodification-of-freya-india': {
-    kicker: 'Who\'s Afraid of Social Media?',
+    kicker: 'Girlhood',
     author: 'Freya India',
     preview: [
       'Maybe you have heard of Freya India. She is a frequent guest on podcasts hosted by middle-aged men, her interviews are clipped into Reels and TikToks and reposted all over the internet, and she has over 54,000 subscribers on Substack.',
@@ -46,7 +49,7 @@ module.exports = {
     author: 'Tessa Augsberger',
   },
   'the-blackpill': {
-    kicker: 'Internet Terrorists',
+    kicker: 'Internet Terrorism',
     author: 'Jacob Zucker',
   },
   'terms-of-service': {
@@ -70,31 +73,31 @@ module.exports = {
     author: 'Elan Kluger',
   },
   'contra': {
-    kicker: 'The New Critic\'s Criticism',
+    kicker: 'The New Critic’s Criticism',
     author: 'The New Critic',
   },
   'last-girl-at-the-beginning-of-history': {
-    kicker: 'Whisperer',
+    kicker: 'New Right Whisperer',
     author: 'Mana Afsari',
   },
   'what-was-college-for-3ce': {
-    kicker: 'A College Deep in the Sierra Nevada',
+    kicker: 'Dark Academia',
     author: 'Benjamin Samuels',
   },
   'voluntary-oasis': {
-    kicker: 'Ranch University?',
+    kicker: 'Ranch University',
     author: 'Declan Rexer',
   },
   'american-berserk': {
-    kicker: 'An Englishman in North Carolina',
+    kicker: 'An Englishman Goes South',
     author: 'Samuel Rigg',
   },
   'not-new-york': {
-    kicker: 'Where All The Postgrads Don\'t Go',
+    kicker: 'Postgraduate Exodus',
     author: 'Declan Rexer',
   },
   'worse-than-you-think': {
-    kicker: 'Are Online Friends Worth Having?',
+    kicker: 'Rational Actor',
     author: 'Clare Ashcraft',
   },
   'collegiate-value': {
@@ -102,19 +105,19 @@ module.exports = {
     author: 'Clare Ashcraft',
   },
   'the-girls-who-watch-girls': {
-    kicker: 'Friends in College',
+    kicker: 'Girlfriends',
     author: 'Sarah Miller',
   },
   'bridge-over-troubled-water': {
-    kicker: 'Who Are the Dusty Intellectuals?',
+    kicker: 'Adventures in Education',
     author: 'Owen Yingling',
   },
   'https://asteriskmag.substack.com/cp/197596620': {
-    kicker: 'The Risk-geist',
+    kicker: 'The Risk-Geist',
     author: 'The New Critic',
   },
   'what-was-college-for': {
-    kicker: 'The $1K Essay',
+    kicker: 'TNC Essay Contest',
     author: 'The New Critic',
   },
   'the-great-zombification': {
@@ -130,7 +133,7 @@ module.exports = {
     author: 'Elan Kluger',
   },
   'pee-1': {
-    kicker: 'An Alternative to Fraternities',
+    kicker: 'Alternative Space',
     author: 'Ryan Merrifield',
   },
   'curtis-yarvin-jr': {
@@ -174,7 +177,7 @@ module.exports = {
     author: 'Charlotte Hampton, Sarah Miller',
   },
   'chasing-the-story': {
-    kicker: 'Reporter\'s Notebook',
+    kicker: 'Reporter’s Notebook',
     author: 'Sarah Miller',
   },
   'ps-the-new-new-critic': {
@@ -226,7 +229,7 @@ module.exports = {
     author: 'Matthew Adelstein, Noah Birnbaum, Amos Wollen',
   },
   'end-times': {
-    kicker: 'Theater Workshop',
+    kicker: 'Theater Training',
     author: 'Zayd Vlach',
   },
   'finding-a-scene-among-the-corporate': {
@@ -234,7 +237,7 @@ module.exports = {
     author: 'Will Diana',
   },
   'in-defense-of-the-personal-essay': {
-    kicker: 'Vulnerable Argument',
+    kicker: 'Vulnerable Arguments',
     author: 'Everett Yum',
   },
   'great-and-wonderful-days': {
@@ -262,7 +265,7 @@ module.exports = {
     author: 'Jonas Rosenthal',
   },
   'against-the-confessional-essay': {
-    kicker: 'Intimates',
+    kicker: 'Intimate Arguments',
     author: 'Owen Yingling',
   },
   'in-the-beak-of-the-heron': {
