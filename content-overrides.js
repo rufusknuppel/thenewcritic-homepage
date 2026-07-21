@@ -356,4 +356,7 @@ module.exports = {
     kicker: 'Phonelessness',
     author: 'Rufus Knuppel',
   },
+  'the-doctor-of-girlhood': {
+    kicker: 'Books',
+  },
 };

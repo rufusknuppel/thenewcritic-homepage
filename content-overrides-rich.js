@@ -12,6 +12,9 @@
 // edit here and run `npm run overrides`.
 
 module.exports = {
+  'the-doctor-of-girlhood': {
+    kicker: 'Books',
+  },
   'the-commodification-of-freya-india': {
     preview: [
       'Maybe you have heard of Freya India. She is a frequent guest on podcasts hosted by middle-aged men, her interviews are clipped into Reels and TikToks and reposted all over the internet, and she has over 54,000 subscribers on Substack.',
