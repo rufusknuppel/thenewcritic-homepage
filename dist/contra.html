@@ -5,11 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
 <title>Contra — The New Critic</title>
+<meta property="og:site_name" content="The New Critic">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contra — The New Critic">
+<meta property="og:url" content="https://thenewcritic.com/contra.html">
+<meta property="og:image" content="https://substackcdn.com/image/fetch/$s_!wGxB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.png">
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/lora-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -603,17 +608,21 @@
     }
   }
 
-  // Reads the rendered line boxes of a two-column block and reports, per
-  // column, whether the bottom line slot is occupied (…Full) and whether
-  // the line sitting in it is an orphan — a paragraph's opening line
-  // stranded at the column's foot while its body carries on past the
-  // break. Assumes the block is height-capped at a whole-line multiple
-  // with sequential fill, so lines land on the grid with no partials.
-  function columnFill(el, plh) {
+  // Reads the rendered line boxes of a multi-column block and reports,
+  // per column, whether the bottom line slot is occupied (full[]) and
+  // whether the line sitting in it is an orphan — a paragraph's opening
+  // line stranded at the column's foot while its body carries on past
+  // the break. Columns are told apart by banding the block's width into
+  // `cols` equal strips (gaps land between bands, so a line's center x
+  // always falls in its own column's band). Assumes the block is
+  // height-capped at a whole-line multiple with sequential fill, so
+  // lines land on the grid with no partials.
+  function columnFill(el, plh, cols) {
     var r = el.getBoundingClientRect();
-    var midX = (r.left + r.right) / 2;
+    var bandW = r.width / cols;
     var slotTop = r.bottom - plh;
-    var st = { leftFull: false, rightFull: false, leftOrphan: false, rightOrphan: false };
+    var st = { full: [], orphan: [] };
+    for (var c = 0; c < cols; c++) { st.full[c] = false; st.orphan[c] = false; }
     [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
       var rng = document.createRange();
       rng.selectNodeContents(p);
@@ -627,41 +636,42 @@
         if (Math.abs(rects[j].top - first.top) > plh / 2) { continues = true; break; }
       }
       rects.forEach(function(rc){
-        // Overflow past the second column renders in phantom columns out
+        // Overflow past the last column renders in phantom columns out
         // beyond the block's right edge — not visible, not counted.
         if (rc.left >= r.right - 1) return;
         if ((rc.top + rc.bottom) / 2 < slotTop) return;
         var isFirstLine = continues && Math.abs(rc.top - first.top) < plh / 2;
-        if ((rc.left + rc.right) / 2 >= midX) {
-          st.rightFull = true;
-          if (isFirstLine) st.rightOrphan = true;
-        } else {
-          st.leftFull = true;
-          if (isFirstLine) st.leftOrphan = true;
-        }
+        var col = Math.min(cols - 1, Math.max(0,
+          Math.floor(((rc.left + rc.right) / 2 - r.left) / bandW)));
+        st.full[col] = true;
+        if (isFirstLine) st.orphan[col] = true;
       });
     });
     return st;
   }
 
-  // Decides how many lines tall a two-column block stands. The rule: both
-  // columns run full — top line against the divider, bottom line in the
-  // slot against the footer gap, line grids aligned (the CSS sets the
-  // paragraph gap to exactly one line) — and neither column may end in an
+  // Decides how many lines tall a multi-column block stands. The rule:
+  // every column runs full — top line against the divider, bottom line
+  // in the slot against the footer gap, line grids aligned (the CSS sets
+  // the paragraph gap to exactly one line) — and no column may end in an
   // orphan. Starts from the tallest height the box allows and gives back
-  // one line at a time until the flow satisfies all of it; every line
-  // given back becomes space above the title via the caller's anchor
-  // shift. Returns 0 when no height fills both columns (content too short
-  // to reach the second column's floor at any of them) — callers fall
-  // back to the natural balanced flow.
-  function pickColumnHeight(el, plh, maxLines) {
+  // one line at a time until the flow satisfies all of it. Returns 0
+  // when no height fills every column (content too short to reach the
+  // last column's floor at any of them) — callers fall back to the
+  // natural balanced flow.
+  function pickColumnHeight(el, plh, maxLines, cols) {
     var firstFull = 0;
     for (var k = maxLines; k >= 1; k--) {
       el.style.height = (k * plh) + 'px';
-      var st = columnFill(el, plh);
-      if (!st.leftFull || !st.rightFull) continue;
+      var st = columnFill(el, plh, cols);
+      var allFull = true, anyOrphan = false;
+      for (var c = 0; c < cols; c++) {
+        if (!st.full[c]) allFull = false;
+        if (st.orphan[c]) anyOrphan = true;
+      }
+      if (!allFull) continue;
       if (!firstFull) firstFull = k;
-      if (!st.leftOrphan && !st.rightOrphan) return k;
+      if (!anyOrphan) return k;
     }
     return firstFull;
   }
@@ -767,6 +777,9 @@
       p.style.webkitLineClamp = '999';
       p.style.lineClamp = '999';
     });
+    // And the previous pass's slack padding (see the end of fit()), so
+    // every measurement below starts from the CSS minimum.
+    panel.style.paddingTop = '';
 
     var limit = band.getBoundingClientRect().top - 14;
 
@@ -824,23 +837,22 @@
         return;
       }
       if (el.classList.contains('card-preview-block')) {
-        if (getComputedStyle(el).columnCount === '2') {
-          // Two-column essay excerpt: line-clamping individual paragraphs
+        var colCount = parseInt(getComputedStyle(el).columnCount, 10) || 1;
+        if (colCount > 1) {
+          // Multi-column essay excerpt (two on the squares, three on the
+          // extra-wide split cells): line-clamping individual paragraphs
           // can't work across column flow, so the block fits as one unit,
-          // sized by pickColumnHeight — both columns full from the divider
-          // line down to the footer line, grids aligned, neither column
-          // ending in an orphan. Overflow spills into clipped phantom
-          // columns past the second and is cut at its last whole word by
-          // truncateToWord, ellipsis joined on inline.
+          // sized by pickColumnHeight — every column full from the
+          // divider line down to the footer line, grids aligned, no
+          // column ending in an orphan. Overflow spills into clipped
+          // phantom columns past the last and is cut at its last whole
+          // word by truncateToWord, ellipsis joined on inline.
           //
-          // The block's budget stops GAP_BOTTOM above the footer band —
-          // 16px of box gap puts the last line's INK the same ~24px from
-          // the band rule as the first line's ink sits from the quote
-          // divider (whose 20px margin + the line's own leading make up
-          // the difference) — and every line the fitter gives back (plus
-          // the line-quantization remainder) shifts the whole column DOWN
-          // instead of pooling here, so the header gap is a floor, never
-          // less.
+          // The block's budget stops GAP_BOTTOM above the footer band
+          // and fills with as many whole lines as fit; the sub-line
+          // remainder (and whatever a short excerpt leaves) moves ABOVE
+          // THE TITLE via the slack padding at the end of fit(), so the
+          // last line still ends exactly GAP_BOTTOM above the band.
           var firstP = el.querySelector('.card-preview');
           var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
           var bandTop = limit + 14;
@@ -861,33 +873,26 @@
           // deleting the clipped tail later can't re-balance what shows.
           el.style.overflow = 'hidden';
           el.style.columnFill = 'auto';
-          var blockLines = pickColumnHeight(el, plh, maxLines);
+          var blockLines = pickColumnHeight(el, plh, maxLines, colCount);
           if (blockLines) {
             el.style.height = (blockLines * plh) + 'px';
           } else {
-            // Content too short to floor both columns at any height —
-            // let it balance naturally and just anchor what there is.
+            // Content too short to floor every column at any height —
+            // let it balance naturally and just cap what there is.
             el.style.height = '';
             el.style.columnFill = '';
             el.style.maxHeight = (maxLines * plh) + 'px';
           }
-          // Anchor to the footer: whatever the block doesn't use ends up
-          // above it, shifting the column down so the block always ends
-          // GAP_BOTTOM above the band. The header gap absorbs all of it
-          // (its padding is the minimum).
-          var anchorShift = (bandTop - GAP_BOTTOM) - el.getBoundingClientRect().bottom;
-          if (anchorShift > 0) topBox.style.marginTop = anchorShift + 'px';
           // Cut text spills into clipped phantom columns, widening the
           // scrollable area — that's the tell that an ellipsis is owed.
           if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
           return;
         }
-        // Single-column preview (trio/quad/mosaic squares): paragraphs
-        // clamp at the rendered line, then the block anchors to the
-        // footer band the same way the essays' two-column blocks do —
-        // its last line ends GAP_BOTTOM above the band, and the line
-        // remainder (or whole unused lines) shifts the column down, the
-        // header gap being the minimum.
+        // Single-column preview (trio/quad/mosaic squares and the split
+        // rows' postscript thirds): paragraphs clamp at the rendered
+        // line inside scGap's budget — as many whole lines as fit — and
+        // the sub-line slack moves above the title, same as the
+        // multi-column path (see the slack padding at the end of fit()).
         var scGap = 16;
         var scLimit = (limit + 14) - scGap;
         var parasCut = false;
@@ -898,10 +903,7 @@
           parasCut = true;
           if (clampToFit(p, scLimit)) lastVisible = p;
         });
-        if (lastVisible) {
-          var scShift = scLimit - lastVisible.getBoundingClientRect().bottom;
-          if (scShift > 0) topBox.style.marginTop = scShift + 'px';
-        } else {
+        if (!lastVisible) {
           // Every paragraph died — hide the empty block and the quote
           // divider that would otherwise sit orphaned above it.
           el.style.display = 'none';
@@ -932,28 +934,21 @@
       if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
     }
 
-    // Homepage contra quads (no excerpt — .card--quad-open, the contra
-    // page's wider cells, keeps its footer-anchored preview): the title/
-    // dek group floats between the bands, so balance it — the gap from
-    // the header band down to the title equals the gap from the dek up
-    // to the footer band. The padding-top stays the floor: content too
-    // tall for equal gaps never rides up under the header band.
-    var quad = panel.closest('.card--quad');
-    if (quad && !quad.classList.contains('card--quad-open')) {
-      var firstEl = null, lastEl = null;
-      [].forEach.call(topBox.children, function(el){
-        if (getComputedStyle(el).display === 'none') return;
-        if (!firstEl) firstEl = el;
-        lastEl = el;
-      });
-      var headBand = panel.querySelector('.panel-band--top');
-      if (firstEl && lastEl && headBand) {
-        var gapAbove = firstEl.getBoundingClientRect().top
-          - headBand.getBoundingClientRect().bottom;
-        var gapBelow = band.getBoundingClientRect().top
-          - lastEl.getBoundingClientRect().bottom;
-        var centerShift = (gapBelow - gapAbove) / 2;
-        if (centerShift > 0) topBox.style.marginTop = centerShift + 'px';
+    // The bottom rhythm: the excerpt's last line ends exactly 16px
+    // above the footer band on every card. The branches above fill
+    // that span with as many whole text lines as fit; the sub-line
+    // remainder — plus whatever a short excerpt leaves — moves ABOVE
+    // THE TITLE here. The panel's CSS padding-top is the standard
+    // MINIMUM header-to-title gap, and each panel's slack is added on
+    // top of it, so the title rides down to close the bottom gap
+    // rather than the text floating up off the band. Panels with no
+    // visible excerpt (the quads) keep the minimum and anchor top.
+    var pvBlock = topBox.querySelector('.card-preview-block');
+    if (pvBlock && getComputedStyle(pvBlock).display !== 'none') {
+      var slack = (limit + 14 - 16) - pvBlock.getBoundingClientRect().bottom;
+      if (slack > 0.5) {
+        var basePad = parseFloat(getComputedStyle(panel).paddingTop) || 0;
+        panel.style.paddingTop = (basePad + slack) + 'px';
       }
     }
   }

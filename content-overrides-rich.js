@@ -15,6 +15,11 @@ module.exports = {
   'the-doctor-of-girlhood': {
     kicker: 'Books',
   },
+  // Was the hand-set HERO_KICKER while this post led the old hero card;
+  // carried over here when the homepage lead rows replaced the hero.
+  'the-new-statesman': {
+    kicker: 'To Phone or Not',
+  },
   'the-commodification-of-freya-india': {
     preview: [
       'Maybe you have heard of Freya India. She is a frequent guest on podcasts hosted by middle-aged men, her interviews are clipped into Reels and TikToks and reposted all over the internet, and she has over 54,000 subscribers on Substack.',

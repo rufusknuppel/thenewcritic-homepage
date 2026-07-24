@@ -32,14 +32,6 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'EB Garamond';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/eb-garamond-roman.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
   font-family: 'Newsreader';
   font-style: normal;
   font-weight: 200 800;
@@ -56,19 +48,11 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Lora';
+  font-family: 'Inter';
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 700;
   font-display: swap;
-  src: url(fonts/lora-roman.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'Lora';
-  font-style: italic;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url(fonts/lora-italic.woff2) format('woff2');
+  src: url(fonts/inter-bold.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 :root{
@@ -86,10 +70,10 @@
   --line-soft: rgba(247,246,241,0.07);
   --display: 'Fraunces', serif;
   --body: 'Newsreader', 'Source Serif 4', serif;
-  /* Titles: the same system Helvetica stack as the labels — one grotesk
-     voice for titles and label furniture alike, set apart from the
-     Newsreader body by size and color rather than family. */
-  --title: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* Titles: Inter Bold — a different, heavier grotesk than the Helvetica
+     label furniture, so titles carry their own weight (literally) while
+     staying in the same sans family as the labels below them. */
+  --title: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* Labels/buttons/deks: Helvetica — the system grotesk, no webfont to
      host. A clean sans voice against the two serifs; the neo-grotesque
      everyone's eye skips past, which is the point of a label face. On
@@ -398,6 +382,46 @@ section{ padding: 80px 0; }
    otherwise leave a 14px gap under an image that's supposed to fill the
    half exactly. */
 .duo-half .duo-card-image{ position: relative; overflow: hidden; width: 100%; aspect-ratio: 1/1; margin-bottom: 0; }
+/* ---------- SPLIT + FLAT-TRIO ROWS (homepage) ----------
+   The homepage's essay/postscript rows print every cover at ONE height
+   — the 1:1 duo squares' — while every postscript cell matches the
+   contra squares' width: a third of the row minus the three-across
+   rows' two divider gutters (49px each: 24px margin + 1px line + 24px
+   margin). No fixed aspect ratio can hit both targets at once (the
+   leftover essay cell's ratio would depend on the row width), so these
+   rows are inline-size containers and their image boxes take height
+   straight from the row width instead: (100cqw - 49px) / 2 IS the
+   square rows' height (two cells, one gutter, 1:1). Covers crop to the
+   box (object-fit cover + focal points), like any duo cell.
+     .card--split — the lead/foot rows: one postscript third + one
+     essay filling the remaining two thirds (renderSplitRow in
+     build.js; the foot row runs them mirrored).
+     .card--trio-flat — three postscripts across, each a contra-square
+     third at the shared essay height. */
+:is(.card--split, .card--trio-flat){ container-type: inline-size; }
+.card--split .duo-half--narrow{ flex: 0 0 calc((100% - 98px) / 3); }
+:is(.card--split, .card--trio-flat) .duo-half .duo-card-image{
+  aspect-ratio: auto;
+  height: calc((100cqw - 49px) / 2);
+}
+@media (max-width: 860px){
+  /* The divider gutters narrow to 41px (20px margins — see
+     .duo-half-divider); same constants re-derived. */
+  .card--split .duo-half--narrow{ flex-basis: calc((100% - 82px) / 3); }
+  :is(.card--split, .card--trio-flat) .duo-half .duo-card-image{
+    height: calc((100cqw - 41px) / 2);
+  }
+}
+@media (max-width: 480px){
+  /* Stacked into a column: content-sized cells again (the same reset
+     the base .duo-half gets below), each cover a plain 4:3 box at full
+     width — a row width's worth of height would be meaningless here. */
+  .card--split .duo-half--narrow{ flex: 0 0 auto; }
+  :is(.card--split, .card--trio-flat) .duo-half .duo-card-image{
+    height: auto;
+    aspect-ratio: 4/3;
+  }
+}
 /* The postscript row (three cells across instead of two) is 1:2 portrait
    rather than square — three classes so it outranks the square rule above
    regardless of source order. Everything else about the row (dividers,
@@ -422,14 +446,22 @@ section{ padding: 80px 0; }
   /* 80 top = a 47px anchor gap under the 33px header band; the bottom
      stays 52 as the open-space zone before the footer. */
   padding: 80px 24px 52px;
-  background: var(--paper);
+  /* A scrim, not a solid: the cover art underneath (already dimmed to
+     grayscale-half by the hover filter below) ghosts through at roughly
+     an eighth of its strength, so the open panel reads as ink printed
+     over the artwork rather than a modal replacing it. The mobile/touch
+     fallback resets this to none along with the rest of the overlay. */
+  background: rgba(0, 0, 0, 0.72);
   border: 1px solid var(--white);
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease, box-shadow .3s ease;
   overflow: hidden;
 }
-.duo-half:hover .duo-panel{
+/* Revealed by pointing at the half, or by keyboard focus landing on any
+   of its links — the panel's links are always in tab order, so without
+   :focus-within a keyboard user would tab through an invisible card. */
+.duo-half:is(:hover, :focus-within) .duo-panel{
   opacity: 1;
   pointer-events: auto;
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
@@ -444,7 +476,8 @@ section{ padding: 80px 0; }
 :is(.duo-panel, .card--feature) .panel-band{
   position: absolute; left: 0; right: 0; z-index: 2;
   display: flex; align-items: stretch;
-  background: var(--paper);
+  /* No background of their own — the panel's scrim runs behind them, so
+     the ghosted artwork shows through band and body alike. */
 }
 /* The bands' horizontal rules and the corner boxes' vertical rules
    (below) draw themselves in each time the card opens — the archive
@@ -563,24 +596,24 @@ section{ padding: 80px 0; }
    open. The panel itself is still fading in (opacity .3s) under the
    first of these delays, so the earliest line starts just as the card
    becomes legible. */
-:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band--top::after{
+:is(.duo-half:is(:hover, :focus-within), .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within))) .duo-panel .panel-band--top::after{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .05s;
 }
-:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band .pc-left::after,
-:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band .pc-right::before{
+:is(.duo-half:is(:hover, :focus-within), .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within))) .duo-panel .panel-band .pc-left::after,
+:is(.duo-half:is(:hover, :focus-within), .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within))) .duo-panel .panel-band .pc-right::before{
   transform: scaleY(1);
   transition: transform .35s ease .2s;
 }
-:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .card-title-divider{
+:is(.duo-half:is(:hover, :focus-within), .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within))) .duo-panel .card-title-divider{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .3s;
 }
-:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .duo-quote-divider{
+:is(.duo-half:is(:hover, :focus-within), .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within))) .duo-panel .duo-quote-divider{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .42s;
 }
-:is(.duo-half:hover, .card.card--feature:has(:is(.card-image-link, .duo-panel):hover)) .duo-panel .panel-band--bottom::before{
+:is(.duo-half:is(:hover, :focus-within), .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within))) .duo-panel .panel-band--bottom::before{
   transform: scaleX(1);
   transition: transform .45s cubic-bezier(.25, .1, .25, 1) .54s;
 }
@@ -681,14 +714,11 @@ section{ padding: 80px 0; }
   .card--archive .duo-divider--h{ margin: 16px -16px; }
   .archive-pair{ flex-direction: column; }
 }
-/* Standardized with the sections above: the tall portrait cell sits at
-   roughly the trio's cell width and takes the trio's (= hero/essay)
-   title size via the shared .card--duo rule; the wide landscape likewise.
-   The two squares match the contra quads — same size, same two-line
-   clamp with the descender padding (see .card--quad .card-title above
-   for why both exist). */
+/* The mosaic's two small squares match the contra quads — the shared
+   title size (one size everywhere, via the .card--duo rule), and the
+   same two-line clamp with the descender padding (see .card--quad
+   .card-title above for why both exist). */
 .card--archive .archive-pair .card-title{
-  font-size: clamp(1.01rem, 1.88vw, 1.62rem);
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 2; -webkit-line-clamp: 2;
   padding-bottom: 0.15em;
@@ -752,7 +782,8 @@ section{ padding: 80px 0; }
   left: 0;
   aspect-ratio: 1 / 2;
 }
-.card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .duo-panel{
+/* Same reveal pair as the duo halves: pointer or keyboard focus. */
+.card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .duo-panel{
   opacity: 1;
   pointer-events: auto;
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
@@ -770,10 +801,10 @@ section{ padding: 80px 0; }
 /* Pinned to the bottom-left corner — .duo-panel (hero and duo/trio/quad
    alike) is an already positioned ancestor. */
 .card-category-btn{ position: absolute; left: 24px; bottom: 24px; }
-/* A white outline framing a HOVERED cover image — drawn as an ::after
-   (rather than an inset box-shadow, which the opaque child img paints
-   over and hides, or an outline, which some browsers won't render with
-   a negative offset inside overflow:hidden) so a generated box is
+/* The outline framing every cover image — drawn as an ::after (rather
+   than an inset box-shadow, which the opaque child img paints over and
+   hides, or an outline, which some browsers won't render with a
+   negative offset inside overflow:hidden) so a generated box is
    guaranteed to paint above the img sibling, its own border sitting
    flush with the link's edge. Sized via inset:0 rather than width/height
    so it always matches the link exactly regardless of the image's
@@ -790,8 +821,8 @@ section{ padding: 80px 0; }
   opacity: 0;
   transition: opacity .18s ease;
 }
-.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image-link::after,
-.duo-half:hover .card-image-link::after{
+.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image-link::after,
+.duo-half:is(:hover, :focus-within) .card-image-link::after{
   opacity: 1;
 }
 
@@ -804,11 +835,11 @@ section{ padding: 80px 0; }
    ring, and a second shadow on the link — clipped top/bottom by
    .feature-image-cell's edges but free to spread sideways — leaked
    extra glow into the pillarboxes. */
-.duo-half:hover .card-image-link{
+.duo-half:is(:hover, :focus-within) .card-image-link{
   box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
 }
-.card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image,
-.duo-half:hover .card-image{
+.card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image,
+.duo-half:is(:hover, :focus-within) .card-image{
   filter: grayscale(1) brightness(0.5);
 }
 .card--feature .card-title,
@@ -820,18 +851,13 @@ section{ padding: 80px 0; }
   font-size: clamp(1.45rem, 2.9vw, 2.17rem); margin: 0; text-align: left; line-height: 1.1;
   overflow-wrap: normal;
 }
-/* Trio bumped up to the hero/essay size — the narrower column still fits
-   it (overflow-wrap: normal above means an over-long word spills rather
-   than breaking, so nothing wraps awkwardly). */
-.card--trio .duo-panel .card-title,
-.card--feature .duo-panel .card-title{ font-size: clamp(1.45rem, 2.9vw, 2.17rem); }
-/* Quad bumped up to the old trio size. Quad titles also clamp to two
-   lines (with the line-clamp ellipsis) — a long contra title ("You Seem
-   Pretty Tame for a Girl in Revolt") would otherwise spend the whole
-   square on itself and the fitter would cut everything after it, meta
-   included. */
+/* One title size everywhere: every hover panel's title runs the shared
+   .card--duo/.card--feature clamp above — no per-variant bumps. Quad
+   titles still clamp to two lines (with the line-clamp ellipsis) — a
+   long contra title ("You Seem Pretty Tame for a Girl in Revolt") would
+   otherwise spend the whole square on itself and the fitter would cut
+   everything after it, meta included. */
 .card--quad .duo-panel .card-title{
-  font-size: clamp(1.01rem, 1.88vw, 1.62rem);
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 2; -webkit-line-clamp: 2;
   /* At line-height 1.1 the last line's descenders ("Hurry", "Girl") hang
@@ -897,26 +923,33 @@ section{ padding: 80px 0; }
   margin-top: 18px;
   line-clamp: 10; -webkit-line-clamp: 10;
 }
-/* Essay panels (the two-across squares) and the hero panel — which
-   borrows the squares' own width (see duo-panel-fit.js) — run their
-   excerpt in two columns; not the trio/quad/mosaic cells, whose columns
-   would be too narrow.
+/* Essay panels (the two-across squares), the hero panel — which
+   borrows the squares' own width (see duo-panel-fit.js) — and the
+   split rows' extra-wide essay cell all run their excerpt in two
+   columns (the wide cell's are simply roomier). Not the trio/
+   trio-flat/quad/mosaic cells or the split rows' narrow postscript
+   third, whose columns would be too narrow.
    The paragraphs drop their -webkit-box clamp display: it fragments
    poorly across columns, and the fitter caps the whole block at a
    line-multiple max-height instead so the columns cut on a clean line
-   boundary (see the two-column branch in duo-panel-fit.js). */
-.card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block,
+   boundary (see the multi-column branch in duo-panel-fit.js). */
+.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block,
 .card--feature .duo-panel .card-preview-block,
 .card--archive .archive-wide .duo-panel .card-preview-block,
 .arch-ledger-card .card-preview-block{
   column-count: 2;
   column-gap: 24px;
 }
-/* When the excerpt overflows the second column, the fitter truncates the
+.card--split .duo-half--wide .duo-panel .card-preview-block{
+  column-count: 2;
+  column-gap: 24px;
+}
+/* When the excerpt overflows the last column, the fitter truncates the
    text itself at the last fully-visible word and joins the ellipsis onto
    it inline (see truncateToWord in duo-panel-fit.js / ledger.js) — no
    overlaid span, so no extra rules needed here. */
-.card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview,
+.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview,
+.card--split .duo-half--wide .duo-panel .card-preview,
 .card--feature .duo-panel .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview,
 .arch-ledger-card .card-preview-block .card-preview{
@@ -931,7 +964,8 @@ section{ padding: 80px 0; }
    avoided by the fitter instead, which shortens the block until no
    column's bottom line is a paragraph's stranded opener (see
    pickColumnHeight in duo-panel-fit.js / ledger.js). */
-.card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block .card-preview,
+.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block .card-preview,
+.card--split .duo-half--wide .duo-panel .card-preview-block .card-preview,
 .card--feature .duo-panel .card-preview-block .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview-block .card-preview,
 .arch-ledger-card .card-preview-block .card-preview{
@@ -943,7 +977,8 @@ section{ padding: 80px 0; }
    baseline grid — an 18px gap knocked the right column's lines out of
    sync with the left's. Fragment margins at a column's top are
    discarded, so a paragraph opening column two starts on the grid. */
-.card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview + .card-preview,
+.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview + .card-preview,
+.card--split .duo-half--wide .duo-panel .card-preview + .card-preview,
 .card--feature .duo-panel .card-preview + .card-preview,
 .card--archive .archive-wide .duo-panel .card-preview + .card-preview,
 .arch-ledger-card .card-preview-block .card-preview + .card-preview{
@@ -1038,10 +1073,7 @@ section{ padding: 80px 0; }
 .card-image{ width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
 .card-title{
-  /* Same Newsreader as the body text, in the body's own regular weight —
-     titles differentiate by size alone. Fraunces stays for the nav brand
-     and arrows; EB Garamond stays declared as a one-line alternative. */
-  font-family: var(--title); font-weight: 400; font-size: 0.89rem; margin: 0; color: var(--white);
+  font-family: var(--title); font-weight: 700; font-size: 0.89rem; margin: 0; color: var(--white);
   overflow-wrap: break-word;
 }
 .card-title a{ text-decoration:none; }
@@ -1141,8 +1173,16 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   .likes:hover .likes-heart{
     fill: var(--muted);
   }
-  .card.card--feature:has(:is(.card-image-link, .duo-panel):hover) .card-image{
+  /* Covers tap-triggered :hover AND the sticky :focus-within a tap
+     leaves behind. */
+  .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image{
     filter: none;
+  }
+  /* The cover ring likewise: no hover to end means a tapped card's
+     whitened outline would stick, so it holds its resting tint. */
+  .card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image-link::after,
+  .duo-half:is(:hover, :focus-within) .card-image-link::after{
+    border-color: rgba(0, 0, 0, 0.72);
   }
 }
 

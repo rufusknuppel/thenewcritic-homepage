@@ -16,6 +16,11 @@ const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
 const SITE_TAGLINE = 'The Young American Magazine';
 const SITE_URL = 'https://www.thenewcritic.com';
+// Where THIS build is served: the apex domain, routed to the gh-pages
+// deploy by cloudflare/worker.js. Social cards need absolute URLs, and
+// the in-page relative paths (which keep the GitHub Pages subpath
+// working) can't provide them — so og:url resolves against this.
+const CANONICAL_ORIGIN = 'https://thenewcritic.com';
 const FEATURED_COUNT = 1;
 const LIST_COUNT = 14;
 const OUT_DIR = path.join(__dirname, 'dist');
@@ -100,10 +105,11 @@ function applyContentOverrides(posts) {
 // current top post — not derived from feed data.
 const HERO_KICKER = 'To Phone or Not';
 
-// The archive mosaic's posts (see renderArchiveMosaic), hand-picked by
-// slug, in cell order: [tall left card, wide top-right card, first small
-// square, second small square].
-const ARCHIVE_ROW_SLUGS = ['curtis-yarvin-jr', 'pdoom', 'freak-show', 'end-times'];
+// The homepage's From the Archive rows, hand-picked by slug, in cell
+// order: [first essay square, second essay square, the split row's
+// extra-wide cell, the split row's postscript third] — see
+// renderHomepage's archive foot rows.
+const ARCHIVE_ROW_SLUGS = ['end-times', 'freak-show', 'pdoom', 'curtis-yarvin-jr'];
 
 // The arrow glyph in every "Read on →" link renders in the display face
 // (Fraunces) rather than inheriting the mono/courier font around it — see
@@ -818,9 +824,6 @@ function artBoxHtml(post, side = 'right') {
 function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) {
   const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, dekLength))}</p>` : '';
   const imgAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
-  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-        ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
-      </a></span>`;
 
   const previewParas = post.previewParagraphs && post.previewParagraphs.length
     ? post.previewParagraphs
@@ -844,6 +847,22 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
   const authorHtml = post.author && section === 'other'
     ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
     : '';
+  // The bands render once and serve twice: live inside the panel, and as
+  // the resting strip's inert copy over the cover image (cardStripHtml).
+  const bandTopHtml = `<div class="panel-band panel-band--top">
+          ${kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(kicker)}</p>` : ''}
+          ${authorBoxHtml}
+          ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
+          <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
+        </div>`;
+  const bandBottomHtml = `<div class="panel-band panel-band--bottom">
+          <a class="duo-essays-btn card-category-btn pc pc-left" href="archive.html">The Latest</a>
+          ${artBoxHtml(post)}${readNowHtml}
+        </div>`;
+  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
+        ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
+      </a></span>`;
+
   // The hero wears one duo panel — the exact panel formation of the
   // row cells (header band with kicker/author/date/likes; title, rule,
   // eyebrow dek, quote divider, excerpt; footer band with The Latest
@@ -856,12 +875,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
         ${imageHtml}
       </div>
       <div class="duo-panel">
-        <div class="panel-band panel-band--top">
-          ${kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(kicker)}</p>` : ''}
-          ${authorBoxHtml}
-          ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
-          <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
-        </div>
+        ${bandTopHtml}
         <div class="duo-panel-top">
           <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
           ${dekHtml ? '<div class="card-title-divider"></div>' : ''}
@@ -870,10 +884,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
           ${previewHtml ? '<div class="duo-quote-divider"></div>' : ''}
           ${previewHtml}
         </div>
-        <div class="panel-band panel-band--bottom">
-          <a class="duo-essays-btn card-category-btn pc pc-left" href="archive.html">The Latest</a>
-          ${artBoxHtml(post)}${readNowHtml}
-        </div>
+        ${bandBottomHtml}
       </div>
     </article>`;
 }
@@ -939,18 +950,24 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   // to edge across the panel, with the courier corners sitting in boxes
   // closed off by vertical rules (see .panel-band in style.css). Top-left
   // kicker, top-right [author +] date+likes, bottom-left the section link,
-  // bottom-right Read on.
+  // bottom-right Read on. Rendered once, served twice: live in the panel,
+  // inert in the resting strip over the image (cardStripHtml).
+  const bandTopHtml = `<div class="panel-band panel-band--top">
+            ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
+            ${authorBoxHtml}
+            ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
+            <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
+          </div>`;
+  const bandBottomHtml = `<div class="panel-band panel-band--bottom">
+            <a class="duo-essays-btn card-category-btn pc pc-left" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
+            ${artBoxHtml(post)}${readNowHtml}
+          </div>`;
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
-            ${authorBoxHtml}
-            ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
-            <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
-          </div>
+          ${bandTopHtml}
           <div class="duo-panel-top">
             <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             ${dekHtml ? '<div class="card-title-divider"></div>' : ''}
@@ -959,15 +976,37 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
             ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
             ${previewHtml}
           </div>
-          <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
-            ${artBoxHtml(post)}${readNowHtml}
-          </div>
+          ${bandBottomHtml}
         </div>
       </div>`;
 }
 
 const DUO_DIVIDER = '<div class="duo-half-divider" role="separator"></div>';
+
+// A homepage lead row: one essay cell at two thirds of the row beside
+// one postscript cell at the remaining third ({ flip: true } mirrors
+// them — postscript's third left, essay's two thirds right). The cells
+// are ordinary duo halves in a .card--split row sized so every essay
+// and postscript cover on the homepage prints at one height (see
+// .card--split in style.css). A missing post pads with a ghost cell so
+// the survivor keeps its own width. wideOpts/narrowOpts override the
+// cells' section tag and footer button (the From the Archive foot rows
+// point theirs at the archive).
+function renderSplitRow(essayPost, psPost, { flip = false, wideOpts, narrowOpts } = {}) {
+  const halves = [
+    essayPost
+      ? renderDuoHalf(essayPost, wideOpts || { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html' }, 'duo-half--wide')
+      : '<div class="duo-half duo-half--ghost duo-half--wide" aria-hidden="true"></div>',
+    psPost
+      ? renderDuoHalf(psPost, narrowOpts || { tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'postscript.html' }, 'duo-half--narrow')
+      : '<div class="duo-half duo-half--ghost duo-half--narrow" aria-hidden="true"></div>',
+  ];
+  if (flip) halves.reverse();
+  return `
+    <article class="card card--duo card--split">
+      ${halves.join(`\n      ${DUO_DIVIDER}\n      `)}
+    </article>`;
+}
 
 function renderDuoCard(posts, opts = {}) {
   const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = 'essays.html', extraClass = '', padTo = 0 } = opts;
@@ -1018,51 +1057,86 @@ function renderArchiveMosaic(posts, opts) {
 // renderListPage/renderArchivePage below are still live — the essays/
 // postscript/contra/archive pages are unaffected.
 
-function renderHomepage({ hero, essays = [], postscripts = [], contras = [], archives = [] }) {
-  const heroPreload = hero?.image
-    ? `<link rel="preload" as="image" href="${escapeHtml(hero.image)}">`
+function renderHomepage({ essays = [], postscripts = [], contras = [], archives = [] }) {
+  // The lead essay (top-left, two thirds wide) is the first cover the
+  // visitor sees — preloaded the way the old hero was.
+  const lead = essays[0];
+  const leadPreload = lead?.image
+    ? `<link rel="preload" as="image" href="${escapeHtml(lead.image)}">`
     : '';
-  const heroHtml = hero ? renderCard(hero, { dekLength: 180, eager: true, kicker: hero.kicker || HERO_KICKER }) : '';
 
-  // The most recent essays (the hero itself excluded), two per row, each
-  // row one combined card — see renderDuoCard. Below them, one row of the
-  // three most recent postscripts as 1:2 portrait cells (card--trio), one
-  // row of the four most recent contras as squares (card--quad), and the
-  // hand-picked archive mosaic (see renderArchiveMosaic / ARCHIVE_ROW_SLUGS).
-  // Every row is its own block, wrapped in its own .wrap — a .row-divider
-  // sits between blocks *outside* any .wrap, so every line between rows of
-  // cover images stretches the full width of the content column (edge to
-  // edge, past the .wrap's own max-width/padding). Each essay row is a
-  // separate block for exactly that reason: the old shared-block layout
-  // drew per-cell divider segments between essay rows that broke at the
-  // gutters instead of running edge to edge.
-  const essayRows = [];
-  for (let i = 0; i < essays.length; i += 2) {
-    essayRows.push(renderDuoCard(essays.slice(i, i + 2)));
-  }
+  // The homepage grid, top to bottom — no separate hero card. Every
+  // essay/postscript cover prints at the 1:1 duo squares' height, and
+  // every postscript cell at the contra squares' width (see .card--split
+  // / .card--trio-flat in style.css):
+  //   1. the latest essay's two thirds beside the latest postscript's
+  //      third,
+  //   2. two essays as 1:1 duo squares,
+  //   3. three contras as 1:1 squares, three across (the contra page's
+  //      own row formation),
+  //   4. two more essays,
+  //   5. three postscripts across (the flat trio),
+  //   6. two more essays,
+  //   7. three more contras,
+  //   8. two more essays,
+  //   9. row 1 mirrored: the fifth postscript's third on the left, the
+  //      tenth essay's two thirds on the right,
+  //   10-11. From the Archive (the hand-picked ARCHIVE_ROW_SLUGS, in
+  //      order): two archive essays as 1:1 squares, then a split row —
+  //      one archive pick extra-wide on the left, one as the postscript
+  //      third on the right — every cell's footer button pointing at
+  //      the archive.
+  // The old archive mosaic stays unrendered (renderArchiveMosaic kept
+  // for its return). Every row is its own block, wrapped in its own .wrap —
+  // a .row-divider sits between blocks *outside* any .wrap, so every
+  // line between rows of cover images stretches the full width of the
+  // content column (edge to edge, past the .wrap's own max-width/
+  // padding).
   const blocks = [];
-  essayRows.forEach((row) => blocks.push(row));
-  if (postscripts.length) {
-    blocks.push(renderDuoCard(postscripts, {
+  const essayPair = (pair) => {
+    if (pair.length) blocks.push(renderDuoCard(pair, { padTo: 2 }));
+  };
+  const contraRow = (row) => {
+    if (row.length) {
+      blocks.push(renderDuoCard(row, {
+        tag: 'From the Review',
+        btnLabel: 'Contra',
+        btnHref: 'contra.html',
+        extraClass: 'card--quad card--quad-open',
+        padTo: 3,
+      }));
+    }
+  };
+  if (essays[0] || postscripts[0]) {
+    blocks.push(renderSplitRow(essays[0], postscripts[0]));
+  }
+  essayPair(essays.slice(1, 3));
+  contraRow(contras.slice(0, 3));
+  essayPair(essays.slice(3, 5));
+  const psTrio = postscripts.slice(1, 4);
+  if (psTrio.length) {
+    blocks.push(renderDuoCard(psTrio, {
       tag: 'From the Interview',
       btnLabel: 'Postscript',
       btnHref: 'postscript.html',
-      extraClass: 'card--trio',
+      extraClass: 'card--trio-flat',
+      padTo: 3,
     }));
   }
-  if (contras.length) {
-    blocks.push(renderDuoCard(contras, {
-      tag: 'From the Review',
-      btnLabel: 'Contra',
-      btnHref: 'contra.html',
-      extraClass: 'card--quad',
-    }));
+  essayPair(essays.slice(5, 7));
+  contraRow(contras.slice(3, 6));
+  essayPair(essays.slice(7, 9));
+  if (essays[9] || postscripts[4]) {
+    blocks.push(renderSplitRow(essays[9], postscripts[4], { flip: true }));
   }
-  if (archives.length >= 4) {
-    blocks.push(renderArchiveMosaic(archives, {
-      tag: 'From the Essay',
-      btnLabel: 'From the Archive',
-      btnHref: 'archive.html',
+  const archiveOpts = { tag: 'From the Essay', btnLabel: 'From the Archive', btnHref: 'archive.html' };
+  if (archives[0] || archives[1]) {
+    blocks.push(renderDuoCard(archives.slice(0, 2), { ...archiveOpts, padTo: 2 }));
+  }
+  if (archives[2] || archives[3]) {
+    blocks.push(renderSplitRow(archives[2], archives[3], {
+      wideOpts: archiveOpts,
+      narrowOpts: archiveOpts,
     }));
   }
   const duoHtml = blocks
@@ -1080,12 +1154,17 @@ function renderHomepage({ hero, essays = [], postscripts = [], contras = [], arc
 <meta name="theme-color" content="#000000">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
+${ogTags({
+    title: `${SITE_NAME} \u2014 ${SITE_TAGLINE}`,
+    description: `${SITE_TAGLINE}. Criticism, essays, and conversation from the most urgent writers of our generation.`,
+    pagePath: '/',
+    image: lead?.image,
+  })}
 <link rel="icon" href="favicon.png">
-${heroPreload}
+${leadPreload}
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/lora-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -1097,16 +1176,9 @@ ${renderHeader()}
 
 <main id="main">
 
-  <section class="featured-strip" id="top">
-    <div class="wrap">
-      <div class="hero-row">
-        ${heroHtml}
-      </div>
-    </div>
-  </section>
-
-  ${blocks.length ? '<div class="row-divider"></div>' : ''}
-  ${duoHtml}
+  <div class="page-rows" id="top">
+${duoHtml}
+  </div>
 
 </main>
 
@@ -1148,7 +1220,24 @@ function renderCaterpillarScript() {
 ${js}
 </script>`;
 }
-function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '' }) {
+// The social-card block every page head carries — og:* plus the Twitter
+// card flavor. Without these a shared link renders as a bare URL in
+// iMessage/Slack/X. Cover art (Substack's CDN URLs are already absolute)
+// gets the large-image card; pages with none (about, archive) fall back
+// to a plain summary card, which renders fine without an image.
+function ogTags({ title, description, pagePath, image }) {
+  return [
+    `<meta property="og:site_name" content="${escapeHtml(SITE_NAME)}">`,
+    '<meta property="og:type" content="website">',
+    `<meta property="og:title" content="${escapeHtml(title)}">`,
+    description ? `<meta property="og:description" content="${escapeHtml(description)}">` : '',
+    `<meta property="og:url" content="${CANONICAL_ORIGIN}${pagePath}">`,
+    image ? `<meta property="og:image" content="${escapeHtml(image)}">` : '',
+    `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`,
+  ].filter(Boolean).join('\n');
+}
+
+function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1157,11 +1246,11 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="theme-color" content="#000000">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
+${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
 <link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/eb-garamond-roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/lora-roman.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -1220,6 +1309,8 @@ ${rows
     currentKey,
     title: label,
     bodyHtml,
+    // The section's newest cover becomes its share card.
+    ogImage: posts.find((p) => p.image)?.image,
     extraScripts: renderDuoPanelFitScript() + renderLineDrawScript(),
   });
 }
@@ -1636,25 +1727,12 @@ async function main() {
     `Parsed ${essaysAll.length} essays, ${postscriptAll.length} postscript, ${contraAll.length} contra posts.`
   );
 
-  // Full archive normalized (every post, real likes/author/subtitle) — used
-  // for the hero pick so it's never short on data the way an RSS-sourced
-  // post would be (RSS gives no like count and a generic excerpt).
+  // Full archive normalized (every post, real likes/author/subtitle) —
+  // richer than the RSS-sourced posts (RSS gives no like count and a
+  // generic excerpt); feeds the ledger and the archive-mosaic picks.
   const archivePosts = dedupeByLink(
     archive.map(normalizeTagPost).filter((p) => p.title && p.link)
   ).sort((a, b) => b.date - a.date);
-
-  const hero = archivePosts[0] || rssPosts[0];
-
-  // Tagline over the hero's paragraph box, matched to the post's section
-  // (specific tags checked before essays, which is the broadest bucket;
-  // untagged posts — editors' notes and the like — fall through).
-  if (hero) {
-    hero.previewTagline =
-      postscriptAll.some((p) => p.link === hero.link) ? 'from the interview'
-      : contraAll.some((p) => p.link === hero.link) ? 'from the review'
-      : essaysAll.some((p) => p.link === hero.link) ? 'from the essay'
-      : 'from the editors';
-  }
 
   // Build a preview map from RSS posts (they already have body content).
   const previewByLink = new Map(rssPosts.filter((p) => p.preview).map((p) => [p.link, p.preview]));
@@ -1677,7 +1755,7 @@ async function main() {
   const contraSlice = contraAll.slice(0, SECTIONS[2].cardCount);
 
   const leadPosts = dedupeByLink(
-    [hero, ...essaysSlice, ...postscriptSlice, ...contraSlice].filter(Boolean)
+    [...essaysSlice, ...postscriptSlice, ...contraSlice].filter(Boolean)
   );
 
   const toFetch = leadPosts.filter((p) => p.link && !previewByLink.has(p.link));
@@ -1693,29 +1771,20 @@ async function main() {
     if (preview) p.preview = preview;
   }
 
-  if (hero?.link) {
-    // Three paragraphs, same as the row posts below — the hero panel runs
-    // the essays' two-column excerpt now and eats text at the same rate.
-    console.log('Fetching hero extended preview (first three paragraphs)');
-    const heroExtended = await fetchExtendedPreview(hero.link, 3);
-    hero.previewParagraphs = heroExtended.paragraphs;
-    if (heroExtended.artist) hero.coverArtist = heroExtended.artist;
-    if (!hero.previewParagraphs.length && rssBodyByLink.has(hero.link)) {
-      console.log('Hero post page gave no paragraphs — falling back to the RSS feed body');
-      hero.previewParagraphs = extractParagraphs(rssBodyByLink.get(hero.link), 3);
-    }
-  }
+  // The homepage rows (no separate hero card anymore — the latest essay
+  // leads row 1 itself): ten most recent essays (the lead row's wide
+  // cell, four square pairs, the bottom row's wide cell), five most
+  // recent postscripts (the lead row's third, the flat trio, the
+  // bottom row's third), and six most recent contras (two three-across
+  // rows) — see renderHomepage's row plan. All of essaysAll/
+  // postscriptAll/contraAll get extended previews below, so these can
+  // slice deeper than the list-page lead slices above.
+  const homeEssays = essaysAll.slice(0, 10);
+  const homePostscripts = postscriptAll.slice(0, 5);
+  const homeContras = contraAll.slice(0, 6);
 
-  // The homepage rows below the hero (hero itself excluded from each):
-  // four most recent essays (two duo rows), three most recent postscripts
-  // (the trio row), four most recent contras (the quad row) — see
-  // renderDuoCard / renderHomepage's duoHtml.
-  const heroEssays = essaysSlice.filter((p) => p.link !== hero?.link).slice(0, 4);
-  const heroPostscripts = postscriptAll.filter((p) => p.link !== hero?.link).slice(0, 3);
-  const heroContras = contraAll.filter((p) => p.link !== hero?.link).slice(0, 4);
-
-  // The archive mosaic's four hand-picked posts, in cell order: tall left
-  // card, wide top-right card, then the two small squares beneath it.
+  // The From the Archive rows' four hand-picked posts (see
+  // ARCHIVE_ROW_SLUGS for the cell order).
   const heroArchive = ARCHIVE_ROW_SLUGS
     .map((slug) => archivePosts.find((p) => slugOf(p.link) === slug))
     .filter(Boolean);
@@ -1751,7 +1820,7 @@ async function main() {
   // for the "Read on" button to render; CONTRA_MANUAL_PREVIEWS entries
   // remain as hand edits that win where present. archivePosts rides along
   // for the ledger's fold-out cards (every post, including untagged ones).
-  const rowPostGroups = [heroEssays, heroPostscripts, heroArchive, essaysAll, postscriptAll, contraAll, archivePosts];
+  const rowPostGroups = [homeEssays, homePostscripts, heroArchive, essaysAll, postscriptAll, contraAll, archivePosts];
   const rowPosts = dedupeByLink(rowPostGroups.flat());
   if (rowPosts.length) {
     console.log(`Fetching extended previews for ${rowPosts.length} row posts`);
@@ -1800,10 +1869,10 @@ async function main() {
   // to every collection that reaches a page — the same post can appear as
   // different objects in several of them, so no deduping here.
   applyContentOverrides(
-    [hero, ...rssPosts, ...essaysAll, ...postscriptAll, ...contraAll, ...archivePosts].filter(Boolean)
+    [...rssPosts, ...essaysAll, ...postscriptAll, ...contraAll, ...archivePosts].filter(Boolean)
   );
 
-  const html = renderHomepage({ hero, essays: heroEssays, postscripts: heroPostscripts, contras: heroContras, archives: heroArchive });
+  const html = renderHomepage({ essays: homeEssays, postscripts: homePostscripts, contras: homeContras, archives: heroArchive });
 
   // give.html is only mined for assets now (see GIVE_SRC_PATH): the
   // founders' Substack links and signature images, the latter written out
