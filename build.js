@@ -459,6 +459,12 @@ const BIO_PATTERNS = [
   // annual rate…".
   /^Our essays are always online\b/i,
   /^[^.!?]{0,60}\bcan be accessed with a paid subscription\b/i,
+  // Contra posts carry the same appeal UNstarred, as a lone paragraph
+  // between the byline bio and the review's opening line — so no run
+  // filter sees it: "New Critic paid subscribers get access to Postscript,
+  // our interview series, Contra, our criticism section, and exclusive New
+  // Critic parties for only $30 a year."
+  /^[^.!?]{0,60}\bpaid subscribers get access\b/i,
   // "If you read The New Critic and take delight or solace in our project,
   // please consider a paid subscription to this flesh-and-blood gen z
   // magazine." — the plea's closing paragraph, phrased sentence-first.
