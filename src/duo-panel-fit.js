@@ -202,6 +202,227 @@
     return firstFull;
   }
 
+  // Title size follows the CELL, not the viewport. The CSS clamp is sized
+  // off vw, so a 318px square was being handed the same 60px as a 685px
+  // lead cell: two or three words to the line, no syllable break narrow
+  // enough to fit, and therefore no hyphen possible — hyphens:auto had
+  // nothing it could do and overflow-wrap broke words mid-letter instead
+  // ("The Unsta/geable"). Capping the CSS size at a fixed fraction of the
+  // panel's own width leaves the wide cells at the full 60px and gives the
+  // squares type their column can actually set — which is what lets the
+  // hyphenation, the two-line balancing and the clamp all work at all.
+  // Measured against the title's OWN column, not the panel — since the
+  // wide cells split into two, the title's measure is half the card and
+  // sizing off the panel would put 60px type in a 294px column, the exact
+  // mismatch this rule exists to prevent.
+  var TITLE_PER_PX = 0.15;
+  function fitTitleSize(panel, title) {
+    if (!title) return;
+    title.style.fontSize = '';
+    // maxWidth from a previous pass would understate the measure.
+    title.style.maxWidth = '';
+    // The wide cells keep the full CSS size deliberately — their title is
+    // the page's lead and is meant to carry, even though its column is
+    // half the card. Their titles are short enough to hold it; a long word
+    // that doesn't fit falls back to the hyphenation and break-word on
+    // .card-title rather than shrinking the whole line.
+    if (panel.closest('.duo-half--wide')) return;
+    var cssPx = parseFloat(getComputedStyle(title).fontSize) || 0;
+    var colPx = title.getBoundingClientRect().width * TITLE_PER_PX;
+    if (colPx && colPx < cssPx) title.style.fontSize = Math.round(colPx) + 'px';
+  }
+
+  // The wide cells' column rule spans the whole card: it starts on the
+  // panel's own top border and stops on the footer band's rule, so it
+  // meets the outline at both ends. Only the fitter knows where the band
+  // actually starts (its height follows the corner boxes' type), so the
+  // geometry is set here rather than guessed at in CSS.
+  // Where the split actually begins. The wide cells divide the whole card,
+  // so their rule starts on the panel's own top border. Everywhere else the
+  // title and byline span the full measure and only the ground BELOW them
+  // divides — and the rule starts ON the byline's own rule, so the two
+  // meet and the panel reads as one ruled grid rather than a line floating
+  // in the space under the byline. Without a byline rule to meet, it falls
+  // back to the top of whichever column content comes first.
+  function splitTop(panel, topBox) {
+    if (panel.closest('.duo-half--wide')) return panel.getBoundingClientRect().top;
+    var byline = topBox.querySelector('.card-byline-divider');
+    if (byline && getComputedStyle(byline).display !== 'none') {
+      return byline.getBoundingClientRect().bottom;
+    }
+    var tops = [];
+    ['.card-dek', '.card-preview-block'].forEach(function(sel){
+      var el = topBox.querySelector(sel);
+      if (el && getComputedStyle(el).display !== 'none') {
+        tops.push(el.getBoundingClientRect().top);
+      }
+    });
+    if (!tops.length) return null;
+    return Math.min.apply(Math, tops);
+  }
+
+  function fitColumnDivider(panel, topBox, band) {
+    var rule = topBox.querySelector('.panel-col-divider');
+    if (!rule) return;
+    rule.style.top = '';
+    rule.style.height = '';
+    // Cleared every pass — a panel that had nothing to divide last time
+    // may have content this time (and vice versa).
+    rule.style.display = '';
+    if (getComputedStyle(rule).position !== 'absolute') return;
+    // A rule has to have something on BOTH sides of it. On the narrow
+    // cells the excerpt is the side that can vanish — the fitter drops it
+    // when the drop to the band won't hold a single line — and a rule with
+    // an empty column beside it divides nothing.
+    if (!panel.closest('.duo-half--wide')) {
+      var right = topBox.querySelector('.card-preview-block');
+      var left = topBox.querySelector('.card-dek');
+      var visible = function(el){
+        return el && getComputedStyle(el).display !== 'none'
+          && el.getBoundingClientRect().height > 1;
+      };
+      if (!visible(right) || !visible(left)) { rule.style.display = 'none'; return; }
+    }
+    var start = splitTop(panel, topBox);
+    // Nothing in either column: a rule here would divide nothing.
+    if (start === null) { rule.style.display = 'none'; return; }
+    var topR = topBox.getBoundingClientRect();
+    rule.style.top = (start - topR.top) + 'px';
+    rule.style.height = Math.max(0, band.getBoundingClientRect().top - start) + 'px';
+  }
+
+  // Titles read as two lines wherever the words allow it. A title that
+  // sets on one line gets a max-width narrow enough to break it — and
+  // since the CSS carries text-wrap:balance, the break lands near the
+  // middle instead of dropping a one-word runt. Widths are tried from
+  // wide to narrow so the result is the WIDEST two-line setting (the
+  // least violence to the natural measure); a title that goes straight
+  // from one line to three (one very long word) is left alone, as is a
+  // single word and anything already two lines or more.
+  function fitTitleTwoLines(title) {
+    if (!title) return;
+    title.style.maxWidth = '';
+    if (getComputedStyle(title).display === 'none') return;
+    if (!/\s/.test(title.textContent.trim())) return;
+    var lh = parseFloat(getComputedStyle(title).lineHeight) || 24;
+    if (Math.round(title.getBoundingClientRect().height / lh) !== 1) return;
+    // The RUN's width, not the h3's — the heading fills its column, so
+    // its own box says nothing about how wide the words actually set.
+    var rng = document.createRange();
+    rng.selectNodeContents(title);
+    var textW = rng.getBoundingClientRect().width;
+    if (!textW) return;
+    // Never narrow the box past the longest WORD. Below that the word no
+    // longer fits its line and overflow-wrap breaks it mid-letter —
+    // "Unstageabl / e" — which is worse than the one line we started with.
+    var wordW = 0;
+    var tn = document.createTreeWalker(title, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = tn.nextNode())) {
+      var re = /\S+/g, m;
+      while ((m = re.exec(node.textContent))) {
+        var wr = document.createRange();
+        wr.setStart(node, m.index);
+        wr.setEnd(node, m.index + m[0].length);
+        var ww = wr.getBoundingClientRect().width;
+        if (ww > wordW) wordW = ww;
+      }
+    }
+    var floorW = Math.ceil(wordW) + 2;
+    if (floorW >= textW) return; // one word already fills the measure
+    for (var f = 0.72; f >= 0.34; f -= 0.06) {
+      var w = Math.max(Math.ceil(textW * f), floorW);
+      title.style.maxWidth = w + 'px';
+      var n = Math.round(title.getBoundingClientRect().height / lh);
+      if (n === 2) return;
+      if (n > 2 || w === floorW) break;
+    }
+    title.style.maxWidth = '';
+  }
+
+  // The title's link tell: one rule per rendered LINE of the title,
+  // placed absolutely inside the h3 and staggered so they sweep in top
+  // line first (see .title-rule in style.css for why CSS can't do this
+  // alone). Called after the title's size, its line breaks and any
+  // truncation have all settled, since those are what the line boxes
+  // depend on. Rules are cleared and rebuilt every fit; they carry no
+  // text, so the truncation walker never sees them.
+  function clearTitleRules(title) {
+    if (!title) return;
+    var old = title.querySelectorAll('.title-rule');
+    for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  }
+  function drawTitleRules(title) {
+    clearTitleRules(title);
+    if (!title || getComputedStyle(title).display === 'none') return;
+    var link = title.querySelector('a') || title;
+    var rng = document.createRange();
+    rng.selectNodeContents(link);
+    var rects = [].slice.call(rng.getClientRects()).filter(function(r){ return r.width >= 1; });
+    if (!rects.length) return;
+    // Fold the fragments of each rendered line into one rule. A line can
+    // arrive as several rects (an <em>, a marked-up word), and they share
+    // a top to within rounding.
+    var lines = [];
+    rects.forEach(function(r){
+      for (var i = 0; i < lines.length; i++) {
+        if (Math.abs(lines[i].top - r.top) < 2) {
+          lines[i].left = Math.min(lines[i].left, r.left);
+          lines[i].right = Math.max(lines[i].right, r.right);
+          lines[i].bottom = Math.max(lines[i].bottom, r.bottom);
+          return;
+        }
+      }
+      lines.push({ top: r.top, bottom: r.bottom, left: r.left, right: r.right });
+    });
+    lines.sort(function(a, b){ return a.top - b.top; });
+    var tr = title.getBoundingClientRect();
+    // The rect's bottom is the font's metric box, a shade under the
+    // descenders; lifting by a fraction of the type size sets the rule
+    // tight against the words, grazing them rather than clearing them.
+    var lift = (parseFloat(getComputedStyle(title).fontSize) || 24) * 0.06;
+    lines.forEach(function(l, i){
+      var el = document.createElement('span');
+      el.className = 'title-rule';
+      el.style.left = (l.left - tr.left) + 'px';
+      el.style.width = (l.right - l.left) + 'px';
+      el.style.top = (l.bottom - tr.top - lift) + 'px';
+      el.style.setProperty('--rule-delay', (i * 0.13) + 's');
+      title.appendChild(el);
+    });
+  }
+
+  // The footer band seats four boxes now — kicker and cover credit left,
+  // likes and section right — and they never wrap or shrink, they
+  // overflow, so scrollWidth is the tell. A narrow card sheds them in
+  // reverse keep-priority: the cover credit first, then the likes, then
+  // the kicker; the section link is the one box that never goes, since
+  // it's the card's only navigation. Runs before the static-fallback
+  // return in fit() so the stacked mobile layout sheds too.
+  function fitBandBoxes(band) {
+    var order = [
+      band.querySelector('.pc-art'),
+      band.querySelector('.card-meta--stats'),
+      band.querySelector('.hero-kicker')
+    ];
+    order.forEach(function(el){ if (el) el.style.display = ''; });
+    for (var i = 0; i < order.length; i++) {
+      if (band.scrollWidth <= band.clientWidth + 1) break;
+      if (order[i]) order[i].style.display = 'none';
+    }
+    // display:none doesn't blank the `.pc-right ~ .pc-right` sibling rule,
+    // so whichever right-hand box survives first has to take over the
+    // margin-left:auto push or the right group slides left against the
+    // left group instead of pinning to the right edge.
+    var rights = band.querySelectorAll('.pc-right');
+    var pushed = false;
+    [].forEach.call(rights, function(el){
+      if (getComputedStyle(el).display === 'none') { el.style.marginLeft = ''; return; }
+      el.style.marginLeft = pushed ? '' : 'auto';
+      pushed = true;
+    });
+  }
+
   // Clamps el to however many of its lines end above `limit`. Returns true
   // if at least one line fit (el stays visible), false if none did (el is
   // hidden). Only called when el's natural bottom crosses the limit.
@@ -219,29 +440,72 @@
     return true;
   }
 
-  // The panel's chrome (kicker, date/likes, Read on, section link) lives
-  // in the fixed header/footer bands now — only the middle column (title,
-  // dek, byline, tagline, preview) needs fitting, against the bottom
-  // band's top edge. When space runs short, content yields in reverse
-  // keep-priority: title (clamps, never vanishes) > byline > dek >
-  // everything else (dividers, tagline, preview paragraphs).
+  // The panel's content sits in two .panel-col groups (see the panel
+  // columns block in style.css): left holds art credit, title, byline and
+  // dek, right holds the excerpt. On most cards the wrappers are
+  // display:contents, so the two read as ONE stack and are fitted as one;
+  // on the wide split cells they are real side-by-side columns, and each
+  // is fitted against the footer band independently — a dek that runs out
+  // of room on the left must not take the excerpt on the right down with
+  // it. Returns an array of element groups, in document order.
+  function panelGroups(topBox) {
+    var cols = [];
+    [].forEach.call(topBox.children, function(el){
+      if (el.classList.contains('panel-col')) cols.push(el);
+    });
+    if (!cols.length) return [[].slice.call(topBox.children)];
+    var laidOut = cols.filter(function(c){
+      return getComputedStyle(c).display !== 'contents';
+    });
+    if (!laidOut.length) {
+      // display:contents everywhere — one flat sequence, exactly the
+      // stack this function replaced.
+      var flat = [];
+      cols.forEach(function(c){
+        [].forEach.call(c.children, function(k){ flat.push(k); });
+      });
+      return [flat];
+    }
+    return laidOut.map(function(c){ return [].slice.call(c.children); });
+  }
+
+  // Every content element of the panel, wrappers flattened — for the
+  // blanket resets, which don't care which column anything is in.
+  function panelEls(topBox) {
+    var out = [];
+    panelGroups(topBox).forEach(function(g){
+      g.forEach(function(el){ out.push(el); });
+    });
+    return out;
+  }
+
+  // The panel's chrome (kicker, section link) lives in the one fixed
+  // footer band — everything else is content, fitted against that band's
+  // top edge. When space runs short, content yields in reverse
+  // keep-priority: title (clamps, never vanishes) > dek > everything else
+  // (credit line, dividers, preview paragraphs).
   function fit(panel) {
     var topBox = panel.querySelector('.duo-panel-top');
     var band = panel.querySelector('.panel-band--bottom');
     if (!topBox || !band) return;
     var title = topBox.querySelector('.card-title');
-    var meta = topBox.querySelector('.card-meta--byline');
+    var meta = topBox.querySelector('.card-meta--line');
 
     // Restore a previous fit's truncation before anything is measured (or
     // queried — the paragraphs below must be the fresh nodes).
     var block0 = topBox.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
+    // Strip last pass's title rules BEFORE anything measures the title or
+    // stashes its markup — truncateToWord snapshots innerHTML the first
+    // time it runs, and a snapshot with rules baked in would restore them
+    // on every later fit.
+    clearTitleRules(title);
     if (title && title.__fullHTML) title.innerHTML = title.__fullHTML;
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
     topBox.style.marginTop = '';
-    [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
+    panelEls(topBox).forEach(function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
 
     // The hero panel covers the cover image's exact box — the fitted
@@ -272,30 +536,20 @@
       }
     }
 
-    // The footer band's Art box (the cover credit's hover counterpart)
-    // yields when the band's boxes outgrow a narrow panel — they never
-    // wrap or shrink, they overflow, and scrollWidth is the tell. Checked
-    // before the static-fallback return below so narrow stacked layouts
-    // shed it too.
-    var artBox = band.querySelector('.pc-art');
-    if (artBox) {
-      var afterArt = artBox.nextElementSibling;
-      artBox.style.display = '';
-      if (afterArt) afterArt.style.marginLeft = '';
-      if (band.scrollWidth > band.clientWidth + 1) {
-        artBox.style.display = 'none';
-        // display:none doesn't blank the `.pc-right ~ .pc-right` sibling
-        // rule — the box after the art box (Read on) must take over the
-        // margin-left:auto push or the right group slides left against
-        // the section button instead of pinning to the right edge.
-        if (afterArt) afterArt.style.marginLeft = 'auto';
-      }
-    }
+    // Seat the footer band's four boxes (or shed what won't fit) before
+    // anything measures against the band — shedding changes its height,
+    // and so the floor every column fits to. Ahead of the static-fallback
+    // return below so the stacked mobile layout sheds too.
+    fitBandBoxes(band);
 
     // In the static fallback layout (touch devices / narrow viewports) the
     // panel flows under the image and the bands sit in flow too — nothing
-    // to fit against, and the CSS fallback clamps handle length.
-    if (getComputedStyle(panel).position !== 'absolute') return;
+    // to fit against, and the CSS fallback clamps handle length. The title
+    // still gets its rules: the layout is static, not the link.
+    if (getComputedStyle(panel).position !== 'absolute') {
+      drawTitleRules(title);
+      return;
+    }
 
     // Lift the CSS fallback clamps so each paragraph's full text is
     // measurable (and kept, when the box turns out to have the room).
@@ -303,10 +557,14 @@
       p.style.webkitLineClamp = '999';
       p.style.lineClamp = '999';
     });
-    // And the previous pass's slack padding (see the end of fit()), so
-    // every measurement below starts from the CSS minimum.
-    panel.style.paddingTop = '';
-
+    // Break one-line titles in two BEFORE anything is measured against the
+    // floor — the second line moves everything under it down, so a budget
+    // computed on the one-line title would be wrong by a whole line.
+    // Size the title to its cell first — every measurement after this one
+    // (the two-line break, the credit's clearance, the floor budget)
+    // depends on the type size being settled.
+    fitTitleSize(panel, title);
+    fitTitleTwoLines(title);
     var limit = band.getBoundingClientRect().top - 14;
 
     // The title outranks the dek wherever the dek sits: if the dek comes
@@ -315,30 +573,31 @@
     // (so the dek yields lines and the title rides up); when the dek sits
     // below the title — the current order — that distance is negative and
     // the reserve clamps to 0, leaving the dek to fit in whatever the
-    // title left over. The byline's height is reserved either way.
+    // title left over. No separate reserve for the credit line any more:
+    // it sits ABOVE the dek now, so its height is already inside the dek's
+    // own measured top edge (reserving it again cost the dek a line).
     var dek = topBox.querySelector('.card-dek');
     var reserve = 0;
     if (dek && title && getComputedStyle(dek).display !== 'none') {
       reserve = Math.max(0,
         title.getBoundingClientRect().bottom - dek.getBoundingClientRect().bottom);
     }
-    var metaSpace = 0;
-    if (meta && getComputedStyle(meta).display !== 'none') {
-      metaSpace = meta.getBoundingClientRect().height
-        + (parseFloat(getComputedStyle(meta).marginTop) || 0);
-    }
+    // Each column yields on its own. In the single-stack case there is
+    // exactly one group and this behaves as the flat loop always did.
+    panelGroups(topBox).forEach(function(group){
+    var groupLimit = limit;
     var cutting = false;
-    [].forEach.call(topBox.children, function(el){
+    group.forEach(function(el){
       if (getComputedStyle(el).display === 'none') return;
       if (el === dek) {
         // Clamping (or even hiding) the dek to protect the title is not a
         // cut — everything after it shifts up and keeps its shot.
-        var dekLim = limit - reserve - metaSpace;
+        var dekLim = groupLimit - reserve;
         if (el.getBoundingClientRect().bottom > dekLim && !clampToFit(el, dekLim)) {
-          // Dek gone entirely — the rule between it and the title would
-          // sit orphaned against the quote divider below.
-          var tdiv = topBox.querySelector('.card-title-divider');
-          if (tdiv) tdiv.style.display = 'none';
+          // Dek gone entirely — the rule between it and the byline above
+          // would sit orphaned against the quote divider below.
+          var bdiv = topBox.querySelector('.card-byline-divider');
+          if (bdiv) bdiv.style.display = 'none';
         }
         return;
       }
@@ -348,17 +607,10 @@
         // rather than vanishing. Checked here (not via the generic branch
         // below) so a clamped title's padding-bottom sitting a hair past
         // the limit never hides it outright.
-        if (el.getBoundingClientRect().bottom > limit) clampToFit(el, limit);
+        if (el.getBoundingClientRect().bottom > groupLimit) clampToFit(el, groupLimit);
         return;
       }
       if (cutting) {
-        if (el === meta) {
-          // The byline survives the cut — its space was reserved. Only if
-          // it still crosses the real limit (a panel too small for even
-          // the title + byline) does it hide like everything else.
-          if (el.getBoundingClientRect().bottom > limit) el.style.display = 'none';
-          return;
-        }
         el.style.display = 'none';
         return;
       }
@@ -436,10 +688,11 @@
           var qd = topBox.querySelector('.duo-quote-divider');
           if (qd) qd.style.display = 'none';
         }
-      } else if (el.getBoundingClientRect().bottom > limit) {
+      } else if (el.getBoundingClientRect().bottom > groupLimit) {
         cutting = true;
         el.style.display = 'none';
       }
+    });
     });
 
     // A line-clamped title never discards its overflow lines — the clamp
@@ -460,23 +713,21 @@
       if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
     }
 
-    // The bottom rhythm: the excerpt's last line ends exactly 16px
-    // above the footer band on every card. The branches above fill
-    // that span with as many whole text lines as fit; the sub-line
-    // remainder — plus whatever a short excerpt leaves — moves ABOVE
-    // THE TITLE here. The panel's CSS padding-top is the standard
-    // MINIMUM header-to-title gap, and each panel's slack is added on
-    // top of it, so the title rides down to close the bottom gap
-    // rather than the text floating up off the band. Panels with no
-    // visible excerpt (the quads) keep the minimum and anchor top.
-    var pvBlock = topBox.querySelector('.card-preview-block');
-    if (pvBlock && getComputedStyle(pvBlock).display !== 'none') {
-      var slack = (limit + 14 - 16) - pvBlock.getBoundingClientRect().bottom;
-      if (slack > 0.5) {
-        var basePad = parseFloat(getComputedStyle(panel).paddingTop) || 0;
-        panel.style.paddingTop = (basePad + slack) + 'px';
-      }
-    }
+    // The title's line breaks are final here — underline them.
+    drawTitleRules(title);
+
+    // Last, once every column's content has settled: run the column rule
+    // from the panel's top border to the band's.
+    fitColumnDivider(panel, topBox, band);
+
+    // The column ends where its last whole line of text ends — no slack
+    // padding above the title any more. That mechanism existed to hold the
+    // excerpt's last line exactly 16px off the footer band by pushing the
+    // title DOWN by the sub-line remainder; the title now sets in the
+    // panel's top-left corner at a fixed 24px margin, so the remainder
+    // stays where it falls, as open space above the band. The 16px is
+    // therefore the MINIMUM bottom gap (set by the branches above), not an
+    // exact figure — a card whose text runs out early simply leaves more.
   }
 
   function fitAll() {

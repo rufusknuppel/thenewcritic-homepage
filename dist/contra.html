@@ -12,10 +12,6 @@
 <meta property="og:image" content="https://substackcdn.com/image/fetch/$s_!kfWq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.png">
-<link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -26,20 +22,21 @@
 <nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./" aria-label="The New Critic — home">
-      <span class="bird-frame"><img src="bird-mark.png" alt="The New Critic"></span>
+      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span><span class="nav-wordmark-line">Critic</span></span>
     </a>
   </div>
+  <img class="nav-bird" src="bird-logo.png" alt="" width="962" height="835">
   <ul class="nav-links">
-    <li><a href="essays.html">Essays</a></li>
-      <li><a href="postscript.html">Postscript</a></li>
-      <li><a href="contra.html" aria-current="page">Contra</a></li>
-      <li><a href="archive.html">Archive</a></li>
-      <li><a href="about.html">About</a></li>
+    <li class="nav-item--essays"><a href="essays.html">Essays</a></li>
+      <li class="nav-item--postscript"><a href="postscript.html">Postscript</a>
+        <span class="nav-dek">Interviews w/<br>extraordinary gen zers</span></li>
+      <li class="nav-item--contra"><a href="contra.html" aria-current="page">Contra</a>
+        <span class="nav-dek">New Critics take on<br>gen z works</span></li>
+      <li class="nav-item--archive"><a href="archive.html">Archive</a></li>
+      <li class="nav-item--about"><a href="about.html">About</a>
+        <span class="nav-dek">The Young<br>American Magazine</span></li>
+    <li class="nav-item--subscribe nav-subscribe-item"><a class="nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></li>
   </ul>
-  <div class="nav-bottom">
-    <p class="nav-tagline">The Young<br>American Magazine</p>
-    <a class="btn btn--small btn--primary nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
-  </div>
 </nav>
 </div>
 
@@ -49,80 +46,83 @@
   <div class="wrap">
     
     <article class="card card--duo card--quad card--quad-open">
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kfWq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUL 24</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">4</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">The Unstageable</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Owen Yingling contra Daniel Gavilovski’s Carbon Pages</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Before the mid-19th</span> century, reading a new book required a bit of preparation: you had to cut every single page loose with a knife. But to make Daniel Gavilovski’s three-play collection <em>Carbon Pages</em>, published by Unreal Press earlier this year, readable, you should simply take your knife and remove the full text of the first and third plays, as well as the preface. 1 Now, Gavilovski is a talented writer and a serious playwright — these plays have been staged, except for <em>No Weapon Formed Against You</em>, his “attempt at epic drama,” which has “eluded all attempts.” 2 But if you don’t take blade to page as I suggest, it is unlikely you will get far enough into <em>Carbon Pages</em> to realize this.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">The Unstageable</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Owen Yingling</span><span class="meta-date">Jul 24</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Daniel Gavilovski’s Carbon Pages</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Before the mid-19th</span> century, reading a new book required a bit of preparation: you had to cut every single page loose with a knife. But to make Daniel Gavilovski’s three-play collection <em>Carbon Pages</em>, published by Unreal Press earlier this year, readable, you should simply take your knife and remove the full text of the first and third plays, as well as the preface. 1 Now, Gavilovski is a talented writer and a serious playwright — these plays have been staged, except for <em>No Weapon Formed Against You</em>, his “attempt at epic drama,” which has “eluded all attempts.” 2 But if you don’t take blade to page as I suggest, it is unlikely you will get far enough into <em>Carbon Pages</em> to realize this.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Theater</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">22</span></span></p>
           </div>
         </div>
       </div>
       <div class="duo-half-divider" role="separator"></div>
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Books</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUL 17</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">16</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">The Doctor of Girlhood</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Henry Reichman contra Freya India’s GIRLS®</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Over the past</span> few years, researchers and professors have put their heads down and uncovered a set of statistics about gen z ineptitude that we can all recite in our sleep now: we are more anxious, more lonely, and less likely to go out with friends or on dates; we’re having less fun and less sex, destroying our bodies, and melting our minds.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">The Doctor of Girlhood</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Henry Reichman</span><span class="meta-date">Jul 17</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Freya India’s GIRLS®</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Over the past</span> few years, researchers and professors have put their heads down and uncovered a set of statistics about gen z ineptitude that we can all recite in our sleep now: we are more anxious, more lonely, and less likely to go out with friends or on dates; we’re having less fun and less sex, destroying our bodies, and melting our minds.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Books</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">16</span></span></p>
           </div>
         </div>
       </div>
       <div class="duo-half-divider" role="separator"></div>
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Movies</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUL 10</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">17</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">Behaving Badly</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Theodore Gary contra Curry Barker’s Obsession</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">There seems to</span> be about one movie a year that manages to penetrate the zeitgeist. This year, it appears to be <em>Obsession</em>. In a little over a month, on a budget of $750,000, it has grossed nearly $330 million. Instagram, X, and TikTok are flooded with stills, clips, frame-by-frame analyses, deep-dive video essays, cultural commentaries, and AI-generated tweets about the movie. Like <em>Backrooms</em> director Kane Parsons, 26-year-old <em>Obsession</em> writer-director Curry Barker got his start on YouTube, releasing horror short <em>The Chair</em> in 2023 and feature <em>Milk and Cereal</em> in 2024 before signing a deal with Focus Features, a real distributor, and bringing <em>Obsession</em> into the world two years later. He’s been tapped as the next director of the <em>Texas Chainsaw Massacre</em> franchise, and in June, he signed an 8-figure deal to direct a horror film with Universal.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">Behaving Badly</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Theodore Gary</span><span class="meta-date">Jul 10</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Curry Barker’s Obsession</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">There seems to</span> be about one movie a year that manages to penetrate the zeitgeist. This year, it appears to be <em>Obsession</em>. In a little over a month, on a budget of $750,000, it has grossed nearly $330 million. Instagram, X, and TikTok are flooded with stills, clips, frame-by-frame analyses, deep-dive video essays, cultural commentaries, and AI-generated tweets about the movie. Like <em>Backrooms</em> director Kane Parsons, 26-year-old <em>Obsession</em> writer-director Curry Barker got his start on YouTube, releasing horror short <em>The Chair</em> in 2023 and feature <em>Milk and Cereal</em> in 2024 before signing a deal with Focus Features, a real distributor, and bringing <em>Obsession</em> into the world two years later. He’s been tapped as the next director of the <em>Texas Chainsaw Massacre</em> franchise, and in June, he signed an 8-figure deal to direct a horror film with Universal.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Movies</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">17</span></span></p>
           </div>
         </div>
       </div>
@@ -132,80 +132,83 @@
   <div class="wrap">
     
     <article class="card card--duo card--quad card--quad-open">
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Music</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 24</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">28</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">You Seem Pretty Tame for a Girl in Revolt</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Tessa Augsberger contra Olivia Rodrigo’s you seem pretty sad for a girl so in love</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Singer-songwriter phenom Olivia</span> Rodrigo’s revamped website features a collaged e-bedroom setting, replete with pink guitar, pink laptop computer, and diary with pink key and lock. There is a bookshelf which, once clicked, allows one to purchase Rodrigo’s CDs. If you press the red bra spilling out of the hand-drawn dresser drawer, the website takes you straight to Rodrigo’s online store. In honor of her new album, Instagram released a custom Rodrigo-designed typeface to every one of its 3 billion monthly active users. YouTube provides a custom pink yarn ball cursor anytime you watch one of her music videos. It’s a veritable fangirl’s wonderland. It seems the entire internet has conspired to promote <em>you seem pretty sad for a girl so in love</em>.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">You Seem Pretty Tame for a Girl in Revolt</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Tessa Augsberger</span><span class="meta-date">Jun 24</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Olivia Rodrigo’s you seem pretty sad for a girl so in love</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Singer-songwriter phenom Olivia</span> Rodrigo’s revamped website features a collaged e-bedroom setting, replete with pink guitar, pink laptop computer, and diary with pink key and lock. There is a bookshelf which, once clicked, allows one to purchase Rodrigo’s CDs. If you press the red bra spilling out of the hand-drawn dresser drawer, the website takes you straight to Rodrigo’s online store. In honor of her new album, Instagram released a custom Rodrigo-designed typeface to every one of its 3 billion monthly active users. YouTube provides a custom pink yarn ball cursor anytime you watch one of her music videos. It’s a veritable fangirl’s wonderland. It seems the entire internet has conspired to promote <em>you seem pretty sad for a girl so in love</em>.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Music</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">28</span></span></p>
           </div>
         </div>
       </div>
       <div class="duo-half-divider" role="separator"></div>
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Movies</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 12</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">17</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">Terms of Service</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Nadav Asal contra Kane Parsons’s Backrooms</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">When the average</span> film directors are a decade south of receiving an AARP subscription, it’s a breath of fresh air to see young faces. Kane Parsons, the director of A24’s new movie <em>Backrooms,</em> is the youngest we’ve seen in a while. What started in 2019 as an anonymous 4chan creepypasta (a horror related short story) turned into Parsons’s directorial debut at the sober age of 20.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">Terms of Service</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Nadav</span><span class="meta-date">Jun 12</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Kane Parsons’s Backrooms</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">When the average</span> film directors are a decade south of receiving an AARP subscription, it’s a breath of fresh air to see young faces. Kane Parsons, the director of A24’s new movie <em>Backrooms,</em> is the youngest we’ve seen in a while. What started in 2019 as an anonymous 4chan creepypasta (a horror related short story) turned into Parsons’s directorial debut at the sober age of 20.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Movies</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">17</span></span></p>
           </div>
         </div>
       </div>
       <div class="duo-half-divider" role="separator"></div>
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Books</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 11</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">20</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">Snug as a Gun</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Max Parness contra Theo Baker’s How to Rule the World</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">It is hard</span> to imagine a reporter having more success out of the gate than (the then 17-year-old) Theo Baker. By the time he returned home after the autumn quarter of his first year at Stanford in 2022, the <em>Stanford Daily</em> journalist had already broken three major stories: the university’s heavy-handed suppression of parties in the post-Covid years; its failure to act against a con man who had lived illegally in student dorms for the better part of a year and allegedly harassed a female student; and the revelation that a series of papers published by then‑university president Marc Tessier‑Lavigne (almost always referred to by his initials, MTL) showed a clear pattern of research misconduct through the use of doctored images.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">Snug as a Gun</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Max Parness</span><span class="meta-date">Jun 11</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Theo Baker’s How to Rule the World</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">It is hard</span> to imagine a reporter having more success out of the gate than (the then 17-year-old) Theo Baker. By the time he returned home after the autumn quarter of his first year at Stanford in 2022, the <em>Stanford Daily</em> journalist had already broken three major stories: the university’s heavy-handed suppression of parties in the post-Covid years; its failure to act against a con man who had lived illegally in student dorms for the better part of a year and allegedly harassed a female student; and the revelation that a series of papers published by then‑university president Marc Tessier‑Lavigne (almost always referred to by his initials, MTL) showed a clear pattern of research misconduct through the use of doctored images.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Books</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">20</span></span></p>
           </div>
         </div>
       </div>
@@ -215,80 +218,83 @@
   <div class="wrap">
     
     <article class="card card--duo card--quad card--quad-open">
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">
           <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Music</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 10</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">21</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">Ugly Fleshy Flap</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Rufus Knuppel contra ear’s Rumspringa</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Perhaps the most</span> important quality in a young musician is their ability to make beautiful that which their parents would find hideous. As a teenager, you want to listen to music that makes you feel free, music to play fucking loud, the kind of music your parents would demand you turn off. In short, you’re after awful-sounding music that, once illicit, becomes mystical and possessive, all yours, just yours.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">Ugly Fleshy Flap</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Rufus Knuppel</span><span class="meta-date">Jun 10</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra ear’s Rumspringa</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Perhaps the most</span> important quality in a young musician is their ability to make beautiful that which their parents would find hideous. As a teenager, you want to listen to music that makes you feel free, music to play fucking loud, the kind of music your parents would demand you turn off. In short, you’re after awful-sounding music that, once illicit, becomes mystical and possessive, all yours, just yours.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Music</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">21</span></span></p>
           </div>
         </div>
       </div>
       <div class="duo-half-divider" role="separator"></div>
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kRyn!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Theater</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 9</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">14</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">Now the Story, Please</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Isabel Mehta contra Eliya Smith’s Dad Don’t Read This</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">I’m running late</span> to catch the tail end of the thrice-extended, off-broadway run of <em>Dad Don’t Read This</em>, a surprise NYT Critic’s Pick by 20-something playwright Eliya Smith and director Chloe Claudel. St. Luke’s Theatre is not quite a basement, but it’s not far from it. Once I settle on a metal stool the producer sets down for me on the periphery, I clock Jesse Eisenberg with his parents in the back. Next to me, a girl with a tooth gap tells me she’s working with a director who’s worked with Nicole Kidman. So it’s a hot show.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">Now the Story, Please</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Isabel Mehta</span><span class="meta-date">Jun 9</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Eliya Smith’s Dad Don’t Read This</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">I’m running late</span> to catch the tail end of the thrice-extended, off-broadway run of <em>Dad Don’t Read This</em>, a surprise NYT Critic’s Pick by 20-something playwright Eliya Smith and director Chloe Claudel. St. Luke’s Theatre is not quite a basement, but it’s not far from it. Once I settle on a metal stool the producer sets down for me on the periphery, I clock Jesse Eisenberg with his parents in the back. Next to me, a girl with a tooth gap tells me she’s working with a director who’s worked with Nicole Kidman. So it’s a hot show.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Theater</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">14</span></span></p>
           </div>
         </div>
       </div>
       <div class="duo-half-divider" role="separator"></div>
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">
           <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">Books</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 8</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">24</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">Young Mann in a Hurry</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Elan Kluger contra Nelio Biedermann’s Lázár</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Nelio Biedermann is</span> the rarest of young men: a mainstream literary wunderkind and recipient of the <em>New York Times</em> imprimatur. His Instagram shows him signing books with Patti Smith and modeling for a Warby Parker ad campaign. The jacket blurb from novelist Daniel Kehlmann on <em>Lázár</em>, Biedermann’s recently translated novel, reads like stage directions: “A truly great writer steps onto the stage, in full possession of his powers.” Biedermann, a 22-year-old writer from Zurich, has been called the next Thomas Mann, the next Joseph Roth, and the next Gabriel García Márquez. He is very handsome, and his novel — a multi-generational story told in a distinctly European idiom — has been selling.</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">Young Mann in a Hurry</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">Elan Kluger</span><span class="meta-date">Jun 8</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Contra Nelio Biedermann’s Lázár</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">Nelio Biedermann is</span> the rarest of young men: a mainstream literary wunderkind and recipient of the <em>New York Times</em> imprimatur. His Instagram shows him signing books with Patti Smith and modeling for a Warby Parker ad campaign. The jacket blurb from novelist Daniel Kehlmann on <em>Lázár</em>, Biedermann’s recently translated novel, reads like stage directions: “A truly great writer steps onto the stage, in full possession of his powers.” Biedermann, a 22-year-old writer from Zurich, has been called the next Thomas Mann, the next Joseph Roth, and the next Gabriel García Márquez. He is very handsome, and his novel — a multi-generational story told in a distinctly European idiom — has been selling.</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">Books</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">24</span></span></p>
           </div>
         </div>
       </div>
@@ -298,28 +304,29 @@
   <div class="wrap">
     
     <article class="card card--duo card--quad card--quad-open">
-      <div class="duo-half">
+      <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/contra" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AIKi!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg" alt="" decoding="async">
         </a></span>
         <div class="duo-panel">
-          <div class="panel-band panel-band--top">
-            <p class="hero-kicker pc pc-left">The New Critic’s Criticism</p>
-            
-            <p class="card-meta pc pc-right"><span class="meta-date">JUN 7</span></p>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">40</span></span></p>
-          </div>
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="https://www.thenewcritic.com/p/contra" rel="noopener">Contra!</a></h3>
-            <div class="card-title-divider"></div>
-            <p class="card-dek">Introducing our criticism section</p>
-            
-            <div class="duo-quote-divider"></div>
-            <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">The critic has</span> two roles: to worship excellence and to wage war on its behalf.</p><p class="card-preview">Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.</p><p class="card-preview">Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?</p></div>
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/contra" rel="noopener">Contra!</a></h3>
+              <p class="card-meta card-meta--line"><span class="meta-author">The New Critic</span><span class="meta-date">Jun 7</span></p>
+              <div class="card-byline-divider"></div>
+              <p class="card-dek">Introducing our criticism section</p>
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              <div class="duo-quote-divider"></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">The critic has</span> two roles: to worship excellence and to wage war on its behalf.</p><p class="card-preview">Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.</p><p class="card-preview">Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?</p></div>
+            </div>
           </div>
           <div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="contra.html">Contra</a>
-            <p class="card-meta pc pc-right pc-art">Art by Kit Knuppel</p><a class="card-preview-cta duo-readon-btn pc pc-right" href="https://www.thenewcritic.com/p/contra" rel="noopener">Read on <span class="cta-arrow">&#8594;</span></a>
+            <p class="hero-kicker pc pc-left">The New Critic’s Criticism</p>
+            <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">40</span></span></p>
           </div>
         </div>
       </div>
@@ -711,6 +718,227 @@
     return firstFull;
   }
 
+  // Title size follows the CELL, not the viewport. The CSS clamp is sized
+  // off vw, so a 318px square was being handed the same 60px as a 685px
+  // lead cell: two or three words to the line, no syllable break narrow
+  // enough to fit, and therefore no hyphen possible — hyphens:auto had
+  // nothing it could do and overflow-wrap broke words mid-letter instead
+  // ("The Unsta/geable"). Capping the CSS size at a fixed fraction of the
+  // panel's own width leaves the wide cells at the full 60px and gives the
+  // squares type their column can actually set — which is what lets the
+  // hyphenation, the two-line balancing and the clamp all work at all.
+  // Measured against the title's OWN column, not the panel — since the
+  // wide cells split into two, the title's measure is half the card and
+  // sizing off the panel would put 60px type in a 294px column, the exact
+  // mismatch this rule exists to prevent.
+  var TITLE_PER_PX = 0.15;
+  function fitTitleSize(panel, title) {
+    if (!title) return;
+    title.style.fontSize = '';
+    // maxWidth from a previous pass would understate the measure.
+    title.style.maxWidth = '';
+    // The wide cells keep the full CSS size deliberately — their title is
+    // the page's lead and is meant to carry, even though its column is
+    // half the card. Their titles are short enough to hold it; a long word
+    // that doesn't fit falls back to the hyphenation and break-word on
+    // .card-title rather than shrinking the whole line.
+    if (panel.closest('.duo-half--wide')) return;
+    var cssPx = parseFloat(getComputedStyle(title).fontSize) || 0;
+    var colPx = title.getBoundingClientRect().width * TITLE_PER_PX;
+    if (colPx && colPx < cssPx) title.style.fontSize = Math.round(colPx) + 'px';
+  }
+
+  // The wide cells' column rule spans the whole card: it starts on the
+  // panel's own top border and stops on the footer band's rule, so it
+  // meets the outline at both ends. Only the fitter knows where the band
+  // actually starts (its height follows the corner boxes' type), so the
+  // geometry is set here rather than guessed at in CSS.
+  // Where the split actually begins. The wide cells divide the whole card,
+  // so their rule starts on the panel's own top border. Everywhere else the
+  // title and byline span the full measure and only the ground BELOW them
+  // divides — and the rule starts ON the byline's own rule, so the two
+  // meet and the panel reads as one ruled grid rather than a line floating
+  // in the space under the byline. Without a byline rule to meet, it falls
+  // back to the top of whichever column content comes first.
+  function splitTop(panel, topBox) {
+    if (panel.closest('.duo-half--wide')) return panel.getBoundingClientRect().top;
+    var byline = topBox.querySelector('.card-byline-divider');
+    if (byline && getComputedStyle(byline).display !== 'none') {
+      return byline.getBoundingClientRect().bottom;
+    }
+    var tops = [];
+    ['.card-dek', '.card-preview-block'].forEach(function(sel){
+      var el = topBox.querySelector(sel);
+      if (el && getComputedStyle(el).display !== 'none') {
+        tops.push(el.getBoundingClientRect().top);
+      }
+    });
+    if (!tops.length) return null;
+    return Math.min.apply(Math, tops);
+  }
+
+  function fitColumnDivider(panel, topBox, band) {
+    var rule = topBox.querySelector('.panel-col-divider');
+    if (!rule) return;
+    rule.style.top = '';
+    rule.style.height = '';
+    // Cleared every pass — a panel that had nothing to divide last time
+    // may have content this time (and vice versa).
+    rule.style.display = '';
+    if (getComputedStyle(rule).position !== 'absolute') return;
+    // A rule has to have something on BOTH sides of it. On the narrow
+    // cells the excerpt is the side that can vanish — the fitter drops it
+    // when the drop to the band won't hold a single line — and a rule with
+    // an empty column beside it divides nothing.
+    if (!panel.closest('.duo-half--wide')) {
+      var right = topBox.querySelector('.card-preview-block');
+      var left = topBox.querySelector('.card-dek');
+      var visible = function(el){
+        return el && getComputedStyle(el).display !== 'none'
+          && el.getBoundingClientRect().height > 1;
+      };
+      if (!visible(right) || !visible(left)) { rule.style.display = 'none'; return; }
+    }
+    var start = splitTop(panel, topBox);
+    // Nothing in either column: a rule here would divide nothing.
+    if (start === null) { rule.style.display = 'none'; return; }
+    var topR = topBox.getBoundingClientRect();
+    rule.style.top = (start - topR.top) + 'px';
+    rule.style.height = Math.max(0, band.getBoundingClientRect().top - start) + 'px';
+  }
+
+  // Titles read as two lines wherever the words allow it. A title that
+  // sets on one line gets a max-width narrow enough to break it — and
+  // since the CSS carries text-wrap:balance, the break lands near the
+  // middle instead of dropping a one-word runt. Widths are tried from
+  // wide to narrow so the result is the WIDEST two-line setting (the
+  // least violence to the natural measure); a title that goes straight
+  // from one line to three (one very long word) is left alone, as is a
+  // single word and anything already two lines or more.
+  function fitTitleTwoLines(title) {
+    if (!title) return;
+    title.style.maxWidth = '';
+    if (getComputedStyle(title).display === 'none') return;
+    if (!/\s/.test(title.textContent.trim())) return;
+    var lh = parseFloat(getComputedStyle(title).lineHeight) || 24;
+    if (Math.round(title.getBoundingClientRect().height / lh) !== 1) return;
+    // The RUN's width, not the h3's — the heading fills its column, so
+    // its own box says nothing about how wide the words actually set.
+    var rng = document.createRange();
+    rng.selectNodeContents(title);
+    var textW = rng.getBoundingClientRect().width;
+    if (!textW) return;
+    // Never narrow the box past the longest WORD. Below that the word no
+    // longer fits its line and overflow-wrap breaks it mid-letter —
+    // "Unstageabl / e" — which is worse than the one line we started with.
+    var wordW = 0;
+    var tn = document.createTreeWalker(title, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = tn.nextNode())) {
+      var re = /\S+/g, m;
+      while ((m = re.exec(node.textContent))) {
+        var wr = document.createRange();
+        wr.setStart(node, m.index);
+        wr.setEnd(node, m.index + m[0].length);
+        var ww = wr.getBoundingClientRect().width;
+        if (ww > wordW) wordW = ww;
+      }
+    }
+    var floorW = Math.ceil(wordW) + 2;
+    if (floorW >= textW) return; // one word already fills the measure
+    for (var f = 0.72; f >= 0.34; f -= 0.06) {
+      var w = Math.max(Math.ceil(textW * f), floorW);
+      title.style.maxWidth = w + 'px';
+      var n = Math.round(title.getBoundingClientRect().height / lh);
+      if (n === 2) return;
+      if (n > 2 || w === floorW) break;
+    }
+    title.style.maxWidth = '';
+  }
+
+  // The title's link tell: one rule per rendered LINE of the title,
+  // placed absolutely inside the h3 and staggered so they sweep in top
+  // line first (see .title-rule in style.css for why CSS can't do this
+  // alone). Called after the title's size, its line breaks and any
+  // truncation have all settled, since those are what the line boxes
+  // depend on. Rules are cleared and rebuilt every fit; they carry no
+  // text, so the truncation walker never sees them.
+  function clearTitleRules(title) {
+    if (!title) return;
+    var old = title.querySelectorAll('.title-rule');
+    for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  }
+  function drawTitleRules(title) {
+    clearTitleRules(title);
+    if (!title || getComputedStyle(title).display === 'none') return;
+    var link = title.querySelector('a') || title;
+    var rng = document.createRange();
+    rng.selectNodeContents(link);
+    var rects = [].slice.call(rng.getClientRects()).filter(function(r){ return r.width >= 1; });
+    if (!rects.length) return;
+    // Fold the fragments of each rendered line into one rule. A line can
+    // arrive as several rects (an <em>, a marked-up word), and they share
+    // a top to within rounding.
+    var lines = [];
+    rects.forEach(function(r){
+      for (var i = 0; i < lines.length; i++) {
+        if (Math.abs(lines[i].top - r.top) < 2) {
+          lines[i].left = Math.min(lines[i].left, r.left);
+          lines[i].right = Math.max(lines[i].right, r.right);
+          lines[i].bottom = Math.max(lines[i].bottom, r.bottom);
+          return;
+        }
+      }
+      lines.push({ top: r.top, bottom: r.bottom, left: r.left, right: r.right });
+    });
+    lines.sort(function(a, b){ return a.top - b.top; });
+    var tr = title.getBoundingClientRect();
+    // The rect's bottom is the font's metric box, a shade under the
+    // descenders; lifting by a fraction of the type size sets the rule
+    // tight against the words, grazing them rather than clearing them.
+    var lift = (parseFloat(getComputedStyle(title).fontSize) || 24) * 0.06;
+    lines.forEach(function(l, i){
+      var el = document.createElement('span');
+      el.className = 'title-rule';
+      el.style.left = (l.left - tr.left) + 'px';
+      el.style.width = (l.right - l.left) + 'px';
+      el.style.top = (l.bottom - tr.top - lift) + 'px';
+      el.style.setProperty('--rule-delay', (i * 0.13) + 's');
+      title.appendChild(el);
+    });
+  }
+
+  // The footer band seats four boxes now — kicker and cover credit left,
+  // likes and section right — and they never wrap or shrink, they
+  // overflow, so scrollWidth is the tell. A narrow card sheds them in
+  // reverse keep-priority: the cover credit first, then the likes, then
+  // the kicker; the section link is the one box that never goes, since
+  // it's the card's only navigation. Runs before the static-fallback
+  // return in fit() so the stacked mobile layout sheds too.
+  function fitBandBoxes(band) {
+    var order = [
+      band.querySelector('.pc-art'),
+      band.querySelector('.card-meta--stats'),
+      band.querySelector('.hero-kicker')
+    ];
+    order.forEach(function(el){ if (el) el.style.display = ''; });
+    for (var i = 0; i < order.length; i++) {
+      if (band.scrollWidth <= band.clientWidth + 1) break;
+      if (order[i]) order[i].style.display = 'none';
+    }
+    // display:none doesn't blank the `.pc-right ~ .pc-right` sibling rule,
+    // so whichever right-hand box survives first has to take over the
+    // margin-left:auto push or the right group slides left against the
+    // left group instead of pinning to the right edge.
+    var rights = band.querySelectorAll('.pc-right');
+    var pushed = false;
+    [].forEach.call(rights, function(el){
+      if (getComputedStyle(el).display === 'none') { el.style.marginLeft = ''; return; }
+      el.style.marginLeft = pushed ? '' : 'auto';
+      pushed = true;
+    });
+  }
+
   // Clamps el to however many of its lines end above `limit`. Returns true
   // if at least one line fit (el stays visible), false if none did (el is
   // hidden). Only called when el's natural bottom crosses the limit.
@@ -728,29 +956,72 @@
     return true;
   }
 
-  // The panel's chrome (kicker, date/likes, Read on, section link) lives
-  // in the fixed header/footer bands now — only the middle column (title,
-  // dek, byline, tagline, preview) needs fitting, against the bottom
-  // band's top edge. When space runs short, content yields in reverse
-  // keep-priority: title (clamps, never vanishes) > byline > dek >
-  // everything else (dividers, tagline, preview paragraphs).
+  // The panel's content sits in two .panel-col groups (see the panel
+  // columns block in style.css): left holds art credit, title, byline and
+  // dek, right holds the excerpt. On most cards the wrappers are
+  // display:contents, so the two read as ONE stack and are fitted as one;
+  // on the wide split cells they are real side-by-side columns, and each
+  // is fitted against the footer band independently — a dek that runs out
+  // of room on the left must not take the excerpt on the right down with
+  // it. Returns an array of element groups, in document order.
+  function panelGroups(topBox) {
+    var cols = [];
+    [].forEach.call(topBox.children, function(el){
+      if (el.classList.contains('panel-col')) cols.push(el);
+    });
+    if (!cols.length) return [[].slice.call(topBox.children)];
+    var laidOut = cols.filter(function(c){
+      return getComputedStyle(c).display !== 'contents';
+    });
+    if (!laidOut.length) {
+      // display:contents everywhere — one flat sequence, exactly the
+      // stack this function replaced.
+      var flat = [];
+      cols.forEach(function(c){
+        [].forEach.call(c.children, function(k){ flat.push(k); });
+      });
+      return [flat];
+    }
+    return laidOut.map(function(c){ return [].slice.call(c.children); });
+  }
+
+  // Every content element of the panel, wrappers flattened — for the
+  // blanket resets, which don't care which column anything is in.
+  function panelEls(topBox) {
+    var out = [];
+    panelGroups(topBox).forEach(function(g){
+      g.forEach(function(el){ out.push(el); });
+    });
+    return out;
+  }
+
+  // The panel's chrome (kicker, section link) lives in the one fixed
+  // footer band — everything else is content, fitted against that band's
+  // top edge. When space runs short, content yields in reverse
+  // keep-priority: title (clamps, never vanishes) > dek > everything else
+  // (credit line, dividers, preview paragraphs).
   function fit(panel) {
     var topBox = panel.querySelector('.duo-panel-top');
     var band = panel.querySelector('.panel-band--bottom');
     if (!topBox || !band) return;
     var title = topBox.querySelector('.card-title');
-    var meta = topBox.querySelector('.card-meta--byline');
+    var meta = topBox.querySelector('.card-meta--line');
 
     // Restore a previous fit's truncation before anything is measured (or
     // queried — the paragraphs below must be the fresh nodes).
     var block0 = topBox.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
+    // Strip last pass's title rules BEFORE anything measures the title or
+    // stashes its markup — truncateToWord snapshots innerHTML the first
+    // time it runs, and a snapshot with rules baked in would restore them
+    // on every later fit.
+    clearTitleRules(title);
     if (title && title.__fullHTML) title.innerHTML = title.__fullHTML;
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
     topBox.style.marginTop = '';
-    [].forEach.call(topBox.children, function(el){ el.style.display = ''; resetClamp(el); });
+    panelEls(topBox).forEach(function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
 
     // The hero panel covers the cover image's exact box — the fitted
@@ -781,30 +1052,20 @@
       }
     }
 
-    // The footer band's Art box (the cover credit's hover counterpart)
-    // yields when the band's boxes outgrow a narrow panel — they never
-    // wrap or shrink, they overflow, and scrollWidth is the tell. Checked
-    // before the static-fallback return below so narrow stacked layouts
-    // shed it too.
-    var artBox = band.querySelector('.pc-art');
-    if (artBox) {
-      var afterArt = artBox.nextElementSibling;
-      artBox.style.display = '';
-      if (afterArt) afterArt.style.marginLeft = '';
-      if (band.scrollWidth > band.clientWidth + 1) {
-        artBox.style.display = 'none';
-        // display:none doesn't blank the `.pc-right ~ .pc-right` sibling
-        // rule — the box after the art box (Read on) must take over the
-        // margin-left:auto push or the right group slides left against
-        // the section button instead of pinning to the right edge.
-        if (afterArt) afterArt.style.marginLeft = 'auto';
-      }
-    }
+    // Seat the footer band's four boxes (or shed what won't fit) before
+    // anything measures against the band — shedding changes its height,
+    // and so the floor every column fits to. Ahead of the static-fallback
+    // return below so the stacked mobile layout sheds too.
+    fitBandBoxes(band);
 
     // In the static fallback layout (touch devices / narrow viewports) the
     // panel flows under the image and the bands sit in flow too — nothing
-    // to fit against, and the CSS fallback clamps handle length.
-    if (getComputedStyle(panel).position !== 'absolute') return;
+    // to fit against, and the CSS fallback clamps handle length. The title
+    // still gets its rules: the layout is static, not the link.
+    if (getComputedStyle(panel).position !== 'absolute') {
+      drawTitleRules(title);
+      return;
+    }
 
     // Lift the CSS fallback clamps so each paragraph's full text is
     // measurable (and kept, when the box turns out to have the room).
@@ -812,10 +1073,14 @@
       p.style.webkitLineClamp = '999';
       p.style.lineClamp = '999';
     });
-    // And the previous pass's slack padding (see the end of fit()), so
-    // every measurement below starts from the CSS minimum.
-    panel.style.paddingTop = '';
-
+    // Break one-line titles in two BEFORE anything is measured against the
+    // floor — the second line moves everything under it down, so a budget
+    // computed on the one-line title would be wrong by a whole line.
+    // Size the title to its cell first — every measurement after this one
+    // (the two-line break, the credit's clearance, the floor budget)
+    // depends on the type size being settled.
+    fitTitleSize(panel, title);
+    fitTitleTwoLines(title);
     var limit = band.getBoundingClientRect().top - 14;
 
     // The title outranks the dek wherever the dek sits: if the dek comes
@@ -824,30 +1089,31 @@
     // (so the dek yields lines and the title rides up); when the dek sits
     // below the title — the current order — that distance is negative and
     // the reserve clamps to 0, leaving the dek to fit in whatever the
-    // title left over. The byline's height is reserved either way.
+    // title left over. No separate reserve for the credit line any more:
+    // it sits ABOVE the dek now, so its height is already inside the dek's
+    // own measured top edge (reserving it again cost the dek a line).
     var dek = topBox.querySelector('.card-dek');
     var reserve = 0;
     if (dek && title && getComputedStyle(dek).display !== 'none') {
       reserve = Math.max(0,
         title.getBoundingClientRect().bottom - dek.getBoundingClientRect().bottom);
     }
-    var metaSpace = 0;
-    if (meta && getComputedStyle(meta).display !== 'none') {
-      metaSpace = meta.getBoundingClientRect().height
-        + (parseFloat(getComputedStyle(meta).marginTop) || 0);
-    }
+    // Each column yields on its own. In the single-stack case there is
+    // exactly one group and this behaves as the flat loop always did.
+    panelGroups(topBox).forEach(function(group){
+    var groupLimit = limit;
     var cutting = false;
-    [].forEach.call(topBox.children, function(el){
+    group.forEach(function(el){
       if (getComputedStyle(el).display === 'none') return;
       if (el === dek) {
         // Clamping (or even hiding) the dek to protect the title is not a
         // cut — everything after it shifts up and keeps its shot.
-        var dekLim = limit - reserve - metaSpace;
+        var dekLim = groupLimit - reserve;
         if (el.getBoundingClientRect().bottom > dekLim && !clampToFit(el, dekLim)) {
-          // Dek gone entirely — the rule between it and the title would
-          // sit orphaned against the quote divider below.
-          var tdiv = topBox.querySelector('.card-title-divider');
-          if (tdiv) tdiv.style.display = 'none';
+          // Dek gone entirely — the rule between it and the byline above
+          // would sit orphaned against the quote divider below.
+          var bdiv = topBox.querySelector('.card-byline-divider');
+          if (bdiv) bdiv.style.display = 'none';
         }
         return;
       }
@@ -857,17 +1123,10 @@
         // rather than vanishing. Checked here (not via the generic branch
         // below) so a clamped title's padding-bottom sitting a hair past
         // the limit never hides it outright.
-        if (el.getBoundingClientRect().bottom > limit) clampToFit(el, limit);
+        if (el.getBoundingClientRect().bottom > groupLimit) clampToFit(el, groupLimit);
         return;
       }
       if (cutting) {
-        if (el === meta) {
-          // The byline survives the cut — its space was reserved. Only if
-          // it still crosses the real limit (a panel too small for even
-          // the title + byline) does it hide like everything else.
-          if (el.getBoundingClientRect().bottom > limit) el.style.display = 'none';
-          return;
-        }
         el.style.display = 'none';
         return;
       }
@@ -945,10 +1204,11 @@
           var qd = topBox.querySelector('.duo-quote-divider');
           if (qd) qd.style.display = 'none';
         }
-      } else if (el.getBoundingClientRect().bottom > limit) {
+      } else if (el.getBoundingClientRect().bottom > groupLimit) {
         cutting = true;
         el.style.display = 'none';
       }
+    });
     });
 
     // A line-clamped title never discards its overflow lines — the clamp
@@ -969,23 +1229,21 @@
       if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
     }
 
-    // The bottom rhythm: the excerpt's last line ends exactly 16px
-    // above the footer band on every card. The branches above fill
-    // that span with as many whole text lines as fit; the sub-line
-    // remainder — plus whatever a short excerpt leaves — moves ABOVE
-    // THE TITLE here. The panel's CSS padding-top is the standard
-    // MINIMUM header-to-title gap, and each panel's slack is added on
-    // top of it, so the title rides down to close the bottom gap
-    // rather than the text floating up off the band. Panels with no
-    // visible excerpt (the quads) keep the minimum and anchor top.
-    var pvBlock = topBox.querySelector('.card-preview-block');
-    if (pvBlock && getComputedStyle(pvBlock).display !== 'none') {
-      var slack = (limit + 14 - 16) - pvBlock.getBoundingClientRect().bottom;
-      if (slack > 0.5) {
-        var basePad = parseFloat(getComputedStyle(panel).paddingTop) || 0;
-        panel.style.paddingTop = (basePad + slack) + 'px';
-      }
-    }
+    // The title's line breaks are final here — underline them.
+    drawTitleRules(title);
+
+    // Last, once every column's content has settled: run the column rule
+    // from the panel's top border to the band's.
+    fitColumnDivider(panel, topBox, band);
+
+    // The column ends where its last whole line of text ends — no slack
+    // padding above the title any more. That mechanism existed to hold the
+    // excerpt's last line exactly 16px off the footer band by pushing the
+    // title DOWN by the sub-line remainder; the title now sets in the
+    // panel's top-left corner at a fixed 24px margin, so the remainder
+    // stays where it falls, as open space above the band. The 16px is
+    // therefore the MINIMUM bottom gap (set by the branches above), not an
+    // exact figure — a card whose text runs out early simply leaves more.
   }
 
   function fitAll() {

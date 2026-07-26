@@ -359,6 +359,9 @@ module.exports = {
   'the-doctor-of-girlhood': {
     kicker: 'Books',
   },
+  'the-unstageable': {
+    kicker: 'Theater',
+  },
   'the-new-statesman': {
     kicker: 'To Phone or Not',
   },

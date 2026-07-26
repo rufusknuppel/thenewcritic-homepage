@@ -101,6 +101,64 @@ function applyContentOverrides(posts) {
   }
 }
 
+// Postscript and Contra deks carry a name the byline should be showing
+// instead of repeating: an interview's dek names the SUBJECT ("Postscript
+// No. 21 | George Monaghan on literary London") while its author field
+// holds the interviewer, and a review's dek opens with the reviewer's own
+// name, which the byline is already printing a line above.
+//
+// Both are rewritten here, once, on the post objects — so every renderer
+// (hover panels, section pages, the archive ledger) reads the same text
+// rather than each parsing the dek for itself.
+const POSTSCRIPT_DEK = /^(Postscript No\.\s*\d+\s*\|\s*)(.+?)\s+on\s+(.+)$/;
+
+// "A and B", "A, B, and C" — the dek's own list style. Split on the
+// commas and the conjunction; the byline shows the first name and lets
+// "et al." stand for the rest.
+function splitNames(text) {
+  return text
+    .split(/\s*,\s*and\s+|\s*,\s*|\s+and\s+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+// One to four capitalised words — enough to tell a byline apart from a
+// sentence, which is all the "contra" rewrite below needs it for.
+function looksLikeName(text) {
+  const words = text.trim().split(/\s+/);
+  if (!words.length || words.length > 4) return false;
+  return words.every(w => /^[A-Z][\p{L}'’.-]*$/u.test(w));
+}
+
+function applyDekBylines(posts) {
+  for (const p of posts) {
+    if (!p.subtitle) continue;
+
+    const ps = p.subtitle.match(POSTSCRIPT_DEK);
+    if (ps) {
+      const names = splitNames(ps[2]);
+      if (names.length) {
+        // displayAuthor, not author: the author field still holds the
+        // interviewer, which is the true byline of the piece and what any
+        // non-panel use of the post should keep seeing.
+        p.displayAuthor = names.length > 1 ? `${names[0]} et al.` : names[0];
+        p.subtitle = `${ps[1]}on ${ps[3]}`;
+      }
+      continue;
+    }
+
+    // "<Reviewer> contra <Work>" → "Contra <Work>". Gated on the prefix
+    // reading as a NAME rather than on the word "contra" alone, so an
+    // essay dek that happens to use it in a sentence is left be. Matching
+    // the prefix against post.author is too strict on its own — one
+    // review's author field is "Nadav" where its dek says "Nadav Asal".
+    const con = p.subtitle.match(/^(.+?)\s+contra\s+(.+)$/i);
+    if (con && looksLikeName(con[1])) {
+      p.subtitle = `Contra ${con[2]}`;
+    }
+  }
+}
+
 // Small courier kicker above the hero title. Static, set by hand per
 // current top post — not derived from feed data.
 const HERO_KICKER = 'To Phone or Not';
@@ -127,11 +185,15 @@ const FAVICON_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAABWGlDQ1BJQ0M
 // Contact go straight out to the live site since we don't have local pages for them.
 const SITE_LINKS = [
   { key: 'home', label: 'Home', href: './' },
+  // dek: the sidebar's gloss under each item (see .nav-dek in style.css).
+  // A newline is a HARD break in the rendered gloss — these are set to
+  // specific line shapes against the column, not left to wrap. About's is
+  // the masthead's old tagline, which moved down here off the wordmark.
   { key: 'essays', label: 'Essays', href: 'essays.html' },
-  { key: 'postscript', label: 'Postscript', href: 'postscript.html' },
-  { key: 'contra', label: 'Contra', href: 'contra.html' },
+  { key: 'postscript', label: 'Postscript', href: 'postscript.html', dek: 'Interviews w/\nextraordinary gen zers' },
+  { key: 'contra', label: 'Contra', href: 'contra.html', dek: 'New Critics take on\ngen z works' },
   { key: 'archive', label: 'Archive', href: 'archive.html' },
-  { key: 'about', label: 'About', href: 'about.html' },
+  { key: 'about', label: 'About', href: 'about.html', dek: 'The Young\nAmerican Magazine' },
 ];
 
 async function fetchFeed(url) {
@@ -719,39 +781,52 @@ function normalizeRssItem(item) {
 // essay row/hero's tagline-as-author substitution (see renderCard/
 // renderDuoHalf) so both read the same shortened, uppercased form.
 const AUTHOR_SHORT = { 'Josie Barboriak': 'Barboriak' };
-function authorDisplay(post) {
-  if (!post.author) return '';
-  return (AUTHOR_SHORT[post.author] || post.author).toUpperCase();
+// caps:false leaves the name in its natural case — the hover panels' byline
+// runs in Newsreader roman, not the courier caps of the band corners.
+// displayAuthor is the byline the CARD should show where it differs from
+// the piece's author field — set by applyDekBylines for the interviews,
+// whose subject is named in the dek and whose author is the interviewer.
+function bylineName(post) {
+  return post.displayAuthor || post.author || '';
 }
 
-// include picks which of date/author/likes render, in that order — the
-// hero and duo panels (see renderCard/renderDuoHalf) split the one meta
-// line the box/grid cards still show in full into two: the author stays
-// inline under the dek, date+likes moved to their own line pinned to the
-// panel's bottom-left corner.
-function metaLine(post, { include = ['date', 'author', 'likes'] } = {}) {
+function authorDisplay(post, caps = true) {
+  const raw = bylineName(post);
+  if (!raw) return '';
+  const name = AUTHOR_SHORT[raw] || raw;
+  return caps ? name.toUpperCase() : name;
+}
+
+// include picks which of date/author/likes render, AND the order they
+// render in — the hover panels run one byline (author · date · likes)
+// under the title rule, while the box/grid cards keep the default
+// date · author · likes. Ordering by the caller's array is what lets the
+// same builder serve both without a second function. caps:false drops the
+// uppercasing for the panels' byline, which reads in Newsreader roman.
+function metaLine(post, { include = ['date', 'author', 'likes'], caps = true } = {}) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
   // metaDate is the manual override from content-overrides.js — a display
-  // string used verbatim (uppercased), skipping the date formatting below.
-  const md = post.metaDate
-    ? post.metaDate.toUpperCase()
-    : d && !isNaN(d.getTime())
+  // string used verbatim, skipping the date formatting below.
+  const raw = post.metaDate
+    || (d && !isNaN(d.getTime())
       ? d.toLocaleDateString('en-US', d.getFullYear() < thisYear
           ? { month: 'long', year: 'numeric' }
-          : { month: 'short', day: 'numeric' }).toUpperCase()
-      : '';
+          : { month: 'short', day: 'numeric' })
+      : '');
+  const md = caps ? raw.toUpperCase() : raw;
   const parts = [];
-  if (include.includes('date') && md) parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
-  if (include.includes('author') && post.author) {
-    parts.push(`<span class="meta-author">${escapeHtml(authorDisplay(post))}</span>`);
-  }
-
-  if (include.includes('likes')) {
-    const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
-    parts.push(
-      `<span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">${likes}</span></span>`
-    );
+  for (const field of include) {
+    if (field === 'date' && md) {
+      parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
+    } else if (field === 'author' && bylineName(post)) {
+      parts.push(`<span class="meta-author">${escapeHtml(authorDisplay(post, caps))}</span>`);
+    } else if (field === 'likes') {
+      const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
+      parts.push(
+        `<span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">${likes}</span></span>`
+      );
+    }
   }
 
   return parts.join(' <span class="meta-dot">&middot;</span> ');
@@ -770,27 +845,42 @@ function taglineSection(taglineText) {
   return 'other';
 }
 
+// Escape first, THEN turn the newlines into breaks — the other way round
+// would escape the tags we just inserted.
+function dekHtml(text) {
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
 function renderNav(currentKey = 'home') {
   function navLink(l) {
-    return `<li><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
+    return `<li class="nav-item--${escapeHtml(l.key)}"><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a>${l.dek ? `\n        <span class="nav-dek">${dekHtml(l.dek)}</span>` : ''}</li>`;
   }
   const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'about'];
   const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ');
 
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
+  // The masthead IS the brand now — the framed-bird mark that used to sit
+  // above it is gone, so the name carries the home link itself. Name over
+  // tagline reads as the sidebar's own title/dek pair, the same shape
+  // every nav item below it takes. The name is broken one word per line,
+  // each in its own block so the lines can be set to the margin (see
+  // .nav-wordmark-line) rather than wrapping wherever they land.
+  const wordmarkLines = SITE_NAME.split(/\s+/)
+    .map(w => `<span class="nav-wordmark-line">${escapeHtml(w)}</span>`)
+    .join('');
+  // Subscribe closes the column as the last item under About, riding the
+  // nav links' own list rhythm (and their type) rather than sitting apart.
   return `<nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
-      <span class="bird-frame"><img src="bird-mark.png" alt="The New Critic"></span>
+      <span class="nav-wordmark">${wordmarkLines}</span>
     </a>
   </div>
+  <img class="nav-bird" src="bird-logo.png" alt="" width="962" height="835">
   <ul class="nav-links">
     ${links}
+    <li class="nav-item--subscribe nav-subscribe-item"><a class="nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></li>
   </ul>
-  <div class="nav-bottom">
-    <p class="nav-tagline">The Young<br>American Magazine</p>
-    <a class="btn btn--small btn--primary nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
-  </div>
 </nav>`;
 }
 
@@ -898,20 +988,17 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
 // One card — not several — holding a row of posts side by side, divider-
 // separated (see .card--duo in style.css). Each cell gets the hero card's
 // hover-reveal mechanic (image always visible, text panel hidden until
-// hover), but as a single panel per cell, four corners pinned: the topic
-// kicker top-left (in flow, not absolute — see .hero-kicker in style.css)
-// and the section button top-right mirror each other, date+likes sit
-// bottom-left and "Read on" bottom-right, with the title/dek/byline block
-// and any leftover space in between left alone — rather than the hero's
-// two side-by-side columns, since each cell is far narrower than the hero.
-// Takes the post's own .kicker (set per-slug in content-overrides.js),
-// unlike the hero which falls back to HERO_KICKER. tag/btnLabel/btnHref
-// point the row at its section (essays by default; the postscript row
-// passes its own), and extraClass carries the row's aspect modifier
-// (e.g. card--trio for the 1:2 portrait postscript row).
-// One cell of a homepage row: the post's image with the hover-reveal panel
-// over it. A post's own .previewTagline (set per-section in main() for the
-// archive mosaic, the way the hero's is) wins over the row-wide tag.
+// hover), as a single panel per cell reading straight down: title against
+// the panel's top margin, a rule, the credit line (author · date · likes ·
+// art), the dek, the quote rule, the excerpt. Only ONE band remains, at
+// the foot — topic kicker bottom-left (in flow, not absolute; see
+// .hero-kicker in style.css), section link bottom-right. There is no
+// header band and no "Read on" corner: the title itself is the link, and
+// it goes pink on hover to say so.
+// Takes the post's own .kicker (set per-slug in content-overrides.js).
+// btnLabel/btnHref point the row at its section (essays by default; the
+// postscript row passes its own), and extraClass carries the row's aspect
+// modifier (e.g. card--trio for the 1:2 portrait postscript row).
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
 function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
@@ -931,56 +1018,53 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
         .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
-  const readNowHtml = previewParas.length
-    ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
+  // The byline straight under the title, no rule between them: the author
+  // at the left, the date pushed to the far right of the same line (see
+  // .card-meta--line in style.css). No separator between them — the line's
+  // own width does that job, which is what retired the dots.
+  const metaLineHtml = [
+    metaLine(post, { include: ['author'], caps: false }),
+    metaLine(post, { include: ['date'], caps: false }),
+  ].filter(Boolean).join('');
+  const metaHtml = metaLineHtml
+    ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
     : '';
-  // No taglines over the excerpt in these cards at all — the section name
-  // lives in the footer band's box, the author (for essays) in the header
-  // band's; a "From the Interview" line above the quote was one element of
-  // vertical clutter too many. The section classification still routes the
-  // author: essays band-box it, editors'-note cards byline it below the
-  // title, postscript/contra never show it.
-  const effectiveTag = post.previewTagline || tag;
-  const section = taglineSection(effectiveTag);
-  const authorHtml = post.author && section === 'other'
-    ? `<p class="card-meta card-meta--byline">${metaLine(post, { include: ['author'] })}</p>`
-    : '';
-  // Essay cards carry the author as a band box of its own, left of the
-  // date/likes box. (No .hero-latest-btn/.preview-card-link classes on any
-  // band link — the corners are plain gray courier boxes whose outline
-  // glows white on hover, not caterpillar buttons.)
-  const authorBoxHtml = section === 'essay' && post.author
-    ? `<p class="card-meta pc pc-right">${escapeHtml(authorDisplay(post))}</p>`
-    : '';
-  // Header/footer bands: full-width strips whose horizontal rule runs edge
-  // to edge across the panel, with the courier corners sitting in boxes
-  // closed off by vertical rules (see .panel-band in style.css). Top-left
-  // kicker, top-right [author +] date+likes, bottom-left the section link,
-  // bottom-right Read on. Rendered once, served twice: live in the panel,
-  // inert in the resting strip over the image (cardStripHtml).
-  const bandTopHtml = `<div class="panel-band panel-band--top">
+  // The footer band now carries four boxes, not two — kicker and cover
+  // credit at the left, likes and section at the right, all in the
+  // byline's own cut. duo-panel-fit.js sheds them right-to-left when a
+  // narrow card can't seat them all (see fitBandBoxes).
+  const bandBottomHtml = `<div class="panel-band panel-band--bottom">
             ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
-            ${authorBoxHtml}
-            ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
+            ${post.coverArtist ? `<p class="card-meta pc pc-left pc-art">Art by ${escapeHtml(post.coverArtist)}</p>` : ''}
+            <a class="duo-essays-btn card-category-btn pc pc-right" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
             <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
           </div>`;
-  const bandBottomHtml = `<div class="panel-band panel-band--bottom">
-            <a class="duo-essays-btn card-category-btn pc pc-left" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
-            ${artBoxHtml(post)}${readNowHtml}
-          </div>`;
-  return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}">
+  // Section accent: essays pink, postscript purple, contra green, carried
+  // as a --accent custom property on the cell (see .duo-half--essay etc.
+  // in style.css) so every hover effect inside the card — title, glows,
+  // band corners, the likes heart — reads off one value. Same section
+  // routing the old byline used: the post's own previewTagline (set
+  // per-post in main() for the From the Archive rows, whose row-wide tag
+  // is a single section) wins over the row's.
+  const section = taglineSection(post.previewTagline || tag || '');
+  const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
+  return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
-          ${bandTopHtml}
           <div class="duo-panel-top">
-            <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-            ${dekHtml ? '<div class="card-title-divider"></div>' : ''}
-            ${dekHtml}
-            ${authorHtml}
-            ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
-            ${previewHtml}
+            <div class="panel-col panel-col--left">
+              <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+              ${metaHtml}
+              ${metaHtml && dekHtml ? '<div class="card-byline-divider"></div>' : ''}
+              ${dekHtml}
+            </div>
+            <div class="panel-col-divider" role="separator"></div>
+            <div class="panel-col panel-col--right">
+              ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
+              ${previewHtml}
+            </div>
           </div>
           ${bandBottomHtml}
         </div>
@@ -1168,10 +1252,6 @@ ${ogTags({
   })}
 <link rel="icon" href="favicon.png">
 ${leadPreload}
-<link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -1254,10 +1334,6 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
-<link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
@@ -1874,9 +1950,11 @@ async function main() {
   // Hand-edited text overrides win over everything fetched above. Applied
   // to every collection that reaches a page — the same post can appear as
   // different objects in several of them, so no deduping here.
-  applyContentOverrides(
-    [...rssPosts, ...essaysAll, ...postscriptAll, ...contraAll, ...archivePosts].filter(Boolean)
-  );
+  const allPosts = [...rssPosts, ...essaysAll, ...postscriptAll, ...contraAll, ...archivePosts].filter(Boolean);
+  applyContentOverrides(allPosts);
+  // After the overrides, so a hand-written dek gets the same treatment as
+  // a fetched one (and so an override can opt out by not matching).
+  applyDekBylines(allPosts);
 
   const html = renderHomepage({ essays: homeEssays, postscripts: homePostscripts, contras: homeContras, archives: heroArchive });
 
@@ -1913,14 +1991,26 @@ async function main() {
     console.log(`Wrote ${path.join(OUT_DIR, filename)}`);
   }
   fs.copyFileSync(path.join(__dirname, 'style.css'), path.join(OUT_DIR, 'style.css'));
-  fs.mkdirSync(path.join(OUT_DIR, 'fonts'), { recursive: true });
-  for (const f of fs.readdirSync(path.join(__dirname, 'fonts'))) {
-    fs.copyFileSync(path.join(__dirname, 'fonts', f), path.join(OUT_DIR, 'fonts', f));
+  // The site runs on system faces now, so there may be no fonts/ to copy.
+  // Guarded because this loop sits BEFORE the asset copies below — an
+  // unguarded ENOENT here aborted main() after the pages were written,
+  // leaving the mark, the favicon and the panel fitter stale in dist/.
+  const fontsDir = path.join(__dirname, 'fonts');
+  if (fs.existsSync(fontsDir)) {
+    fs.mkdirSync(path.join(OUT_DIR, 'fonts'), { recursive: true });
+    for (const f of fs.readdirSync(fontsDir)) {
+      fs.copyFileSync(path.join(fontsDir, f), path.join(OUT_DIR, 'fonts', f));
+    }
   }
   // The nav wordmark: the hand-drawn framed bird (white ink on
   // transparency, extracted from "Bird logo.png" in the repo root — see
   // assets/bird-mark.png).
   fs.copyFileSync(path.join(__dirname, 'assets/bird-mark.png'), path.join(OUT_DIR, 'bird-mark.png'));
+  // The bird that closes the sidebar (see renderNav / .nav-bird). Kept in
+  // assets/ under a clean name rather than read from the root "Bird
+  // logo.png" it was drawn as — the build shouldn't depend on a filename
+  // with a space in it, and the root copy is deliberately untracked.
+  fs.copyFileSync(path.join(__dirname, 'assets/bird-logo.png'), path.join(OUT_DIR, 'bird-logo.png'));
   fs.writeFileSync(path.join(OUT_DIR, 'favicon.png'), Buffer.from(FAVICON_B64, 'base64'));
 }
 

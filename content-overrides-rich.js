@@ -15,6 +15,9 @@ module.exports = {
   'the-doctor-of-girlhood': {
     kicker: 'Books',
   },
+  'the-unstageable': {
+    kicker: 'Theater',
+  },
   // Was the hand-set HERO_KICKER while this post led the old hero card;
   // carried over here when the homepage lead rows replaced the hero.
   'the-new-statesman': {
