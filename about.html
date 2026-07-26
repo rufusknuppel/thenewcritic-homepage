@@ -13,10 +13,6 @@
 <meta property="og:url" content="https://thenewcritic.com/about.html">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.png">
-<link rel="preload" href="fonts/fraunces-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/inter-bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-roman.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="mission-body">
@@ -27,20 +23,21 @@
 <nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./" aria-label="The New Critic — home">
-      <span class="bird-frame"><img src="bird-mark.png" alt="The New Critic"></span>
+      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span><span class="nav-wordmark-line">Critic</span></span>
     </a>
   </div>
+  <img class="nav-bird" src="bird-logo.png" alt="" width="962" height="835">
   <ul class="nav-links">
-    <li><a href="essays.html">Essays</a></li>
-      <li><a href="postscript.html">Postscript</a></li>
-      <li><a href="contra.html">Contra</a></li>
-      <li><a href="archive.html">Archive</a></li>
-      <li><a href="about.html" aria-current="page">About</a></li>
+    <li class="nav-item--essays"><a href="essays.html">Essays</a></li>
+      <li class="nav-item--postscript"><a href="postscript.html">Postscript</a>
+        <span class="nav-dek">Interviews w/<br>extraordinary gen zers</span></li>
+      <li class="nav-item--contra"><a href="contra.html">Contra</a>
+        <span class="nav-dek">New Critics take on<br>gen z works</span></li>
+      <li class="nav-item--archive"><a href="archive.html">Archive</a></li>
+      <li class="nav-item--about"><a href="about.html" aria-current="page">About</a>
+        <span class="nav-dek">The Young<br>American Magazine</span></li>
+    <li class="nav-item--subscribe nav-subscribe-item"><a class="nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></li>
   </ul>
-  <div class="nav-bottom">
-    <p class="nav-tagline">The Young<br>American Magazine</p>
-    <a class="btn btn--small btn--primary nav-subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
-  </div>
 </nav>
 </div>
 
