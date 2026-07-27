@@ -1527,6 +1527,25 @@ section{ padding: 80px 0; }
 .card-image-link{ display:block; margin-bottom: 0; }
 .card-image{ width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 .card-image--blank{ display:block; width:100%; aspect-ratio: 4/3; background: var(--surface); }
+/* Image arrival: covers fade in on decode instead of popping mid-scroll.
+   src/img-fade.js (inlined in every head) stamps .imgfade on <html> and
+   flags each <img> is-loaded when its pixels are ready; until then the
+   surface tint reads as a quiet placeholder tile rather than a void.
+   No JS → no .imgfade → nothing is ever hidden. */
+img.card-image,
+.arch-ledger-card-image img,
+.mission-person-photo{ background: var(--surface); }
+.imgfade img.card-image,
+.imgfade .arch-ledger-card-image img,
+.imgfade .mission-person-photo{ opacity: 0; transition: opacity .45s ease; }
+.imgfade img.card-image.is-loaded,
+.imgfade .arch-ledger-card-image img.is-loaded,
+.imgfade .mission-person-photo.is-loaded{ opacity: 1; }
+@media (prefers-reduced-motion: reduce){
+  .imgfade img.card-image,
+  .imgfade .arch-ledger-card-image img,
+  .imgfade .mission-person-photo{ transition: none; }
+}
 .card-title{
   font-family: var(--title); font-weight: 700; font-size: 1.53rem; margin: 0; color: var(--white);
   overflow-wrap: break-word;

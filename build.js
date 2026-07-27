@@ -431,6 +431,45 @@ function focalStyle(post) {
   return post.focal ? ` style="object-position: ${escapeHtml(post.focal)}"` : '';
 }
 
+// Every feed cover routes through substackcdn.com/image/fetch/<params>/<src>,
+// and the CDN honors extra Cloudinary-style transform params spliced into
+// that segment — so width variants cost a string edit at build time, no
+// image processing. w_ caps the width, c_limit forbids upscaling past the
+// original. The splice lands after Substack's own $s_!..! named-variable
+// segment when one leads (the tested-working position; a w_400 variant of
+// a 218KB cover came back at 25KB).
+function cdnVariant(url, w) {
+  const m = /^(https:\/\/substackcdn\.com\/image\/fetch\/)([^/]+)(\/.+)$/.exec(url);
+  if (!m) return null;
+  const params = m[2].split(',');
+  params.splice(params[0].startsWith('$') ? 1 : 0, 0, `w_${w}`, 'c_limit');
+  return `${m[1]}${params.join(',')}${m[3]}`;
+}
+
+// The src/srcset/sizes attribute set for a cover <img> — or the
+// href/imagesrcset/imagesizes set when preload:true, kept identical so the
+// homepage lead's <link rel=preload> warms the exact URL the <img> will
+// pick. Covers that don't route through the CDN fall back to the bare
+// original with no srcset.
+const COVER_SIZES = {
+  // A wide split-row cell runs about two thirds of the row; everything
+  // else (duo squares, trios, quads, archive fold-outs) sits between a
+  // quarter and a half — 40vw overshoots the small cells a step, which
+  // beats threading exact row geometry down into renderDuoHalf.
+  wide: '(max-width: 720px) 100vw, 60vw',
+  cell: '(max-width: 720px) 100vw, 40vw',
+};
+function coverSrcAttrs(url, sizes, { preload = false } = {}) {
+  const variants = [480, 800, 1200, 1600].map((w) => ({ v: cdnVariant(url, w), w }));
+  if (variants.some(({ v }) => !v)) {
+    return preload ? `href="${escapeHtml(url)}"` : `src="${escapeHtml(url)}"`;
+  }
+  const srcset = variants.map(({ v, w }) => `${v} ${w}w`).join(', ');
+  return preload
+    ? `href="${escapeHtml(variants[1].v)}" imagesrcset="${escapeHtml(srcset)}" imagesizes="${escapeHtml(sizes)}"`
+    : `src="${escapeHtml(variants[1].v)}" srcset="${escapeHtml(srcset)}" sizes="${escapeHtml(sizes)}"`;
+}
+
 // Wraps the paragraph's first letter in a span so CSS can render it as a
 // two-line drop cap (see .card-preview-dropcap) — a magazine-style flourish
 // on the feature card's opening paragraph. If the paragraph opens with a
@@ -1084,7 +1123,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-          ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} decoding="async">` : '<span class="card-image card-image--blank"></span>'}
+          ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -1186,7 +1225,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // visitor sees — preloaded the way the old hero was.
   const lead = essays[0];
   const leadPreload = lead?.image
-    ? `<link rel="preload" as="image" href="${escapeHtml(lead.image)}">`
+    ? `<link rel="preload" as="image" ${coverSrcAttrs(lead.image, COVER_SIZES.wide, { preload: true })} fetchpriority="high">`
     : '';
 
   // The homepage grid, top to bottom — no separate hero card. Every
@@ -1287,6 +1326,7 @@ ${ogTags({
 <link rel="icon" href="favicon.png">
 ${leadPreload}
 <link rel="stylesheet" href="style.css">
+${renderImgFadeScript()}
 </head>
 <body>
 
@@ -1340,6 +1380,17 @@ function renderCaterpillarScript() {
 ${js}
 </script>`;
 }
+
+// Head-inlined, unlike the body scripts above: it must arm the .imgfade
+// gate and its capture-phase load listener before the first <img> is
+// parsed, or early covers could paint-then-hide (a flash) or load before
+// anyone's listening (stuck invisible). See src/img-fade.js.
+function renderImgFadeScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/img-fade.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
 // The social-card block every page head carries — og:* plus the Twitter
 // card flavor. Without these a shared link renders as a bare URL in
 // iMessage/Slack/X. Cover art (Substack's CDN URLs are already absolute)
@@ -1369,6 +1420,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
 <link rel="stylesheet" href="style.css">
+${renderImgFadeScript()}
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
 
@@ -1656,7 +1708,7 @@ function renderLedgerRow(post) {
     </div>
     <div class="arch-ledger-card arch-ledger-grid" hidden>
       <span class="arch-ledger-card-image"><a href="${escapeHtml(post.link)}" rel="noopener">
-        ${post.image ? `<img src="${escapeHtml(post.image)}" alt="" loading="lazy" decoding="async"${focalStyle(post)}>` : '<span class="card-image--blank"></span>'}
+        ${post.image ? `<img ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt="" loading="lazy" decoding="async"${focalStyle(post)}>` : '<span class="card-image--blank"></span>'}
       </a></span>
       <div class="arch-ledger-card-text">
         ${dekHtml ? '<div class="arch-ledger-card-divider arch-ledger-card-divider--top"></div>' : ''}
