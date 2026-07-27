@@ -195,27 +195,6 @@ a{ color: inherit; }
   letter-spacing: 0.03em; line-height: 1.3;
   color: var(--muted);
   margin-top: 8px;
-  /* Absent from the layout until its own item is pointed at, so opening a
-     gloss takes real space and walks the items below it down the column.
-     (It was out of flow before, precisely so nothing moved — this is the
-     opposite call.) :focus-within carries the keyboard: tabbing to
-     Postscript's link should surface its gloss the way pointing does.
-
-     display is a discrete property, so the fade needs the pair below to
-     run at all: allow-discrete holds the box through the transition, and
-     @starting-style gives the just-shown gloss a transparent first frame
-     to move off. Browsers without either simply snap it on — the layout
-     shift, which is the point here, happens regardless. */
-  display: none;
-  opacity: 0;
-  transition: opacity .2s ease, display .2s allow-discrete;
-}
-.nav-links li:is(:hover, :focus-within) .nav-dek{
-  display: block;
-  opacity: 1;
-}
-@starting-style{
-  .nav-links li:is(:hover, :focus-within) .nav-dek{ opacity: 0; }
 }
 /* The whole column sets left, masthead included — one margin for every
    line in the sidebar. (Items used to break left and right against each
@@ -248,49 +227,47 @@ a{ color: inherit; }
 .nav-wordmark-line{ display: block; }
 .nav-wordmark{ text-align: left; }
 
-/* ---------- MASTHEAD HOVER: THE COLUMN INVERTS ----------
-   Pointing at THE NEW CRITIC turns the whole sidebar over — white ground,
-   black type, top to bottom — rather than lighting the wordmark alone.
-   :has() on the header rather than a rule per descendant, so the trigger
-   is the mark and the effect is the column.
+/* ---------- MASTHEAD UNDERLINE ----------
+   THE NEW CRITIC takes the same tell every other link in the column
+   does: a rule that draws itself left to right under the words on hover.
+   (It used to invert the whole sidebar instead — white ground, black
+   type. That's gone; the mark now reads as what it is, the column's
+   first link.)
 
-   :focus-visible, not :focus-within: the wordmark is a link, so a plain
-   :focus rule would also fire on a mouse click and leave the column
-   inverted after the pointer left. Keyboard focus is the case that needs
-   it, and that's what :focus-visible names.
+   Per LINE, not per link: the name sets one word to the line, and a
+   background on the <a> would paint a single bar under the last of them.
+   Each .nav-wordmark-line carries its own gradient, so three rules draw
+   under three words. They're blocks, so the gradient would run the full
+   column width — width:fit-content pulls each box in to its own word.
 
-   Colours come from the tokens' own inverses: --paper for type on
-   --white, and --faint for the glosses (--muted is set for a black
-   ground and goes weak on white). The links' underline is drawn in
-   currentColor, so it follows without a rule.
+   Geometry matches .nav-links a exactly (same 3px, same 0.06em lift,
+   same content-box origin and 3px padding to keep the bar off the border
+   box's clip). :focus-visible rather than :focus-within: the wordmark is
+   a link, and a plain focus rule would leave the rules lit after a mouse
+   click.
 
-   The divider goes solid white rather than inverting to a faint black:
-   the edge it draws is against the page's black, not against the column,
-   so a dark rule there would simply vanish. Full white keeps the flipped
-   column's edge crisp — and it's the same move the open hover cards
-   make, a hairline of --white against the black. */
-.site-header{ transition: background-color .2s ease, border-color .2s ease; }
-.site-header :is(.nav-wordmark, .nav-links a, .nav-subscribe, .nav-dek){
-  transition: color .2s ease, background-size .3s cubic-bezier(.25, .1, .25, 1);
+   Staggered top line first, exactly like a card title's rules — same
+   .3s curve, same 0.13s step (see .title-rule and drawTitleRules). The
+   titles need JS because their rules are absolutely-positioned spans
+   measured off rendered line boxes; here the lines are real elements
+   already, so --rule-delay is just declared per line. Only the HOVER
+   state carries the transition, so leaving snaps all three back at once,
+   re-armed for the next pass — the same rest/hover split every other
+   drawn rule on the site uses. */
+.nav-wordmark-line{
+  width: fit-content;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 calc(100% + 3px - 0.06em);
+  background-origin: content-box;
+  padding-bottom: 3px;
+  background-size: 0% 3px;
 }
-.site-header:has(.wordmark:is(:hover, :focus-visible)){
-  background: var(--white);
-  border-right-color: var(--white);
-}
-.site-header:has(.wordmark:is(:hover, :focus-visible)) :is(.nav-wordmark, .nav-links a, .nav-subscribe){
-  color: var(--paper);
-}
-.site-header:has(.wordmark:is(:hover, :focus-visible)) .nav-dek{
-  color: var(--faint);
-}
-/* assets/bird-logo.png is the drawing with its black block dropped out:
-   white ink, everything else transparent (the greys between kept their
-   luminance as alpha, so the feather edges stay soft). That's the black
-   column's version as-is; on the flipped column it would be white on
-   white, so it inverts to black ink. A filter rather than a second
-   asset — one file, and the two states can't drift apart. */
-.site-header:has(.wordmark:is(:hover, :focus-visible)) .nav-bird{
-  filter: invert(1);
+.nav-wordmark-line:nth-child(2){ --rule-delay: .13s; }
+.nav-wordmark-line:nth-child(3){ --rule-delay: .26s; }
+.wordmark:is(:hover, :focus-visible) .nav-wordmark-line{
+  background-size: 100% 3px;
+  transition: background-size .3s cubic-bezier(.25, .1, .25, 1) var(--rule-delay, 0s);
 }
 /* The bird sits between the masthead and the links — the mark under the
    name, with the sections beginning below it. Decorative (alt=""): the
@@ -300,7 +277,6 @@ a{ color: inherit; }
   display: block;
   margin: 0 0 24px;
   width: 100%; height: auto;
-  transition: filter .2s ease;
 }
 main, footer{ margin-left: 205px; }
 
@@ -1176,70 +1152,15 @@ section{ padding: 80px 0; }
   margin-top: 18px;
   line-clamp: 10; -webkit-line-clamp: 10;
 }
-/* ---------- THE BODY TEXT SETS ON WHITE ----------
-   The excerpt is the one part of an open card that's meant to be READ
-   rather than scanned, so it gets printed stock: a white box with black
-   type, sitting in the panel's black like a column of the magazine laid
-   on the artwork. Everything else in the panel — title, byline, dek,
-   bands — stays white-on-black.
-
-   Scoped to .duo-panel, so it's the hover cards only: the archive
-   ledger's .arch-ledger-card previews are always-open text on the page's
-   own ground and keep theirs.
-
-   The white is NOT painted on the text block, which is only as tall as
-   its own lines and left the box floating short of the rules. It's drawn
-   off the column divider instead (see .panel-col-divider::after), the one
-   element that already knows where the column starts and stops: the
-   fitter gives it its exact top and height — byline rule to footer band —
-   because it's the only thing that knows where the band actually falls.
-
-   The color rule needs the block in its selector to outrank
-   `.card--duo .card-preview`'s explicit white two classes up. */
-.duo-panel .card-preview-block .card-preview{
-  color: var(--paper);
-}
-/* Lifted into the positioned layer so it sets ON the stock rather than
-   under it. The divider carries a transform (its draw-in), which makes it
-   a stacking context — so the fill's own z-index:-1 only ever puts it
-   behind the DIVIDER, never behind the panel's in-flow text, and the
-   white swallowed the excerpt whole. The text has to come up to meet it
-   instead. */
-.duo-panel .card-preview-block{
-  position: relative;
-  z-index: 1;
-}
-/* The divider element itself is now just geometry — the fitter's top and
-   height, 1px wide — and carries no ink. Two pseudos hang off it:
-
-   ::before is the RULE — 1px of --line over the element's full box. It's
-   a pseudo rather than the element's own background because the element
-   is the stock's anchor: back when the rule drew itself in, a transform
-   on the element would have collapsed the stock along with it.
-
-   ::after is the STOCK: from the divider's right edge out to the panel's
-   frame, top and bottom exactly the rule's own. width is arbitrary and
-   large because the panel's overflow:hidden is what ends it — that clips
-   at the border box, so the white runs past the panel's 24px padding and
-   dies on the frame, the way a pasted column would. No transform, no
-   transition: the ground is simply there when the card opens, and only
-   the lines on it move.
-
-   z-index:0 keeps it above .duo-panel's scrim; the excerpt block lifts
-   itself to 1 to set on top of it (see .card-preview-block below). */
-.panel-col-divider::before{
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--line);
-}
-.panel-col-divider::after{
-  content: '';
-  position: absolute;
-  left: 1px; top: 0; bottom: 0;
-  width: 100vw;
-  background: var(--white);
-  z-index: 0;
+/* A hair more weight in the excerpt. NOT font-weight: the stack is
+   Helvetica Neue, which goes Regular → Medium → Bold with nothing in
+   between, so 600 resolves to Bold — measured identical to 700 — and the
+   body would have matched the panel's bold labels. A sub-pixel stroke in
+   the text's own colour thickens the strokes by less than the jump to
+   Medium did, which is the "slightly" this wants. Kept off the archive
+   ledger's previews, which aren't set on a dimmed cover. */
+.duo-panel .card-preview{
+  -webkit-text-stroke: 0.22px currentColor;
 }
 /* Essay panels (the two-across squares), the hero panel — which
    borrows the squares' own width (see duo-panel-fit.js) — and the
@@ -1301,6 +1222,7 @@ section{ padding: 80px 0; }
   position: absolute;
   left: 50%;
   width: 1px;
+  background: var(--line);
 }
 /* The excerpt owns its column outright: one measure, no sub-columns (at
    half of 685px a two-column split leaves ~135px a column), and no rule
@@ -1393,6 +1315,7 @@ section{ padding: 80px 0; }
   grid-row: 1 / -1;
   top: 0; bottom: 0;
   width: 1px;
+  background: var(--line);
 }
 /* The vertical rule beside the excerpt does the separating now, so the
    horizontal one above it is redundant — same call the wide cells make. */

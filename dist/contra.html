@@ -68,7 +68,7 @@
             <p class="hero-kicker pc pc-left">Theater</p>
             <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
             <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">22</span></span></p>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">25</span></span></p>
           </div>
         </div>
       </div>
@@ -319,7 +319,7 @@
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">The critic has</span> two roles: to worship excellence and to wage war on its behalf.</p><p class="card-preview">Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.</p><p class="card-preview">Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?</p></div>
+              <div class="card-preview-block"><p class="card-preview"><span class="card-preview-lead">The critic has</span> two roles: to worship excellence and to wage war on its behalf.</p><p class="card-preview">Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.</p><p class="card-preview">Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?</p><p class="card-preview">The duty falls on us, the New Critics, to wield the sword of Sontag and Trilling, of Mencken and Kael.</p><p class="card-preview">Today marks the introduction of lean and mean criticism to the New Critic retinue.</p><p class="card-preview">In Contra, our critics will impress the nutrients of a healthy culture — the requisite cruelty, suspicion, spite, and congratulation — upon the significant works of generation z.</p></div>
             </div>
           </div>
           <div class="panel-band panel-band--bottom">
@@ -732,6 +732,50 @@
   // sizing off the panel would put 60px type in a 294px column, the exact
   // mismatch this rule exists to prevent.
   var TITLE_PER_PX = 0.15;
+  // Whether this engine will hyphenate a TITLE-CASE English word — which
+  // is stricter than having a dictionary: engines deliberately skip
+  // capitalized words (so proper nouns never break), and titles are
+  // title-case, so a lowercase probe reports a capability the titles
+  // never receive. Chrome has the dictionary and still sets
+  // "Commodifica / tion" bare. Probe with the capitalized form: it wraps
+  // inside a 40px measure only if capitalized words genuinely hyphenate
+  // (the span carries no overflow-wrap to fall back on). Decides whether
+  // fitTitleSize below may keep a title's full size and trust the
+  // hyphen, or must shrink until the longest word sets whole. Words
+  // carrying a baked soft hyphen break everywhere and are exempt either
+  // way — longestWordWidth measures their fragments, not the whole. */
+  var CAN_HYPHENATE = (function(){
+    var probe = document.createElement('span');
+    probe.lang = 'en';
+    probe.textContent = 'Hyphenation';
+    probe.style.cssText = 'position:absolute;visibility:hidden;display:block;' +
+      'width:40px;font-size:16px;line-height:16px;' +
+      '-webkit-hyphens:auto;hyphens:auto;';
+    document.body.appendChild(probe);
+    var broke = probe.getBoundingClientRect().height > 24;
+    document.body.removeChild(probe);
+    return broke;
+  })();
+  // Shared scratch context for measuring words without touching the DOM.
+  var measureCtx = document.createElement('canvas').getContext('2d');
+  function longestWordWidth(title, fontPx) {
+    var cs = getComputedStyle(title);
+    measureCtx.font = cs.fontWeight + ' ' + fontPx + 'px ' + cs.fontFamily;
+    var hyphenW = measureCtx.measureText('\u2010').width;
+    var w = 0;
+    (title.textContent.trim().split(/\s+/)).forEach(function(word){
+      // A soft hyphen is a licensed break: the widest thing such a word
+      // ever puts on one line is its longest fragment plus the hyphen
+      // the break paints — not the whole word.
+      var frags = word.split('\u00AD');
+      frags.forEach(function(frag, i){
+        var ww = measureCtx.measureText(frag).width
+          + (frags.length > 1 && i < frags.length - 1 ? hyphenW : 0);
+        if (ww > w) w = ww;
+      });
+    });
+    return w;
+  }
   function fitTitleSize(panel, title) {
     if (!title) return;
     title.style.fontSize = '';
@@ -744,8 +788,25 @@
     // .card-title rather than shrinking the whole line.
     if (panel.closest('.duo-half--wide')) return;
     var cssPx = parseFloat(getComputedStyle(title).fontSize) || 0;
-    var colPx = title.getBoundingClientRect().width * TITLE_PER_PX;
-    if (colPx && colPx < cssPx) title.style.fontSize = Math.round(colPx) + 'px';
+    var colW = title.getBoundingClientRect().width;
+    var colPx = colW * TITLE_PER_PX;
+    var size = (colPx && colPx < cssPx) ? Math.round(colPx) : cssPx;
+    // Where the engine can hyphenate, an over-long word is the CSS's
+    // business: hyphens:auto breaks it at a real syllable and sets the
+    // hyphen ("Commodifica-tion"), and the title keeps its full size.
+    // Only where no dictionary is installed does the fitter step in —
+    // there an overflowing word doesn't even get the hyphen, overflow-
+    // wrap just snaps it mid-letter ("Commodifica / tion") — by scaling
+    // the size down until the longest word sets whole; the -2 keeps a
+    // rounding hair of slack inside the measure. Floored at 20px so a
+    // pathological word can't shrink the title into the panel text.
+    if (colW && !CAN_HYPHENATE) {
+      var wordW = longestWordWidth(title, size);
+      if (wordW > colW - 2) {
+        size = Math.max(20, Math.floor(size * (colW - 2) / wordW));
+      }
+    }
+    if (size < cssPx) title.style.fontSize = size + 'px';
   }
 
   // The wide cells' column rule spans the whole card: it starts on the
@@ -805,6 +866,30 @@
     var topR = topBox.getBoundingClientRect();
     rule.style.top = (start - topR.top) + 'px';
     rule.style.height = Math.max(0, band.getBoundingClientRect().top - start) + 'px';
+  }
+
+  // A whole line is worth a couple of points of size: when a title sets
+  // in three-plus lines and 1-2px less would save one — typically a
+  // short first word stranded alone because the pair after it missed the
+  // measure by a hair ("The / Commod-ification…") — take the trade. Runs
+  // after fitTitleSize so the word-fit floor is already in; skips the
+  // wide cells, whose titles keep their size on principle.
+  function fitTitleFewerLines(panel, title) {
+    if (!title || panel.closest('.duo-half--wide')) return;
+    if (getComputedStyle(title).display === 'none') return;
+    function lineCount() {
+      var lh = parseFloat(getComputedStyle(title).lineHeight) || 24;
+      return Math.round(title.getBoundingClientRect().height / lh);
+    }
+    var lines = lineCount();
+    if (lines < 3) return;
+    var prev = title.style.fontSize;
+    var size = parseFloat(getComputedStyle(title).fontSize);
+    for (var d = 1; d <= 2; d++) {
+      title.style.fontSize = (size - d) + 'px';
+      if (lineCount() < lines) return;
+    }
+    title.style.fontSize = prev;
   }
 
   // Titles read as two lines wherever the words allow it. A title that
@@ -1080,6 +1165,7 @@
     // (the two-line break, the credit's clearance, the floor budget)
     // depends on the type size being settled.
     fitTitleSize(panel, title);
+    fitTitleFewerLines(panel, title);
     fitTitleTwoLines(title);
     var limit = band.getBoundingClientRect().top - 14;
 
@@ -1184,18 +1270,42 @@
         }
         // Single-column preview (trio/quad/mosaic squares and the split
         // rows' postscript thirds): paragraphs clamp at the rendered
-        // line inside scGap's budget — as many whole lines as fit — and
-        // the sub-line slack moves above the title, same as the
-        // multi-column path (see the slack padding at the end of fit()).
+        // line inside scGap's budget — as many whole lines as fit.
+        //
+        // Positions are COMPUTED, not read: with every paragraph's clamp
+        // lifted to 999 for measuring, sibling clamp boxes in some
+        // engines (the in-app preview among them) stop stacking — all of
+        // them sit at the block's top and rect.top lies by a whole
+        // paragraph. Heights stay true, so the real layout is block top
+        // plus a running sum of heights and margins. That fed one card a
+        // clamp of 12 where 2 fit ("Curtis Yarvin Jr.", 181px past the
+        // band) and let every other card's paragraphs "fit" unclamped —
+        // which is why no ellipsis ever appeared.
         var scGap = 16;
         var scLimit = (limit + 14) - scGap;
         var parasCut = false;
         var lastVisible = null;
+        var scY = el.getBoundingClientRect().top;
+        var scFirst = true;
         [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
           if (parasCut) { p.style.display = 'none'; return; }
-          if (p.getBoundingClientRect().bottom <= scLimit) { lastVisible = p; return; }
+          var pTop = scY + (scFirst ? 0 : (parseFloat(getComputedStyle(p).marginTop) || 0));
+          scFirst = false;
+          var pBottom = pTop + p.getBoundingClientRect().height;
+          if (pBottom <= scLimit) { lastVisible = p; scY = pBottom; return; }
           parasCut = true;
-          if (clampToFit(p, scLimit)) lastVisible = p;
+          // clampToFit's own rect would reuse the lying top — inline the
+          // same clamp against the computed one.
+          var pLh = parseFloat(getComputedStyle(p).lineHeight) || 22;
+          var pLines = Math.floor((scLimit - pTop) / pLh);
+          if (pLines < 1) { p.style.display = 'none'; return; }
+          p.style.display = '-webkit-box';
+          p.style.webkitBoxOrient = 'vertical';
+          p.style.overflow = 'hidden';
+          p.style.webkitLineClamp = String(pLines);
+          p.style.lineClamp = String(pLines);
+          p.classList.add('card-preview--clamped');
+          lastVisible = p;
         });
         if (!lastVisible) {
           // Every paragraph died — hide the empty block and the quote

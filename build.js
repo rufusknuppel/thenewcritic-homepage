@@ -110,6 +110,25 @@ function applyContentOverrides(posts) {
 // Both are rewritten here, once, on the post objects — so every renderer
 // (hover panels, section pages, the archive ledger) reads the same text
 // rather than each parsing the dek for itself.
+// Soft hyphens for title words too long to set whole in a narrow card
+// column. hyphens:auto can't help: engines skip capitalized words by
+// design (so proper nouns don't hyphenate), and a title-case word that
+// overflows falls through to overflow-wrap's bare mid-letter snap. A
+// baked \u00AD breaks with a real painted hyphen in every engine and is
+// invisible wherever the word fits. Points are hand-chosen syllable
+// breaks; add a word here the day another over-long title appears.
+const TITLE_HYPHENATION = new Map([
+  ['Commodification', 'Commod\u00ADification'],
+]);
+function applyTitleHyphenation(posts) {
+  for (const p of posts) {
+    if (!p || !p.title) continue;
+    for (const [word, broken] of TITLE_HYPHENATION) {
+      p.title = p.title.split(word).join(broken);
+    }
+  }
+}
+
 const POSTSCRIPT_DEK = /^(Postscript No\.\s*\d+\s*\|\s*)(.+?)\s+on\s+(.+)$/;
 
 // "A and B", "A, B, and C" — the dek's own list style. Split on the
@@ -1906,7 +1925,7 @@ async function main() {
   const rowPosts = dedupeByLink(rowPostGroups.flat());
   if (rowPosts.length) {
     console.log(`Fetching extended previews for ${rowPosts.length} row posts`);
-    const extended = await mapBatched(rowPosts, 10, (p) => fetchExtendedPreview(p.link, 3));
+    const extended = await mapBatched(rowPosts, 10, (p) => fetchExtendedPreview(p.link, 6));
     const parasByLink = new Map();
     const artistByLink = new Map();
     rowPosts.forEach((p, i) => {
@@ -1915,7 +1934,7 @@ async function main() {
       if ((!paras || !paras.length) && rssBodyByLink.has(p.link)) {
         // Same fallback as the hero's — recent posts still in the feed can
         // recover their free-preview paragraphs from content:encoded.
-        paras = extractParagraphs(rssBodyByLink.get(p.link), 3);
+        paras = extractParagraphs(rssBodyByLink.get(p.link), 6);
       }
       if (paras && paras.length) parasByLink.set(p.link, paras);
     });
@@ -1955,6 +1974,7 @@ async function main() {
   // After the overrides, so a hand-written dek gets the same treatment as
   // a fetched one (and so an override can opt out by not matching).
   applyDekBylines(allPosts);
+  applyTitleHyphenation(allPosts);
 
   const html = renderHomepage({ essays: homeEssays, postscripts: homePostscripts, contras: homeContras, archives: heroArchive });
 
