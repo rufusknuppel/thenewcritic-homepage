@@ -14,8 +14,39 @@
 <meta property="og:image" content="https://substackcdn.com/image/fetch/$s_!vvaX!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.png">
-<link rel="preload" as="image" href="https://substackcdn.com/image/fetch/$s_!vvaX!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png">
+<link rel="preload" as="image" href="https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png" imagesrcset="https://substackcdn.com/image/fetch/$s_!vvaX!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 480w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 800w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1200w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1600w" imagesizes="(max-width: 720px) 100vw, 60vw" fetchpriority="high">
 <link rel="stylesheet" href="style.css">
+<script>
+// Cover-image arrival: each cover fades in once its pixels are decoded
+// instead of popping into place mid-scroll. Inlined into <head>, so it
+// runs before any <img> exists — the load listener rides the capture
+// phase ('load' doesn't bubble, but it does capture), which is the only
+// way a single listener attached this early can catch every image,
+// cached ones included. It must sit on document, not window: a
+// subresource load's propagation path ends at document. The .imgfade
+// class on <html> gates the opacity:0 in style.css: no JS, no hiding,
+// covers render as before.
+(function () {
+  document.documentElement.classList.add('imgfade');
+  function arrived(e) {
+    var t = e.target;
+    if (t && t.tagName === 'IMG') t.classList.add('is-loaded');
+  }
+  document.addEventListener('load', arrived, true);
+  // A broken image should settle on the placeholder tile, not hold the
+  // box invisible forever.
+  document.addEventListener('error', arrived, true);
+  // Sweep for anything already complete — pages restored from the
+  // back/forward cache re-fire no load events (pageshow fires on every
+  // navigation, so this also backstops ordinary loads).
+  addEventListener('pageshow', function () {
+    for (var i = 0; i < document.images.length; i++) {
+      if (document.images[i].complete) document.images[i].classList.add('is-loaded');
+    }
+  });
+})();
+
+</script>
 </head>
 <body>
 
@@ -52,7 +83,7 @@
     <article class="card card--duo card--split">
       <div class="duo-half duo-half--wide duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/manifest-man" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vvaX!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png" srcset="https://substackcdn.com/image/fetch/$s_!vvaX!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 480w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 800w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1200w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -80,7 +111,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--narrow duo-half--postscript">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-new-statesman" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!8JY3!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!8JY3!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!8JY3!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 480w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 800w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -114,7 +145,7 @@
     <article class="card card--duo">
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/luddite-club" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!d4tT!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!d4tT!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!d4tT!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 480w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 800w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -142,7 +173,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-blackpill" rel="noopener">
-          <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/a8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/a8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -176,7 +207,7 @@
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kfWq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kfWq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -204,7 +235,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!wGxB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 480w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 800w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -232,7 +263,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" srcset="https://substackcdn.com/image/fetch/$s_!7T76!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 480w, https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 800w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1200w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -266,7 +297,7 @@
     <article class="card card--duo">
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/what-was-college-for-3ce" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vHKv!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vHKv!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!vHKv!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 480w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 800w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -294,7 +325,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/american-berserk" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AkQ6!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AkQ6!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!AkQ6!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 480w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 800w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -328,7 +359,7 @@
     <article class="card card--duo card--trio-flat">
       <div class="duo-half duo-half--postscript">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/change-my-mind" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jXht!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jXht!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!jXht!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 480w, https://substackcdn.com/image/fetch/$s_!jXht!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 800w, https://substackcdn.com/image/fetch/$s_!jXht!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!jXht!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -356,7 +387,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--postscript">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-commodification-of-freya-india" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!VmgB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!VmgB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!VmgB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 480w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 800w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -384,7 +415,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--postscript">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/last-girl-at-the-beginning-of-history" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!SXxb!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!SXxb!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!SXxb!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 480w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 800w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -418,7 +449,7 @@
     <article class="card card--duo">
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/not-new-york" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jgOM!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbfa52207-7665-4792-b941-ad96e416d342_3833x2557.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jgOM!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbfa52207-7665-4792-b941-ad96e416d342_3833x2557.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!jgOM!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbfa52207-7665-4792-b941-ad96e416d342_3833x2557.jpeg 480w, https://substackcdn.com/image/fetch/$s_!jgOM!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbfa52207-7665-4792-b941-ad96e416d342_3833x2557.jpeg 800w, https://substackcdn.com/image/fetch/$s_!jgOM!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbfa52207-7665-4792-b941-ad96e416d342_3833x2557.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!jgOM!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbfa52207-7665-4792-b941-ad96e416d342_3833x2557.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -446,7 +477,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-girls-who-watch-girls" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kOlu!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32d262dd-c78e-4b1e-8756-25336f77f840_3182x1911.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kOlu!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32d262dd-c78e-4b1e-8756-25336f77f840_3182x1911.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kOlu!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32d262dd-c78e-4b1e-8756-25336f77f840_3182x1911.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kOlu!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32d262dd-c78e-4b1e-8756-25336f77f840_3182x1911.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kOlu!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32d262dd-c78e-4b1e-8756-25336f77f840_3182x1911.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kOlu!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32d262dd-c78e-4b1e-8756-25336f77f840_3182x1911.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -480,7 +511,7 @@
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 480w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 800w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -508,7 +539,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!DRni!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 480w, https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 800w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -536,7 +567,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!WbnN!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 480w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 800w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -570,7 +601,7 @@
     <article class="card card--duo">
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-great-zombification" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!6aMR!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbba99be4-4e77-4c82-954f-50128e629d56_3866x2833.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!6aMR!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbba99be4-4e77-4c82-954f-50128e629d56_3866x2833.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!6aMR!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbba99be4-4e77-4c82-954f-50128e629d56_3866x2833.jpeg 480w, https://substackcdn.com/image/fetch/$s_!6aMR!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbba99be4-4e77-4c82-954f-50128e629d56_3866x2833.jpeg 800w, https://substackcdn.com/image/fetch/$s_!6aMR!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbba99be4-4e77-4c82-954f-50128e629d56_3866x2833.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!6aMR!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbba99be4-4e77-4c82-954f-50128e629d56_3866x2833.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -598,7 +629,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/notes-on-camp" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!9vpP!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F20932858-400d-4836-a18f-7afe01c164cc_2901x2244.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!9vpP!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F20932858-400d-4836-a18f-7afe01c164cc_2901x2244.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!9vpP!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F20932858-400d-4836-a18f-7afe01c164cc_2901x2244.jpeg 480w, https://substackcdn.com/image/fetch/$s_!9vpP!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F20932858-400d-4836-a18f-7afe01c164cc_2901x2244.jpeg 800w, https://substackcdn.com/image/fetch/$s_!9vpP!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F20932858-400d-4836-a18f-7afe01c164cc_2901x2244.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!9vpP!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F20932858-400d-4836-a18f-7afe01c164cc_2901x2244.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -632,7 +663,7 @@
     <article class="card card--duo card--split">
       <div class="duo-half duo-half--narrow duo-half--postscript">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/voluntary-oasis" rel="noopener">
-          <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -660,7 +691,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--wide duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/pee-1" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AOGq!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F990db60e-c03a-401a-bd10-4d034ba979fe_3601x2481.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AOGq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F990db60e-c03a-401a-bd10-4d034ba979fe_3601x2481.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!AOGq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F990db60e-c03a-401a-bd10-4d034ba979fe_3601x2481.jpeg 480w, https://substackcdn.com/image/fetch/$s_!AOGq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F990db60e-c03a-401a-bd10-4d034ba979fe_3601x2481.jpeg 800w, https://substackcdn.com/image/fetch/$s_!AOGq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F990db60e-c03a-401a-bd10-4d034ba979fe_3601x2481.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!AOGq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F990db60e-c03a-401a-bd10-4d034ba979fe_3601x2481.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -694,7 +725,7 @@
     <article class="card card--duo">
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/end-times" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!pi3Y!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa4ec230c-7944-41f8-9758-29e4ac220b8e_1599x1073.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!pi3Y!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa4ec230c-7944-41f8-9758-29e4ac220b8e_1599x1073.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!pi3Y!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa4ec230c-7944-41f8-9758-29e4ac220b8e_1599x1073.jpeg 480w, https://substackcdn.com/image/fetch/$s_!pi3Y!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa4ec230c-7944-41f8-9758-29e4ac220b8e_1599x1073.jpeg 800w, https://substackcdn.com/image/fetch/$s_!pi3Y!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa4ec230c-7944-41f8-9758-29e4ac220b8e_1599x1073.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!pi3Y!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa4ec230c-7944-41f8-9758-29e4ac220b8e_1599x1073.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -722,7 +753,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/freak-show" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!1Pzd!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 480w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 800w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -756,7 +787,7 @@
     <article class="card card--duo card--split">
       <div class="duo-half duo-half--wide duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/pdoom" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!uRkh!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!uRkh!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 480w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 800w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
@@ -784,7 +815,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--narrow duo-half--postscript">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!iaVB!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg" alt="" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!iaVB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!iaVB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 480w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 800w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           <div class="duo-panel-top">
