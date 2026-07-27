@@ -802,13 +802,12 @@ section{ padding: 80px 0; }
    pair still reads as one unit. */
 .duo-panel .card-title-divider{ margin: 12.5px -24px 13px; }
 /* The byline: author · date · likes, in the title's own cut — Helvetica
-   Bold, natural case, white — sitting straight under the title with no
-   rule between them. The uppercasing and courier tracking that
-   .card-meta carries site-wide are both undone here. .card-meta still
-   supplies the flex row, its 6px gap and the wrap; this sets the panel's
-   own spacing, including the 13px that the removed title rule used to
-   hold open, and overrides .card--duo .card-meta's 16px top margin
-   (meant for a byline sitting under a dek — this one sits above it). */
+   Bold, natural case, white — a ruled strip under the dek (the dek sits
+   against its title now, byline below it; see THE STACK for the order).
+   The uppercasing and courier tracking that .card-meta carries
+   site-wide are both undone here. .card-meta still supplies the flex
+   row, its 6px gap and the wrap; this sets the panel's own spacing and
+   the full-bleed sides. */
 .card--duo .duo-panel .card-meta--line,
 .card--feature .duo-panel .card-meta--line{
   font-family: var(--title);
@@ -825,10 +824,9 @@ section{ padding: 80px 0; }
      and, below, the byline/dek divider, which the strip sits flush on so
      the two read as one ruled band. The type was already the band's
      exactly; the boxes are what made them read differently. */
-  /* 21px of air above the strip's overhead rule, and the same below its
-     bottom one (see .card-byline-divider) — the title and the dek each
-     stand clear of the band rather than crowding it. */
-  margin: 21px -24px 0;
+  /* 16px of air above the strip's overhead rule — the stack's one step
+     (title to dek, dek to strip, strip to excerpt all match). */
+  margin: 16px -24px 0;
   gap: 0;
   align-items: stretch;
   position: relative;
@@ -856,20 +854,42 @@ section{ padding: 80px 0; }
   background: var(--line);
 }
 .duo-panel .card-meta--line .meta-author::after{ right: -1px; }
+/* A contra's billing rides in the byline where the date used to (the
+   date moves down beside the kicker — see .pc-date). Same box as the
+   author beside it, so the strip reads as two ruled cells rather than a
+   name with a caption; gray, because it's the dek's voice, not the
+   byline's. One line, always: flex-basis 0 with min-width 0 lets it take
+   whatever the author leaves and no more — without min-width:0 a flex
+   item refuses to shrink below its content and the ellipsis never
+   fires — and the row's own edge does the cutting. */
+.duo-panel .card-meta--line .meta-dek{
+  display: inline-flex; align-items: center;
+  padding: 10.35px 24px 9.65px;
+  flex: 1 1 0; min-width: 0;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* text-overflow needs a block-ish box to clip in: an inline-flex
+     container ellipsizes its own overflow only if the text is a block
+     child, so the padding box does the clipping and this display keeps
+     the vertical centring the other byline boxes have. */
+  display: block;
+  line-height: 1;
+  padding-top: 13px; padding-bottom: 12px;
+}
 .duo-panel .card-meta--line .meta-date::before{ left: -1px; }
 /* Sized to the byline's own cap height rather than the courier corners' —
    the bold line sets a touch larger than the caps it replaced. */
 .duo-panel .card-meta--line .likes-heart{ height: 12px; width: auto; fill: var(--white); }
-/* The rule between byline and dek, edge to edge like the title's own.
-   Symmetric 13px: the byline's descenders and the dek's caps leave
-   roughly equal air, so the ink-to-line gap reads even on both sides. */
+/* The byline strip's bottom rule, edge to edge. No top margin: it sits
+   flush under the boxes so their vertical rules land on it — and no
+   bottom margin either, because nothing follows it in its column any
+   more (the dek moved above the strip; in non-wide cells the quote rule
+   does this job and this one is hidden — see THE STACK). */
 .duo-panel .card-byline-divider{
   height: 1px; background: var(--line);
-  /* No top margin: this is the byline strip's own bottom rule as much as
-     it is the dek's top one, so it sits flush under the boxes and their
-     vertical rules land on it. The 21px below is the gap to the dek,
-     matching the strip's own gap to the title above it. */
-  margin: 0 -24px 21px;
+  margin: 0 -24px;
 }
 /* The date rides the byline's own line, pushed to its far end — the
    bottom-right corner of the title block, opposite the author. margin
@@ -1081,12 +1101,14 @@ section{ padding: 80px 0; }
      reason "Unstageable" was setting as "Unstageabl / e". Full width and
      it fits whole. */
   width: 100%;
-  /* Four lines, not two. At 60px in a 318px square a Contra title sets
-     two or three words to the line, so a two-line clamp was cutting most
-     of them to a single word plus an ellipsis — "The…" for "The
-     Unstageable". Four lines is what the hyphenation above needs to
-     actually deliver a readable title here. */
-  line-clamp: 4; -webkit-line-clamp: 4;
+  /* Three lines. At this size in a 318px square a contra title sets two
+     or three words to the line, so a two-line clamp cut most of them to
+     a single word plus an ellipsis ("The…" for "The Unstageable") — but
+     a fourth line eats the excerpt outright: "You Seem Pretty Tame for a
+     Girl in Revolt" ran four lines, about 200px of a 356px panel, and
+     the fitter had nothing left to give the body text at all. Three is
+     the compromise that leaves every card room to read. */
+  line-clamp: 3; -webkit-line-clamp: 3;
   /* At line-height 1.1 the last line's descenders ("Hurry", "Girl") hang
      below the line box, and this clamp's overflow:hidden — unlike the
      unclamped duo/trio titles — cuts that ink off. The padding gives it
@@ -1232,27 +1254,28 @@ section{ padding: 80px 0; }
 .duo-half--wide .duo-panel .card-preview-block{
   column-count: 1;
 }
-/* ---------- THE NON-WIDE SPLIT ----------
-   Everything that ISN'T an extra-wide cell splits too, but lower down: the
-   title and byline keep the full measure across the top, and only the
-   ground below the byline divides — dek on the left, excerpt on the right,
-   a drawn rule between them running down to the footer band.
+/* Dek before byline in the left column — the same reversal the
+   non-wide cells make with grid order (see THE STACK below), done with
+   flex order since this column is a flex column. Spacing comes from
+   the shared rules: the dek's own 16px step off the title here, the
+   strip's 16px top margin, and .card-byline-divider closing the strip
+   flush with nothing after it — the excerpt is across the divide. */
+.duo-half--wide .panel-col--left .card-title{ order: 1; }
+.duo-half--wide .panel-col--left .card-dek{ order: 2; margin-top: 16px; }
+.duo-half--wide .panel-col--left .card-meta--line{ order: 3; }
+.duo-half--wide .panel-col--left .card-byline-divider{ order: 4; }
+/* ---------- THE NON-WIDE STACK ----------
+   Everything that ISN'T an extra-wide cell keeps the full measure and
+   reads straight down: title, dek, the ruled byline strip, the excerpt.
+   The dek-left/excerpt-right split retired when the dek moved above the
+   byline — that left the ground under the strip to the excerpt alone,
+   with nothing beside it for a vertical rule to divide.
 
-   Done as a grid rather than the wide cells' flex row, because here the
-   head has to SPAN the split while the two columns sit under it. The
-   .panel-col wrappers stay display:contents so their children become grid
-   items directly, which is also what keeps the fitter's panelGroups()
-   seeing one flat sequence — correct here, since it measures every element
-   against its own laid-out box rather than a running total, and the two
-   columns' boxes are already side by side by the time it reads them.
-
-   The quad cells (the contras) split too. Counter-intuitively this can
-   GAIN them an excerpt rather than cost them one: stacked, the dek's
-   height pushed the excerpt down until the fitter had no lines left for
-   it, and side by side the two start at the same y, so the excerpt's
-   budget is the whole drop to the band. Where one still doesn't survive,
-   the fitter drops the rule rather than leave it dividing nothing (see
-   fitColumnDivider). */
+   Still a grid, not a plain block: every item spans every track (see
+   THE STACK below), but the .panel-col wrappers stay display:contents
+   so their children become grid items directly, which is what keeps the
+   fitter's panelGroups() seeing one flat sequence and lets `order` do
+   the dek/byline swap without touching build.js. */
 .card .duo-half:not(.duo-half--wide) .duo-panel-top{
   display: grid;
   /* Body text takes the larger share — the dek is a few lines of gloss,
@@ -1279,47 +1302,80 @@ section{ padding: 80px 0; }
    a title genuinely overruns. */
 .card--quad .duo-half:not(.duo-half--wide) .duo-panel .card-title{
   display: block;
-  max-height: 4.4em; /* four lines at the 1.1 leading */
+  max-height: 3.3em; /* three lines at the 1.1 leading */
   overflow: hidden;
 }
-/* The head spans the whole measure; the two columns divide below it. */
+/* The head spans the whole measure. (So does everything else now — see
+   THE STACK below — but these three earn it structurally: the byline
+   strip's full-bleed rules must run the panel's width regardless.) */
 .card .duo-half:not(.duo-half--wide) .duo-panel :is(.card-title, .card-meta, .card-byline-divider){
   grid-column: 1 / -1;
 }
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-dek{ grid-column: 1; }
-/* One measure in the right-hand column: sub-columns inside a ~60% column
-   would leave each of them unreadably narrow. */
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{
-  grid-column: 3;
-}
-/* Carries the multi-column rule's own :not() chain because it has to beat
-   it — that selector runs eight classes deep, and a shorter one here lost
-   silently, leaving two ~120px sub-columns inside the right-hand column. */
-.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block,
+/* Only the split rows' narrow postscript third keeps one measure — at
+   its width a two-column cut leaves ~110px a column. The essay squares
+   (the plain two-across rows) run their excerpt in TWO columns like the
+   extra-wide cells: they simply inherit the .card--duo two-column rule
+   above, and the fitter's multi-column branch floors both columns.
+   Carries the multi-column rule's own :not() chain shape because it has
+   to beat it on specificity, not just order. */
 .card--split .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{
   column-count: 1;
 }
-/* Out of flow in its own 1px track — an absolutely positioned grid child
-   takes that track as its containing block, so it needs no left offset of
-   its own. Exact top and height come from the fitter, the only thing that
-   knows where the band starts; drawn downward on open like the wide
-   cells' rule and every other vertical rule on the page. */
-.card .duo-half:not(.duo-half--wide) .duo-panel .panel-col-divider{
-  display: block;
-  position: absolute;
-  /* Spanning every row matters: an absolutely positioned grid child takes
-     its GRID AREA as the containing block, so a column-only placement
-     would anchor it to whichever row it landed in and the fitter's
-     offsets — measured from the grid's top — would all be short. */
-  grid-column: 2;
-  grid-row: 1 / -1;
-  top: 0; bottom: 0;
-  width: 1px;
-  background: var(--line);
+/* ---------- THE STACK ----------
+   Every non-wide cell reads straight down — the postscript arrangement
+   (a dek as the piece's billing, standing under its title) made the
+   house arrangement:
+
+     title
+     dek
+     ───────
+     author · date
+     ───────
+     excerpt
+
+   One 16px step between each pair of neighbours. With nothing side by
+   side there's nothing for a vertical rule to divide — the base
+   .panel-col-divider{ display:none } simply stays in force — and the
+   ruling is horizontal instead. */
+.card .duo-half:not(.duo-half--wide) .duo-panel :is(.card-dek, .duo-quote-divider, .card-preview-block){
+  /* The rule needs this as much as the text does: a grid item with no
+     placement lands in column 1 (0.72fr — 146px of a 354px panel), so
+     without it the divider ruled the left third and stopped. */
+  grid-column: 1 / -1;
 }
-/* The vertical rule beside the excerpt does the separating now, so the
-   horizontal one above it is redundant — same call the wide cells make. */
-.card .duo-half:not(.duo-half--wide) .duo-panel-top .duo-quote-divider{ display: none; }
+/* Dek before byline. The markup order is title, byline, rule, dek —
+   built for the retired layout where the dek was a gloss under the
+   ruled byline — so the swap happens here rather than in build.js.
+   Every item is numbered: `order` sorts within a common value by
+   document order, so leaving any of them at the default 0 would float
+   it above the whole numbered set. */
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-title{ order: 1; }
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-dek{ order: 2; margin-top: 16px; }
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-meta--line{ order: 3; }
+.card .duo-half:not(.duo-half--wide) .duo-panel .duo-quote-divider{ order: 4; }
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{ order: 5; }
+/* The byline already rules its own top edge (.card-meta--line::before),
+   and that rule now falls exactly where .card-byline-divider used to —
+   directly under the dek. Keeping both would print two full-bleed lines
+   16px apart, so the standalone one goes and the byline's own does the
+   work. */
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-byline-divider{
+  display: none;
+}
+/* The byline is a closed strip, not a line floating between two rules:
+   its own rule caps it above (.card-meta--line::before) and the quote
+   rule seats flush against its foot, so the box verticals inside it land
+   on both. The air the strip needs is INSIDE it, from the boxes' own
+   10.35/9.65 padding, which is why the rule takes no margin above it;
+   the 16px below is the strip's step down to the excerpt.
+   display:block deliberately outranks the homepage quads' hide
+   (.card--quad .duo-panel .duo-quote-divider above): a contra square
+   keeps its excerpt hidden but still needs this rule to close its
+   byline strip now that .card-byline-divider is gone. */
+.card .duo-half:not(.duo-half--wide) .duo-panel-top .duo-quote-divider{
+  display: block;
+  margin: 0 -24px 16px;
+}
 /* When the excerpt overflows the last column, the fitter truncates the
    text itself at the last fully-visible word and joins the ellipsis onto
    it inline (see truncateToWord in duo-panel-fit.js / ledger.js) — no

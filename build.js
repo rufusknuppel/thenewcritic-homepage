@@ -1021,10 +1021,30 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
 function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
+  // Section accent: essays pink, postscript purple, contra green, carried
+  // as a --accent custom property on the cell (see .duo-half--essay etc.
+  // in style.css) so every hover effect inside the card — title, glows,
+  // band corners, the likes heart — reads off one value. Same section
+  // routing the old byline used: the post's own previewTagline (set
+  // per-post in main() for the From the Archive rows, whose row-wide tag
+  // is a single section) wins over the row's. Read up here because the
+  // contra cells lay their byline and band out differently (below).
+  const section = taglineSection(post.previewTagline || tag || '');
+  // A contra's dek is its whole billing — "Contra <work>" — so it rides
+  // IN the byline beside the author rather than under it, and the date it
+  // displaces moves down to the band beside the kicker. Lowercase
+  // "contra" there: in the byline it reads as the preposition it is
+  // ("Owen Yingling · contra Carbon Pages"), not a section label.
+  const isContra = section === 'contra';
+  const contraDek = isContra && post.subtitle
+    ? post.subtitle.replace(/^Contra\b/, 'contra')
+    : '';
   // Full, untruncated subtitle — duo-panel-fit.js clamps it to the lines
   // the panel actually has room for. A build-time character cut here (the
   // old truncate(…, 140)) ellipsized deks short of space the panel had.
-  const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>` : '';
+  const dekHtml = (post.subtitle && !isContra)
+    ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>`
+    : '';
   // Full, untruncated paragraphs (several of them where the row-posts
   // fetch in main() ran) — duo-panel-fit.js decides at render time how
   // many lines each panel actually has room for and clamps there, with
@@ -1043,7 +1063,9 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   // own width does that job, which is what retired the dots.
   const metaLineHtml = [
     metaLine(post, { include: ['author'], caps: false }),
-    metaLine(post, { include: ['date'], caps: false }),
+    isContra
+      ? (contraDek ? `<span class="meta-dek">${escapeHtml(contraDek)}</span>` : '')
+      : metaLine(post, { include: ['date'], caps: false }),
   ].filter(Boolean).join('');
   const metaHtml = metaLineHtml
     ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
@@ -1054,18 +1076,11 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   // narrow card can't seat them all (see fitBandBoxes).
   const bandBottomHtml = `<div class="panel-band panel-band--bottom">
             ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
+            ${isContra ? metaLine(post, { include: ['date'], caps: false }).replace('<span class="meta-date">', '<p class="card-meta pc pc-left pc-date">').replace('</span>', '</p>') : ''}
             ${post.coverArtist ? `<p class="card-meta pc pc-left pc-art">Art by ${escapeHtml(post.coverArtist)}</p>` : ''}
             <a class="duo-essays-btn card-category-btn pc pc-right" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
             <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
           </div>`;
-  // Section accent: essays pink, postscript purple, contra green, carried
-  // as a --accent custom property on the cell (see .duo-half--essay etc.
-  // in style.css) so every hover effect inside the card — title, glows,
-  // band corners, the likes heart — reads off one value. Same section
-  // routing the old byline used: the post's own previewTagline (set
-  // per-post in main() for the From the Archive rows, whose row-wide tag
-  // is a single section) wins over the row's.
-  const section = taglineSection(post.previewTagline || tag || '');
   const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
@@ -1076,7 +1091,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
             <div class="panel-col panel-col--left">
               <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
               ${metaHtml}
-              ${metaHtml && dekHtml ? '<div class="card-byline-divider"></div>' : ''}
+              ${metaHtml && (dekHtml || isContra) ? '<div class="card-byline-divider"></div>' : ''}
               ${dekHtml}
             </div>
             <div class="panel-col-divider" role="separator"></div>

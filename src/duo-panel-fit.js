@@ -488,6 +488,10 @@
     var order = [
       band.querySelector('.pc-art'),
       band.querySelector('.card-meta--stats'),
+      // The contra date (see .pc-date) sheds late: it's the byline half
+      // that moved down here, so it outranks the likes and the credit,
+      // and only the kicker outranks it.
+      band.querySelector('.pc-date'),
       band.querySelector('.hero-kicker')
     ];
     order.forEach(function(el){ if (el) el.style.display = ''; });
