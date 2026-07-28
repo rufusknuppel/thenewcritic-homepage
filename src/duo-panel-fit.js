@@ -17,7 +17,13 @@
   // footer band's top minus this. It is a MINIMUM — a short excerpt ends
   // where it ends and leaves more — but a full box lands its last line
   // exactly here (see the slot stretch below).
-  var GAP = 16;
+  // 18.1, not 24, because this measures the text's BOX and the panel's
+  // spacing is specified ink to ink (see PANEL INK RHYTHM in style.css):
+  // the excerpt's 1.6 leading hangs 0.454em — 5.9px at the 13px panel
+  // size — below its last baseline, so an 18.1px box floor is what
+  // prints the wanted 24px of air between the last line and the band's
+  // rule.
+  var GAP = 18.1;
   // When a block's text fills every line slot its box allows, the sub-line
   // remainder (box height mod line-height) is distributed into the leading
   // instead of piling up as dead space over the band: each slot may open
@@ -85,6 +91,33 @@
       while (n.nextSibling) n.parentNode.removeChild(n.nextSibling);
       n = n.parentNode;
     }
+  }
+
+  // Last non-empty text node under root, or null.
+  function lastTextNode(root) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var n, last = null;
+    while ((n = w.nextNode())) { if (n.textContent.trim()) last = n; }
+    return last;
+  }
+
+  // Removes the last word under root (trailing punctuation goes with it;
+  // an inline wrapper like <em> that empties out is dropped so the next
+  // pass doesn't stall on it). Returns false once nothing is left.
+  function popLastWord(root) {
+    var n = lastTextNode(root);
+    if (!n) return false;
+    n.textContent = n.textContent
+      .replace(TRAIL_PUNCT, '')
+      .replace(/\S+$/, '')
+      .replace(/\s+$/, '');
+    if (!n.textContent.trim() && n.parentNode !== root) {
+      var host = n.parentNode;
+      if (host.parentNode && !host.textContent.trim()) {
+        host.parentNode.removeChild(host);
+      }
+    }
+    return true;
   }
 
   // Truncates a capped two-column block to its last fully-visible word and
@@ -307,6 +340,18 @@
     var colW = title.getBoundingClientRect().width;
     var colPx = colW * TITLE_PER_PX;
     var size = (colPx && colPx < cssPx) ? Math.round(colPx) : cssPx;
+    // Contra and postscript cells keep the full CSS size — one headline
+    // voice across every section. Contra carries no excerpt at all (see
+    // .duo-half--contra in style.css), so the width ratio — whose whole
+    // job is leaving an excerpt room in a narrow column — has nothing to
+    // protect; postscript keeps its excerpt and simply cedes it the
+    // lines a bigger title costs (the fit loop below clamps the body to
+    // whatever ground remains). Set here rather than as an early return
+    // so the long-word floor below still applies: a title that cannot
+    // set whole still shrinks rather than breaking mid-letter.
+    if (panel.closest('.duo-half--contra') || panel.closest('.duo-half--postscript')) {
+      size = cssPx;
+    }
     // Where the engine can hyphenate, an over-long word is the CSS's
     // business: hyphens:auto breaks it at a real syllable and sets the
     // hyphen ("Commodifica-tion"), and the title keeps its full size.
@@ -325,23 +370,27 @@
     if (size < cssPx) title.style.fontSize = size + 'px';
   }
 
-  // The wide cells' column rule spans the whole card: it starts on the
-  // panel's own top border and stops on the footer band's rule, so it
-  // meets the outline at both ends. Only the fitter knows where the band
-  // actually starts (its height follows the corner boxes' type), so the
-  // geometry is set here rather than guessed at in CSS.
-  // Where the split actually begins. The wide cells divide the whole card,
-  // so their rule starts on the panel's own top border. Everywhere else the
-  // title and byline span the full measure and only the ground BELOW them
-  // divides — and the rule starts ON the byline's own rule, so the two
-  // meet and the panel reads as one ruled grid rather than a line floating
-  // in the space under the byline. Without a byline rule to meet, it falls
-  // back to the top of whichever column content comes first.
+  // Where the split actually begins, for the rule the wide cells draw
+  // between their two facing columns. Only the fitter knows where the
+  // footer band starts (its height follows the corner boxes' type), so
+  // this geometry is set here rather than guessed at in CSS.
+  //
+  // The byline strip runs the panel's FULL width — it is a header band
+  // above .duo-panel-top, not a member of the left column — so the split
+  // below it starts on its closing rule, and the two meet: the strip caps
+  // the columns, the rule divides them, the footer band closes them. (It
+  // used to start on the panel's own top border, from when the strip sat
+  // inside the left column and the rule had to run past it.) Everywhere
+  // else the strip and title span the full measure and only the ground
+  // BELOW them divides, so the rule starts at the top of whichever column
+  // content comes first.
   function splitTop(panel, topBox) {
-    if (panel.closest('.duo-half--wide')) return panel.getBoundingClientRect().top;
-    var byline = topBox.querySelector('.card-byline-divider');
-    if (byline && getComputedStyle(byline).display !== 'none') {
-      return byline.getBoundingClientRect().bottom;
+    if (panel.closest('.duo-half--wide')) {
+      var head = panel.querySelector('.card-byline-divider');
+      if (head && getComputedStyle(head).display !== 'none') {
+        return head.getBoundingClientRect().bottom;
+      }
+      return topBox.getBoundingClientRect().top;
     }
     var tops = [];
     ['.card-dek', '.card-preview-block'].forEach(function(sel){
@@ -509,21 +558,16 @@
     });
   }
 
-  // The footer band seats four boxes now — kicker and cover credit left,
-  // likes and section right — and they never wrap or shrink, they
-  // overflow, so scrollWidth is the tell. A narrow card sheds them in
-  // reverse keep-priority: the cover credit first, then the likes, then
-  // the kicker; the section link is the one box that never goes, since
-  // it's the card's only navigation. Runs before the static-fallback
-  // return in fit() so the stacked mobile layout sheds too.
+  // The footer band seats three boxes now — kicker and cover credit left,
+  // section right (the likes live in the byline) — and they never wrap or
+  // shrink, they overflow, so scrollWidth is the tell. A narrow card
+  // sheds them in reverse keep-priority: the cover credit first, then the
+  // kicker; the section link is the one box that never goes, since it's
+  // the card's only navigation. Runs before the static-fallback return in
+  // fit() so the stacked mobile layout sheds too.
   function fitBandBoxes(band) {
     var order = [
       band.querySelector('.pc-art'),
-      band.querySelector('.card-meta--stats'),
-      // The contra date (see .pc-date) sheds late: it's the byline half
-      // that moved down here, so it outranks the likes and the credit,
-      // and only the kicker outranks it.
-      band.querySelector('.pc-date'),
       band.querySelector('.hero-kicker')
     ];
     order.forEach(function(el){ if (el) el.style.display = ''; });
@@ -555,8 +599,14 @@
     el.style.display = '-webkit-box';
     el.style.webkitBoxOrient = 'vertical';
     el.style.overflow = 'hidden';
+    // Legacy -webkit-line-clamp ONLY — never the standard line-clamp
+    // property alongside it. Chrome versions mid-way through shipping
+    // the standardized implementation render the mixed pair as a seated
+    // box that never paints (observed live: the walk seats a clamped
+    // paragraph, used-slots and rects all correct, zero pixels drawn).
+    // The legacy pair alone takes the same battle-tested path in every
+    // engine, current Chrome included.
     el.style.webkitLineClamp = String(lines);
-    el.style.lineClamp = String(lines);
     el.classList.add('card-preview--clamped');
     return true;
   }
@@ -610,10 +660,14 @@
     var band = panel.querySelector('.panel-band--bottom');
     if (!topBox || !band) return;
     var title = topBox.querySelector('.card-title');
-    var meta = topBox.querySelector('.card-meta--line');
+    // Off the PANEL, not the top box: the byline strip is a header band
+    // above .duo-panel-top now, so it runs the full width on wide cells.
+    var meta = panel.querySelector('.card-meta--line');
 
     // Restore a previous fit's truncation before anything is measured (or
-    // queried — the paragraphs below must be the fresh nodes).
+    // queried — the paragraphs below must be the fresh nodes). All cuts
+    // are block-level (truncateToWord on the preview block, in every
+    // branch), so one restore covers them.
     var block0 = topBox.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
     // Strip last pass's title rules BEFORE anything measures the title or
@@ -663,6 +717,25 @@
     // return below so the stacked mobile layout sheds too.
     fitBandBoxes(band);
 
+    // The byline seats the likes box beside the author only when the line
+    // has room for author + likes + date — the boxes never shrink or wrap
+    // (see .card-meta--line's flex-shrink:0), so scrollWidth is the tell,
+    // same as the band. Ahead of the static-fallback return below so the
+    // stacked mobile layout sheds too.
+    if (meta) {
+      var bylineLikes = meta.querySelector('.meta-likes');
+      if (bylineLikes) {
+        bylineLikes.style.display = '';
+        meta.classList.remove('likes-shed');
+        if (meta.scrollWidth > meta.clientWidth + 1) {
+          bylineLikes.style.display = 'none';
+          // The corner box (and its outer 24s) passes to the date — see
+          // .card-meta--line.likes-shed in style.css.
+          meta.classList.add('likes-shed');
+        }
+      }
+    }
+
     // In the static fallback layout (touch devices / narrow viewports) the
     // panel flows under the image and the bands sit in flow too — nothing
     // to fit against, and the CSS fallback clamps handle length. The title
@@ -674,9 +747,13 @@
 
     // Lift the CSS fallback clamps so each paragraph's full text is
     // measurable (and kept, when the box turns out to have the room).
+    // The stylesheet's standard line-clamp is lifted with 'none' — which
+    // DISENGAGES the standardized clamp path — never with a big number,
+    // which keeps that path active (see clampToFit for the paint bug the
+    // active path has in mid-transition Chrome versions).
     [].forEach.call(paras, function(p){
       p.style.webkitLineClamp = '999';
-      p.style.lineClamp = '999';
+      p.style.lineClamp = 'none';
     });
     // Break one-line titles in two BEFORE anything is measured against the
     // floor — the second line moves everything under it down, so a budget
@@ -719,12 +796,10 @@
         // Clamping (or even hiding) the dek to protect the title is not a
         // cut — everything after it shifts up and keeps its shot.
         var dekLim = groupLimit - reserve;
-        if (el.getBoundingClientRect().bottom > dekLim && !clampToFit(el, dekLim)) {
-          // Dek gone entirely — the rule between it and the byline above
-          // would sit orphaned against the quote divider below.
-          var bdiv = topBox.querySelector('.card-byline-divider');
-          if (bdiv) bdiv.style.display = 'none';
-        }
+        // A dek that can't fit even one line just goes — .card-byline-divider
+        // stays put regardless: it closes the byline header strip above the
+        // TITLE now, nothing to do with the dek.
+        if (el.getBoundingClientRect().bottom > dekLim) clampToFit(el, dekLim);
         return;
       }
       if (el === title) {
@@ -839,19 +914,18 @@
           return;
         }
         // Single-column preview (trio/quad-open cells, the split rows'
-        // postscript thirds, the wide cells' right column): pure slot
-        // arithmetic. The paragraph gap is exactly one line (see the
-        // .card-preview + .card-preview rule in style.css), so the block
-        // is a uniform grid of line slots — floor(budget / line) of them
-        // — and each paragraph spends its own line count plus one gap
-        // slot. Clean multiples, no per-paragraph pixel drift.
-        //
-        // Everything is COMPUTED from heights, never read from rect
-        // tops: with every paragraph's clamp lifted to 999 for
-        // measuring, sibling clamp boxes in some engines (the in-app
-        // preview among them) stop stacking — they all report the
-        // block's own top and rect.top lies by whole paragraphs.
-        // Heights stay true.
+        // postscript thirds, the wide cells' right column): cap the WHOLE
+        // block at the slot count and cut the text to the box, exactly as
+        // the multi-column branch does — block geometry is the one
+        // mechanism every engine paints. (The per-paragraph walk that
+        // lived here seated its partial paragraph correctly — used-slots
+        // and rects all right — and Chromium drew zero pixels for it in
+        // the wide cells, under -webkit-box and max-height clamps alike.)
+        // The paragraph gap is exactly one line (see the .card-preview +
+        // .card-preview rule in style.css), so the block is a uniform
+        // grid of line slots and the cap seats exactly what a paragraph
+        // walk would: floor(budget / line) slots, each paragraph costing
+        // its lines plus one gap slot.
         var scFirstP = el.querySelector('.card-preview');
         var scLh = parseFloat(getComputedStyle(scFirstP || el).lineHeight) || 21;
         var scAvail = bandTop - GAP - el.getBoundingClientRect().top;
@@ -862,37 +936,120 @@
           if (qd0) qd0.style.display = 'none';
           return;
         }
-        var scUsed = 0, scCut = false, scAny = false;
+        // NOTHING inside the live block is measured — engines disagree
+        // about its interior so thoroughly that even the block's own
+        // height comes back as its tallest child's (children report
+        // overlapped at its top; observed live in Chrome and the in-app
+        // pane both, wide cells worst). Only two live reads are trusted:
+        // the block's top and the band's top, both element-level rects
+        // from OUTSIDE the block. Everything content-shaped — paragraph
+        // line counts, the boundary paragraph, the word the cut lands
+        // on — is computed on a clean clone laid out beside the block:
+        // same parent, so every class-scoped style still applies;
+        // plain-block paragraphs at the base leading; offsetHeight, so
+        // no transform can scale the numbers. The finished cut is
+        // transplanted back, and the block itself is only ever WRITTEN
+        // to. Paint has been correct in every engine throughout — it
+        // was measurement that lied — so writing final geometry and
+        // trusting the render is the stable contract.
+        // Normalize the LIVE paragraphs to plain blocks first — the same
+        // state the clone measures in — so the transplanted cut wraps
+        // identically in both, and no legacy -webkit-box clamp display
+        // is left in the live block for an engine to mislay (the
+        // overlapped-children disease rides the clamp boxes).
         [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
-          if (scCut) { p.style.display = 'none'; return; }
-          var pLines = Math.round(p.getBoundingClientRect().height / scLh);
-          var need = (scAny ? 1 : 0) + pLines;
-          var room = scSlots - scUsed;
-          if (need <= room) { scUsed += need; scAny = true; return; }
-          scCut = true;
-          var fitLines = room - (scAny ? 1 : 0);
-          if (fitLines < 1) { p.style.display = 'none'; return; }
-          p.style.display = '-webkit-box';
-          p.style.webkitBoxOrient = 'vertical';
-          p.style.overflow = 'hidden';
-          p.style.webkitLineClamp = String(fitLines);
-          p.style.lineClamp = String(fitLines);
-          p.classList.add('card-preview--clamped');
-          scUsed += (scAny ? 1 : 0) + fitLines;
-          scAny = true;
+          p.style.display = 'block';
+          p.style.webkitLineClamp = 'none';
+          p.style.lineClamp = 'none';
         });
-        if (!scAny) {
-          // Every paragraph died — hide the empty block and the quote
-          // divider that would otherwise sit orphaned above it.
-          el.style.display = 'none';
-          var qd = topBox.querySelector('.duo-quote-divider');
-          if (qd) qd.style.display = 'none';
-        } else if (scCut) {
-          // The box is full — feather the leading so the last line lands
-          // exactly GAP over the band (see the multi-column branch; the
-          // clamp boxes grow with their line boxes, so the counts hold).
-          var scUnit = Math.min(scAvail / scUsed, scLh * MAX_SLOT_STRETCH);
-          if (scUnit > scLh + 0.05) setSlot(el, scUnit);
+        var scClone = el.cloneNode(true);
+        scClone.style.cssText =
+          'position:absolute;left:-9999px;top:0;visibility:hidden;' +
+          'width:' + el.clientWidth + 'px;height:auto;max-height:none;' +
+          'overflow:visible;column-count:auto;display:block;';
+        var scCloneParas = [].slice.call(scClone.querySelectorAll('.card-preview'));
+        scCloneParas.forEach(function(p, i){
+          p.style.display = 'block';
+          p.style.webkitLineClamp = 'none';
+          p.style.lineClamp = 'none';
+          p.style.maxHeight = 'none';
+          p.style.overflow = 'visible';
+          p.style.lineHeight = scLh + 'px';
+          p.style.marginTop = i ? scLh + 'px' : '0';
+        });
+        el.parentNode.appendChild(scClone);
+        // Each paragraph's true line count, read off the clone — where
+        // the box is a plain block at base leading and offsetHeight can
+        // be trusted.
+        var scParaLines = scCloneParas.map(function(p){
+          return Math.round(p.offsetHeight / scLh);
+        });
+        // The walk, on honest numbers: each paragraph costs its lines
+        // plus one gap slot; the first that doesn't fit whole is the
+        // boundary.
+        var scUsed = 0, scAny = false, scBoundary = -1, scFitLines = 0;
+        for (var pi = 0; pi < scParaLines.length; pi++) {
+          var scNeed = (scAny ? 1 : 0) + scParaLines[pi];
+          if (scNeed <= scSlots - scUsed) { scUsed += scNeed; scAny = true; continue; }
+          scBoundary = pi;
+          scFitLines = (scSlots - scUsed) - (scAny ? 1 : 0);
+          break;
+        }
+        if (scBoundary === -1) {
+          // Everything fits — natural render, floor stays a minimum.
+          scClone.parentNode.removeChild(scClone);
+        } else {
+          if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+          var scRealParas = [].slice.call(el.querySelectorAll('.card-preview'));
+          if (scFitLines >= 1) {
+            // Cut the boundary paragraph ON THE CLONE, by height alone:
+            // shed words off its end until it sits inside its line
+            // count, then join the ellipsis (backing off further if the
+            // join wraps a fresh line). Then transplant.
+            var scCp = scCloneParas[scBoundary];
+            var scCapH = scFitLines * scLh + 1;
+            var scGuard = 600;
+            while (scGuard-- > 0 && scCp.offsetHeight > scCapH) {
+              if (!popLastWord(scCp)) break;
+            }
+            scGuard = 60;
+            while (scGuard-- > 0) {
+              var scN = lastTextNode(scCp);
+              if (!scN) break;
+              scN.textContent = scN.textContent.replace(TRAIL_PUNCT, '') + '…';
+              if (scCp.offsetHeight <= scCapH) break;
+              scN.textContent = scN.textContent.slice(0, -1);
+              if (!popLastWord(scCp)) break;
+            }
+            scRealParas[scBoundary].innerHTML = scCp.innerHTML;
+            scUsed += (scAny ? 1 : 0) + scFitLines;
+            scAny = true;
+          }
+          // Paragraphs past the cut go dark (a clean paragraph-boundary
+          // cut keeps its complete last paragraph, no ellipsis — same
+          // convention the old walk kept).
+          var scHideFrom = scFitLines >= 1 ? scBoundary + 1 : scBoundary;
+          for (var ph = scHideFrom; ph < scRealParas.length; ph++) {
+            scRealParas[ph].style.display = 'none';
+          }
+          scClone.parentNode.removeChild(scClone);
+          if (!scAny) {
+            // Not even one line seats — hide the block and the quote
+            // divider that would otherwise sit orphaned above it.
+            el.style.display = 'none';
+            var qd1 = topBox.querySelector('.duo-quote-divider');
+            if (qd1) qd1.style.display = 'none';
+          } else {
+            // Feather the leading so the last line lands exactly GAP
+            // over the band (capped — see MAX_SLOT_STRETCH), and cap
+            // the block at its seated slots; +1 is the sub-pixel slack
+            // the multi-column branch carries too.
+            var scUnit = Math.min(scAvail / scUsed, scLh * MAX_SLOT_STRETCH);
+            if (scUnit > scLh + 0.05) setSlot(el, scUnit);
+            else scUnit = scLh;
+            el.style.maxHeight = (scUsed * scUnit + 1) + 'px';
+            el.style.overflow = 'hidden';
+          }
         }
       } else if (el.getBoundingClientRect().bottom > groupLimit) {
         cutting = true;
@@ -966,5 +1123,14 @@
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(fitAll, 100);
+  });
+  // A back/forward restore brings the page back exactly as it was left —
+  // every panel fitted for the window the reader LEFT at, with no load or
+  // resize event to correct it. The archive deep links make homepage →
+  // archive → back a routine round trip, and a window that changed size
+  // (or zoom) while away restores half-empty boxes with paragraphs stuck
+  // hidden. Refit on the restore itself.
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) fitAll();
   });
 })();

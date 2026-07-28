@@ -170,7 +170,10 @@
     if (getComputedStyle(text).position !== 'absolute') return;
     [].forEach.call(paras, function(p){
       p.style.webkitLineClamp = '999';
-      p.style.lineClamp = '999';
+      // 'none' disengages the standardized clamp path; a big number
+      // keeps it active, which mid-transition Chrome versions mispaint
+      // (see clampToFit in duo-panel-fit.js).
+      p.style.lineClamp = 'none';
     });
     var GAP_BOTTOM = 16;
     var limit = (band
@@ -440,6 +443,96 @@
     });
     if (document.visibilityState === 'hidden') {
       document.addEventListener('visibilitychange', onVisible);
+    }
+  }
+
+  // Deep links from the cards' bylines and kickers (see archiveHref in
+  // build.js): #sort=<key>&post=<slug> sorts the ledger by that column —
+  // alphabetical for author/kicker, newest-first for date — and folds the
+  // named post's card open in place, so the reader lands on it with its
+  // neighbors around it (the author's other pieces, the tag's other
+  // posts). Runs last so the sort click replays the rule-draw cascade
+  // over the fresh order like any hand sort. Going through the real
+  // button keeps the arrow's active state honest too.
+  var hashParams = {};
+  location.hash.slice(1).split('&').forEach(function(kv){
+    var eq = kv.indexOf('=');
+    if (eq > 0) hashParams[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1));
+  });
+  if (hashParams.sort) {
+    var dir = hashParams.sort === 'date' ? 'desc' : 'asc';
+    var sortBtn = ledger.querySelector(
+      '.arch-sort[data-key="' + hashParams.sort + '"][data-dir="' + dir + '"]'
+    );
+    if (sortBtn) sortBtn.click();
+  }
+  if (hashParams.post) {
+    var target = null;
+    items.forEach(function(it){
+      if (it.getAttribute('data-slug') === hashParams.post) target = it;
+    });
+    if (target) {
+      // The hash names the position — don't let the browser's scroll
+      // restoration put a reload back at the top over it.
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      setOpen(target, true);
+      // The open item (row + fold-out) lands mid-viewport; near the top
+      // of the ledger, center clamps at zero scroll, so a target with too
+      // few rows above it simply opens with the page's top in position.
+      var jumpPoll = null;
+      function cancelJumpPoll() {
+        if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
+      }
+      function jumpToTarget() {
+        // A page loaded unseen (a suspended rendering pipeline — same
+        // environments the ruling poller below exists for) reports a
+        // zero-height viewport, and scrollIntoView against it is a no-op.
+        // Poll until the viewport is real, then aim; a reader who scrolls
+        // themselves first keeps their place — any input cancels.
+        if (document.documentElement.clientHeight > 0) {
+          cancelJumpPoll();
+          // behavior:'instant', not the default: the page sets
+          // scroll-behavior:smooth, which the default (and 'auto') defer
+          // to — and a deep link is an arrival position, not a move to
+          // animate the whole ledger past. Smooth also never completes
+          // in a throttled pipeline, which is how this line was caught.
+          target.scrollIntoView({ block: 'center', behavior: 'instant' });
+          return;
+        }
+        if (jumpPoll != null) return;
+        ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+          addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
+        });
+        jumpPoll = setInterval(function () {
+          if (document.documentElement.clientHeight > 0) {
+            // The auto-open above fit the card against the zero-size
+            // layout — refit against the real one before aiming at it.
+            fitCard(target.querySelector('.arch-ledger-card'));
+            jumpToTarget();
+          }
+        }, 300);
+      }
+      jumpToTarget();
+      // This script runs parser-blocking before load; the browser's own
+      // post-load scroll pass (restoration on reload) lands after and
+      // overrides the early jump — so jump once more when it's done.
+      if (document.readyState === 'complete') {
+        requestAnimationFrame(jumpToTarget);
+      } else {
+        addEventListener('load', function () {
+          requestAnimationFrame(jumpToTarget);
+        });
+      }
+      // The auto-open fits its card before the webfonts land; a wrap
+      // shift after they do would leave a stale truncation — and shifted
+      // row heights above the target move it, so re-aim the jump too.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function(){
+          if (!target.classList.contains('open')) return;
+          fitCard(target.querySelector('.arch-ledger-card'));
+          jumpToTarget();
+        });
+      }
     }
   }
 })();

@@ -105,6 +105,10 @@ a{ color: inherit; }
   width: 205px; height: 100vh;
   background: var(--paper);
   border-right: 1px solid var(--line);
+  /* The column ends in the social row now, and on a short window the
+     fixed 100vh box would clip it into unreachability — let the sidebar
+     scroll its own overflow instead. */
+  overflow-y: auto;
 }
 /* 24px insets all around — the site's standard gutter, which also puts
    the mark's top at y:24, flush with the hero cover image and the page
@@ -190,8 +194,11 @@ a{ color: inherit; }
    the shape. 0.03em buys the ~3px it needed. */
 .nav-dek{
   display: block;
+  /* The panel deks' own voice — bold at 0.97rem (see .duo-panel
+     .card-dek) — so the sidebar's glosses and the cards' billings read
+     as one family. The gray keeps them subordinate to the headings. */
   font-family: var(--mono); font-weight: 700;
-  font-size: var(--panel-text);
+  font-size: 0.97rem;
   letter-spacing: 0.03em; line-height: 1.3;
   color: var(--muted);
   margin-top: 8px;
@@ -203,6 +210,12 @@ a{ color: inherit; }
    since the tracking after a line's last glyph falls on the ragged edge
    where it costs nothing.) */
 .nav-links li{ text-align: left; }
+/* Postscript, Contra and About break RIGHT against the left-set items
+   around them — title and gloss together, since the dek block inherits
+   the alignment. (The old alternating layout, back by request for these
+   three; the trailing-letter-space cost on a right-set ragged edge is
+   accepted.) */
+.nav-links :is(.nav-item--postscript, .nav-item--contra, .nav-item--about){ text-align: right; }
 /* Subscribe closes the column, under About, at the nav items' own size. */
 .nav-subscribe{
   /* Inline for the same reason the nav links are (see .nav-links li). */
@@ -278,6 +291,37 @@ a{ color: inherit; }
   margin: 0 0 24px;
   width: 100%; height: auto;
 }
+/* The social row closes the column under Subscribe: the Substack and
+   Instagram marks, white like every link above them, each saying it's a
+   link the site's one way — the rule sweeping in underneath (as an
+   ::after bar, the icon version of the sweep; see the copy-link button
+   for the same cut). Substack's mark is a filled glyph, Instagram's an
+   outline — the stroke/fill split below keeps both reading at one
+   weight. */
+.nav-social{
+  display: flex; gap: 16px;
+  /* Centered on the column — the one row that breaks the sidebar's
+     left margin, sitting under the list like a colophon. */
+  justify-content: center;
+  margin-top: 24px;
+}
+.nav-social-link{
+  display: inline-flex;
+  position: relative;
+  color: var(--white);
+}
+.nav-social-icon{ width: 18px; height: 18px; fill: currentColor; }
+.nav-social-icon--stroke{ fill: none; stroke: currentColor; stroke-width: 1.8; }
+.nav-social-icon--stroke .ig-dot{ fill: currentColor; stroke: none; }
+.nav-social-link::after{
+  content: '';
+  position: absolute; left: 0; bottom: -6px;
+  width: 100%; height: 3px;
+  background: currentColor;
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .3s cubic-bezier(.25, .1, .25, 1);
+}
+.nav-social-link:hover::after{ transform: scaleX(1); }
 main, footer{ margin-left: 205px; }
 
 /* Below 900px the sidebar can't fit alongside readable content widths —
@@ -307,6 +351,9 @@ main, footer{ margin-left: 205px; }
   .nav-bird{ display: none; }
   .nav-subscribe{ font-size: 1rem; }
   .nav-top{ gap: 14px; }
+  /* In the bar the social row rides the flex line like everything else —
+     the column's 24px stack gap has no meaning laid on its side. */
+  .nav-social{ margin-top: 0; }
   main, footer{ margin-left: 0; }
 }
 /* The link column has no room left in the bar, but Subscribe is the one
@@ -441,6 +488,40 @@ section{ padding: 80px 0; }
 }
 
 .duo-half{ position: relative; flex: 1 1 0; min-width: 0; }
+/* ---------- RESTING KICKER ----------
+   The topic label in the footer band's own chip, printed over the
+   cover's bottom-left corner while the card is closed: solid black
+   fill, the band box's cut and interior padding, no ruling of its own.
+   On hover the panel's kicker box prints EXACTLY over it (the paddings
+   below are the band's own plus the panel's 1px border, so the TEXT
+   lands to the pixel), which makes the open card read as the rest of
+   the band growing out of a chip that was always there. Sits under the
+   panel (z-index 2 vs its 3), so the opening panel simply covers it —
+   no second fade to choreograph. pointer-events:none: it's a label,
+   not a control; the band's kicker is the archive link.
+   A solid chip, not a shadowed floater: flat black under white type is
+   how the site asserts text over an image everywhere else, it needs no
+   colour rigging to survive a near-white cover, and the one soft
+   photographic effect on the page (the old four-layer text-shadow) read
+   as borrowed from someone else's site. */
+.duo-half .rest-kicker{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 10.35px 24px 10.65px 25px;
+  /* Solid black, unruled: at rest the chip is a silent block on the
+     artwork — the hairline edges it briefly wore previewed the band
+     box's anatomy, but read as an outline where the closed card should
+     show nothing but the label on its ground. The ruling arrives with
+     the panel. */
+  background: var(--paper);
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none; line-height: 1;
+  color: var(--white);
+  pointer-events: none;
+}
 @media (max-width: 480px){
   /* flex:1 1 0 only works out to a square box in the row layout above,
      where it's sizing along the width axis and height comes from the
@@ -544,18 +625,22 @@ section{ padding: 80px 0; }
    one essay's text doesn't also reveal the other's. */
 .duo-panel{
   position: absolute; inset: 0; z-index: 3;
+  /* A column, so the byline header strip can stand ABOVE .duo-panel-top
+     as its own full-width band and the columned body fill what's left
+     (see PANEL INK RHYTHM). The bands are absolutely positioned, so they
+     are not flex items and pin to the panel's edges as before. */
+  display: flex; flex-direction: column;
   /* The title starts 16px under the panel's outline, tighter than the
      24px sides — it sets into the top-left corner with the text column
      below it. (This was 80px when a header band sat above it; the band
      is gone and nothing replaces the gap.) The bottom stays 52 as the
      open-space zone before the footer band. */
   padding: 16px 24px 52px;
-  /* A scrim, not a solid: the cover art underneath (already dimmed to
-     grayscale-half by the hover filter below) ghosts through at roughly
-     an eighth of its strength, so the open panel reads as ink printed
-     over the artwork rather than a modal replacing it. The mobile/touch
-     fallback resets this to none along with the rest of the overlay. */
-  background: rgba(0, 0, 0, 0.72);
+  /* Solid black, edge to edge — the panel replaces the artwork outright
+     while it's open (the scrim that let the art ghost through was tried
+     and walked back). The mobile/touch fallback resets this to none
+     along with the rest of the overlay. */
+  background: var(--paper);
   /* The open card's outline stays white, and stays a hairline — it's the
      whole hover signal now that the glow is gone (see the reveal rule
      below), but it carries that on colour, not weight. The section accent
@@ -584,12 +669,21 @@ section{ padding: 80px 0; }
   opacity: 1;
   pointer-events: auto;
 }
-/* Every rule INSIDE an open card is the page's own hairline gray — band
-   rules, the corner boxes' verticals, the byline and quote dividers, the
-   column divider alike. They all read --line and nothing rebinds it here,
-   so the panel's interior rules and the page's dividers are the same line
-   by construction. Only the panel's frame is white: the outline says
-   where the card is, the rules inside it just organise the page. */
+/* Every rule INSIDE a card reads --line — band rules, the corner boxes'
+   verticals, the byline and quote dividers, the column divider, the
+   resting chip's edges alike — so ONE rebind here brightens them all
+   together. Rebound, not the page's 0.14: the panels are solid black
+   now, and at 14% white their interior ruling all but vanished. Twice
+   the strength holds the same hairline weight while actually printing;
+   the page's own dividers keep the quiet site-wide value. Scoped to the
+   card containers (.duo-half spans chip and panel; the hero and the
+   archive fold-out are their own contexts), so the chip's edges at rest
+   and the band rules that land over them on hover are the same line by
+   construction. Only the panel's frame is white: the outline says where
+   the card is, the rules inside it just organise the page. */
+.duo-half,
+.card--feature,
+.arch-ledger-card{ --line: rgba(247,246,241,0.28); }
 /* ---------- PANEL BANDS (hover-card header/footer) ----------
    Full-width strips pinned to the panel's top and bottom edges. Each
    band's single horizontal rule (border) runs edge to edge — past the
@@ -782,15 +876,61 @@ section{ padding: 80px 0; }
 .card--feature .duo-panel .card-dek{
   font-family: var(--mono);
   font-style: normal;
+  /* The title's own weight — with the tight 8px seat under the headline
+     (see THE STACK's dek step) the pair reads as one bold unit, and the
+     gray keeps the dek subordinate inside it. */
   font-weight: 700;
-  /* Dek and excerpt run at one size across every panel — see
-     --panel-text. They sit in the same measure, so setting them apart
-     read as an accident rather than a hierarchy. */
-  font-size: var(--panel-text);
+  /* A step above the excerpt's 13px — the dek is the piece's billing,
+     and at the excerpt's own size the bold read as a stray lead-in
+     rather than a subtitle. One voice with the sidebar's glosses
+     (.nav-dek carries this same bold and size). */
+  font-size: 0.97rem;
   letter-spacing: 0.04em;
   line-height: 1.5;
   color: var(--muted);
   margin: 0;
+}
+/* ---------- PANEL INK RHYTHM ----------
+   Every gap in a hover panel is specified INK to INK — cap tops and
+   baselines — not box to box, because Helvetica's line boxes carry a
+   lot of dead air and the title's size varies per cell (the fitter sets
+   it inline: 60/47/45px across the homepage), so equal box margins print
+   visibly unequal gaps. The stack, top to bottom:
+
+     byline strip rule
+       32   ← title cap top
+     TITLE
+       32   ← title last baseline to dek cap top (the tighter 24 was
+             tried and walked back — at the dek's bold 0.97rem the pair
+             reads as one unit on hierarchy alone, and the even 32 keeps
+             the whole stack on a single step)
+     DEK
+       32   ← dek last baseline to the quote rule
+     quote rule
+       24   ← excerpt cap top
+     EXCERPT
+       24   ← excerpt last baseline to the footer band rule (GAP, in
+              duo-panel-fit.js — the one gap the fitter owns)
+
+   The measured offsets, from canvas font metrics for this stack:
+     title  (lh 1.1): cap top 0.219em below box top; last baseline
+                      0.167em above box bottom
+     dek    (lh 1.5): cap top 0.421em; baseline 0.365em → 6.5 / 5.7px
+                      at its 0.97rem
+     excerpt(lh 1.6): cap top 0.432em; baseline 0.454em → 5.6 / 5.9px
+                      at its 13px
+   Each margin below is the wanted ink gap minus whichever of those
+   applies — in em where the type's size can change, in px where it is
+   pinned to --panel-text. */
+/* The title's own bottom margin owns the title-to-dek gap rather than
+   the dek's top margin: the title's descent term scales with ITS size,
+   and `em` only resolves that way on the title itself. 32 minus the
+   title's 0.167em baseline drop minus the dek's fixed 6.5px cap inset
+   (0.4206em of its 0.97rem — see PANEL INK RHYTHM's measured offsets).
+   :has() so a dek-less card doesn't reserve the space — there the quote
+   rule's own margin takes over. */
+.duo-panel .card-title:has(+ .card-dek){
+  margin-bottom: calc(25.5px - 0.167em);
 }
 /* The rule between title and eyebrow, edge to edge like the band lines.
    Margins are optical: the title's descent + leading leave ≈8px of air
@@ -803,13 +943,12 @@ section{ padding: 80px 0; }
    the rule, and 13px below leaves the dek's caps ≈15px under it — the
    pair still reads as one unit. */
 .duo-panel .card-title-divider{ margin: 12.5px -24px 13px; }
-/* The byline: author · date · likes, in the title's own cut — Helvetica
-   Bold, natural case, white — a ruled strip under the dek (the dek sits
-   against its title now, byline below it; see THE STACK for the order).
-   The uppercasing and courier tracking that .card-meta carries
-   site-wide are both undone here. .card-meta still supplies the flex
-   row, its 6px gap and the wrap; this sets the panel's own spacing and
-   the full-bleed sides. */
+/* The byline: author · likes · date, in the title's own cut — Helvetica
+   Bold, natural case, white — the panel's HEADER strip, above the title
+   (the markup order in build.js matches; see THE STACK). The uppercasing
+   and courier tracking that .card-meta carries site-wide are both undone
+   here. .card-meta still supplies the flex row, its 6px gap and the wrap;
+   this sets the panel's own spacing and the full-bleed sides. */
 .card--duo .duo-panel .card-meta--line,
 .card--feature .duo-panel .card-meta--line{
   font-family: var(--title);
@@ -819,33 +958,36 @@ section{ padding: 80px 0; }
   letter-spacing: 0;
   line-height: 1;
   color: var(--white);
-  /* The footer band's own strip treatment, mirrored at the top of the
-     card: full bleed past the panel's side padding, its two items in
-     boxes closed by vertical rules, the same 10.35/9.65 optical vertical
-     the band boxes use, and a rule along both edges — the one overhead
-     and, below, the byline/dek divider, which the strip sits flush on so
-     the two read as one ruled band. The type was already the band's
-     exactly; the boxes are what made them read differently. */
-  /* 16px of air above the strip's overhead rule — the stack's one step
-     (title to dek, dek to strip, strip to excerpt all match). */
-  margin: 16px -24px 0;
+  /* The hero's header band exactly, but in flow: full bleed past the
+     panel's side padding, its items in boxes closed by vertical rules,
+     the same 10.35/9.65 optical vertical the band boxes use. The -16px
+     top margin cancels the panel's own top padding so the strip seats
+     flush against the panel's border — the border caps it above, and
+     .card-byline-divider rules it off below, exactly how the hero band's
+     top edge is the panel frame and its bottom is its own rule. */
+  margin: -16px -24px 0;
   gap: 0;
   align-items: stretch;
+  /* One row, always — .card-meta's base wrap would fold the date onto a
+     second line when author + likes + date run long. The boxes overflow
+     instead (flex-shrink:0 below), which is what lets the fitter detect
+     a line that doesn't fit and shed the likes box (duo-panel-fit.js). */
+  flex-wrap: nowrap;
   position: relative;
 }
-/* The overhead rule. Absolute rather than a border so it can draw itself
-   in on open like every other line, and so it never becomes a flex item
-   of the strip it belongs to. */
-.duo-panel .card-meta--line::before{
-  content: '';
-  position: absolute; left: 0; right: 0; top: -1px; height: 1px;
-  background: var(--line);
-}
+/* (The strip carried its own overhead rule when it sat mid-panel under
+   the dek. At the top it's the panel's white border that caps it — an
+   extra gray line 1px inside that frame just muddied the edge.) */
 .duo-panel .card-meta--line .meta-author,
 .duo-panel .card-meta--line .meta-date{
   display: inline-flex; align-items: center;
   padding: 10.35px 24px 9.65px;
   position: relative;
+  /* Like the band's .pc boxes: never shrink — overflow instead, so the
+     fitter's scrollWidth check can see a line that doesn't fit and shed
+     the likes box (see the byline shed in duo-panel-fit.js). */
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 /* Rules at each group's inner edge, exactly as the band closes its own
    corner boxes: the author's right, the date's left. */
@@ -856,52 +998,160 @@ section{ padding: 80px 0; }
   background: var(--line);
 }
 .duo-panel .card-meta--line .meta-author::after{ right: -1px; }
-/* A contra's billing rides in the byline where the date used to (the
-   date moves down beside the kicker — see .pc-date). Same box as the
-   author beside it, so the strip reads as two ruled cells rather than a
-   name with a caption; gray, because it's the dek's voice, not the
-   byline's. One line, always: flex-basis 0 with min-width 0 lets it take
-   whatever the author leaves and no more — without min-width:0 a flex
-   item refuses to shrink below its content and the ellipsis never
-   fires — and the row's own edge does the cutting. */
-.duo-panel .card-meta--line .meta-dek{
+/* (A contra's "contra <work>" billing used to ride the byline here as
+   .meta-dek, displacing the date down to the band beside the kicker.
+   Retired: contra cells run the ordinary dek-under-title and byline-date
+   the postscript cells do.) */
+/* The likes count, in the byline's right group (it used to hold the
+   corner box; the copy-link button holds the corner now, so the likes
+   take an interior box's tighter symmetric 14s, same as the date). */
+.duo-panel .card-meta--line .meta-likes{
   display: inline-flex; align-items: center;
-  padding: 10.35px 24px 9.65px;
-  flex: 1 1 0; min-width: 0;
-  color: var(--muted);
+  padding: 10.35px 14px 9.65px;
+  position: relative;
+  flex-shrink: 0;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* text-overflow needs a block-ish box to clip in: an inline-flex
-     container ellipsizes its own overflow only if the text is a block
-     child, so the padding box does the clipping and this display keeps
-     the vertical centring the other byline boxes have. */
-  display: block;
-  line-height: 1;
-  padding-top: 13px; padding-bottom: 12px;
+}
+.duo-panel .card-meta--line .meta-likes::before{
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 1px; left: -1px;
+  background: var(--line);
+}
+/* The heart alone reddens under the cursor, as it did in the band. */
+.duo-panel .card-meta--line .meta-likes:hover .likes-heart{
+  fill: var(--like-red); transition: fill .2s ease;
 }
 .duo-panel .card-meta--line .meta-date::before{ left: -1px; }
+/* The byline's author and date are archive deep links now (see
+   archiveHref in build.js) — same boxes, same cut, but they say they're
+   links the way the band's section button does: the accent on hover and
+   a rule sweeping in under the words. Same gradient trick and the same
+   position calc as a.pc above — these boxes share the band boxes'
+   line-height-1 inline-flex geometry, so the bar lands the same 0.06em
+   under the text's foot. */
+.duo-panel .card-meta--line a{
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: 0 calc(100% + 3px + 0.03em);
+  background-size: 0% 3px;
+  transition: color .15s ease, background-size .3s cubic-bezier(.25, .1, .25, 1);
+}
+.duo-panel .card-meta--line a:hover{
+  color: var(--accent);
+  background-size: 100% 3px;
+}
+/* The heart is a link now — to the post itself, where Substack's real
+   like button lives. It says so the way every byline link does: the
+   redden-on-hover heart AND a rule sweeping in under heart-and-count.
+   The anchor is the tight heart+count run inside its padded box, so the
+   byline links' gradient trick can't reach it (a bar 3px below an
+   unpadded box paints outside it and clips) — the sweep is an ::after
+   below the box instead, scaleX-drawn like the copy button's, and the
+   gradient the .card-meta--line a rule would hand it is switched off.
+   Hovering anywhere on the padded box (span or band corner) draws it,
+   matching the heart's own redden triggers. */
+a.likes{ color: inherit; text-decoration: none; position: relative; }
+.duo-panel .card-meta--line a.likes{ background-image: none; }
+a.likes::after{
+  content: '';
+  position: absolute; left: 0; bottom: -6px;
+  width: 100%; height: 3px;
+  background: currentColor;
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .3s cubic-bezier(.25, .1, .25, 1);
+}
+a.likes:hover::after,
+.meta-likes:hover a.likes::after,
+:is(.duo-panel, .card--feature) .panel-band .pc:hover a.likes::after{ transform: scaleX(1); }
 /* Sized to the byline's own cap height rather than the courier corners' —
    the bold line sets a touch larger than the caps it replaced. */
 .duo-panel .card-meta--line .likes-heart{ height: 12px; width: auto; fill: var(--white); }
-/* The byline strip's bottom rule, edge to edge. No top margin: it sits
-   flush under the boxes so their vertical rules land on it — and no
-   bottom margin either, because nothing follows it in its column any
-   more (the dek moved above the strip; in non-wide cells the quote rule
-   does this job and this one is hidden — see THE STACK). */
+/* The header strip's bottom rule, edge to edge — the line that closes
+   the byline off from the title below it (the hero band's border-bottom,
+   as an in-flow element). No top margin: it sits flush under the boxes
+   so their vertical rules land on it; the 16px below is the title's own
+   top margin (see THE STACK). */
 .duo-panel .card-byline-divider{
   height: 1px; background: var(--line);
   margin: 0 -24px;
 }
-/* The date rides the byline's own line, pushed to its far end — the
-   bottom-right corner of the title block, opposite the author. margin
-   -left:auto rather than justify-content:space-between so it pins right
-   however many items precede it (a card with no byline still lands its
-   date correctly). Being in the line rather than floated above it is also
+/* The date opens the byline's right group — margin-left:auto rather than
+   justify-content:space-between so the group pins right however many
+   items precede it (a card with no author still lands its date and likes
+   correctly). Being in the line rather than floated above it is also
    what keeps it off the title: a float in that corner shortened the
    title's first line, which on a 270px column cost whole cards their
-   excerpt. */
-.duo-panel .card-meta--line .meta-date{ margin-left: auto; }
+   excerpt. An interior box now (the likes corner sits outside it), so
+   the tighter symmetric 14s — unless the fitter shed the likes for a
+   narrow card, which hands the corner (and its outer 24s) back to the
+   date (see the byline shed in duo-panel-fit.js). */
+.duo-panel .card-meta--line .meta-date{
+  margin-left: auto;
+  padding-left: 14px; padding-right: 14px;
+}
+/* (The likes-shed override that handed the corner 24s to the date is
+   gone: the copy-link button is the outermost box now and keeps the
+   corner whether or not the fitter sheds the likes.) */
+/* The copy-link corner: a chain icon in a button that puts the post's
+   Substack URL on the clipboard (see copyLinkBtnHtml in build.js and
+   src/copy-link.js). The byline's outermost right box, in the boxes'
+   own padding rhythm — the corner's optical 10.35/9.65 and outer 24s,
+   its left rule closing it off — white always, like every box around
+   it. (The hero band's copy, .card-copylink, needs none of this: .pc
+   supplies the same box, the last-child rule its 24s, .pc-right its
+   left rule; only the button-ness below is its own.) */
+.duo-panel .card-meta--line .meta-copylink{
+  display: inline-flex; align-items: center;
+  padding: 10.35px 24px 9.65px;
+  position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.duo-panel .card-meta--line .meta-copylink::before{
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 1px; left: -1px;
+  background: var(--line);
+}
+.duo-panel .card-meta--line .meta-copylink,
+:is(.duo-panel, .card--feature) .panel-band .pc.card-copylink{
+  background: none; border: 0;
+  cursor: pointer;
+  color: var(--white);
+}
+/* The underline treatment, re-cut for an icon: the byline links'
+   gradient trick keys off a text baseline the icon doesn't have, so the
+   button draws its bar as an ::after instead — icon-wide, centered
+   under the icon (the symmetric padding centers both) at the same 3px
+   bar / 3px gap the text rules use, sweeping left-to-right via scaleX.
+   (::after is free in both homes: the byline button's ::before is its
+   left rule, the band button's is .pc-right's.) */
+[data-copy-link]::after{
+  content: '';
+  position: absolute;
+  left: 50%; margin-left: -6px;
+  top: calc(50% + 9px);
+  width: 12px; height: 3px;
+  background: currentColor;
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .3s cubic-bezier(.25, .1, .25, 1);
+}
+[data-copy-link]:hover::after{ transform: scaleX(1); }
+/* Both icons ship in the button; .copied (set for a beat by
+   src/copy-link.js after a successful copy) swaps the chain for the
+   check. Stroke icons, unlike the filled heart — currentColor keeps
+   them on the button's white. */
+[data-copy-link] .copylink-icon,
+[data-copy-link] .copylink-check{
+  height: 12px; width: auto;
+  fill: none; stroke: currentColor;
+  stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
+[data-copy-link] .copylink-check{ display: none; }
+[data-copy-link].copied .copylink-icon{ display: none; }
+[data-copy-link].copied .copylink-check{ display: inline; }
 /* ---------- ARCHIVE MOSAIC (card--archive) ----------
    Four cells closing into one block: a 1:2 tall card on the left, and the
    right side a 2:1 landscape over two 1:1 squares. The geometry closes
@@ -1130,6 +1380,17 @@ section{ padding: 80px 0; }
 .card--quad-open .duo-panel .duo-quote-divider,
 .card--quad-open .duo-panel .card-preview-block{ display: block; }
 .card--quad-open .duo-panel .preview-tagline{ display: block; width: fit-content; }
+/* A contra card runs title and billing only — no excerpt. The dek IS the
+   piece's statement ("contra Freya India's GIRLS®"); the review's prose
+   belongs on its own page, and without it the title has the panel to
+   itself and sets large (see the contra band in fitTitleSize,
+   duo-panel-fit.js). Scoped to the SECTION, not the quad shape, so a
+   contra travelling in an archive row or a split cell reads the same.
+   The extra .card qualifier is what beats .card--quad-open above, which
+   re-shows the block for the contra page's wider three-across squares. */
+.card .duo-half--contra .duo-panel .card-preview-block,
+.card .duo-half--contra .duo-panel .duo-quote-divider,
+.card .duo-half--contra .duo-panel .preview-tagline{ display: none; }
 .card--feature .card-meta,
 .card--duo .card-meta{ margin-top: 16px; }
 /* Subheading matches the subheading size used in the other card grids.
@@ -1160,12 +1421,21 @@ section{ padding: 80px 0; }
 .card--feature .card-preview,
 .card--duo .card-preview,
 .arch-ledger-card .card-preview{
-  /* Matched to the dek (--panel-text) — the actual line count that fits
-     is computed live by duo-panel-fit.js off the rendered box height, so
-     this only sets how big the text reads, not how many lines show. */
+  /* The About page's body cut (see .mission-card .card-preview) —
+     Helvetica regular, white — at the panels' own 13px (the About size
+     was tried and walked back; the dek pairing keeps the smaller cut).
+     The actual line count that fits is computed live by duo-panel-fit.js
+     off the rendered box height, so this only sets how big the text
+     reads, not how many lines show. */
+  font-family: var(--body);
   font-size: var(--panel-text); color: var(--white); line-height: 1.6; margin: 0;
-  /* A notch above regular — the excerpt sits next to a 700 dek and read
-     thin beside it; Medium closes the gap without matching the dek. */
+  /* Medium, not regular: white-on-black halation thins strokes at 13px,
+     and against the panels' bold deks and 60px titles the 400 read as a
+     whisper. (Medium was the excerpt's wanted weight once before — see
+     the retired-stroke note below; the About-page pass took it to 400
+     and the panels got quieter around it since.) Arial fallback maps
+     500 to its regular — no faux-bolding on machines without the
+     Neue family. */
   font-weight: 500;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
@@ -1222,11 +1492,13 @@ section{ padding: 80px 0; }
 .duo-half--wide .duo-panel-top{
   display: flex;
   align-items: stretch;
-  /* Fills the panel's content box rather than sizing to its text, so both
-     columns run the card's full height — which is what lets the art
-     credit sit on the left column's floor and the rule below reach the
-     footer band. */
-  height: 100%;
+  /* Fills whatever the byline strip above it leaves, rather than sizing
+     to its text, so both columns run to the card's floor — which is what
+     lets the art credit sit on the left column's floor and the rule
+     below reach the footer band. (flex:1 rather than height:100%: the
+     panel is a flex column now and the strip is a sibling above this
+     box, so a percentage height would overrun by the strip's height.) */
+  flex: 1 1 auto;
   min-height: 0;
   position: relative;
 }
@@ -1235,7 +1507,16 @@ section{ padding: 80px 0; }
   flex: 1 1 0; min-width: 0;
 }
 .duo-half--wide .panel-col--left{ padding-right: 24px; position: relative; }
-.duo-half--wide .panel-col--right{ padding-left: 24px; }
+/* 18.4 rather than 24 on top for the same reason every gap in the panel
+   is corrected: padding measures the text's BOX, and the excerpt's 1.6
+   leading hangs 0.432em — 5.6px at the 13px panel size — above its cap
+   tops. 18.4 + 5.6 prints 24px of INK below the byline strip's rule,
+   matching the 24px the same text keeps off the column rule at its left,
+   so the excerpt sits evenly inside its column. (Identical value, for
+   identical reasons, to the quote rule's margin-bottom in the non-wide
+   stack — see PANEL INK RHYTHM.) These cells have no quote rule of their
+   own; the vertical divider does that work, so the offset lives here. */
+.duo-half--wide .panel-col--right{ padding-left: 24px; padding-top: 18.4px; }
 /* The rule between the two runs the CARD's full height — from the panel's
    own top border down to the footer band's rule — so it meets the outline
    at both ends and closes the card into a grid instead of floating in the
@@ -1254,31 +1535,39 @@ section{ padding: 80px 0; }
    above it — the vertical divider beside it already separates it from
    the title block, so the horizontal quote rule is redundant here. */
 .duo-half--wide .duo-panel-top .duo-quote-divider{ display: none; }
+/* `auto`, NOT `1`: column-count:1 still makes a MULTICOL container, and
+   a height-capped multicol sends its overflow SIDEWAYS into a clipped
+   phantom column — which is where the fitter's cut line (ellipsis and
+   all) kept vanishing to, and why every rect and height read inside the
+   block came back as a fragment-union lie. auto is a plain block:
+   overflow clips downward, geometry reads true. */
 .duo-half--wide .duo-panel .card-preview-block{
-  column-count: 1;
+  column-count: auto;
 }
-/* Dek before byline in the left column — the same reversal the
-   non-wide cells make with grid order (see THE STACK below), done with
-   flex order since this column is a flex column. Spacing comes from
-   the shared rules: the dek's own 16px step off the title here, the
-   strip's 16px top margin, and .card-byline-divider closing the strip
-   flush with nothing after it — the excerpt is across the divide. */
-.duo-half--wide .panel-col--left .card-title{ order: 1; }
-.duo-half--wide .panel-col--left .card-dek{ order: 2; margin-top: 16px; }
-.duo-half--wide .panel-col--left .card-meta--line{ order: 3; }
-.duo-half--wide .panel-col--left .card-byline-divider{ order: 4; }
+/* The left column reads in document order now — byline strip, its rule,
+   title, dek (the `order` reshuffles retired when the byline moved into
+   header position and build.js's markup order caught up with the visual
+   one). Spacing comes from the shared rules — the strip's -16px pull to
+   the panel border, the title's 16px step off the strip's rule — plus
+   the dek's own step off the title here. The strip spans only this
+   column: its right bleed stops on the fitter's column divider, which
+   runs the card's full height and closes the strip's right end. */
+/* 32px of INK off the strip's rule, same optical correction as the
+   non-wide stack below (see PANEL INK RHYTHM). */
+.duo-half--wide .panel-col--left .card-title{ margin-top: calc(32px - 0.219em); }
 /* ---------- THE NON-WIDE STACK ----------
    Everything that ISN'T an extra-wide cell keeps the full measure and
-   reads straight down: title, dek, the ruled byline strip, the excerpt.
-   The dek-left/excerpt-right split retired when the dek moved above the
-   byline — that left the ground under the strip to the excerpt alone,
-   with nothing beside it for a vertical rule to divide.
+   reads straight down: the byline header strip, the title, dek, the
+   excerpt. The dek-left/excerpt-right split retired when the dek moved
+   up against the title — that left the ground below to the excerpt
+   alone, with nothing beside it for a vertical rule to divide.
 
    Still a grid, not a plain block: every item spans every track (see
    THE STACK below), but the .panel-col wrappers stay display:contents
    so their children become grid items directly, which is what keeps the
-   fitter's panelGroups() seeing one flat sequence and lets `order` do
-   the dek/byline swap without touching build.js. */
+   fitter's panelGroups() seeing one flat sequence. (The `order`
+   reshuffles this grid used to carry are gone — build.js's markup order
+   IS the reading order since the byline moved into header position.) */
 .card .duo-half:not(.duo-half--wide) .duo-panel-top{
   display: grid;
   /* Body text takes the larger share — the dek is a few lines of gloss,
@@ -1312,10 +1601,41 @@ section{ padding: 80px 0; }
   max-height: 2.2em;
   overflow: hidden;
 }
+/* ---------- CONTRA: TITLE AND BILLING, CENTRED ----------
+   With the excerpt gone the contra panel holds two things — the title at
+   full size and its "contra <work>" billing — and they sit in the middle
+   of the ground between the byline strip and the footer band rather than
+   hanging off the strip with dead space beneath. The pair keeps its own
+   24px ink gap (see PANEL INK RHYTHM); only the block as a whole moves. */
+.card .duo-half--contra:not(.duo-half--wide) .duo-panel-top{
+  /* Fill what the strip leaves, so there is a height to centre within —
+     the grid is content-height by default and would have nothing to do. */
+  flex: 1 1 auto;
+  min-height: 0;
+  /* `safe`: if a long title ever outgrows the panel, fall back to packing
+     from the top instead of centring and letting it overflow BOTH edges —
+     which would push the first lines up under the byline strip. */
+  align-content: safe center;
+}
+/* Three lines rather than the two-across quads' two: the excerpt used to
+   own the ground below and a third line ate it, but a contra panel has
+   nothing else to spend that room on. Sized in em so it tracks the title
+   through every viewport the CSS clamp steps down.
+   3.45, not 3.3: box-sizing is border-box, so the cap must hold the
+   title's own 0.15em descender padding ON TOP of the three 1.1 line
+   boxes. At a plain 3.3em a genuine three-liner lost 9px of content
+   height — the box ended mid-third-line, the line painted on through
+   (the fitter runs titles overflow-visible), and the dek, laid out
+   against the short box, seated 8px under a line the box didn't own. */
+.card .duo-half--contra:not(.duo-half--wide) .duo-panel .card-title{
+  max-height: 3.45em;
+}
 /* The head spans the whole measure. (So does everything else now — see
-   THE STACK below — but these three earn it structurally: the byline
-   strip's full-bleed rules must run the panel's width regardless.) */
-.card .duo-half:not(.duo-half--wide) .duo-panel :is(.card-title, .card-meta, .card-byline-divider){
+   THE STACK below. The byline strip and its rule used to be listed here
+   too; they are no longer grid items at all — they stand above this box
+   as the panel's own header band, which is what lets them run full width
+   on the extra-wide cells.) */
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-title{
   grid-column: 1 / -1;
 }
 /* Only the split rows' narrow postscript third keeps one measure — at
@@ -1324,64 +1644,76 @@ section{ padding: 80px 0; }
    extra-wide cells: they simply inherit the .card--duo two-column rule
    above, and the fitter's multi-column branch floors both columns.
    Carries the multi-column rule's own :not() chain shape because it has
-   to beat it on specificity, not just order. */
+   to beat it on specificity, not just order. `auto` for the same reason
+   as the wide cells above: count 1 is still a multicol container, and
+   capped multicols hide their overflow in sideways phantom columns. */
 .card--split .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{
-  column-count: 1;
+  column-count: auto;
 }
 /* ---------- THE STACK ----------
-   Every non-wide cell reads straight down — the postscript arrangement
-   (a dek as the piece's billing, standing under its title) made the
-   house arrangement:
+   Every non-wide cell reads straight down, the byline standing as the
+   panel's header — the hero band's arrangement, in flow:
 
+     ═══════  (panel border)
+     author · date · likes
+     ───────  (.card-byline-divider)
      title
      dek
-     ───────
-     author · date
-     ───────
+     ───────  (quote divider)
      excerpt
 
-   One 16px step between each pair of neighbours. With nothing side by
-   side there's nothing for a vertical rule to divide — the base
-   .panel-col-divider{ display:none } simply stays in force — and the
-   ruling is horizontal instead. */
+   The strip seats flush on the border (its -16px pull), closed by its
+   own rule; below that, one 16px step between each pair of neighbours.
+   With nothing side by side there's nothing for a vertical rule to
+   divide — the base .panel-col-divider{ display:none } simply stays in
+   force — and the ruling is horizontal instead. The markup order in
+   build.js matches this reading order exactly, so no `order` juggling. */
 .card .duo-half:not(.duo-half--wide) .duo-panel :is(.card-dek, .duo-quote-divider, .card-preview-block){
   /* The rule needs this as much as the text does: a grid item with no
      placement lands in column 1 (0.72fr — 146px of a 354px panel), so
      without it the divider ruled the left third and stopped. */
   grid-column: 1 / -1;
 }
-/* Dek before byline. The markup order is title, byline, rule, dek —
-   built for the retired layout where the dek was a gloss under the
-   ruled byline — so the swap happens here rather than in build.js.
-   Every item is numbered: `order` sorts within a common value by
-   document order, so leaving any of them at the default 0 would float
-   it above the whole numbered set. */
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-title{ order: 1; }
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-dek{ order: 2; margin-top: 16px; }
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-meta--line{ order: 3; }
-.card .duo-half:not(.duo-half--wide) .duo-panel .duo-quote-divider{ order: 4; }
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{ order: 5; }
-/* The byline already rules its own top edge (.card-meta--line::before),
-   and that rule now falls exactly where .card-byline-divider used to —
-   directly under the dek. Keeping both would print two full-bleed lines
-   16px apart, so the standalone one goes and the byline's own does the
-   work. */
-.card .duo-half:not(.duo-half--wide) .duo-panel .card-byline-divider{
-  display: none;
+/* The title's step down from the header strip's rule — 32px of INK to
+   rule, not box to rule. Helvetica's line box hangs 0.219em of dead air
+   above its cap tops (half-leading plus the ascender's gap over the
+   caps), so a flat margin printed a gap half again as large, and one
+   that changed with the title's size. Subtracting the offset in em
+   rather than px is what holds it at 32 everywhere: the fitter sets
+   title font-size inline per cell (60/47/45px across the homepage), and
+   em resolves against that. Same optical reasoning as
+   .card-title-divider above. See PANEL INK RHYTHM for the whole stack. */
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-title{
+  margin-top: calc(32px - 0.219em);
 }
-/* The byline is a closed strip, not a line floating between two rules:
-   its own rule caps it above (.card-meta--line::before) and the quote
-   rule seats flush against its foot, so the box verticals inside it land
-   on both. The air the strip needs is INSIDE it, from the boxes' own
-   10.35/9.65 padding, which is why the rule takes no margin above it;
-   the 16px below is the strip's step down to the excerpt.
-   display:block deliberately outranks the homepage quads' hide
-   (.card--quad .duo-panel .duo-quote-divider above): a contra square
-   keeps its excerpt hidden but still needs this rule to close its
-   byline strip now that .card-byline-divider is gone. */
+/* Contra overrides that step: its title is CENTRED between the strip and
+   the band (see CONTRA above), not hung 32px off the strip, so this
+   margin's only remaining job is balancing the block's INK. Box-centring
+   alone reads 10px high, from three offsets the box model hides:
+     + 0.219em   the title's cap top, inset inside its own line box
+     − 5.67px    the dek's last baseline, riding above its box bottom
+                 (0.365em of its 0.97rem)
+     + 17px      the panel's 52px bottom padding minus the footer band's
+                 ~35px height — the centring box stops that much short of
+                 the band's rule
+   22.75px − 0.219em is those three resolved, and it lands the title's
+   caps and the dek's baseline equidistant from the two rules. Must come
+   AFTER the rule above: same specificity, so source order decides. */
+.card .duo-half--contra:not(.duo-half--wide) .duo-panel .card-title{
+  margin-top: calc(22.75px - 0.219em);
+}
+/* The dek carries no top margin of its own — the TITLE's margin-bottom
+   owns that gap, because only there does `em` resolve against the
+   title's per-cell fitted size (see PANEL INK RHYTHM). */
+/* The quote rule between dek and excerpt, and the excerpt's own step
+   down off it — the two halves of the stack's 24-above / 16-below break.
+   (The quads' hide still applies: with the byline strip closing itself
+   via .card-byline-divider, a contra square no longer needs the quote
+   rule for that job, and its base .card--quad hide stands.) */
 .card .duo-half:not(.duo-half--wide) .duo-panel-top .duo-quote-divider{
-  display: block;
-  margin: 0 -24px 16px;
+  /* 26.35 above: 32 of ink minus the 0.97rem dek's 5.67px baseline ride
+     (0.3654em). 18.4 below: 24 minus the 13px excerpt's 5.6px cap hang. */
+  margin: 26.35px -24px 18.4px;
 }
 /* When the excerpt overflows the last column, the fitter truncates the
    text itself at the last fully-visible word and joins the ellipsis onto
@@ -1416,8 +1748,10 @@ section{ padding: 80px 0; }
    rule above — one value, every panel.) */
 /* Opening flourish (see wrapLeadWords in build.js): the first paragraph's
    first three words set in caps — inline, so it clamps and wraps like any
-   other text, which the old floated drop cap never did. */
-.card-preview-lead{ text-transform: uppercase; letter-spacing: 0.03em; font-weight: 700; }
+   other text, which the old floated drop cap never did. The caps run at
+   the excerpt's own weight: uppercase alone carries the flourish, and
+   bold on top of it read as a second dek. */
+.card-preview-lead{ text-transform: uppercase; letter-spacing: 0.03em; }
 /* "from the essay" / "from the interview" / "from the review" (set per
    the hero's section tag in build.js) — same courier-kicker treatment as
    .hero-kicker (family, weight, size, letter-spacing, margin) so column 3
@@ -1486,19 +1820,24 @@ section{ padding: 80px 0; }
     line-clamp: 7; -webkit-line-clamp: 7;
   }
   :is(.duo-panel, .card--feature) .panel-band{ position: static; }
+  /* No hover state to be continuous with — the panel's content (kicker
+     included) is statically visible below the image, so the overlay
+     copy would just print the topic twice. */
+  .duo-half .rest-kicker{ display: none; }
   .duo-panel .card-title-divider,
   .duo-panel .card-byline-divider,
   .duo-panel .duo-quote-divider{ margin-left: 0; margin-right: 0; }
   /* Qualified to outrank the .card--duo/.card--feature rule that sets the
-     strip's full-bleed margins — a bare .duo-panel selector loses on
-     specificity even from inside this query, and the strip hung outside
-     its own panel on every card. */
+     strip's full-bleed margins and its -16px pull to the panel border —
+     a bare .duo-panel selector loses on specificity even from inside
+     this query. Static panels have no border to seat against, so the
+     strip starts where the panel's own top padding puts it. */
   .card--duo .duo-panel .card-meta--line,
-  .card--feature .duo-panel .card-meta--line{ margin-left: 0; margin-right: 0; }
+  .card--feature .duo-panel .card-meta--line{ margin: 0; }
   /* The panel has no side padding here, so the byline boxes lose the
      24px inset that lined their text up with the card's margin. */
   .duo-panel .card-meta--line .meta-author{ padding-left: 0; }
-  .duo-panel .card-meta--line .meta-date{ padding-right: 0; }
+  .duo-panel .card-meta--line .meta-likes{ padding-right: 0; }
   :is(.duo-panel, .card--feature) .panel-band--top{ margin-bottom: 12px; }
   :is(.duo-panel, .card--feature) .panel-band--bottom{ margin-top: 12px; }
   /* Statically-visible panels have no "open" moment, so the per-hover
@@ -1511,7 +1850,6 @@ section{ padding: 80px 0; }
   .duo-panel .card-title-divider,
   .duo-panel .card-byline-divider,
   .duo-panel .panel-col-divider,
-  .duo-panel .card-meta--line::before,
   .duo-panel .card-meta--line .meta-author::after,
   .duo-panel .card-meta--line .meta-date::before,
   .duo-panel .duo-quote-divider{ transform: none; transition: none; }
@@ -1569,7 +1907,13 @@ img.card-image,
 .duo-panel .card-title{ position: relative; }
 .duo-panel .card-title .title-rule{
   position: absolute;
-  height: 3px;
+  /* In em, not px: the rule inherits the h3's fitted size, so a heavier
+     title carries a heavier rule (0.08em is ~5px under the 60px
+     headlines, where the old flat 3px read as a hairline; a fitted-down
+     45px title gets ~3.6px). The byline/band underlines keep their 3px —
+     their type is 0.86rem and the panel headline's weight would swamp
+     them. */
+  height: 0.08em;
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: 0 50%;
@@ -1981,19 +2325,23 @@ a.mission-person:hover .mission-person-photo{ border-color: var(--white); }
   padding-right: 0;
 }
 /* Item rows run at the hover cards' band-box height: text on a
-   line-height:1 box with a 10.1/9.9 optical padding split (measured to
-   dead-center Helvetica's mixed-case ink in the row), so each row
-   stands as tall as a panel header. The column head above keeps its
-   roomier 13/13. */
+   line-height:1 box with the band boxes' own 10.35/9.65 optical padding
+   split (the rows set in the bands' exact cut now, so the same split
+   dead-centers the same ink), making each row stand as tall as a panel
+   header. The column head above keeps its roomier 13/13. */
 .arch-ledger-row .arch-ledger-cell{
-  padding-top: 10.1px;
-  padding-bottom: 9.9px;
+  padding-top: 10.35px;
+  padding-bottom: 9.65px;
   line-height: 1;
 }
 .arch-ledger-head{
-  /* Same courier treatment as the card metas/kickers site-wide. */
-  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
-  letter-spacing: 0.03em; text-transform: uppercase;
+  /* The homepage byline/band voice (see .card-meta--line and .pc) —
+     Helvetica Bold at its size, natural case, no tracking — replacing
+     the courier-caps treatment so the ledger reads in the cards' own
+     cut. Gray stays: the head is a control, muted at rest like the
+     rows under it. */
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none;
   color: var(--muted);
 }
 /* The head labels ride flex so they sit vertically centered against the
@@ -2056,10 +2404,9 @@ a.mission-person:hover .mission-person-photo{ border-color: var(--white); }
 .arch-ledger-item.open + .arch-ledger-item{ border-top-color: transparent; }
 main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transparent; }
 .arch-ledger-row{
-  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
-  /* All caps like the column head above — same tracking as the site's
-     other uppercase label runs. */
-  letter-spacing: 0.03em; text-transform: uppercase;
+  /* Same voice as the head: the cards' byline cut, natural case. */
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none;
   color: var(--muted);
   cursor: pointer;
   transition: color .15s ease;
@@ -2204,12 +2551,13 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   padding: 24px 0 49px;
 }
 .arch-ledger-card .card-dek{
-  /* Courier eyebrow, same cut as the band corners — the fold-out has no
-     title of its own (the row above carries it). */
+  /* The hover panels' own eyebrow cut (see .duo-panel .card-dek) — the
+     fold-out has no title of its own (the row above carries it). Follows
+     the panels' bold 0.97rem so the family stays one voice. */
   font-family: var(--mono);
   font-style: normal;
-  font-weight: 400;
-  font-size: var(--mono-size-muted);
+  font-weight: 700;
+  font-size: 0.97rem;
   letter-spacing: 0.04em;
   line-height: 1.5;
   color: var(--muted);
@@ -2243,8 +2591,11 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   margin: 0; background: none; border: 0;
   /* Re-balanced 10.35/9.65 split — see .panel-band .pc's comment. */
   padding: 10.35px 14px 9.65px;
-  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
-  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1;
+  /* The homepage band boxes' cut (Helvetica Bold, natural case — see
+     .panel-band .pc), keeping the fold-out's own quiet coloring: muted
+     at rest, white on hover, like the ledger rows around it. */
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none; line-height: 1;
   color: var(--muted);
   text-decoration: none;
   transition: color .15s ease;

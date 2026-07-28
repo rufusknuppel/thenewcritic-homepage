@@ -119,6 +119,12 @@ function applyContentOverrides(posts) {
 // breaks; add a word here the day another over-long title appears.
 const TITLE_HYPHENATION = new Map([
   ['Commodification', 'Commod\u00ADification'],
+  // Lets the contra square keep the full 60px: unbroken, the word out-
+  // measures the 313px column and the fitter would shrink the title to
+  // 51px rather than let the engine snap it mid-letter (browsers refuse
+  // to auto-hyphenate capitalised words \u2014 see CAN_HYPHENATE in
+  // duo-panel-fit.js \u2014 so licensed breaks are injected here by hand).
+  ['Unstageable', 'Unstage\u00ADable'],
 ]);
 function applyTitleHyphenation(posts) {
   for (const p of posts) {
@@ -130,6 +136,9 @@ function applyTitleHyphenation(posts) {
 }
 
 const POSTSCRIPT_DEK = /^(Postscript No\.\s*\d+\s*\|\s*)(.+?)\s+on\s+(.+)$/;
+// The issue number on its own, for deks that don't split into the
+// name/subject shape above but still carry the prefix.
+const POSTSCRIPT_DEK_PREFIX = /^Postscript No\.\s*\d+\s*\|\s*/i;
 
 // "A and B", "A, B, and C" — the dek's own list style. Split on the
 // commas and the conjunction; the byline shows the first name and lets
@@ -149,6 +158,11 @@ function looksLikeName(text) {
   return words.every(w => /^[A-Z][\p{L}'’.-]*$/u.test(w));
 }
 
+// The deks' house voice: every card dek opens on a lowercase function
+// word — "on …" for the interviews, "contra …" for the reviews — so the
+// two sections read in one register instead of as two headline styles.
+// Only that opening label is lowercased; names and work titles keep
+// their capitals ("contra Freya India's GIRLS®").
 function applyDekBylines(posts) {
   for (const p of posts) {
     if (!p.subtitle) continue;
@@ -161,20 +175,36 @@ function applyDekBylines(posts) {
         // interviewer, which is the true byline of the piece and what any
         // non-panel use of the post should keep seeing.
         p.displayAuthor = names.length > 1 ? `${names[0]} et al.` : names[0];
-        p.subtitle = `${ps[1]}on ${ps[3]}`;
+        // The issue number goes with the names: the dek is "on <subject>"
+        // and nothing more. The number belongs to the post's own page,
+        // and repeating it here spent a third of the dek's measure
+        // before the subject even started.
+        p.subtitle = `on ${ps[3]}`;
+      } else {
+        // The dek didn't split into name/subject — keep whatever it says
+        // and just drop the issue number off the front.
+        p.subtitle = p.subtitle.replace(POSTSCRIPT_DEK_PREFIX, '');
       }
       continue;
     }
 
-    // "<Reviewer> contra <Work>" → "Contra <Work>". Gated on the prefix
+    // "<Reviewer> contra <Work>" → "contra <Work>". Gated on the prefix
     // reading as a NAME rather than on the word "contra" alone, so an
     // essay dek that happens to use it in a sentence is left be. Matching
     // the prefix against post.author is too strict on its own — one
     // review's author field is "Nadav" where its dek says "Nadav Asal".
     const con = p.subtitle.match(/^(.+?)\s+contra\s+(.+)$/i);
     if (con && looksLikeName(con[1])) {
-      p.subtitle = `Contra ${con[2]}`;
+      p.subtitle = `contra ${con[2]}`;
+      continue;
     }
+
+    // Deks that already arrive in the target shape — a hand-written
+    // override, or a review whose dek opens on "Contra" with no reviewer
+    // in front of it for the branch above to strip.
+    p.subtitle = p.subtitle
+      .replace(POSTSCRIPT_DEK_PREFIX, '')
+      .replace(/^Contra\s+/, 'contra ');
   }
 }
 
@@ -210,7 +240,7 @@ const SITE_LINKS = [
   // the masthead's old tagline, which moved down here off the wordmark.
   { key: 'essays', label: 'Essays', href: 'essays.html' },
   { key: 'postscript', label: 'Postscript', href: 'postscript.html', dek: 'Interviews w/\nextraordinary gen zers' },
-  { key: 'contra', label: 'Contra', href: 'contra.html', dek: 'New Critics take on\ngen z works' },
+  { key: 'contra', label: 'Contra', href: 'contra.html', dek: 'New Critics take on\nsignificant gen z works' },
   { key: 'archive', label: 'Archive', href: 'archive.html' },
   { key: 'about', label: 'About', href: 'about.html', dek: 'The Young\nAmerican Magazine' },
 ];
@@ -493,6 +523,17 @@ function emHtml(text) {
   const closes = (html.match(/<\/em>/g) || []).length;
   if (opens > closes) html += '</em>'.repeat(opens - closes);
   return html;
+}
+
+// A contra's dek bills the work under review — "Contra <artist>'s
+// <work>" — so the work's title sets in italics: everything after the
+// first possessive. A dek that doesn't fit the pattern passes through
+// plain. (The first "'s" is the artist's — a later apostrophe inside the
+// title itself, like "Dad Don't Read This", stays inside the italics.)
+function contraWorkDek(subtitle) {
+  const m = /^([\s\S]*?[’']s\s+)(\S[\s\S]*)$/.exec(subtitle || '');
+  if (!m) return escapeHtml(subtitle || '');
+  return `${escapeHtml(m[1])}<em>${escapeHtml(m[2])}</em>`;
 }
 
 function wrapLeadWords(text) {
@@ -855,13 +896,24 @@ function authorDisplay(post, caps = true) {
   return caps ? name.toUpperCase() : name;
 }
 
+// A card's author/kicker/date each deep-link into the archive ledger:
+// sorted by that column, folded open at this post's row, so the reader
+// lands among its neighbors (the author's other pieces, the tag's other
+// posts, the date's contemporaries). src/ledger.js reads the hash.
+function archiveHref(post, key) {
+  return `archive.html#sort=${key}&post=${slugOf(post.link)}`;
+}
+
 // include picks which of date/author/likes render, AND the order they
 // render in — the hover panels run one byline (author · date · likes)
 // under the title rule, while the box/grid cards keep the default
 // date · author · likes. Ordering by the caller's array is what lets the
 // same builder serve both without a second function. caps:false drops the
 // uppercasing for the panels' byline, which reads in Newsreader roman.
-function metaLine(post, { include = ['date', 'author', 'likes'], caps = true } = {}) {
+// archiveLinks:true renders the author and date as archive deep links
+// (see archiveHref) instead of inert spans — same classes, so the byline
+// boxes keep their ruling either way.
+function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, archiveLinks = false } = {}) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
   // metaDate is the manual override from content-overrides.js — a display
@@ -876,18 +928,38 @@ function metaLine(post, { include = ['date', 'author', 'likes'], caps = true } =
   const parts = [];
   for (const field of include) {
     if (field === 'date' && md) {
-      parts.push(`<span class="meta-date">${escapeHtml(md)}</span>`);
+      parts.push(archiveLinks
+        ? `<a class="meta-date" href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(md)}</a>`
+        : `<span class="meta-date">${escapeHtml(md)}</span>`);
     } else if (field === 'author' && bylineName(post)) {
-      parts.push(`<span class="meta-author">${escapeHtml(authorDisplay(post, caps))}</span>`);
+      parts.push(archiveLinks
+        ? `<a class="meta-author" href="${escapeHtml(archiveHref(post, 'author'))}">${escapeHtml(authorDisplay(post, caps))}</a>`
+        : `<span class="meta-author">${escapeHtml(authorDisplay(post, caps))}</span>`);
     } else if (field === 'likes') {
       const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
-      parts.push(
-        `<span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">${likes}</span></span>`
-      );
+      // The heart is a door, not a control: liking lives on Substack (it
+      // needs the reader's session there), so the heart links to the post
+      // itself, where the real button is. Same classes either way, so the
+      // styling doesn't care whether a post is missing its link.
+      const likesInner = `<svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">${likes}</span>`;
+      parts.push(post.link
+        ? `<a class="likes" href="${escapeHtml(post.link)}" rel="noopener" title="Like this on Substack">${likesInner}</a>`
+        : `<span class="likes">${likesInner}</span>`);
     }
   }
 
   return parts.join(' <span class="meta-dot">&middot;</span> ');
+}
+
+// The copy-link corner button — a chain icon that puts the post's
+// Substack URL on the clipboard (src/copy-link.js does the copying and
+// flips .copied for the check-mark beat). Rides the top-right corner of
+// every hover panel: outermost box of the duo byline strip, last band
+// box of the hero's header band. Both icons ship in the one button and
+// CSS swaps them on .copied.
+function copyLinkBtnHtml(post, cls) {
+  if (!post.link) return '';
+  return `<button type="button" class="${cls}" data-copy-link="${escapeHtml(post.link)}" title="Copy link" aria-label="Copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></button>`;
 }
 
 // Which of essay/postscript/contra a tagline belongs to, read off the
@@ -939,6 +1011,11 @@ function renderNav(currentKey = 'home') {
     ${links}
     <li class="nav-item--subscribe nav-subscribe-item"><a class="nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></li>
   </ul>
+  <div class="nav-social">
+    <a class="nav-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack" title="Substack"><svg class="nav-social-icon nav-social-icon--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 4.1h18.8M2.6 8.9h18.8M2.6 13.7h18.8v7.7L12 17.1l-9.4 4.3v-7.7z"/></svg></a>
+    <a class="nav-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram" title="Instagram"><svg class="nav-social-icon nav-social-icon--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5"/><circle cx="12" cy="12" r="4.3"/><circle class="ig-dot" cx="17.2" cy="6.8" r="1.2"/></svg></a>
+    <a class="nav-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors" title="editors@thenewcritic.com"><svg class="nav-social-icon nav-social-icon--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.2" y="4.4" width="19.6" height="15.2" rx="2.5"/><path d="M3.2 6.2l8.8 6.8 8.8-6.8"/></svg></a>
+  </div>
 </nav>`;
 }
 
@@ -1008,6 +1085,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
           ${authorBoxHtml}
           ${metaLine(post, { include: ['date'] }) ? `<p class="card-meta pc pc-right">${metaLine(post, { include: ['date'] })}</p>` : ''}
           <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
+          ${copyLinkBtnHtml(post, 'card-copylink pc pc-right')}
         </div>`;
   const bandBottomHtml = `<div class="panel-band panel-band--bottom">
           <a class="duo-essays-btn card-category-btn pc pc-left" href="archive.html">The Latest</a>
@@ -1066,23 +1144,17 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   // band corners, the likes heart — reads off one value. Same section
   // routing the old byline used: the post's own previewTagline (set
   // per-post in main() for the From the Archive rows, whose row-wide tag
-  // is a single section) wins over the row's. Read up here because the
-  // contra cells lay their byline and band out differently (below).
+  // is a single section) wins over the row's.
   const section = taglineSection(post.previewTagline || tag || '');
-  // A contra's dek is its whole billing — "Contra <work>" — so it rides
-  // IN the byline beside the author rather than under it, and the date it
-  // displaces moves down to the band beside the kicker. Lowercase
-  // "contra" there: in the byline it reads as the preposition it is
-  // ("Owen Yingling · contra Carbon Pages"), not a section label.
-  const isContra = section === 'contra';
-  const contraDek = isContra && post.subtitle
-    ? post.subtitle.replace(/^Contra\b/, 'contra')
-    : '';
   // Full, untruncated subtitle — duo-panel-fit.js clamps it to the lines
   // the panel actually has room for. A build-time character cut here (the
   // old truncate(…, 140)) ellipsized deks short of space the panel had.
-  const dekHtml = (post.subtitle && !isContra)
-    ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>`
+  // Contra cards run their "Contra <work>" billing as this ordinary dek
+  // now, same as every other cell (it used to ride in the byline as
+  // .meta-dek, displacing the date down to the band) — with the work's
+  // title in italics (see contraWorkDek).
+  const dekHtml = post.subtitle
+    ? `<p class="card-dek">${section === 'contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
     : '';
   // Full, untruncated paragraphs (several of them where the row-posts
   // fetch in main() ran) — duo-panel-fit.js decides at render time how
@@ -1096,41 +1168,53 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
         .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
-  // The byline straight under the title, no rule between them: the author
-  // at the left, the date pushed to the far right of the same line (see
-  // .card-meta--line in style.css). No separator between them — the line's
-  // own width does that job, which is what retired the dots.
+  // The byline as the panel's HEADER strip: a sibling ABOVE
+  // .duo-panel-top rather than a member of its left column, so it runs
+  // the panel's whole width on the extra-wide cells too — the two facing
+  // columns start beneath it, and the rule between them starts on its
+  // foot (see splitTop in duo-panel-fit.js). Flush against the panel's
+  // top border, closed underneath by .card-byline-divider (see
+  // .card-meta--line in style.css): the author at the left; pushed to
+  // the far right, the date with the likes count in the corner box
+  // beside it. No separator between the groups — the line's own width
+  // does that job, which is what retired the dots.
   const metaLineHtml = [
-    metaLine(post, { include: ['author'], caps: false }),
-    isContra
-      ? (contraDek ? `<span class="meta-dek">${escapeHtml(contraDek)}</span>` : '')
-      : metaLine(post, { include: ['date'], caps: false }),
+    metaLine(post, { include: ['author'], caps: false, archiveLinks: true }),
+    metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
+    `<span class="meta-likes">${metaLine(post, { include: ['likes'] })}</span>`,
+    copyLinkBtnHtml(post, 'meta-copylink'),
   ].filter(Boolean).join('');
   const metaHtml = metaLineHtml
     ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
     : '';
-  // The footer band now carries four boxes, not two — kicker and cover
-  // credit at the left, likes and section at the right, all in the
-  // byline's own cut. duo-panel-fit.js sheds them right-to-left when a
-  // narrow card can't seat them all (see fitBandBoxes).
+  // The footer band carries three boxes — kicker and cover credit at the
+  // left, the section link at the right (the likes moved up into the
+  // byline beside the author). duo-panel-fit.js sheds the left boxes
+  // right-to-left when a narrow card can't seat them all (see
+  // fitBandBoxes).
   const bandBottomHtml = `<div class="panel-band panel-band--bottom">
-            ${post.kicker ? `<p class="hero-kicker pc pc-left">${escapeHtml(post.kicker)}</p>` : ''}
-            ${isContra ? metaLine(post, { include: ['date'], caps: false }).replace('<span class="meta-date">', '<p class="card-meta pc pc-left pc-date">').replace('</span>', '</p>') : ''}
+            ${post.kicker ? `<a class="hero-kicker pc pc-left" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>` : ''}
             ${post.coverArtist ? `<p class="card-meta pc pc-left pc-art">Art by ${escapeHtml(post.coverArtist)}</p>` : ''}
             <a class="duo-essays-btn card-category-btn pc pc-right" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
-            <p class="card-meta card-meta--stats pc pc-right">${metaLine(post, { include: ['likes'] })}</p>
           </div>`;
   const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
+  // The resting kicker: the topic alone, printed over the cover's
+  // bottom-left corner while the card is closed — at the exact spot the
+  // footer band's kicker box holds it when the panel opens, so the hover
+  // reads as the panel materialising AROUND a label that never moves
+  // (see .rest-kicker in style.css). aria-hidden: it duplicates the panel
+  // band's kicker link, which is the one assistive tech should meet.
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
+        ${post.kicker ? `<p class="rest-kicker" aria-hidden="true">${escapeHtml(post.kicker)}</p>` : ''}
         <div class="duo-panel">
+          ${metaHtml}
+          ${metaHtml ? '<div class="card-byline-divider"></div>' : ''}
           <div class="duo-panel-top">
             <div class="panel-col panel-col--left">
               <h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
-              ${metaHtml}
-              ${metaHtml && (dekHtml || isContra) ? '<div class="card-byline-divider"></div>' : ''}
               ${dekHtml}
             </div>
             <div class="panel-col-divider" role="separator"></div>
@@ -1346,6 +1430,7 @@ ${renderFooter()}
 
 ${renderCaterpillarScript()}
 ${renderDuoPanelFitScript()}
+${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 </body>
 </html>`;
@@ -1367,6 +1452,16 @@ ${js}
 // (renderListPage), and the give/about column pages (their flanking
 // rules and section rules join it); archive has the ledger itself. See
 // src/line-draw.js.
+// Ships wherever the hover-panel cells do (homepage + the essays/
+// postscript/contra list pages) — it serves their corner copy-link
+// buttons, so it rides alongside renderDuoPanelFitScript.
+function renderCopyLinkScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/copy-link.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
 function renderLineDrawScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/line-draw.js'), 'utf8');
   return `<script>
@@ -1479,7 +1574,7 @@ ${rows
     bodyHtml,
     // The section's newest cover becomes its share card.
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderLineDrawScript(),
+    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript(),
   });
 }
 
@@ -1674,7 +1769,7 @@ function renderLedgerRow(post) {
         .join('')}</div>`
     : '';
   const dekHtml = post.subtitle
-    ? `<p class="card-dek">${escapeHtml(post.subtitle)}</p>`
+    ? `<p class="card-dek">${post.sectionLabel === 'Contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
     : '';
   const d = post.date;
   // Current-year dates drop the year — "Jul 15" — while older posts keep
@@ -1696,7 +1791,10 @@ function renderLedgerRow(post) {
     ` data-author="${escapeHtml((post.author || '').toLowerCase())}"` +
     ` data-date="${d && !isNaN(d.getTime()) ? d.getTime() : 0}"` +
     ` data-kicker="${escapeHtml((post.kicker || '').toLowerCase())}"` +
-    ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"`;
+    ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"` +
+    // The deep-link target: cards' author/kicker/date links arrive as
+    // #sort=<key>&post=<slug> and ledger.js opens the matching item.
+    ` data-slug="${escapeHtml(slugOf(post.link))}"`;
   return `
   <div class="arch-ledger-item"${sortAttrs}>
     <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
