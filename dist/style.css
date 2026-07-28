@@ -202,6 +202,29 @@ a{ color: inherit; }
   letter-spacing: 0.03em; line-height: 1.3;
   color: var(--muted);
   margin-top: 8px;
+  /* Invisible until its own item is pointed at, but never out of flow:
+     the box holds its place, so the column keeps its opened spacing and
+     nothing walks when a gloss fades in — only the ink comes and goes.
+     (display:none was tried first, per 2d2f81c; the layout shift it
+     causes was the part to lose.) visibility rather than opacity alone
+     keeps the hidden text unfindable and unselectable; delaying its
+     hidden flip by the fade's length lets the fade-out finish before
+     the text winks off. :focus-visible carries the keyboard: tabbing to
+     Postscript's link surfaces its gloss the way pointing does. */
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .2s ease, visibility 0s linear .2s;
+}
+/* Triggered by the HEADING alone (the adjacent-sibling combinator reads
+   off the <a> the gloss follows), not the whole <li> — the li's box
+   includes the gloss's own reserved slot, and pointing at what looks
+   like empty column shouldn't conjure text into it. Drifting off the
+   heading onto the gloss lets it fade back out; it's a label, not a
+   target. */
+.nav-links a:is(:hover, :focus-visible) + .nav-dek{
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .2s ease;
 }
 /* The whole column sets left, masthead included — one margin for every
    line in the sidebar. (Items used to break left and right against each
@@ -300,9 +323,10 @@ a{ color: inherit; }
    weight. */
 .nav-social{
   display: flex; gap: 16px;
-  /* Centered on the column — the one row that breaks the sidebar's
-     left margin, sitting under the list like a colophon. */
-  justify-content: center;
+  /* Set right, against the column's ragged edge — the same side the
+     right-breaking items (Postscript, Contra, About) set to, closing
+     the list like a colophon. */
+  justify-content: flex-end;
   margin-top: 24px;
 }
 .nav-social-link{
@@ -508,6 +532,17 @@ section{ padding: 80px 0; }
   position: absolute;
   left: 0;
   bottom: 0;
+  /* UNDER the panel (2 vs its 3), deliberately: this is the one stacking
+     order in which the white outline fills in at a single uniform rate.
+     The chip and the band's kicker cell print the same word at the same
+     pixel, so as the panel fades in, the corner composites white text
+     over identical white text and black over black — the label simply
+     holds still while the frame and rules arrive around it at exactly
+     the pace they arrive everywhere else. (Putting the chip ON TOP was
+     tried: even fading it out in sync, the border segment behind it only
+     shows through at panel-opacity × chip-transparency, so the corner's
+     stretch of outline lags the rest of the frame quadratically. Under
+     the panel there is no second fade to choreograph at all.) */
   z-index: 2;
   margin: 0;
   padding: 10.35px 24px 10.65px 25px;
@@ -649,6 +684,15 @@ section{ padding: 80px 0; }
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease;
+  /* Pre-rasterise the panel. At opacity:0 the browser skips painting it,
+     so without this the very first hover has to raster the whole
+     text-heavy panel in the same frame the fade starts — a dropped
+     frame right at the top of the transition, which reads as the white
+     outline stuttering in instead of filling smoothly. will-change
+     keeps each panel's layer painted ahead of time; the fade is then
+     pure compositor work from its first frame. The cost is one held
+     GPU layer per card, which a static page of ~25 cards can afford. */
+  will-change: opacity;
   overflow: hidden;
 }
 /* Per-section accents are OFF: every card's hover reads white now. The
