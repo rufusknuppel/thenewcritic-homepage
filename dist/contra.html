@@ -100,7 +100,7 @@
             <p class="card-meta pc pc-left pc-date">Jul 24</p>
             <p class="card-meta pc pc-left pc-art">Art by Kit Knuppel</p>
             <a class="duo-essays-btn card-category-btn pc pc-right" href="contra.html">Contra</a>
-            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">26</span></span></p>
+            <p class="card-meta card-meta--stats pc pc-right"><span class="likes"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">27</span></span></p>
           </div>
         </div>
       </div>
@@ -570,6 +570,30 @@
   var panels = document.querySelectorAll('.duo-panel');
   if (!panels.length) return;
 
+  // The one floor constant: text and hard blocks alike fit against the
+  // footer band's top minus this. It is a MINIMUM — a short excerpt ends
+  // where it ends and leaves more — but a full box lands its last line
+  // exactly here (see the slot stretch below).
+  var GAP = 16;
+  // When a block's text fills every line slot its box allows, the sub-line
+  // remainder (box height mod line-height) is distributed into the leading
+  // instead of piling up as dead space over the band: each slot may open
+  // by up to this factor so the last line sits ON the floor. 15% of a
+  // 20.8px line is ~3px a slot — feathering, not double-spacing.
+  var MAX_SLOT_STRETCH = 1.15;
+
+  // Applies a stretched slot to a preview block's paragraphs: line-height
+  // and the between-paragraph gap both become `unit`, so the paragraph
+  // gap keeps costing exactly one slot and the whole block scales as one
+  // grid. Wraps don't move — line-height is vertical only. Inline styles
+  // are cleared by resetClamp on the next fit.
+  function setSlot(block, unit) {
+    [].forEach.call(block.querySelectorAll('.card-preview'), function(p, i){
+      p.style.lineHeight = unit + 'px';
+      if (i) p.style.marginTop = unit + 'px';
+    });
+  }
+
   // The hero's hover zone is the picture itself: the link is sized to
   // the image's exact contain-box — height is the frame's, width follows
   // the image's own ratio, centered by the frame's flex row (see
@@ -602,6 +626,10 @@
     el.style.webkitBoxOrient = '';
     el.style.webkitLineClamp = '';
     el.style.lineClamp = '';
+    // The slot stretch's inline leading and paragraph gap (see setSlot) —
+    // cleared so every fit measures the natural grid.
+    el.style.lineHeight = '';
+    el.style.marginTop = '';
     el.classList.remove('card-preview--clamped');
     el.classList.remove('card-preview--capped');
   }
@@ -704,8 +732,11 @@
     var r = el.getBoundingClientRect();
     var bandW = r.width / cols;
     var slotTop = r.bottom - plh;
-    var st = { full: [], orphan: [] };
-    for (var c = 0; c < cols; c++) { st.full[c] = false; st.orphan[c] = false; }
+    // full: the column's bottom line slot is occupied. any: the column
+    // holds at least one line at all (the acceptance test for a ragged
+    // last column — see the multi-column branch in fit()).
+    var st = { full: [], orphan: [], any: [] };
+    for (var c = 0; c < cols; c++) { st.full[c] = false; st.orphan[c] = false; st.any[c] = false; }
     [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
       var rng = document.createRange();
       rng.selectNodeContents(p);
@@ -722,10 +753,11 @@
         // Overflow past the last column renders in phantom columns out
         // beyond the block's right edge — not visible, not counted.
         if (rc.left >= r.right - 1) return;
-        if ((rc.top + rc.bottom) / 2 < slotTop) return;
-        var isFirstLine = continues && Math.abs(rc.top - first.top) < plh / 2;
         var col = Math.min(cols - 1, Math.max(0,
           Math.floor(((rc.left + rc.right) / 2 - r.left) / bandW)));
+        st.any[col] = true;
+        if ((rc.top + rc.bottom) / 2 < slotTop) return;
+        var isFirstLine = continues && Math.abs(rc.top - first.top) < plh / 2;
         st.full[col] = true;
         if (isFirstLine) st.orphan[col] = true;
       });
@@ -1212,7 +1244,11 @@
     fitTitleSize(panel, title);
     fitTitleFewerLines(panel, title);
     fitTitleTwoLines(title);
-    var limit = band.getBoundingClientRect().top - 14;
+    // One floor for everything: the band's top edge, GAP of air above it.
+    // (This used to be -14 for hard blocks and -16 for running text — two
+    // constants disagreeing by a hair for no reason anyone remembered.)
+    var bandTop = band.getBoundingClientRect().top;
+    var limit = bandTop - GAP;
 
     // The title outranks the dek wherever the dek sits: if the dek comes
     // first in the column, everything from its bottom edge down through
@@ -1264,25 +1300,17 @@
       if (el.classList.contains('card-preview-block')) {
         var colCount = parseInt(getComputedStyle(el).columnCount, 10) || 1;
         if (colCount > 1) {
-          // Multi-column essay excerpt (two on the squares, three on the
-          // extra-wide split cells): line-clamping individual paragraphs
+          // Multi-column essay excerpt (the two-across squares, the hero,
+          // the archive-wide cell): line-clamping individual paragraphs
           // can't work across column flow, so the block fits as one unit,
           // sized by pickColumnHeight — every column full from the
           // divider line down to the footer line, grids aligned, no
           // column ending in an orphan. Overflow spills into clipped
           // phantom columns past the last and is cut at its last whole
           // word by truncateToWord, ellipsis joined on inline.
-          //
-          // The block's budget stops GAP_BOTTOM above the footer band
-          // and fills with as many whole lines as fit; the sub-line
-          // remainder (and whatever a short excerpt leaves) moves ABOVE
-          // THE TITLE via the slack padding at the end of fit(), so the
-          // last line still ends exactly GAP_BOTTOM above the band.
           var firstP = el.querySelector('.card-preview');
           var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
-          var bandTop = limit + 14;
-          var GAP_BOTTOM = 16;
-          var budget = bandTop - GAP_BOTTOM - el.getBoundingClientRect().top;
+          var budget = bandTop - GAP - el.getBoundingClientRect().top;
           var maxLines = Math.floor(budget / plh);
           if (maxLines < 1) {
             // No room for even one line — the quote divider above would
@@ -1298,66 +1326,130 @@
           // deleting the clipped tail later can't re-balance what shows.
           el.style.overflow = 'hidden';
           el.style.columnFill = 'auto';
-          var blockLines = pickColumnHeight(el, plh, maxLines, colCount);
+          // A block that can fill (or overfill) the full height keeps it
+          // outright, in either of two shapes:
+          //   - text to spare: spills at full height, truncates on the
+          //     bottom row. The no-orphan walk used to give back whole
+          //     rows here, and the slot stretch (capped at 15%) can
+          //     never bridge a 21px row — cards floated a row or two off
+          //     the floor to dodge an orphan that, beside a truncation
+          //     ellipsis, is no blemish: the block already ends
+          //     mid-sentence.
+          //   - text one line shy of flush (the parity case): every
+          //     column but the last runs full and the last runs ragged,
+          //     like a book's final page. The old flush-bottom rule cut
+          //     that spare line AND dropped a row of box for it.
+          // Only a block too short to fill the first column at full
+          // height still walks down through pickColumnHeight for a
+          // balanced, flush, orphan-free ending — there the bottom line
+          // is a real ending, and worth keeping clean.
+          el.style.height = (maxLines * plh) + 'px';
+          var blockLines = 0;
+          if (el.scrollWidth > el.clientWidth + 1) {
+            blockLines = maxLines;
+          } else {
+            var stMax = columnFill(el, plh, colCount);
+            var interiorFull = true;
+            for (var ci = 0; ci < colCount - 1; ci++) {
+              if (!stMax.full[ci]) interiorFull = false;
+            }
+            blockLines = interiorFull && stMax.any[colCount - 1]
+              ? maxLines
+              : pickColumnHeight(el, plh, maxLines, colCount);
+          }
           if (blockLines) {
             el.style.height = (blockLines * plh) + 'px';
+            var spills = el.scrollWidth > el.clientWidth + 1;
+            // A full box earns the slot stretch: when the text either
+            // overflows or fills every allowed line, the sub-line
+            // remainder feathers into the leading so the bottom line
+            // lands ON the floor instead of a random hair above it.
+            // Same words on the same lines — line-height is vertical
+            // only, and height stays lines × slot, so each column holds
+            // exactly the rows it held at the natural leading.
+            if (spills || blockLines === maxLines) {
+              var unit = Math.min((budget - 1) / blockLines, plh * MAX_SLOT_STRETCH);
+              if (unit > plh + 0.05) {
+                setSlot(el, unit);
+                // One pixel of slack under the bottom row: the stretched
+                // unit is fractional, and at an EXACT lines × unit height
+                // sub-pixel rounding in the column engine can flip the
+                // boundary — the box reflows a whole row short (flush
+                // three-line columns stood in four-row boxes). Far less
+                // than a line, so it can't admit an extra row; the unit
+                // divides budget−1 above so the floor stays ≥ GAP.
+                el.style.height = (blockLines * unit + 1) + 'px';
+                spills = el.scrollWidth > el.clientWidth + 1;
+              }
+            }
+            // Cut text spills into clipped phantom columns, widening the
+            // scrollable area — the tell that an ellipsis is owed.
+            if (spills) truncateToWord(el);
           } else {
             // Content too short to floor every column at any height —
             // let it balance naturally and just cap what there is.
             el.style.height = '';
             el.style.columnFill = '';
             el.style.maxHeight = (maxLines * plh) + 'px';
+            if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
           }
-          // Cut text spills into clipped phantom columns, widening the
-          // scrollable area — that's the tell that an ellipsis is owed.
-          if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
           return;
         }
-        // Single-column preview (trio/quad/mosaic squares and the split
-        // rows' postscript thirds): paragraphs clamp at the rendered
-        // line inside scGap's budget — as many whole lines as fit.
+        // Single-column preview (trio/quad-open cells, the split rows'
+        // postscript thirds, the wide cells' right column): pure slot
+        // arithmetic. The paragraph gap is exactly one line (see the
+        // .card-preview + .card-preview rule in style.css), so the block
+        // is a uniform grid of line slots — floor(budget / line) of them
+        // — and each paragraph spends its own line count plus one gap
+        // slot. Clean multiples, no per-paragraph pixel drift.
         //
-        // Positions are COMPUTED, not read: with every paragraph's clamp
-        // lifted to 999 for measuring, sibling clamp boxes in some
-        // engines (the in-app preview among them) stop stacking — all of
-        // them sit at the block's top and rect.top lies by a whole
-        // paragraph. Heights stay true, so the real layout is block top
-        // plus a running sum of heights and margins. That fed one card a
-        // clamp of 12 where 2 fit ("Curtis Yarvin Jr.", 181px past the
-        // band) and let every other card's paragraphs "fit" unclamped —
-        // which is why no ellipsis ever appeared.
-        var scGap = 16;
-        var scLimit = (limit + 14) - scGap;
-        var parasCut = false;
-        var lastVisible = null;
-        var scY = el.getBoundingClientRect().top;
-        var scFirst = true;
+        // Everything is COMPUTED from heights, never read from rect
+        // tops: with every paragraph's clamp lifted to 999 for
+        // measuring, sibling clamp boxes in some engines (the in-app
+        // preview among them) stop stacking — they all report the
+        // block's own top and rect.top lies by whole paragraphs.
+        // Heights stay true.
+        var scFirstP = el.querySelector('.card-preview');
+        var scLh = parseFloat(getComputedStyle(scFirstP || el).lineHeight) || 21;
+        var scAvail = bandTop - GAP - el.getBoundingClientRect().top;
+        var scSlots = Math.floor(scAvail / scLh);
+        if (scSlots < 1) {
+          el.style.display = 'none';
+          var qd0 = topBox.querySelector('.duo-quote-divider');
+          if (qd0) qd0.style.display = 'none';
+          return;
+        }
+        var scUsed = 0, scCut = false, scAny = false;
         [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
-          if (parasCut) { p.style.display = 'none'; return; }
-          var pTop = scY + (scFirst ? 0 : (parseFloat(getComputedStyle(p).marginTop) || 0));
-          scFirst = false;
-          var pBottom = pTop + p.getBoundingClientRect().height;
-          if (pBottom <= scLimit) { lastVisible = p; scY = pBottom; return; }
-          parasCut = true;
-          // clampToFit's own rect would reuse the lying top — inline the
-          // same clamp against the computed one.
-          var pLh = parseFloat(getComputedStyle(p).lineHeight) || 22;
-          var pLines = Math.floor((scLimit - pTop) / pLh);
-          if (pLines < 1) { p.style.display = 'none'; return; }
+          if (scCut) { p.style.display = 'none'; return; }
+          var pLines = Math.round(p.getBoundingClientRect().height / scLh);
+          var need = (scAny ? 1 : 0) + pLines;
+          var room = scSlots - scUsed;
+          if (need <= room) { scUsed += need; scAny = true; return; }
+          scCut = true;
+          var fitLines = room - (scAny ? 1 : 0);
+          if (fitLines < 1) { p.style.display = 'none'; return; }
           p.style.display = '-webkit-box';
           p.style.webkitBoxOrient = 'vertical';
           p.style.overflow = 'hidden';
-          p.style.webkitLineClamp = String(pLines);
-          p.style.lineClamp = String(pLines);
+          p.style.webkitLineClamp = String(fitLines);
+          p.style.lineClamp = String(fitLines);
           p.classList.add('card-preview--clamped');
-          lastVisible = p;
+          scUsed += (scAny ? 1 : 0) + fitLines;
+          scAny = true;
         });
-        if (!lastVisible) {
+        if (!scAny) {
           // Every paragraph died — hide the empty block and the quote
           // divider that would otherwise sit orphaned above it.
           el.style.display = 'none';
           var qd = topBox.querySelector('.duo-quote-divider');
           if (qd) qd.style.display = 'none';
+        } else if (scCut) {
+          // The box is full — feather the leading so the last line lands
+          // exactly GAP over the band (see the multi-column branch; the
+          // clamp boxes grow with their line boxes, so the counts hold).
+          var scUnit = Math.min(scAvail / scUsed, scLh * MAX_SLOT_STRETCH);
+          if (scUnit > scLh + 0.05) setSlot(el, scUnit);
         }
       } else if (el.getBoundingClientRect().bottom > groupLimit) {
         cutting = true;
@@ -1382,6 +1474,17 @@
     if (title && getComputedStyle(title).display !== 'none') {
       var titleLh = parseFloat(getComputedStyle(title).lineHeight) || 24;
       if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
+      // The quad titles' line cap (max-height + overflow:hidden in CSS)
+      // clips at the box's edge — and the LAST line's rule is drawn at
+      // that line's foot, a hair past it, so the clip sheared the rule
+      // (and the line's own descenders) to a sliver. With the overflow
+      // text genuinely cut above, the clip has nothing left to hide:
+      // release it so ink and rule paint whole. Only for the CSS cap —
+      // an inline overflow means clampToFit is mid-clamp and must keep
+      // its clipping.
+      if (!title.style.overflow && getComputedStyle(title).maxHeight !== 'none') {
+        title.style.overflow = 'visible';
+      }
     }
 
     // The title's line breaks are final here — underline them.
@@ -1391,14 +1494,13 @@
     // from the panel's top border to the band's.
     fitColumnDivider(panel, topBox, band);
 
-    // The column ends where its last whole line of text ends — no slack
-    // padding above the title any more. That mechanism existed to hold the
-    // excerpt's last line exactly 16px off the footer band by pushing the
-    // title DOWN by the sub-line remainder; the title now sets in the
-    // panel's top-left corner at a fixed 24px margin, so the remainder
-    // stays where it falls, as open space above the band. The 16px is
-    // therefore the MINIMUM bottom gap (set by the branches above), not an
-    // exact figure — a card whose text runs out early simply leaves more.
+    // A full box lands its last line exactly GAP over the band — the
+    // sub-line remainder is feathered into the leading by the slot
+    // stretch in the branches above, never left as a random hair of
+    // dead space. A box whose text runs out early keeps the natural
+    // leading and simply leaves more; GAP is the minimum, not a target
+    // the text is stretched to at any cost (the stretch caps at
+    // MAX_SLOT_STRETCH).
   }
 
   function fitAll() {

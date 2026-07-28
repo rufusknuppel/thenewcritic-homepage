@@ -767,7 +767,9 @@ section{ padding: 80px 0; }
 /* Thin rule between the dek above and the "From the Essay" tagline +
    pull-quote below it (the tagline sits under the divider, opening the
    quote block the way the kicker opens the title block). */
-.duo-quote-divider{ height: 1px; background: var(--line); margin: 16px -24px 20px; }
+/* 16px on both sides — the same step every neighbour pair in the panel
+   stack keeps (the old 20px below was a stray odd one out). */
+.duo-quote-divider{ height: 1px; background: var(--line); margin: 16px -24px 16px; }
 /* The dek fused with its title as an eyebrow under it: no rule between
    them, a tight gap, and quiet styling (small, gray, roman) so the pair
    reads as one unit — headline, then a whispered subtitle — rather than
@@ -1168,22 +1170,23 @@ section{ padding: 80px 0; }
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
 }
+/* Paragraph gap = exactly one line (1.6em at the preview's own size =
+   its line-height), in EVERY panel context, single column or multi. In
+   the column blocks it keeps both columns on one baseline grid (an 18px
+   gap knocked the right column's lines out of sync with the left's;
+   fragment margins at a column's top are discarded, so a paragraph
+   opening column two starts on the grid). In the single-column stacks it
+   makes the block pure slot arithmetic for the fitter — a paragraph
+   break costs exactly one line slot, so line counts and the box height
+   are clean multiples of one number. */
 .card--feature .card-preview + .card-preview,
 .card--duo .card-preview + .card-preview,
 .arch-ledger-card .card-preview + .card-preview{
-  margin-top: 18px;
+  margin-top: 1.6em;
   line-clamp: 10; -webkit-line-clamp: 10;
 }
-/* A hair more weight in the excerpt. NOT font-weight: the stack is
-   Helvetica Neue, which goes Regular → Medium → Bold with nothing in
-   between, so 600 resolves to Bold — measured identical to 700 — and the
-   body would have matched the panel's bold labels. A sub-pixel stroke in
-   the text's own colour thickens the strokes by less than the jump to
-   Medium did, which is the "slightly" this wants. Kept off the archive
-   ledger's previews, which aren't set on a dimmed cover. */
-.duo-panel .card-preview{
-  -webkit-text-stroke: 0.22px currentColor;
-}
+/* (The excerpt once carried a 0.22px same-colour text-stroke on top of
+   Medium for extra weight; retired — Medium alone is the wanted weight.) */
 /* Essay panels (the two-across squares), the hero panel — which
    borrows the squares' own width (see duo-panel-fit.js) — and the
    split rows' extra-wide essay cell all run their excerpt in two
@@ -1302,7 +1305,11 @@ section{ padding: 80px 0; }
    a title genuinely overruns. */
 .card--quad .duo-half:not(.duo-half--wide) .duo-panel .card-title{
   display: block;
-  max-height: 3.3em; /* three lines at the 1.1 leading */
+  /* Two lines at the 1.1 leading — a contra title never runs longer; the
+     fitter truncates the overflow at its last visible word and joins the
+     ellipsis inline, at full size (no shrinking to squeeze a third line
+     back in). */
+  max-height: 2.2em;
   overflow: hidden;
 }
 /* The head spans the whole measure. (So does everything else now — see
@@ -1404,18 +1411,9 @@ section{ padding: 80px 0; }
   orphans: 1;
   widows: 1;
 }
-/* Paragraph gap = exactly one line (1.6em at the preview's own size =
-   its line-height), so every line in both columns sits on the same
-   baseline grid — an 18px gap knocked the right column's lines out of
-   sync with the left's. Fragment margins at a column's top are
-   discarded, so a paragraph opening column two starts on the grid. */
-.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview + .card-preview,
-.card--split .duo-half--wide .duo-panel .card-preview + .card-preview,
-.card--feature .duo-panel .card-preview + .card-preview,
-.card--archive .archive-wide .duo-panel .card-preview + .card-preview,
-.arch-ledger-card .card-preview-block .card-preview + .card-preview{
-  margin-top: 1.6em;
-}
+/* (The one-line paragraph gap that used to be re-asserted here per
+   column context now lives on the base .card-preview + .card-preview
+   rule above — one value, every panel.) */
 /* Opening flourish (see wrapLeadWords in build.js): the first paragraph's
    first three words set in caps — inline, so it clamps and wraps like any
    other text, which the old floated drop cap never did. */
