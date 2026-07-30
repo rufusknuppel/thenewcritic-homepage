@@ -558,6 +558,34 @@
     });
   }
 
+  // The resting title (essays page — see restTitle in build.js): the
+  // cell prints its headline over the cover at rest, in the EXACT box
+  // the hover panel's title occupies. The panel is inset:0 over the
+  // cell, so the title's offset inside the panel maps 1:1 onto the
+  // cell; the fitted font metrics are copied inline because the fitter
+  // sizes each title per cell. Same words (build.js prints the same
+  // hyphenated string), same width, same font ⇒ the same line breaks.
+  // Runs after drawTitleRules, when the title's geometry is final;
+  // rects work fine on the opacity-0 panel, which is laid out always.
+  function seatRestTitle(panel, title) {
+    var half = panel.closest ? panel.closest('.duo-half') : null;
+    var rest = half && half.querySelector('.rest-title');
+    if (!rest) return;
+    var hr = half.getBoundingClientRect();
+    var tr = title.getBoundingClientRect();
+    var ts = getComputedStyle(title);
+    rest.style.left = (tr.left - hr.left) + 'px';
+    rest.style.top = (tr.top - hr.top) + 'px';
+    rest.style.width = tr.width + 'px';
+    rest.style.fontSize = ts.fontSize;
+    rest.style.lineHeight = ts.lineHeight;
+    rest.style.letterSpacing = ts.letterSpacing;
+  }
+  // (White-or-ink is decided at BUILD time — REST_TITLE_INK in build.js
+  // — not here. Reading the cover's pixels from the page was tried and
+  // is impossible: substackcdn refuses CORS outright, so a crossOrigin
+  // probe never loads and a plain draw taints the canvas.)
+
   // The footer band seats three boxes now — kicker and cover credit left,
   // section right (the likes live in the byline) — and they never wrap or
   // shrink, they overflow, so scrollWidth is the tell. A narrow card
@@ -656,6 +684,12 @@
   // keep-priority: title (clamps, never vanishes) > dek > everything else
   // (credit line, dividers, preview paragraphs).
   function fit(panel) {
+    // A panel inside a display:none subtree (the postscript page's
+    // prerendered, unselected cards) has no boxes to measure — every
+    // rect reads zero and a "fit" would just bake garbage inline
+    // styles. Skip it; postscript-index.js fires a resize on reveal
+    // and the panel gets its first real fit then.
+    if (!panel.getClientRects().length) return;
     var topBox = panel.querySelector('.duo-panel-top');
     var band = panel.querySelector('.panel-band--bottom');
     if (!topBox || !band) return;
@@ -1087,8 +1121,10 @@
       }
     }
 
-    // The title's line breaks are final here — underline them.
+    // The title's line breaks are final here — underline them, and seat
+    // the resting copy over the cover where the page carries one.
     drawTitleRules(title);
+    seatRestTitle(panel, title);
 
     // Last, once every column's content has settled: run the column rule
     // from the panel's top border to the band's.
@@ -1103,8 +1139,74 @@
     // MAX_SLOT_STRETCH).
   }
 
+  // The contra page's lead card holds the height of a contra square —
+  // the first cell below is the measure, re-read every fit so resizes
+  // track. In the stacked mobile layout (flex-direction column, see the
+  // .contra-lead media block) the lead flows at natural height instead:
+  // the inline height is cleared, the CSS max-height does the bounding.
+  function fitContraLead() {
+    var lead = document.querySelector('.contra-lead');
+    if (!lead) return;
+    var body = lead.querySelector('.contra-lead-body');
+    // Refits start from the pristine text (truncateToWord stashes it).
+    if (body && body.__fullHTML) body.innerHTML = body.__fullHTML;
+    // The stacked-layout tell is the inner cols row (the lead itself is
+    // always a column now — byline strip over the name/body row).
+    var cols = lead.querySelector('.contra-lead-cols');
+    if (cols && getComputedStyle(cols).flexDirection === 'column') {
+      lead.style.height = '';
+      if (body) body.style.height = '';
+      return;
+    }
+    var cell = document.querySelector('.card--quad .duo-half .duo-card-image');
+    if (!cell) return;
+    var h = cell.getBoundingClientRect().height;
+    if (!h) return;
+    lead.style.height = h + 'px';
+    if (!body) return;
+    // Fill whole lines, the essay excerpts' own cut: the body's slots
+    // are all 1.6em of 13px (paragraph gaps are exactly one slot), so
+    // quantizing the box to a slot multiple means no half-clipped
+    // bottom line in any column. Freeze it there (explicit height +
+    // the CSS column-fill:auto) and cut the clipped tail at the last
+    // fully-visible word, ellipsis joined inline.
+    body.style.height = '';
+    var lh = parseFloat(getComputedStyle(body).lineHeight) || 20.8;
+    var slots = Math.floor(body.getBoundingClientRect().height / lh);
+    if (slots < 1) return;
+    body.style.height = (slots * lh) + 'px';
+    // The whole manifesto outranks matching the square when the two
+    // collide: while text still spills into phantom overflow columns
+    // (scrollWidth is the tell), grow card and body a line slot at a
+    // time. On a wide window the loop never runs and the card holds
+    // the square's own height.
+    var guard = 40;
+    while (guard-- > 0 && body.scrollWidth > body.clientWidth + 1) {
+      slots++;
+      h += lh;
+      body.style.height = (slots * lh) + 'px';
+      lead.style.height = h + 'px';
+    }
+    // Safety cut ONLY if the guard ran dry with text still spilling —
+    // truncateToWord always stamps its ellipsis, so calling it on a
+    // fully-seated block would deface the manifesto's last line.
+    if (body.scrollWidth > body.clientWidth + 1) truncateToWord(body);
+    // Run the name/body divider down to the footer band's rule — the
+    // cols row ends at the 52px bottom zone, the band's top is partway
+    // into it, and align-items:stretch means a negative bottom margin
+    // GROWS the divider by exactly that overshoot.
+    var vert = lead.querySelector('.contra-lead-divider');
+    var band = lead.querySelector('.panel-band--bottom');
+    if (vert && band) {
+      vert.style.marginBottom = '';
+      var gap = band.getBoundingClientRect().top - vert.getBoundingClientRect().bottom;
+      if (gap > 0) vert.style.marginBottom = -gap + 'px';
+    }
+  }
+
   function fitAll() {
     fitHeroLink(); // before the panels: the hero panel pins to the fitted link
+    fitContraLead(); // before too: the lead's height moves every row below it
     [].forEach.call(panels, fit);
   }
 

@@ -142,11 +142,12 @@ a{ color: inherit; }
      down. */
   display: flex; flex-direction: column; gap: 16px;
   line-height: 1.1;
-  /* The items sit a step under the masthead rather than filling the
-     column: the wider sidebar goes to THE NEW CRITIC, which alone is
-     sized to the measure (2rem), while the links keep the size they
-     had before the column grew. */
-  font-family: var(--title); font-weight: 700; font-size: 1.5rem;
+  /* The items sit a step under the masthead, which alone is sized to
+     the measure (2rem) and untouched here. The links themselves match
+     the postscript reading room's own name-scroll cut (see
+     .ps-index-name) — one size for "a list of names down a column"
+     wherever the site has one, sidebar included. */
+  font-family: var(--title); font-weight: 700; font-size: 1.15rem;
   letter-spacing: 0; text-transform: none;
 }
 /* Each item is a title over a gloss, the same shape the cards use: white
@@ -186,19 +187,15 @@ a{ color: inherit; }
 .nav-links a:hover,
 .nav-subscribe:hover{ background-size: 100% 3px; }
 .nav-links a[aria-current="page"]{ color: var(--white); }
-/* The gloss under each item: the cards' dek cut exactly — Helvetica at the
-   panel text size, tracked, gray. Tracked a notch tighter than the cards'
-   0.04em: the glosses are set to hard line shapes (see SITE_LINKS in
-   build.js) against a 156px column, and the longest of them — Subscribe's
-   "the free TNC newsletter" — ran 159px at 0.04em and wrapped, breaking
-   the shape. 0.03em buys the ~3px it needed. */
+/* The gloss under each item: gray, tracked, bold — the postscript
+   index's own gloss cut (see .ps-index-dek), which is what sets its
+   size here; the tracking was already the same 0.03em the glosses'
+   hard line shapes (see SITE_LINKS in build.js) needed to clear their
+   156px column without wrapping, so the match cost nothing. */
 .nav-dek{
   display: block;
-  /* The panel deks' own voice — bold at 0.97rem (see .duo-panel
-     .card-dek) — so the sidebar's glosses and the cards' billings read
-     as one family. The gray keeps them subordinate to the headings. */
   font-family: var(--mono); font-weight: 700;
-  font-size: 0.97rem;
+  font-size: 0.85rem;
   letter-spacing: 0.03em; line-height: 1.3;
   color: var(--muted);
   margin-top: 8px;
@@ -227,23 +224,17 @@ a{ color: inherit; }
   transition: opacity .2s ease;
 }
 /* The whole column sets left, masthead included — one margin for every
-   line in the sidebar. (Items used to break left and right against each
-   other, which needed a per-item rule and a trailing-letter-space
-   correction on the right-set ones; a single left margin needs neither,
-   since the tracking after a line's last glyph falls on the ragged edge
-   where it costs nothing.) */
+   line in the sidebar, every item alike. (Postscript, Contra and About
+   used to break right against their left-set neighbors, an alternating
+   layout that read fine at the items' old 1.5rem but just looked
+   unsettled once they matched the postscript index's smaller, plainly
+   left-set list — one ragged edge for the whole column now.) */
 .nav-links li{ text-align: left; }
-/* Postscript, Contra and About break RIGHT against the left-set items
-   around them — title and gloss together, since the dek block inherits
-   the alignment. (The old alternating layout, back by request for these
-   three; the trailing-letter-space cost on a right-set ragged edge is
-   accepted.) */
-.nav-links :is(.nav-item--postscript, .nav-item--contra, .nav-item--about){ text-align: right; }
 /* Subscribe closes the column, under About, at the nav items' own size. */
 .nav-subscribe{
   /* Inline for the same reason the nav links are (see .nav-links li). */
   display: inline;
-  font-family: var(--title); font-weight: 700; font-size: 1.5rem;
+  font-family: var(--title); font-weight: 700; font-size: 1.15rem;
   letter-spacing: 0; text-transform: none;
 }
 /* The masthead: the name in caps, and the head of the column. The tagline
@@ -528,6 +519,36 @@ section{ padding: 80px 0; }
    colour rigging to survive a near-white cover, and the one soft
    photographic effect on the page (the old four-layer text-shadow) read
    as borrowed from someone else's site. */
+/* ---------- RESTING TITLE CHIP (top-right) ----------
+   The bottom-left kicker chip's mirror image at the cover's top-right
+   corner: same solid-black fill, same type cut, same optical vertical
+   centering — only the horizontal padding swaps (the outer edge is now
+   the right, not the left). No hover choreography to sync with (there
+   is no top-right box in the open panel to grow into), so it simply
+   sits under the panel like the kicker does and the panel covers it on
+   open. Content is section-specific (see restChipTopHtml in build.js):
+   the essay's own title, postscript's "w/ <subject>", or contra's
+   "contra <work>" with the work italicized. Truncates to one line —
+   a title chip has no natural short form the way a kicker word does. */
+.duo-half .rest-title-chip{
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 10.35px 25px 10.65px 24px;
+  background: var(--paper);
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none; line-height: 1;
+  color: var(--white);
+  pointer-events: none;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.duo-half .rest-title-chip em{ font-style: italic; }
 .duo-half .rest-kicker{
   position: absolute;
   left: 0;
@@ -555,6 +576,41 @@ section{ padding: 80px 0; }
   font-family: var(--title); font-weight: 700; font-size: 0.86rem;
   letter-spacing: 0; text-transform: none; line-height: 1;
   color: var(--white);
+  pointer-events: none;
+}
+/* ---------- RESTING TITLES (essays page) ----------
+   The essays page prints each cell's title at rest, straight over the
+   cover — no chip, no scrim. The glyphs INVERT the artwork under them
+   (white type through mix-blend-mode:difference): near-white over a
+   dark cover, near-ink over a pale one, decided pixel by pixel with no
+   color to pick and no per-cover curation. (Reading the cover's pixels
+   to choose a flat white-or-black was tried first and is impossible —
+   substackcdn refuses CORS — and a hand-kept per-slug list rots the
+   day a new cover lands.) It occupies the EXACT box the hover panel's
+   title holds:
+   duo-panel-fit.js seats it after every fit (see seatRestTitle),
+   copying left/top/width and the fitted font metrics off the real
+   title — same words, same width, same font ⇒ the same line breaks.
+   So the hover reads as the panel materialising around a headline
+   that never moves. Under the panel (z 2 vs 3) like the kicker chip:
+   the opening panel simply covers it, no second fade. */
+.duo-half .rest-title{
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--title); font-weight: 700;
+  /* TRUE white, not the site's warm --white: under difference the glyph
+     prints |cover − color|, so #fff is the full inversion — a warm
+     white would leave a blue-ish cast on every glyph. */
+  color: #fff;
+  mix-blend-mode: difference;
+  overflow-wrap: break-word;
+  /* The panel title balances its lines (see .card-title's own rule);
+     without the same policy here the resting copy wraps greedy and the
+     words land on different lines than the hover card's — "Chasing the
+     / Story" over "Chasing / the Story". Same policy + same width +
+     same font = the same distribution. */
+  text-wrap: balance;
   pointer-events: none;
 }
 @media (max-width: 480px){
@@ -735,7 +791,7 @@ section{ padding: 80px 0; }
    the band edge above/below them, their own vertical rule on the inner
    side. Linked corners (Read on, the section) keep their caterpillar
    classes, so hovering one traces its box outline with the crawl glow. */
-:is(.duo-panel, .card--feature) .panel-band{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band{
   position: absolute; left: 0; right: 0; z-index: 2;
   display: flex; align-items: stretch;
   /* No background of their own — the panel's scrim runs behind them, so
@@ -748,18 +804,18 @@ section{ padding: 80px 0; }
    had to draw over its strip; the ruling is gone (every line in an open
    card now arrives with the panel's own fade) but the geometry is exactly
    right, so the pseudos stay. */
-:is(.duo-panel, .card--feature) .panel-band--top{ top: 0; border-bottom: 1px solid transparent; }
-:is(.duo-panel, .card--feature) .panel-band--bottom{ bottom: 0; border-top: 1px solid transparent; }
-:is(.duo-panel, .card--feature) .panel-band--top::after,
-:is(.duo-panel, .card--feature) .panel-band--bottom::before{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band--top{ top: 0; border-bottom: 1px solid transparent; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band--bottom{ bottom: 0; border-top: 1px solid transparent; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band--top::after,
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band--bottom::before{
   content: '';
   position: absolute; left: 0; right: 0; height: 1px;
   background: var(--line);
 }
-:is(.duo-panel, .card--feature) .panel-band--top::after{ bottom: -1px; }
-:is(.duo-panel, .card--feature) .panel-band--bottom::before{ top: -1px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band--top::after{ bottom: -1px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band--bottom::before{ top: -1px; }
 /* Shared corner-box look for every band box. */
-:is(.duo-panel, .card--feature) .panel-band .pc{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc{
   position: static;
   /* inset:auto matters: caterpillar.js sets inline position:relative on
      the linked corners, which would otherwise re-activate the left/bottom
@@ -789,16 +845,16 @@ section{ padding: 80px 0; }
   transition: color .15s ease;
 }
 /* Every band box's text takes the accent on hover. */
-:is(.duo-panel, .card--feature) .panel-band .pc:hover{ color: var(--accent); }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc:hover{ color: var(--accent); }
 /* Sized to the corner text's cap height — at its natural 13px width the
    heart ran the stats box (and with it the whole band) 2px taller,
    skewing the content centering. White at rest with the rest of the
    band, and the one thing on the card that reddens: the heart alone
    keeps a colour of its own. */
-:is(.duo-panel, .card--feature) .panel-band .likes-heart{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .likes-heart{
   height: 11.5px; width: auto; fill: var(--white);
 }
-:is(.duo-panel, .card--feature) .panel-band .pc:hover .likes-heart{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc:hover .likes-heart{
   fill: var(--like-red); transition: fill .15s ease;
 }
 /* The linked corner says it's a link the way the title does — a rule that
@@ -809,7 +865,7 @@ section{ padding: 80px 0; }
    so it needs no geometry: background-origin:content-box starts it inside
    the box's padding, which is exactly the text, and animating
    background-size from 0% is the left-to-right draw. */
-:is(.duo-panel, .card--feature) .panel-band a.pc{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band a.pc{
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   background-origin: content-box;
@@ -823,22 +879,22 @@ section{ padding: 80px 0; }
   background-size: 0% 3px;
   transition: color .15s ease, background-size .3s cubic-bezier(.25, .1, .25, 1);
 }
-:is(.duo-panel, .card--feature) .panel-band a.pc:hover{ background-size: 100% 3px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band a.pc:hover{ background-size: 100% 3px; }
 /* The vertical rules closing each corner box; margin-left:auto keeps the
    right-side group (author box and/or date+likes) pinned right — only
    the group's first box pushes, so the boxes inside it stay adjacent.
    Real borders transparent + pseudo lines over them (see the band comment
    above): pc-left's right rule rides its ::after, pc-right's left rule
    its ::before. */
-:is(.duo-panel, .card--feature) .panel-band .pc-left{ border-right: 1px solid transparent; position: relative; }
-:is(.duo-panel, .card--feature) .panel-band .pc-left::after,
-:is(.duo-panel, .card--feature) .panel-band .pc-right::before{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-left{ border-right: 1px solid transparent; position: relative; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-left::after,
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-right::before{
   content: '';
   position: absolute; top: 0; bottom: 0; width: 1px;
   background: var(--line);
 }
-:is(.duo-panel, .card--feature) .panel-band .pc-left::after{ right: -1px; }
-:is(.duo-panel, .card--feature) .panel-band .pc-right::before{ left: -1px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-left::after{ right: -1px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-right::before{ left: -1px; }
 /* (The linked corner used to blank its own vertical rule on hover, so the
    white outline it drew wasn't shadowed by a gray line. There's no
    outline any more — it underlines instead — so the rule stays put and
@@ -849,14 +905,14 @@ section{ padding: 80px 0; }
    the right group keep the tighter symmetric 14s. Scoped by side: a
    kickerless top band opens on a right-group box (not at the left edge),
    and only the right group's last box touches the right edge. */
-:is(.duo-panel, .card--feature) .panel-band .pc-left{ padding-left: 24px; padding-right: 24px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-left{ padding-left: 24px; padding-right: 24px; }
 /* Only the OUTERMOST left box reaches the card's margin; a second one
    (the cover credit beside the kicker) is an interior box and keeps the
    tighter symmetric 14s, same as the right group's interior boxes. */
-:is(.duo-panel, .card--feature) .panel-band .pc-left ~ .pc-left{ padding-left: 14px; padding-right: 14px; }
-:is(.duo-panel, .card--feature) .panel-band .pc-right:last-child{ padding-left: 24px; padding-right: 24px; }
-:is(.duo-panel, .card--feature) .panel-band .pc-right{ border-left: 1px solid transparent; margin-left: auto; position: relative; }
-:is(.duo-panel, .card--feature) .panel-band .pc-right ~ .pc-right{ margin-left: 0; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-left ~ .pc-left{ padding-left: 14px; padding-right: 14px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-right:last-child{ padding-left: 24px; padding-right: 24px; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-right{ border-left: 1px solid transparent; margin-left: auto; position: relative; }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-right ~ .pc-right{ margin-left: 0; }
 /* ---------- NO LEDGER RULING ----------
    The open card's rules used to sweep themselves in, top to bottom, on a
    stagger of delays — byline rule, quote rule, footer band, then the
@@ -994,7 +1050,8 @@ section{ padding: 80px 0; }
    here. .card-meta still supplies the flex row, its 6px gap and the wrap;
    this sets the panel's own spacing and the full-bleed sides. */
 .card--duo .duo-panel .card-meta--line,
-.card--feature .duo-panel .card-meta--line{
+.card--feature .duo-panel .card-meta--line,
+.contra-lead .card-meta--line{
   font-family: var(--title);
   font-weight: 700;
   font-size: 0.86rem;
@@ -1022,8 +1079,12 @@ section{ padding: 80px 0; }
 /* (The strip carried its own overhead rule when it sat mid-panel under
    the dek. At the top it's the panel's white border that caps it — an
    extra gray line 1px inside that frame just muddied the edge.) */
-.duo-panel .card-meta--line .meta-author,
-.duo-panel .card-meta--line .meta-date{
+/* The contra lead card wears the same strip (see .contra-lead in the
+   CONTRA LEAD section) — its flush-to-border pull is -24 because the
+   lead pads an even 24 all round, no 16px top. */
+.contra-lead .card-meta--line{ margin: -24px -24px 0; }
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-author,
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-date{
   display: inline-flex; align-items: center;
   padding: 10.35px 24px 9.65px;
   position: relative;
@@ -1034,38 +1095,24 @@ section{ padding: 80px 0; }
   white-space: nowrap;
 }
 /* Rules at each group's inner edge, exactly as the band closes its own
-   corner boxes: the author's right, the date's left. */
-.duo-panel .card-meta--line .meta-author::after,
-.duo-panel .card-meta--line .meta-date::before{
+   corner boxes: the author's right, the date's left. (All the byline
+   and band verticals are BACK as of the likes/date/copy reshuffle —
+   restore everything, then subtract case by case.) */
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-author::after,
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-date::before{
   content: '';
   position: absolute; top: 0; bottom: 0; width: 1px;
   background: var(--line);
 }
-.duo-panel .card-meta--line .meta-author::after{ right: -1px; }
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-author::after{ right: -1px; }
 /* (A contra's "contra <work>" billing used to ride the byline here as
    .meta-dek, displacing the date down to the band beside the kicker.
    Retired: contra cells run the ordinary dek-under-title and byline-date
    the postscript cells do.) */
-/* The likes count, in the byline's right group (it used to hold the
-   corner box; the copy-link button holds the corner now, so the likes
-   take an interior box's tighter symmetric 14s, same as the date). */
-.duo-panel .card-meta--line .meta-likes{
-  display: inline-flex; align-items: center;
-  padding: 10.35px 14px 9.65px;
-  position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.duo-panel .card-meta--line .meta-likes::before{
-  content: '';
-  position: absolute; top: 0; bottom: 0; width: 1px; left: -1px;
-  background: var(--line);
-}
-/* The heart alone reddens under the cursor, as it did in the band. */
-.duo-panel .card-meta--line .meta-likes:hover .likes-heart{
-  fill: var(--like-red); transition: fill .2s ease;
-}
-.duo-panel .card-meta--line .meta-date::before{ left: -1px; }
+/* (The likes left the byline for the footer band — see bandBottomHtml
+   in build.js, which seats them in the hero band's own
+   .card-meta--stats pc box — so the strip runs author | copy | date.) */
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-date::before{ left: -1px; }
 /* The byline's author and date are archive deep links now (see
    archiveHref in build.js) — same boxes, same cut, but they say they're
    links the way the band's section button does: the accent on hover and
@@ -1109,7 +1156,7 @@ a.likes::after{
 }
 a.likes:hover::after,
 .meta-likes:hover a.likes::after,
-:is(.duo-panel, .card--feature) .panel-band .pc:hover a.likes::after{ transform: scaleX(1); }
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc:hover a.likes::after{ transform: scaleX(1); }
 /* Sized to the byline's own cap height rather than the courier corners' —
    the bold line sets a touch larger than the caps it replaced. */
 .duo-panel .card-meta--line .likes-heart{ height: 12px; width: auto; fill: var(--white); }
@@ -1118,7 +1165,7 @@ a.likes:hover::after,
    as an in-flow element). No top margin: it sits flush under the boxes
    so their vertical rules land on it; the 16px below is the title's own
    top margin (see THE STACK). */
-.duo-panel .card-byline-divider{
+:is(.duo-panel, .contra-lead) .card-byline-divider{
   height: 1px; background: var(--line);
   margin: 0 -24px;
 }
@@ -1128,28 +1175,26 @@ a.likes:hover::after,
    correctly). Being in the line rather than floated above it is also
    what keeps it off the title: a float in that corner shortened the
    title's first line, which on a 270px column cost whole cards their
-   excerpt. An interior box now (the likes corner sits outside it), so
-   the tighter symmetric 14s — unless the fitter shed the likes for a
-   narrow card, which hands the corner (and its outer 24s) back to the
-   date (see the byline shed in duo-panel-fit.js). */
-.duo-panel .card-meta--line .meta-date{
-  margin-left: auto;
-  padding-left: 14px; padding-right: 14px;
-}
-/* (The likes-shed override that handed the corner 24s to the date is
-   gone: the copy-link button is the outermost box now and keeps the
-   corner whether or not the fitter sheds the likes.) */
-/* The copy-link corner: a chain icon in a button that puts the post's
+   excerpt. The strip's corner box now: the shared author/date rule's
+   symmetric 24s stand — proper air on both sides of the date, with the
+   outer 24 landing it on the central column's margin. */
+:is(.duo-panel, .contra-lead) .card-meta--line .meta-date{ margin-left: auto; }
+/* When the copy button is present it leads the right group instead and
+   takes over the push; the date then seats flush against it, the
+   date's left rule the edge between them. */
+.duo-panel .card-meta--line .meta-copylink{ margin-left: auto; }
+.duo-panel .card-meta--line .meta-copylink ~ .meta-date{ margin-left: 0; }
+/* The copy-link button: a chain icon in a button that puts the post's
    Substack URL on the clipboard (see copyLinkBtnHtml in build.js and
-   src/copy-link.js). The byline's outermost right box, in the boxes'
-   own padding rhythm — the corner's optical 10.35/9.65 and outer 24s,
-   its left rule closing it off — white always, like every box around
-   it. (The hero band's copy, .card-copylink, needs none of this: .pc
-   supplies the same box, the last-child rule its 24s, .pc-right its
-   left rule; only the button-ness below is its own.) */
+   src/copy-link.js). In the byline's right group, just left of the
+   date's corner box — an interior box in the strip's own rhythm
+   (tighter symmetric 14s), its left rule closing it off. (The hero
+   band's copy, .card-copylink, needs none of this box: .pc supplies
+   the same, the last-child rule its 24s, .pc-right its left rule; only
+   the button-ness below is shared.) */
 .duo-panel .card-meta--line .meta-copylink{
   display: inline-flex; align-items: center;
-  padding: 10.35px 24px 9.65px;
+  padding: 10.35px 14px 9.65px;
   position: relative;
   flex-shrink: 0;
   white-space: nowrap;
@@ -1160,18 +1205,17 @@ a.likes:hover::after,
   background: var(--line);
 }
 .duo-panel .card-meta--line .meta-copylink,
-:is(.duo-panel, .card--feature) .panel-band .pc.card-copylink{
+:is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc.card-copylink{
   background: none; border: 0;
   cursor: pointer;
   color: var(--white);
 }
-/* The underline treatment, re-cut for an icon: the byline links'
+/* The underline treatment, re-cut for an icon: the text links'
    gradient trick keys off a text baseline the icon doesn't have, so the
    button draws its bar as an ::after instead — icon-wide, centered
    under the icon (the symmetric padding centers both) at the same 3px
    bar / 3px gap the text rules use, sweeping left-to-right via scaleX.
-   (::after is free in both homes: the byline button's ::before is its
-   left rule, the band button's is .pc-right's.) */
+   (::after is free: the band button's ::before belongs to .pc-right.) */
 [data-copy-link]::after{
   content: '';
   position: absolute;
@@ -1863,11 +1907,13 @@ a.likes:hover::after,
     display: -webkit-box; overflow: hidden;
     line-clamp: 7; -webkit-line-clamp: 7;
   }
-  :is(.duo-panel, .card--feature) .panel-band{ position: static; }
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band{ position: static; }
   /* No hover state to be continuous with — the panel's content (kicker
      included) is statically visible below the image, so the overlay
      copy would just print the topic twice. */
   .duo-half .rest-kicker{ display: none; }
+  .duo-half .rest-title-chip{ display: none; }
+  .duo-half .rest-title{ display: none; }
   .duo-panel .card-title-divider,
   .duo-panel .card-byline-divider,
   .duo-panel .duo-quote-divider{ margin-left: 0; margin-right: 0; }
@@ -1882,21 +1928,344 @@ a.likes:hover::after,
      24px inset that lined their text up with the card's margin. */
   .duo-panel .card-meta--line .meta-author{ padding-left: 0; }
   .duo-panel .card-meta--line .meta-likes{ padding-right: 0; }
-  :is(.duo-panel, .card--feature) .panel-band--top{ margin-bottom: 12px; }
-  :is(.duo-panel, .card--feature) .panel-band--bottom{ margin-top: 12px; }
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band--top{ margin-bottom: 12px; }
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band--bottom{ margin-top: 12px; }
   /* Statically-visible panels have no "open" moment, so the per-hover
      ruling never fires — its lines just stand fully drawn (the text is
      always at full strength now, no override needed). */
-  :is(.duo-panel, .card--feature) .panel-band--top::after,
-  :is(.duo-panel, .card--feature) .panel-band--bottom::before,
-  :is(.duo-panel, .card--feature) .panel-band .pc-left::after,
-  :is(.duo-panel, .card--feature) .panel-band .pc-right::before,
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band--top::after,
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band--bottom::before,
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-left::after,
+  :is(.duo-panel, .card--feature, .contra-lead) .panel-band .pc-right::before,
   .duo-panel .card-title-divider,
   .duo-panel .card-byline-divider,
   .duo-panel .panel-col-divider,
   .duo-panel .card-meta--line .meta-author::after,
   .duo-panel .card-meta--line .meta-date::before,
   .duo-panel .duo-quote-divider{ transform: none; transition: none; }
+}
+
+/* ---------- CONTRA LEAD (contra page) ----------
+   A standing hover card at the head of the contra page: the panels'
+   formation — black ground, white outline, the title/dek/excerpt cuts
+   and interior ruling — but open always, in flow, stretched across the
+   whole row. Height is a contra square's own, held inline by
+   duo-panel-fit.js (fitContraLead) so it always matches the cells
+   below. The manifesto fills columns to that height and the box clips
+   the rest: multicol never splits a line box, so the cut is always a
+   whole line, and the overflow columns that run rightward disappear
+   under overflow:hidden — "as much as fits", computed by the layout
+   itself. */
+.card.contra-lead{
+  background: var(--paper);
+  border: 1px solid var(--white);
+  /* An even 24 at top and sides — the ink corrections below make the
+     TEXT honor it, not just the boxes. (The byline strip's negative
+     margins pull it back through this to sit flush on the border,
+     exactly as in the panels.) The bottom is the panels' own 52: the
+     open-space zone the footer band sits in. */
+  padding: 24px 24px 52px;
+  /* Positioned ancestor for the footer band, same as .duo-panel. */
+  position: relative;
+  overflow: hidden;
+  /* The row rhythm's 24 above the full-bleed divider below the card —
+     the same air every row of squares puts over its own line. */
+  margin-bottom: 24px;
+  --line: rgba(247,246,241,0.28);
+}
+/* Flex items of a FIXED-height column flex-shrink by default — the
+   byline strip and its rule were being squashed by the overflowing
+   cols row below them (the rule rendered at a third of a pixel and
+   read lighter than every other line on the card). Pinned, they hold
+   the panels' exact weight. */
+.contra-lead .card-meta--line,
+.contra-lead .card-byline-divider{ flex-shrink: 0; }
+/* The columned body of the card, under the byline strip — the .card
+   base is already a column, so the strip stacks above this row. */
+.contra-lead-cols{
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.contra-lead-left{
+  /* Narrow — the name is one word over a two-line gloss; every inch
+     given up here widens the manifesto's three columns, which is what
+     lets the whole text seat (see fitContraLead). NO min-width:0 —
+     the default min-width:auto is the floor that keeps "Contra" from
+     wrapping mid-word when 18% of a narrow window undercuts the
+     title's own measure. */
+  flex: 0 0 18%;
+  padding-right: 24px;
+}
+/* The contra squares' own 60px, held rather than fitted — the name is
+   one short word, nothing to fit. The panels' 32px of ink under the
+   byline rule (see PANEL INK RHYTHM). */
+.contra-lead .card-title{
+  font-size: 60px;
+  line-height: 1.1;
+  margin: calc(32px - 0.219em) 0 0;
+}
+/* The panels' dek cut (see .duo-panel .card-dek), under the panels' own
+   32px ink gap (title baseline to dek cap top — see PANEL INK RHYTHM
+   for the offsets). */
+.contra-lead .card-dek{
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.97rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: calc(32px - 0.167em - 0.4206em) 0 0;
+}
+/* The rule between name and body — the panels' own mid-panel divider.
+   It runs from the byline rule down to the footer band's rule; the
+   extension past the cols row's own bottom is set inline by
+   fitContraLead, which measures where the band's top actually lands. */
+.contra-lead-divider{
+  flex: 0 0 1px;
+  background: var(--line);
+  margin: 0;
+}
+.contra-lead-body{
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: 24px;
+  /* The excerpt cut's own metrics ON THE WRAPPER too, so the em in the
+     margin below and the line-height the fitter quantizes against (see
+     fitContraLead) are the text's 13px/1.6, not an inherited base. */
+  font-size: var(--panel-text);
+  line-height: 1.6;
+  /* 24px of ink under the byline rule, same as the wide cells give
+     their excerpt. */
+  margin-top: calc(24px - 0.4322em);
+  /* Three columns on the essay panels' own 24 gap, NO rule between
+     them — the gap's air does the separating; the card's one interior
+     vertical is the name/body divider. The fitter freezes this box at
+     a whole-line-slot height and cuts the tail at the last visible
+     word with an inline ellipsis, exactly the essay excerpts' fill
+     (column-fill:auto + the explicit height is what lets the cut not
+     re-balance the columns — see truncateToWord). */
+  column-count: 3;
+  column-gap: 24px;
+  column-fill: auto;
+  overflow: hidden;
+}
+/* The panels' excerpt cut (see .card--duo .card-preview) without its
+   CSS clamp fallback — here the box itself is the clamp. */
+.contra-lead .card-preview{
+  font-family: var(--body);
+  font-size: var(--panel-text);
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--white);
+  margin: 0;
+}
+/* One full line between paragraphs, same as every panel block. */
+.contra-lead .card-preview + .card-preview{ margin-top: 1.6em; }
+/* ---------- CONTRA CATEGORY BAR ----------
+   The filter nav under the lead card: the section's kickers at the
+   sidebar items' own cut (Helvetica bold 1.5rem), each carrying the
+   nav's underline sweep. The active one's underline PREVAILS
+   (.is-active, set by src/contra-filter.js) and the rows below deal
+   themselves to its category. */
+/* On scroll the bar sticks to the viewport top and the rows pass
+   beneath it: sticky within .page-rows, which spans every row below,
+   so it rides the whole page. Solid ground (the page's own black) so
+   cards can't ghost through, and a z-index above the cells' panels.
+   The bar's vertical air is the WRAP's padding, not the nav's margin —
+   a margin would poke transparent gaps over and under the stuck bar. */
+.contra-filter-wrap{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--paper);
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.contra-filter{
+  display: flex;
+  gap: 32px;
+  margin: 0;
+}
+.contra-filter-link{
+  background: none; border: 0; cursor: pointer;
+  font-family: var(--title); font-weight: 700; font-size: 1.5rem;
+  letter-spacing: 0; text-transform: none; line-height: 1.1;
+  color: var(--white);
+  /* The sidebar links' underline, verbatim (see .nav-links a): 3px bar
+     drawn left to right, 0.06em under the words, content-box origin +
+     the 3px bottom padding giving the bar's overhang room to paint. */
+  padding: 0 0 3px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 calc(100% + 3px - 0.06em);
+  background-origin: content-box;
+  background-size: 0% 3px;
+  transition: color .15s ease, background-size .3s cubic-bezier(.25, .1, .25, 1);
+}
+.contra-filter-link:hover,
+.contra-filter-link.is-active{ background-size: 100% 3px; }
+@media (max-width: 860px){
+  .contra-lead-cols{ flex-direction: column; }
+  .contra-lead-left{ padding-right: 0; }
+  .contra-lead-divider{ display: none; }
+  /* Stacked, the lead flows at natural height (fitContraLead clears its
+     inline height when it sees this layout) — but not unbounded: one
+     column of the whole manifesto would bury the row cells below it. */
+  .contra-lead-body{ padding-left: 0; margin-top: 24px; column-count: 1; max-height: 480px; }
+}
+
+/* ---------- POSTSCRIPT READING ROOM (postscript page) ----------
+   One trio row instead of a grid (see renderPostscriptPage in
+   build.js): the section's name and gloss over a rule and a
+   chronological scroll of every interviewee (left); the selected
+   postscript's cover (middle); its hover card standing open (right).
+   The middle and right columns split the remaining width evenly, and
+   both are square (the cover's own 1:1 and the duo cell's), so the
+   row's height is simply that shared square. The left column matches
+   it and scrolls its overflow — the name list is the one thing on the
+   page that scrolls in place. */
+/* The row fills the viewport: 100vh less the page's 24 top inset and a
+   matching 24 of breathing below. Cover and card don't bring their own
+   aspect — both fill the row's height outright, so the two are the
+   same box by construction. */
+.card.ps-hero{
+  height: calc(100vh - 48px);
+  margin-bottom: 24px;
+  /* Containing block for the full-row rule (see .ps-hero-rule). */
+  position: relative;
+}
+.ps-hero-cell,
+.ps-hero-cell .duo-half{ height: 100%; }
+.card.ps-hero .ps-hero-cell .duo-card-image{ aspect-ratio: auto; height: 100%; }
+/* Three columns cut from equal thirds, the row's own dividers between
+   them (the .duo-half-divider rules carry the 24px gap on each side;
+   two dividers + margins = the 98px the calc removes). The cover and
+   card columns each take 24px MORE than a third and the name column
+   pays the 48 — the images and the open card want the measure more
+   than the list does. min-width:0 everywhere: no content floor may
+   push a column off its cut. */
+.ps-hero-left{
+  flex: 0 0 calc((100% - 98px) / 3 - 48px);
+  min-width: 0;
+  display: flex; flex-direction: column;
+  min-height: 0;
+  /* Sizes the title against the column itself (cqw below). */
+  container-type: inline-size;
+}
+.ps-hero-left .card-title{
+  /* The panels' 60px wherever the column affords it; on a narrower
+     third the name scales to the measure instead of wrapping —
+     "Postscript" sets ~5.5em wide in the title cut, so 18cqw keeps a
+     hair of slack on one line. */
+  font-size: min(60px, 18cqw);
+  line-height: 1.1;
+  /* 24 of ink above the cap — the row's own breathing, not flush. */
+  margin: calc(24px - 0.219em) 0 0;
+}
+/* The panels' dek cut under their 32 ink gap — the contra lead's own
+   pairing (see .contra-lead .card-dek). */
+.ps-hero-left .card-dek{
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.97rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: calc(32px - 0.167em - 0.4206em) 0 0;
+}
+/* The rule under the name and gloss — the left column's own width,
+   no further. (A full-row stretch was tried and walked back: the line
+   crossing the cover read as a scratch on the art.) */
+.ps-hero-rule{
+  height: 1px;
+  flex-shrink: 0;
+  margin: 24px 0;
+  background: var(--line);
+}
+/* Fills whatever height the squares' row leaves under the rule and
+   scrolls it INDEPENDENTLY — flex-basis 0 is what keeps the list from
+   driving the row's height, so the name of the section and its gloss
+   above stand still while the names roll. */
+.ps-index{
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  /* Scrolls, but shows no bar for it — the ragged column of names is
+     the design, and a gutter beside it read as furniture. */
+  scrollbar-width: none;
+  display: flex; flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+}
+.ps-index::-webkit-scrollbar{ display: none; }
+/* Each entry: the interviewee's name over the piece's kicker as a
+   small gloss — title over dek, the shape everything on the site
+   uses. The underline sweep rides the NAME span alone (the button
+   holds both lines, and a bar under the whole box would strike the
+   gloss instead of the name); hover anywhere on the entry draws it,
+   and the selected entry's prevails (.is-active, set by
+   src/postscript-index.js). */
+.ps-index-link{
+  background: none; border: 0; cursor: pointer;
+  text-align: left;
+  padding: 0;
+  color: var(--white);
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.ps-index-name{
+  font-family: var(--title); font-weight: 700; font-size: 1.15rem;
+  letter-spacing: 0; text-transform: none; line-height: 1.2;
+  padding: 0 0 3px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 calc(100% + 3px - 0.06em);
+  background-origin: content-box;
+  background-size: 0% 3px;
+  transition: background-size .3s cubic-bezier(.25, .1, .25, 1);
+}
+.ps-index-link:hover .ps-index-name,
+.ps-index-link.is-active .ps-index-name{ background-size: 100% 3px; }
+.ps-index-dek{
+  font-family: var(--mono); font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em; line-height: 1.3;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.ps-hero-cover,
+.ps-hero-card{
+  /* Each 24px past a third — the name column's 48 split between them
+     (see .ps-hero-left). */
+  flex: 0 0 calc((100% - 98px) / 3 + 24px);
+  min-width: 0;
+}
+.ps-hero-coverimg{
+  display: block;
+  width: 100%; height: 100%;
+  position: relative; overflow: hidden;
+}
+.ps-hero-coverimg .card-image{
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+/* The right column's cell is an ordinary hover card held OPEN — same
+   markup, same fitter, the panel's opacity simply pinned. */
+.ps-hero-cell .duo-panel{ opacity: 1; pointer-events: auto; }
+/* [hidden] must actually hide: the frame/cell display rules above
+   would otherwise outrank the UA's [hidden] style. */
+.ps-hero [hidden]{ display: none !important; }
+@media (max-width: 860px){
+  .card.ps-hero{ flex-direction: column; height: auto; }
+  .ps-index{ max-height: 260px; }
+  .ps-hero-cell,
+  .ps-hero-cell .duo-half{ height: auto; }
+  .card.ps-hero .ps-hero-cell .duo-card-image{ aspect-ratio: 1/1; height: auto; }
+  .ps-hero-coverimg{ height: auto; aspect-ratio: 1/1; }
+  .ps-hero-card{ margin-top: 24px; }
 }
 
 /* ---------- CARD PRIMITIVES ----------

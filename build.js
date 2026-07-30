@@ -175,6 +175,13 @@ function applyDekBylines(posts) {
         // interviewer, which is the true byline of the piece and what any
         // non-panel use of the post should keep seeing.
         p.displayAuthor = names.length > 1 ? `${names[0]} et al.` : names[0];
+        // The full subject name(s), unabbreviated — the postscript
+        // page's index scroll lists every interviewee by name (see
+        // renderPostscriptPage). Serial style: commas between the
+        // early names, the ampersand only before the last ("A, B & C").
+        p.psName = names.length > 2
+          ? `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`
+          : names.join(' & ');
         // The issue number goes with the names: the dek is "on <subject>"
         // and nothing more. The number belongs to the post's own page,
         // and repeating it here spent a third of the dek's measure
@@ -534,6 +541,19 @@ function contraWorkDek(subtitle) {
   const m = /^([\s\S]*?[’']s\s+)(\S[\s\S]*)$/.exec(subtitle || '');
   if (!m) return escapeHtml(subtitle || '');
   return `${escapeHtml(m[1])}<em>${escapeHtml(m[2])}</em>`;
+}
+
+// The resting corner chip's text, by section — see restChipTopHtml's
+// call site in renderDuoHalf for how it's placed. Essays bill their
+// own title (there's nothing shorter that still identifies the piece);
+// postscript bills its subject with the "w/" the interview format
+// wants; contra bills the work under review, in contraWorkDek's own
+// italics (only the work slants, not the reviewed artist's possessive
+// name in front of it).
+function restChipTopHtml(post, section) {
+  if (section === 'postscript' && post.psName) return `w/ ${escapeHtml(post.psName)}`;
+  if (section === 'contra' && post.subtitle) return contraWorkDek(post.subtitle);
+  return escapeHtml(post.title);
 }
 
 function wrapLeadWords(text) {
@@ -1137,7 +1157,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
 // modifier (e.g. card--trio for the 1:2 portrait postscript row).
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
-function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
+function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, restTitle = false }, halfClass = '') {
   // Section accent: essays pink, postscript purple, contra green, carried
   // as a --accent custom property on the cell (see .duo-half--essay etc.
   // in style.css) so every hover effect inside the card — title, glows,
@@ -1175,27 +1195,38 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
   // foot (see splitTop in duo-panel-fit.js). Flush against the panel's
   // top border, closed underneath by .card-byline-divider (see
   // .card-meta--line in style.css): the author at the left; pushed to
-  // the far right, the date with the likes count in the corner box
-  // beside it. No separator between the groups — the line's own width
-  // does that job, which is what retired the dots.
+  // the far right, the copy-link button with the date closing the
+  // corner beside it (the likes live down in the footer band, beside
+  // the section corner). No separator between the groups — the line's
+  // own width does that job, which is what retired the dots.
   const metaLineHtml = [
     metaLine(post, { include: ['author'], caps: false, archiveLinks: true }),
-    metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
-    `<span class="meta-likes">${metaLine(post, { include: ['likes'] })}</span>`,
     copyLinkBtnHtml(post, 'meta-copylink'),
+    metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
   ].filter(Boolean).join('');
   const metaHtml = metaLineHtml
     ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
     : '';
-  // The footer band carries three boxes — kicker and cover credit at the
-  // left, the section link at the right (the likes moved up into the
-  // byline beside the author). duo-panel-fit.js sheds the left boxes
-  // right-to-left when a narrow card can't seat them all (see
-  // fitBandBoxes).
+  // The footer band: kicker (and, on the homepage's essay/postscript
+  // cells, the cover credit) at the left; at the right, the likes box
+  // ahead of the corner box — same box the hero's header band gives
+  // the likes. The corner is the section link on homepage rows, or —
+  // on a section's own page, where the link is dropped (sectionBtn:
+  // false, set by renderListPage) because every card there IS the
+  // section — the cover credit, slid over from the left group to close
+  // the band instead. Homepage contra squares drop the credit
+  // outright: the narrow band has no room to seat it. duo-panel-fit.js
+  // sheds left boxes right-to-left when a narrow card can't seat them
+  // all (see fitBandBoxes).
+  const artBox = (side) => post.coverArtist
+    ? `<p class="card-meta pc pc-${side} pc-art">Art by ${escapeHtml(post.coverArtist)}</p>`
+    : '';
+  const likesLine = metaLine(post, { include: ['likes'] });
   const bandBottomHtml = `<div class="panel-band panel-band--bottom">
             ${post.kicker ? `<a class="hero-kicker pc pc-left" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>` : ''}
-            ${post.coverArtist ? `<p class="card-meta pc pc-left pc-art">Art by ${escapeHtml(post.coverArtist)}</p>` : ''}
-            <a class="duo-essays-btn card-category-btn pc pc-right" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>
+            ${sectionBtn && section !== 'contra' ? artBox('left') : ''}
+            ${likesLine ? `<p class="card-meta card-meta--stats pc pc-right">${likesLine}</p>` : ''}
+            ${sectionBtn ? `<a class="duo-essays-btn card-category-btn pc pc-right" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>` : artBox('right')}
           </div>`;
   const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
   // The resting kicker: the topic alone, printed over the cover's
@@ -1209,6 +1240,8 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref }, halfClass = '') {
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         ${post.kicker ? `<p class="rest-kicker" aria-hidden="true">${escapeHtml(post.kicker)}</p>` : ''}
+        <p class="rest-title-chip" aria-hidden="true">${restChipTopHtml(post, section)}</p>
+        ${restTitle ? `<p class="rest-title" aria-hidden="true">${escapeHtml(post.title)}</p>` : ''}
         <div class="duo-panel">
           ${metaHtml}
           ${metaHtml ? '<div class="card-byline-divider"></div>' : ''}
@@ -1256,9 +1289,9 @@ function renderSplitRow(essayPost, psPost, { flip = false, wideOpts, narrowOpts 
 }
 
 function renderDuoCard(posts, opts = {}) {
-  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = 'essays.html', extraClass = '', padTo = 0 } = opts;
+  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = 'essays.html', extraClass = '', padTo = 0, sectionBtn = true, restTitle = false } = opts;
   if (!posts.length) return '';
-  const cells = posts.map((post) => renderDuoHalf(post, { tag, btnLabel, btnHref }));
+  const cells = posts.map((post) => renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn, restTitle }));
   // A short last row (the section pages render every post, so their post
   // count rarely divides by the row width) gets empty filler cells — the
   // real cells keep the same flex width they'd have in a full row instead
@@ -1540,7 +1573,10 @@ ${renderCaterpillarScript()}${extraScripts ? `\n${extraScripts}` : ''}
 // (card--trio), contra as three-across small squares (card--quad styling —
 // same look as the homepage's quad row, one cell fewer per row).
 const LIST_ROWS = {
-  essays: { perRow: 2, extraClass: '', tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html' },
+  // restTitle: the essays page prints each cell's title over the cover
+  // at rest, in the exact box the hover panel's title occupies (seated
+  // by duo-panel-fit.js — see seatRestTitle).
+  essays: { perRow: 2, extraClass: '', tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html', restTitle: true },
   postscript: { perRow: 3, extraClass: 'card--trio', tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'postscript.html' },
   // card--quad-open lifts the homepage quad's hide-the-excerpt rules —
   // these cells are a third wider than the homepage's four-across squares,
@@ -1548,19 +1584,81 @@ const LIST_ROWS = {
   contra: { perRow: 3, extraClass: 'card--quad card--quad-open', tag: 'From the Review', btnLabel: 'Contra', btnHref: 'contra.html' },
 };
 
-function renderListPage({ currentKey, label, posts }) {
+// The contra lead card's text: the Contra! manifesto AS EDITED for the
+// page (hand-tuned copy handed over 2026-07 — tenses tightened, one
+// paragraph dropped), not the live post at /p/contra, which is why it
+// is baked here rather than fetched. The byline is fixed alongside it:
+// the manifesto ran unsigned, from the editors, on June 7.
+const CONTRA_LEAD_BYLINE = { author: 'From the Editors', date: 'June 7' };
+const CONTRA_LEAD_PARAS = [
+  'The critic has two roles: to worship excellence and to wage war on its behalf.',
+  'Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.',
+  'Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?',
+  'The duty falls on us, the New Critics, to wield the sword of Sontag and Trilling, of Mencken and Kael.',
+  'In Contra, our critics impress the nutrients of a healthy culture — the requisite cruelty, suspicion, spite, and congratulation — upon the significant works of generation z.',
+  'We, the editors, match our critics and subjects like psychic partners: in exposing something about the other, they reveal something, too, about themselves. The two meet in the arena of our reviews like sumo wrestlers, thwacking their bellyrolls together in eternal, aesthetic combat.',
+  'New Critics, excess eats the page away; dispassion begets the languor of indifference. Do not interpret, nor reference, the work to death. Do not fear the almighty I — its lifeforce is the soul of everything. Do not cower below the blanket of your reputation.',
+  'At last, rush to the theater! It will not write about itself.',
+];
+
+function renderListPage({ currentKey, label, posts, leadParas }) {
   const cfg = LIST_ROWS[currentKey];
   const rows = [];
   for (let i = 0; i < posts.length; i += cfg.perRow) {
-    rows.push(renderDuoCard(posts.slice(i, i + cfg.perRow), { ...cfg, padTo: cfg.perRow }));
+    // sectionBtn: false — the band's bottom-right section link is dropped
+    // on the section's own page, where it only named the page itself.
+    rows.push(renderDuoCard(posts.slice(i, i + cfg.perRow), { ...cfg, padTo: cfg.perRow, sectionBtn: false }));
   }
+  // The lead card (contra page): a standing hover card stretched across
+  // the top row — the section's name at panel-title size, the sidebar's
+  // own gloss as its dek (hard line break and all, via dekHtml), and the
+  // section's manifesto filling columns to a contra square's height
+  // (duo-panel-fit.js holds the height, the CSS multicol clips at the
+  // box — see .contra-lead in style.css). Under it, the category bar:
+  // one button per kicker the section actually uses, in a fixed shelf
+  // order — src/contra-filter.js deals the rows below to the active one.
+  const KICKER_ORDER = ['Books', 'Movies', 'Music', 'Theater'];
+  const kickers = KICKER_ORDER.filter((k) => posts.some((p) => (p.kicker || '').toLowerCase() === k.toLowerCase()));
+  const filterHtml = kickers.length
+    ? `  <div class="wrap contra-filter-wrap">
+    <nav class="contra-filter" aria-label="Filter ${escapeHtml(label)} by category">
+      ${kickers.map((k) => `<button type="button" class="contra-filter-link" data-kicker="${escapeHtml(k.toLowerCase())}" aria-pressed="false">${escapeHtml(k)}</button>`).join('\n      ')}
+    </nav>
+  </div>
+`
+    : '';
+  const leadHtml = leadParas && leadParas.length
+    ? `  <div class="wrap">
+    <article class="card contra-lead">
+      <p class="card-meta card-meta--line"><span class="meta-author">${escapeHtml(CONTRA_LEAD_BYLINE.author)}</span><span class="meta-date">${escapeHtml(CONTRA_LEAD_BYLINE.date)}</span></p>
+      <div class="card-byline-divider"></div>
+      <div class="contra-lead-cols">
+        <div class="contra-lead-left">
+          <h2 class="card-title">${escapeHtml(label)}</h2>
+          <p class="card-dek">${dekHtml((SITE_LINKS.find((l) => l.key === currentKey) || { dek: '' }).dek || '')}</p>
+        </div>
+        <div class="contra-lead-divider" role="separator"></div>
+        <div class="contra-lead-body">
+          ${leadParas.map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`).join('\n          ')}
+        </div>
+      </div>
+      <div class="panel-band panel-band--bottom">
+        <p class="hero-kicker pc pc-left">The New Critic’s Criticism Section</p>
+        <a class="duo-essays-btn card-category-btn pc pc-right" href="https://www.thenewcritic.com/p/contra" rel="noopener">Read the Manifesto</a>
+      </div>
+    </article>
+  </div>
+  <div class="row-divider"></div>
+${filterHtml}  <div class="row-divider"></div>
+`
+    : '';
   // Same structure as the homepage blocks: one .wrap per row with a
   // full-bleed .row-divider between rows, so every line between cover
   // images runs edge to edge. .page-rows is now the outer sleeve carrying
   // the page's top/bottom insets.
   const bodyHtml = `
   <div class="page-rows">
-${rows
+${leadHtml}${rows
     .map(
       (row, i) => `  <div class="wrap">
     ${row}
@@ -1574,7 +1672,70 @@ ${rows
     bodyHtml,
     // The section's newest cover becomes its share card.
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript(),
+    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
+      + (filterHtml ? renderContraFilterScript() : ''),
+  });
+}
+
+function renderContraFilterScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/contra-filter.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+function renderPostscriptIndexScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/postscript-index.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+// The postscript page: not a grid but a reading room — one trio row.
+// Left, the section's name over its sidebar gloss, a rule, and a
+// scroll of every interviewee's name in reverse-chronological order
+// (today at the top, reading back; src/postscript-index.js drives the
+// selection). Middle, the selected postscript's cover. Right, its
+// hover card, standing open (.ps-hero-cell pins the panel's opacity).
+// Every cover and card is prerendered and hidden — selection is a
+// display toggle plus a refit, no fetches.
+function renderPostscriptPage({ currentKey, label, posts }) {
+  const chrono = posts.slice();
+  const newestIdx = 0;
+  const dek = (SITE_LINKS.find((l) => l.key === currentKey) || { dek: '' }).dek || '';
+  const nameOf = (p) => p.psName || p.title;
+  const coverHtml = (p, i) => `<span class="card-image-frame duo-card-image ps-hero-coverimg" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}><a class="card-image-link" href="${escapeHtml(p.link)}" rel="noopener">${p.image ? `<img class="card-image" ${coverSrcAttrs(p.image, COVER_SIZES.cell)} alt=""${focalStyle(p)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}</a></span>`;
+  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Interview', btnLabel: label, btnHref: 'postscript.html', sectionBtn: false })}</div>`;
+  const bodyHtml = `
+  <div class="page-rows">
+  <div class="wrap">
+    <article class="card card--duo card--trio ps-hero">
+      <div class="ps-hero-left">
+        <h2 class="card-title">${escapeHtml(label)}</h2>
+        <p class="card-dek">${dekHtml(dek)}</p>
+        <div class="ps-hero-rule"></div>
+        <nav class="ps-index" aria-label="Every ${escapeHtml(label)} subject, newest first">
+          ${chrono.map((p, i) => `<button type="button" class="ps-index-link${i === newestIdx ? ' is-active' : ''}" data-idx="${i}"><span class="ps-index-name">${escapeHtml(nameOf(p))}</span>${p.kicker ? `<span class="ps-index-dek">${escapeHtml(p.kicker)}</span>` : ''}</button>`).join('\n          ')}
+        </nav>
+      </div>
+      ${DUO_DIVIDER}
+      <div class="ps-hero-cover">
+        ${chrono.map(coverHtml).join('\n        ')}
+      </div>
+      ${DUO_DIVIDER}
+      <div class="ps-hero-card">
+        ${chrono.map(cellHtml).join('\n        ')}
+      </div>
+    </article>
+  </div>
+  </div>`;
+  return renderPageShell({
+    currentKey,
+    title: label,
+    bodyHtml,
+    ogImage: posts.find((p) => p.image)?.image,
+    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
+      + renderPostscriptIndexScript(),
   });
 }
 
@@ -2117,6 +2278,7 @@ async function main() {
     }
   }
 
+
   // Every failure here already survived fetchHtml's retries. A few are
   // tolerable (those cards fall back to feed excerpts or lose their
   // credit); past a quarter of the posts the site would be visibly
@@ -2164,8 +2326,8 @@ async function main() {
   const pages = {
     'index.html': html,
     'essays.html': renderListPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
-    'postscript.html': renderListPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
-    'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll }),
+    'postscript.html': renderPostscriptPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
+    'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll, leadParas: CONTRA_LEAD_PARAS }),
     'about.html': renderAboutPage(founders),
     'archive.html': renderArchivePage(archivePool),
   };
