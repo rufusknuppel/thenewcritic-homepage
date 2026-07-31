@@ -363,6 +363,6 @@ module.exports = {
     kicker: 'Theater',
   },
   'the-new-statesman': {
-    kicker: 'To Phone or Not',
+    kicker: 'Stylish Literature',
   },
 };

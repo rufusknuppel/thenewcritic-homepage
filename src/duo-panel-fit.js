@@ -558,34 +558,6 @@
     });
   }
 
-  // The resting title (essays page — see restTitle in build.js): the
-  // cell prints its headline over the cover at rest, in the EXACT box
-  // the hover panel's title occupies. The panel is inset:0 over the
-  // cell, so the title's offset inside the panel maps 1:1 onto the
-  // cell; the fitted font metrics are copied inline because the fitter
-  // sizes each title per cell. Same words (build.js prints the same
-  // hyphenated string), same width, same font ⇒ the same line breaks.
-  // Runs after drawTitleRules, when the title's geometry is final;
-  // rects work fine on the opacity-0 panel, which is laid out always.
-  function seatRestTitle(panel, title) {
-    var half = panel.closest ? panel.closest('.duo-half') : null;
-    var rest = half && half.querySelector('.rest-title');
-    if (!rest) return;
-    var hr = half.getBoundingClientRect();
-    var tr = title.getBoundingClientRect();
-    var ts = getComputedStyle(title);
-    rest.style.left = (tr.left - hr.left) + 'px';
-    rest.style.top = (tr.top - hr.top) + 'px';
-    rest.style.width = tr.width + 'px';
-    rest.style.fontSize = ts.fontSize;
-    rest.style.lineHeight = ts.lineHeight;
-    rest.style.letterSpacing = ts.letterSpacing;
-  }
-  // (White-or-ink is decided at BUILD time — REST_TITLE_INK in build.js
-  // — not here. Reading the cover's pixels from the page was tried and
-  // is impossible: substackcdn refuses CORS outright, so a crossOrigin
-  // probe never loads and a plain draw taints the canvas.)
-
   // The footer band seats three boxes now — kicker and cover credit left,
   // section right (the likes live in the byline) — and they never wrap or
   // shrink, they overflow, so scrollWidth is the tell. A narrow card
@@ -1121,10 +1093,8 @@
       }
     }
 
-    // The title's line breaks are final here — underline them, and seat
-    // the resting copy over the cover where the page carries one.
+    // The title's line breaks are final here — underline them.
     drawTitleRules(title);
-    seatRestTitle(panel, title);
 
     // Last, once every column's content has settled: run the column rule
     // from the panel's top border to the band's.
