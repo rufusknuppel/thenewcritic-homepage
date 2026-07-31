@@ -130,16 +130,9 @@ a{ color: inherit; }
    tracking both go, so "ESSAYS" reads "Essays" the way a title would.) */
 .nav-links{
   list-style: none; margin: 0; padding: 0;
-  /* 16px between ITEMS, tight leading WITHIN one. The link's line box was
-     inheriting the body's 1.65, which hung ~7px of half-leading under the
-     word and pushed the dek that much further off — the masthead didn't
-     have the problem because it already runs at 1.1. Matching the leading
-     here closes the heading/dek pair to the same 4px the masthead uses;
-     the gap goes 8 → 16 so the groups stay as far apart as they were. */
-  /* Tight now that the glosses are back in flow (see .nav-dek): the
-     column has no reserved air to hold, so the gap is just the gap. An
-     opened gloss adds its own height and pushes the rest of the list
-     down. */
+  /* 16px between plain single-line items, tight leading within one — no
+     gloss to reserve room for under any of them now, so every item
+     condenses to the same even rhythm Essays and Archive always kept. */
   display: flex; flex-direction: column; gap: 16px;
   line-height: 1.1;
   /* The items sit a step under the masthead, which alone is sized to
@@ -187,42 +180,12 @@ a{ color: inherit; }
 .nav-links a:hover,
 .nav-subscribe:hover{ background-size: 100% 3px; }
 .nav-links a[aria-current="page"]{ color: var(--white); }
-/* The gloss under each item: gray, tracked, bold — the postscript
-   index's own gloss cut (see .ps-index-dek), which is what sets its
-   size here; the tracking was already the same 0.03em the glosses'
-   hard line shapes (see SITE_LINKS in build.js) needed to clear their
-   156px column without wrapping, so the match cost nothing. */
-.nav-dek{
-  display: block;
-  font-family: var(--mono); font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.03em; line-height: 1.3;
-  color: var(--muted);
-  margin-top: 8px;
-  /* Invisible until its own item is pointed at, but never out of flow:
-     the box holds its place, so the column keeps its opened spacing and
-     nothing walks when a gloss fades in — only the ink comes and goes.
-     (display:none was tried first, per 2d2f81c; the layout shift it
-     causes was the part to lose.) visibility rather than opacity alone
-     keeps the hidden text unfindable and unselectable; delaying its
-     hidden flip by the fade's length lets the fade-out finish before
-     the text winks off. :focus-visible carries the keyboard: tabbing to
-     Postscript's link surfaces its gloss the way pointing does. */
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity .2s ease, visibility 0s linear .2s;
-}
-/* Triggered by the HEADING alone (the adjacent-sibling combinator reads
-   off the <a> the gloss follows), not the whole <li> — the li's box
-   includes the gloss's own reserved slot, and pointing at what looks
-   like empty column shouldn't conjure text into it. Drifting off the
-   heading onto the gloss lets it fade back out; it's a label, not a
-   target. */
-.nav-links a:is(:hover, :focus-visible) + .nav-dek{
-  visibility: visible;
-  opacity: 1;
-  transition: opacity .2s ease;
-}
+/* The sidebar no longer prints a gloss under each item (see navLink in
+   build.js) — SITE_LINKS still carries l.dek for the section pages' own
+   title/dek pair, but the .nav-dek element and its hover-reveal that
+   used to read it here are gone along with the reserved space they held
+   under Postscript/Contra/About alone; every item is now a plain link,
+   the same shape as Essays/Archive always were. */
 /* The whole column sets left, masthead included — one margin for every
    line in the sidebar, every item alike. (Postscript, Contra and About
    used to break right against their left-set neighbors, an alternating
@@ -305,7 +268,17 @@ a{ color: inherit; }
   margin: 0 0 24px;
   width: 100%; height: auto;
 }
-/* The social row closes the column under Subscribe: the Substack and
+/* The permanent sidebar tagline: the site name's own dek, in the gloss
+   cut the nav items themselves no longer carry — the column's own line,
+   always on, closing the list before the social row. */
+.nav-tagline{
+  font-family: var(--mono); font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em; line-height: 1.3;
+  color: var(--muted);
+  margin: 24px 0 0;
+}
+/* The social row closes the column under the tagline: the Substack and
    Instagram marks, white like every link above them, each saying it's a
    link the site's one way — the rule sweeping in underneath (as an
    ::after bar, the icon version of the sweep; see the copy-link button
@@ -314,10 +287,11 @@ a{ color: inherit; }
    weight. */
 .nav-social{
   display: flex; gap: 16px;
-  /* Set right, against the column's ragged edge — the same side the
-     right-breaking items (Postscript, Contra, About) set to, closing
-     the list like a colophon. */
-  justify-content: flex-end;
+  /* Set left, with the rest of the column — the alternating right-set
+     items are gone (see .nav-links li), so the social row falls in
+     line with everything above it instead of closing against a ragged
+     edge that no longer exists. */
+  justify-content: flex-start;
   margin-top: 24px;
 }
 .nav-social-link{
@@ -359,8 +333,8 @@ main, footer{ margin-left: 205px; }
   .nav-wordmark{ font-size: 1rem; line-height: 1.2; text-align: left; margin-right: 0; }
   .nav-wordmark-line{ display: inline; }
   .nav-wordmark-line + .nav-wordmark-line::before{ content: " "; }
-  /* The glosses are column furniture — a horizontal bar has no room. */
-  .nav-dek{ display: none; }
+  /* The tagline is column furniture — a horizontal bar has no room. */
+  .nav-tagline{ display: none; }
   /* Nor the mark: at the column's width it would set the bar's height,
      and the wordmark beside it already carries the brand here. */
   .nav-bird{ display: none; }
@@ -519,12 +493,12 @@ section{ padding: 80px 0; }
    colour rigging to survive a near-white cover, and the one soft
    photographic effect on the page (the old four-layer text-shadow) read
    as borrowed from someone else's site. */
-/* ---------- RESTING TITLE CHIP (top-right) ----------
-   The bottom-left kicker chip's mirror image at the cover's top-right
+/* ---------- RESTING TITLE CHIP (bottom-right) ----------
+   The bottom-left kicker chip's mirror image at the cover's bottom-right
    corner: same solid-black fill, same type cut, same optical vertical
    centering — only the horizontal padding swaps (the outer edge is now
    the right, not the left). No hover choreography to sync with (there
-   is no top-right box in the open panel to grow into), so it simply
+   is no bottom-right box in the open panel to grow into), so it simply
    sits under the panel like the kicker does and the panel covers it on
    open. Content is section-specific (see restChipTopHtml in build.js):
    the essay's own title, postscript's "w/ <subject>", or contra's
@@ -532,7 +506,7 @@ section{ padding: 80px 0; }
    a title chip has no natural short form the way a kicker word does. */
 .duo-half .rest-title-chip{
   position: absolute;
-  top: 0;
+  bottom: 0;
   right: 0;
   z-index: 2;
   margin: 0;
@@ -576,41 +550,6 @@ section{ padding: 80px 0; }
   font-family: var(--title); font-weight: 700; font-size: 0.86rem;
   letter-spacing: 0; text-transform: none; line-height: 1;
   color: var(--white);
-  pointer-events: none;
-}
-/* ---------- RESTING TITLES (essays page) ----------
-   The essays page prints each cell's title at rest, straight over the
-   cover — no chip, no scrim. The glyphs INVERT the artwork under them
-   (white type through mix-blend-mode:difference): near-white over a
-   dark cover, near-ink over a pale one, decided pixel by pixel with no
-   color to pick and no per-cover curation. (Reading the cover's pixels
-   to choose a flat white-or-black was tried first and is impossible —
-   substackcdn refuses CORS — and a hand-kept per-slug list rots the
-   day a new cover lands.) It occupies the EXACT box the hover panel's
-   title holds:
-   duo-panel-fit.js seats it after every fit (see seatRestTitle),
-   copying left/top/width and the fitted font metrics off the real
-   title — same words, same width, same font ⇒ the same line breaks.
-   So the hover reads as the panel materialising around a headline
-   that never moves. Under the panel (z 2 vs 3) like the kicker chip:
-   the opening panel simply covers it, no second fade. */
-.duo-half .rest-title{
-  position: absolute;
-  z-index: 2;
-  margin: 0;
-  font-family: var(--title); font-weight: 700;
-  /* TRUE white, not the site's warm --white: under difference the glyph
-     prints |cover − color|, so #fff is the full inversion — a warm
-     white would leave a blue-ish cast on every glyph. */
-  color: #fff;
-  mix-blend-mode: difference;
-  overflow-wrap: break-word;
-  /* The panel title balances its lines (see .card-title's own rule);
-     without the same policy here the resting copy wraps greedy and the
-     words land on different lines than the hover card's — "Chasing the
-     / Story" over "Chasing / the Story". Same policy + same width +
-     same font = the same distribution. */
-  text-wrap: balance;
   pointer-events: none;
 }
 @media (max-width: 480px){
@@ -732,11 +671,11 @@ section{ padding: 80px 0; }
      and walked back). The mobile/touch fallback resets this to none
      along with the rest of the overlay. */
   background: var(--paper);
-  /* The open card's outline stays white, and stays a hairline — it's the
+  /* The open card's outline stays gray, and stays a hairline — it's the
      whole hover signal now that the glow is gone (see the reveal rule
      below), but it carries that on colour, not weight. The section accent
      drives the title and the band corners; the frame itself does not. */
-  border: 1px solid var(--white);
+  border: 1px solid var(--line);
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease;
@@ -982,8 +921,8 @@ section{ padding: 80px 0; }
   font-weight: 700;
   /* A step above the excerpt's 13px — the dek is the piece's billing,
      and at the excerpt's own size the bold read as a stray lead-in
-     rather than a subtitle. One voice with the sidebar's glosses
-     (.nav-dek carries this same bold and size). */
+     rather than a subtitle. One voice with the sidebar's own gloss cut
+     (.nav-tagline carries this same bold and size). */
   font-size: 0.97rem;
   letter-spacing: 0.04em;
   line-height: 1.5;
@@ -1378,10 +1317,15 @@ a.likes:hover::after,
   /* Matches the open panel's frame, which lands on the same rectangle and
      paints over this one. It carries the look by itself wherever the
      panel doesn't open — the ≤900px fallback disables the overlay. */
-  border: 1px solid var(--white);
+  border: 1px solid var(--line);
   pointer-events: none;
   opacity: 0;
-  transition: opacity .18s ease;
+  /* Same .3s as the panel and the image dim (see .duo-panel and
+     .card-image below) — ring, dim and panel are three separate
+     properties on three separate elements, all keyed off the same
+     hover selector, so matching their durations is what makes them
+     read as one cross-fade instead of three staggered ones. */
+  transition: opacity .3s ease;
 }
 .card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image-link::after,
 .duo-half:is(:hover, :focus-within) .card-image-link::after{
@@ -1790,9 +1734,71 @@ a.likes:hover::after,
 .card .duo-half--contra:not(.duo-half--wide) .duo-panel .card-title{
   margin-top: calc(22.75px - 0.219em);
 }
+/* ---------- POSTSCRIPT: TITLE-FIRST STACK ----------
+   Postscript reorders THE STACK — title, then the dek tight under it,
+   then the byline (see the isPostscript branch in renderDuoHalf) — so
+   the rules above that hang the title 32px off a byline-strip rule, or
+   centre it contra-style, don't apply here: there's no strip above it
+   any more. Must come after both: same specificity as the plain
+   .duo-half:not(.duo-half--wide) rule above, so source order decides.
+   The title's own top padding is just the panel's shared 16px (see the
+   base .duo-panel rule) — nothing to override there, so margin-top is
+   0. Its margin-bottom is the title-to-dek gap, kept tight (8px) so the
+   pair reads as one unit; the dek's own margin-bottom carries the
+   larger 32px step down to the byline's box below it — grid items
+   don't collapse adjoining margins the way block boxes do, so each gap
+   needs to live on exactly one side or the two would stack. */
+.card .duo-half--postscript:not(.duo-half--wide) .duo-panel .card-title{
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+/* Italic: the base .card-dek rule already carries it, but the shared
+   .card--duo/.card--feature eyebrow-cut override (mono, bold, tracked)
+   flips it back to normal for every section — restated here to win it
+   back for postscript's dek alone. */
+.duo-half--postscript .duo-panel .card-dek{ margin: 0 0 32px; font-style: italic; }
+/* Two rules bracket the byline top and bottom — the same full-bleed
+   weight .duo-quote-divider uses one stack over (title/dek to
+   excerpt), closing the byline into an actual box the way the footer
+   band's own top/bottom edges close its corner boxes. Zero vertical
+   margin (the base rule's own 0 -24px, restated here only for
+   grid-column) so each rule sits flush against the byline row — the
+   vertical lines inside it (.meta-author/.meta-date's ::after/::before,
+   which stretch to the row's own full height) land right on both
+   rules with no gap, the same corner-to-corner join the footer band's
+   boxes make against the band's border. The gap off the title above is
+   the title's own margin-bottom, not this rule's — so the box's OWN
+   edges stay flush while the air outside it doesn't. grid-column:1/-1
+   for the same reason the byline itself needs it: nothing here is
+   listed in THE STACK's :is(...) grid-column rule since this pairing
+   is postscript-only. */
+.duo-half--postscript .duo-panel .card-byline-divider{
+  grid-column: 1 / -1;
+  margin: 0 -24px;
+}
+/* The byline keeps its header-strip's full boxed/ruled look — same
+   horizontal bleed, same padded author/date groups, same vertical
+   rules the footer band's own corner boxes wear (see the base
+   .card-meta--line rule above and :is(.duo-panel,...) .panel-band
+   .pc-left/.pc-right) — only the vertical pull changes: -16px cancelled
+   the panel's top padding to seat the strip on the panel's own border;
+   here there's a rule above it instead (.card-byline-divider), so the
+   top margin drops to 0 and the horizontal -24px is all that's left to
+   restore. The boxes' own 24px padding re-lands the text on the same
+   measure as the title and dek above once the bleed cancels it back
+   out — the same "bleed out, pad back in" round trip the footer band
+   itself runs. grid-column:1/-1 claims that full measure to begin with
+   (see THE STACK's :is(...) rule, which doesn't list this pairing
+   since everywhere else the byline is a flex child of .duo-panel, not
+   a grid item of .duo-panel-top). */
+.duo-half--postscript .duo-panel .card-meta--line{
+  grid-column: 1 / -1;
+  margin: 0 -24px;
+}
 /* The dek carries no top margin of its own — the TITLE's margin-bottom
    owns that gap, because only there does `em` resolve against the
-   title's per-cell fitted size (see PANEL INK RHYTHM). */
+   title's per-cell fitted size (see PANEL INK RHYTHM). (Postscript's
+   own dek-first stack above is the one exception — see POSTSCRIPT.) */
 /* The quote rule between dek and excerpt, and the excerpt's own step
    down off it — the two halves of the stack's 24-above / 16-below break.
    (The quads' hide still applies: with the byline strip closing itself
@@ -1802,6 +1808,20 @@ a.likes:hover::after,
   /* 26.35 above: 32 of ink minus the 0.97rem dek's 5.67px baseline ride
      (0.3654em). 18.4 below: 24 minus the 13px excerpt's 5.6px cap hang. */
   margin: 26.35px -24px 18.4px;
+}
+/* Postscript's own stack (see POSTSCRIPT above) lands this rule right
+   after the byline instead of the dek — it takes over the byline box's
+   bottom edge rather than run a second rule under a rule, so the top
+   margin drops to 0 and the vertical lines inside the byline row (see
+   .card-meta--line above) land flush on it, the same corner-to-corner
+   join its top rule makes. The bottom margin is untouched: the excerpt
+   below still wants its usual step off the rule. Repeats the rule
+   above's exact selector shape (.duo-half--postscript standing in for
+   plain .duo-half): :not(.duo-half--wide) counts its argument's class
+   toward specificity, so anything looser loses regardless of source
+   order. */
+.card .duo-half--postscript:not(.duo-half--wide) .duo-panel-top .duo-quote-divider{
+  margin-top: 0;
 }
 /* When the excerpt overflows the last column, the fitter truncates the
    text itself at the last fully-visible word and joins the ellipsis onto
@@ -1913,7 +1933,6 @@ a.likes:hover::after,
      copy would just print the topic twice. */
   .duo-half .rest-kicker{ display: none; }
   .duo-half .rest-title-chip{ display: none; }
-  .duo-half .rest-title{ display: none; }
   .duo-panel .card-title-divider,
   .duo-panel .card-byline-divider,
   .duo-panel .duo-quote-divider{ margin-left: 0; margin-right: 0; }
@@ -1947,7 +1966,7 @@ a.likes:hover::after,
 
 /* ---------- CONTRA LEAD (contra page) ----------
    A standing hover card at the head of the contra page: the panels'
-   formation — black ground, white outline, the title/dek/excerpt cuts
+   formation — black ground, gray outline, the title/dek/excerpt cuts
    and interior ruling — but open always, in flow, stretched across the
    whole row. Height is a contra square's own, held inline by
    duo-panel-fit.js (fitContraLead) so it always matches the cells
@@ -1958,7 +1977,7 @@ a.likes:hover::after,
    itself. */
 .card.contra-lead{
   background: var(--paper);
-  border: 1px solid var(--white);
+  border: 1px solid var(--line);
   /* An even 24 at top and sides — the ink corrections below make the
      TEXT honor it, not just the boxes. (The byline strip's negative
      margins pull it back through this to sit flush on the border,
@@ -2252,6 +2271,29 @@ a.likes:hover::after,
   width: 100%; height: 100%;
   object-fit: cover; display: block;
 }
+/* The cover's own credit chip — same cut as the corner chips on every
+   other hover card (.rest-title-chip), bottom-right instead of the
+   band's usual left-aligned "Art by" line, since the matching card's
+   band drops it (showArtInBand:false in renderPostscriptPage) rather
+   than print it twice. */
+.ps-hero-art{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 10.35px 25px 10.65px 24px;
+  background: var(--paper);
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none; line-height: 1;
+  color: var(--white);
+  pointer-events: none;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 /* The right column's cell is an ordinary hover card held OPEN — same
    markup, same fitter, the panel's opacity simply pinned. */
 .ps-hero-cell .duo-panel{ opacity: 1; pointer-events: auto; }
@@ -2287,6 +2329,15 @@ img.card-image,
 .imgfade img.card-image,
 .imgfade .arch-ledger-card-image img,
 .imgfade .mission-person-photo{ opacity: 0; transition: opacity .45s ease; }
+/* .card-image also carries the hover-dim filter transition (see
+   .duo-half:is(:hover,:focus-within) .card-image above) — a shorthand
+   `transition` fully replaces the one above rather than adding to it,
+   so without this second, equally-specific declaration the load fade
+   would silently swallow the filter transition and the hover dim would
+   snap with no animation at all. Kept off .arch-ledger-card-image img
+   and .mission-person-photo: neither carries a hover filter, so they
+   stay on the plain opacity-only transition above. */
+.imgfade img.card-image{ transition: opacity .45s ease, filter .3s ease; }
 .imgfade img.card-image.is-loaded,
 .imgfade .arch-ledger-card-image img.is-loaded,
 .imgfade .mission-person-photo.is-loaded{ opacity: 1; }
@@ -2418,14 +2469,16 @@ footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
   position: relative;
 }
 /* The image link contains its hover ring/glow; the image itself carries
-   the dim transition the cover hover choreography drives. */
+   the dim transition the cover hover choreography drives — same .3s as
+   the panel and the ring (see .duo-panel and .card-image-link::after
+   above), so all three read as one cross-fade. */
 .card-image-link{
   position: relative;
   overflow: hidden;
-  transition: box-shadow .25s ease;
+  transition: box-shadow .3s ease;
 }
 .card-image{
-  transition: filter .25s ease;
+  transition: filter .3s ease;
 }
 
 /* ---------- TOUCH-DEVICE HOVER GUARD ---------- */
