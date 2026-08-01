@@ -10,8 +10,7 @@
   // measuring so a bigger box really does pull more text. Panels are
   // opacity:0 at rest but still laid out, so everything here is
   // measurable without hovering.
-  var panels = document.querySelectorAll('.duo-panel');
-  if (!panels.length) return;
+  if (!document.querySelector('.duo-panel')) return;
 
   // The one floor constant: text and hard blocks alike fit against the
   // footer band's top minus this. It is a MINIMUM — a short excerpt ends
@@ -30,6 +29,14 @@
   // by up to this factor so the last line sits ON the floor. 15% of a
   // 20.8px line is ~3px a slot — feathering, not double-spacing.
   var MAX_SLOT_STRETCH = 1.15;
+  // The re-seat after a cut (see the multi-column branch) is allowed a
+  // little more than the general feather. It is closing a STRUCTURAL
+  // shortfall — a leftover row no paragraph can start in, because the
+  // gap costs a slot of its own — rather than distributing a sub-line
+  // remainder, and at 1.15 it lands half a line short of the floor and
+  // leaves exactly the hole it was meant to close. 1.25 of a 1.5 leading
+  // is 1.88, a hair looser than the 1.73 its neighbours already run at.
+  var RESEAT_SLOT_STRETCH = 1.25;
 
   // Applies a stretched slot to a preview block's paragraphs: line-height
   // and the between-paragraph gap both become `unit`, so the paragraph
@@ -241,6 +248,38 @@
     return st;
   }
 
+  // The rows the INK actually occupies, counted per column and reported
+  // as the deepest column. Distinct from columnFill's "is the bottom slot
+  // used" question: this is "how far down does the text really reach",
+  // which is what tells the caller a seated block came up short.
+  function inkRows(el, cols) {
+    var r = el.getBoundingClientRect();
+    var first = el.querySelector('.card-preview');
+    var lh = parseFloat(getComputedStyle(first || el).lineHeight) || 1;
+    var gapW = parseFloat(getComputedStyle(el).columnGap) || 0;
+    var colW = (r.width - gapW * (cols - 1)) / cols;
+    var deepest = 0;
+    [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
+      if (getComputedStyle(p).display === 'none') return;
+      var w = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
+      var n;
+      while ((n = w.nextNode())) {
+        var rg = document.createRange();
+        rg.selectNodeContents(n);
+        var rs = rg.getClientRects();
+        for (var i = 0; i < rs.length; i++) {
+          if (rs[i].width < 1) continue;
+          // Ignore the clipped phantom columns past the last real one.
+          var ci = Math.floor((rs[i].left - r.left + 1) / (colW + gapW));
+          if (ci < 0 || ci >= cols) continue;
+          var row = Math.round((rs[i].top - r.top) / lh) + 1;
+          if (row > deepest) deepest = row;
+        }
+      }
+    });
+    return deepest;
+  }
+
   // Decides how many lines tall a multi-column block stands. The rule:
   // every column runs full — top line against the divider, bottom line
   // in the slot against the footer gap, line grids aligned (the CSS sets
@@ -420,6 +459,15 @@
     title.style.fontSize = best + 'px';
   }
 
+  // The voices whose titles FILL their measure on one or two lines (see
+  // fitFillTitle): every section cell, and the ticker berths, whose
+  // panels hold nothing but a title and so want exactly this treatment.
+  function isFillTitlePanel(panel) {
+    return !!(panel.closest('.duo-half--essay') || panel.closest('.duo-half--contra')
+      || panel.closest('.duo-half--postscript') || panel.closest('.duo-half--wide')
+      || panel.closest('.ticker-item'));
+  }
+
   function fitTitleSize(panel, title) {
     if (!title) return;
     title.style.fontSize = '';
@@ -438,8 +486,7 @@
     //     grows until one more point would spill a word or a third line.
     // Either way both lines pack out to the column. See fitFillTitle; the
     // excerpt/dek below keeps whatever ground the title leaves.
-    if (panel.closest('.duo-half--essay') || panel.closest('.duo-half--contra')
-        || panel.closest('.duo-half--postscript') || panel.closest('.duo-half--wide')) {
+    if (isFillTitlePanel(panel)) {
       fitFillTitle(panel, title);
       return;
     }
@@ -604,15 +651,17 @@
     title.style.maxWidth = '';
   }
 
-  // The footer band seats three boxes now — kicker and cover credit left,
-  // section right (the likes live in the byline) — and they never wrap or
-  // shrink, they overflow, so scrollWidth is the tell. A narrow card
-  // sheds them in reverse keep-priority: the cover credit first, then the
+  // The footer band's boxes never wrap or shrink, they overflow, so
+  // scrollWidth is the tell. A narrow card sheds them in reverse
+  // keep-priority: first the "Share" label (the chain icon beside it says
+  // the same thing, so the word is the one piece that costs width and
+  // carries no information of its own), then the cover credit, then the
   // kicker; the section link is the one box that never goes, since it's
   // the card's only navigation. Runs before the static-fallback return in
   // fit() so the stacked mobile layout sheds too.
   function fitBandBoxes(band) {
     var order = [
+      band.querySelector('.copylink-label'),
       band.querySelector('.pc-art'),
       band.querySelector('.hero-kicker')
     ];
@@ -696,6 +745,112 @@
     return out;
   }
 
+  // Whatever vertical slack the fitted content leaves above the footer
+  // band is given to the TITLE, split evenly above and below it.
+  //
+  // The body used to absorb it, by feathering its leading until the last
+  // line touched the floor — which made the excerpt's rhythm a function
+  // of how the box happened to divide, and left the dek and the body
+  // running at different leadings on cards that divided differently.
+  // Both now hold their 1.5 exactly, and the leftover collects in the one
+  // place on the card that is already negative space: the air around the
+  // headline.
+  //
+  // Half above and half below, so the title stays optically centred in
+  // its own band. Adding X to each margin moves the content below the
+  // title down by 2X — hence the halving; the title itself descends by X,
+  // which is what keeps the two gaps equal.
+  //
+  // Only for stacked panels. On the wide cells the title and the excerpt
+  // sit in FACING columns, so growing the title's margins would push the
+  // dek around without moving the body an inch.
+  function slackToTitle(panel, topBox, band, title) {
+    if (!title || getComputedStyle(title).display === 'none') return;
+    var body = topBox.querySelector('.card-preview-block');
+    var dek = topBox.querySelector('.card-dek');
+    var last = null;
+    [body, dek].forEach(function(el){
+      if (!el || getComputedStyle(el).display === 'none') return;
+      var r = el.getBoundingClientRect();
+      if (r.height <= 1) return;
+      // Below the title, and sharing its measure — the facing-column case
+      // this must not touch.
+      var tr = title.getBoundingClientRect();
+      if (r.top < tr.bottom - 4) return;
+      if (!last || r.bottom > last) last = r.bottom;
+    });
+    if (last === null) return;
+    // Measure to the last LINE OF INK, not the box edge: a box capped on
+    // whole rows can stand a hair taller than the text it holds, and that
+    // hair is not slack anyone can see.
+    var inkBottom = -Infinity;
+    [].forEach.call(topBox.querySelectorAll('.card-preview, .card-dek'), function(el){
+      if (getComputedStyle(el).display === 'none') return;
+      var tr = title.getBoundingClientRect();
+      if (el.getBoundingClientRect().top < tr.bottom - 4) return;
+      var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+      var n;
+      while ((n = w.nextNode())) {
+        if (!n.textContent.trim()) continue;
+        var rg = document.createRange();
+        rg.selectNodeContents(n);
+        var rs = rg.getClientRects();
+        for (var i = 0; i < rs.length; i++) {
+          if (rs[i].width < 1) continue;
+          if (rs[i].bottom > inkBottom) inkBottom = rs[i].bottom;
+        }
+      }
+    });
+    if (inkBottom === -Infinity) return;
+    var slack = band.getBoundingClientRect().top - GAP - inkBottom;
+    if (slack < 1) return;
+    var cs = getComputedStyle(title);
+    var half = slack / 2;
+    title.style.marginTop = (parseFloat(cs.marginTop) || 0) + half + 'px';
+    title.style.marginBottom = (parseFloat(cs.marginBottom) || 0) + half + 'px';
+  }
+
+  // The wide cells' own version. There the excerpt FACES the title rather
+  // than sitting under it, so the title's margins can't reach it and its
+  // column keeps whatever slack the text leaves. Split that the same way
+  // — half above the block, half left under it — so the body sits centred
+  // in its column instead of hanging from the top with a hole beneath.
+  // (Giving it all to the top would close the hole, but drop the body's
+  // first line well below the title's, which is the alignment the two
+  // columns are built on.)
+  function slackToBodyColumn(panel, topBox, band, title) {
+    if (!panel.closest('.duo-half--wide')) return;
+    var body = topBox.querySelector('.card-preview-block');
+    if (!body || getComputedStyle(body).display === 'none') return;
+    if (title) {
+      var tr = title.getBoundingClientRect();
+      // Only the facing-column case: a body BELOW the title is the
+      // stacked one, already served by slackToTitle.
+      if (body.getBoundingClientRect().top >= tr.bottom - 4) return;
+    }
+    var inkBottom = -Infinity;
+    [].forEach.call(body.querySelectorAll('.card-preview'), function(p){
+      if (getComputedStyle(p).display === 'none') return;
+      var w = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
+      var n;
+      while ((n = w.nextNode())) {
+        if (!n.textContent.trim()) continue;
+        var rg = document.createRange();
+        rg.selectNodeContents(n);
+        var rs = rg.getClientRects();
+        for (var i = 0; i < rs.length; i++) {
+          if (rs[i].width >= 1 && rs[i].bottom > inkBottom) inkBottom = rs[i].bottom;
+        }
+      }
+    });
+    if (inkBottom === -Infinity) return;
+    var slack = band.getBoundingClientRect().top - GAP - inkBottom;
+    if (slack < 1) return;
+    var quote = topBox.querySelector('.duo-quote-divider');
+    var head = (quote && getComputedStyle(quote).display !== 'none') ? quote : body;
+    head.style.marginTop = (parseFloat(getComputedStyle(head).marginTop) || 0) + slack / 2 + 'px';
+  }
+
   // The panel's chrome (kicker, section link) lives in the one fixed
   // footer band — everything else is content, fitted against that band's
   // top edge. When space runs short, content yields in reverse
@@ -726,6 +881,13 @@
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
+    // The title's margins carry the slack distribution (see slackToTitle)
+    // and must go back to their CSS values before anything is measured.
+    if (title) { title.style.marginTop = ''; title.style.marginBottom = ''; }
+    var qdReset = topBox.querySelector('.duo-quote-divider');
+    if (qdReset) qdReset.style.marginTop = '';
+    var bodyReset = topBox.querySelector('.card-preview-block');
+    if (bodyReset) bodyReset.style.marginTop = '';
     topBox.style.marginTop = '';
     panelEls(topBox).forEach(function(el){ el.style.display = ''; resetClamp(el); });
     [].forEach.call(paras, function(p){ p.style.display = ''; resetClamp(p); });
@@ -770,6 +932,13 @@
     // same as the band. Ahead of the static-fallback return below so the
     // stacked mobile layout sheds too.
     if (meta) {
+      // Same order of sacrifice as the band: the "Share" word goes before
+      // anything with meaning does, since its icon stays and still says it.
+      var bylineLabel = meta.querySelector('.copylink-label');
+      if (bylineLabel) {
+        bylineLabel.style.display = '';
+        if (meta.scrollWidth > meta.clientWidth + 1) bylineLabel.style.display = 'none';
+      }
       var bylineLikes = meta.querySelector('.meta-likes');
       if (bylineLikes) {
         bylineLikes.style.display = '';
@@ -812,8 +981,7 @@
     // The fewer-lines trim and the two-line balancer both fight that (one
     // shrinks to save a line, the other forces a split), so neither runs
     // for them; they still serve the width-ratio fall-through titles.
-    if (!(panel.closest('.duo-half--essay') || panel.closest('.duo-half--contra')
-        || panel.closest('.duo-half--postscript') || panel.closest('.duo-half--wide'))) {
+    if (!isFillTitlePanel(panel)) {
       fitTitleFewerLines(panel, title);
       fitTitleTwoLines(title);
     }
@@ -916,10 +1084,26 @@
           // is a real ending, and worth keeping clean.
           el.style.height = (maxLines * plh) + 'px';
           var blockLines = 0;
-          if (el.scrollWidth > el.clientWidth + 1) {
+          var stMax = columnFill(el, plh, colCount);
+          // EVERY column's bottom slot occupied at full height means the
+          // text reaches the floor on its own — the box is full, whatever
+          // else is true of it. That is the test that decides whether the
+          // block keeps its height; scrollWidth alone is not.
+          //
+          // It used to be: spills ? maxLines : walk. But a block can fill
+          // its box to the last slot and still not register as spilling —
+          // multicol overflow doesn't always widen scrollWidth — and such
+          // a block fell through to the no-orphan walk, which gave back
+          // WHOLE ROWS to avoid ending a column on a paragraph's opening
+          // line. Three rows of dead space under a full-looking excerpt,
+          // to dodge an orphan the truncation ellipsis makes moot.
+          var allFull = true;
+          for (var cf = 0; cf < colCount; cf++) {
+            if (!stMax.full[cf]) allFull = false;
+          }
+          if (allFull || el.scrollWidth > el.clientWidth + 1) {
             blockLines = maxLines;
           } else {
-            var stMax = columnFill(el, plh, colCount);
             var interiorFull = true;
             for (var ci = 0; ci < colCount - 1; ci++) {
               if (!stMax.full[ci]) interiorFull = false;
@@ -931,31 +1115,32 @@
           if (blockLines) {
             el.style.height = (blockLines * plh) + 'px';
             var spills = el.scrollWidth > el.clientWidth + 1;
-            // A full box earns the slot stretch: when the text either
-            // overflows or fills every allowed line, the sub-line
-            // remainder feathers into the leading so the bottom line
-            // lands ON the floor instead of a random hair above it.
-            // Same words on the same lines — line-height is vertical
-            // only, and height stays lines × slot, so each column holds
-            // exactly the rows it held at the natural leading.
-            if (spills || blockLines === maxLines) {
-              var unit = Math.min((budget - 1) / blockLines, plh * MAX_SLOT_STRETCH);
-              if (unit > plh + 0.05) {
-                setSlot(el, unit);
-                // One pixel of slack under the bottom row: the stretched
-                // unit is fractional, and at an EXACT lines × unit height
-                // sub-pixel rounding in the column engine can flip the
-                // boundary — the box reflows a whole row short (flush
-                // three-line columns stood in four-row boxes). Far less
-                // than a line, so it can't admit an extra row; the unit
-                // divides budget−1 above so the floor stays ≥ GAP.
-                el.style.height = (blockLines * unit + 1) + 'px';
-                spills = el.scrollWidth > el.clientWidth + 1;
-              }
-            }
+            // No slot stretch. The excerpt keeps its 1.5 leading exactly,
+            // whatever the box's sub-line remainder — feathering the
+            // leading to reach the floor made the body's rhythm a
+            // function of how the box happened to divide. The remainder
+            // is handed to the title's margins instead (see slackToTitle
+            // at the end of fit), where it reads as air around the
+            // headline rather than as looser body copy.
+            // The cut can leave the block a row taller than its ink. A
+            // paragraph gap costs a slot of its own, so when a column has
+            // exactly one row left, nothing can use it: the next
+            // paragraph needs the gap AND a line. The box still reaches
+            // the floor, but the text stops a row above it — which reads
+            // as a card that failed to fill, and is the one shortfall the
+            // stretch above can't have anticipated, since it ran before
+            // the cut existed.
             // Cut text spills into clipped phantom columns, widening the
             // scrollable area — the tell that an ellipsis is owed.
             if (spills) truncateToWord(el);
+            // The cut can leave the box a row taller than its ink (a
+            // paragraph gap costs a slot of its own, so a single leftover
+            // row can hold nothing). Shrink to the rows the ink really
+            // occupies; the space that frees goes to the title.
+            var seated = inkRows(el, colCount);
+            if (seated && seated < blockLines) {
+              el.style.height = (seated * plh + 1) + 'px';
+            }
           } else {
             // Content too short to floor every column at any height —
             // let it balance naturally and just cap what there is.
@@ -1097,11 +1282,23 @@
             // over the band (capped — see MAX_SLOT_STRETCH), and cap
             // the block at its seated slots; +1 is the sub-pixel slack
             // the multi-column branch carries too.
-            var scUnit = Math.min(scAvail / scUsed, scLh * MAX_SLOT_STRETCH);
-            if (scUnit > scLh + 0.05) setSlot(el, scUnit);
-            else scUnit = scLh;
-            el.style.maxHeight = (scUsed * scUnit + 1) + 'px';
+            // Natural leading, and the box capped on what the block
+            // ACTUALLY renders rather than on the walk's arithmetic.
+            // The walk counts lines on a clone; when the live block
+            // disagrees by a line — and it can, the clone being a
+            // separately laid-out copy — an arithmetic cap either clips
+            // the last line through its glyphs or leaves a row of air.
+            // The slot stretch used to hide that mismatch inside the
+            // headroom it added; at exact leading there is no headroom
+            // to hide it in.
+            // So: measure the live ink, take the smaller of that and the
+            // slots the budget allows, and let truncateToWord settle any
+            // remainder the way every other overflow on the card is
+            // settled — cut to the last whole word, ellipsis joined on.
+            var scRows = Math.min(inkRows(el, 1) || scUsed, scSlots);
+            el.style.maxHeight = (scRows * scLh + 1) + 'px';
             el.style.overflow = 'hidden';
+            if (el.scrollHeight > el.clientHeight + 1) truncateToWord(el);
           }
         }
       } else if (el.getBoundingClientRect().bottom > groupLimit) {
@@ -1140,8 +1337,13 @@
       }
     }
 
-    // Last, once every column's content has settled: run the column rule
-    // from the panel's top border to the band's.
+    // Once every column's content has settled, hand the leftover height to
+    // the title's margins — before the column rule, which is drawn to the
+    // geometry this leaves behind.
+    slackToTitle(panel, topBox, band, title);
+    slackToBodyColumn(panel, topBox, band, title);
+
+    // Last: run the column rule from the panel's top border to the band's.
     fitColumnDivider(panel, topBox, band);
 
     // A full box lands its last line exactly GAP over the band — the
@@ -1221,7 +1423,11 @@
   function fitAll() {
     fitHeroLink(); // before the panels: the hero panel pins to the fitted link
     fitContraLead(); // before too: the lead's height moves every row below it
-    [].forEach.call(panels, fit);
+    // Re-queried every pass, not captured once: the ticker clones its whole
+    // strip after this script runs (essay-ticker.js), so a NodeList taken at
+    // load would leave every cloned berth's panel unfitted — its title stuck
+    // at the CSS size while the original's filled its box.
+    [].forEach.call(document.querySelectorAll('.duo-panel'), fit);
   }
 
   (function(){

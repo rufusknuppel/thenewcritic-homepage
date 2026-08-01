@@ -117,10 +117,21 @@ a{ color: inherit; }
    rules (no more 40px padding + negative-margin correction). */
 .site-nav{
   display: flex; flex-direction: column;
-  height: 100%;
-  padding: 24px;
+  /* min-height, not height: the mark-and-Subscribe block is pushed to the
+     foot of this box, and on a short window the column has to be able to
+     GROW past the viewport (the header scrolls it) instead of overflowing
+     a fixed box — which would carry the bottom inset off the end. */
+  min-height: 100%;
+  /* 24px on three sides, 48 at the foot: the mark-and-Subscribe block is
+     pinned down there, and it wants more air under it than the standard
+     inset gives — everything else in the column still sits on the 24. */
+  padding: 24px 24px 48px;
 }
-.nav-top{ position: relative; margin-bottom: 24px; }
+/* The masthead group closes up: name, sections and mark read as one
+   block, so the step under the wordmark is the same 16px the sections
+   keep between themselves rather than the 24 that used to hold the mark
+   apart from them. */
+.nav-top{ position: relative; margin-bottom: 32px; }
 /* The set name IS the brand now — the framed-bird mark that used to head
    the column is gone, and the wordmark carries the home link in its
    place. Nothing sits above it, so the column starts at the nav's own
@@ -132,11 +143,11 @@ a{ color: inherit; }
    tracking both go, so "ESSAYS" reads "Essays" the way a title would.) */
 .nav-links{
   list-style: none; margin: 0; padding: 0;
-  /* 16px between plain single-line items, tight leading within one — no
-     gloss to reserve room for under any of them now, so every item
-     condenses to the same even rhythm Essays and Archive always kept. */
-  display: flex; flex-direction: column; gap: 16px;
-  line-height: 1.1;
+  /* The items are spaced by their own leading now — 1.5, with no gap on
+     top of it — so the column's rhythm is one number rather than a
+     line-height and a gap arguing with each other. */
+  display: flex; flex-direction: column; gap: 0;
+  line-height: 1.5;
   /* The items sit a step under the masthead, which alone is sized to
      the measure (2rem) and untouched here. The links themselves match
      the postscript reading room's own name-scroll cut (see
@@ -159,6 +170,8 @@ a{ color: inherit; }
 .nav-links a,
 .nav-subscribe{
   text-decoration:none; color: var(--white);
+  /* .nav-subscribe overrides this to Klein below — it pairs with the mark
+     rather than with the section list. */
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   /* Same 0.06em lift as the title rules and the cards' band links, and the
@@ -181,7 +194,11 @@ a{ color: inherit; }
 }
 .nav-links a:hover,
 .nav-subscribe:hover{ color: var(--klein); background-size: 0% 3px; }
-.nav-links a[aria-current="page"]{ color: var(--white); }
+/* The page you're on is held in the hover blue — the nav says where you
+   ARE in the same ink it uses to say where a link would take you, so the
+   current section reads as already-followed rather than merely brighter.
+   Placed after the :hover rule so pointing at it changes nothing. */
+.nav-links a[aria-current="page"]{ color: var(--klein); }
 /* The sidebar no longer prints a gloss under each item (see navLink in
    build.js) — SITE_LINKS still carries l.dek for the section pages' own
    title/dek pair, but the .nav-dek element and its hover-reveal that
@@ -194,13 +211,34 @@ a{ color: inherit; }
    layout that read fine at the items' old 1.5rem but just looked
    unsettled once they matched the postscript index's smaller, plainly
    left-set list — one ragged edge for the whole column now.) */
-.nav-links li{ text-align: left; }
-/* Subscribe closes the column, under About, at the nav items' own size. */
+/* Set right, to the same margin the wordmark closes on — the column
+   reads down one edge instead of two. */
+.nav-links li{ text-align: right; }
+/* Subscribe closes the column BELOW the mark — out of the section list
+   and out of its register: the rail's one call to action, set in caps at
+   the width of the column itself.
+   The size is derived, not guessed. The rail is a fixed 205px less its
+   two 24px insets, and SUBSCRIBE at this weight sets 5.85× its own
+   font-size of ink, so the column width over that ratio IS the size that
+   spans it. Divided by a hair more so the word lands just inside the
+   measure rather than flush against it. If the rail's width ever
+   changes, this follows it on its own; only a change of face or tracking
+   would need the ratio re-measured — as it did when the tracking came
+   off (it was 6.17 at 0.04em). */
 .nav-subscribe{
-  /* Inline for the same reason the nav links are (see .nav-links li). */
-  display: inline;
-  font-family: var(--title); font-weight: 700; font-size: 1.15rem;
-  letter-spacing: 0; text-transform: none;
+  /* White at rest with the mark, and blue with it on hover (see THE
+     MASTHEAD PAIRINGS) — the two share a destination, so they light as
+     one thing rather than as two links that happen to sit together. */
+  color: var(--white);
+  display: block;
+  width: fit-content;
+  /* Flush on the mark, no gap at all — the two read as one closing
+     block under the long drop above them. */
+  margin-top: 0;
+  font-family: var(--title); font-weight: 700;
+  font-size: calc((205px - 48px) / 5.9);
+  letter-spacing: normal; text-transform: uppercase;
+  white-space: nowrap;
 }
 /* The masthead: the name in caps, and the head of the column. The tagline
    that used to sit under it now runs as About's gloss down in the links
@@ -211,8 +249,19 @@ a{ color: inherit; }
      now, sitting straight on the nav's 24px inset. */
   display: block;
   font-family: var(--title); font-weight: 700;
-  font-size: 2rem; letter-spacing: 0.04em; text-transform: uppercase;
-  color: var(--white); margin: 0; line-height: 1.1;
+  /* Sized so CRITIC — the longest of the three lines — spans the rail's
+     measure exactly. Derived the same way SUBSCRIBE is (see
+     .nav-subscribe): the column is the fixed 205px rail less its two
+     24px insets, and CRITIC at this weight sets 3.405× its own font-size
+     of ink, so the column over that ratio is the size that fills it.
+     Divided by a hair more so the last letter lands just inside the
+     margin rather than flush against it. (The ratio is tracking-
+     sensitive: it was 3.605 while the mark carried 0.04em.) */
+  font-size: calc((205px - 48px) / 3.44);
+  letter-spacing: normal; text-transform: uppercase;
+  /* White at rest, going blue on its own hover — it's the home link, and
+     it answers for nothing else (see THE MASTHEAD PAIRINGS). */
+  color: var(--white); margin: 0; line-height: 1;
 }
 /* One word per line. Each is its own block, so the leading stays the
    wordmark's own. */
@@ -245,7 +294,9 @@ a{ color: inherit; }
    re-armed for the next pass — the same rest/hover split every other
    drawn rule on the site uses. */
 .nav-wordmark-line{
-  width: fit-content;
+  /* Full width, not fit-content: each line has to fill the column for its
+     own text-align to have anywhere to push against. */
+  width: auto;
   background-image: linear-gradient(currentColor, currentColor);
   background-repeat: no-repeat;
   background-position: 0 calc(100% + 3px - 0.06em);
@@ -253,13 +304,18 @@ a{ color: inherit; }
   padding-bottom: 3px;
   background-size: 0% 3px;
 }
-.nav-wordmark-line:nth-child(2){ --rule-delay: .13s; }
-.nav-wordmark-line:nth-child(3){ --rule-delay: .26s; }
+/* One word to the line, alternating edges: The and Critic hold the left
+   margin, New alone swings right, so the name zigzags down the column
+   instead of stacking to one flush edge. */
+.nav-wordmark-line{ text-align: right; }
+.nav-wordmark-the,
+.nav-wordmark-critic{ text-align: left; }
+/* .nav-wordmark carries the uppercase; "The" alone opts back out. */
+.nav-wordmark-the{ text-transform: none; }
 .wordmark:is(:hover, :focus-visible){ color: var(--klein); }
-/* .nav-wordmark carries its own color:white, so tint the span itself (not
-   just the anchor) to bring the name blue with the bird. */
+/* .nav-wordmark carries its own color:white, so the span itself is tinted,
+   not just the anchor — see the masthead trade below. */
 .nav-wordmark{ transition: color .15s ease; }
-.wordmark:is(:hover, :focus-visible) .nav-wordmark{ color: var(--klein); }
 .wordmark:is(:hover, :focus-visible) .nav-wordmark-line{
   background-size: 0% 3px;
   transition: color .15s ease;
@@ -270,11 +326,20 @@ a{ color: inherit; }
    of the same mark would just be noise to a screen reader. */
 /* The bird is a white silhouette (bird-logo.png, white-on-transparent)
    painted as a MASK over a solid fill rather than an <img>, so it can take
-   a colour: white at rest, and — inside the wordmark link now — Klein blue
-   together with the name on hover. */
+   a colour — which is what lets the mark answer a hover at all. It rests
+   white with Subscribe below it and goes blue with it (see THE MASTHEAD
+   PAIRINGS); the wordmark above keeps its own separate state.
+   The mark closes the masthead group under the section list now, so its
+   top margin is the group's own 16px step; the 24 below it is the gap to
+   the tagline, which is a different thing and keeps its own measure. */
+/* The mark and Subscribe close the column at its FOOT, not a fixed drop
+   below the sections: margin-top:auto eats whatever height is left, so
+   they sit on the nav's own 24px bottom inset at any window height, and
+   simply follow the sections up when the column runs out of room. */
+.nav-bird-link{ display: block; margin-top: auto; }
 .nav-bird{
   display: block;
-  margin: 24px 0 24px;
+  margin: 0;
   width: 100%;
   aspect-ratio: 962 / 835;
   background-color: var(--white);
@@ -282,34 +347,29 @@ a{ color: inherit; }
   mask: url(bird-logo.png) center / contain no-repeat;
   transition: background-color .15s ease;
 }
-.wordmark:is(:hover, :focus-visible) .nav-bird{ background-color: var(--klein); }
-/* The permanent sidebar tagline: the site name's own dek, in the gloss
-   cut the nav items themselves no longer carry — the column's own line,
-   always on, closing the list before the social row. */
-.nav-tagline{
-  font-family: var(--mono); font-weight: 500;
-  font-size: 0.85rem;
-  letter-spacing: 0.03em; line-height: 1.3;
-  color: var(--muted);
-  margin: 24px 0 0;
-}
-/* The social row closes the column under the tagline: the Substack and
-   Instagram marks, white like every link above them, each saying it's a
+/* ---------- THE MASTHEAD PAIRINGS ----------
+   The column's three brand elements pair off by WHERE THEY GO, not by
+   where they sit. The wordmark is the home link and lights on its own.
+   The mark and Subscribe both point at the subscribe page, so they light
+   together — pointing at either turns both blue, which is what tells the
+   reader the bird IS that button and not a second logo.
+   The pair needs :has(): they're siblings in the nav, neither containing
+   the other, so no descendant selector can reach across. */
+.wordmark:is(:hover, :focus-visible) .nav-wordmark{ color: var(--klein); }
+/* The pair lights TOGETHER: both rest white, and pointing at either
+   turns both blue at once. Driving them from one condition is what makes
+   that true — no arrival order can catch the foot of the column half
+   lit. */
+.site-nav:has(:is(.nav-bird-link, .nav-subscribe):is(:hover, :focus-visible)) .nav-bird{ background-color: var(--klein); }
+.site-nav:has(:is(.nav-bird-link, .nav-subscribe):is(:hover, :focus-visible)) .nav-subscribe{ color: var(--klein); }
+/* The social marks: white like every link on the site, each saying it's a
    link the site's one way — the rule sweeping in underneath (as an
    ::after bar, the icon version of the sweep; see the copy-link button
    for the same cut). Substack's mark is a filled glyph, Instagram's an
    outline — the stroke/fill split below keeps both reading at one
    weight. */
-.nav-social{
-  display: flex; gap: 16px;
-  /* Set left, with the rest of the column — the alternating right-set
-     items are gone (see .nav-links li), so the social row falls in
-     line with everything above it instead of closing against a ragged
-     edge that no longer exists. */
-  justify-content: flex-start;
-  margin-top: 24px;
-}
-.nav-social-link{
+
+.site-social-link{
   display: inline-flex;
   position: relative;
   color: var(--white);
@@ -317,11 +377,14 @@ a{ color: inherit; }
 }
 /* The icons say "link" the way everything else does now — Klein blue on
    hover (their currentColor fill/stroke follows), no underline draw. */
-.nav-social-link:hover{ color: var(--klein); }
-.nav-social-icon{ width: 18px; height: 18px; fill: currentColor; }
-.nav-social-icon--stroke{ fill: none; stroke: currentColor; stroke-width: 1.8; }
-.nav-social-icon--stroke .ig-dot{ fill: currentColor; stroke: none; }
-.nav-social-link::after{
+.site-social-link:hover{ color: var(--klein); }
+/* Solid marks, not outlines: at the size they run here (1.15em of a 13px
+   line) a 1.8px stroke read as wiry against the type beside it, so the
+   glyphs are filled shapes now — the Instagram mark is one even-odd path,
+   the square filling, the lens ring knocking out, its centre filling
+   again, the corner dot knocking out. */
+.site-social-icon{ width: 18px; height: 18px; fill: currentColor; stroke: none; }
+.site-social-link::after{
   content: '';
   position: absolute; left: 0; bottom: -6px;
   width: 100%; height: 3px;
@@ -329,7 +392,7 @@ a{ color: inherit; }
   transform: scaleX(0); transform-origin: 0 50%;
   transition: transform .3s cubic-bezier(.25, .1, .25, 1);
 }
-.nav-social-link:hover::after{ transform: scaleX(0); }
+.site-social-link:hover::after{ transform: scaleX(0); }
 main, footer{ margin-left: 205px; }
 
 /* Below 900px the sidebar can't fit alongside readable content widths —
@@ -352,24 +415,23 @@ main, footer{ margin-left: 205px; }
   .nav-wordmark{ font-size: 1rem; line-height: 1.2; text-align: left; margin-right: 0; }
   .nav-wordmark-line{ display: inline; }
   .nav-wordmark-line + .nav-wordmark-line::before{ content: " "; }
-  /* The tagline is column furniture — a horizontal bar has no room. */
-  .nav-tagline{ display: none; }
   /* Nor the mark: at the column's width it would set the bar's height,
      and the wordmark beside it already carries the brand here. */
   .nav-bird{ display: none; }
-  .nav-subscribe{ font-size: 1rem; }
+  /* Laid on its side the rail is a bar, so Subscribe drops the
+     span-the-column sizing and rejoins the other items inline. */
+  .nav-subscribe{
+    display: inline; width: auto; margin-top: 0;
+    font-size: 1rem; letter-spacing: 0; text-transform: none;
+  }
   .nav-top{ gap: 14px; }
-  /* In the bar the social row rides the flex line like everything else —
-     the column's 24px stack gap has no meaning laid on its side. */
-  .nav-social{ margin-top: 0; }
   main, footer{ margin-left: 0; }
 }
 /* The link column has no room left in the bar, but Subscribe is the one
-   item that has to survive — it lives inside the list now, so it's
-   re-shown rather than left out with the rest. */
+   item that has to survive — it sits OUTSIDE the list now (below the mark
+   in the column), so hiding the list leaves it standing on its own. */
 @media (max-width: 720px){
   .nav-links li{ display: none; }
-  .nav-links li.nav-subscribe-item{ display: block; }
 }
 
 .btn{
@@ -746,7 +808,8 @@ section{ padding: 80px 0; }
    the card is, the rules inside it just organise the page. */
 .duo-half,
 .card--feature,
-.arch-ledger-card{ --line: rgba(247,246,241,0.28); }
+.arch-ledger-card,
+.ticker-item{ --line: rgba(247,246,241,0.28); }
 /* ---------- PANEL BANDS (hover-card header/footer) ----------
    Full-width strips pinned to the panel's top and bottom edges. Each
    band's single horizontal rule (border) runs edge to edge — past the
@@ -812,8 +875,7 @@ section{ padding: 80px 0; }
 /* Sized to the corner text's cap height — at its natural 13px width the
    heart ran the stats box (and with it the whole band) 2px taller,
    skewing the content centering. White at rest with the rest of the
-   band, and the one thing on the card that reddens: the heart alone
-   keeps a colour of its own. */
+   band, and Klein under the pointer with its box. */
 :is(.duo-panel, .card--feature, .contra-lead) .panel-band .likes-heart{
   height: 11.5px; width: auto; fill: var(--white);
 }
@@ -1036,6 +1098,7 @@ section{ padding: 80px 0; }
    this sets the panel's own spacing and the full-bleed sides. */
 .card--duo .duo-panel .card-meta--line,
 .card--feature .duo-panel .card-meta--line,
+.ticker-item .duo-panel .card-meta--line,
 .contra-lead .card-meta--line{
   font-family: var(--title);
   font-weight: 700;
@@ -1236,6 +1299,11 @@ a.likes:hover::after,
   position: relative;
   flex-shrink: 0;
   white-space: nowrap;
+  /* A <button> takes the UA's own font, not the strip's, so the "Share"
+     label inside it would set in the browser's default face. Inherit the
+     strip's cut instead. (The band's copy needs none of this: .pc names
+     the face on the button element itself.) */
+  font: inherit;
 }
 .duo-panel .card-meta--line .meta-copylink::before{
   content: '';
@@ -1285,6 +1353,8 @@ a.likes:hover::after,
   fill: none; stroke: currentColor;
   stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
 }
+/* The word beside the mark. */
+.copylink-label{ margin-left: 7px; }
 [data-copy-link] .copylink-check{ display: none; }
 [data-copy-link].copied .copylink-icon{ display: none; }
 [data-copy-link].copied .copylink-check{ display: inline; }
@@ -1702,7 +1772,8 @@ a.likes:hover::after,
 /* Extra-wide essay cells get a divider between the title and the dek
    beneath it (the dek-divider, hidden on the other wide cells, shown here),
    and the title takes the same 72px of ink above and below as the non-wide
-   essays — with the dek stepping 16px off the rule below it. */
+   essays — with the dek stepping off the rule below it on the same 16px
+   every other dek uses. */
 .card .duo-half--wide.duo-half--essay .duo-panel .card-dek-divider{
   display: block;
 }
@@ -1710,8 +1781,13 @@ a.likes:hover::after,
   margin-top: calc(72px - 0.219em);
   margin-bottom: calc(72px - 0.167em);
 }
+/* The same 16px box padding every other dek steps off its rule with —
+   NOT an ink-corrected 16, which is what this was: against the same rule
+   the ink-corrected version opened 12.5px where the others opened 18, so
+   the wide cells' deks sat visibly tighter than the rest. */
 .duo-half--wide.duo-half--essay .panel-col--left .card-dek{
-  margin-top: calc(16px - 0.4206em);
+  margin-top: 0;
+  padding-top: 16px;
 }
 /* ---------- THE NON-WIDE STACK ----------
    Everything that ISN'T an extra-wide cell keeps the full measure and
@@ -1922,14 +1998,14 @@ a.likes:hover::after,
    column context now lives on the base .card-preview + .card-preview
    rule above — one value, every panel.) */
 /* Opening flourish (see wrapLeadWords in build.js): the first paragraph's
-   first three words. The caps treatment is now reserved for the extra-wide
-   cells alone — everywhere else the lead words read as plain body text (the
-   .card-preview-lead span still wraps them, it just carries no transform),
-   so the flourish stays a feature of the biggest cards rather than a tic on
-   every excerpt. Where it does run, uppercase alone carries it (bold on top
-   read as a second dek). */
-.card-preview-lead{ text-transform: none; letter-spacing: normal; }
-.duo-half--wide .card-preview-lead{ text-transform: uppercase; letter-spacing: 0.03em; }
+   first three words, in caps on EVERY card — the successor to the drop
+   cap, marking where the piece itself starts speaking. Uppercase alone
+   carries it, in the body's own ink: bold read as a second dek, and
+   colour as a second link. (It used to be wide-cells-only.) */
+.card-preview-lead{
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
 /* "from the essay" / "from the interview" / "from the review" (set per
    the hero's section tag in build.js) — same courier-kicker treatment as
    .hero-kicker (family, weight, size, letter-spacing, margin) so column 3
@@ -2496,15 +2572,232 @@ img.card-image,
    first row's extend up through the top inset to the top of the page. */
 .page-rows{ padding-top: 24px; padding-bottom: 0; }
 
+/* ---------- ESSAY TICKER ---------- */
+/* The essays page's three tapes (renderEssayTicker in build.js):
+   full-bleed, ~a third of the viewport tall each, scrolled BY THE READER
+   — nothing crawls on its own. Each berth is a 10:8 cover under a corner
+   topic chip that opens a hover card, with full-height vertical rules
+   between berths. src/essay-ticker.js shuffles the berths across the
+   three per visit (no essay on two tapes), offsets each tape's resting
+   scroll so they visibly don't line up, and adds a mouse drag. Without
+   JS the tapes are still scrollable — they just sit flush at 0. */
+/* padding:0 overrides the generic section{ padding:80px 0 } — with it,
+   160px of the tape's border-box height went to padding and the strip
+   laid out in the squeezed remainder (berth columns crushed their
+   titles to zero — overflow:hidden text has no min-content floor —
+   and the bottom bylines clipped). One height formula, stated twice
+   (here and on the strip): max() keeps the viewport-or-floor choice
+   inside the height property itself, so the strip's own max() and the
+   group's 100% land on the same definite number. */
+.essay-ticker{
+  /* The tape's height and its berth inset, as tokens: the strip, the
+     berths and the covers all derive from these two, so a breakpoint
+     retunes the tape by setting them once (see the media queries at the
+     foot of this block) rather than restating a height in three places. */
+  --tape-h: max(33vh, 290px);
+  --tape-pad: 24px;
+  height: var(--tape-h);
+  padding: 0;
+  /* The tape IS the scroll container. overscroll-behavior-x keeps a flick
+     past either end from chaining out — on a trackpad that would
+     otherwise trigger the browser's back-swipe and leave the page. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  /* No scrollbar under the strip: it would rule a second line under every
+     tape and break the ruling the page is built on. The resting stagger
+     (essay-ticker.js) is what says these move, and drag/trackpad/touch/
+     shift-wheel all still work. */
+  scrollbar-width: none;
+}
+.essay-ticker::-webkit-scrollbar{ display: none; }
+/* Mouse drag (essay-ticker.js): grab only once the pointer is actually
+   over a tape, and hold the closed hand for the length of the drag. */
+.essay-ticker.is-scrollable{ cursor: grab; }
+.essay-ticker.is-dragging{ cursor: grabbing; }
+/* While dragging, the covers and their chips must not take the pointer's
+   text-selection or link-drag behaviour with them. */
+.essay-ticker.is-dragging{ user-select: none; }
+/* A drag is a scroll, not a hover — holding the panels shut while the
+   strip is moving keeps cards from flashing open under the cursor. */
+.essay-ticker.is-dragging .duo-panel{ opacity: 0; }
+/* Only the FIRST tape pulls up through .page-rows' 24px top inset, so the
+   page opens on the strip itself and its berth rules run all the way up
+   to the top — the same move the first row's gutter dividers make. The
+   tapes below it meet their neighbours on a shared rule instead (see
+   .page-rows--tapes), so they must not pull anywhere. */
+.essay-ticker:first-child{ margin-top: -24px; }
+/* The three tapes stack flush, parted by a single full-bleed rule with no
+   gap on either side, so the berth rules of one tape meet the rule that
+   closes it and the page reads as one continuous ruling rather than three
+   floating strips. */
+.page-rows--tapes .row-divider{ margin-bottom: 0; }
+.ticker-track{
+  display: flex; width: max-content; height: var(--tape-h);
+}
+.ticker-group{ display: flex; height: 100%; }
+.ticker-divider{ width: 1px; flex-shrink: 0; background: var(--line); }
+/* 24px all round, the same inset every cover card carries — and no
+   centering: the cover fills what's left of the tape's height, so the
+   only space above it is that 24px. The berth takes its WIDTH from the
+   cover (align-items:center leaves the frame's width auto, which its
+   10:8 ratio then resolves from the filled height) rather than fixing a
+   width and leaving the column short. */
+.ticker-item{
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+  padding: var(--tape-pad);
+  text-decoration: none;
+}
+/* A DEFINITE height, not flex:1. Filling by flex with an auto width and
+   a 10:8 ratio is circular — the ratio wants the width, the width wants
+   the flexed height — and the frame silently fell back to the image's
+   intrinsic height, overrunning the tape. Stating the height outright
+   (what's left of the tape after its insets) lets the ratio resolve the
+   width from it, which is what sets the berth's width in turn. */
+.ticker-cover-frame{
+  position: relative; display: block;
+  height: calc(var(--tape-h) - 2 * var(--tape-pad));
+  aspect-ratio: 10 / 8;
+}
+/* The topic as the cards' resting corner chip (see .rest-title-chip):
+   solid black flat on the cover's bottom-left, same type cut, same
+   10.35/10.65 optical vertical, hugging its text with an equal 25px
+   inset and ellipsizing only at the cover's edge. pointer-events:none,
+   as there — it's a label, not a control, and letting the pointer fall
+   through to the cover is what lets a hover ON THE CHIP still count as
+   a hover on the image beneath it. */
+.ticker-kicker{
+  position: absolute; bottom: 0; left: 0; z-index: 2;
+  margin: 0;
+  padding: 10.35px 25px 10.65px;
+  background: var(--paper);
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none; line-height: 1;
+  color: var(--white);
+  pointer-events: none;
+  max-width: 100%; box-sizing: border-box;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  transition: color .15s ease;
+}
+.ticker-cover-frame:hover .ticker-kicker{ color: var(--klein); }
+.ticker-cover-link{ display: block; height: 100%; }
+
+/* ---------- TICKER HOVER CARD ----------
+   The berths open the same .duo-panel the row cells do, so the header
+   strip, the footer band, their rules and their padding all arrive from
+   the shared rules above — only three things are the tape's own: what
+   reveals it, what it holds, and how big that sits.
+   The panel pins to the COVER's box (.ticker-cover-frame is the
+   positioned ancestor), so it opens over the picture exactly, chip and
+   all, the way a duo half's does. */
+.ticker-cover-frame:is(:hover, :focus-within) .duo-panel{
+  opacity: 1;
+  pointer-events: auto;
+}
+/* The row cells hold one composited layer each ahead of time to keep the
+   first fade smooth. The tape can't afford that bargain: 50 berths, and
+   the strip is cloned, so honouring it would pin 100 text-heavy layers
+   in GPU memory for a masthead. These panels raster on first hover. */
+.ticker-item .duo-panel{ will-change: auto; }
+/* The shared panel keeps 52px below its content box as the open-space
+   zone before the footer band — but the band itself only stands ~35px
+   tall, so the box stopped 17px SHORT of the band's rule and a title
+   centred in it rode that much high. Pad to the band's own height
+   instead (its two .pc insets, its type at line-height 1, and the 1px
+   its transparent border holds) and the box runs divider-to-rule, which
+   is the measure a centred title should be centred in. */
+.ticker-item .duo-panel{ padding-bottom: calc(10.35px + 9.65px + 0.86rem + 1px); }
+/* Nothing but the title, centred in the ground the strip and the band
+   leave between them. flex:1 takes that ground; min-height:0 lets it be
+   given back when a title runs long, so the box can never push the band
+   off its edge. */
+.ticker-item .duo-panel-top{
+  flex: 1; min-height: 0;
+  display: flex; align-items: center;
+}
+/* The starting size only: duo-panel-fit.js fills the measure from here,
+   growing a one-line title to the column and holding a wrapping one to
+   exactly two lines (its ceiling is 1.8× this, its floor 24px). */
+.ticker-item .duo-panel .card-title{
+  font-size: 2rem; line-height: 1.1; margin: 0;
+  text-wrap: balance;
+  -webkit-hyphens: auto; hyphens: auto;
+}
+/* The cover rides bare, no frame of its own — .card-image carries the
+   site's own cover treatment (object-fit, the surface tint under it and
+   the fade-in on decode); only the ratio is the tape's. */
+.ticker-cover{ width: 100%; height: 100%; }
+/* The cards' own inset steps down at these widths — the tape follows. */
+@media (max-width: 860px){
+  .essay-ticker{ --tape-pad: 20px; }
+}
+@media (max-width: 720px){
+  .essay-ticker{ --tape-h: max(33vh, 250px); }
+}
+@media (max-width: 480px){
+  .essay-ticker{ --tape-pad: 16px; }
+}
+
+
 /* ---------- FOOTER ---------- */
-footer{ padding: 32px 0; text-align:center; border-top: 1px solid var(--line); }
+footer{ padding: 24px 0; text-align:center; border-top: 1px solid var(--line); }
 /* Footer is just the fine-print line now — the bird and the link list
    were removed (their .foot-bird/.foot-links rules with them). */
-.foot-fine{ font-family: var(--title); font-weight: 700; font-size: var(--mono-size-muted); color: var(--muted); letter-spacing: 0; margin:0; }
-/* Each segment of the bottom line (©, est., email) lights up on its own
-   hover, same treatment as the link row above it. */
-.foot-fine-item{ transition: color .15s ease; }
-.foot-fine-item:hover{ color: var(--white); }
+/* The fine print wears the hover cards' dek cut exactly (see
+   .card--duo .duo-panel .card-dek): mono face at 500, --panel-text,
+   0.04em tracking, all caps, 1.5 leading, white ink — the same all-caps
+   eyebrow the panels speak in, closing the page in the site's own voice.
+   align-items:center so the three marks sit on the line's centre rather
+   than its baseline. */
+.foot-fine{
+  font-family: var(--mono); font-style: normal; font-weight: 500;
+  font-size: var(--panel-text);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--white); margin: 0;
+}
+/* One row, three groups. A 1fr auto 1fr grid rather than
+   space-between: it centres the marks against the FOOTER, not against
+   whatever the two text groups happen to measure, so the middle stays put
+   as the credit's year or the gloss changes length. */
+.foot-row{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+.foot-row > :first-child{ justify-self: start; text-align: left; }
+.foot-row > :last-child{ justify-self: end; text-align: right; }
+/* The marks line carries no dots — a flex row spaces them instead, so the
+   gap between marks is set once rather than living in the markup. They
+   still take their size from the type around them (1.15em) rather than
+   the 18px they stood at as a row of their own. */
+.foot-marks{ display: flex; justify-content: center; align-items: center; gap: 16px; }
+/* Both texts in the footer take the cards' resting-chip cut (see
+   .rest-title-chip): title face at 700, 0.86rem, no tracking, natural
+   case, line-height 1. The chip's own black fill and padding are left
+   off — the footer is already black, so a box here would draw nothing
+   and only cost the line its alignment. */
+.foot-chip{
+  font-family: var(--title); font-weight: 700; font-size: 0.86rem;
+  letter-spacing: 0; text-transform: none; line-height: 1;
+  color: var(--white);
+}
+.foot-fine .site-social-link{ vertical-align: middle; }
+.foot-fine .site-social-icon{ width: 1.15em; height: 1.15em; }
+/* The credit and the founding date take no hover at all — they aren't
+   links and never were, and lighting them implied they went somewhere.
+   The three marks beside them are the footer's only live targets. */
+
+/* Below the sidebar's own breakpoint the row has no width to divide —
+   the three groups stack and centre, in the source order they already
+   read left to right. */
+@media (max-width: 720px){
+  .foot-row{ grid-template-columns: 1fr; justify-items: center; gap: 6px; }
+  .foot-row > :first-child,
+  .foot-row > :last-child{ justify-self: center; text-align: center; }
+}
 
 /* The arrow in every "Read on →" link (site-wide) renders in the display
    face rather than inheriting the mono/courier font around it. The

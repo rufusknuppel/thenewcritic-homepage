@@ -243,7 +243,7 @@ const SITE_LINKS = [
   { key: 'home', label: 'Home', href: './' },
   // dek: the section page's own title/dek pair (see renderListPage /
   // renderPostscriptPage) — the sidebar no longer prints it (see
-  // navLink in renderNav; the permanent .nav-tagline replaced About's
+  // navLink in renderNav; the sidebar's own permanent gloss replaced About's
   // copy of it there). A newline is a HARD break where it's rendered —
   // these are set to specific line shapes, not left to wrap.
   { key: 'essays', label: 'Essays', href: 'essays.html' },
@@ -956,10 +956,14 @@ function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, ar
   const thisYear = new Date().getFullYear();
   // metaDate is the manual override from content-overrides.js — a display
   // string used verbatim, skipping the date formatting below.
+  // This year's posts are dated to the day — "Jul 13" — and older ones to
+  // the month and year — "Dec 2025". The month is abbreviated in both, so
+  // the two shapes read as one format at two precisions rather than as
+  // two different formats sitting side by side.
   const raw = post.metaDate
     || (d && !isNaN(d.getTime())
       ? d.toLocaleDateString('en-US', d.getFullYear() < thisYear
-          ? { month: 'long', year: 'numeric' }
+          ? { month: 'short', year: 'numeric' }
           : { month: 'short', day: 'numeric' })
       : '');
   const md = caps ? raw.toUpperCase() : raw;
@@ -990,7 +994,7 @@ function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, ar
   return parts.join(' <span class="meta-dot">&middot;</span> ');
 }
 
-// The copy-link corner button — a chain icon that puts the post's
+// The copy-link corner button — a chain icon and the word "Share" that put the post's
 // Substack URL on the clipboard (src/copy-link.js does the copying and
 // flips .copied for the check-mark beat). Rides the top-right corner of
 // every hover panel: outermost box of the duo byline strip, last band
@@ -998,7 +1002,10 @@ function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, ar
 // CSS swaps them on .copied.
 function copyLinkBtnHtml(post, cls) {
   if (!post.link) return '';
-  return `<button type="button" class="${cls}" data-copy-link="${escapeHtml(post.link)}" title="Copy link" aria-label="Copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></button>`;
+  // The visible word is "Share", so the accessible name has to CONTAIN it
+  // (a name that says only "Copy link" leaves voice control with no way to
+  // say what's on screen) — hence "Share" first, the mechanism after.
+  return `<button type="button" class="${cls}" data-copy-link="${escapeHtml(post.link)}" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button>`;
 }
 
 // Which of essay/postscript/contra a tagline belongs to, read off the
@@ -1039,36 +1046,55 @@ function renderNav(currentKey = 'home') {
   // every nav item below it takes. The name is broken one word per line,
   // each in its own block so the lines can be set to the margin (see
   // .nav-wordmark-line) rather than wrapping wherever they land.
-  const wordmarkLines = SITE_NAME.split(/\s+/)
-    .map(w => `<span class="nav-wordmark-line">${escapeHtml(w)}</span>`)
-    .join('');
-  // Subscribe closes the column as the last item under About, riding the
-  // nav links' own list rhythm (and their type) rather than sitting apart.
+  // One word to the line, set to alternating edges — The and Critic on
+  // the left margin, New on the right — so the masthead steps across the
+  // column instead of stacking flush (see .nav-wordmark-line). "The"
+  // keeps its sentence case against the other two's caps. Spelled out
+  // here rather than split off SITE_NAME: the treatment is per word now,
+  // and a generic split can't say which word gets what.
+  const wordmarkLines =
+    '<span class="nav-wordmark-line nav-wordmark-the">The</span>'
+    + '<span class="nav-wordmark-line">New</span>'
+    + '<span class="nav-wordmark-line nav-wordmark-critic">Critic</span>';
+  // Subscribe closes the column BELOW the mark, out of the section list
+  // and set apart from it: all caps, sized to span the rail's full measure
+  // (see .nav-subscribe in style.css). It's the column's one call to
+  // action, so it reads as its own register rather than a seventh section.
+  // The column reads name → sections → mark → Subscribe, and it pairs off
+  // by DESTINATION rather than by position: the wordmark is the home link
+  // and answers only for itself, while the mark and Subscribe both point
+  // at the subscribe page and light together (see THE MASTHEAD PAIRINGS
+  // in style.css). The mark duplicates Subscribe's destination, so it's
+  // aria-hidden and untabbable — the visible link right under it is the
+  // one assistive tech should meet, and a second announcement of the same
+  // page is only noise.
   return `<nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
       <span class="nav-wordmark">${wordmarkLines}</span>
-      <span class="nav-bird" aria-hidden="true"></span>
     </a>
   </div>
   <ul class="nav-links">
     ${links}
-    <li class="nav-item--subscribe nav-subscribe-item"><a class="nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></li>
   </ul>
-  <p class="nav-tagline">${escapeHtml(SITE_TAGLINE)}</p>
-  <div class="nav-social">
-    <a class="nav-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack" title="Substack"><svg class="nav-social-icon nav-social-icon--stroke" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 4.1h18.8M2.6 8.9h18.8M2.6 13.7h18.8v7.7L12 17.1l-9.4 4.3v-7.7z"/></svg></a>
-    <a class="nav-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram" title="Instagram"><svg class="nav-social-icon nav-social-icon--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5"/><circle cx="12" cy="12" r="4.3"/><circle class="ig-dot" cx="17.2" cy="6.8" r="1.2"/></svg></a>
-    <a class="nav-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors" title="editors@thenewcritic.com"><svg class="nav-social-icon nav-social-icon--stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.2" y="4.4" width="19.6" height="15.2" rx="2.5"/><path d="M3.2 6.2l8.8 6.8 8.8-6.8"/></svg></a>
-  </div>
+  <a class="nav-bird-link" href="${SITE_URL}/subscribe" rel="noopener" tabindex="-1" aria-hidden="true"><span class="nav-bird"></span></a>
+  <a class="nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
 </nav>`;
 }
 
 function renderFooter() {
   const year = new Date().getFullYear();
+  // One line, three groups: the set's gloss on the left, the marks —
+  // Substack, Instagram, the editors' address — centred, the credit and
+  // founding date on the right, both texts in the cards' chip cut. Source order is
+  // left-to-right so the stacked narrow-window fallback reads the same
+  // way. The mail mark carries the mailto the spelled-out address used
+  // to, so nothing is lost but the string.
   return `<footer>
-  <div class="wrap">
-    <p class="foot-fine"><span class="foot-fine-item">&copy; ${year} The New Critic</span> &middot; <span class="foot-fine-item">est. May 2025</span> &middot; <span class="foot-fine-item">editors@thenewcritic.com</span></p>
+  <div class="wrap foot-row">
+    <p class="foot-fine foot-chip">${escapeHtml(SITE_TAGLINE)}</p>
+    <p class="foot-fine foot-marks"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack" title="Substack"><svg class="site-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 3.4h18.8v2.9H2.6Z"/><path d="M2.6 8.2h18.8v2.9H2.6Z"/><path d="M2.6 13h18.8v8.6L12 17.4 2.6 21.6Z"/></svg></a><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram" title="Instagram"><svg class="site-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M7.6 2.6h8.8a5 5 0 0 1 5 5v8.8a5 5 0 0 1-5 5H7.6a5 5 0 0 1-5-5V7.6a5 5 0 0 1 5-5ZM12 7.7a4.3 4.3 0 1 0 0 8.6 4.3 4.3 0 0 0 0-8.6ZM12 9.4a2.6 2.6 0 1 1 0 5.2 2.6 2.6 0 0 1 0-5.2ZM17.2 5.55a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Z"/></svg></a><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors" title="editors@thenewcritic.com"><svg class="site-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 4.4h14.8a2.4 2.4 0 0 1 2.4 2.4v.35L12 13.9 2.2 7.15V6.8a2.4 2.4 0 0 1 2.4-2.4Z"/><path d="M2.2 9.5l9.23 6.36a1 1 0 0 0 1.14 0L21.8 9.5v7.7a2.4 2.4 0 0 1-2.4 2.4H4.6a2.4 2.4 0 0 1-2.4-2.4Z"/></svg></a></p>
+    <p class="foot-fine foot-chip">&copy; ${year} The New Critic &middot; est. May 2025</p>
   </div>
 </footer>`;
 }
@@ -1255,8 +1281,8 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     : '';
   const metaLineHtml = homepage
     ? [
-        bylineKickerBox,
         metaLine(post, { include: ['author'], caps: false, archiveLinks: true, authorPrefix }),
+        metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
       ].filter(Boolean).join('')
     : [
         metaLine(post, { include: ['author'], caps: false, archiveLinks: true, authorPrefix }),
@@ -1265,7 +1291,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
         bylineKickerBox,
       ].filter(Boolean).join('');
   const metaHtml = metaLineHtml
-    ? `<p class="card-meta card-meta--line${homepage ? ' card-meta--line--dateled' : ''}">${metaLineHtml}</p>`
+    ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
     : '';
   // The footer band: kicker (and, on the homepage's essay/postscript
   // cells, the cover credit) at the left; at the right, the likes box
@@ -1292,17 +1318,14 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? `<p class="card-meta card-meta--stats pc pc-right">${likesLine}</p>`
     : '';
   const copyBox = copyLinkBtnHtml(post, 'card-copylink pc pc-right');
-  const categoryBtn = (side) => `<a class="duo-essays-btn card-category-btn pc pc-${side}" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>`;
-  // The date opens the homepage band at the bottom-left — an archive deep
-  // link like the byline's was — with the section category slid over to its
-  // right; the copy-link + likes close the right. Contra shows no category
-  // here: its category already leads the byline (top-left) and carries the
-  // filtered contra-page link, so the footer would only repeat it.
-  const dateBox = `<span class="card-date-box pc pc-left">${metaLine(post, { include: ['date'], caps: false, archiveLinks: true })}</span>`;
+  // The homepage card reads to its four corners and nothing else: author
+  // top-left, date top-right, topic bottom-left, share and likes
+  // bottom-right. The section chip that used to sit in the band is gone —
+  // on the homepage every row is already labelled by the row above it, so
+  // the chip only ever repeated what the reader could see.
   const bandBottomHtml = homepage
     ? `<div class="panel-band panel-band--bottom">
-            ${dateBox}
-            ${section === 'contra' ? '' : categoryBtn('left')}
+            ${kickerBox}
             ${copyBox}
             ${likesBox}
           </div>`
@@ -1707,6 +1730,98 @@ const CONTRA_LEAD_PARAS = [
   'At last, rush to the theater! It will not write about itself.',
 ];
 
+// The essays page's masthead: a ticker tape of the section's essays,
+// crawling on its own at a slow constant pace (src/essay-ticker.js deals
+// the berths into a random order each visit, clones the strip for a
+// seamless wrap, and sets the pace; CSS drives the motion). Each berth
+// carries the topic over a 10:8 cover as the cards' resting corner chip,
+// with full-height vertical rules between berths and the whole tape
+// running edge to edge at ~a third of the viewport. Hovering a cover
+// opens a hover card over it — the same .duo-panel the row cells use, so
+// it inherits their header strip, footer band, rules and padding
+// wholesale (see .essay-ticker / .ticker-item .duo-panel in style.css).
+// The berth's panel holds nothing but the title, which duo-panel-fit.js
+// fills to the box on one or two lines exactly as it does the cards'.
+function renderEssayTicker(posts, { lanes = 3 } = {}) {
+  const items = posts.filter((p) => p.image);
+  if (!items.length) return '';
+  // loading:eager, not lazy. The strip is one 26,500px-wide clipped box,
+  // so every berth past the first screen sits outside the viewport and a
+  // lazy cover only STARTS loading as the crawl carries it in — each
+  // berth then entered dark and resolved through .card-image's 0.45s
+  // fade in full view. Eager at low fetchpriority loads them all up
+  // front (the 480w variant at a 200px slot, ~25KB each) without
+  // competing with the page's own critical images.
+  //
+  // The berth is a DIV, not the anchor it used to be: the panel carries
+  // its own links (title, topic, likes) and an anchor can't nest.
+  const itemHtml = (p) => {
+    const kicker = p.kicker || 'Essay';
+    const bandKicker = `<a class="hero-kicker pc pc-left" href="${escapeHtml(archiveHref(p, 'kicker'))}">${escapeHtml(kicker)}</a>`;
+    const likesLine = metaLine(p, { include: ['likes'] });
+    const likesBox = likesLine
+      ? `<p class="card-meta card-meta--stats pc pc-right">${likesLine}</p>`
+      : '';
+    return `<div class="ticker-item">
+          <span class="ticker-cover-frame">
+            <a class="ticker-cover-link" href="${escapeHtml(p.link)}" rel="noopener" aria-label="${escapeHtml(bylineName(p) ? `${p.title} by ${bylineName(p)}` : p.title)}"><img class="card-image ticker-cover" ${coverSrcAttrs(p.image, '200px')} alt=""${focalStyle(p)} loading="eager" fetchpriority="low" decoding="async"></a>
+            <span class="ticker-kicker" aria-hidden="true">${escapeHtml(kicker)}</span>
+            <div class="duo-panel">
+              <p class="card-meta card-meta--line">${metaLine(p, { include: ['author'], caps: false, archiveLinks: true })}${metaLine(p, { include: ['date'], caps: false, archiveLinks: true })}</p>
+              <div class="card-byline-divider"></div>
+              <div class="duo-panel-top">
+                <h3 class="card-title"><a href="${escapeHtml(p.link)}" rel="noopener">${escapeHtml(p.title)}</a></h3>
+              </div>
+              <div class="panel-band panel-band--bottom">
+                ${bandKicker}
+                ${likesBox}
+              </div>
+            </div>
+          </span>
+        </div><div class="ticker-divider" role="separator"></div>`;
+  };
+  // The pool dealt into `lanes` contiguous runs, as evenly as they
+  // divide. This split is only what ships in the HTML: essay-ticker.js
+  // repartitions a freshly shuffled pool across the tapes on every load.
+  // It still has to be repeat-free on its own, because without JS this
+  // static deal IS the page — and a post on two tapes at once would be
+  // the one thing the three-tape reading is meant to avoid.
+  const per = Math.ceil(items.length / lanes);
+  const runs = [];
+  for (let i = 0; i < items.length; i += per) runs.push(items.slice(i, i + per));
+  return runs
+    .map(
+      (run, i) => `  <section class="essay-ticker" aria-label="Essays, shuffled — tape ${i + 1} of ${runs.length}">
+    <div class="ticker-track">
+      <div class="ticker-group">
+        ${run.map(itemHtml).join('\n        ')}
+      </div>
+    </div>
+  </section>`
+    )
+    .join('\n  <div class="row-divider"></div>\n') + '\n';
+}
+
+// The essays page IS the tape now — three of them stacked, each scrolled
+// by the reader in either direction, together carrying every essay
+// exactly once (no card rows below: each berth's hover card already
+// prints the title, byline, date, topic and likes the rows used to).
+// src/essay-ticker.js reshuffles the whole pool across the three on every
+// load and staggers where each one rests.
+function renderEssaysPage({ currentKey, label, posts }) {
+  const bodyHtml = `
+  <div class="page-rows page-rows--tapes">
+${renderEssayTicker(posts)}  </div>`;
+  return renderPageShell({
+    currentKey,
+    title: label,
+    bodyHtml,
+    ogImage: posts.find((p) => p.image)?.image,
+    // No copy-link script: the tape's panels carry no copy button.
+    extraScripts: renderDuoPanelFitScript() + renderLineDrawScript() + renderEssayTickerScript(),
+  });
+}
+
 function renderListPage({ currentKey, label, posts, leadParas }) {
   const cfg = LIST_ROWS[currentKey];
   const rows = [];
@@ -1785,6 +1900,13 @@ ${leadHtml}${rows
 
 function renderContraFilterScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/contra-filter.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+function renderEssayTickerScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/essay-ticker.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
@@ -2435,7 +2557,7 @@ async function main() {
 
   const pages = {
     'index.html': html,
-    'essays.html': renderListPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
+    'essays.html': renderEssaysPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
     'postscript.html': renderPostscriptPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
     'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll, leadParas: CONTRA_LEAD_PARAS }),
     'about.html': renderAboutPage(founders),
