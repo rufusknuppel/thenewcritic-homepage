@@ -325,33 +325,131 @@
     });
     return w;
   }
+  // The width the title has to wrap in: the content box of its containing
+  // block. Walks past the display:contents .panel-col wrappers (which have
+  // no box of their own) to the first ancestor that actually lays out — the
+  // grid for the full-measure stacks (title spans 1 / -1) or the left flex
+  // column for the two-up wide cells.
+  function titleColWidth(title) {
+    // Skip ONLY the display:contents wrappers (which have no box). Stop at
+    // the first real element — even if it measures 0 (a closed panel): that
+    // is the true containing block, and a 0 there means "not laid out yet",
+    // which must bail the fit, not send the walk up into an ancestor whose
+    // width has nothing to do with the title's column.
+    var el = title.parentElement;
+    while (el && getComputedStyle(el).display === 'contents') el = el.parentElement;
+    if (!el) return 0;
+    var cs = getComputedStyle(el);
+    return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  }
+
+  // Fill the column on AT MOST two lines (see the call in fitTitleSize for
+  // the intent). Used by every headline voice — essay squares, the wide
+  // essay hero, contra, postscript. Called with fontSize/maxWidth already
+  // cleared, so the h3 reads at its CSS size to start.
+  function fitFillTitle(panel, title) {
+    var availW = titleColWidth(title);
+    var base = parseFloat(getComputedStyle(title).fontSize) || 0;
+    if (!availW || !base) return;
+    var lhRatio = (parseFloat(getComputedStyle(title).lineHeight) || base * 1.1) / base;
+    var ceil = Math.round(base * 1.8);             // the one-liners' ceiling
+    function linesAt(px) {
+      title.style.fontSize = px + 'px';
+      return Math.round(title.getBoundingClientRect().height / (px * lhRatio));
+    }
+
+    // A title that already sets on ONE line stays one line and grows to the
+    // column — the filled look the one-liners have. (Breaking it into two
+    // to grow further only shrinks the type: one full line reads larger
+    // than two half-empty ones.)
+    if (linesAt(base) <= 1) {
+      var rng = document.createRange();
+      rng.selectNodeContents(title);
+      var lineW = rng.getBoundingClientRect().width;
+      title.style.fontSize = '';
+      if (lineW > 0) {
+        var grown = Math.min(Math.floor(base * (availW - 2) / lineW), ceil);
+        if (grown > base) title.style.fontSize = grown + 'px';
+      }
+      return;
+    }
+
+    // A wrapping title is set on exactly two lines at the LARGEST type that
+    // still fits in two — long titles shrink until two lines hold them,
+    // short two-liners grow until one more point would spill a word or a
+    // third line. Three ceilings on the size (two lines, no word past the
+    // column, the block clears whatever sits below it), all monotonic, so a
+    // binary search lands the largest that clears them.
+    var band = panel.querySelector('.panel-band--bottom') || panel.querySelector('.panel-band');
+    var bandTop = band ? band.getBoundingClientRect().top : Infinity;
+    var tr = title.getBoundingClientRect();
+    // Reserve the room the title must leave below itself: its own bottom
+    // margin, plus whatever shares its column beneath it — an excerpt keeps
+    // a two-line sliver, a dek keeps its whole (short) self. Content BESIDE
+    // the title (the wide cell's excerpt, in the other column) doesn't
+    // compete for this vertical space, so it isn't counted; contra has no
+    // excerpt at all and simply reserves for its dek.
+    var reserve = parseFloat(getComputedStyle(title).marginBottom) || 0;
+    // The excerpt CONTAINER once (.card-preview-block), never its individual
+    // paragraphs — matching .card-preview here counted every paragraph as a
+    // separate 44px reserve, ballooning maxH negative so the search failed
+    // and the title fell to its 24px floor.
+    [].forEach.call(panel.querySelectorAll('.card-preview-block, .card-dek'), function(el){
+      if (getComputedStyle(el).display === 'none') return;
+      var r = el.getBoundingClientRect();
+      if (r.height <= 1) return;
+      var below = r.top >= tr.top + 4;
+      var sameCol = r.left < tr.right - 4 && r.right > tr.left + 4;
+      if (!below || !sameCol) return;
+      reserve += el.classList.contains('card-dek') ? r.height + 12 : 44;
+    });
+    var maxH = bandTop - tr.top - GAP - reserve;
+    function fits(px) {
+      title.style.fontSize = px + 'px';
+      var h = title.getBoundingClientRect().height;
+      if (Math.round(h / (px * lhRatio)) > 2) return false;
+      if (h > maxH) return false;
+      if (longestWordWidth(title, px) > availW - 2) return false;
+      return true;
+    }
+    var lo = 24, hi = ceil, best = 24;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1;
+      if (fits(mid)) { best = mid; lo = mid + 1; } else { hi = mid - 1; }
+    }
+    title.style.fontSize = best + 'px';
+  }
+
   function fitTitleSize(panel, title) {
     if (!title) return;
     title.style.fontSize = '';
     // maxWidth from a previous pass would understate the measure.
     title.style.maxWidth = '';
-    // The wide cells keep the full CSS size deliberately — their title is
-    // the page's lead and is meant to carry, even though its column is
-    // half the card. Their titles are short enough to hold it; a long word
-    // that doesn't fit falls back to the hyphenation and break-word on
-    // .card-title rather than shrinking the whole line.
-    if (panel.closest('.duo-half--wide')) return;
+    // Every headline voice fills its measure, capped at TWO lines — the
+    // essay squares, the wide essay hero, contra, postscript. The old
+    // behaviour (a width ratio that only ever SHRANK, one-line titles
+    // balanced into two, the wide cells frozen at the CSS size and left to
+    // break a long word mid-letter) is gone. Now:
+    //   • a title that sets on ONE line at the CSS size stays one line and
+    //     grows until it spans the full column (as big as the box allows);
+    //   • a title that needs to wrap is set on exactly two lines, sized to
+    //     the LARGEST type that still fits in two — a long title shrinks
+    //     until two lines hold it (no mid-word break), a short two-liner
+    //     grows until one more point would spill a word or a third line.
+    // Either way both lines pack out to the column. See fitFillTitle; the
+    // excerpt/dek below keeps whatever ground the title leaves.
+    if (panel.closest('.duo-half--essay') || panel.closest('.duo-half--contra')
+        || panel.closest('.duo-half--postscript') || panel.closest('.duo-half--wide')) {
+      fitFillTitle(panel, title);
+      return;
+    }
+    // Any remaining panel (archive ledger, a non-essay feature) keeps the
+    // width-ratio shrink: the title cedes room to the excerpt in its narrow
+    // column and never grows past the CSS size.
     var cssPx = parseFloat(getComputedStyle(title).fontSize) || 0;
     var colW = title.getBoundingClientRect().width;
     var colPx = colW * TITLE_PER_PX;
     var size = (colPx && colPx < cssPx) ? Math.round(colPx) : cssPx;
-    // Contra and postscript cells keep the full CSS size — one headline
-    // voice across every section. Contra carries no excerpt at all (see
-    // .duo-half--contra in style.css), so the width ratio — whose whole
-    // job is leaving an excerpt room in a narrow column — has nothing to
-    // protect; postscript keeps its excerpt and simply cedes it the
-    // lines a bigger title costs (the fit loop below clamps the body to
-    // whatever ground remains). Set here rather than as an early return
-    // so the long-word floor below still applies: a title that cannot
-    // set whole still shrinks rather than breaking mid-letter.
-    if (panel.closest('.duo-half--contra') || panel.closest('.duo-half--postscript')) {
-      size = cssPx;
-    }
     // Where the engine can hyphenate, an over-long word is the CSS's
     // business: hyphens:auto breaks it at a real syllable and sets the
     // hyphen ("Commodifica-tion"), and the title keeps its full size.
@@ -506,58 +604,6 @@
     title.style.maxWidth = '';
   }
 
-  // The title's link tell: one rule per rendered LINE of the title,
-  // placed absolutely inside the h3 and staggered so they sweep in top
-  // line first (see .title-rule in style.css for why CSS can't do this
-  // alone). Called after the title's size, its line breaks and any
-  // truncation have all settled, since those are what the line boxes
-  // depend on. Rules are cleared and rebuilt every fit; they carry no
-  // text, so the truncation walker never sees them.
-  function clearTitleRules(title) {
-    if (!title) return;
-    var old = title.querySelectorAll('.title-rule');
-    for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
-  }
-  function drawTitleRules(title) {
-    clearTitleRules(title);
-    if (!title || getComputedStyle(title).display === 'none') return;
-    var link = title.querySelector('a') || title;
-    var rng = document.createRange();
-    rng.selectNodeContents(link);
-    var rects = [].slice.call(rng.getClientRects()).filter(function(r){ return r.width >= 1; });
-    if (!rects.length) return;
-    // Fold the fragments of each rendered line into one rule. A line can
-    // arrive as several rects (an <em>, a marked-up word), and they share
-    // a top to within rounding.
-    var lines = [];
-    rects.forEach(function(r){
-      for (var i = 0; i < lines.length; i++) {
-        if (Math.abs(lines[i].top - r.top) < 2) {
-          lines[i].left = Math.min(lines[i].left, r.left);
-          lines[i].right = Math.max(lines[i].right, r.right);
-          lines[i].bottom = Math.max(lines[i].bottom, r.bottom);
-          return;
-        }
-      }
-      lines.push({ top: r.top, bottom: r.bottom, left: r.left, right: r.right });
-    });
-    lines.sort(function(a, b){ return a.top - b.top; });
-    var tr = title.getBoundingClientRect();
-    // The rect's bottom is the font's metric box, a shade under the
-    // descenders; lifting by a fraction of the type size sets the rule
-    // tight against the words, grazing them rather than clearing them.
-    var lift = (parseFloat(getComputedStyle(title).fontSize) || 24) * 0.06;
-    lines.forEach(function(l, i){
-      var el = document.createElement('span');
-      el.className = 'title-rule';
-      el.style.left = (l.left - tr.left) + 'px';
-      el.style.width = (l.right - l.left) + 'px';
-      el.style.top = (l.bottom - tr.top - lift) + 'px';
-      el.style.setProperty('--rule-delay', (i * 0.13) + 's');
-      title.appendChild(el);
-    });
-  }
-
   // The footer band seats three boxes now — kicker and cover credit left,
   // section right (the likes live in the byline) — and they never wrap or
   // shrink, they overflow, so scrollWidth is the tell. A narrow card
@@ -676,11 +722,6 @@
     // branch), so one restore covers them.
     var block0 = topBox.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
-    // Strip last pass's title rules BEFORE anything measures the title or
-    // stashes its markup — truncateToWord snapshots innerHTML the first
-    // time it runs, and a snapshot with rules baked in would restore them
-    // on every later fit.
-    clearTitleRules(title);
     if (title && title.__fullHTML) title.innerHTML = title.__fullHTML;
     var paras = topBox.querySelectorAll('.card-preview');
 
@@ -744,10 +785,8 @@
 
     // In the static fallback layout (touch devices / narrow viewports) the
     // panel flows under the image and the bands sit in flow too — nothing
-    // to fit against, and the CSS fallback clamps handle length. The title
-    // still gets its rules: the layout is static, not the link.
+    // to fit against, and the CSS fallback clamps handle length.
     if (getComputedStyle(panel).position !== 'absolute') {
-      drawTitleRules(title);
       return;
     }
 
@@ -768,8 +807,16 @@
     // (the two-line break, the credit's clearance, the floor budget)
     // depends on the type size being settled.
     fitTitleSize(panel, title);
-    fitTitleFewerLines(panel, title);
-    fitTitleTwoLines(title);
+    // The fill-title voices own their line count — fitFillTitle grows a
+    // one-line title to the column and holds a wrapping one to exactly two.
+    // The fewer-lines trim and the two-line balancer both fight that (one
+    // shrinks to save a line, the other forces a split), so neither runs
+    // for them; they still serve the width-ratio fall-through titles.
+    if (!(panel.closest('.duo-half--essay') || panel.closest('.duo-half--contra')
+        || panel.closest('.duo-half--postscript') || panel.closest('.duo-half--wide'))) {
+      fitTitleFewerLines(panel, title);
+      fitTitleTwoLines(title);
+    }
     // One floor for everything: the band's top edge, GAP of air above it.
     // (This used to be -14 for hard blocks and -16 for running text — two
     // constants disagreeing by a hair for no reason anyone remembered.)
@@ -1092,9 +1139,6 @@
         title.style.overflow = 'visible';
       }
     }
-
-    // The title's line breaks are final here — underline them.
-    drawTitleRules(title);
 
     // Last, once every column's content has settled: run the column rule
     // from the panel's top border to the band's.

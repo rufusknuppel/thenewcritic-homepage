@@ -553,18 +553,25 @@ function contraWorkChipHtml(subtitle) {
   return `${escapeHtml(m[1])} <em>${escapeHtml(m[2])}</em>`;
 }
 
-// The resting corner chip's text, by section — see restChipTopHtml's
-// call site in renderDuoHalf for how it's placed. Essays bill their own
-// author, since the title already prints at rest below (essays.html) or
-// sits one hover away everywhere else; postscript bills its subject
-// with the "w/" the interview format wants; contra bills the work under
-// review, italicized, with the reviewed artist's name dropped for space
-// (see contraWorkChipHtml).
-function restChipTopHtml(post, section) {
-  if (section === 'postscript' && post.psName) return `w/ ${escapeHtml(post.psName)}`;
-  if (section === 'contra' && post.subtitle) return contraWorkChipHtml(post.subtitle);
-  if (section === 'essay') return escapeHtml(bylineName(post));
-  return escapeHtml(post.title);
+
+// The resting chip's billing, by section — the one-line label printed over
+// the cover's bottom-left corner while the card is closed (see the
+// .rest-title-chip rules in style.css). Essays bill the title (italic) and
+// author, postscript the topic and its subject, contra the reviewer and
+// the work under review (italic). Ellipsized where it runs long.
+function composedChipHtml(post, section) {
+  if (section === 'postscript') {
+    return `${escapeHtml(post.kicker || '')}${post.psName ? ` w/ ${escapeHtml(post.psName)}` : ''}`;
+  }
+  if (section === 'contra') {
+    // subtitle is "contra <artist>'s <Work>" (or just "contra <Work>");
+    // keep the reviewer + "contra" + the work alone, italicized.
+    const work = (post.subtitle || '').replace(/^contra\s+/i, '');
+    const m = /[’']s\s+(\S[\s\S]*)$/.exec(work);
+    const workTitle = m ? m[1] : work;
+    return `${escapeHtml(bylineName(post))} contra <em>${escapeHtml(workTitle)}</em>`;
+  }
+  return `${escapeHtml(post.title)} by ${escapeHtml(bylineName(post))}`;
 }
 
 function wrapLeadWords(text) {
@@ -944,7 +951,7 @@ function archiveHref(post, key) {
 // archiveLinks:true renders the author and date as archive deep links
 // (see archiveHref) instead of inert spans — same classes, so the byline
 // boxes keep their ruling either way.
-function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, archiveLinks = false } = {}) {
+function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, archiveLinks = false, authorPrefix = '' } = {}) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
   // metaDate is the manual override from content-overrides.js — a display
@@ -963,9 +970,10 @@ function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, ar
         ? `<a class="meta-date" href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(md)}</a>`
         : `<span class="meta-date">${escapeHtml(md)}</span>`);
     } else if (field === 'author' && bylineName(post)) {
+      const authorText = escapeHtml(`${authorPrefix}${authorDisplay(post, caps)}`);
       parts.push(archiveLinks
-        ? `<a class="meta-author" href="${escapeHtml(archiveHref(post, 'author'))}">${escapeHtml(authorDisplay(post, caps))}</a>`
-        : `<span class="meta-author">${escapeHtml(authorDisplay(post, caps))}</span>`);
+        ? `<a class="meta-author" href="${escapeHtml(archiveHref(post, 'author'))}">${authorText}</a>`
+        : `<span class="meta-author">${authorText}</span>`);
     } else if (field === 'likes') {
       const likes = typeof post.reactionCount === 'number' ? post.reactionCount : 0;
       // The heart is a door, not a control: liking lives on Substack (it
@@ -1040,9 +1048,9 @@ function renderNav(currentKey = 'home') {
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
       <span class="nav-wordmark">${wordmarkLines}</span>
+      <span class="nav-bird" aria-hidden="true"></span>
     </a>
   </div>
-  <img class="nav-bird" src="bird-logo.png" alt="" width="962" height="835">
   <ul class="nav-links">
     ${links}
     <li class="nav-item--subscribe nav-subscribe-item"><a class="nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></li>
@@ -1219,13 +1227,45 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // instead, left of the likes count (see bandBottomHtml below) — every
   // other section keeps it here.
   const isPostscript = section === 'postscript';
-  const metaLineHtml = [
-    metaLine(post, { include: ['author'], caps: false, archiveLinks: true }),
-    isPostscript ? '' : copyLinkBtnHtml(post, 'meta-copylink'),
-    metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
-  ].filter(Boolean).join('');
+  // Postscript names its subject with "w/"; essays and contra reviews print
+  // the author's name plain (the "by" is dropped from the hover byline).
+  const authorPrefix = isPostscript ? 'w/ ' : '';
+  // sectionBtn is true only on the homepage rows (renderListPage and the
+  // heroes pass false) — the "this is a homepage cell" signal. On the
+  // homepage the copy-link lives in the footer band (left of the likes),
+  // so the byline strip drops it there; postscript always bills it down
+  // in the band too, on every page.
+  const homepage = sectionBtn;
+  // On the homepage the byline reads DATE then author (the reverse of the
+  // section pages' author-then-date); the .card-meta--line--dateled
+  // modifier swaps which box takes the margin-left:auto that pins the
+  // right group (see style.css). Off-homepage keeps author left, the
+  // copy-link (essay/contra), and the date closing the corner.
+  // Essays, postscript and contra all carry their topic/category as a chip
+  // of its own at the head of the byline — top-LEFT — boxed by its own
+  // vertical rules (see .meta-kicker in style.css); the author (with its
+  // "by"/"w/" prefix) takes the top-RIGHT beside it. Essay/postscript chips
+  // deep-link into the archive by topic; contra's carries the filtered
+  // contra-page link (it used to ride the footer, now dropped from there).
+  const kickerHref = section === 'contra'
+    ? `contra.html#${escapeHtml(post.kicker ? post.kicker.toLowerCase() : '')}`
+    : escapeHtml(archiveHref(post, 'kicker'));
+  const bylineKickerBox = post.kicker
+    ? `<a class="meta-kicker" href="${kickerHref}">${escapeHtml(post.kicker)}</a>`
+    : '';
+  const metaLineHtml = homepage
+    ? [
+        bylineKickerBox,
+        metaLine(post, { include: ['author'], caps: false, archiveLinks: true, authorPrefix }),
+      ].filter(Boolean).join('')
+    : [
+        metaLine(post, { include: ['author'], caps: false, archiveLinks: true, authorPrefix }),
+        isPostscript ? '' : copyLinkBtnHtml(post, 'meta-copylink'),
+        metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
+        bylineKickerBox,
+      ].filter(Boolean).join('');
   const metaHtml = metaLineHtml
-    ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
+    ? `<p class="card-meta card-meta--line${homepage ? ' card-meta--line--dateled' : ''}">${metaLineHtml}</p>`
     : '';
   // The footer band: kicker (and, on the homepage's essay/postscript
   // cells, the cover credit) at the left; at the right, the likes box
@@ -1245,12 +1285,32 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? `<p class="card-meta pc pc-${side} pc-art">Art by ${escapeHtml(post.coverArtist)}</p>`
     : '';
   const likesLine = metaLine(post, { include: ['likes'] });
-  const bandBottomHtml = `<div class="panel-band panel-band--bottom">
-            ${post.kicker ? `<a class="hero-kicker pc pc-left" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>` : ''}
-            ${sectionBtn && section !== 'contra' ? artBox('left') : ''}
-            ${isPostscript ? copyLinkBtnHtml(post, 'card-copylink pc pc-right') : ''}
-            ${likesLine ? `<p class="card-meta card-meta--stats pc pc-right">${likesLine}</p>` : ''}
-            ${sectionBtn ? `<a class="duo-essays-btn card-category-btn pc pc-right" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>` : artBox('right')}
+  const kickerBox = post.kicker
+    ? `<a class="hero-kicker pc pc-left" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>`
+    : '';
+  const likesBox = likesLine
+    ? `<p class="card-meta card-meta--stats pc pc-right">${likesLine}</p>`
+    : '';
+  const copyBox = copyLinkBtnHtml(post, 'card-copylink pc pc-right');
+  const categoryBtn = (side) => `<a class="duo-essays-btn card-category-btn pc pc-${side}" href="${escapeHtml(btnHref)}">${escapeHtml(btnLabel)}</a>`;
+  // The date opens the homepage band at the bottom-left — an archive deep
+  // link like the byline's was — with the section category slid over to its
+  // right; the copy-link + likes close the right. Contra shows no category
+  // here: its category already leads the byline (top-left) and carries the
+  // filtered contra-page link, so the footer would only repeat it.
+  const dateBox = `<span class="card-date-box pc pc-left">${metaLine(post, { include: ['date'], caps: false, archiveLinks: true })}</span>`;
+  const bandBottomHtml = homepage
+    ? `<div class="panel-band panel-band--bottom">
+            ${dateBox}
+            ${section === 'contra' ? '' : categoryBtn('left')}
+            ${copyBox}
+            ${likesBox}
+          </div>`
+    : `<div class="panel-band panel-band--bottom">
+            ${kickerBox}
+            ${isPostscript ? copyBox : ''}
+            ${likesBox}
+            ${artBox('right')}
           </div>`;
   const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
   // The resting kicker: the topic alone, printed over the cover's
@@ -1260,34 +1320,38 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // (see .rest-kicker in style.css). aria-hidden: it duplicates the panel
   // band's kicker link, which is the one assistive tech should meet.
   const titleHtml = `<h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>`;
-  // Postscript reorders THE STACK: title leads, then the dek tight
-  // under it, then the byline drops out of its header-strip position
-  // to sit under both instead — all still one flat DOM run inside
-  // panel-col--left,
-  // since .panel-col is display:contents (see style.css) and hands its
-  // children straight to .duo-panel-top's grid as ordinary stack items.
-  // Every other section keeps the byline as the panel's full-width
-  // header strip above .duo-panel-top (see THE STACK in style.css).
-  // (isPostscript itself is declared above, by metaLineHtml — reused
-  // here and by bandBottomHtml too.)
-  // The byline's bottom edge has no divider of its own — the excerpt's
-  // .duo-quote-divider (rendered in panel-col--right below) lands right
-  // after it in THE STACK's flattened grid order and does that job
-  // instead, so the byline box doesn't close with one rule only for a
-  // second, near-identical one to follow immediately under it (see the
-  // postscript .duo-quote-divider override in style.css).
-  const leftColHtml = isPostscript
-    ? `${titleHtml}${dekHtml}${metaHtml ? '<div class="card-byline-divider"></div>' : ''}${metaHtml}`
-    : `${titleHtml}${dekHtml}`;
+  // THE STACK: title then dek in the left column, with the byline as the
+  // panel's full-width header strip above .duo-panel-top (see THE STACK
+  // in style.css) — every section, postscript included. Postscript's own
+  // byline/footer CONTENT still differs (its copy-link bills down in the
+  // footer band, not the strip — see metaLineHtml / bandBottomHtml and
+  // the isPostscript gates there), but the arrangement matches the rest.
+  //
+  // Essays (in the stacked, non-wide cells) invert the top of that order:
+  // the dek band rides up directly under the byline — the byline strip's
+  // own divider becomes the band's top edge — with the dek's divider
+  // closing it below, and the title drops in between the band and the
+  // excerpt, keeping its usual 48px steps. So the essay run is
+  // dek → dek-divider → title, where every other section is
+  // title → dek-divider → dek (see the .duo-half--essay overrides in
+  // style.css for the matching spacing).
+  const isWide = halfClass.includes('duo-half--wide');
+  const dekDivider = dekHtml ? '<div class="card-dek-divider" aria-hidden="true"></div>' : '';
+  // Every section reads byline → title → dek → body → footer: the title
+  // hangs off the byline strip, then the dek sits UNDER it in a band of its
+  // own — its top edge the .card-dek-divider, its bottom edge the body's
+  // quote divider. Contra prints no body, so its dek band closes on the
+  // dek-divider alone (the quote rule and excerpt are hidden — see the
+  // .duo-half--contra rules in style.css).
+  const leftColHtml = `${titleHtml}${dekDivider}${dekHtml}`;
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
-        ${post.kicker ? `<p class="rest-kicker" aria-hidden="true">${escapeHtml(post.kicker)}</p>` : ''}
-        <p class="rest-title-chip" aria-hidden="true">${restChipTopHtml(post, section)}</p>
+        <p class="rest-title-chip" aria-hidden="true">${composedChipHtml(post, section)}</p>
         <div class="duo-panel">
-          ${!isPostscript ? metaHtml : ''}
-          ${!isPostscript && metaHtml ? '<div class="card-byline-divider"></div>' : ''}
+          ${metaHtml}
+          ${metaHtml ? '<div class="card-byline-divider"></div>' : ''}
           <div class="duo-panel-top">
             <div class="panel-col panel-col--left">
               ${leftColHtml}
@@ -1414,12 +1478,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // line between rows of cover images stretches the full width of the
   // content column (edge to edge, past the .wrap's own max-width/
   // padding).
-  // Deks drop out of every homepage cell (showDek: false throughout) —
-  // the grid runs on covers, titles and kickers alone; the dek stays on
-  // the section pages and the open hover panel everywhere else.
+  // Deks print in every homepage cell (showDek defaults true) — kicker,
+  // title, dek and cover together, matching the section pages and the
+  // open hover panel.
   const blocks = [];
   const essayPair = (pair) => {
-    if (pair.length) blocks.push(renderDuoCard(pair, { padTo: 2, showDek: false }));
+    if (pair.length) blocks.push(renderDuoCard(pair, { padTo: 2 }));
   };
   const contraRow = (row) => {
     if (row.length) {
@@ -1429,12 +1493,11 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         btnHref: 'contra.html',
         extraClass: 'card--quad card--quad-open',
         padTo: 3,
-        showDek: false,
       }));
     }
   };
   if (essays[0] || postscripts[0]) {
-    blocks.push(renderSplitRow(essays[0], postscripts[0], { showDek: false }));
+    blocks.push(renderSplitRow(essays[0], postscripts[0]));
   }
   essayPair(essays.slice(1, 3));
   contraRow(contras.slice(0, 3));
@@ -1447,16 +1510,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       btnHref: 'postscript.html',
       extraClass: 'card--trio-flat',
       padTo: 3,
-      showDek: false,
     }));
   }
   essayPair(essays.slice(5, 7));
   contraRow(contras.slice(3, 6));
   essayPair(essays.slice(7, 9));
   if (essays[9] || postscripts[4]) {
-    blocks.push(renderSplitRow(essays[9], postscripts[4], { flip: true, showDek: false }));
+    blocks.push(renderSplitRow(essays[9], postscripts[4], { flip: true }));
   }
-  const archiveOpts = { tag: 'From the Essay', btnLabel: 'From the Archive', btnHref: 'archive.html', showDek: false };
+  const archiveOpts = { tag: 'From the Essay', btnLabel: 'From the Archive', btnHref: 'archive.html' };
   if (archives[0] || archives[1]) {
     blocks.push(renderDuoCard(archives.slice(0, 2), { ...archiveOpts, padTo: 2 }));
   }

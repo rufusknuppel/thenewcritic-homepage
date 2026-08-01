@@ -83,16 +83,30 @@
   }
 
   var active = null;
+  function setActive(k) {
+    active = k;
+    [].forEach.call(nav.querySelectorAll('.contra-filter-link'), function (b) {
+      var on = b.getAttribute('data-kicker') === active;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    layout(active);
+  }
   [].forEach.call(nav.querySelectorAll('.contra-filter-link'), function (btn) {
     btn.addEventListener('click', function () {
       var k = btn.getAttribute('data-kicker');
-      active = active === k ? null : k;
-      [].forEach.call(nav.querySelectorAll('.contra-filter-link'), function (b) {
-        var on = b.getAttribute('data-kicker') === active;
-        b.classList.toggle('is-active', on);
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-      layout(active);
+      setActive(active === k ? null : k);
     });
   });
+  // Deep link: a homepage contra card's category chip links here as
+  // contra.html#books (see the rest-kicker link in build.js), so the
+  // matching filter opens on arrival. hashchange too, for same-page jumps.
+  function applyHash() {
+    var want = (location.hash || '').replace(/^#/, '').toLowerCase();
+    if (!want) return;
+    var match = nav.querySelector('.contra-filter-link[data-kicker="' + want + '"]');
+    if (match && active !== want) setActive(want);
+  }
+  applyHash();
+  window.addEventListener('hashchange', applyHash);
 })();
