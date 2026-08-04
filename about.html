@@ -48,7 +48,7 @@
 
 </script>
 </head>
-<body class="mission-body">
+<body class="about-body">
 
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -75,160 +75,104 @@
 </div>
 
 <main id="main">
-
-  <div class="mission-page">
-    <div class="mission-col">
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">About</span>
+  <div class="page-rows">
+  <div class="wrap">
+    <header class="card contra-head about-head">
+      <nav class="about-head-list" aria-label="About sections">
+        <button type="button" class="contra-filter-link about-link is-active" data-key="about" aria-expanded="true">About</button>
+        <button type="button" class="contra-filter-link about-link" data-key="subscribe" aria-expanded="false">Subscriptions</button>
+        <button type="button" class="contra-filter-link about-link" data-key="give" aria-expanded="false">Give</button>
+        <button type="button" class="contra-filter-link about-link" data-key="masthead" aria-expanded="false">Masthead</button>
+        <button type="button" class="contra-filter-link about-link" data-key="contact" aria-expanded="false">Contact</button>
+        <button type="button" class="contra-filter-link about-link about-link--parted" data-key="letter" aria-expanded="false">Letter</button>
+        <button type="button" class="contra-filter-link about-link" data-key="manifesto" aria-expanded="false">Manifesto</button>
+      </nav>
+    </header>
+  </div>
+  <div class="row-divider"></div>
+  <div class="wrap">
+    <section class="about-panel" data-key="about" aria-label="About">
+      <p class="card-preview">The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.</p>
+    </section>
+    <section class="about-panel" data-key="subscribe" aria-label="Subscriptions" hidden>
+      <p class="card-dek">Sign up for our free newsletter<br>or become a paying member.</p>
+      <p class="card-preview">Hundreds of New Critic readers are paid subscribers. For $30 a year, paid subscribers get access to:</p>
+      <ol class="mission-list">
+        <li>Postscript, our interview series</li>
+        <li>Contra, our criticism section</li>
+        <li>Exclusive New Critic parties</li>
+      </ol>
+      <div class="about-actions"><a class="about-action" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></div>
+    </section>
+    <section class="about-panel" data-key="give" aria-label="Give" hidden>
+      <p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
+      <div class="about-give-cols">
+        <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
+        <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
+      </div>
+      <p class="card-preview about-give-line">Give through <a href="https://fundraising.fracturedatlas.org/the-new-critic" rel="noopener" target="_blank">Fractured Atlas</a> or <a href="https://donate.stripe.com/00w00i0rufwc8KFf9S7AI01" rel="noopener" target="_blank">Stripe</a>.</p>
+      <p class="card-preview about-give-caveat">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+    </section>
+    <section class="about-panel" data-key="masthead" aria-label="Masthead" hidden>
+      <div class="mh-list">
+          <div class="mh-group">
+            <p class="mh-role">Founding Editors</p>
+            <a class="mh-name mh-name--left" href="https://substack.com/@tessaaugsberger" rel="noopener" target="_blank">Tessa Augsberger<img class="mh-pfp" src="people/tessa-augsberger.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+            <a class="mh-name mh-name--right" href="https://substack.com/@elankluger" rel="noopener" target="_blank">Elan Kluger<img class="mh-pfp" src="people/elan-kluger.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+            <a class="mh-name mh-name--left" href="https://substack.com/@rufusknuppel" rel="noopener" target="_blank">Rufus Knuppel<img class="mh-pfp" src="people/rufus-knuppel.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+          </div>
+          <div class="mh-group">
+            <p class="mh-role">Assistant Editors</p>
+            <a class="mh-name mh-name--right" href="https://substack.com/@willdiana" rel="noopener" target="_blank">Will Diana<img class="mh-pfp" src="people/will-diana.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+            <a class="mh-name mh-name--left" href="https://substack.com/@theogary" rel="noopener" target="_blank">Theodore Gary<img class="mh-pfp" src="people/theodore-gary.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+            <a class="mh-name mh-name--right" href="https://substack.com/@isabelmehta" rel="noopener" target="_blank">Isabel Mehta<img class="mh-pfp" src="people/isabel-mehta.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+            <a class="mh-name mh-name--left" href="https://substack.com/@oyyy" rel="noopener" target="_blank">Owen Yingling<img class="mh-pfp" src="people/owen-yingling.jpeg" alt="" aria-hidden="true" loading="lazy"></a>
+          </div>
+          <div class="mh-group">
+            <p class="mh-role">Art Director</p>
+            <a class="mh-name mh-name--right" href="https://substack.com/@kitknuppel1" rel="noopener" target="_blank">Kit Knuppel<img class="mh-pfp" src="people/kit-knuppel.jpg" alt="" aria-hidden="true" loading="lazy"></a>
+          </div>
         </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>
-        <p class="card-dek">The Young American Magazine</p>
-        <div class="duo-quote-divider"></div>
-        <p class="card-preview">The New Critic publishes essays, interviews, and criticism by and for generation z.</p>
-      </article>
-      <div class="mission-hr" role="separator"></div>
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">Subscribe</span>
-          <span class="mission-band-box mission-band-box--right">$30 / year</span>
-        </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>
-        <p class="card-dek">Sign up for our free newsletter or become a paying member.</p>
-        <div class="duo-quote-divider"></div>
-        <p class="card-preview">Hundreds of New Critic readers are paid subscribers. For $30 a year, paid subscribers get access to:</p>
-        <ul class="mission-list">
-          <li>Postscript, our interview series</li>
-          <li>Contra, our criticism section</li>
-          <li>Exclusive New Critic parties</li>
-        </ul>
-        <div class="mission-band-rule mission-band-rule--bottom" role="separator"></div>
-        <div class="mission-band mission-band--bottom">
-          <a class="mission-band-box mission-band-box--right" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
-        </div>
-      </article>
-      <div class="mission-hr" role="separator"></div>
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">Masthead</span>
-        </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>
-        <div class="mission-people">
-        <a class="mission-person" href="https://substack.com/@tessaaugsberger" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/tessa-augsberger.jpg" alt="Tessa Augsberger" loading="lazy">
-          <span class="mission-person-name">Tessa Augsberger</span>
-          <span class="mission-person-role">Founding Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@elankluger" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/elan-kluger.jpg" alt="Elan Kluger" loading="lazy">
-          <span class="mission-person-name">Elan Kluger</span>
-          <span class="mission-person-role">Founding Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@rufusknuppel" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/rufus-knuppel.jpg" alt="Rufus Knuppel" loading="lazy">
-          <span class="mission-person-name">Rufus Knuppel</span>
-          <span class="mission-person-role">Founding Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@willdiana" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/will-diana.jpg" alt="Will Diana" loading="lazy">
-          <span class="mission-person-name">Will Diana</span>
-          <span class="mission-person-role">Assistant Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@theogary" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/theodore-gary.jpg" alt="Theodore Gary" loading="lazy">
-          <span class="mission-person-name">Theodore Gary</span>
-          <span class="mission-person-role">Assistant Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@isabelmehta" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/isabel-mehta.jpg" alt="Isabel Mehta" loading="lazy">
-          <span class="mission-person-name">Isabel Mehta</span>
-          <span class="mission-person-role">Assistant Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@oyyy" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/owen-yingling.jpeg" alt="Owen Yingling" loading="lazy">
-          <span class="mission-person-name">Owen Yingling</span>
-          <span class="mission-person-role">Assistant Editor</span>
-        </a>
-        <a class="mission-person" href="https://substack.com/@kitknuppel1" rel="noopener" target="_blank">
-          <img class="mission-person-photo" src="people/kit-knuppel.jpg" alt="Kit Knuppel" loading="lazy">
-          <span class="mission-person-name">Kit Knuppel</span>
-          <span class="mission-person-role">Art Director</span>
-        </a>
-        </div>
-      </article>
-      <div class="mission-hr" role="separator"></div>
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">Contact</span>
-        </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>
-        <p class="card-preview">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-      </article>
-    </div>
-    <span class="mission-vr" role="separator"></span>
-    <div class="mission-col mission-col--double">
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">Give</span>
-          <span class="mission-band-box mission-band-box--right">$300 Lifetime Subscription</span>
-        </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>
-        <p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
-        <div class="duo-quote-divider"></div>
-        <div class="mission-cols">
-          <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
-          <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
-          <p class="card-preview">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-        </div>
-        <div class="mission-band-rule mission-band-rule--bottom" role="separator"></div>
-        <div class="mission-band mission-band--bottom mission-band--split">
-          <a class="mission-band-box" href="https://fundraising.fracturedatlas.org/the-new-critic" rel="noopener" target="_blank">Give through Fractured Atlas</a>
-          <a class="mission-band-box" href="https://donate.stripe.com/00w00i0rufwc8KFf9S7AI01" rel="noopener" target="_blank">Give instantly through Stripe</a>
-        </div>
-      </article>
-      <div class="mission-hr" role="separator"></div>
-      <article class="mission-card">
-        <div class="mission-band mission-band--top">
-          <span class="mission-band-box mission-band-box--left">From the Founding Editors</span>
-        </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>
-        <p class="card-dek">A letter to our readers</p>
-        <div class="duo-quote-divider"></div>
-        <div class="mission-cols">
-        <p class="card-preview">In this era of investment in technological innovation and big ideas, The New Critic believes the same approach to risk should be applied to the world of letters.</p>
-        <p class="card-preview">We operate in a different sector than the tech sphere — ours is the bazaar of rhetoric, emotion, and ideas — and our mission is not tied to any bottom line. Rather, our magazine is the product of one long conversation, a lasting friendship between our editors, and a dogged pursuit of excellence in the name of beauty and freedom, that liberty to act according to what activates the mind and invigorates the body.</p>
-        <p class="card-preview">The New Critic is a venture capital firm for writing. We invest resources in the intrepid thinkers, writers, and ideas of our generation.</p>
-        <p class="card-preview">Cynics see the internet as a scourge on the intellect, a blight that rots our appetite for reading and mutilates our attention. But we believe in the digital as the accelerant of communication, the medium that will allow our generation of writers to be among the greatest that have ever lived.</p>
-        <p class="card-preview">With a year of notches on our editorial belt, we now have our ambitions and wits about us. We have built up our arsenal of scouts, sharpened our eye for potential, developed our talent, and expanded our public. We are the foremost experts at identifying the extraordinary among our peers, offering talented writers the range, platform, and connections they need to pursue the writing life.</p>
-        <p class="card-preview">But our venture firm needs capital. The internet is only as good, as disciplined, as exciting as we make it. By giving to The New Critic, you are investing in young writers before embitteredness, intimidation, and embourgeoisement can overtake their ideals. You are allowing The New Critic to be a patron, to pay our writers more competitive rates, send them on more ambitious assignments, and create the material conditions required for their work.</p>
-        <p class="card-preview">With our sights set on these ruthless ends, we ask believers in our project to pledge their faith.</p>
-        </div>
-        <div class="duo-quote-divider"></div>
-        <div class="col-signers">
-            <a class="col-signer" href="https://substack.com/@tessaaugsberger" rel="noopener" target="_blank">
-              <span class="col-sig-wrap"><img class="col-sig" src="people/tessa-augsberger-sig.png" alt="Tessa Augsberger’s signature" loading="lazy"></span>
-              <span class="col-signer-name">Tessa Augsberger</span>
-            </a>
-            <a class="col-signer" href="https://substack.com/@elankluger" rel="noopener" target="_blank">
-              <span class="col-sig-wrap"><img class="col-sig col-sig--elan" src="people/elan-kluger-sig.png" alt="Elan Kluger’s signature" loading="lazy"></span>
-              <span class="col-signer-name">Elan Kluger</span>
-            </a>
-            <a class="col-signer" href="https://substack.com/@rufusknuppel" rel="noopener" target="_blank">
-              <span class="col-sig-wrap"><img class="col-sig col-sig--rufus" src="people/rufus-knuppel-sig.png" alt="Rufus Knuppel’s signature" loading="lazy"></span>
-              <span class="col-signer-name">Rufus Knuppel</span>
-            </a>
-        </div>
-      </article>
-    </div>
-    <span class="mission-vr" role="separator"></span>
+    </section>
+    <section class="about-panel" data-key="letter" aria-label="Letter" hidden>
+      <p class="card-dek">A Letter to Our Readers<br><em>from the founding editors</em><br><br>June 26</p>
+      <p class="card-preview">In this era of investment in technological innovation and big ideas, The New Critic believes the same approach to risk should be applied to the world of letters.</p>
+      <p class="card-preview">We operate in a different sector than the tech sphere — ours is the bazaar of rhetoric, emotion, and ideas — and our mission is not tied to any bottom line. Rather, our magazine is the product of one long conversation, a lasting friendship between our editors, and a dogged pursuit of excellence in the name of beauty and freedom, that liberty to act according to what activates the mind and invigorates the body.</p>
+      <p class="card-preview">The New Critic is a venture capital firm for writing. We invest resources in the intrepid thinkers, writers, and ideas of our generation.</p>
+      <p class="card-preview">Cynics see the internet as a scourge on the intellect, a blight that rots our appetite for reading and mutilates our attention. But we believe in the digital as the accelerant of communication, the medium that will allow our generation of writers to be among the greatest that have ever lived.</p>
+      <p class="card-preview">With a year of notches on our editorial belt, we now have our ambitions and wits about us. We have built up our arsenal of scouts, sharpened our eye for potential, developed our talent, and expanded our public. We are the foremost experts at identifying the extraordinary among our peers, offering talented writers the range, platform, and connections they need to pursue the writing life.</p>
+      <p class="card-preview">But our venture firm needs capital. The internet is only as good, as disciplined, as exciting as we make it. By giving to The New Critic, you are investing in young writers before embitteredness, intimidation, and embourgeoisement can overtake their ideals. You are allowing The New Critic to be a patron, to pay our writers more competitive rates, send them on more ambitious assignments, and create the material conditions required for their work.</p>
+      <p class="card-preview">With our sights set on these ruthless ends, we ask believers in our project to pledge their faith.</p>
+    </section>
+    <section class="about-panel" data-key="manifesto" aria-label="Manifesto" hidden>
+      <p class="card-dek">The New Critic Secession<br><em>A Manifesto of 42 theses</em><br><br>March 24</p>
+      <figure class="manifesto-fig">
+        <img src="https://substackcdn.com/image/fetch/$s_!2vOY!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Faae4e10a-a555-4ca4-a911-434aa5b5930c_1920x1080.jpeg" alt="From The New Critic Secession" loading="lazy">
+        
+      </figure>
+      <pre class="manifesto-pre manifesto-pre--aside"><span class="manifesto-line">Von Bar, NY. Bleecker and Bowery. Friday, March 20, 2026.</span><span class="manifesto-line"></span><span class="manifesto-line">The New Critic attends the “Lit Mags Party” of <em><a href="https://therepublicofletters.substack.com/" rel="noopener" target="_blank">The Republic of Letters</a></em>.</span><span class="manifesto-line"></span><span class="manifesto-line">At a quarter past nine, we step to the microphone.</span><span class="manifesto-line"></span><span class="manifesto-line">We are to deliver a manifesto to an uproarious crowd; a manifesto that will announce our secession from all who came before.</span><span class="manifesto-line"></span><span class="manifesto-line">Seven editors present 42 theses.</span><span class="manifesto-line"></span><span class="manifesto-line">We print those theses below.</span></pre>
+      <pre class="manifesto-pre manifesto-pre--quote"><span class="manifesto-line">The 42 Theses of Secession</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| No. 1 |</span><span class="manifesto-line" style="padding-left:3.00ch">All of the world’s problems are the creation of our elders.</span><span class="manifesto-line" style="padding-left:6.00ch">Now they want to make those problems our responsibility.</span><span class="manifesto-line" style="padding-left:9.00ch">So be it.</span><span class="manifesto-line" style="padding-left:12.00ch">We will solve all the problems in the world.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 2 |</span><span class="manifesto-line" style="padding-left:3.00ch">We are the establishment establishment,</span><span class="manifesto-line" style="padding-left:6.00ch">the anti-establishment anti-establishment,</span><span class="manifesto-line" style="padding-left:9.00ch">the establishment anti-establishment,</span><span class="manifesto-line" style="padding-left:12.00ch">the anti-establishment establishment.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 3 |</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC is authoritarian.</span><span class="manifesto-line" style="padding-left:6.00ch">We are authors, and contrarians.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 4 |</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC is the gold standard.</span><span class="manifesto-line" style="padding-left:6.00ch">THE NEW CRITIC wants your cash.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 5 |</span><span class="manifesto-line" style="padding-left:3.00ch">You were there the day print died.</span><span class="manifesto-line" style="padding-left:6.00ch">We’ll be there the day print dies again.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 6|</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC is always alive.</span><span class="manifesto-line" style="padding-left:6.00ch">It will never die.</span><span class="manifesto-line" style="padding-left:9.00ch">It has always been.</span><span class="manifesto-line" style="padding-left:12.00ch">It always will be.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 7 |</span><span class="manifesto-line" style="padding-left:3.00ch">Hurl no hate toward the antagonist.</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| No. 8 |</span><span class="manifesto-line" style="padding-left:2.00ch">When you love a woman,</span><span class="manifesto-line" style="padding-left:4.00ch">that’s THE NEW CRITIC.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 9 |</span><span class="manifesto-line" style="padding-left:2.00ch">THE NEW CRITIC wants to bring the real world to the internet</span><span class="manifesto-line" style="padding-left:4.00ch">and the internet to the real world.</span><span class="manifesto-line" style="padding-left:6.00ch">We want to make the two indistinguishable.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 10 |</span><span class="manifesto-line" style="padding-left:2.00ch">We write the world as we experience it</span><span class="manifesto-line" style="padding-left:4.00ch">and experience the world as we write it.</span><span class="manifesto-line" style="padding-left:6.00ch">We never leave our rooms.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 11 |</span><span class="manifesto-line" style="padding-left:2.00ch">We see ourselves as both shaped by and reacting against</span><span class="manifesto-line" style="padding-left:4.00ch">the chief moment of our history.</span><span class="manifesto-line" style="padding-left:6.00ch">September 14, 1982.</span><span class="manifesto-line" style="padding-left:8.00ch">That was the day of the first issue of <em>USA Today</em>.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 12 |</span><span class="manifesto-line" style="padding-left:2.00ch">The NEW CRITIC writer takes one afternoon to write their story</span><span class="manifesto-line" style="padding-left:4.00ch">and 10,000 years to live it.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 13 |</span><span class="manifesto-line" style="padding-left:2.00ch">Write for no audience.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 14 |</span><span class="manifesto-line" style="padding-left:2.00ch">To utilize Substack is to make love to the cyberspace,</span><span class="manifesto-line" style="padding-left:4.00ch">to find one’s match across the cosmos of doctored user profiles.</span><span class="manifesto-line" style="padding-left:6.00ch">All writers are virile and attractive.</span><span class="manifesto-line" style="padding-left:8.00ch">Writing is indicative of other things.</span><span class="manifesto-line" style="padding-left:10.00ch">Writers always have the blood pumping.</span><span class="manifesto-line" style="padding-left:12.00ch">So do non-writers.</span><span class="manifesto-line" style="padding-left:14.00ch">It is the way of things.</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| No. 15 |</span><span class="manifesto-line" style="padding-left:1.56ch">THE NEW CRITIC writer doesn’t write at all;</span><span class="manifesto-line" style="padding-left:3.11ch">they merely find their stories fully formed in the darkness beneath the earth.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 16 |</span><span class="manifesto-line" style="padding-left:1.56ch">ALL NEW CRITIC writers write with typewriters.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 17 |</span><span class="manifesto-line" style="padding-left:1.56ch">ALL NEW CRITIC writers have nice eyes.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 18 |</span><span class="manifesto-line" style="padding-left:1.56ch">The NEW CRITIC writer doesn’t believe in ideas.</span><span class="manifesto-line" style="padding-left:3.11ch">They put their faith in the sword.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 19 |</span><span class="manifesto-line" style="padding-left:1.56ch">We write from the heart of darkness <em>to</em> the heart of darkness.</span><span class="manifesto-line" style="padding-left:3.11ch">The heart of darkness,</span><span class="manifesto-line" style="padding-left:4.67ch">in other words,</span><span class="manifesto-line" style="padding-left:6.22ch">is THE NEW CRITIC.</span><span class="manifesto-line" style="padding-left:7.78ch">THE NEW CRITIC is the heart,</span><span class="manifesto-line" style="padding-left:9.33ch">of darkness.</span><span class="manifesto-line" style="padding-left:10.89ch">Darkness is the heart of THE NEW CRITIC.</span><span class="manifesto-line" style="padding-left:12.44ch">The heart is the darkness of THE NEW CRITIC.</span><span class="manifesto-line" style="padding-left:14.00ch">The darkness of THE NEW CRITIC is the heart.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 20 |</span><span class="manifesto-line" style="padding-left:1.56ch">We write to get filthy rich and famous.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 21 |</span><span class="manifesto-line" style="padding-left:1.56ch">The divine spirit moves between our sentences.</span><span class="manifesto-line" style="padding-left:3.11ch">Our sentences are moved by the divine spirit.</span><span class="manifesto-line" style="padding-left:4.67ch">Our editors move the sentences in our pieces.</span><span class="manifesto-line" style="padding-left:6.22ch">We are our editors.</span><span class="manifesto-line" style="padding-left:7.78ch">Our editors contain the spirit of the divine spirit.</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| No. 22 |</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC fashions something</span><span class="manifesto-line" style="padding-left:6.00ch">lasting out of silly internet discourse.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 23 |</span><span class="manifesto-line" style="padding-left:3.00ch">The best writers don’t think.</span><span class="manifesto-line" style="padding-left:6.00ch">Introspection is not for THE NEW CRITICs.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 24 |</span><span class="manifesto-line" style="padding-left:3.00ch">The internet runs in our veins;</span><span class="manifesto-line" style="padding-left:6.00ch">we refuse to drain our own blood.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 25 |</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC aims to break you down and build you up.</span><span class="manifesto-line" style="padding-left:6.00ch">And break you down.</span><span class="manifesto-line" style="padding-left:9.00ch">And build you up.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 26 |</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC has no resentment</span><span class="manifesto-line" style="padding-left:6.00ch">toward the existing literary institutions</span><span class="manifesto-line" style="padding-left:9.00ch">but also no mercy.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 27 |</span><span class="manifesto-line" style="padding-left:3.00ch">THE NEW CRITIC stands among all of us.</span><span class="manifesto-line" style="padding-left:6.00ch">We are THE NEW CRITIC.</span><span class="manifesto-line" style="padding-left:9.00ch">We stand before you.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 28 |</span><span class="manifesto-line" style="padding-left:3.00ch">The gen z NEW CRITIC writer is not “political”</span><span class="manifesto-line" style="padding-left:6.00ch">in the way that <em>Gawker</em> was political</span><span class="manifesto-line" style="padding-left:9.00ch">and not “not political”</span><span class="manifesto-line" style="padding-left:12.00ch">in the way that <em>The Free Press</em> is “not political.”</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| No. 29 |</span><span class="manifesto-line" style="padding-left:0.30ch">THE NEW CRITIC is all about the old critics.</span><span class="manifesto-line" style="padding-left:0.61ch">We are writers.</span><span class="manifesto-line" style="padding-left:0.91ch">We are birds looking at the frozen sea</span><span class="manifesto-line" style="padding-left:1.22ch">and flying past the frozen sea.</span><span class="manifesto-line" style="padding-left:1.52ch">We seek warmth,</span><span class="manifesto-line" style="padding-left:1.83ch">the heat of summer.</span><span class="manifesto-line" style="padding-left:2.13ch">We leave the axing of the sea to others,</span><span class="manifesto-line" style="padding-left:2.43ch">to those who can lift the axe.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 30 |</span><span class="manifesto-line" style="padding-left:0.30ch">The gen z essayist is aware of their tradition</span><span class="manifesto-line" style="padding-left:0.61ch">and has read their Honor Levy,</span><span class="manifesto-line" style="padding-left:0.91ch">Emily Sundberg,</span><span class="manifesto-line" style="padding-left:1.22ch">Dean Kissick,</span><span class="manifesto-line" style="padding-left:1.52ch">Sam Kriss,</span><span class="manifesto-line" style="padding-left:1.83ch">Becca Rothfeld,</span><span class="manifesto-line" style="padding-left:2.13ch">Merve Emre,</span><span class="manifesto-line" style="padding-left:2.43ch">Christian Lorentzen,</span><span class="manifesto-line" style="padding-left:2.74ch">Lauren Oyler,</span><span class="manifesto-line" style="padding-left:3.04ch">Patricia Lockwood,</span><span class="manifesto-line" style="padding-left:3.35ch">Emily Witt,</span><span class="manifesto-line" style="padding-left:3.65ch">Elvia Wilk,</span><span class="manifesto-line" style="padding-left:3.96ch">Alice Bolin,</span><span class="manifesto-line" style="padding-left:4.26ch">Michelle Dean,</span><span class="manifesto-line" style="padding-left:4.57ch">Molly Young,</span><span class="manifesto-line" style="padding-left:4.87ch">Tavi Gevinson,</span><span class="manifesto-line" style="padding-left:5.17ch">Brandon Taylor,</span><span class="manifesto-line" style="padding-left:5.48ch">Vinson Cunningham,</span><span class="manifesto-line" style="padding-left:5.78ch">Wesley Morris,</span><span class="manifesto-line" style="padding-left:6.09ch">Leslie Jamison,</span><span class="manifesto-line" style="padding-left:6.39ch">Sheila Heti,</span><span class="manifesto-line" style="padding-left:6.70ch">Kate Zambreno,</span><span class="manifesto-line" style="padding-left:7.00ch">Lauren Groff,</span><span class="manifesto-line" style="padding-left:7.30ch">Ariana Reines,</span><span class="manifesto-line" style="padding-left:7.61ch">Garth Greenwell,</span><span class="manifesto-line" style="padding-left:7.91ch">Benjamin Kunkel,</span><span class="manifesto-line" style="padding-left:8.22ch">Keith Gessen,</span><span class="manifesto-line" style="padding-left:8.52ch">Mark Greif,</span><span class="manifesto-line" style="padding-left:8.83ch">Chad Harbach,</span><span class="manifesto-line" style="padding-left:9.13ch">Joshua Cohen,</span><span class="manifesto-line" style="padding-left:9.33ch">Ben Lerner,</span><span class="manifesto-line" style="padding-left:9.64ch">Tom McCarthy,</span><span class="manifesto-line" style="padding-left:9.94ch">Jonathan Lethem,</span><span class="manifesto-line" style="padding-left:10.25ch">Emily Gould,</span><span class="manifesto-line" style="padding-left:10.55ch">Gary Indiana,</span><span class="manifesto-line" style="padding-left:10.86ch">Chris Kraus,</span><span class="manifesto-line" style="padding-left:11.16ch">Eileen Myles,</span><span class="manifesto-line" style="padding-left:11.46ch">Maggie Nelson,</span><span class="manifesto-line" style="padding-left:11.77ch">Geoff Dyer,</span><span class="manifesto-line" style="padding-left:12.07ch">Will Self,</span><span class="manifesto-line" style="padding-left:12.38ch">David Shields,</span><span class="manifesto-line" style="padding-left:12.68ch">Olivia Laing,</span><span class="manifesto-line" style="padding-left:12.99ch">Hermione Lee,</span><span class="manifesto-line" style="padding-left:0.30ch">Claire Tomalin,</span><span class="manifesto-line" style="padding-left:0.61ch">Fintan O’Toole,</span><span class="manifesto-line" style="padding-left:0.91ch">Colm Toibin,</span><span class="manifesto-line" style="padding-left:1.22ch">John Banville,</span><span class="manifesto-line" style="padding-left:1.42ch">Marina Warner,</span><span class="manifesto-line" style="padding-left:1.72ch">Ali Smith,</span><span class="manifesto-line" style="padding-left:2.03ch">Frank Rich,</span><span class="manifesto-line" style="padding-left:2.33ch">James Wolcott,</span><span class="manifesto-line" style="padding-left:2.64ch">Walter Kirn,</span><span class="manifesto-line" style="padding-left:2.94ch">Laura Kipnis,</span><span class="manifesto-line" style="padding-left:3.25ch">Daniel Mendelsohn,</span><span class="manifesto-line" style="padding-left:3.55ch">Adam Gopnik,</span><span class="manifesto-line" style="padding-left:3.86ch">Louis Menand,</span><span class="manifesto-line" style="padding-left:4.16ch">Stephen Greenblatt,</span><span class="manifesto-line" style="padding-left:4.36ch">Helen Vendler,</span><span class="manifesto-line" style="padding-left:4.67ch">Michael Wood,</span><span class="manifesto-line" style="padding-left:4.97ch">Robert Hughes,</span><span class="manifesto-line" style="padding-left:5.28ch">George Steiner,</span><span class="manifesto-line" style="padding-left:5.58ch">Edward Said,</span><span class="manifesto-line" style="padding-left:5.88ch">Fredric Jameson,</span><span class="manifesto-line" style="padding-left:6.29ch">Terry Eagleton,</span><span class="manifesto-line" style="padding-left:6.59ch">Harold Bloom,</span><span class="manifesto-line" style="padding-left:6.90ch">Anne Carson,</span><span class="manifesto-line" style="padding-left:7.30ch">Mary Ruefle,</span><span class="manifesto-line" style="padding-left:7.71ch">Zadie Smith,</span><span class="manifesto-line" style="padding-left:8.12ch">James Wood,</span><span class="manifesto-line" style="padding-left:8.42ch">Hilton Als,</span><span class="manifesto-line" style="padding-left:8.72ch">Margo Jefferson,</span><span class="manifesto-line" style="padding-left:9.03ch">Martin Amis,</span><span class="manifesto-line" style="padding-left:9.33ch">Christopher Hitchens,</span><span class="manifesto-line" style="padding-left:9.64ch">Clive James,</span><span class="manifesto-line" style="padding-left:9.94ch">Julian Barnes,</span><span class="manifesto-line" style="padding-left:10.25ch">James Salter,</span><span class="manifesto-line" style="padding-left:10.55ch">Vivian Gornick,</span><span class="manifesto-line" style="padding-left:10.86ch">Cynthia Ozick,</span><span class="manifesto-line" style="padding-left:11.16ch">Joan Didion,</span><span class="manifesto-line" style="padding-left:11.46ch">Janet Malcolm,</span><span class="manifesto-line" style="padding-left:11.77ch">Susan Sontag,</span><span class="manifesto-line" style="padding-left:12.07ch">Renata Adler,</span><span class="manifesto-line" style="padding-left:12.38ch">Pauline Kael,</span><span class="manifesto-line" style="padding-left:12.68ch">Elizabeth Hardwick,</span><span class="manifesto-line" style="padding-left:0.30ch">Mary McCarthy,</span><span class="manifesto-line" style="padding-left:0.61ch">Hannah Arendt,</span><span class="manifesto-line" style="padding-left:0.91ch">Italo Calvino,</span><span class="manifesto-line" style="padding-left:1.22ch">Lionel Trilling,</span><span class="manifesto-line" style="padding-left:1.52ch">Alfred Kazin,</span><span class="manifesto-line" style="padding-left:1.83ch">Irving Howe,</span><span class="manifesto-line" style="padding-left:2.13ch">Dwight Macdonald,</span><span class="manifesto-line" style="padding-left:2.43ch">Philip Rahv,</span><span class="manifesto-line" style="padding-left:2.74ch">Clement Greenberg,</span><span class="manifesto-line" style="padding-left:3.04ch">Robert Warshow,</span><span class="manifesto-line" style="padding-left:3.35ch">Randall Jarrell,</span><span class="manifesto-line" style="padding-left:3.65ch">John Berryman,</span><span class="manifesto-line" style="padding-left:3.96ch">Robert Lowell,</span><span class="manifesto-line" style="padding-left:4.26ch">Elizabeth Bishop,</span><span class="manifesto-line" style="padding-left:4.57ch">John Ashbery,</span><span class="manifesto-line" style="padding-left:4.87ch">Frank O’Hara,</span><span class="manifesto-line" style="padding-left:5.17ch">Kenneth Koch,</span><span class="manifesto-line" style="padding-left:5.48ch">James Schuyler,</span><span class="manifesto-line" style="padding-left:5.78ch">Allen Tate,</span><span class="manifesto-line" style="padding-left:6.09ch">Robert Penn Warren,</span><span class="manifesto-line" style="padding-left:6.39ch">Kenneth Burke,</span><span class="manifesto-line" style="padding-left:6.70ch">Northrop Frye,</span><span class="manifesto-line" style="padding-left:7.00ch">William Empson,</span><span class="manifesto-line" style="padding-left:7.30ch">Hugh Kenner,</span><span class="manifesto-line" style="padding-left:7.61ch">Frank Kermode,</span><span class="manifesto-line" style="padding-left:7.91ch">Marshall McLuhan,</span><span class="manifesto-line" style="padding-left:8.22ch">Jacques Barzun,</span><span class="manifesto-line" style="padding-left:8.52ch">Gore Vidal,</span><span class="manifesto-line" style="padding-left:8.83ch">Truman Capote,</span><span class="manifesto-line" style="padding-left:9.13ch">James Baldwin,</span><span class="manifesto-line" style="padding-left:9.43ch">Norman Mailer,</span><span class="manifesto-line" style="padding-left:9.74ch">Saul Bellow,</span><span class="manifesto-line" style="padding-left:10.04ch">Ralph Ellison,</span><span class="manifesto-line" style="padding-left:10.35ch">Rebecca West,</span><span class="manifesto-line" style="padding-left:10.65ch">Cyril Connolly,</span><span class="manifesto-line" style="padding-left:10.96ch">Evelyn Waugh,</span><span class="manifesto-line" style="padding-left:11.26ch">Graham Greene,</span><span class="manifesto-line" style="padding-left:11.57ch">Edmund Wilson,</span><span class="manifesto-line" style="padding-left:11.87ch">Joseph Mitchell,</span><span class="manifesto-line" style="padding-left:12.17ch">E. B. White,</span><span class="manifesto-line" style="padding-left:12.48ch">James Agee,</span><span class="manifesto-line" style="padding-left:12.78ch">Dorothy Parker,</span><span class="manifesto-line" style="padding-left:0.30ch">James Thurber,</span><span class="manifesto-line" style="padding-left:0.61ch">Robert Benchley,</span><span class="manifesto-line" style="padding-left:0.91ch">H. L. Mencken,</span><span class="manifesto-line" style="padding-left:1.22ch">Virginia Woolf,</span><span class="manifesto-line" style="padding-left:1.52ch">Lytton Strachey,</span><span class="manifesto-line" style="padding-left:1.83ch">Clive Bell,</span><span class="manifesto-line" style="padding-left:2.13ch">Max Beerbohm,</span><span class="manifesto-line" style="padding-left:2.43ch">T. S. Eliot,</span><span class="manifesto-line" style="padding-left:2.74ch">Ezra Pound,</span><span class="manifesto-line" style="padding-left:3.04ch">Wyndham Lewis,</span><span class="manifesto-line" style="padding-left:3.35ch">Paul Valery,</span><span class="manifesto-line" style="padding-left:3.65ch">Andre Gide,</span><span class="manifesto-line" style="padding-left:3.96ch">Karl Kraus,</span><span class="manifesto-line" style="padding-left:4.26ch">Walter Benjamin,</span><span class="manifesto-line" style="padding-left:4.57ch">Robert Musil,</span><span class="manifesto-line" style="padding-left:4.87ch">T. E. Hulme,</span><span class="manifesto-line" style="padding-left:5.17ch">Arthur Symons,</span><span class="manifesto-line" style="padding-left:5.48ch">Edmund Gosse,</span><span class="manifesto-line" style="padding-left:5.78ch">Patrick Leigh Fermor,</span><span class="manifesto-line" style="padding-left:6.09ch">Will Diana,</span><span class="manifesto-line" style="padding-left:6.39ch">Charles Baudelaire,</span><span class="manifesto-line" style="padding-left:6.70ch">Gustave Flaubert,</span><span class="manifesto-line" style="padding-left:7.00ch">Friedrich Nietzsche,</span><span class="manifesto-line" style="padding-left:7.30ch">Walter Pater,</span><span class="manifesto-line" style="padding-left:7.61ch">Matthew Arnold,</span><span class="manifesto-line" style="padding-left:7.91ch">John Ruskin,</span><span class="manifesto-line" style="padding-left:8.22ch">Thomas Carlyle,</span><span class="manifesto-line" style="padding-left:8.52ch">Heinrich Heine,</span><span class="manifesto-line" style="padding-left:8.83ch">Arthur Schopenhauer,</span><span class="manifesto-line" style="padding-left:9.13ch">John Henry Newman,</span><span class="manifesto-line" style="padding-left:9.43ch">Leslie Stephen,</span><span class="manifesto-line" style="padding-left:9.74ch">William Hazlitt,</span><span class="manifesto-line" style="padding-left:10.04ch">Charles Lamb,</span><span class="manifesto-line" style="padding-left:10.35ch">Leigh Hunt,</span><span class="manifesto-line" style="padding-left:10.65ch">Samuel Coleridge,</span><span class="manifesto-line" style="padding-left:10.96ch">William Wordsworth,</span><span class="manifesto-line" style="padding-left:11.26ch">Johann Goethe,</span><span class="manifesto-line" style="padding-left:11.57ch">Friedrich Schiller,</span><span class="manifesto-line" style="padding-left:11.87ch">Denis Diderot,</span><span class="manifesto-line" style="padding-left:12.17ch">Voltaire,</span><span class="manifesto-line" style="padding-left:12.48ch">Jean Rousseau,</span><span class="manifesto-line" style="padding-left:12.78ch">William Shakespeare,</span><span class="manifesto-line" style="padding-left:0.30ch">Edmund Burke,</span><span class="manifesto-line" style="padding-left:0.61ch">Thomas Paine,</span><span class="manifesto-line" style="padding-left:0.91ch">Oliver Goldsmith,</span><span class="manifesto-line" style="padding-left:1.22ch">Samuel Johnson,</span><span class="manifesto-line" style="padding-left:1.52ch">James Boswell,</span><span class="manifesto-line" style="padding-left:1.83ch">Edward Gibbon,</span><span class="manifesto-line" style="padding-left:2.13ch">Joseph Addison,</span><span class="manifesto-line" style="padding-left:2.43ch">Richard Steele,</span><span class="manifesto-line" style="padding-left:2.74ch">Jonathan Swift,</span><span class="manifesto-line" style="padding-left:3.04ch">Alexander Pope,</span><span class="manifesto-line" style="padding-left:3.35ch">Horace Walpole,</span><span class="manifesto-line" style="padding-left:3.65ch">Laurence Sterne,</span><span class="manifesto-line" style="padding-left:3.96ch">Blaise Pascal,</span><span class="manifesto-line" style="padding-left:4.26ch">Michel de Montaigne,</span><span class="manifesto-line" style="padding-left:4.57ch">Francis Bacon,</span><span class="manifesto-line" style="padding-left:4.87ch">Thomas Browne,</span><span class="manifesto-line" style="padding-left:5.17ch">Robert Burton,</span><span class="manifesto-line" style="padding-left:5.48ch">Samuel Pepys,</span><span class="manifesto-line" style="padding-left:5.78ch">John Donne,</span><span class="manifesto-line" style="padding-left:6.09ch">George Herbert,</span><span class="manifesto-line" style="padding-left:6.39ch">Philip Sidney,</span><span class="manifesto-line" style="padding-left:6.70ch">Christopher Marlowe,</span><span class="manifesto-line" style="padding-left:7.00ch">Ben Jonson,</span><span class="manifesto-line" style="padding-left:7.30ch">Edmund Spenser,</span><span class="manifesto-line" style="padding-left:7.61ch">Walter Raleigh,</span><span class="manifesto-line" style="padding-left:7.91ch">Thomas More,</span><span class="manifesto-line" style="padding-left:8.22ch">Erasmus,</span><span class="manifesto-line" style="padding-left:8.52ch">Niccolo Machiavelli,</span><span class="manifesto-line" style="padding-left:8.83ch">Giorgio Vasari,</span><span class="manifesto-line" style="padding-left:9.13ch">Miguel de Cervantes,</span><span class="manifesto-line" style="padding-left:9.43ch">Petrarch,</span><span class="manifesto-line" style="padding-left:9.74ch">Dante,</span><span class="manifesto-line" style="padding-left:10.04ch">Geoffrey Chaucer,</span><span class="manifesto-line" style="padding-left:10.35ch">Abelard,</span><span class="manifesto-line" style="padding-left:10.65ch">Saint Augustine,</span><span class="manifesto-line" style="padding-left:10.96ch">Saint Jerome,</span><span class="manifesto-line" style="padding-left:11.26ch">Plutarch,</span><span class="manifesto-line" style="padding-left:11.57ch">Lucian,</span><span class="manifesto-line" style="padding-left:11.87ch">Marcus Aurelius,</span><span class="manifesto-line" style="padding-left:12.17ch">Quintilian,</span><span class="manifesto-line" style="padding-left:12.48ch">Seneca,</span><span class="manifesto-line" style="padding-left:12.78ch">Tacitus,</span><span class="manifesto-line" style="padding-left:13.09ch">Julius Caesar,</span><span class="manifesto-line" style="padding-left:13.39ch">Cicero,</span><span class="manifesto-line" style="padding-left:13.70ch">Horace,</span><span class="manifesto-line" style="padding-left:14.00ch">Ovid, Lucretius,</span><span class="manifesto-line" style="padding-left:0.30ch">Virgil,</span><span class="manifesto-line" style="padding-left:0.61ch">Longinus,</span><span class="manifesto-line" style="padding-left:0.91ch">Aristotle,</span><span class="manifesto-line" style="padding-left:1.22ch">Plato,</span><span class="manifesto-line" style="padding-left:1.52ch">Xenophon,</span><span class="manifesto-line" style="padding-left:1.83ch">Herodotus,</span><span class="manifesto-line" style="padding-left:2.13ch">and Homer.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 31 |</span><span class="manifesto-line" style="padding-left:0.30ch">A specter is haunting writing,</span><span class="manifesto-line" style="padding-left:0.61ch">the specter of dull writing by middle-aged men.</span><span class="manifesto-line" style="padding-left:0.91ch">Why not replace them with young men?</span><span class="manifesto-line" style="padding-left:1.22ch">All from the Ivy League.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 32 |</span><span class="manifesto-line" style="padding-left:0.30ch">THE NEW CRITIC publishes those who have read at least one book.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 33 |</span><span class="manifesto-line" style="padding-left:0.30ch">Be kind,</span><span class="manifesto-line" style="padding-left:0.61ch">be curious,</span><span class="manifesto-line" style="padding-left:0.91ch">do not look down upon those</span><span class="manifesto-line" style="padding-left:1.22ch">who don’t choose to read or write.</span><span class="manifesto-line" style="padding-left:1.52ch">Encourage them instead</span><span class="manifesto-line" style="padding-left:1.83ch">to take up these activities</span><span class="manifesto-line" style="padding-left:2.13ch">with patience.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 34 |</span><span class="manifesto-line" style="padding-left:0.30ch">Always cry in public.</span><span class="manifesto-line" style="padding-left:0.61ch">Always be suspicious.</span><span class="manifesto-line" style="padding-left:0.91ch">Write only about love.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 35 |</span><span class="manifesto-line" style="padding-left:0.30ch">What is waiting?</span><span class="manifesto-line" style="padding-left:0.61ch">There is no such thing.</span><span class="manifesto-line" style="padding-left:0.91ch">There is no moment when life aligns for action,</span><span class="manifesto-line" style="padding-left:1.22ch">when the world sits at the ready.</span><span class="manifesto-line" style="padding-left:1.52ch">If we see a building on fire,</span><span class="manifesto-line" style="padding-left:1.83ch">we run into it.</span><span class="manifesto-line" style="padding-left:2.13ch">If we spot a ledge,</span><span class="manifesto-line" style="padding-left:2.43ch">we jump from it.</span><span class="manifesto-line" style="padding-left:2.74ch">If we sight a glimmer of life,</span><span class="manifesto-line" style="padding-left:3.04ch">we seize it by the throat.</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| No. 36 |</span><span class="manifesto-line" style="padding-left:3.00ch">Seek not</span><span class="manifesto-line" style="padding-left:6.00ch">to take up arms</span><span class="manifesto-line" style="padding-left:9.00ch">in whatever we call</span><span class="manifesto-line" style="padding-left:12.00ch">the culture wars.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 37 |</span><span class="manifesto-line" style="padding-left:3.00ch">The NEW CRITIC writer only does what they love,</span><span class="manifesto-line" style="padding-left:6.00ch">which is write.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 38 |</span><span class="manifesto-line" style="padding-left:3.00ch">No one is a voice of their generation.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 39 |</span><span class="manifesto-line" style="padding-left:3.00ch">The mission of youth is to be an icebreaker,</span><span class="manifesto-line" style="padding-left:6.00ch">a glacier destroyer sent to explode</span><span class="manifesto-line" style="padding-left:9.00ch">the cold,</span><span class="manifesto-line" style="padding-left:12.00ch">arctic heart of the world.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 40 |</span><span class="manifesto-line" style="padding-left:3.00ch">We write as if we will die tomorrow</span><span class="manifesto-line" style="padding-left:6.00ch">but live as if we will live forever.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 41 |</span><span class="manifesto-line" style="padding-left:3.00ch">At THE NEW CRITIC,</span><span class="manifesto-line" style="padding-left:6.00ch">we edit as if our lives depend on it,</span><span class="manifesto-line" style="padding-left:9.00ch">because they do.</span><span class="manifesto-line"></span><span class="manifesto-line">| No. 42 |</span><span class="manifesto-line" style="padding-left:3.00ch">The deluge of thought is the deluge of THE NEW CRITIC.</span><span class="manifesto-line" style="padding-left:6.00ch">THE NEW CRITIC is a deluge,</span><span class="manifesto-line" style="padding-left:9.00ch">and you are standing in it.</span></pre>
+      <pre class="manifesto-pre"><span class="manifesto-line">| Signed |</span><span class="manifesto-line" style="padding-left:2.00ch">Tessa Augsberger</span><span class="manifesto-line" style="padding-left:4.00ch">William Diana</span><span class="manifesto-line" style="padding-left:6.00ch">Theodore Gary</span><span class="manifesto-line" style="padding-left:8.00ch">Elan Kluger</span><span class="manifesto-line" style="padding-left:10.00ch">Rufus Knuppel</span><span class="manifesto-line" style="padding-left:12.00ch">Isabel Mehta</span><span class="manifesto-line" style="padding-left:14.00ch">Owen Yingling</span></pre>
+    </section>
+    <section class="about-panel" data-key="contact" aria-label="Contact" hidden>
+      <p class="card-preview">To pitch, submit, or place an inquiry,<br>email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+      <p class="card-preview about-follow">Subscribe on <a href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a><br>Follow us on <a href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a></p>
+    </section>
+  </div>
   </div>
 </main>
 
 <footer>
   <div class="wrap foot-row">
-    <p class="foot-fine foot-chip">The New Critic &middot; est. May 2025</p>
+    <p class="foot-fine foot-chip">The New Critic</p>
     <p class="foot-fine foot-marks foot-chip"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack">Substack</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram">Instagram</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors">Email</a></p>
-    <p class="foot-fine foot-chip">The Young American Magazine</p>
+    <p class="foot-fine foot-chip">est. May 2025</p>
   </div>
 </footer>
 
@@ -419,11 +363,10 @@
   if (prefersReduced) return;
   var lines = [].slice.call(
     document.querySelectorAll(
-      '.row-divider, .duo-half-divider, .duo-divider--h, ' +
-      // The About page's ruling: the vertical rules between its card
-      // columns, the horizontal rules between stacked cards, every card's
-      // band rules, and the quote rules inside the cards.
-      '.mission-vr, .mission-hr, .mission-band-rule, .mission-page .duo-quote-divider'
+      // Not the about panels' quote rules: those sit inside [hidden]
+      // sections — a hidden rule would take .line-draw at 0×0, never
+      // enter the viewport, and open later stuck at scaleX(0).
+      '.row-divider, .duo-half-divider, .duo-divider--h'
     )
   );
   if (!lines.length) return;
@@ -498,6 +441,76 @@
   if (document.visibilityState === 'hidden') {
     document.addEventListener('visibilitychange', onVisible);
   }
+})();
+
+</script><script>
+// ---------- ABOUT SECTIONS ----------
+// The about page's head lists its sections down one centred column (see
+// .about-head in style.css): each name opens its section's text below
+// the head's full-bleed divider. ONE section at a time; clicking the
+// open section's name closes it and the page rests on the head alone.
+// The About panel ships open in the markup (and its button .is-active),
+// so a no-JS reader still gets the page's one indispensable paragraph —
+// this script only reads that state back rather than restating it.
+//
+// The open section is written to the URL as a hash (about.html#give), so
+// a reload holds its place and the link is shareable. replaceState
+// rather than assigning location.hash: assigning would stack a history
+// entry per click and turn the back button into a section-by-section
+// rewind of everything the reader browsed through. hashchange is still
+// listened for — a pasted link, or a browser walking back to a different
+// page state, must land on the named section.
+(function () {
+  var head = document.querySelector('.about-head');
+  if (!head) return;
+  var btns = [].slice.call(head.querySelectorAll('.about-link'));
+  var panels = [].slice.call(document.querySelectorAll('.about-panel'));
+  if (!btns.length || !panels.length) return;
+  var keys = panels.map(function (p) { return p.getAttribute('data-key'); });
+  var active = null;
+  panels.forEach(function (p) {
+    if (!p.hidden) active = p.getAttribute('data-key');
+  });
+
+  function apply() {
+    btns.forEach(function (b) {
+      var on = b.getAttribute('data-key') === active;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      p.hidden = p.getAttribute('data-key') !== active;
+    });
+  }
+  // The hash carries the open section, and nothing when the page rests
+  // closed — pathname + search kept so the URL is only ever rewritten
+  // from its fragment down.
+  function writeHash() {
+    if (!window.history || !window.history.replaceState) return;
+    var url = location.pathname + location.search + (active ? '#' + active : '');
+    window.history.replaceState(null, '', url);
+  }
+  function readHash() {
+    var want = (location.hash || '').replace(/^#/, '').toLowerCase();
+    if (!want || keys.indexOf(want) < 0 || want === active) return false;
+    active = want;
+    apply();
+    return true;
+  }
+
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var k = b.getAttribute('data-key');
+      active = active === k ? null : k;
+      apply();
+      writeHash();
+    });
+  });
+  // On arrival: an addressed section wins over the markup's default;
+  // without one, the default is stamped into the URL so a reload from
+  // here holds the same page.
+  if (!readHash()) writeHash();
+  window.addEventListener('hashchange', readHash);
 })();
 
 </script>

@@ -418,9 +418,9 @@
 
 <footer>
   <div class="wrap foot-row">
-    <p class="foot-fine foot-chip">The New Critic &middot; est. May 2025</p>
+    <p class="foot-fine foot-chip">The New Critic</p>
     <p class="foot-fine foot-marks foot-chip"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack">Substack</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram">Instagram</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors">Email</a></p>
-    <p class="foot-fine foot-chip">The Young American Magazine</p>
+    <p class="foot-fine foot-chip">est. May 2025</p>
   </div>
 </footer>
 
@@ -2163,11 +2163,10 @@
   if (prefersReduced) return;
   var lines = [].slice.call(
     document.querySelectorAll(
-      '.row-divider, .duo-half-divider, .duo-divider--h, ' +
-      // The About page's ruling: the vertical rules between its card
-      // columns, the horizontal rules between stacked cards, every card's
-      // band rules, and the quote rules inside the cards.
-      '.mission-vr, .mission-hr, .mission-band-rule, .mission-page .duo-quote-divider'
+      // Not the about panels' quote rules: those sit inside [hidden]
+      // sections — a hidden rule would take .line-draw at 0×0, never
+      // enter the viewport, and open later stuck at scaleX(0).
+      '.row-divider, .duo-half-divider, .duo-divider--h'
     )
   );
   if (!lines.length) return;
