@@ -1,8 +1,11 @@
-// ---------- CONTRA CATEGORY FILTER ----------
-// The nav bar under the contra lead card (see .contra-filter in
-// style.css and renderListPage in build.js): Books / Movies / Music /
-// Theater. One category active at a time — its underline prevails via
-// .is-active — and clicking the active one again clears the filter.
+// ---------- CONTRA HEAD FILTER ----------
+// The header section on the contra page (see .contra-head in style.css
+// and renderListPage in build.js): five category columns — Art / Books /
+// Movies / Music / Theater — each heading a filter button, each review
+// under it an entry button carrying data-idx, its cell's position in the
+// grid below. ONE selection at a time, of either kind: a heading deals
+// the grid to its category, an entry deals it to that single review, and
+// clicking the active one again clears the filter.
 //
 // Filtering REBUILDS the rows rather than hiding cells in place:
 // display:none on a flex cell hands its width to the row's survivors
@@ -14,10 +17,11 @@
 // cloned, so their fitted panels, listeners and seated chips ride
 // along untouched.
 (function () {
-  var nav = document.querySelector('.contra-filter');
-  if (!nav) return;
+  var head = document.querySelector('.contra-head');
+  if (!head) return;
   var pageRows = document.querySelector('.page-rows');
   if (!pageRows) return;
+  // Only the grid rows: the head's own wrap holds no .card--duo.
   var wraps = [].slice.call(pageRows.children).filter(function (el) {
     return el.classList.contains('wrap') && el.querySelector('.card--duo');
   });
@@ -30,6 +34,9 @@
     var n = w.nextElementSibling;
     return n && n.classList.contains('row-divider') ? n : null;
   });
+  // Document order here IS posts order — the same order the head's
+  // entries were numbered in at build time, which is what lets an
+  // entry's data-idx address cells[idx] directly.
   var cells = [];
   cards.forEach(function (c) {
     [].forEach.call(c.querySelectorAll('.duo-half:not(.duo-half--ghost)'), function (cell) {
@@ -58,10 +65,11 @@
     return g;
   }
 
-  function layout(filter) {
-    var visible = filter
-      ? cells.filter(function (c) { return kickerOf(c) === filter; })
-      : cells.slice();
+  // match is a predicate over cells, or null for "everything". A filter
+  // that matches nothing (Art, before it has entries) hides every row —
+  // an empty shelf, honestly empty.
+  function layout(match) {
+    var visible = match ? cells.filter(match) : cells.slice();
     var used = Math.ceil(visible.length / perRow);
     cards.forEach(function (card, i) {
       while (card.firstChild) card.removeChild(card.firstChild);
@@ -77,25 +85,60 @@
       }
     });
     // Kick the fitter (debounced resize listener in duo-panel-fit.js):
-    // widths are unchanged, but the lead card re-measures the first
-    // square for its height and any freshly-revealed panel refits.
+    // widths are unchanged, but any freshly-revealed panel refits.
     window.dispatchEvent(new Event('resize'));
   }
 
-  var active = null;
-  function setActive(k) {
-    active = k;
-    [].forEach.call(nav.querySelectorAll('.contra-filter-link'), function (b) {
-      var on = b.getAttribute('data-kicker') === active;
+  var activeKicker = null;
+  var activeIdx = null;
+  var kickerBtns = [].slice.call(head.querySelectorAll('.contra-filter-link'));
+  var entryBtns = [].slice.call(head.querySelectorAll('.contra-entry-link'));
+  function apply() {
+    kickerBtns.forEach(function (b) {
+      var on = b.getAttribute('data-kicker') === activeKicker;
       b.classList.toggle('is-active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    layout(active);
+    entryBtns.forEach(function (b) {
+      var on = +b.getAttribute('data-idx') === activeIdx;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (activeIdx !== null) {
+      var chosen = cells[activeIdx];
+      layout(function (c) { return c === chosen; });
+    } else if (activeKicker) {
+      layout(function (c) { return kickerOf(c) === activeKicker; });
+    } else {
+      layout(null);
+    }
   }
-  [].forEach.call(nav.querySelectorAll('.contra-filter-link'), function (btn) {
+  // The section's own name, at the head of the first column: the way
+  // back to the whole shelf from any filter. It takes no selected state
+  // of its own — the shelf entire is the page's resting state, not a
+  // filter among the others — so it only ever blues on hover.
+  var clearBtn = head.querySelector('.contra-clear-link');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      activeKicker = null;
+      activeIdx = null;
+      apply();
+    });
+  }
+  kickerBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
       var k = btn.getAttribute('data-kicker');
-      setActive(active === k ? null : k);
+      activeIdx = null;
+      activeKicker = activeKicker === k ? null : k;
+      apply();
+    });
+  });
+  entryBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var i = +btn.getAttribute('data-idx');
+      activeKicker = null;
+      activeIdx = activeIdx === i ? null : i;
+      apply();
     });
   });
   // Deep link: a homepage contra card's category chip links here as
@@ -104,8 +147,12 @@
   function applyHash() {
     var want = (location.hash || '').replace(/^#/, '').toLowerCase();
     if (!want) return;
-    var match = nav.querySelector('.contra-filter-link[data-kicker="' + want + '"]');
-    if (match && active !== want) setActive(want);
+    var match = head.querySelector('.contra-filter-link[data-kicker="' + want + '"]');
+    if (match && activeKicker !== want) {
+      activeIdx = null;
+      activeKicker = want;
+      apply();
+    }
   }
   applyHash();
   window.addEventListener('hashchange', applyHash);

@@ -554,33 +554,48 @@ function contraWorkChipHtml(subtitle) {
 }
 
 
-// The resting chip's billing, by section — the one-line label printed over
-// the cover's bottom-left corner while the card is closed (see the
-// .rest-title-chip rules in style.css). Essays bill the title (italic) and
-// author, postscript the topic and its subject, contra the reviewer and
-// the work under review (italic). Ellipsized where it runs long.
-function composedChipHtml(post, section) {
-  if (section === 'postscript') {
-    return `${escapeHtml(post.kicker || '')}${post.psName ? ` w/ ${escapeHtml(post.psName)}` : ''}`;
-  }
-  if (section === 'contra') {
-    // subtitle is "contra <artist>'s <Work>" (or just "contra <Work>");
-    // keep the reviewer + "contra" + the work alone, italicized.
-    const work = (post.subtitle || '').replace(/^contra\s+/i, '');
-    const m = /[’']s\s+(\S[\s\S]*)$/.exec(work);
-    const workTitle = m ? m[1] : work;
-    return `${escapeHtml(bylineName(post))} contra <em>${escapeHtml(workTitle)}</em>`;
-  }
-  return `${escapeHtml(post.title)} by ${escapeHtml(bylineName(post))}`;
+// Just the reviewed work, italic — no reviewer, no "contra". The contra
+// head's category columns list their reviews this way (see
+// renderListPage): the column's heading already says what kind of thing
+// these are, and the reviewer's name is on the cover a click below, so
+// the shelf reads as a shelf — a list of works.
+function contraWorkTitle(post) {
+  const work = (post.subtitle || '').replace(/^contra\s+/i, '');
+  const m = /[’']s\s+(\S[\s\S]*)$/.exec(work);
+  return m ? m[1] : work;
 }
 
-function wrapLeadWords(text) {
-  // Opening flourish on a card's first preview paragraph: its first three
-  // words set in caps (.card-preview-lead uppercases them) — the successor
-  // to the old two-line drop cap, which never survived line-clamping well.
-  const m = /^((?:\S+\s+){0,2}\S+)([\s\S]*)$/.exec(text);
-  if (!m) return emHtml(text);
-  return `<span class="card-preview-lead">${emHtml(m[1])}</span>${emHtml(m[2])}`;
+// The resting chip's billing, by section — the label printed over the
+// middle of the cover while the card is closed (see the .rest-title-chip
+// rules in style.css). Essays bill the title and author, postscript the
+// topic and its subject, contra the reviewer and the work under review
+// (italic).
+//
+// Two lines, and the CONNECTOR leads the second: "Manifest Man / by Alex
+// Bronzini-Vender", not "Manifest Man by / Alex Bronzini-Vender". The
+// break is where the sense breaks, so the chip reads as a billing —
+// the thing, then who it's by — rather than as one long line that ran
+// out of room. It's set here rather than left to wrap for the same reason
+// the sidebar's tagline is: a wrap would put the break wherever the
+// cover's width happened to land it.
+function chipLines(first, connector, second) {
+  const line1 = `<span class="rest-chip-line">${first}</span>`;
+  if (!second) return line1;
+  return `${line1}<span class="rest-chip-line">${connector} ${second}</span>`;
+}
+function composedChipHtml(post, section) {
+  if (section === 'postscript') {
+    return chipLines(escapeHtml(post.kicker || ''), 'w/', post.psName ? escapeHtml(post.psName) : '');
+  }
+  if (section === 'contra') {
+    // The manifesto is the one contra post that isn't a review — it has
+    // no reviewer and no work to be contra, so it names itself.
+    if (slugOf(post.link) === 'contra') return chipLines('The Contra Manifesto');
+    // subtitle is "contra <artist>'s <Work>" (or just "contra <Work>");
+    // keep the reviewer + "contra" + the work alone, italicized.
+    return chipLines(escapeHtml(bylineName(post)), 'contra', `<em>${escapeHtml(contraWorkTitle(post))}</em>`);
+  }
+  return chipLines(escapeHtml(post.title), 'by', escapeHtml(bylineName(post)));
 }
 
 function stripHtml(html) {
@@ -951,21 +966,24 @@ function archiveHref(post, key) {
 // archiveLinks:true renders the author and date as archive deep links
 // (see archiveHref) instead of inert spans — same classes, so the byline
 // boxes keep their ruling either way.
-function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, archiveLinks = false, authorPrefix = '' } = {}) {
+// metaDate is the manual override from content-overrides.js — a display
+// string used verbatim, skipping the formatting below.
+// This year's posts are dated to the day — "Jul 13" — and older ones to
+// the month and year — "Dec 2025". The month is abbreviated in both, so
+// the two shapes read as one format at two precisions rather than as
+// two different formats sitting side by side.
+function metaDateText(post) {
   const d = post.date;
   const thisYear = new Date().getFullYear();
-  // metaDate is the manual override from content-overrides.js — a display
-  // string used verbatim, skipping the date formatting below.
-  // This year's posts are dated to the day — "Jul 13" — and older ones to
-  // the month and year — "Dec 2025". The month is abbreviated in both, so
-  // the two shapes read as one format at two precisions rather than as
-  // two different formats sitting side by side.
-  const raw = post.metaDate
+  return post.metaDate
     || (d && !isNaN(d.getTime())
       ? d.toLocaleDateString('en-US', d.getFullYear() < thisYear
           ? { month: 'short', year: 'numeric' }
           : { month: 'short', day: 'numeric' })
       : '');
+}
+function metaLine(post, { include = ['date', 'author', 'likes'], caps = true, archiveLinks = false, authorPrefix = '' } = {}) {
+  const raw = metaDateText(post);
   const md = caps ? raw.toUpperCase() : raw;
   const parts = [];
   for (const field of include) {
@@ -1037,64 +1055,67 @@ function renderNav(currentKey = 'home') {
     return `<li class="nav-item--${escapeHtml(l.key)}"><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
   }
   const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'about'];
-  const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ');
+  const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ')
+    // Store and Events stand in the list but go nowhere yet — plain
+    // spans, no href, no hover; they take the list's cut by inheritance
+    // and turn into navLink entries the day they have destinations.
+    + '\n      <li><span class="nav-links-dead">Store</span></li>'
+    + '\n      <li><span class="nav-links-dead">Events</span></li>'
+    // Subscribe rides in the list now — the one item that keeps a place
+    // in the collapsed bar (see the ≤720px rules in style.css).
+    + `\n      <li class="nav-item--subscribe"><a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></li>`;
 
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
-  // The masthead IS the brand now — the framed-bird mark that used to sit
-  // above it is gone, so the name carries the home link itself. Name over
-  // tagline reads as the sidebar's own title/dek pair, the same shape
-  // every nav item below it takes. The name is broken one word per line,
-  // each in its own block so the lines can be set to the margin (see
-  // .nav-wordmark-line) rather than wrapping wherever they land.
-  // One word to the line, set to alternating edges — The and Critic on
-  // the left margin, New on the right — so the masthead steps across the
-  // column instead of stacking flush (see .nav-wordmark-line). "The"
-  // keeps its sentence case against the other two's caps. Spelled out
-  // here rather than split off SITE_NAME: the treatment is per word now,
-  // and a generic split can't say which word gets what.
-  const wordmarkLines =
-    '<span class="nav-wordmark-line nav-wordmark-the">The</span>'
-    + '<span class="nav-wordmark-line">New</span>'
-    + '<span class="nav-wordmark-line nav-wordmark-critic">Critic</span>';
-  // Subscribe closes the column BELOW the mark, out of the section list
-  // and set apart from it: all caps, sized to span the rail's full measure
-  // (see .nav-subscribe in style.css). It's the column's one call to
-  // action, so it reads as its own register rather than a seventh section.
-  // The column reads name → sections → mark → Subscribe, and it pairs off
-  // by DESTINATION rather than by position: the wordmark is the home link
-  // and answers only for itself, while the mark and Subscribe both point
-  // at the subscribe page and light together (see THE MASTHEAD PAIRINGS
-  // in style.css). The mark duplicates Subscribe's destination, so it's
-  // aria-hidden and untabbable — the visible link right under it is the
-  // one assistive tech should meet, and a second announcement of the same
-  // page is only noise.
+  // The masthead IS the brand — the framed-bird mark that used to sit
+  // above it is gone, so the name carries the home link itself. It sets
+  // on ONE line in the rail's small courier now, which is why it's a
+  // plain string again: it spent a while broken one word per line, each
+  // word its own block so the three could be set to alternating margins,
+  // and none of that structure survives a single line.
+  // The tagline closes the column under Subscribe, across two lines and
+  // off a blank one — the break is spelled out rather than left to wrap,
+  // because "The Young / American Magazine" is the reading and "The Young
+  // American / Magazine" is what the rail's measure would otherwise give.
+  // It points home like the name and the mark above it, and lights with
+  // them (see THE MASTHEAD in style.css): the three are one brand said
+  // three ways — in words, in the mark, and in the set's own gloss — so
+  // they answer a hover as one thing however far apart they sit in the
+  // column.
+  //
+  // The rail reads name → sections → socials → tagline. The bird that
+  // used to stand under the name is gone; the name and the tagline are
+  // the brand now, and they light together on hover (see THE MASTHEAD in
+  // style.css) since both point home.
+  const taglineLines =
+    '<span class="nav-tagline-line">The Young</span>'
+    + '<span class="nav-tagline-line">American Magazine</span>';
   return `<nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
-      <span class="nav-wordmark">${wordmarkLines}</span>
+      <span class="nav-wordmark">${escapeHtml(SITE_NAME)}</span>
     </a>
   </div>
   <ul class="nav-links">
     ${links}
   </ul>
-  <a class="nav-bird-link" href="${SITE_URL}/subscribe" rel="noopener" tabindex="-1" aria-hidden="true"><span class="nav-bird"></span></a>
-  <a class="nav-subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
+  <p class="nav-social"><a href="https://substack.com/@thenewcritic" rel="noopener">Substack</a><a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a><a href="mailto:editors@thenewcritic.com">Email</a></p>
+  <a class="nav-tagline" href="./">${taglineLines}</a>
 </nav>`;
 }
 
 function renderFooter() {
-  const year = new Date().getFullYear();
-  // One line, three groups: the set's gloss on the left, the marks —
-  // Substack, Instagram, the editors' address — centred, the credit and
-  // founding date on the right, both texts in the cards' chip cut. Source order is
-  // left-to-right so the stacked narrow-window fallback reads the same
-  // way. The mail mark carries the mailto the spelled-out address used
-  // to, so nothing is lost but the string.
+  // One line, three groups: the name and founding date on the left (no
+  // copyright line — the name and date carry it), the social links —
+  // words now — centred, the set's gloss on the right, both texts in the
+  // cards' chip cut. Source order is left-to-right so the stacked
+  // narrow-window fallback reads the same way. The marks run Substack,
+  // Instagram, Email — the rail's own order (see .nav-social), so the
+  // page opens and closes on the same list.
   return `<footer>
   <div class="wrap foot-row">
+    <p class="foot-fine foot-chip">The New Critic &middot; est. May 2025</p>
+    <p class="foot-fine foot-marks foot-chip"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack">Substack</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram">Instagram</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors">Email</a></p>
     <p class="foot-fine foot-chip">${escapeHtml(SITE_TAGLINE)}</p>
-    <p class="foot-fine foot-marks"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack" title="Substack"><svg class="site-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.6 3.4h18.8v2.9H2.6Z"/><path d="M2.6 8.2h18.8v2.9H2.6Z"/><path d="M2.6 13h18.8v8.6L12 17.4 2.6 21.6Z"/></svg></a><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram" title="Instagram"><svg class="site-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M7.6 2.6h8.8a5 5 0 0 1 5 5v8.8a5 5 0 0 1-5 5H7.6a5 5 0 0 1-5-5V7.6a5 5 0 0 1 5-5ZM12 7.7a4.3 4.3 0 1 0 0 8.6 4.3 4.3 0 0 0 0-8.6ZM12 9.4a2.6 2.6 0 1 1 0 5.2 2.6 2.6 0 0 1 0-5.2ZM17.2 5.55a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Z"/></svg></a><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors" title="editors@thenewcritic.com"><svg class="site-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 4.4h14.8a2.4 2.4 0 0 1 2.4 2.4v.35L12 13.9 2.2 7.15V6.8a2.4 2.4 0 0 1 2.4-2.4Z"/><path d="M2.2 9.5l9.23 6.36a1 1 0 0 0 1.14 0L21.8 9.5v7.7a2.4 2.4 0 0 1-2.4 2.4H4.6a2.4 2.4 0 0 1-2.4-2.4Z"/></svg></a></p>
-    <p class="foot-fine foot-chip">&copy; ${year} The New Critic &middot; est. May 2025</p>
   </div>
 </footer>`;
 }
@@ -1132,7 +1153,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
     ? `<div class="card-preview-block">${previewParas
-        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
+        .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
   const readNowHtml = post.preview
@@ -1208,7 +1229,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
 // modifier (e.g. card--trio for the 1:2 portrait postscript row).
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
-function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showArtInBand = true, showDek = true }, halfClass = '') {
+function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showArtInBand = true, showDek = true, restChipArt = false }, halfClass = '') {
   // Section accent: essays pink, postscript purple, contra green, carried
   // as a --accent custom property on the cell (see .duo-half--essay etc.
   // in style.css) so every hover effect inside the card — title, glows,
@@ -1236,7 +1257,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
     ? `<div class="card-preview-block">${previewParas
-        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
+        .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
   // The byline as the panel's HEADER strip: a sibling ABOVE
@@ -1288,7 +1309,12 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
         metaLine(post, { include: ['author'], caps: false, archiveLinks: true, authorPrefix }),
         isPostscript ? '' : copyLinkBtnHtml(post, 'meta-copylink'),
         metaLine(post, { include: ['date'], caps: false, archiveLinks: true }),
-        bylineKickerBox,
+        // Postscript's header drops the topic chip: its card stands OPEN
+        // on the postscript page, where the same word is already printed
+        // in the footer band below it and again as the entry's gloss in
+        // the index at the left. The sections whose cards only open on
+        // hover keep it — there the header is the one place it appears.
+        isPostscript ? '' : bylineKickerBox,
       ].filter(Boolean).join('');
   const metaHtml = metaLineHtml
     ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
@@ -1333,7 +1359,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             ${kickerBox}
             ${isPostscript ? copyBox : ''}
             ${likesBox}
-            ${artBox('right')}
+            ${isPostscript ? '' : artBox('right')}
           </div>`;
   const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
   // The resting kicker: the topic alone, printed over the cover's
@@ -1349,29 +1375,38 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // byline/footer CONTENT still differs (its copy-link bills down in the
   // footer band, not the strip — see metaLineHtml / bandBottomHtml and
   // the isPostscript gates there), but the arrangement matches the rest.
-  //
-  // Essays (in the stacked, non-wide cells) invert the top of that order:
-  // the dek band rides up directly under the byline — the byline strip's
-  // own divider becomes the band's top edge — with the dek's divider
-  // closing it below, and the title drops in between the band and the
-  // excerpt, keeping its usual 48px steps. So the essay run is
-  // dek → dek-divider → title, where every other section is
-  // title → dek-divider → dek (see the .duo-half--essay overrides in
-  // style.css for the matching spacing).
+  // The resting billing over the cover. restChipArt swaps it for the
+  // cover credit — one line, "Art by X" — which is what the postscript
+  // page's standing cover wants: the names beside it already say whose
+  // interview it is, so the billing only repeated the list, and the
+  // credit had nowhere else to sit once it left the byline.
+  const restChipHtml = restChipArt && post.coverArtist
+    ? `<span class="rest-chip-line">Art by ${escapeHtml(post.coverArtist)}</span>`
+    : composedChipHtml(post, section);
   const isWide = halfClass.includes('duo-half--wide');
   const dekDivider = dekHtml ? '<div class="card-dek-divider" aria-hidden="true"></div>' : '';
   // Every section reads byline → title → dek → body → footer: the title
   // hangs off the byline strip, then the dek sits UNDER it in a band of its
   // own — its top edge the .card-dek-divider, its bottom edge the body's
-  // quote divider. Contra prints no body, so its dek band closes on the
-  // dek-divider alone (the quote rule and excerpt are hidden — see the
-  // .duo-half--contra rules in style.css).
-  const leftColHtml = `${titleHtml}${dekDivider}${dekHtml}`;
+  // quote divider. (The dek rode ABOVE the title briefly, its band fused
+  // onto the byline strip; reverted — the title leads again.) Contra
+  // prints no body, so its dek band closes on the dek-divider alone (the
+  // quote rule and excerpt are hidden — see the .duo-half--contra rules
+  // in style.css).
+  //
+  // The extra-wide cells split that reading: the title holds the LEFT
+  // column alone, centred in its height, and the dek opens the RIGHT
+  // column over the excerpt — the feature card's arrangement, where the
+  // dek is the body's eyebrow rather than the title's tail. No divider
+  // travels with it; the vertical column rule already separates the two
+  // sides, and the dek-to-excerpt step is the non-wide stack's own 24 of
+  // ink (see .duo-half--wide .panel-col--right .card-dek).
+  const leftColHtml = isWide ? titleHtml : `${titleHtml}${dekDivider}${dekHtml}`;
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
-        <p class="rest-title-chip" aria-hidden="true">${composedChipHtml(post, section)}</p>
+        <p class="rest-title-chip" aria-hidden="true">${restChipHtml}</p>
         <div class="duo-panel">
           ${metaHtml}
           ${metaHtml ? '<div class="card-byline-divider"></div>' : ''}
@@ -1381,6 +1416,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             </div>
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
+              ${isWide ? dekHtml : ''}
               ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
               ${previewHtml}
             </div>
@@ -1574,6 +1610,8 @@ ${ogTags({
   })}
 <link rel="icon" href="favicon.png">
 ${leadPreload}
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/fxr6gmc.css">
 <link rel="stylesheet" href="style.css">
 ${renderImgFadeScript()}
 </head>
@@ -1679,6 +1717,8 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/fxr6gmc.css">
 <link rel="stylesheet" href="style.css">
 ${renderImgFadeScript()}
 </head>
@@ -1713,12 +1753,12 @@ const LIST_ROWS = {
   contra: { perRow: 3, extraClass: 'card--quad card--quad-open', tag: 'From the Review', btnLabel: 'Contra', btnHref: 'contra.html' },
 };
 
-// The contra lead card's text: the Contra! manifesto AS EDITED for the
-// page (hand-tuned copy handed over 2026-07 — tenses tightened, one
-// paragraph dropped), not the live post at /p/contra, which is why it
-// is baked here rather than fetched. The byline is fixed alongside it:
-// the manifesto ran unsigned, from the editors, on June 7.
-const CONTRA_LEAD_BYLINE = { author: 'From the Editors', date: 'June 7' };
+// The Contra! manifesto AS EDITED for the page (hand-tuned copy handed
+// over 2026-07 — tenses tightened, one paragraph dropped), not the live
+// post at /p/contra, which is why it is baked here rather than fetched.
+// Only the opening line prints now — the head's excerpt (see
+// renderListPage) — but the whole text stays: it's the canonical page
+// copy, and the head may want more of it back.
 const CONTRA_LEAD_PARAS = [
   'The critic has two roles: to worship excellence and to wage war on its behalf.',
   'Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.',
@@ -1742,7 +1782,7 @@ const CONTRA_LEAD_PARAS = [
 // wholesale (see .essay-ticker / .ticker-item .duo-panel in style.css).
 // The berth's panel holds nothing but the title, which duo-panel-fit.js
 // fills to the box on one or two lines exactly as it does the cards'.
-function renderEssayTicker(posts, { lanes = 3 } = {}) {
+function renderEssayTicker(posts, { lanes = 2 } = {}) {
   const items = posts.filter((p) => p.image);
   if (!items.length) return '';
   // loading:eager, not lazy. The strip is one 26,500px-wide clipped box,
@@ -1785,7 +1825,7 @@ function renderEssayTicker(posts, { lanes = 3 } = {}) {
   // repartitions a freshly shuffled pool across the tapes on every load.
   // It still has to be repeat-free on its own, because without JS this
   // static deal IS the page — and a post on two tapes at once would be
-  // the one thing the three-tape reading is meant to avoid.
+  // the one thing the stacked-tape reading is meant to avoid.
   const per = Math.ceil(items.length / lanes);
   const runs = [];
   for (let i = 0; i < items.length; i += per) runs.push(items.slice(i, i + per));
@@ -1802,23 +1842,83 @@ function renderEssayTicker(posts, { lanes = 3 } = {}) {
     .join('\n  <div class="row-divider"></div>\n') + '\n';
 }
 
-// The essays page IS the tape now — three of them stacked, each scrolled
-// by the reader in either direction, together carrying every essay
-// exactly once (no card rows below: each berth's hover card already
-// prints the title, byline, date, topic and likes the rows used to).
-// src/essay-ticker.js reshuffles the whole pool across the three on every
+// The essays page IS the tape now — TWO of them stacked, sized so the
+// pair fills the viewport exactly (see --tape-h in style.css), each
+// scrolled by the reader in either direction, together carrying every
+// essay exactly once (no card rows below: each berth's hover card
+// already prints the title, byline, date, topic and likes the rows used
+// to). Three tapes at a third of the screen each was the earlier cut;
+// two at half give the berths — and their covers — half again the size.
+// src/essay-ticker.js reshuffles the whole pool across the tapes on every
 // load and staggers where each one rests.
+// The essays page: the postscript page's reading room. Same row of two
+// in the same order — the cover leading at the left, the index beside
+// it — same classes, same index script. The cover fills the screen and
+// sticks while the list runs past; only its WIDTH differs, taking the
+// homepage extra-wide cell's two-thirds and leaving the list the narrow
+// third (the row wears .card--split for it; see .essay-hero in
+// style.css). An entry reads date / topic / writer, where a
+// postscript's reads number / name / topic — an essay is known by its
+// subject, a postscript by whose interview it is.
+// (This page was three scrolling tapes of covers — renderEssayTicker,
+// still here and now unused by any page.)
 function renderEssaysPage({ currentKey, label, posts }) {
+  const chrono = posts.slice();
+  const newestIdx = 0;
+  // No masthead over this column — no name, no gloss. The rail already
+  // says which section you're in (Essays holds the Klein there), the
+  // list under it is unmistakably a list of essays, and the column
+  // opens straight onto the newest one. (Postscript keeps its name and
+  // gloss: see renderPostscriptPage.)
+  // restChipArt, as on the postscript page and for the same reason: the
+  // list beside the cover already prints the topic, the writer and the
+  // date, so the billing chip would only repeat it — the cover credit
+  // is the one thing the column doesn't say.
+  // duo-half--wide: the cell is the homepage's extra-wide essay, panel
+  // and all — title alone in the left column, centred in its height,
+  // with the dek opening the right column over the excerpt. It already
+  // has that cell's exact dimensions (see .essay-hero in style.css);
+  // this gives it the arrangement that goes with them.
+  // sectionBtn TRUE is the same "homepage cell" signal renderListPage
+  // passes for the contra squares (renderDuoHalf reads it as
+  // `homepage`), and it settles the strip and the band the same way:
+  // author and date alone in the byline, topic bottom-left, share and
+  // likes bottom-right. False gave this page its own cut — the topic
+  // repeated as a chip in the byline, the share up beside it, and the
+  // cover credit closing the band.
+  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Essay', btnLabel: label, btnHref: 'essays.html', sectionBtn: true, restChipArt: true }, 'duo-half--wide')}</div>`;
+  // Date, then topic, then writer. Each span keeps the class that names
+  // what it holds — -name is the person, -dek the date — so only the
+  // order moves here; which line is italic and which takes the Klein is
+  // set in style.css (.ps-index--essays).
+  const entryHtml = (p, i) => `<button type="button" class="ps-index-link${i === newestIdx ? ' is-active' : ''}" data-idx="${i}">`
+    + `${metaDateText(p) ? `<span class="ps-index-dek">${escapeHtml(metaDateText(p))}</span>` : ''}`
+    + `${p.kicker ? `<span class="ps-index-no">${escapeHtml(p.kicker)}</span>` : ''}`
+    + `<span class="ps-index-name">${escapeHtml(bylineName(p))}</span>`
+    + `</button>`;
   const bodyHtml = `
-  <div class="page-rows page-rows--tapes">
-${renderEssayTicker(posts)}  </div>`;
+  <div class="page-rows">
+  <div class="wrap">
+    <article class="card card--duo card--split ps-hero essay-hero">
+      <div class="ps-hero-card">
+        ${chrono.map(cellHtml).join('\n        ')}
+      </div>
+      ${DUO_DIVIDER}
+      <div class="ps-hero-names">
+        <nav class="ps-index ps-index--essays" aria-label="Every ${escapeHtml(label.toLowerCase())} entry, newest first">
+          ${chrono.map(entryHtml).join('\n          ')}
+        </nav>
+      </div>
+    </article>
+  </div>
+  </div>`;
   return renderPageShell({
     currentKey,
     title: label,
     bodyHtml,
     ogImage: posts.find((p) => p.image)?.image,
-    // No copy-link script: the tape's panels carry no copy button.
-    extraScripts: renderDuoPanelFitScript() + renderLineDrawScript() + renderEssayTickerScript(),
+    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
+      + renderPostscriptIndexScript(),
   });
 }
 
@@ -1826,51 +1926,79 @@ function renderListPage({ currentKey, label, posts, leadParas }) {
   const cfg = LIST_ROWS[currentKey];
   const rows = [];
   for (let i = 0; i < posts.length; i += cfg.perRow) {
-    // sectionBtn: false — the band's bottom-right section link is dropped
-    // on the section's own page, where it only named the page itself.
-    rows.push(renderDuoCard(posts.slice(i, i + cfg.perRow), { ...cfg, padTo: cfg.perRow, sectionBtn: false }));
+    // sectionBtn TRUE: the flag is really the "homepage cell" signal
+    // (renderDuoHalf reads it as `homepage`), and the contra page's
+    // squares are the homepage's squares exactly — author and date in
+    // the byline strip and nothing else, topic bottom-left, share and
+    // likes bottom-right. False gave this page its own cut: the topic
+    // repeated as a chip in the byline, the share moved up beside it,
+    // and the cover credit closed the band.
+    rows.push(renderDuoCard(posts.slice(i, i + cfg.perRow), { ...cfg, padTo: cfg.perRow, sectionBtn: true }));
   }
-  // The lead card (contra page): a standing hover card stretched across
-  // the top row — the section's name at panel-title size, the sidebar's
-  // own gloss as its dek (hard line break and all, via dekHtml), and the
-  // section's manifesto filling columns to a contra square's height
-  // (duo-panel-fit.js holds the height, the CSS multicol clips at the
-  // box — see .contra-lead in style.css). Under it, the category bar:
-  // one button per kicker the section actually uses, in a fixed shelf
-  // order — src/contra-filter.js deals the rows below to the active one.
-  const KICKER_ORDER = ['Books', 'Movies', 'Music', 'Theater'];
-  const kickers = KICKER_ORDER.filter((k) => posts.some((p) => (p.kicker || '').toLowerCase() === k.toLowerCase()));
-  const filterHtml = kickers.length
-    ? `  <div class="wrap contra-filter-wrap">
-    <nav class="contra-filter" aria-label="Filter ${escapeHtml(label)} by category">
-      ${kickers.map((k) => `<button type="button" class="contra-filter-link" data-kicker="${escapeHtml(k.toLowerCase())}" aria-pressed="false">${escapeHtml(k)}</button>`).join('\n      ')}
-    </nav>
-  </div>
-`
-    : '';
-  const leadHtml = leadParas && leadParas.length
+  // The contra page's head (was a lead card over a sticky filter bar):
+  // ONE header section cut like the postscript page's name column — all
+  // typewriter, all centred, everything reading down a middle axis.
+  // The section speaks first, in a block centred over the shelf: the
+  // manifesto's opening line as an epigraph over the section's name and
+  // its gloss — and the name itself is the way back, clearing whatever
+  // filter is on. (The gloss sheds the hard break SITE_LINKS writes
+  // into it: that break is cut for the sidebar's measure, and in a
+  // column this narrow it only wastes a line.) Under it, the shelf: the
+  // five categories in fixed order — Art holds its place before it has
+  // any entries — each heading a filter button with its reviews listed
+  // under it as the WORKS alone, italic (see contraWorkTitle): under
+  // "Books", a list of books. (They carried the covers' full chip
+  // billing, "<Reviewer> / contra <Work>", which repeated the
+  // reviewer's name down every column and said "contra" five times a
+  // shelf.) data-idx ties an entry to its cell in the grid below (cells
+  // sit in posts order), and src/contra-filter.js deals the grid to
+  // whichever heading or entry is pressed.
+  const KICKER_ORDER = ['Art', 'Books', 'Movies', 'Music', 'Theater'];
+  const colHtml = (k) => {
+    const entries = posts
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => (p.kicker || '').toLowerCase() === k.toLowerCase());
+    const listHtml = entries.length
+      ? `\n        <nav class="contra-head-list" aria-label="${escapeHtml(k)} reviews">
+          ${entries.map(({ p, i }) => `<button type="button" class="contra-entry-link" data-idx="${i}" aria-pressed="false"><span class="contra-entry-work"><em>${escapeHtml(contraWorkTitle(p))}</em></span></button>`).join('\n          ')}
+        </nav>`
+      : '';
+    return `<div class="contra-head-col">
+        <button type="button" class="contra-filter-link" data-kicker="${escapeHtml(k.toLowerCase())}" aria-pressed="false">${escapeHtml(k)}</button>${listHtml}
+      </div>`;
+  };
+  // The manifesto's opening line, in quotes and set as ONE line — it
+  // stands above the section's name now, an epigraph the page opens on
+  // rather than a paragraph hanging off the gloss, and an epigraph
+  // wants to be read in a single breath. (It was broken by hand after
+  // the colon and again after "excellence", back when it sat under the
+  // gloss and ran three lines deep.) The block is cut wide enough to
+  // hold it unbroken — see .contra-head-col--lead in style.css.
+  const manifestoQuote = emHtml((leadParas && leadParas[0]) || '');
+  // The quote IS the link to the manifesto — not out to Substack, but
+  // down into the grid, dealing it to the manifesto's own card the way
+  // any other entry in the head does. (It sat under a separate "The
+  // Contra Manifesto" line pointing off-site; the card it deals to now
+  // carries that title as its chip, see composedChipHtml.) The
+  // manifesto's kicker isn't one of the five categories, so no shelf
+  // column lists it — this is the only way to it.
+  const manifestoIdx = posts.findIndex((p) => slugOf(p.link) === 'contra');
+  const headHtml = leadParas && leadParas.length
     ? `  <div class="wrap">
-    <article class="card contra-lead">
-      <p class="card-meta card-meta--line"><span class="meta-author">${escapeHtml(CONTRA_LEAD_BYLINE.author)}</span><span class="meta-date">${escapeHtml(CONTRA_LEAD_BYLINE.date)}</span></p>
-      <div class="card-byline-divider"></div>
-      <div class="contra-lead-cols">
-        <div class="contra-lead-left">
-          <h2 class="card-title">${escapeHtml(label)}</h2>
-          <p class="card-dek">${dekHtml((SITE_LINKS.find((l) => l.key === currentKey) || { dek: '' }).dek || '')}</p>
-        </div>
-        <div class="contra-lead-divider" role="separator"></div>
-        <div class="contra-lead-body">
-          ${leadParas.map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`).join('\n          ')}
-        </div>
+    <header class="card contra-head">
+      <div class="contra-head-col contra-head-col--lead">
+        ${manifestoIdx >= 0
+          ? `<button type="button" class="contra-entry-link contra-head-excerpt" data-idx="${manifestoIdx}" aria-pressed="false">“${manifestoQuote}”</button>`
+          : `<p class="contra-head-excerpt">“${manifestoQuote}”</p>`}
+        <h2 class="card-title"><button type="button" class="contra-clear-link">${escapeHtml(label)}</button></h2>
+        <p class="card-dek">${dekHtml((SITE_LINKS.find((l) => l.key === currentKey) || { dek: '' }).dek || '')}</p>
       </div>
-      <div class="panel-band panel-band--bottom">
-        <p class="hero-kicker pc pc-left">The New Critic’s Criticism Section</p>
-        <a class="duo-essays-btn card-category-btn pc pc-right" href="https://www.thenewcritic.com/p/contra" rel="noopener">Read the Manifesto</a>
+      <div class="contra-head-shelf">
+        ${KICKER_ORDER.map(colHtml).join('\n        ')}
       </div>
-    </article>
+    </header>
   </div>
   <div class="row-divider"></div>
-${filterHtml}  <div class="row-divider"></div>
 `
     : '';
   // Same structure as the homepage blocks: one .wrap per row with a
@@ -1879,7 +2007,7 @@ ${filterHtml}  <div class="row-divider"></div>
   // the page's top/bottom insets.
   const bodyHtml = `
   <div class="page-rows">
-${leadHtml}${rows
+${headHtml}${rows
     .map(
       (row, i) => `  <div class="wrap">
     ${row}
@@ -1894,7 +2022,7 @@ ${leadHtml}${rows
     // The section's newest cover becomes its share card.
     ogImage: posts.find((p) => p.image)?.image,
     extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
-      + (filterHtml ? renderContraFilterScript() : ''),
+      + (headHtml ? renderContraFilterScript() : ''),
   });
 }
 
@@ -1919,44 +2047,53 @@ ${js}
 </script>`;
 }
 
-// The postscript page: not a grid but a reading room — one trio row.
-// Left, the section's name over its sidebar gloss, a rule, and a
-// scroll of every interviewee's name in reverse-chronological order
-// (today at the top, reading back; src/postscript-index.js drives the
-// selection). Middle, the selected postscript's cover. Right, its
-// hover card, standing open (.ps-hero-cell pins the panel's opacity).
-// Every cover and card is prerendered and hidden — selection is a
-// display toggle plus a refit, no fetches.
+// The postscript page: not a grid but a reading room — one row of two.
+// Right, a column built like the nav rail: the section's name centred in
+// the rail's own typewriter face at the deks' size, its gloss under it,
+// then every interviewee's name in reverse-chronological order (today at
+// the top, reading back), centred and set on the rail's 1.5 leading.
+// Each entry runs three lines: its number, the name, then the piece's
+// topic as an all-caps dek. The numbers count UP from the first
+// postscript ever published — the list prints newest first, so they run
+// backwards down the page and the highest is at the top. They're issue
+// numbers, not positions in the scroll: an interview keeps the number it
+// was given as later ones publish above it.
+// src/postscript-index.js drives the selection.
+// The cover LEADS, at the left: the selected postscript as an ordinary
+// hover cell — cover standing, card opening over it on hover — and it
+// sticks to the top of the screen while the names run past it. (It was
+// two columns on the right — a cover beside a card pinned permanently
+// open — which printed the same picture's frame twice and left the card
+// no rest state at all.)
+// Every cell is prerendered and hidden; selection is a display toggle
+// plus a refit, no fetches.
 function renderPostscriptPage({ currentKey, label, posts }) {
   const chrono = posts.slice();
   const newestIdx = 0;
   const dek = (SITE_LINKS.find((l) => l.key === currentKey) || { dek: '' }).dek || '';
   const nameOf = (p) => p.psName || p.title;
-  // The credit bills once, as a chip on the cover itself — renderDuoHalf's
-  // own band copy is turned off (showArtInBand: false in cellHtml below)
-  // so the standing-open card doesn't repeat it.
-  const artChipHtml = (p) => p.coverArtist ? `<p class="ps-hero-art" aria-hidden="true">Art by ${escapeHtml(p.coverArtist)}</p>` : '';
-  const coverHtml = (p, i) => `<span class="card-image-frame duo-card-image ps-hero-coverimg" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}><a class="card-image-link" href="${escapeHtml(p.link)}" rel="noopener">${p.image ? `<img class="card-image" ${coverSrcAttrs(p.image, COVER_SIZES.cell)} alt=""${focalStyle(p)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}</a>${artChipHtml(p)}</span>`;
-  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Interview', btnLabel: label, btnHref: 'postscript.html', sectionBtn: false, showArtInBand: false })}</div>`;
+  // ONE cell now, not a cover column beside a standing-open card: the
+  // duo half already carries its own cover, and letting it behave like
+  // every other duo half — panel shut, opening on hover — merges the two
+  // columns into the thing they were always two halves of. The credit
+  // goes back to the band with it (showArtInBand defaults true), where
+  // every other section page bills it; the cover chip it used to ride
+  // went with the column.
+  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Interview', btnLabel: label, btnHref: 'postscript.html', sectionBtn: false, restChipArt: true })}</div>`;
   const bodyHtml = `
   <div class="page-rows">
   <div class="wrap">
-    <article class="card card--duo card--trio ps-hero">
-      <div class="ps-hero-left">
-        <h2 class="card-title">${escapeHtml(label)}</h2>
-        <p class="card-dek">${dekHtml(dek)}</p>
-        <div class="ps-hero-rule"></div>
-        <nav class="ps-index" aria-label="Every ${escapeHtml(label)} subject, newest first">
-          ${chrono.map((p, i) => `<button type="button" class="ps-index-link${i === newestIdx ? ' is-active' : ''}" data-idx="${i}"><span class="ps-index-name">${escapeHtml(nameOf(p))}</span>${p.kicker ? `<span class="ps-index-dek">${escapeHtml(p.kicker)}</span>` : ''}</button>`).join('\n          ')}
-        </nav>
-      </div>
-      ${DUO_DIVIDER}
-      <div class="ps-hero-cover">
-        ${chrono.map(coverHtml).join('\n        ')}
-      </div>
-      ${DUO_DIVIDER}
+    <article class="card card--duo ps-hero">
       <div class="ps-hero-card">
         ${chrono.map(cellHtml).join('\n        ')}
+      </div>
+      ${DUO_DIVIDER}
+      <div class="ps-hero-names">
+        <h2 class="card-title">${escapeHtml(label)}</h2>
+        <p class="card-dek">${dekHtml(dek)}</p>
+        <nav class="ps-index" aria-label="Every ${escapeHtml(label)} subject, newest first">
+          ${chrono.map((p, i) => `<button type="button" class="ps-index-link${i === newestIdx ? ' is-active' : ''}" data-idx="${i}"><span class="ps-index-no">No. ${chrono.length - i}</span><span class="ps-index-name">${escapeHtml(nameOf(p))}</span>${p.kicker ? `<span class="ps-index-dek">${escapeHtml(p.kicker)}</span>` : ''}</button>`).join('\n          ')}
+        </nav>
       </div>
     </article>
   </div>
@@ -2122,7 +2259,7 @@ function renderAboutPage(founders = []) {
         <p class="card-dek">A letter to our readers</p>
         <div class="duo-quote-divider"></div>
         <div class="mission-cols">
-        ${GIVE_LETTER.map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : escapeHtml(p)}</p>`).join('\n        ')}
+        ${GIVE_LETTER.map((p) => `<p class="card-preview">${escapeHtml(p)}</p>`).join('\n        ')}
         </div>
         <div class="duo-quote-divider"></div>
         <div class="col-signers">
@@ -2158,7 +2295,7 @@ function renderLedgerRow(post) {
         : [];
   const previewBlock = previewParas.length
     ? `<div class="card-preview-block">${previewParas
-        .map((p, i) => `<p class="card-preview">${i === 0 ? wrapLeadWords(p) : emHtml(p)}</p>`)
+        .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
         .join('')}</div>`
     : '';
   const dekHtml = post.subtitle
@@ -2173,7 +2310,22 @@ function renderLedgerRow(post) {
           ? { month: 'short', day: 'numeric' }
           : { month: 'short', day: 'numeric', year: 'numeric' })
       : post.metaDate || '';
-  const readNowHtml = `<a class="card-preview-cta arch-ledger-readon pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`;
+  // Sentence case, and bare — the arrow came off with the caps. "Read
+  // on" reads as the invitation it is; set loud it was shouting the one
+  // thing on the card that didn't need to.
+  const readNowHtml = `<a class="card-preview-cta arch-ledger-readon pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on</a>`;
+  // The fold-out's band: share leads from the LEFT (the row above
+  // already names the topic, so no kicker repeats it here) and Read on
+  // closes it on the right — the fold-out has no linked title, and the
+  // row toggles rather than navigates. The art credit rides the cover as
+  // a chip (see arch-art-chip below), not the band. No likes count: a
+  // heart is a thing to press, and pressing it means leaving for
+  // Substack — the two doors out of this band were one too many, and
+  // Read on is the one that means it.
+  const ledgerCopyBox = copyLinkBtnHtml(post, 'card-copylink pc pc-left');
+  const ledgerArtChip = post.coverArtist
+    ? `<p class="arch-art-chip" aria-hidden="false">Art by ${escapeHtml(post.coverArtist)}</p>`
+    : '';
   // Sort keys for the column-head controls (see src/ledger.js): author and
   // section lowercased for a case-blind alphabetical order, the date as a
   // plain epoch number.
@@ -2200,14 +2352,13 @@ function renderLedgerRow(post) {
     <div class="arch-ledger-card arch-ledger-grid" hidden>
       <span class="arch-ledger-card-image"><a href="${escapeHtml(post.link)}" rel="noopener">
         ${post.image ? `<img ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt="" loading="lazy" decoding="async"${focalStyle(post)}>` : '<span class="card-image--blank"></span>'}
-      </a></span>
+      </a>${ledgerArtChip}</span>
       <div class="arch-ledger-card-text">
-        ${dekHtml ? '<div class="arch-ledger-card-divider arch-ledger-card-divider--top"></div>' : ''}
         ${dekHtml}
         ${dekHtml && previewBlock ? '<div class="arch-ledger-card-divider"></div>' : ''}
         ${previewBlock}
         <div class="panel-band panel-band--bottom">
-          ${artBoxHtml(post, 'left')}${readNowHtml}
+          ${ledgerCopyBox}${readNowHtml}
         </div>
       </div>
     </div>

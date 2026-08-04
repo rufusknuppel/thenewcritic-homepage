@@ -18,11 +18,12 @@
   // exactly here (see the slot stretch below).
   // 18.1, not 24, because this measures the text's BOX and the panel's
   // spacing is specified ink to ink (see PANEL INK RHYTHM in style.css):
-  // the excerpt's 1.6 leading hangs 0.454em — 5.9px at the 13px panel
-  // size — below its last baseline, so an 18.1px box floor is what
-  // prints the wanted 24px of air between the last line and the band's
-  // rule.
-  var GAP = 18.1;
+  // the Helvetica excerpt hangs ~4.3px below its last baseline at the
+  // 13px panel size, so a 19.7px box floor is what prints the wanted
+  // 24px of air between the last line and the band's rule. (This number
+  // tracks the body face: 18.1 in an earlier Helvetica-metrics pass,
+  // 21.2 under Newsreader — re-derive it if the face moves again.)
+  var GAP = 19.7;
   // When a block's text fills every line slot its box allows, the sub-line
   // remainder (box height mod line-height) is distributed into the leading
   // instead of piling up as dead space over the band: each slot may open
@@ -676,11 +677,30 @@
     // left group instead of pinning to the right edge.
     var rights = band.querySelectorAll('.pc-right');
     var pushed = false;
+    var firstRight = null;
     [].forEach.call(rights, function(el){
       if (getComputedStyle(el).display === 'none') { el.style.marginLeft = ''; return; }
       el.style.marginLeft = pushed ? '' : 'auto';
+      if (!pushed) firstRight = el;
       pushed = true;
     });
+    // A tight band drops the right group's LEADING rule: when the open
+    // ground between the left group and the first right-hand box is
+    // narrower than that box, its left rule stands so close to the
+    // kicker's that the sliver between them reads as a boxed nothing.
+    // Class off first so the measure is of the natural band each pass.
+    [].forEach.call(rights, function(el){ el.classList.remove('band-tight'); });
+    if (firstRight) {
+      var lefts = band.querySelectorAll('.pc-left');
+      var leftEdge = band.getBoundingClientRect().left;
+      [].forEach.call(lefts, function(el){
+        if (getComputedStyle(el).display === 'none') return;
+        var r = el.getBoundingClientRect().right;
+        if (r > leftEdge) leftEdge = r;
+      });
+      var fr = firstRight.getBoundingClientRect();
+      if (fr.left - leftEdge < fr.width) firstRight.classList.add('band-tight');
+    }
   }
 
   // Clamps el to however many of its lines end above `limit`. Returns true
@@ -822,6 +842,15 @@
     if (!panel.closest('.duo-half--wide')) return;
     var body = topBox.querySelector('.card-preview-block');
     if (!body || getComputedStyle(body).display === 'none') return;
+    // The wide column centres itself now — the dek and the block carry
+    // margin:auto (see .panel-col--right in style.css), and flex shares
+    // the slack out evenly. Writing a px margin-top here would OVERRIDE
+    // the auto (inline beats stylesheet) and pin the head back to the
+    // top, so where the autos are in charge this pass stands down. The
+    // tell is the COLUMN's display: computed margin-top can't be it —
+    // engines resolve a flex auto margin to its used px value there.
+    var bodyCol = body.parentNode;
+    if (bodyCol && getComputedStyle(bodyCol).display === 'flex') return;
     if (title) {
       var tr = title.getBoundingClientRect();
       // Only the facing-column case: a body BELOW the title is the
@@ -846,8 +875,15 @@
     if (inkBottom === -Infinity) return;
     var slack = band.getBoundingClientRect().top - GAP - inkBottom;
     if (slack < 1) return;
+    // The column's HEAD takes the half-slack, whatever the head is: the
+    // dek when the column opens on one (the wide cells bill the dek over
+    // the excerpt now), else the quote rule, else the body — pushing a
+    // mid-column element down instead would open a hole between it and
+    // whatever sits above it.
+    var dekHead = topBox.querySelector('.panel-col--right .card-dek');
     var quote = topBox.querySelector('.duo-quote-divider');
-    var head = (quote && getComputedStyle(quote).display !== 'none') ? quote : body;
+    var head = (dekHead && getComputedStyle(dekHead).display !== 'none') ? dekHead
+      : (quote && getComputedStyle(quote).display !== 'none') ? quote : body;
     head.style.marginTop = (parseFloat(getComputedStyle(head).marginTop) || 0) + slack / 2 + 'px';
   }
 
@@ -886,6 +922,8 @@
     if (title) { title.style.marginTop = ''; title.style.marginBottom = ''; }
     var qdReset = topBox.querySelector('.duo-quote-divider');
     if (qdReset) qdReset.style.marginTop = '';
+    var dekReset = topBox.querySelector('.panel-col--right .card-dek');
+    if (dekReset) dekReset.style.marginTop = '';
     var bodyReset = topBox.querySelector('.card-preview-block');
     if (bodyReset) bodyReset.style.marginTop = '';
     topBox.style.marginTop = '';

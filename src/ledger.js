@@ -15,8 +15,10 @@
   // columns (same rules as the essay panels): the block is capped at a
   // whole-line multiple ending GAP_BOTTOM above the footer band, the
   // line remainder shifts the column down (top padding is the minimum),
-  // and a cut ends at its last whole word with the ellipsis joined onto
-  // it inline (see truncateToWord — same approach as duo-panel-fit.js).
+  // and a cut ends at its last whole word — with the ellipsis joined onto
+  // it inline UNLESS the cut fell at a paragraph's end, where the text
+  // already reads as finished (see truncateToWord; duo-panel-fit.js has
+  // its own copy for the hover panels and still marks every cut).
   var TRAIL_PUNCT = /[\s.,;:!?'"‘’“”()\[\]…—–-]+$/;
 
   function removeAfter(root, node) {
@@ -57,8 +59,28 @@
       if (best > -1) { cutNode = nodes[i]; cutEnd = best; }
     }
     if (!cutNode) return;
+    // Did the cut land on the END of a paragraph? Then the excerpt closes
+    // on a finished thought, and an ellipsis would only claim a sentence
+    // was interrupted when it wasn't. (Later paragraphs may still be
+    // dropped — the mark is about how the visible text ends, not about
+    // whether anything follows.)
+    var para = cutNode.parentNode;
+    while (para && para !== el && !(para.classList && para.classList.contains('card-preview'))) {
+      para = para.parentNode;
+    }
+    var atParaEnd = false;
+    if (para && para !== el && !/\S/.test(cutNode.textContent.slice(cutEnd))) {
+      var pw = document.createTreeWalker(para, NodeFilter.SHOW_TEXT, null, false);
+      var pn, past = false;
+      atParaEnd = true;
+      while ((pn = pw.nextNode())) {
+        if (pn === cutNode) { past = true; continue; }
+        if (past && /\S/.test(pn.textContent)) { atParaEnd = false; break; }
+      }
+    }
     removeAfter(el, cutNode);
     cutNode.textContent = cutNode.textContent.slice(0, cutEnd);
+    if (atParaEnd) return;
     var guard = 30;
     while (guard-- > 0 && cutNode) {
       cutNode.textContent = cutNode.textContent.replace(TRAIL_PUNCT, '') + '…';
@@ -83,70 +105,32 @@
     }
   }
 
-  // Reads the rendered line boxes of the two-column block and reports, per
-  // column, whether the bottom line slot is occupied (…Full) and whether
-  // the line sitting in it is an orphan — a paragraph's opening line
-  // stranded at the column's foot while its body carries on past the
-  // break. Same helper as duo-panel-fit.js.
-  function columnFill(el, plh) {
-    var r = el.getBoundingClientRect();
-    var midX = (r.left + r.right) / 2;
-    var slotTop = r.bottom - plh;
-    var st = { leftFull: false, rightFull: false, leftOrphan: false, rightOrphan: false };
-    [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
-      var rng = document.createRange();
-      rng.selectNodeContents(p);
-      var rs = rng.getClientRects();
-      var rects = [];
-      for (var i = 0; i < rs.length; i++) if (rs[i].width >= 1) rects.push(rs[i]);
-      if (!rects.length) return;
-      var first = rects[0];
-      var continues = false;
-      for (var j = 0; j < rects.length; j++) {
-        if (Math.abs(rects[j].top - first.top) > plh / 2) { continues = true; break; }
-      }
-      rects.forEach(function(rc){
-        if (rc.left >= r.right - 1) return;
-        if ((rc.top + rc.bottom) / 2 < slotTop) return;
-        var isFirstLine = continues && Math.abs(rc.top - first.top) < plh / 2;
-        if ((rc.left + rc.right) / 2 >= midX) {
-          st.rightFull = true;
-          if (isFirstLine) st.rightOrphan = true;
-        } else {
-          st.leftFull = true;
-          if (isFirstLine) st.leftOrphan = true;
-        }
-      });
-    });
-    return st;
-  }
-
-  // Tallest height (in lines) at which both columns run full — top line
-  // against the divider, bottom line against the footer gap — with
-  // neither column ending in an orphan. 0 when no height fills both
-  // columns (content too short). Same helper as duo-panel-fit.js.
-  function pickColumnHeight(el, plh, maxLines) {
-    var firstFull = 0;
-    for (var k = maxLines; k >= 1; k--) {
-      el.style.height = (k * plh) + 'px';
-      var st = columnFill(el, plh);
-      if (!st.leftFull || !st.rightFull) continue;
-      if (!firstFull) firstFull = k;
-      if (!st.leftOrphan && !st.rightOrphan) return k;
-    }
-    return firstFull;
-  }
-
   function fitCard(card) {
     var text = card.querySelector('.arch-ledger-card-text');
     if (!text || card.hidden) return;
     var band = text.querySelector('.panel-band--bottom');
+    // The band sheds like the homepage cards' (see fitBandBoxes in
+    // duo-panel-fit.js): when the boxes outrun the band, the Share
+    // label goes first, then the art credit — the kicker, likes and
+    // Read on always survive. Restored before each measure so a wider
+    // pass gets them back.
+    if (band) {
+      var shed = [band.querySelector('.copylink-label'), band.querySelector('.pc-art')];
+      shed.forEach(function(el){ if (el) el.style.display = ''; });
+      for (var si = 0; si < shed.length; si++) {
+        if (band.scrollWidth <= band.clientWidth + 1) break;
+        if (shed[si]) shed[si].style.display = 'none';
+      }
+    }
     // Restore a previous fit's truncation before anything is measured (or
     // queried — the paragraphs below must be the fresh nodes).
     var block0 = text.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
     var paras = text.querySelectorAll('.card-preview');
+    var divider = text.querySelector('.arch-ledger-card-divider');
     text.style.paddingTop = '';
+    text.style.paddingBottom = '';
+    if (divider) { divider.style.marginTop = ''; divider.style.marginBottom = ''; }
     [].forEach.call(text.children, function(el){
       if (el === band) return;
       el.style.display = '';
@@ -175,22 +159,37 @@
       // (see clampToFit in duo-panel-fit.js).
       p.style.lineClamp = 'none';
     });
-    var GAP_BOTTOM = 16;
-    var limit = (band
-      ? band.getBoundingClientRect().top
-      : text.getBoundingClientRect().bottom - 33) - GAP_BOTTOM;
+    // FOUR equal gaps hold the column: over the dek, under it, over the
+    // body, under the body. 16 is the floor each one gets; whatever
+    // height the body doesn't use is split four ways and added to all of
+    // them, so the stack breathes evenly instead of stranding one hole
+    // above the footer band. The CSS values are only the pre-JS resting
+    // state — every one of the four is written inline below.
+    var MIN_PAD = 16;
+    var textRect = text.getBoundingClientRect();
+    var bandTop = band ? band.getBoundingClientRect().top : textRect.bottom - 33;
+    var bandH = textRect.bottom - bandTop;
+    // Measure from the floor, so "what's left over" is a real figure.
+    text.style.paddingTop = MIN_PAD + 'px';
+    text.style.paddingBottom = (bandH + MIN_PAD) + 'px';
+    if (divider) {
+      divider.style.marginTop = MIN_PAD + 'px';
+      divider.style.marginBottom = MIN_PAD + 'px';
+    }
+    var limit = bandTop - MIN_PAD;
     var cutting = false;
     [].forEach.call(text.children, function(el){
       if (el === band) return;
       if (getComputedStyle(el).display === 'none') return;
       if (cutting) { el.style.display = 'none'; return; }
       if (el.classList.contains('card-preview-block')) {
-        // Two-column excerpt, sized by pickColumnHeight: both columns run
-        // full from the divider line down to the footer line, grids
-        // aligned, neither column ending in an orphan. Sequential fill
-        // against an explicit height makes "both columns full" a property
-        // the height alone controls — and deleting the clipped tail later
-        // can't re-balance what shows.
+        // The excerpt fills the LEFT column to the box height and only
+        // then flows into the right — column-fill:auto against an
+        // explicit height, and nothing else. (It used to hunt for a
+        // height where both columns ran full and neither ended on a
+        // stranded opener; that rule cost whole lines to satisfy and
+        // spent them as a hole above the band.) A right column that runs
+        // out mid-way is simply where the text ends.
         var firstP = el.querySelector('.card-preview');
         var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
         var budget = limit - el.getBoundingClientRect().top;
@@ -198,25 +197,37 @@
         if (maxLines < 1) { el.style.display = 'none'; return; }
         el.style.overflow = 'hidden';
         el.style.columnFill = 'auto';
-        var blockLines = pickColumnHeight(el, plh, maxLines);
-        if (blockLines) {
-          el.style.height = (blockLines * plh) + 'px';
-        } else {
-          // Content too short to floor both columns at any height — let
-          // it balance naturally and just anchor what there is.
-          el.style.height = '';
-          el.style.columnFill = '';
-          el.style.maxHeight = (maxLines * plh) + 'px';
-        }
-        // Anchor to the footer band: whatever the block doesn't use —
-        // lines the fitter gave back, plus the line remainder — raises
-        // the top padding above its minimum.
-        var anchorShift = limit - el.getBoundingClientRect().bottom;
-        if (anchorShift > 0) {
-          var basePad = parseFloat(getComputedStyle(text).paddingTop) || 0;
-          text.style.paddingTop = (basePad + anchorShift) + 'px';
-        }
+        el.style.height = (maxLines * plh) + 'px';
         if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
+        // What the text actually reaches. With sequential fill this is
+        // the box height whenever the left column fills — the slack case
+        // is a short excerpt that never gets there, and then the block
+        // shrinks to its own last line and the four gaps take the rest.
+        var blockTop = el.getBoundingClientRect().top;
+        var used = 0;
+        [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
+          var rng = document.createRange();
+          rng.selectNodeContents(p);
+          var rs = rng.getClientRects();
+          for (var i = 0; i < rs.length; i++) {
+            if (rs[i].width < 1) continue;
+            var b = rs[i].bottom - blockTop;
+            if (b > used) used = b;
+          }
+        });
+        var usedLines = Math.max(1, Math.min(maxLines, Math.ceil((used - 1) / plh)));
+        el.style.height = (usedLines * plh) + 'px';
+        // Everything the body didn't take — the lines it never needed AND
+        // the sub-line remainder the box could never use — split four ways.
+        var share = (budget - usedLines * plh) / 4;
+        if (share > 0) {
+          text.style.paddingTop = (MIN_PAD + share) + 'px';
+          text.style.paddingBottom = (bandH + MIN_PAD + share) + 'px';
+          if (divider) {
+            divider.style.marginTop = (MIN_PAD + share) + 'px';
+            divider.style.marginBottom = (MIN_PAD + share) + 'px';
+          }
+        }
         return;
       }
       if (el.getBoundingClientRect().bottom > limit) {
