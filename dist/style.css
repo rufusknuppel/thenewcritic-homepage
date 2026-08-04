@@ -530,8 +530,7 @@ section{ padding: 80px 0; }
   transform: scaleX(0);
   transform-origin: 0 50%;
 }
-.duo-half-divider.line-draw,
-.mission-vr.line-draw{
+.duo-half-divider.line-draw{
   transform: scaleY(0);
   transform-origin: 50% 0;
 }
@@ -1704,9 +1703,10 @@ a.likes:hover::after,
 .card--feature .card-preview,
 .card--duo .card-preview,
 .arch-ledger-card .card-preview{
-  /* The About page's body cut (see .mission-card .card-preview) — the
-     body face, white — at the panels' own 13px (the About size was tried
-     and walked back; the dek pairing keeps the smaller cut). The actual
+  /* The body face, white, at the panels' own 13px (the About page's old
+     14.9px was tried and walked back; the dek pairing keeps the smaller
+     cut — and the About page now borrows THIS cut back, see
+     .about-panel .card-preview). The actual
      line count that fits is computed live by duo-panel-fit.js off the
      rendered box height, so this only sets how big the text reads, not
      how many lines show. */
@@ -2654,27 +2654,25 @@ a.likes:hover::after,
    surface tint reads as a quiet placeholder tile rather than a void.
    No JS → no .imgfade → nothing is ever hidden. */
 img.card-image,
-.arch-ledger-card-image img,
-.mission-person-photo{ background: var(--surface); }
+.arch-ledger-card-image img{ background: var(--surface); }
 .imgfade img.card-image,
-.imgfade .arch-ledger-card-image img,
-.imgfade .mission-person-photo{ opacity: 0; transition: opacity .45s ease; }
+.imgfade .arch-ledger-card-image img{ opacity: 0; transition: opacity .45s ease; }
 /* .card-image also carries the hover-dim filter transition (see
    .duo-half:is(:hover,:focus-within) .card-image above) — a shorthand
    `transition` fully replaces the one above rather than adding to it,
    so without this second, equally-specific declaration the load fade
    would silently swallow the filter transition and the hover dim would
-   snap with no animation at all. Kept off .arch-ledger-card-image img
-   and .mission-person-photo: neither carries a hover filter, so they
-   stay on the plain opacity-only transition above. */
+   snap with no animation at all. Kept off .arch-ledger-card-image img,
+   which carries no hover filter and stays on the plain opacity-only
+   transition above. (The masthead portraits are deliberately NOT in
+   this set: .mh-pfp owns its own opacity for the hover reveal, and a
+   load fade writing to the same property would fight it.) */
 .imgfade img.card-image{ transition: opacity .45s ease, filter .3s ease; }
 .imgfade img.card-image.is-loaded,
-.imgfade .arch-ledger-card-image img.is-loaded,
-.imgfade .mission-person-photo.is-loaded{ opacity: 1; }
+.imgfade .arch-ledger-card-image img.is-loaded{ opacity: 1; }
 @media (prefers-reduced-motion: reduce){
   .imgfade img.card-image,
-  .imgfade .arch-ledger-card-image img,
-  .imgfade .mission-person-photo{ transition: none; }
+  .imgfade .arch-ledger-card-image img{ transition: none; }
 }
 .card-title{
   font-family: var(--title); font-weight: 700; font-size: 1.53rem; margin: 0; color: var(--white);
@@ -2933,7 +2931,18 @@ img.card-image,
 
 
 /* ---------- FOOTER ---------- */
-footer{ padding: 24px 0; text-align:center; border-top: 1px solid var(--line); }
+/* 48 of air under the border rule and 48 below the line's lowest ink,
+   measured INK to edge rather than box to edge, the way the rail and the
+   contra head are measured. The row's three groups all stand in the chip
+   cut at line-height 1: 2.55 is the drop from their box top to the cap of
+   an S or a T, and 0.15 is how far the deepest descender on the line —
+   the g of Instagram, a hair below the y of May — hangs BELOW the box's
+   own foot, which is why the foot pays more than 48 and the head pays
+   less. Plain px, not em: em here would resolve against the footer's
+   inherited size, not the --chip-size its lines actually set at. Both
+   numbers are string-dependent — re-derive if the marks or the imprint
+   change. */
+footer{ padding: 45.45px 0 48.15px; text-align:center; border-top: 1px solid var(--line); }
 /* Footer is just the fine-print line now — the bird and the link list
    were removed (their .foot-bird/.foot-links rules with them). */
 /* The fine print wears the hover cards' dek cut exactly (see
@@ -2952,7 +2961,7 @@ footer{ padding: 24px 0; text-align:center; border-top: 1px solid var(--line); }
 /* One row, three groups. A 1fr auto 1fr grid rather than
    space-between: it centres the marks against the FOOTER, not against
    whatever the two text groups happen to measure, so the middle stays put
-   as the credit's year or the gloss changes length. */
+   as the name or the founding year changes length. */
 .foot-row{
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -3057,258 +3066,418 @@ footer{ padding: 24px 0; text-align:center; border-top: 1px solid var(--line); }
   }
 }
 
-/* The founders' letter signatures (the About page's letter card): written
-   signature over the courier name, three across. Per-hand size modifiers
-   keep the ink optically even. */
-.col-signers{
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 36px 48px; margin-top: 44px;
+/* ---------- ABOUT PAGE ----------
+   The head wears the contra head's cut — the .contra-head class carries
+   it (borderless, centred typewriter, blue on hover and in Klein while
+   open) — but the six section names slot down ONE column on the page's
+   centre instead of ranging across a shelf. Below the head's full-bleed
+   divider, ONE section's text at a time (toggled by src/about-panel.js)
+   in a centred column one contra card wide, ruleless, all of it in the
+   head's own centred sentence-case courier except the letter's
+   paragraphs, which keep the hover panels' serif excerpt cut.
+   (The page was a two-column card grid wearing the panels' skin; its
+   .mission-card/band/column rules went with it. The masthead medallions
+   and the subscribe list keep their mission-* names.) */
+/* 48 of air over the column's ink and 48 under it, measured INK to edge
+   like the contra head's (and, like there, 24 of each is already paid —
+   the page's top inset above, the card's margin down to the divider
+   below): 5.67 is the drop from the first line's box top to the highest
+   ink of "About" (a longer first line reads 5.4 — "About the Magazine"
+   carried more ascenders and they measured a shade higher), and 5.58
+   the rise from the last line's box
+   bottom to its lowest ink — Contact closes the column and nothing in it
+   descends, so the lowest ink is the baseline itself, higher off the box
+   bottom than the contra columns' descender-bearing lists. Plain px, not
+   em (em would resolve against the card's inherited size, not the 13px
+   the labels set at). String-dependent — re-derive if a section is
+   renamed or the order changes. */
+.card.about-head{ padding: 18.33px 0 18.42px; }
+/* The sections' column: stacked on the page's centre at the head's plain
+   1.5 leading, gap 0 — a list of one kind of line, like a contra
+   column's works (the seam half-lines there part a heading from its
+   list; this column has no heading). */
+.about-head-list{
+  display: flex; flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
-.col-signer{
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  gap: 12px; text-decoration: none;
-}
-.col-sig-wrap{ height: 52px; display: flex; align-items: flex-end; justify-content: center; }
-.col-sig{ max-width: 118px; max-height: 44px; width: auto; height: auto; opacity: 0.92; }
-.col-sig--elan{ max-width: 150px; max-height: 30px; }
-.col-sig--rufus{ max-width: 112px; max-height: 50px; }
-.col-signer-name{
-  font-family: var(--body); font-weight: 400; font-size: calc(0.97rem - 0.62px);
-  color: var(--white);
-}
+/* The two whole documents — the Letter, then the Manifesto — stand
+   below the sections with 48 of air over them, measured INK to ink like
+   every other 48 on this page: 5.58 falls from Contact's baseline (it
+   carries no descender) to its box bottom, and 6.32 from the next box's
+   top down to the cap of "Letter", so the margin pays 48 less those
+   two. String-dependent — when this line read "Letter from the
+   Editors" its ascenders measured 5.4 and the margin was 37.02.
+   The Manifesto under it keeps the column's own 19.5 step.
+   Qualified by .about-head so it outranks the head's inherited
+   `.contra-head .contra-filter-link{ margin: 0 }` — a bare class loses
+   to that pair and the gap silently doesn't happen. */
+.about-head .about-link--parted{ margin-top: 36.10px; }
+/* Sticky footer: with one short section open (or none), the page runs
+   out of content well above the fold — main grows to hold the footer at
+   the viewport's foot instead of letting it float mid-page. (The fixed
+   sidebar is out of flow, so main + footer are the body's whole flex
+   column.) */
+body.about-body{ min-height: 100vh; display: flex; flex-direction: column; }
+body.about-body main{ flex: 1 0 auto; }
+/* The reveal below the divider: the open section's text, on the page's
+   own black with no box of its own — the divider above is all the
+   parting it needs. A centred column exactly ONE CONTRA CARD wide — a
+   3-across cell of the content column, (min(1600, viewport − sidebar) −
+   wrap padding − two 49px gutters) / 3, the same measure the old
+   mission cards took — so the reveal reads at the width of one of the
+   site's own squares. And TALL enough that opening any section puts the
+   footer below the fold: min-height is the viewport less everything
+   standing above the panel — 24 page inset + 36.75 head padding + 136.5
+   (the column's seven 13px lines at 1.5) + 36.10 (the air over the
+   Letter) + 24 head margin + 1 divider + 24 divider margin = 282.35,
+   taken as 281.6 (the three-quarters of a pixel kept back is clearance:
+   at the exact figure the footer's border lands ON the fold, where any
+   subpixel rounding grazes it back into view) — so head + panel always
+   fill the first viewport and the footer starts past it.
+   Line-count-dependent: re-derive if a section is added or a label
+   wraps.
 
-/* ---------- ABOUT PAGE (the .mission-* classes keep its working name) ----------
-   A single standalone square card in the top-left of the content area (nav
-   + footer stay from the page shell). It wears the trio hover card's look
-   with the hover state made permanent: the panel's black fill, white
-   border and glow, always on, and no header/footer bands. A gray rule runs
-   down its right side from the top of the page to the footer rule. */
-/* Sticky footer, scoped to this page: the fixed sidebar is out of flow, so
-   main + footer are the body's flex column — main grows to fill the
-   viewport, pinning the footer to the bottom, so the frame column below
-   can span the full height down to the footer rule. */
-body.mission-body{ min-height: 100vh; display: flex; flex-direction: column; }
-body.mission-body main{ flex: 1 0 auto; display: flex; }
-.mission-page{ flex: 1; display: flex; }
-/* A card column: 24px on all sides, so cards sit the standard gap off the
-   nav/top and the last card ends 24px above the footer rule. The vertical
-   rules between columns are their own elements (.mission-vr below), not
-   borders, so they can join the line-draw ruling. */
-.mission-col{
-  padding: 24px;
-}
-/* The vertical rules between/after the columns: flex siblings of the
-   columns, stretched to the page's full height by the flex row — from the
-   page's top edge down to the footer rule the sticky footer pins them
-   against. They sweep in with the page ruling (see the .line-draw list). */
-.mission-vr{
-  width: 1px; flex-shrink: 0;
-  background: var(--line);
-}
-/* The card itself: the contra page's cell width — a 3-across cell of the
-   content column, (min(1600, viewport − sidebar) − wrap padding − two 49px
-   gutters) / 3. Height is content + the 24px inset (no forced square, so a
-   short card is only as tall as it needs, and a long one — the letter —
-   runs on). Skin like the duo panels but with the site's default rest/hover
-   treatment: a gray outline like the sidebar divider at rest, going white
-   with the panels' glow on hover. */
-.mission-card{
-  /* The contra cell width plus 50px — the left column runs a little wider
-     than a bare 3-across cell, and the double column below gives the same
-     50px back, so the page's total width still closes exactly. */
-  width: calc((min(1600px, 100vw - 205px) - 146px) / 3 + 50px);
+   At the foot, 48 from the last line's ink down to the footer's rule —
+   the panel's bottom IS the page's bottom, so this padding is the whole
+   gap. 3.36 is the rise from a closing line's box bottom to its lowest
+   ink, and the two panels long enough to reach the footer both end on a
+   descender — the manifesto on "Owen Yingling", the letter on "to
+   pledge their faith." — so one number serves both. String-dependent
+   like every other ink correction here: a closing line with no
+   descender sits higher and would want a smaller number. */
+.about-panel{
+  width: calc((min(1600px, 100vw - 205px) - 146px) / 3);
   max-width: 100%;
-  padding: 24px;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  transition: border-color .18s ease, box-shadow .3s ease;
+  margin: 0 auto;
+  min-height: calc(100vh - 281.6px);
+  /* 48 of ink from the head's divider rule down to the panel's first
+     line: the divider's own margin pays 24, this pays the rest less 5.4
+     — the drop from a courier 13/1.5 box top to its ascender ink (every
+     panel opens on a line carrying one: The/Sign/From/To/Founding). */
+  padding-top: 18.6px;
+  padding-bottom: 44.64px;
 }
-.mission-card:hover{
-  border-color: var(--white);
-  box-shadow: 0 0 14px 3px rgba(247,246,241,0.3);
-}
-/* The double column (Give + the letter): two cells plus the 49px
-   gutter-and-rule between them, minus the 50px the left column gained. */
-.mission-col--double .mission-card{
-  width: calc(2 * ((min(1600px, 100vw - 205px) - 146px) / 3) - 1px);
-}
-/* Below 900px the sidebar collapses to a top bar and main loses its 205px
-   inset, so the cell math drops the sidebar term (contra stays 3-across
-   until it stacks at 480, where the square fills the column too). */
+/* Below the sidebar's collapse the cell math drops the sidebar term
+   (the contra grid's own 900 breakpoint), and below 860 a third of the
+   measure is a sliver — the column takes the whole width like
+   everything else does down there. */
 @media (max-width: 900px){
-  .mission-card{ width: calc((min(1600px, 100vw) - 146px) / 3 + 50px); }
-  .mission-col--double .mission-card{ width: calc(2 * ((min(1600px, 100vw) - 146px) / 3) - 1px); }
+  .about-panel{ width: calc((min(1600px, 100vw) - 146px) / 3); }
 }
-@media (max-width: 480px){
-  .mission-card,
-  .mission-col--double .mission-card{ width: 100%; }
+@media (max-width: 860px){
+  .about-panel{ width: 100%; }
 }
-.mission-card .card-dek{
+/* The panels speak the head's own voice: courier at the deks' size,
+   sentence case, centred — the caps-and-tracking eyebrow cut was walked
+   back with the serif body (only the letter's paragraphs keep the serif,
+   see below). */
+.about-panel .card-dek{
   font-family: var(--chip); font-style: normal; font-weight: var(--chip-weight);
-  font-size: var(--mono-size-muted); letter-spacing: 0.04em; line-height: 1.5;
-  color: var(--muted); margin: 0;
+  font-size: var(--panel-text); letter-spacing: var(--chip-track); text-transform: none;
+  line-height: 1.5; color: var(--white); margin: 0;
+  text-align: center;
 }
-/* Stacked dek lines (Subscribe's sign-up line over its subscriber count)
-   read as one block with a small breath between. */
-.mission-card .card-dek + .card-dek{ margin-top: 8px; }
-.mission-card .duo-quote-divider{ margin: 16px -24px 20px; }
-.mission-card .card-preview{
-  font-family: var(--body);
-  font-size: calc(0.97rem - 0.62px); color: var(--white); line-height: 1.6;
-  margin: 0; display: block;
+/* No rule between the dek and the body: the two speak in exactly the
+   same voice now, so a line across them was parting one block into two
+   — and the head's own divider is the last rule the page draws. The
+   step between them is the paragraph gap the body already takes between
+   its own paragraphs, one line at the panel's own size. */
+.about-panel .card-dek + .card-preview{ margin-top: 1.5em; }
+/* Body in the same centred courier — one voice from the head's column
+   to the panel's last line. */
+.about-panel .card-preview{
+  font-family: var(--chip); font-weight: var(--chip-weight);
+  font-size: var(--panel-text); color: var(--white); line-height: 1.5;
+  margin: 0; display: block; text-align: center;
 }
-/* When body text is the card's last content (About, Contact), pull the
-   last line's half-leading (~6px at 14.9px/1.6) back out of the bottom
-   gap so the text's INK ends 24px off the card edge — the same gap the
-   header rule keeps above, equal air on both sides. */
-.mission-card > .card-preview:last-child{ margin-bottom: -6px; }
-/* Consecutive body paragraphs (the letter card) get a one-line gap. */
-.mission-card .card-preview + .card-preview{ margin-top: 1.6em; }
-/* Inline links in body text (the email, Contact/Give) — underlined in the
-   faint rule, whitening on hover, like the column pages. */
-.mission-card .card-preview a{
+/* The letter speaks in the page's courier like everything else (it used
+   to be set in the hover panels' serif), but it keeps ONE thing from
+   when it was the exception: its paragraphs range left. It is the
+   longest continuous read on the site, and centring holds a reader's
+   eye to no fixed left edge to return to at the end of each line. Its
+   dek stays centred with every other. */
+.about-panel[data-key="letter"] .card-preview{ text-align: left; }
+
+/* ---------- THE MANIFESTO PANEL ----------
+   The Secession post (see renderManifestoHtml in build.js). It opens in
+   the same third-of-a-card column every other section does — but it is
+   the one panel that RANGES LEFT: the piece is written in Substack's
+   preformatted block, each thesis stepping further right than the line
+   above it, and that staircase is measured from the left edge. Centring
+   preformatted text measures it from nowhere.
+
+   Each line is a block of its own carrying its indent as padding (see
+   manifestoLines in build.js), rather than one <pre> of preserved
+   spaces. That buys the two things a narrow column needs: a line too
+   long for the column folds under its own step instead of returning to
+   the left edge, and the step itself can be scaled down per block so
+   the piece's deepest cascade — 138 characters of indent in a column
+   that holds 40 — still reads as a diagonal. */
+.manifesto-pre{
+  font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--panel-text);
+  letter-spacing: var(--chip-track);
+  color: var(--white); line-height: 1.5;
+  text-align: left;
+  margin: 1.5em 0 0;
+}
+.manifesto-line{
+  display: block;
+  /* pre-wrap, not normal: the leading spaces are gone into the padding,
+     but a line's own internal spacing is the author's and stays. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+/* The blank lines between theses carry no text to give them height. */
+.manifesto-line:empty{ height: 1.5em; }
+/* Every block is parted from the one above by a line; the first block
+   is parted from the head's divider by the panel's own padding, which
+   is already measured to 48 of ink. */
+.manifesto-pre:first-child, .manifesto-fig:first-child{ margin-top: 0; }
+/* The piece's standing lines — here, THE 42 THESES OF SECESSION — are
+   pullquotes upstream and centre; they carry no indentation to lose. */
+.manifesto-pre--quote{ text-align: center; }
+/* The dateline that opens the piece and the note that closes it are
+   Substack's *…* asides — italic, with the stars taken off. */
+.manifesto-pre--aside{ font-style: italic; }
+.manifesto-pre a{ color: var(--white); text-decoration: none; transition: color .15s ease; }
+.manifesto-pre a:hover{ color: var(--klein); }
+/* The photographs cut between the blocks, at the column's own measure. */
+.manifesto-fig{ margin: 1.5em 0 0; }
+.manifesto-fig img{ display: block; width: 100%; height: auto; }
+.manifesto-fig figcaption{
+  font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--panel-text);
+  letter-spacing: var(--chip-track); color: var(--muted);
+  line-height: 1.5; margin-top: 9.75px; text-align: center;
+}
+/* Paragraph gap = one line, the panels' own slot arithmetic. */
+.about-panel .card-preview + .card-preview{ margin-top: 1.5em; }
+/* The contact panel's follow lines stand 48 under the email address
+   instead of one line, measured ink to ink: 5.52 is the rise from the
+   box bottom of "email editors@thenewcritic.com." to its lowest ink
+   (the @ hangs a little, but not past the baseline the period sits on),
+   and 5.4 the drop from the next box's top to the ascenders of
+   "Subscribe on Substack". It carries .card-preview in the selector and
+   sits directly below the rhythm rule for one reason: that rule is
+   three classes deep, so anything lighter loses to it and the gap comes
+   out as a plain line with no error anywhere. */
+.about-panel .card-preview.about-follow{ margin-top: 37.08px; }
+/* Inline links (the emails) — no rule under them: they blue on hover
+   like every other live target on the page (the head's own section
+   names, the cards' links), which is tell enough. */
+.about-panel .card-preview a{
   color: var(--white); text-decoration: none;
-  border-bottom: 1px solid var(--faint);
-  transition: border-color .15s ease;
+  transition: color .15s ease;
 }
-.mission-card .card-preview a:hover{ border-color: var(--white); }
-/* Links inside a dek (the Contact card's email) — same treatment, in the
-   dek's own muted courier, whitening with its underline on hover. */
-.mission-card .card-dek a{
-  color: inherit; text-decoration: none;
-  border-bottom: 1px solid var(--faint);
-  transition: color .15s ease, border-color .15s ease;
-}
-.mission-card .card-dek a:hover{ color: var(--white); border-color: var(--white); }
-/* Two-column body text (the Give pitch, the letter) — the essay panels'
-   excerpt formation at the double cards' span: paragraph gap of exactly
-   one line so the columns share a baseline grid, orphans/widows free
-   like the panels. */
-.mission-cols{ column-count: 2; column-gap: 24px; }
-.mission-cols .card-preview{ orphans: 1; widows: 1; }
-/* The signatures sit under their own rule at the letter's foot — the
-   divider's 20px bottom margin is the gap, replacing .col-signers' own
-   44px letter-page inset. */
-.mission-card .duo-quote-divider + .col-signers{ margin-top: 0; }
-/* Horizontal rule between stacked cards in a column — the row counterpart
-   of the columns' own vertical dividers, bled 24px each side to meet them,
-   with 24px of air above and below (the 49px gutter rhythm). */
-.mission-hr{ height: 1px; background: var(--line); margin: 24px -24px; }
-/* Bullet list under a dek (the Subscribe card's access list) — set as body
-   text (serif) so it reads as part of the "get access to:" body above it. */
+.about-panel .card-preview a:hover{ color: var(--klein); }
+/* The subscriptions list: numbered 1. 2. 3., the markers set INSIDE so
+   they start on the panel's own left edge, flush under the paragraph
+   that introduces them, rather than hanging off it into the margin.
+   (It was markerless while it ran centred, where a marker hanging off
+   a centred line reads as a smudge; ranged left, it can count.) */
 .mission-list{
-  margin: 0.8em 0 0; padding-left: 1.2em;
-  font-family: var(--body);
-  font-size: calc(0.97rem - 0.62px); color: var(--white); line-height: 1.6;
+  margin: 1.5em 0 0; padding: 0;
+  list-style: decimal inside;
+  font-family: var(--chip); font-weight: var(--chip-weight);
+  font-size: var(--panel-text); color: var(--white); line-height: 1.5;
+  text-align: center;
 }
 .mission-list li{ margin-bottom: 4px; }
 .mission-list li:last-child{ margin-bottom: 0; }
-/* Header/footer bands, the hover cards' strips made permanent: courier
-   boxes pinned into the corners, closed off by their own vertical rules,
-   over/under the band's horizontal rule — which is its own element
-   (.mission-band-rule, emitted next to the band in build.js) rather than a
-   border, so it sweeps in with the page ruling. Negative margins bleed
-   band and rule to the card's edges past the 24px padding. */
-.mission-band{ display: flex; }
-.mission-band--top{ margin: -24px -24px 0; }
-.mission-band-rule{ height: 1px; background: var(--line); }
-/* The bottom margin is the gap down to the card's content — 22px of box
-   gap lands the dek's INK 24px under the rule (the dek's line-height
-   leading eats the other 2), so header rule and side/foot gaps all read
-   on the card's 24px rhythm. */
-.mission-band-rule--top{ margin: 0 -24px 22px; }
-/* A fixed 24px of air between the body text above and the footer rule —
-   the card's own padding rhythm. */
-.mission-band-rule--bottom{ margin: 24px -24px 0; }
-.mission-band--bottom{
-  margin: 0 -24px -24px;
-  flex-wrap: wrap;
+/* The Subscribe action. (This was the shared chip cut — an outlined
+   button, in this panel and in Give's pair; both are plain text now,
+   and Give's two live in a sentence rather than in a box, so only
+   Subscribe still uses these two rules and the plain-text override
+   further down.) */
+.about-actions{
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 24px; margin-top: 24px;
 }
-.mission-band-box{
-  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
-  line-height: 1; white-space: nowrap;
-  /* Re-balanced 10.35/9.65 split — see .panel-band .pc's comment. */
-  padding: 10.35px 14px 9.65px;
+a.about-action{
+  font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--panel-text);
+  letter-spacing: var(--chip-track); text-transform: none; color: var(--muted);
+  line-height: 1;
+  /* The band boxes' re-balanced 10.35/9.65 split — see .panel-band .pc. */
+  padding: 10.35px 24px 9.65px;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: color .15s ease, border-color .15s ease;
+}
+a.about-action:hover{ color: var(--white); border-color: var(--white); }
+/* The Subscriptions panel reads as a page of prose rather than a
+   pitch: its body and its list range LEFT under the centred dek — a
+   list of what a subscription buys wants a common left edge to run
+   down, which centring denies it — and its action drops the keyline
+   and the padding to become one more line of the page's own courier,
+   still centred, white until it is pointed at. (The Give panel's two
+   actions keep the outlined cut; only this one was asked for.) */
+.about-panel[data-key="subscribe"] .card-preview,
+.about-panel[data-key="subscribe"] .mission-list{ text-align: left; }
+/* Its dek is italic entire — an invitation in the magazine's own aside
+   voice, not a heading — and broken after "newsletter" so the two
+   things on offer, the free list and the paid membership, take a line
+   each. */
+.about-panel[data-key="subscribe"] .card-dek{ font-style: italic; }
+/* 48 at the panel's two seams, ink to ink: under the dek's last line
+   ("or become a paying member.", whose p/y/g reach 3.36 up from the box
+   bottom) down to the ascenders of "Hundreds…" 5.4 below its own box
+   top; and under the list's last item ("Exclusive New Critic parties",
+   the same 3.36) down to the S of "Subscribe". Both seams take the same
+   pair of corrections, so both take the same number. */
+.about-panel[data-key="subscribe"] .card-dek + .card-preview{ margin-top: 39.24px; }
+.about-panel[data-key="subscribe"] .about-actions{ margin-top: 39.24px; }
+
+/* Give reads as prose too: everything ranged left under an italic
+   opening paragraph, and its two destinations named in a closing
+   sentence rather than set in two boxes — "Give through Fractured
+   Atlas or Stripe", both proper nouns linked, blueing on hover through
+   the panel's own inline-link rule. The paragraph above it is where the
+   difference between them is explained, so the line needs no more than
+   their names to fit on one. */
+/* Everything centres, the two columns included, and everything but the
+   caveat stands roman — the panel keeps the page's one voice and lets
+   the block widths alone do the shaping. (It ranged left for a spell,
+   then only at its working middle; the pair of columns reads as a pair
+   from their equal measure and their shared top line, without needing a
+   common left edge too. The opening paragraph was italic for a spell as
+   well, until the caveat below it was the only thing left that wanted
+   the aside voice.) */
+/* --about-wide is the WRAP's own content box — the page's full measure,
+   the widest thing on it — held here so the blocks below can break out
+   of the reveal column and run to it. It tracks the panel's own three
+   width cases exactly (see .about-panel above): the sidebar's 205 comes
+   out until the sidebar collapses at 900, and below 860 the panel is
+   already the full measure and there is nothing left to break out of. */
+.about-panel[data-key="give"]{ --about-wide: calc(min(1600px, 100vw - 205px) - 48px); }
+@media (max-width: 900px){
+  .about-panel[data-key="give"]{ --about-wide: calc(min(1600px, 100vw) - 48px); }
+}
+@media (max-width: 860px){
+  .about-panel[data-key="give"]{ --about-wide: 100%; }
+}
+/* A block that breaks the column: given a width wider than its parent
+   and pulled back by half the difference, so it grows out of BOTH sides
+   equally and stays centred on the same spine the narrow blocks sit on.
+   (margin-left alone does the centring — a negative left margin plus an
+   explicit width leaves the right side to fall where it must.) */
+.about-give-cols,
+.about-panel[data-key="give"] .about-give-caveat{
+  width: var(--width);
+  margin-left: calc((100% - var(--width)) / 2);
+}
+/* The two working paragraphs side by side, each set to the reveal
+   column's OWN width rather than to half the page: two columns of 100%
+   plus the 48 between them is 200% + 48, and the two 1fr tracks then
+   come out at exactly 100% each. So the pair reads as the same measure
+   as every other paragraph on the page, printed twice — the block
+   overflows, the measure doesn't change. */
+.about-give-cols{
+  --width: calc(200% + 48px);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+}
+/* The two are siblings, so the panel's paragraph rhythm (.card-preview
+   + .card-preview) reaches them and drops the second column a line
+   below the first — they are side by side now, not stacked, and the
+   grid's own gap does the parting. */
+.about-give-cols .card-preview + .card-preview{ margin-top: 0; }
+/* The caveat spills too, but only halfway: at the full measure it would
+   set as a single 124-character line, and at the column's width it runs
+   to four. 66ch — 515px of courier — lands it on two. */
+.about-panel[data-key="give"] .about-give-caveat{
+  --width: min(66ch, var(--about-wide));
+  font-style: italic;
+}
+@media (max-width: 860px){
+  .about-give-cols{ --width: 100%; grid-template-columns: 1fr; }
+  .about-give-cols .card-preview + .card-preview{ margin-top: 1.5em; }
+}
+/* The panel's three 48s, ink to ink. Each pays 48 less the drop from
+   the box bottom above it to that line's lowest ink, and less the drop
+   from the next box's top to its highest. The first seam takes a
+   different number from the other two only because the dek closes on
+   "letters." — no descender, so its ink stops 5.58 up from the box
+   bottom, where the two lines below the other seams stop at 3.36. */
+.about-panel[data-key="give"] .card-dek + .about-give-cols{ margin-top: 37.01px; }
+.about-panel[data-key="give"] .about-give-cols + .card-preview{ margin-top: 39.24px; }
+.about-panel[data-key="give"] .about-give-line + .about-give-caveat{ margin-top: 39.24px; }
+.about-panel[data-key="subscribe"] a.about-action{
+  padding: 0; border: 0;
+  color: var(--white); line-height: 1.5;
   transition: color .15s ease;
 }
-/* Corner boxes are closed off by their own vertical rules (a left box on
-   its right, a right box on its left), and — like the hover cards' corner
-   boxes — carry 24px side padding so their text aligns with the card's
-   inner column margins. The right box's auto left margin pins it to the
-   far corner. */
-.mission-band-box--left{
-  border-right: 1px solid var(--line);
-  padding-left: 24px; padding-right: 24px;
+.about-panel[data-key="subscribe"] a.about-action:hover{ color: var(--klein); }
+/* ---------- MASTHEAD PANEL ----------
+   A centred list: one heading per role, its people under it, each name
+   a link to that editor's Substack. (It was a two-across grid of
+   medallions, every face on show at once; the faces are still here but
+   they wait to be asked for — see .mh-pfp.)
+
+   No margin of its own now: the panel opens on the first role heading,
+   ordinary type with an ascender, so the panel's own padding lands it
+   on 48 like every other section. (The medallion grid needed 5.4 added
+   back because it opened on a photograph, whose ink IS its edge.) */
+.mh-list{ text-align: center; }
+/* The role headings are italic — the same tell that parted a name from
+   its role when the two sat stacked in a medallion, kept now that the
+   role heads a group instead. One blank line between a role and its
+   first name: the heading and the names are all 19.5 lines, so a 19.5
+   margin IS the blank line. */
+.mh-role{
+  font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--panel-text);
+  letter-spacing: var(--chip-track); text-transform: none; font-style: italic;
+  color: var(--white); line-height: 1.5;
+  margin: 0 0 19.5px;
 }
-.mission-band-box--right{
-  margin-left: auto;
-  border-left: 1px solid var(--line);
-  padding-left: 24px; padding-right: 24px;
+/* 48 between one role's last name and the next role's heading, ink to
+   ink. One margin serves both seams because both groups happen to close
+   on a descender — the p's of "Rufus Knuppel", the g of "Owen
+   Yingling" — putting their lowest ink 3.36 up from the box bottom,
+   and both headings below them ("Assistant Editors", "Art Director")
+   start 5.4 down from theirs: 48 - 3.36 - 5.4. String-dependent, as
+   every ink correction on this page is — a group closing on a name with
+   no descender sits 5.58 up instead and would want 37.02. Re-derive if
+   the masthead gains, loses or reorders a name. */
+.mh-group + .mh-group{ margin-top: 39.24px; }
+/* The names are the only live targets in the panel: white at rest,
+   Klein on hover, like every other link on the site. They shrink to
+   their own text (a block at width:fit-content, centred by auto
+   margins) rather than filling the column, so the portrait below can be
+   positioned against the NAME's edge instead of the column's. */
+.mh-name{
+  display: block; width: fit-content; margin-inline: auto;
+  position: relative;
+  font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--panel-text);
+  letter-spacing: var(--chip-track); text-transform: none;
+  color: var(--white); line-height: 1.5;
+  text-decoration: none;
+  transition: color .15s ease;
 }
-/* A split footer (the Give buttons): built like the top bands' corner
-   pair — a left box closed off by its own right rule, a right box closed
-   off by its left rule, and open band between them. Each label sits
-   flush with the card's 24px inner column margin. Labels may wrap
-   rather than overflow when the band gets narrow. */
-.mission-band--split .mission-band-box{
-  min-width: 0;
-  white-space: normal;
-  padding-left: 24px; padding-right: 24px;
-}
-.mission-band--split .mission-band-box:first-child{
-  text-align: left;
-  border-right: 1px solid var(--line);
-}
-.mission-band--split .mission-band-box:last-child{
-  text-align: right;
-  margin-left: auto;
-  border-left: 1px solid var(--line);
-}
-/* Text in every band box whitens on hover — no glow; link boxes
-   (Subscribe, the Give buttons) also take the Read-on button's white
-   outline, their gray rules going transparent under it. */
-.mission-band-box:hover{ color: var(--white); }
-a.mission-band-box{ text-decoration: none; }
-a.mission-band-box:hover{
-  outline: 1px solid var(--white); outline-offset: 0;
-  border-color: transparent;
-}
-/* Masthead card: the About page's editor medallions, two columns of four —
-   circle headshot, courier name, courier-muted role, matching the mission
-   cards' own type. */
-.mission-people{
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-/* gap covers photo→name; the role hugs its name (negative margin against
-   the shared gap nets ~2px) so the pair reads as one label. */
-.mission-person{
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  gap: 8px; text-decoration: none;
-}
-.mission-person-role{ margin-top: -6px; }
-.mission-person-photo{
+.mh-name:hover, .mh-name:focus-visible{ color: var(--klein); }
+/* The portrait waits beside the name and arrives on hover, centred on
+   the name's own middle, 48 clear of it — left of the first name, right
+   of the second, alternating down the list so the column doesn't lean.
+   It hangs outside the reveal column into the page's own margin, which
+   is empty; pointer-events:none so it can never eat the hover that
+   summoned it. */
+.mh-pfp{
+  position: absolute; top: 50%; transform: translateY(-50%);
   width: 68px; height: 68px; border-radius: 50%;
   border: 1px solid var(--line);
   object-fit: cover; object-position: center;
   filter: grayscale(0.15) contrast(1.02);
+  opacity: 0; pointer-events: none;
+  transition: opacity .15s ease;
 }
-.mission-person-photo--blank{ background: var(--surface-2); }
-.mission-person-name{
-  font-family: var(--body); font-weight: 400; font-size: calc(0.97rem - 0.62px);
-  color: var(--white); line-height: 1.3;
-  transition: color .15s ease;
+.mh-name--left .mh-pfp{ right: calc(100% + 48px); }
+.mh-name--right .mh-pfp{ left: calc(100% + 48px); }
+.mh-name:hover .mh-pfp, .mh-name:focus-visible .mh-pfp{ opacity: 1; }
+/* Only where there is a pointer to hover with, and only where the page
+   has margin to hang a portrait in: 68 + 48 has to clear the reveal
+   column on both sides, which it does from the sidebar's own breakpoint
+   up. Below that the name is simply a link. */
+@media (max-width: 900px), (hover: none){
+  .mh-pfp{ display: none; }
 }
-.mission-person-role{
-  font-family: var(--mono); font-weight: 400; font-size: var(--mono-size-muted);
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted);
-  line-height: 1.3;
-}
-a.mission-person:hover .mission-person-name{ color: var(--white); }
-a.mission-person:hover .mission-person-photo{ border-color: var(--white); }
 
 /* ---------- ARCHIVE LEDGER ----------
    The archive page is a full-bleed table of every post: courier-gray

@@ -1104,18 +1104,21 @@ function renderNav(currentKey = 'home') {
 }
 
 function renderFooter() {
-  // One line, three groups: the name and founding date on the left (no
-  // copyright line — the name and date carry it), the social links —
-  // words now — centred, the set's gloss on the right, both texts in the
-  // cards' chip cut. Source order is left-to-right so the stacked
-  // narrow-window fallback reads the same way. The marks run Substack,
-  // Instagram, Email — the rail's own order (see .nav-social), so the
-  // page opens and closes on the same list.
+  // One line, three groups: the name on the left (no copyright line —
+  // the name and date carry it), the social links — words now — centred,
+  // the founding date on the right, both texts in the cards' chip cut.
+  // The name and the date used to share the left group with a middot
+  // between them, against the rail's gloss on the right; the two halves
+  // of the imprint now stand at the two ends of the line instead, so the
+  // dot has nothing left to separate. Source order is left-to-right so
+  // the stacked narrow-window fallback reads the same way. The marks run
+  // Substack, Instagram, Email — the rail's own order (see .nav-social),
+  // so the page opens and closes on the same list.
   return `<footer>
   <div class="wrap foot-row">
-    <p class="foot-fine foot-chip">The New Critic &middot; est. May 2025</p>
+    <p class="foot-fine foot-chip">The New Critic</p>
     <p class="foot-fine foot-marks foot-chip"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack">Substack</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram">Instagram</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors">Email</a></p>
-    <p class="foot-fine foot-chip">${escapeHtml(SITE_TAGLINE)}</p>
+    <p class="foot-fine foot-chip">est. May 2025</p>
   </div>
 </footer>`;
 }
@@ -1672,6 +1675,14 @@ ${js}
 </script>`;
 }
 
+// The about page's section toggle — see renderAboutPage / src/about-panel.js.
+function renderAboutPanelScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/about-panel.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
 function renderCaterpillarScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/caterpillar.js'), 'utf8');
   return `<script>
@@ -2154,20 +2165,37 @@ const ADDITIONAL_PEOPLE_PHOTOS = {
   },
 };
 
-// The About page (née Mission): a card grid in the hover cards' skin —
-// left column About/Subscribe/Masthead/Contact, a double-width right
-// column with Give over the founders' letter, every rule joining the
-// line-draw ledger effect on load. See .mission-* in style.css (the
-// class names keep the page's working name).
-function renderAboutPage(founders = []) {
-  const hr = '<div class="mission-hr" role="separator"></div>';
-
-  // The masthead card's medallions: the About people minus the Founder
-  // (Milla), in two columns of four. Founders' headshots come from
-  // give.html's signer blocks (written out in main), the rest from
-  // assets/people/ (ADDITIONAL_PEOPLE_PHOTOS). Same resolution the old
-  // About page used.
+// The About page: a head cut like the contra page's (same classes, same
+// centred typewriter — see .about-head in style.css), the sections
+// slotted down ONE centred column — About the Magazine / Subscriptions
+// / Give to The New Critic / Masthead / Letter from the Editors /
+// Contact — each a button that opens its section's text below the
+// head's full-bleed divider, in a centred column one contra card wide
+// and tall enough to hold the footer below the fold, all of it in the
+// head's own centred sentence-case courier except the letter's serif
+// paragraphs (see .about-panel in style.css). One section at a time,
+// About open on load (in the markup, so a no-JS reader still gets the
+// page's one indispensable paragraph); src/about-panel.js deals the
+// rest. (It was a two-column card grid in the hover cards' skin — the
+// .mission-* card/band/column rules went with it; the masthead
+// medallions and the subscribe list keep their mission-* names.)
+function renderAboutPage(founders = [], manifestoHtml = '') {
+  // The masthead panel: a centred list, one heading per role with its
+  // people under it, each name a link to that editor's Substack. The
+  // roles keep the order they are written in above — a masthead ranks,
+  // it doesn't alphabetize — and the names inside each role run
+  // alphabetically BY SURNAME (Augsberger, Kluger, Knuppel). A role with
+  // more than one person is pluralized; Art Director, held by one, is
+  // not. The Founder is left out, as she was from the medallion grid
+  // this replaces.
+  //
+  // Each name carries its own portrait, revealed on hover to one side of
+  // the name (see .mh-pfp in style.css) — sides alternating down the
+  // whole list, first name's to the left, so the column doesn't lean.
+  // Founders' headshots come from give.html's signer blocks (written out
+  // in main), the rest from assets/people/ (ADDITIONAL_PEOPLE_PHOTOS).
   const founderLookup = new Map(founders.map((f) => [f.name, f]));
+  const surnameOf = (name) => name.trim().split(/\s+/).pop().toLowerCase();
   const mastheadPeople = ABOUT_PEOPLE
     .filter((p) => p.role !== 'Founder')
     .map((p) => {
@@ -2177,105 +2205,162 @@ function renderAboutPage(founders = []) {
       const href = founder?.href || extra?.href;
       return { ...p, photo, href };
     });
-  const mastheadHtml = mastheadPeople
-    .map((p) => {
-      const tag = p.href ? 'a' : 'div';
-      const hrefAttr = p.href ? ` href="${escapeHtml(p.href)}" rel="noopener" target="_blank"` : '';
-      const photoHtml = p.photo
-        ? `<img class="mission-person-photo" src="${escapeHtml(p.photo)}" alt="${escapeHtml(p.name)}" loading="lazy">`
-        : '<span class="mission-person-photo mission-person-photo--blank" aria-hidden="true"></span>';
-      return `<${tag} class="mission-person"${hrefAttr}>
-          ${photoHtml}
-          <span class="mission-person-name">${escapeHtml(p.name)}</span>
-          <span class="mission-person-role">${escapeHtml(p.role)}</span>
-        </${tag}>`;
+  const roleOrder = [];
+  const byRole = new Map();
+  for (const p of mastheadPeople) {
+    if (!byRole.has(p.role)) { byRole.set(p.role, []); roleOrder.push(p.role); }
+    byRole.get(p.role).push(p);
+  }
+  let sideIdx = 0;
+  const mastheadHtml = roleOrder
+    .map((role) => {
+      const people = byRole.get(role).slice().sort((a, b) => surnameOf(a.name).localeCompare(surnameOf(b.name)));
+      const heading = people.length > 1 ? `${role}s` : role;
+      const names = people
+        .map((p) => {
+          const side = sideIdx++ % 2 === 0 ? 'left' : 'right';
+          const tag = p.href ? 'a' : 'span';
+          const hrefAttr = p.href ? ` href="${escapeHtml(p.href)}" rel="noopener" target="_blank"` : '';
+          const pfp = p.photo
+            ? `<img class="mh-pfp" src="${escapeHtml(p.photo)}" alt="" aria-hidden="true" loading="lazy">`
+            : '';
+          return `<${tag} class="mh-name mh-name--${side}"${hrefAttr}>${escapeHtml(p.name)}${pfp}</${tag}>`;
+        })
+        .join('\n            ');
+      return `<div class="mh-group">
+            <p class="mh-role">${escapeHtml(heading)}</p>
+            ${names}
+          </div>`;
     })
-    .join('\n        ');
+    .join('\n          ');
 
-  // Band strips: boxes over their own rule element (a real element rather
-  // than a border, so it joins the line-draw ruling with everything else).
-  const bandTop = (boxes) => `<div class="mission-band mission-band--top">
-          ${boxes}
-        </div>
-        <div class="mission-band-rule mission-band-rule--top" role="separator"></div>`;
-  const bandBottom = (boxes, extraClass = '') => `<div class="mission-band-rule mission-band-rule--bottom" role="separator"></div>
-        <div class="mission-band mission-band--bottom${extraClass}">
-          ${boxes}
-        </div>`;
-  const vr = '<span class="mission-vr" role="separator"></span>';
+  // Each section: its label in the head's column and its panel's inner
+  // HTML — paragraphs stacked single-file down the narrow reveal column,
+  // no rules between them (the head's own divider is the page's last
+  // line). Nothing in here is a button any more: Subscribe is a line of
+  // the same courier under its list, and Give's two destinations are
+  // two links inside one sentence — the paragraph above them already
+  // draws the distinction (Fractured Atlas for a tax-deductible gift,
+  // Stripe for an instant one), so the line itself needs only to name
+  // them.
+  const sections = [
+    {
+      key: 'about',
+      label: 'About',
+      // One sentence, no dek over it: the dek read "The Young American
+      // Magazine" and the body opened "The New Critic publishes …" —
+      // with the rule between them gone and both lines in the same
+      // courier, the pair was one sentence said twice. It says it once.
+      html: `<p class="card-preview">The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.</p>`,
+    },
+    {
+      key: 'subscribe',
+      label: 'Subscriptions',
+      html: `<p class="card-dek">Sign up for our free newsletter<br>or become a paying member.</p>
+      <p class="card-preview">Hundreds of New Critic readers are paid subscribers. For $30 a year, paid subscribers get access to:</p>
+      <ol class="mission-list">
+        <li>Postscript, our interview series</li>
+        <li>Contra, our criticism section</li>
+        <li>Exclusive New Critic parties</li>
+      </ol>
+      <div class="about-actions"><a class="about-action" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></div>`,
+    },
+    {
+      key: 'give',
+      label: 'Give',
+      // The panel opens and closes narrow and swells in the middle: an
+      // italic opening at the reveal column's own width, then the two
+      // working paragraphs side by side across a measure far wider than
+      // the column, the Give line back at the column, and the caveat
+      // spilling again to half the wide measure. Every block is centred
+      // on the same axis, so the measure widens and narrows around one
+      // spine (see .about-give-* in style.css).
+      html: `<p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
+      <div class="about-give-cols">
+        <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
+        <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
+      </div>
+      <p class="card-preview about-give-line">Give through <a href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Fractured Atlas</a> or <a href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Stripe</a>.</p>
+      <p class="card-preview about-give-caveat">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>`,
+    },
+    {
+      key: 'masthead',
+      label: 'Masthead',
+      html: `<div class="mh-list">
+          ${mastheadHtml}
+        </div>`,
+    },
+    {
+      key: 'letter',
+      label: 'Letter',
+      // The letter's own title, who signs it in italic under that, then
+      // a blank line and the date — a dateline, roman, so it reads as
+      // the piece's stamp rather than as more of the subtitle.
+      html: `<p class="card-dek">A Letter to Our Readers<br><em>from the founding editors</em><br><br>June 26</p>
+      ${GIVE_LETTER.map((p) => `<p class="card-preview">${escapeHtml(p)}</p>`).join('\n      ')}`,
+    },
+    {
+      key: 'manifesto',
+      label: 'Manifesto',
+      // The Secession post — see renderManifestoHtml for what it prints
+      // and what it cuts. The dek carries the post's own title and
+      // subtitle, and the piece's lede photograph stands under it.
+      html: `<p class="card-dek">The New Critic Secession<br><em>A Manifesto of 42 theses</em><br><br>March 24</p>
+      ${manifestoHtml || `<p class="card-preview">The manifesto is <a href="${MANIFESTO_URL}" rel="noopener" target="_blank">published here</a>.</p>`}`,
+    },
+    {
+      key: 'contact',
+      label: 'Contact',
+      // Hard break before "email": the address stays with the verb that
+      // governs it, and the line above closes on the clause. Under it,
+      // 48 down, the two places to follow the magazine — the same two
+      // the footer and the rail carry, named in a sentence here rather
+      // than as a list of marks.
+      html: `<p class="card-preview">To pitch, submit, or place an inquiry,<br>email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+      <p class="card-preview about-follow">Subscribe on <a href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a><br>Follow us on <a href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a></p>`,
+    },
+  ];
 
-  const bodyHtml = `
-  <div class="mission-page">
-    <div class="mission-col">
-      <article class="mission-card">
-        ${bandTop('<span class="mission-band-box mission-band-box--left">About</span>')}
-        <p class="card-dek">The Young American Magazine</p>
-        <div class="duo-quote-divider"></div>
-        <p class="card-preview">The New Critic publishes essays, interviews, and criticism by and for generation z.</p>
-      </article>
-      ${hr}
-      <article class="mission-card">
-        ${bandTop('<span class="mission-band-box mission-band-box--left">Subscribe</span>\n          <span class="mission-band-box mission-band-box--right">$30 / year</span>')}
-        <p class="card-dek">Sign up for our free newsletter or become a paying member.</p>
-        <div class="duo-quote-divider"></div>
-        <p class="card-preview">Hundreds of New Critic readers are paid subscribers. For $30 a year, paid subscribers get access to:</p>
-        <ul class="mission-list">
-          <li>Postscript, our interview series</li>
-          <li>Contra, our criticism section</li>
-          <li>Exclusive New Critic parties</li>
-        </ul>
-        ${bandBottom(`<a class="mission-band-box mission-band-box--right" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`)}
-      </article>
-      ${hr}
-      <article class="mission-card">
-        ${bandTop('<span class="mission-band-box mission-band-box--left">Masthead</span>')}
-        <div class="mission-people">
-        ${mastheadHtml}
-        </div>
-      </article>
-      ${hr}
-      <article class="mission-card">
-        ${bandTop('<span class="mission-band-box mission-band-box--left">Contact</span>')}
-        <p class="card-preview">To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-      </article>
-    </div>
-    ${vr}
-    <div class="mission-col mission-col--double">
-      <article class="mission-card">
-        ${bandTop('<span class="mission-band-box mission-band-box--left">Give</span>\n          <span class="mission-band-box mission-band-box--right">$300 Lifetime Subscription</span>')}
-        <p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
-        <div class="duo-quote-divider"></div>
-        <div class="mission-cols">
-          <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
-          <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
-          <p class="card-preview">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-        </div>
-        ${bandBottom(`<a class="mission-band-box" href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Give through Fractured Atlas</a>
-          <a class="mission-band-box" href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Give instantly through Stripe</a>`, ' mission-band--split')}
-      </article>
-      ${hr}
-      <article class="mission-card">
-        ${bandTop('<span class="mission-band-box mission-band-box--left">From the Founding Editors</span>')}
-        <p class="card-dek">A letter to our readers</p>
-        <div class="duo-quote-divider"></div>
-        <div class="mission-cols">
-        ${GIVE_LETTER.map((p) => `<p class="card-preview">${escapeHtml(p)}</p>`).join('\n        ')}
-        </div>
-        <div class="duo-quote-divider"></div>
-        <div class="col-signers">
-${renderSignersHtml(founders)}
-        </div>
-      </article>
-    </div>
-    ${vr}
+  const OPEN_KEY = 'about';
+  // The head reads down one column — About, Subscriptions, Give,
+  // Masthead, Contact — then a 48 of air, then Letter and Manifesto on
+  // lines of their own, each named in one word like the sections above. Both are whole documents rather
+  // than sections of this page, so the gap sets them apart from the
+  // queue above rather than a rule doing it. Seven lines and one gap,
+  // which is what the panel's min-height is measured against (see
+  // .about-panel in style.css).
+  const COLUMN_KEYS = ['about', 'subscribe', 'give', 'masthead', 'contact'];
+  const PARTED_KEYS = ['letter', 'manifesto'];
+  const byKey = new Map(sections.map((s) => [s.key, s]));
+  const headBtn = (s, cls = '') =>
+    `<button type="button" class="contra-filter-link about-link${cls}${s.key === OPEN_KEY ? ' is-active' : ''}" data-key="${s.key}" aria-expanded="${s.key === OPEN_KEY ? 'true' : 'false'}">${escapeHtml(s.label)}</button>`;
+  const bodyHtml = `  <div class="page-rows">
+  <div class="wrap">
+    <header class="card contra-head about-head">
+      <nav class="about-head-list" aria-label="About sections">
+        ${COLUMN_KEYS.map((k) => headBtn(byKey.get(k))).join('\n        ')}
+        ${PARTED_KEYS.map((k, i) => headBtn(byKey.get(k), i === 0 ? ' about-link--parted' : '')).join('\n        ')}
+      </nav>
+    </header>
+  </div>
+  <div class="row-divider"></div>
+  <div class="wrap">
+    ${sections
+      .map(
+        (s) => `<section class="about-panel" data-key="${s.key}" aria-label="${escapeHtml(s.label)}"${s.key === OPEN_KEY ? '' : ' hidden'}>
+      ${s.html}
+    </section>`
+      )
+      .join('\n    ')}
+  </div>
   </div>`;
   return renderPageShell({
     currentKey: 'about',
     title: 'About',
     description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
     bodyHtml,
-    bodyClass: 'mission-body',
-    extraScripts: renderLineDrawScript(),
+    bodyClass: 'about-body',
+    extraScripts: renderLineDrawScript() + renderAboutPanelScript(),
   });
 }
 
@@ -2491,22 +2576,224 @@ const GIVE_LINKS = {
   stripe: 'https://donate.stripe.com/00w00i0rufwc8KFf9S7AI01',
 };
 
-// The founders' letter signatures: each written signature over its courier
-// name, linked to the founder's Substack — the About page's letter card.
-// Per-signature size modifiers keep the three hands optically even (the
-// images' ink boxes differ).
-function renderSignersHtml(founders) {
-  const SIG_MODS = { 'Elan Kluger': ' col-sig--elan', 'Rufus Knuppel': ' col-sig--rufus' };
-  return founders
-    .filter((f) => f.sig)
-    .map(
-      (f) => `            <a class="col-signer" href="${escapeHtml(f.href || SITE_URL)}" rel="noopener" target="_blank">
-              <span class="col-sig-wrap"><img class="col-sig${SIG_MODS[f.name] || ''}" src="${escapeHtml(f.sig)}" alt="${escapeHtml(f.name)}’s signature" loading="lazy"></span>
-              <span class="col-signer-name">${escapeHtml(f.name)}</span>
-            </a>`
-    )
-    .join('\n');
+// ---------- THE MANIFESTO ----------
+// The About page's Manifesto section is the Secession post, whole: "The
+// New Critic Secession — A Manifesto of 42 Theses". It is fetched at
+// build time like every other post body and reprinted here rather than
+// retyped, so the page can never drift from what was published.
+//
+// The piece is not written in paragraphs. Substack's preformatted-text
+// block is the whole instrument: twelve <pre class="text"> blocks whose
+// leading spaces build a staircase down the page ("| No. 19 |" runs nine
+// steps deep), italics on every THE NEW CRITIC, links in the dateline,
+// and eight photographs cut between the blocks. So this does not go
+// through extractParagraphs — that strips <pre> as non-prose and would
+// return the piece as nothing. It walks the body's blocks in order and
+// keeps what prints:
+//   - <pre class="text">      → the theses, spacing intact
+//   - <figure>                → the photographs, with their captions
+//   - <p class="button-wrapper"> → dropped: Substack's own Subscribe
+//     widget, and this page carries a Subscriptions section of its own
+// A run of text bracketed in *…* is Substack's italic aside (the
+// dateline that opens the piece, the subscription note that closes it) —
+// the stars come off and the block is set italic, the same reading
+// extractParagraphs gives them.
+const MANIFESTO_URL = `${SITE_URL}/p/the-new-critic-secession`;
+
+// Inside a <pre>, only <em> and <a href> survive; everything else is
+// escaped so the post's own angle brackets and ampersands print as
+// written. (escapeHtml would eat the tags we are keeping, so the two
+// kept tags are parked behind control characters first — the same trick
+// EM_OPEN/EM_CLOSE play in extractParagraphs.)
+const LINK_OPEN = '\u0003';
+const LINK_CLOSE = '\u0004';
+function manifestoInline(html) {
+  const hrefs = [];
+  const marked = String(html || '')
+    .replace(/<\/?(?:em|i)\b[^>]*>/gi, (t) => (t[1] === '/' ? EM_CLOSE : EM_OPEN))
+    .replace(/<a\b[^>]*\shref="([^"]*)"[^>]*>/gi, (_, h) => {
+      hrefs.push(h);
+      return LINK_OPEN;
+    })
+    .replace(/<\/a>/gi, LINK_CLOSE);
+  let i = 0;
+  return escapeHtml(unescapeNumericEntities(marked.replace(/<[^>]+>/g, '')))
+    .split(EM_OPEN).join('<em>')
+    .split(EM_CLOSE).join('</em>')
+    .replace(new RegExp(LINK_OPEN, 'g'), () => {
+      const h = hrefs[i++] || SITE_URL;
+      return `<a href="${escapeHtml(h)}" rel="noopener" target="_blank">`;
+    })
+    .split(LINK_CLOSE).join('</a>');
 }
+
+// A preformatted line becomes its own block carrying its indent as
+// padding, rather than as the leading spaces it was written with. Two
+// things follow from that, and both are the point:
+//
+//   - A line that runs past the column folds under ITS OWN STEP instead
+//     of returning to the left edge. The staircase survives wrapping.
+//   - The step can be SCALED. The piece's deepest cascade — the list of
+//     the tradition, No. 30, some 180 names each indented three spaces
+//     past the last — reaches 138 characters of indent. The column
+//     holds about 40. Printed at one character per space that list
+//     doesn't cascade, it detonates: every name folding three times,
+//     the diagonal gone. So each block's step is divided down until its
+//     own deepest line fits INDENT_BUDGET_CH, and the cascade is
+//     redrawn at whatever step the column can hold — a fine diagonal
+//     for the tradition list (about 2.4px a name, ~110px of drift
+//     across a run), the natural full step for the theses, which never
+//     go deeper than 27.
+//
+// Scaled per block, not globally: a shallow block shouldn't lose its
+// steps because a deep one exists elsewhere in the piece.
+// The piece's standing lines are set upstream in italic capitals
+// (<em>THE 42 THESES OF SECESSION</em>) — a plate, at the width of a
+// post. Printed here they come out of both: the capitals go to title
+// case and the italic comes off, so the line reads as a heading in the
+// panel's own voice rather than as shouting in the middle of a column.
+// The magazine's own name is italicized throughout the piece — a
+// masthead's habit of italicizing itself. On a page that IS the
+// magazine it reads as emphasis where none is meant, and the name falls
+// in nearly every thesis. So an <em> holding nothing but the name is
+// unwrapped; every other italic in the piece stands (USA Today, The
+// Republic of Letters, the stressed "to" in No. 19). Written to catch
+// the several ways the name is marked up upstream — "THE NEW CRITIC",
+// bare "NEW CRITIC" after an un-italicized "The", "The New Critic" in
+// the dateline, and the plural "THE NEW CRITICs" whose s sits outside
+// the tag.
+function unitalicizeMastheadName(html) {
+  return String(html || '').replace(
+    /<(em|i)\b[^>]*>(\s*(?:the\s+)?new\s+critic\s*)<\/\1>/gi,
+    '$2'
+  );
+}
+
+const TITLE_MINOR = /^(a|an|and|at|by|for|from|in|nor|of|on|or|the|to)$/;
+function titleCaseLine(line) {
+  let first = true;
+  return line.replace(/[A-Za-z][A-Za-z’']*/g, (w) => {
+    const lower = w.toLowerCase();
+    const out = !first && TITLE_MINOR.test(lower)
+      ? lower
+      : lower.charAt(0).toUpperCase() + lower.slice(1);
+    first = false;
+    return out;
+  });
+}
+
+const INDENT_BUDGET_CH = 14;
+function manifestoLines(text) {
+  const lines = text.split('\n').map((l) => l.replace(/\s+$/, ''));
+  const indentOf = (l) => /^ */.exec(l)[0].length;
+  const maxIndent = Math.max(0, ...lines.map(indentOf));
+  const scale = maxIndent > INDENT_BUDGET_CH ? INDENT_BUDGET_CH / maxIndent : 1;
+  return lines
+    .map((line) => {
+      const n = indentOf(line);
+      const body = manifestoInline(line.slice(n));
+      if (!body) return '<span class="manifesto-line"></span>';
+      const pad = n ? ` style="padding-left:${(n * scale).toFixed(2)}ch"` : '';
+      return `<span class="manifesto-line"${pad}>${body}</span>`;
+    })
+    .join('');
+}
+
+// Substack serves one upload at several widths; the <img src> is already
+// the widest f_auto variant, which is what the cards hotlink too.
+function manifestoFigure(figureHtml) {
+  const src = (/<img[^>]*\ssrc="([^"]+)"/i.exec(figureHtml) || [])[1];
+  if (!src) return '';
+  const capRaw = (/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/i.exec(figureHtml) || [])[1];
+  const cap = capRaw ? unescapeNumericEntities(stripHtml(capRaw)).trim() : '';
+  return `<figure class="manifesto-fig">
+        <img src="${escapeHtml(src)}" alt="${escapeHtml(cap || 'From The New Critic Secession')}" loading="lazy">
+        ${cap ? `<figcaption>${escapeHtml(cap)}</figcaption>` : ''}
+      </figure>`;
+}
+
+// The piece as printed here is shorter than the piece as published, and
+// deliberately so — three cuts, all made on the piece's own landmarks
+// rather than on block numbers, so they survive a re-edit upstream:
+//
+//   1. It ENDS WHERE IT IS SIGNED. The published post carries a flying
+//      bird plate after the signatures, then Substack's subscription
+//      note, its Subscribe button and a closing THE YOUNG AMERICANS
+//      plate. The bird and everything after it are dropped: the
+//      manifesto's last word is the seven editors' names.
+//   2. ONE PHOTOGRAPH, the last one standing before that cut, and it is
+//      lifted out of the theses to stand under the title instead —
+//      where the post's own lede photograph stood. Seven party
+//      photographs cut between the theses at the full width of a post;
+//      in a column a third this wide they were most of the section's
+//      height and none of its argument.
+//   3. NO OPENING PLATE. The post opens on a standing THE NEW CRITIC
+//      line, which the panel's own title now says.
+function renderManifestoHtml(bodyHtml) {
+  if (!bodyHtml) return '';
+  // Pullquote blocks — the piece's standing lines — are wrapped in
+  // <div class="pullquote"> upstream. They centre; the theses range
+  // left, because their staircase is measured from the left edge.
+  const quoted = new Set();
+  for (const q of bodyHtml.match(/<div class="pullquote">[\s\S]*?<\/pre>/gi) || []) {
+    const t = (/<pre class="text">([\s\S]*?)<\/pre>$/i.exec(q) || [])[1];
+    if (t) quoted.add(t);
+  }
+  const re = /<pre class="text">([\s\S]*?)<\/pre>|<figure[\s\S]*?<\/figure>/gi;
+  const blocks = [];
+  let m;
+  while ((m = re.exec(bodyHtml)) !== null) {
+    if (m[1] === undefined) {
+      blocks.push({ fig: true, html: manifestoFigure(m[0]) });
+      continue;
+    }
+    let text = unitalicizeMastheadName(m[1]);
+    const aside = /^\s*\*/.test(text) && /\*\s*$/.test(text);
+    if (aside) text = text.replace(/^(\s*)\*/, '$1').replace(/\*(\s*)$/, '$1');
+    const quote = quoted.has(m[1]);
+    // A standing line loses its italic capitals — see titleCaseLine.
+    if (quote) text = titleCaseLine(text.replace(/<\/?(?:em|i)\b[^>]*>/gi, ''));
+    const cls =
+      'manifesto-pre'
+      + (quote ? ' manifesto-pre--quote' : '')
+      + (aside ? ' manifesto-pre--aside' : '');
+    blocks.push({
+      fig: false,
+      quote,
+      signed: /^\s*\|\s*Signed\s*\|/i.test(text),
+      html: `<pre class="${cls}">${manifestoLines(text)}</pre>`,
+    });
+  }
+  // (1) Cut after the signatures.
+  const signedAt = blocks.findIndex((b) => b.signed);
+  const kept = signedAt >= 0 ? blocks.slice(0, signedAt + 1) : blocks;
+  // (2) Of the photographs left, only the last one stands — and it is
+  // moved to the head of the piece, under the title.
+  const lastFig = kept.map((b) => b.fig).lastIndexOf(true);
+  // (3) The opening plate goes — a leading standing line, before any of
+  // the piece's prose has started.
+  const firstProse = kept.findIndex((b) => !b.fig && !b.quote);
+  const lede = lastFig >= 0 ? [kept[lastFig].html] : [];
+  const text = kept
+    .filter((b, i) => !b.fig && !(b.quote && i < firstProse))
+    .map((b) => b.html);
+  return lede.concat(text).join('\n      ');
+}
+
+async function fetchManifesto() {
+  const html = await fetchHtml(MANIFESTO_URL);
+  if (!html) { failedPageFetches++; return ''; }
+  const preloads = extractPreloads(html);
+  const body = preloads && preloads.post && preloads.post.body_html;
+  if (!body) { failedPageFetches++; return ''; }
+  return renderManifestoHtml(body);
+}
+
+// (The founders' written signatures used to close the letter panel —
+// renderSignersHtml, the .col-sig* rules and the sig image write-out all
+// went when the letter stopped being signed. give.html is still mined
+// for the founders' Substack links and headshots, which the masthead
+// uses; the signature data URIs in it are simply no longer written out.)
 
 async function main() {
   console.log(`Fetching feed and archive in parallel`);
@@ -2691,13 +2978,18 @@ async function main() {
   // give.html is only mined for assets now (see GIVE_SRC_PATH): the
   // founders' Substack links and signature images, the latter written out
   // from their inline base64 to real cacheable files.
+  // The About page's Manifesto section reprints the Secession post —
+  // one more post-page fetch, counted with the rest (a failure here
+  // trips the same "post pages failed to fetch" warning).
+  console.log('Fetching the Secession manifesto');
+  const manifestoHtml = await fetchManifesto();
+
   console.log('Reading give.html');
   const giveSrc = fs.readFileSync(GIVE_SRC_PATH, 'utf8');
   const founders = extractFounders(giveSrc);
   for (const f of founders) {
-    if (f.sigDataUri) f.sig = writeDataUriImage(f.sigDataUri, `people/${slugify(f.name)}-sig.png`);
-    // Founder headshots (for the mission page masthead card) — same inline
-    // base64 → real file treatment as the signatures.
+    // Founder headshots (for the About page's masthead panel): inline
+    // base64 in give.html → real cacheable files here.
     if (f.photoDataUri) {
       const ext = f.photoDataUri.startsWith('data:image/png') ? 'png' : 'jpg';
       f.photo = writeDataUriImage(f.photoDataUri, `people/${slugify(f.name)}.${ext}`);
@@ -2711,7 +3003,7 @@ async function main() {
     'essays.html': renderEssaysPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
     'postscript.html': renderPostscriptPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
     'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll, leadParas: CONTRA_LEAD_PARAS }),
-    'about.html': renderAboutPage(founders),
+    'about.html': renderAboutPage(founders, manifestoHtml),
     'archive.html': renderArchivePage(archivePool),
   };
 
