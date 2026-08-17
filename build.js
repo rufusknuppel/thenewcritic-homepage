@@ -1092,7 +1092,7 @@ function renderNav(currentKey = 'home') {
   return `<nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
-      <span class="nav-wordmark">${escapeHtml(SITE_NAME)}</span>
+      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span><span class="nav-wordmark-line">Critic</span></span>
     </a>
   </div>
   <ul class="nav-links">
@@ -1378,53 +1378,34 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // byline/footer CONTENT still differs (its copy-link bills down in the
   // footer band, not the strip — see metaLineHtml / bandBottomHtml and
   // the isPostscript gates there), but the arrangement matches the rest.
-  // The resting billing over the cover. restChipArt swaps it for the
-  // cover credit — one line, "Art by X" — which is what the postscript
-  // page's standing cover wants: the names beside it already say whose
-  // interview it is, so the billing only repeated the list, and the
-  // credit had nowhere else to sit once it left the byline.
-  const restChipHtml = restChipArt && post.coverArtist
-    ? `<span class="rest-chip-line">Art by ${escapeHtml(post.coverArtist)}</span>`
-    : composedChipHtml(post, section);
+  // (The resting billing chip that sat over the cover is retired — the
+  // covers rest bare now, and the panel carries every label.)
   const isWide = halfClass.includes('duo-half--wide');
-  const dekDivider = dekHtml ? '<div class="card-dek-divider" aria-hidden="true"></div>' : '';
-  // Every section reads byline → title → dek → body → footer: the title
-  // hangs off the byline strip, then the dek sits UNDER it in a band of its
-  // own — its top edge the .card-dek-divider, its bottom edge the body's
-  // quote divider. (The dek rode ABOVE the title briefly, its band fused
-  // onto the byline strip; reverted — the title leads again.) Contra
-  // prints no body, so its dek band closes on the dek-divider alone (the
-  // quote rule and excerpt are hidden — see the .duo-half--contra rules
-  // in style.css).
-  //
-  // The extra-wide cells split that reading: the title holds the LEFT
-  // column alone, centred in its height, and the dek opens the RIGHT
-  // column over the excerpt — the feature card's arrangement, where the
-  // dek is the body's eyebrow rather than the title's tail. No divider
-  // travels with it; the vertical column rule already separates the two
-  // sides, and the dek-to-excerpt step is the non-wide stack's own 24 of
-  // ink (see .duo-half--wide .panel-col--right .card-dek).
-  const leftColHtml = isWide ? titleHtml : `${titleHtml}${dekDivider}${dekHtml}`;
+  // Every cell reads the stack — title → byline strip → excerpt → dek,
+  // 24 of ink at the panel's head and foot, 36 between the interior
+  // pairs (see PANEL INK RHYTHM in style.css). The dek CLOSES the
+  // stack, under the body preview, stretch-fitted like the title
+  // (fitFillDek in duo-panel-fit.js). The footer band is GONE from all
+  // of these cells — the byline strip is the panel's one chip row. The
+  // extra-wides run the same rhythm down their RIGHT column with the
+  // title facing from a centred column on the left (the CSS pins the
+  // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
-        <p class="rest-title-chip" aria-hidden="true">${restChipHtml}</p>
         <div class="duo-panel">
-          ${metaHtml}
-          ${metaHtml ? '<div class="card-byline-divider"></div>' : ''}
           <div class="duo-panel-top">
             <div class="panel-col panel-col--left">
-              ${leftColHtml}
+              ${titleHtml}
             </div>
+            ${metaHtml ? `${metaHtml}<div class="card-byline-divider"></div>` : ''}
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
-              ${isWide ? dekHtml : ''}
               ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
-              ${previewHtml}
+              ${previewHtml}${dekHtml}
             </div>
           </div>
-          ${bandBottomHtml}
         </div>
       </div>`;
 }
@@ -1602,7 +1583,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#121417">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -1613,8 +1594,6 @@ ${ogTags({
   })}
 <link rel="icon" href="favicon.png">
 ${leadPreload}
-<link rel="preconnect" href="https://use.typekit.net" crossorigin>
-<link rel="stylesheet" href="https://use.typekit.net/fxr6gmc.css">
 <link rel="stylesheet" href="style.css">
 ${renderImgFadeScript()}
 </head>
@@ -1723,13 +1702,11 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#121417">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
-<link rel="preconnect" href="https://use.typekit.net" crossorigin>
-<link rel="stylesheet" href="https://use.typekit.net/fxr6gmc.css">
 <link rel="stylesheet" href="style.css">
 ${renderImgFadeScript()}
 </head>

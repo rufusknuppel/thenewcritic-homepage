@@ -13,17 +13,17 @@
   if (!document.querySelector('.duo-panel')) return;
 
   // The one floor constant: text and hard blocks alike fit against the
-  // footer band's top minus this. It is a MINIMUM — a short excerpt ends
-  // where it ends and leaves more — but a full box lands its last line
-  // exactly here (see the slot stretch below).
-  // 18.1, not 24, because this measures the text's BOX and the panel's
+  // panel floor (see panelFloor) minus this. It is a MINIMUM — a short
+  // excerpt ends where it ends and leaves more — but a full box lands
+  // its last line exactly here (see featherToFloor below).
+  // 19.25, not 24, because this measures the text's BOX and the panel's
   // spacing is specified ink to ink (see PANEL INK RHYTHM in style.css):
-  // the Helvetica excerpt hangs ~4.3px below its last baseline at the
-  // 13px panel size, so a 19.7px box floor is what prints the wanted
-  // 24px of air between the last line and the band's rule. (This number
-  // tracks the body face: 18.1 in an earlier Helvetica-metrics pass,
-  // 21.2 under Newsreader — re-derive it if the face moves again.)
-  var GAP = 19.7;
+  // the Berlin excerpt's baseline rides 4.75px above its line box bottom
+  // at 13px/1.5, so a 19.25px box floor is what prints the wanted 24px
+  // of air under the last baseline. (This number tracks the body face:
+  // 19.7 under Helvetica, 21.2 under Newsreader — re-derive it if the
+  // face moves again.)
+  var GAP = 19.25;
   // When a block's text fills every line slot its box allows, the sub-line
   // remainder (box height mod line-height) is distributed into the leading
   // instead of piling up as dead space over the band: each slot may open
@@ -48,6 +48,43 @@
     [].forEach.call(block.querySelectorAll('.card-preview'), function(p, i){
       p.style.lineHeight = unit + 'px';
       if (i) p.style.marginTop = unit + 'px';
+    });
+  }
+
+  // The line grid's leftover — whatever ground the seated excerpt leaves
+  // above the panel's foot — goes into the STACK'S GAPS, split equally
+  // over the three interior steps (title→byline, byline→dek, dek→body;
+  // over the two that exist when a cell has no dek), never into the
+  // body's leading (feathering was tried and walked back — it made the
+  // excerpt's rhythm a function of how the box divided). Each joint's
+  // share is capped at one line slot so a genuinely short excerpt can't
+  // balloon the gaps; past that the remainder stays at the foot.
+  // Stacked (band-less) cells only — the caller gates on that.
+  function distributeStackSlack(topBox, title, dek, limit) {
+    var block = topBox.querySelector('.card-preview-block');
+    if (!block || getComputedStyle(block).display === 'none') return;
+    // The stack's last element — the dek where one prints (it closes
+    // the stack now, under the excerpt), the excerpt itself otherwise.
+    // Its box floor is `limit` less its own bottom margin.
+    var dekShown = dek && getComputedStyle(dek).display !== 'none';
+    var lastEl = dekShown ? dek : block;
+    var lastMb = parseFloat(getComputedStyle(lastEl).marginBottom) || 0;
+    var r = limit - lastMb - lastEl.getBoundingClientRect().bottom;
+    if (r < 1) return;
+    var firstP = block.querySelector('.card-preview');
+    var plh = parseFloat(getComputedStyle(firstP || block).lineHeight) || 19.5;
+    // The excerpt FLOATS: the two joints around it — byline→excerpt
+    // (the block's top margin) and excerpt→dek (the dek's top margin)
+    // — breathe EQUALLY, so the body keeps the same air above and
+    // below. Title→byline stays pinned at 24 (its margin rule in
+    // style.css).
+    var joints = [[block, 'marginTop']];
+    if (dekShown) joints.push([dek, 'marginTop']);
+    if (!joints.length) return;
+    var add = Math.min(r / joints.length, plh);
+    joints.forEach(function(j){
+      j[0].style[j[1]] =
+        ((parseFloat(getComputedStyle(j[0])[j[1]]) || 0) + add).toFixed(2) + 'px';
     });
   }
 
@@ -351,8 +388,16 @@
     var cs = getComputedStyle(title);
     measureCtx.font = cs.fontWeight + ' ' + fontPx + 'px ' + cs.fontFamily;
     var hyphenW = measureCtx.measureText('\u2010').width;
+    // Measure what the browser SETS, not what the markup says: CSS
+    // text-transform never touches textContent, and capitals run wider \u2014
+    // measuring the raw case approved sizes whose uppercase rendering
+    // overflowed the column and broke mid-word.
+    var text = title.textContent.trim();
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
+    else if (cs.textTransform === 'capitalize') text = text.replace(/(^|\s)\S/g, function(c){ return c.toUpperCase(); });
     var w = 0;
-    (title.textContent.trim().split(/\s+/)).forEach(function(word){
+    (text.split(/\s+/)).forEach(function(word){
       // A soft hyphen is a licensed break: the widest thing such a word
       // ever puts on one line is its longest fragment plus the hyphen
       // the break paints — not the whole word.
@@ -383,81 +428,289 @@
     return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   }
 
-  // Fill the column on AT MOST two lines (see the call in fitTitleSize for
-  // the intent). Used by every headline voice — essay squares, the wide
-  // essay hero, contra, postscript. Called with fontSize/maxWidth already
-  // cleared, so the h3 reads at its CSS size to start.
+  // The stretch core, the masthead's way: the element's text is broken
+  // into one or two lines and EACH LINE gets its own font-size, the
+  // measured size at which its words span the column exactly — like
+  // THE / NEW / CRITIC down the rail. Shared by the titles
+  // (fitFillTitle) and the stacked deks (fitFillDek), which "follow the
+  // title logic". Called with fontSize/maxWidth already cleared.
+  // The one taste rule on the stretch: no single line may swallow the
+  // cell. A short word set alone ("MAN" under "MANIFEST") fills the
+  // measure at a size that eats half the panel; any setting containing
+  // such a line is rejected, and the search falls to the partition with
+  // more text per line — usually the whole title on ONE line at its own
+  // natural fill size ("MANIFEST MAN", big but proportionate). Size
+  // does all the work: the type always fills the measure by scale, no
+  // letterspacing. The threshold is a fraction of the line's own
+  // column, so small squares police lower than the wide lead cells.
+  var LINE_MAX_PER_PX = 0.22;
+
+  // Splits words into k lines minimizing the WIDEST line (spaces
+  // included, measured via w100) — the truly balanced setting for the
+  // multi-line deks. Exact DP, not greedy: a greedy pass piles its
+  // surplus onto the last line, and one over-wide line is exactly what
+  // sinks the dek's size floor (the fill size of the widest line IS the
+  // setting's smallest type).
+  function balancedPartition(words, k, w100) {
+    var n = words.length;
+    if (k >= n) return words.map(function(){ return 1; });
+    // seg[i][j-i]: width of words i..j joined with spaces.
+    var seg = [];
+    for (var i = 0; i < n; i++) {
+      seg.push([]);
+      var s = '';
+      for (var j = i; j < n; j++) {
+        s = s ? s + ' ' + words[j] : words[j];
+        seg[i][j - i] = w100(s);
+      }
+    }
+    var INF = Infinity;
+    var dp = [], cut = [];
+    for (var p = 0; p <= n; p++) {
+      dp.push(new Array(k + 1).fill(INF));
+      cut.push(new Array(k + 1).fill(0));
+    }
+    dp[0][0] = 0;
+    for (var m = 1; m <= k; m++) {
+      for (var e = m; e <= n; e++) {
+        for (var b = m - 1; b < e; b++) {
+          var w = Math.max(dp[b][m - 1], seg[b][e - 1 - b]);
+          if (w < dp[e][m]) { dp[e][m] = w; cut[e][m] = b; }
+        }
+      }
+    }
+    var counts = [], at = n;
+    for (var mm = k; mm >= 1; mm--) { var bb = cut[at][mm]; counts.unshift(at - bb); at = bb; }
+    return counts;
+  }
+
+  // opts.minSize: never set a line below this — split onto MORE lines
+  //   (up to opts.maxLines) until every line clears it. The deks' floor:
+  //   a dek must not print smaller than the body text.
+  // opts.maxLines: how many lines the search may use (titles 2, deks 4).
+  function stretchFill(el, availW, maxH, opts) {
+    opts = opts || {};
+    var maxLines = opts.maxLines || 2;
+    var cs = getComputedStyle(el);
+    var LH = 1.1;
+    // Words as the browser sets them (the uppercase transform changes
+    // widths — same trap longestWordWidth guards against).
+    var raw = el.textContent.trim().replace(/\s+/g, ' ');
+    var shown = cs.textTransform === 'uppercase' ? raw.toUpperCase() : raw;
+    var rawWords = raw.split(' ');
+    var shownWords = shown.split(' ');
+    if (!rawWords.length || !raw) return;
+    measureCtx.font = cs.fontWeight + ' 100px ' + cs.fontFamily;
+    var w100 = function(s){ return measureCtx.measureText(s).width; };
+
+    // Candidate settings: the whole text on one stretched line, any
+    // two-line word partition, and (when maxLines allows — the deks) a
+    // balanced 3- and 4-line setting. Each line is sized to span availW
+    // exactly (half a pixel inside it, so rounding never folds a line).
+    var fitW = availW - 0.5;
+    // The swallow threshold judges against the CELL (opts.lineMax, from
+    // the panel's own width) rather than the line's column — a wide
+    // cell's half-width title column deserves the type its whole panel
+    // can carry.
+    var lineMax = opts.lineMax || availW * LINE_MAX_PER_PX;
+    var candidates = [[rawWords.length]];
+    for (var i = 1; i < rawWords.length; i++) candidates.push([i, rawWords.length - i]);
+    for (var k = 3; k <= maxLines && k <= rawWords.length; k++) {
+      candidates.push(balancedPartition(shownWords, k, w100));
+    }
+    var scored = candidates.map(function(counts){
+      var lines = [], shownLines = [], at = 0;
+      counts.forEach(function(n){
+        lines.push(rawWords.slice(at, at + n).join(' '));
+        shownLines.push(shownWords.slice(at, at + n).join(' '));
+        at += n;
+      });
+      var sizes = shownLines.map(function(l){ return fitW * 100 / w100(l); });
+      var h = sizes.reduce(function(a, s){ return a + s * LH; }, 0);
+      var minSize = Math.min.apply(Math, sizes);
+      var maxSize = Math.max.apply(Math, sizes);
+      return {
+        lines: lines, sizes: sizes, h: h, minSize: minSize, maxSize: maxSize,
+        spread: sizes.length > 1 ? maxSize - minSize : 0,
+        fitsH: h <= maxH,
+        // The taste rule: no line may swallow the cell.
+        ok: h <= maxH && maxSize <= lineMax
+      };
+    });
+    var chosen = null;
+    if (opts.minSize) {
+      // The dek's search: the fewest lines (from 2 up) whose every line
+      // clears the floor, fits the height, and stays in proportion —
+      // most even setting first.
+      for (var kk = 2; kk <= maxLines && !chosen; kk++) {
+        var atK = scored.filter(function(c){
+          return c.lines.length === kk && c.ok && c.minSize >= opts.minSize - 0.05;
+        });
+        atK.sort(function(a, b){ return a.spread - b.spread; });
+        chosen = atK[0] || null;
+      }
+      // A short dek that clears the floor on ONE line at a bigger size
+      // than any split would give it keeps the line.
+      if (!chosen && scored[0].ok && scored[0].minSize >= opts.minSize - 0.05) {
+        chosen = scored[0];
+      }
+      // Nothing clears the floor — take whatever setting comes closest.
+      if (!chosen) {
+        var fitters = scored.filter(function(c){ return c.fitsH; });
+        fitters.sort(function(a, b){ return b.minSize - a.minSize; });
+        chosen = fitters[0] || null;
+      }
+    } else {
+      // The title's search: two balanced lines when every line stays in
+      // proportion; a setting whose short line would swallow the cell
+      // ("MANIFEST" over a giant "MAN") fails `ok` and the whole title
+      // takes ONE line at its own natural fill size instead — smaller
+      // type by construction, since the line holds more text.
+      var twos = scored.filter(function(c){ return c.lines.length === 2 && c.ok; });
+      twos.sort(function(a, b){ return a.spread - b.spread; });
+      chosen = twos[0] || (scored[0].ok ? scored[0] : null);
+    }
+    if (!chosen) {
+      // Nothing passes whole — a single word too short to set at a
+      // proportionate fill, or no height for any setting. Take the
+      // height-fitting candidate with the LEAST oversized line and
+      // clamp its lines to the threshold (they underfill and centre —
+      // the one case scale alone can't span the measure), else the
+      // shortest setting scaled to the height budget.
+      var anyFit = scored.filter(function(c){ return c.fitsH; });
+      anyFit.sort(function(a, b){ return a.maxSize - b.maxSize; });
+      chosen = anyFit[0];
+      if (chosen) {
+        chosen.sizes = chosen.sizes.map(function(s){ return Math.min(s, lineMax); });
+      } else {
+        chosen = scored.slice().sort(function(a, b){ return a.h - b.h; })[0];
+        var scale = maxH > 0 ? maxH / chosen.h : 1;
+        chosen.sizes = chosen.sizes.map(function(s){ return s * scale; });
+      }
+    }
+
+    if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+    var host = el.querySelector('a') || el;
+    host.innerHTML = chosen.lines.map(function(l, k){
+      return '<span class="title-line" style="font-size:' + chosen.sizes[k].toFixed(2) + 'px">'
+        + l.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
+    }).join('');
+    // The em-based margin corrections read the element's own size; the
+    // first line's is the closest single stand-in for the stack.
+    el.style.fontSize = chosen.sizes[0].toFixed(2) + 'px';
+    // The CSS margin-bottom's em term subtracts the LAST baseline's ride
+    // (0.167em) — but em resolves against the element size just set,
+    // the FIRST line's. When a two-line setting lands its lines at
+    // different sizes the difference prints straight into the ink gap
+    // below (a contra pair 30px apart missed by 5), so re-solve the
+    // margin against the last line's size. (The margin-TOP term reads
+    // the first line, which the element size already is.)
+    if (chosen.sizes.length > 1) {
+      var sLast = chosen.sizes[chosen.sizes.length - 1];
+      if (Math.abs(chosen.sizes[0] - sLast) > 0.1) {
+        var mb = parseFloat(getComputedStyle(el).marginBottom);
+        if (!isNaN(mb)) {
+          el.style.marginBottom = (mb + 0.167 * (chosen.sizes[0] - sLast)).toFixed(2) + 'px';
+        }
+      }
+    }
+    el.__stretched = true;
+  }
+
+  // Where a panel's content floors: the footer band's top where a band
+  // still stands (the wides, the ticker berths, the hero), the panel's
+  // own bottom edge where there is none — the stacked cells print no
+  // band at all now, so their excerpt closes the panel itself.
+  function panelFloor(panel) {
+    var band = panel.querySelector('.panel-band--bottom') || panel.querySelector('.panel-band');
+    if (!band) return panel.getBoundingClientRect().bottom;
+    var topBoxEl = panel.querySelector('.duo-panel-top');
+    if (topBoxEl && topBoxEl.contains(band)) {
+      return panel.getBoundingClientRect().bottom;
+    }
+    return band.getBoundingClientRect().top;
+  }
+
   function fitFillTitle(panel, title) {
     var availW = titleColWidth(title);
-    var base = parseFloat(getComputedStyle(title).fontSize) || 0;
-    if (!availW || !base) return;
-    var lhRatio = (parseFloat(getComputedStyle(title).lineHeight) || base * 1.1) / base;
-    var ceil = Math.round(base * 1.8);             // the one-liners' ceiling
-    function linesAt(px) {
-      title.style.fontSize = px + 'px';
-      return Math.round(title.getBoundingClientRect().height / (px * lhRatio));
-    }
-
-    // A title that already sets on ONE line stays one line and grows to the
-    // column — the filled look the one-liners have. (Breaking it into two
-    // to grow further only shrinks the type: one full line reads larger
-    // than two half-empty ones.)
-    if (linesAt(base) <= 1) {
-      var rng = document.createRange();
-      rng.selectNodeContents(title);
-      var lineW = rng.getBoundingClientRect().width;
-      title.style.fontSize = '';
-      if (lineW > 0) {
-        var grown = Math.min(Math.floor(base * (availW - 2) / lineW), ceil);
-        if (grown > base) title.style.fontSize = grown + 'px';
-      }
-      return;
-    }
-
-    // A wrapping title is set on exactly two lines at the LARGEST type that
-    // still fits in two — long titles shrink until two lines hold them,
-    // short two-liners grow until one more point would spill a word or a
-    // third line. Three ceilings on the size (two lines, no word past the
-    // column, the block clears whatever sits below it), all monotonic, so a
-    // binary search lands the largest that clears them.
-    var band = panel.querySelector('.panel-band--bottom') || panel.querySelector('.panel-band');
-    var bandTop = band ? band.getBoundingClientRect().top : Infinity;
+    if (!availW) return;
+    var floorY = panelFloor(panel);
     var tr = title.getBoundingClientRect();
     // Reserve the room the title must leave below itself: its own bottom
     // margin, plus whatever shares its column beneath it — an excerpt keeps
-    // a two-line sliver, a dek keeps its whole (short) self. Content BESIDE
-    // the title (the wide cell's excerpt, in the other column) doesn't
-    // compete for this vertical space, so it isn't counted; contra has no
-    // excerpt at all and simply reserves for its dek.
+    // a two-line sliver, a dek keeps its whole (short) self, and in the
+    // stacked stack the byline strip and the in-flow band hold their full
+    // heights. Content BESIDE the title (the wide cell's excerpt, in the
+    // other column) doesn't compete for this vertical space, so the
+    // same-column test drops it.
     var reserve = parseFloat(getComputedStyle(title).marginBottom) || 0;
     // The excerpt CONTAINER once (.card-preview-block), never its individual
     // paragraphs — matching .card-preview here counted every paragraph as a
     // separate 44px reserve, ballooning maxH negative so the search failed
     // and the title fell to its 24px floor.
-    [].forEach.call(panel.querySelectorAll('.card-preview-block, .card-dek'), function(el){
+    [].forEach.call(panel.querySelectorAll('.card-preview-block, .card-dek, .duo-panel-top .card-meta--line, .duo-panel-top .panel-band--bottom'), function(el){
       if (getComputedStyle(el).display === 'none') return;
       var r = el.getBoundingClientRect();
       if (r.height <= 1) return;
       var below = r.top >= tr.top + 4;
       var sameCol = r.left < tr.right - 4 && r.right > tr.left + 4;
       if (!below || !sameCol) return;
-      reserve += el.classList.contains('card-dek') ? r.height + 12 : 44;
+      reserve += el.classList.contains('card-preview-block') ? 44
+        : el.classList.contains('card-dek') ? r.height + 12
+        : r.height + 8;
     });
-    var maxH = bandTop - tr.top - GAP - reserve;
-    function fits(px) {
-      title.style.fontSize = px + 'px';
-      var h = title.getBoundingClientRect().height;
-      if (Math.round(h / (px * lhRatio)) > 2) return false;
-      if (h > maxH) return false;
-      if (longestWordWidth(title, px) > availW - 2) return false;
-      return true;
+    var maxH = floorY - tr.top - GAP - reserve;
+    stretchFill(title, availW, maxH, {
+      lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
+    });
+  }
+
+  // The stacked dek follows the title's logic (stretch-filled lines —
+  // see stretchFill), sized to whatever ground the fitted title left
+  // between the byline strip and the in-flow band: its own budget is
+  // the floor minus the band's height and a two-line sliver for the
+  // excerpt below (contra, band pinned and no excerpt, reserves only
+  // its own margin). Runs AFTER fitTitleSize so the dek's measured top
+  // already sits under the fitted title.
+  function fitFillDek(panel, dek) {
+    var availW = titleColWidth(dek);
+    if (!availW) return;
+    var floorY = panelFloor(panel);
+    // The dek sits BELOW the not-yet-clamped excerpt at fit time, so
+    // its own rect top says nothing — its ground is measured from the
+    // byline strip's closing rule: everything under the strip, minus
+    // the excerpt's minimum keep and the fixed steps around the dek.
+    // The strip's closing rule where it prints; the strip itself where
+    // the rule is hidden (the wides pin the strip over their excerpt
+    // column and drop its rule).
+    var head = panel.querySelector('.duo-panel-top .card-byline-divider');
+    if (head && !head.getClientRects().length) head = null;
+    var meta = panel.querySelector('.duo-panel-top .card-meta--line');
+    var start = head ? head.getBoundingClientRect().bottom
+      : meta ? meta.getBoundingClientRect().bottom
+      : dek.getBoundingClientRect().top;
+    var dcs = getComputedStyle(dek);
+    var reserve = (parseFloat(dcs.marginTop) || 0) + (parseFloat(dcs.marginBottom) || 0);
+    var block = panel.querySelector('.card-preview-block');
+    var blockShown = block && getComputedStyle(block).display !== 'none';
+    // The strip→excerpt step plus a two-line sliver for the excerpt.
+    if (blockShown) reserve += 21.57 + 44;
+    var maxH = floorY - start - GAP - reserve;
+    // The dek's floor is the body text's own size — read live off the
+    // excerpt when the cell prints one, the 13px default otherwise. Up
+    // to four lines to clear it: a long dek splits further rather than
+    // shrinking under the text it introduces.
+    var floorSize = 13;
+    if (blockShown) {
+      var firstP = block.querySelector('.card-preview');
+      if (firstP) floorSize = parseFloat(getComputedStyle(firstP).fontSize) || 13;
     }
-    var lo = 24, hi = ceil, best = 24;
-    while (lo <= hi) {
-      var mid = (lo + hi) >> 1;
-      if (fits(mid)) { best = mid; lo = mid + 1; } else { hi = mid - 1; }
-    }
-    title.style.fontSize = best + 'px';
+    // Up to six lines: the wide cells' half-width column needs the
+    // extra splits before a long dek clears the body-size floor.
+    stretchFill(dek, availW, maxH, {
+      minSize: floorSize, maxLines: 6,
+      lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
+    });
   }
 
   // The voices whose titles FILL their measure on one or two lines (see
@@ -587,6 +840,10 @@
   // wide cells, whose titles keep their size on principle.
   function fitTitleFewerLines(panel, title) {
     if (!title || panel.closest('.duo-half--wide')) return;
+    // Stretch-fitted titles carry per-line sizes in their own spans —
+    // the whole-element line count and font-size this works on don't
+    // exist for them.
+    if (title.__stretched) return;
     if (getComputedStyle(title).display === 'none') return;
     function lineCount() {
       var lh = parseFloat(getComputedStyle(title).lineHeight) || 24;
@@ -613,6 +870,9 @@
   // single word and anything already two lines or more.
   function fitTitleTwoLines(title) {
     if (!title) return;
+    // Stretch-fitted titles chose their own lines; a max-width here
+    // would fold the fitted spans.
+    if (title.__stretched) return;
     title.style.maxWidth = '';
     if (getComputedStyle(title).display === 'none') return;
     if (!/\s/.test(title.textContent.trim())) return;
@@ -786,6 +1046,25 @@
   // dek around without moving the body an inch.
   function slackToTitle(panel, topBox, band, title) {
     if (!title || getComputedStyle(title).display === 'none') return;
+    // Explicitly not the wide cells: their left column centres the
+    // title/dek pair with justify-content, so there is no slack to
+    // move — and the dek now sits BELOW the title there (it used to
+    // face it from the excerpt's column), so the geometric skip below
+    // no longer excludes them. Growing the title's margins here would
+    // stretch the pair's standardized 36-of-ink gap.
+    if (panel.closest('.duo-half--wide')) return;
+    // Nor contra: its panel-top centres the title/byline/dek block itself
+    // (align-content: safe center — no excerpt, the block floats in the
+    // whole ground), so every pixel this would move is already placed.
+    // Splitting the ground below the dek onto the title's margins here
+    // stretched the block's gaps to whatever the empty panel left over.
+    if (panel.closest('.duo-half--contra')) return;
+    // Nor the band-less stack: every step is a fixed measure of ink now
+    // (see PANEL INK RHYTHM) — a short excerpt simply ends early and
+    // leaves its slack at the panel's foot (a full one feathers to it,
+    // see featherToFloor); feeding slack to the title's margins would
+    // break the whole rhythm.
+    if (!band || topBox.contains(band)) return;
     var body = topBox.querySelector('.card-preview-block');
     var dek = topBox.querySelector('.card-dek');
     var last = null;
@@ -839,7 +1118,7 @@
   // first line well below the title's, which is the alignment the two
   // columns are built on.)
   function slackToBodyColumn(panel, topBox, band, title) {
-    if (!panel.closest('.duo-half--wide')) return;
+    if (!band || !panel.closest('.duo-half--wide')) return;
     var body = topBox.querySelector('.card-preview-block');
     if (!body || getComputedStyle(body).display === 'none') return;
     // The wide column centres itself now — the dek and the block carry
@@ -900,8 +1179,11 @@
     // and the panel gets its first real fit then.
     if (!panel.getClientRects().length) return;
     var topBox = panel.querySelector('.duo-panel-top');
+    // band may be null now — the stacked cells print none; everything
+    // that touches it below is guarded, and the floor comes from
+    // panelFloor either way.
     var band = panel.querySelector('.panel-band--bottom');
-    if (!topBox || !band) return;
+    if (!topBox) return;
     var title = topBox.querySelector('.card-title');
     // Off the PANEL, not the top box: the byline strip is a header band
     // above .duo-panel-top now, so it runs the full width on wide cells.
@@ -913,7 +1195,16 @@
     // branch), so one restore covers them.
     var block0 = topBox.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
-    if (title && title.__fullHTML) title.innerHTML = title.__fullHTML;
+    if (title && title.__fullHTML) { title.innerHTML = title.__fullHTML; title.__stretched = false; }
+    // The stacked dek is stretch-fitted like the title (fitFillDek) —
+    // same restore, and its fitted inline size goes with it.
+    var dek = topBox.querySelector('.card-dek');
+    if (dek) {
+      if (dek.__fullHTML) { dek.innerHTML = dek.__fullHTML; dek.__stretched = false; }
+      dek.style.fontSize = '';
+      // stretchFill may have re-solved this against its last line's size.
+      dek.style.marginBottom = '';
+    }
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
@@ -962,7 +1253,7 @@
     // anything measures against the band — shedding changes its height,
     // and so the floor every column fits to. Ahead of the static-fallback
     // return below so the stacked mobile layout sheds too.
-    fitBandBoxes(band);
+    if (band) fitBandBoxes(band);
 
     // The byline seats the likes box beside the author only when the line
     // has room for author + likes + date — the boxes never shrink or wrap
@@ -1023,11 +1314,32 @@
       fitTitleFewerLines(panel, title);
       fitTitleTwoLines(title);
     }
-    // One floor for everything: the band's top edge, GAP of air above it.
-    // (This used to be -14 for hard blocks and -16 for running text — two
-    // constants disagreeing by a hair for no reason anyone remembered.)
-    var bandTop = band.getBoundingClientRect().top;
+    // Every stacked cell's dek follows the title's logic — the wides
+    // included, now that they run the same stack — stretch-fitted to
+    // fill its lines (see fitFillDek). After the title, so the dek's
+    // budget is measured under the fitted title.
+    if (dek && getComputedStyle(dek).display !== 'none' && isFillTitlePanel(panel)) {
+      fitFillDek(panel, dek);
+    }
+    // One floor for everything, GAP of air above it: the band's top edge —
+    // or the panel's own bottom edge where the band sits in the flow
+    // (see panelFloor). (This used to be -14 for hard blocks and -16 for
+    // running text — two constants disagreeing by a hair for no reason
+    // anyone remembered.)
+    var bandTop = panelFloor(panel);
     var limit = bandTop - GAP;
+    // The stacked cells' dek closes the stack BELOW the excerpt, so the
+    // excerpt's own floor rises by the dek's full outer height (box +
+    // both margins). Measured here, after fitFillDek has set the dek's
+    // real lines; the wides (band present) keep their dek above the
+    // excerpt and reserve nothing.
+    var dekBelowReserve = 0;
+    if (!band && dek && getComputedStyle(dek).display !== 'none') {
+      var dekBelowCs = getComputedStyle(dek);
+      dekBelowReserve = dek.getBoundingClientRect().height
+        + (parseFloat(dekBelowCs.marginTop) || 0)
+        + (parseFloat(dekBelowCs.marginBottom) || 0);
+    }
 
     // The title outranks the dek wherever the dek sits: if the dek comes
     // first in the column, everything from its bottom edge down through
@@ -1038,7 +1350,6 @@
     // title left over. No separate reserve for the credit line any more:
     // it sits ABOVE the dek now, so its height is already inside the dek's
     // own measured top edge (reserving it again cost the dek a line).
-    var dek = topBox.querySelector('.card-dek');
     var reserve = 0;
     if (dek && title && getComputedStyle(dek).display !== 'none') {
       reserve = Math.max(0,
@@ -1051,7 +1362,13 @@
     var cutting = false;
     group.forEach(function(el){
       if (getComputedStyle(el).display === 'none') return;
+      // The in-flow band is chrome, not content: never clamped, never
+      // cut — the budgets above already count its height.
+      if (el.classList.contains('panel-band')) return;
       if (el === dek) {
+        // A stretch-fitted dek sized itself to its budget already; the
+        // whole-element clamp would fight the per-line spans.
+        if (el.__stretched) return;
         // Clamping (or even hiding) the dek to protect the title is not a
         // cut — everything after it shifts up and keeps its shot.
         var dekLim = groupLimit - reserve;
@@ -1087,7 +1404,7 @@
           // word by truncateToWord, ellipsis joined on inline.
           var firstP = el.querySelector('.card-preview');
           var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
-          var budget = bandTop - GAP - el.getBoundingClientRect().top;
+          var budget = bandTop - GAP - dekBelowReserve - el.getBoundingClientRect().top;
           var maxLines = Math.floor(budget / plh);
           if (maxLines < 1) {
             // No room for even one line — the quote divider above would
@@ -1174,11 +1491,15 @@
             // The cut can leave the box a row taller than its ink (a
             // paragraph gap costs a slot of its own, so a single leftover
             // row can hold nothing). Shrink to the rows the ink really
-            // occupies; the space that frees goes to the title.
+            // occupies.
             var seated = inkRows(el, colCount);
             if (seated && seated < blockLines) {
               el.style.height = (seated * plh + 1) + 'px';
             }
+            // Whatever ground the seated rows leave above the floor —
+            // the grid's sub-line remainder, a structurally freed row —
+            // is handed to the stack's gaps afterwards (see
+            // distributeStackSlack at the end of fit).
           } else {
             // Content too short to floor every column at any height —
             // let it balance naturally and just cap what there is.
@@ -1204,7 +1525,7 @@
         // its lines plus one gap slot.
         var scFirstP = el.querySelector('.card-preview');
         var scLh = parseFloat(getComputedStyle(scFirstP || el).lineHeight) || 21;
-        var scAvail = bandTop - GAP - el.getBoundingClientRect().top;
+        var scAvail = bandTop - GAP - dekBelowReserve - el.getBoundingClientRect().top;
         var scSlots = Math.floor(scAvail / scLh);
         if (scSlots < 1) {
           el.style.display = 'none';
@@ -1337,6 +1658,8 @@
             el.style.maxHeight = (scRows * scLh + 1) + 'px';
             el.style.overflow = 'hidden';
             if (el.scrollHeight > el.clientHeight + 1) truncateToWord(el);
+            // The slot remainder under the seated rows goes to the
+            // stack's gaps (see distributeStackSlack at the end of fit).
           }
         }
       } else if (el.getBoundingClientRect().bottom > groupLimit) {
@@ -1378,11 +1701,16 @@
     // Once every column's content has settled, hand the leftover height to
     // the title's margins — before the column rule, which is drawn to the
     // geometry this leaves behind.
+    // The stacked (band-less) cells hand their leftover ground to the
+    // stack's interior gaps, equally; the wides keep their own slack
+    // passes below.
+    if (!band) distributeStackSlack(topBox, title, dek, limit);
+
     slackToTitle(panel, topBox, band, title);
     slackToBodyColumn(panel, topBox, band, title);
 
     // Last: run the column rule from the panel's top border to the band's.
-    fitColumnDivider(panel, topBox, band);
+    if (band) fitColumnDivider(panel, topBox, band);
 
     // A full box lands its last line exactly GAP over the band — the
     // sub-line remainder is feathered into the leading by the slot
