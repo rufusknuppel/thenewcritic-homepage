@@ -359,8 +359,11 @@ a{ color: inherit; }
    Garamond's ascenders hug theirs — so equal margins printed unequal
    air. Rebalanced ink-to-ink (measured via canvas font metrics at
    these sizes). */
-.nav-links .nav-item--about{ margin-top: 35.6px; }
-.nav-links .nav-item--tagline-first{ margin-top: 24.4px; }
+/* (Tuned by rendered pixels, not canvas metrics — the canvas ascent
+   for the italic Garamond overstates what actually prints, which had
+   the bottom gap ~7px wide of the top.) */
+.nav-links .nav-item--about{ margin-top: 31.8px; }
+.nav-links .nav-item--tagline-first{ margin-top: 28.4px; }
 .nav-links .nav-item--tagline a{
   font-family: var(--byline-face);
   font-style: normal;
@@ -369,6 +372,12 @@ a{ color: inherit; }
   text-transform: uppercase;
   letter-spacing: -0.02em;
   line-height: 1.4;
+}
+/* The tagline HOVERS AS ONE: its two lines are separate links (each
+   its own list row), so pointing at either blues both together — one
+   phrase, one light. */
+.nav-links:has(.nav-item--tagline :is(a:hover, a:focus-visible)) .nav-item--tagline a{
+  color: var(--klein);
 }
 /* Each item is a title over a gloss, the same shape the cards use: white
    name, gray dek beneath. The <li> stays a plain block and the dek is a
