@@ -16,14 +16,23 @@
   // panel floor (see panelFloor) minus this. It is a MINIMUM — a short
   // excerpt ends where it ends and leaves more — but a full box lands
   // its last line exactly here (see featherToFloor below).
-  // 19.25, not 24, because this measures the text's BOX and the panel's
+  // 18.75, not 24, because this measures the text's BOX and the panel's
   // spacing is specified ink to ink (see PANEL INK RHYTHM in style.css):
-  // the Berlin excerpt's baseline rides 4.75px above its line box bottom
-  // at 13px/1.5, so a 19.25px box floor is what prints the wanted 24px
-  // of air under the last baseline. (This number tracks the body face:
-  // 19.7 under Helvetica, 21.2 under Newsreader — re-derive it if the
-  // face moves again.)
-  var GAP = 19.25;
+  // the Garamond Premier excerpt's baseline rides 6.75px above its line
+  // box bottom at 15px/1.5, so a 17.25px box floor is what prints the
+  // wanted 24px of air under the last baseline. (This number tracks the
+  // body face: 19.75 under Playfair regular, 19.25 under Berlin — re-derive it
+  // if the face moves again.)
+  // The cover-colour strip at the panel's foot — the ground showing
+  // under the body band — stands exactly 24px tall.
+  var GAP = 24;
+  // The stacked (upright-column) cells' vertical split: the charcoal
+  // body band keeps this share of the panel's height, the coloured
+  // ground (title, dek, corner credits) the rest — the wide's 50/50
+  // column split turned upright, weighted toward the ground. Read by
+  // the title fit (reserve) and the body budget (cap) so the two
+  // never fight over the same pixels.
+  var BAND_SHARE = 0.38;
   // When a block's text fills every line slot its box allows, the sub-line
   // remainder (box height mod line-height) is distributed into the leading
   // instead of piling up as dead space over the band: each slot may open
@@ -113,6 +122,17 @@
   }
 
   function resetClamp(el) {
+    // The band block's inner .card-preview-cols wrapper carries the
+    // multicol fit styles now — clear those alongside the block's own.
+    var rcCols = el.querySelector && el.querySelector('.card-preview-cols');
+    el.style.paddingBottom = '';
+    if (rcCols) {
+      rcCols.style.display = '';
+      rcCols.style.overflow = '';
+      rcCols.style.maxHeight = '';
+      rcCols.style.height = '';
+      rcCols.style.columnFill = '';
+    }
     el.style.overflow = '';
     el.style.maxHeight = '';
     el.style.height = '';
@@ -175,6 +195,12 @@
     if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
     var blockR = el.getBoundingClientRect();
     var EPS = 2;
+    // The dek rides at the band's foot, after the body; the truncation
+    // must stop the body ABOVE the dek's reserved band and keep the dek
+    // element itself (removeAfter would otherwise drop it with the tail).
+    var dekEl = el.querySelector('.card-dek');
+    var dekReserve = 0;
+    if (dekEl){ var dkcs = getComputedStyle(dekEl); dekReserve = dekEl.getBoundingClientRect().height + (parseFloat(dkcs.marginTop)||0) + (parseFloat(dkcs.marginBottom)||0); }
     // Word rects come from the FONT-METRIC box, which for EB Garamond
     // (~1.18em) overhangs the 1.1 line box by a few px — a fixed 2px
     // bottom tolerance read every last line as clipped and cut it (titles
@@ -183,7 +209,7 @@
     // the box — still fails by a mile.
     var lineTol = (parseFloat(getComputedStyle(el).lineHeight) || 24) * 0.25;
     function fits(r) {
-      return r.bottom <= blockR.bottom + lineTol && r.right <= blockR.right + EPS;
+      return r.bottom <= (blockR.bottom - dekReserve) + lineTol && r.right <= blockR.right + EPS;
     }
     // Walk the text nodes back to front for the last one holding a word
     // whose every fragment sits inside the visible box (clipped text lives
@@ -213,6 +239,8 @@
     if (!cutNode) return;
     removeAfter(el, cutNode);
     cutNode.textContent = cutNode.textContent.slice(0, cutEnd);
+    // removeAfter took the dek with the tail — put it back at the foot.
+    if (dekEl && !el.contains(dekEl)) el.appendChild(dekEl);
     // Append the ellipsis and confirm it landed in view — on a full last
     // line it wraps out of the visible box, so back off a word and retry.
     var guard = 30;
@@ -327,10 +355,28 @@
   // when no height fills every column (content too short to reach the
   // last column's floor at any of them) — callers fall back to the
   // natural balanced flow.
+  // The body band carries vertical padding (its 24px inset); every
+  // explicit block height/max-height is a border-box, so it must add
+  // that padding back or overflow:hidden clips the bottom inset.
+  function blockVPad(el){
+    var cs=getComputedStyle(el);
+    var pad=(parseFloat(cs.paddingTop)||0)+(parseFloat(cs.paddingBottom)||0);
+    // The byline now rides inside the band as its first child; reserve its
+    // outer height (box + margins) so the excerpt fits BELOW it.
+    var by=el.querySelector('.card-meta--line');
+    if (by){ var bcs=getComputedStyle(by); pad += by.getBoundingClientRect().height + (parseFloat(bcs.marginTop)||0) + (parseFloat(bcs.marginBottom)||0); }
+    var dk=el.querySelector('.card-dek');
+    if (dk){ var dcs=getComputedStyle(dk); pad += dk.getBoundingClientRect().height + (parseFloat(dcs.marginTop)||0) + (parseFloat(dcs.marginBottom)||0); }
+    return pad;
+  }
   function pickColumnHeight(el, plh, maxLines, cols) {
     var firstFull = 0;
+    // box-sizing:border-box means a set height swallows the block's own
+    // padding (the body band's 24px vertical inset) — add it back so the
+    // content area holds exactly k lines and the bottom inset survives.
+    var pcVPad = (parseFloat(getComputedStyle(el).paddingTop)||0) + (parseFloat(getComputedStyle(el).paddingBottom)||0);
     for (var k = maxLines; k >= 1; k--) {
-      el.style.height = (k * plh) + 'px';
+      el.style.height = (k * plh + pcVPad) + 'px';
       var st = columnFill(el, plh, cols);
       var allFull = true, anyOrphan = false;
       for (var c = 0; c < cols; c++) {
@@ -560,6 +606,61 @@
         fitters.sort(function(a, b){ return b.minSize - a.minSize; });
         chosen = fitters[0] || null;
       }
+    } else if (opts.preferMostLines) {
+      // The wide title's search: the DEEPEST split, UNCONDITIONALLY —
+      // every word on its own line ("The / Striver / Class"), whatever
+      // the viewport. Height is not a gate but a CAP: the uniform print
+      // size starts at the longest line's fill and shrinks to what the
+      // budget allows, so a stack too big for its column underfills the
+      // measure (it ranges left) instead of giving up lines. (The old
+      // height gate made the line COUNT a function of viewport width —
+      // wider window, bigger fill size, fewer lines — which flipped the
+      // poster stack to two lines on the user's own screen twice.)
+      var km = Math.min(maxLines, rawWords.length);
+      var atKm = scored.filter(function(c){ return c.lines.length === km; });
+      atKm.sort(function(a, b){ return b.minSize - a.minSize; });
+      chosen = atKm[0] || scored[0];
+      // What a setting will really print at, all caps applied — the
+      // uniform (longest line's fill), floored, height-capped by its
+      // own line count, ceilinged.
+      // (No scaling floor in here: lifting a size past the longest
+      // line's fill prints WIDER than the column — the Commodification
+      // spill. The floor a poster title really has is depth: more lines
+      // mean shorter lines mean bigger fills, and this competition
+      // already finds that.)
+      var finalSize = function(c){
+        var u = c.minSize;
+        if (maxH > 0) u = Math.min(u, maxH / (c.lines.length * 1.1));
+        if (opts.maxSize) u = Math.min(u, opts.maxSize);
+        return u;
+      };
+      // stackOnlyIfBigger (the postscripts): the stack is a means, not
+      // the look — EVERY depth competes on what it will actually print
+      // at, mid-way groupings included ("The New / Statesman" beside
+      // the full "The / New / Statesman"), and on a tie the FEWEST
+      // lines win: when one long word is the width-limiter at any
+      // depth, the shallower grouping prints the same size with less
+      // stacking. (The wides skip this: their poster stack is the
+      // intended look at any size.)
+      if (opts.stackOnlyIfBigger) {
+        scored.forEach(function(c){
+          // No swallow guard here: settings print at the UNIFORM size
+          // (the longest line's fill), so a short line can't balloon —
+          // and the ceiling polices absolute size. The old per-line
+          // `ok` check rejected exactly the wanted mid-ways ("The New /
+          // Statesman" for "The New"'s own fill).
+          var fs = finalSize(c), bs = finalSize(chosen);
+          if (fs > bs + 0.5 || (Math.abs(fs - bs) <= 0.5 && c.lines.length < chosen.lines.length)) {
+            chosen = c;
+          }
+        });
+      }
+      if (maxH > 0) {
+        var uCap = maxH / (chosen.lines.length * 1.1);
+        if (uCap > 0) {
+          chosen.sizes = chosen.sizes.map(function(s){ return Math.min(s, uCap); });
+        }
+      }
     } else {
       // The title's search: two balanced lines when every line stays in
       // proportion; a setting whose short line would swallow the cell
@@ -589,7 +690,18 @@
       }
     }
 
+    // opts.maxSize: a hard ceiling on the print size, whatever the fill
+    // or height budget would allow — the wide titles cap at 60px now.
+    if (opts.maxSize) {
+      chosen.sizes = chosen.sizes.map(function(s){ return Math.min(s, opts.maxSize); });
+    }
     if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+    // ONE size for the whole setting: the LONGEST line's fill size caps
+    // every line, so a multi-line title reads as one headline at one
+    // scale (shorter lines underfill their measure) rather than each
+    // line ballooning to span it.
+    var uniform = Math.min.apply(Math, chosen.sizes);
+    chosen.sizes = chosen.sizes.map(function(){ return uniform; });
     var host = el.querySelector('a') || el;
     host.innerHTML = chosen.lines.map(function(l, k){
       return '<span class="title-line" style="font-size:' + chosen.sizes[k].toFixed(2) + 'px">'
@@ -599,7 +711,7 @@
     // first line's is the closest single stand-in for the stack.
     el.style.fontSize = chosen.sizes[0].toFixed(2) + 'px';
     // The CSS margin-bottom's em term subtracts the LAST baseline's ride
-    // (0.167em) — but em resolves against the element size just set,
+    // (0.21em, Neue Haas at lh 1.1, for both title and dek now) — but em resolves against the element size just set,
     // the FIRST line's. When a two-line setting lands its lines at
     // different sizes the difference prints straight into the ink gap
     // below (a contra pair 30px apart missed by 5), so re-solve the
@@ -610,7 +722,8 @@
       if (Math.abs(chosen.sizes[0] - sLast) > 0.1) {
         var mb = parseFloat(getComputedStyle(el).marginBottom);
         if (!isNaN(mb)) {
-          el.style.marginBottom = (mb + 0.167 * (chosen.sizes[0] - sLast)).toFixed(2) + 'px';
+          var rideF = el.classList.contains('card-dek') ? 0.25 : 0.21;
+          el.style.marginBottom = (mb + rideF * (chosen.sizes[0] - sLast)).toFixed(2) + 'px';
         }
       }
     }
@@ -644,6 +757,19 @@
     // other column) doesn't compete for this vertical space, so the
     // same-column test drops it.
     var reserve = parseFloat(getComputedStyle(title).marginBottom) || 0;
+    // Every fill-title cell but contra and the ticker berths runs the
+    // POSTER treatment now: words stacked one to the line, ranged left,
+    // one uniform size between a floor and a ceiling.
+    var wideTitle = !!panel.closest('.duo-half--wide');
+    // Every fill-title cell but the ticker berths runs the poster
+    // treatment now — contra included, since its ground carries the
+    // same corner/title/dek anatomy as the rest.
+    var poster = !panel.closest('.ticker-item');
+    // And every poster cell may STACK: the wides unconditionally (the
+    // poster look), everyone else by the biggest-print competition —
+    // deep stack, mid-way grouping, or one/two plain lines, whichever
+    // sets largest (see stackOnlyIfBigger in stretchFill).
+    var stackTitle = poster;
     // The excerpt CONTAINER once (.card-preview-block), never its individual
     // paragraphs — matching .card-preview here counted every paragraph as a
     // separate 44px reserve, ballooning maxH negative so the search failed
@@ -655,12 +781,64 @@
       var below = r.top >= tr.top + 4;
       var sameCol = r.left < tr.right - 4 && r.right > tr.left + 4;
       if (!below || !sameCol) return;
-      reserve += el.classList.contains('card-preview-block') ? 44
+      // The stacked poster cells split the panel VERTICALLY with their
+      // band — reserve it a real share of the ground (the wide's 50/50
+      // column split, turned upright) rather than the old two-line
+      // sliver, so the body keeps a readable block under the title.
+      reserve += el.classList.contains('card-preview-block')
+        ? (poster && !wideTitle ? Math.max(44, panel.clientHeight * BAND_SHARE) : 44)
         : el.classList.contains('card-dek') ? r.height + 12
         : r.height + 8;
     });
     var maxH = floorY - tr.top - GAP - reserve;
+    // The POSTER budget mirrors the ground's real anatomy — the title
+    // lives between the courier HEADER (the lower of the two corner
+    // blocks, plus 16 of air) and the DEK FOOTER (the band's reserved
+    // share, the dek's box with its 16 top and 24 seat margins, plus
+    // 16 of air above it) — computed from the containing column's own
+    // edges, so the centring pass afterwards has exactly the region
+    // this budget promised. (The old estimate under-counted the dek's
+    // margins and double-counted the corners, which let titles overrun
+    // the region and land on the corner blocks.)
+    if (poster) {
+      var pCol = title.parentElement;
+      while (pCol && getComputedStyle(pCol).display === 'contents') pCol = pCol.parentElement;
+      if (pCol) {
+        var pColTop = pCol.getBoundingClientRect().top;
+        // HEAD: the lower corner block's foot + air, measured from the
+        // column's top.
+        var headRes = 0;
+        [].forEach.call(panel.querySelectorAll('.wide-corner'), function(wc){
+          if (getComputedStyle(wc).position !== 'absolute') return;
+          var hb = wc.getBoundingClientRect().bottom - pColTop + 16;
+          if (hb > headRes) headRes = hb;
+        });
+        // FOOT: the wide closes on the panel's 24 padding (GAP); the
+        // stacked cells on their band's reserved share. Then the dek
+        // block — box, 16 top margin, 24 seat — and 16 of air over it.
+        var footRes = wideTitle ? GAP : Math.max(44, panel.clientHeight * BAND_SHARE);
+        var dekRes = panel.querySelector('.panel-col--left .card-dek');
+        if (dekRes && getComputedStyle(dekRes).display !== 'none') {
+          footRes += dekRes.getBoundingClientRect().height + 16 + 24 + 16;
+        }
+        maxH = floorY - pColTop - headRes - footRes;
+      }
+    }
     stretchFill(title, availW, maxH, {
+      maxLines: stackTitle ? 6 : 2,
+      preferMostLines: stackTitle,
+      // The non-wides stack to get BIGGER, not for the stack itself —
+      // every depth competes on printed size, mid-ways included, and
+      // the fewest lines win a tie. The wides stack unconditionally.
+      stackOnlyIfBigger: stackTitle && !wideTitle,
+      // The 84px CEILING binds the STACKED cells only; the wide's
+      // poster stack runs uncapped — its size is already bounded by
+      // the column's width (the longest word's fill) and the height
+      // budget, and capping it under those printed visibly small in
+      // the big ground. No scaling floor anywhere (it printed wider
+      // than the column — the real floor is depth, which the
+      // competition finds).
+      maxSize: poster && !wideTitle ? 84 : 0,
       lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
     });
   }
@@ -1195,6 +1373,12 @@
     // branch), so one restore covers them.
     var block0 = topBox.querySelector('.card-preview-block');
     if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
+    // The multicol cut runs on the inner .card-preview-cols wrapper now —
+    // restore its truncation the same way (the block-level restore above
+    // replaces the wrapper node wholesale when it fires, which is fine:
+    // the fresh node simply has no __fullHTML yet).
+    var cols0 = block0 && block0.querySelector('.card-preview-cols');
+    if (cols0 && cols0.__fullHTML) cols0.innerHTML = cols0.__fullHTML;
     if (title && title.__fullHTML) { title.innerHTML = title.__fullHTML; title.__stretched = false; }
     // The stacked dek is stretch-fitted like the title (fitFillDek) —
     // same restore, and its fitted inline size goes with it.
@@ -1204,7 +1388,12 @@
       dek.style.fontSize = '';
       // stretchFill may have re-solved this against its last line's size.
       dek.style.marginBottom = '';
+      // The foot pass distributes the grid's remainder into this margin.
+      dek.style.marginTop = '';
     }
+    // ...and into the byline's bottom margin — both restored per fit.
+    var meta0 = topBox.querySelector('.card-preview-block .card-meta--line');
+    if (meta0) meta0.style.marginBottom = '';
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
@@ -1319,7 +1508,9 @@
     // fill its lines (see fitFillDek). After the title, so the dek's
     // budget is measured under the fitted title.
     if (dek && getComputedStyle(dek).display !== 'none' && isFillTitlePanel(panel)) {
-      fitFillDek(panel, dek);
+      // fitFillDek retired — the dek runs plain 14px Courier now (see
+      // THE DEK in style.css), wall to wall, not stretch-fitted.
+      // fitFillDek(panel, dek);
     }
     // One floor for everything, GAP of air above it: the band's top edge —
     // or the panel's own bottom edge where the band sits in the flow
@@ -1333,13 +1524,9 @@
     // both margins). Measured here, after fitFillDek has set the dek's
     // real lines; the wides (band present) keep their dek above the
     // excerpt and reserve nothing.
+    // The dek rides INSIDE the band now (its last line, reserved by
+    // blockVPad), so nothing is reserved for it below the band.
     var dekBelowReserve = 0;
-    if (!band && dek && getComputedStyle(dek).display !== 'none') {
-      var dekBelowCs = getComputedStyle(dek);
-      dekBelowReserve = dek.getBoundingClientRect().height
-        + (parseFloat(dekBelowCs.marginTop) || 0)
-        + (parseFloat(dekBelowCs.marginBottom) || 0);
-    }
 
     // The title outranks the dek wherever the dek sits: if the dek comes
     // first in the column, everything from its bottom edge down through
@@ -1388,11 +1575,43 @@
         return;
       }
       if (cutting) {
+        // The band block carries the byline and dek now — when the walk
+        // runs out of floor, hide only its BODY wrapper and keep the band
+        // (the contra grounds hit this every time; they print no body).
+        var cutCols = el.classList.contains('card-preview-block')
+          && el.querySelector('.card-preview-cols');
+        if (cutCols) { cutCols.style.display = 'none'; return; }
         el.style.display = 'none';
         return;
       }
       if (el.classList.contains('card-preview-block')) {
-        var colCount = parseInt(getComputedStyle(el).columnCount, 10) || 1;
+        // The paragraphs live in the .card-preview-cols wrapper (the real
+        // multicol container); byline and dek are its plain-flow siblings
+        // inside the band block. All column geometry runs on the wrapper;
+        // budgets and caps run on the block (whose blockVPad reserves the
+        // padding, the byline and the dek).
+        var colsEl = el.querySelector('.card-preview-cols') || el;
+        var colCount = parseInt(getComputedStyle(colsEl).columnCount, 10) || 1;
+        // Every duo half but contra runs its band FLUSH to the panel's
+        // bottom edge now (the wide's full-height column; the stacked
+        // cells' pinned foot band) — the band's own 24px bottom inset
+        // (inside blockVPad) is the closing air, so the GAP strip drops
+        // out of the body budget. Contra (and the non-duo-half panels —
+        // hero, ledger) keep the strip.
+        var bandFlush = !!panel.closest('.duo-half');
+        // Every duo half's band is flush now, contra included.
+        // The STACKED cells split the panel vertically with their band —
+        // and unlike the wide's side column, the band competes with the
+        // coloured ground for the same height. Left uncapped it swallows
+        // every pixel the title leaves (the flow puts its top right under
+        // the dek), the flex centring is left no free space, and the
+        // title lands on the corner credits. Cap the band's CONTENT at
+        // the same share of the panel the title fit reserves for it
+        // (BAND_SHARE), so the ground keeps its centring room.
+        var stackedBand = bandFlush && !panel.closest('.duo-half--wide');
+        var bandCap = stackedBand
+          ? Math.max(44, panel.clientHeight * BAND_SHARE) - blockVPad(el)
+          : Infinity;
         if (colCount > 1) {
           // Multi-column essay excerpt (the two-across squares, the hero,
           // the archive-wide cell): line-clamping individual paragraphs
@@ -1404,12 +1623,16 @@
           // word by truncateToWord, ellipsis joined on inline.
           var firstP = el.querySelector('.card-preview');
           var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
-          var budget = bandTop - GAP - dekBelowReserve - el.getBoundingClientRect().top;
+          var budget = Math.min(
+            bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el),
+            bandCap);
           var maxLines = Math.floor(budget / plh);
           if (maxLines < 1) {
-            // No room for even one line — the quote divider above would
-            // sit orphaned over nothing.
-            el.style.display = 'none';
+            // No room for even one body line — hide the BODY only (the
+            // band block still carries the byline and dek; hiding the
+            // whole block took them with it on the small contra grounds).
+            if (colsEl !== el) colsEl.style.display = 'none';
+            else el.style.display = 'none';
             var qd2 = topBox.querySelector('.duo-quote-divider');
             if (qd2) qd2.style.display = 'none';
             return;
@@ -1418,8 +1641,8 @@
           // fills to the brim before the right starts, which makes "both
           // columns full" a property the height alone controls — and
           // deleting the clipped tail later can't re-balance what shows.
-          el.style.overflow = 'hidden';
-          el.style.columnFill = 'auto';
+          colsEl.style.overflow = 'hidden';
+          colsEl.style.columnFill = 'auto';
           // A block that can fill (or overfill) the full height keeps it
           // outright, in either of two shapes:
           //   - text to spare: spills at full height, truncates on the
@@ -1437,9 +1660,9 @@
           // height still walks down through pickColumnHeight for a
           // balanced, flush, orphan-free ending — there the bottom line
           // is a real ending, and worth keeping clean.
-          el.style.height = (maxLines * plh) + 'px';
+          colsEl.style.height = (maxLines * plh) + 'px';
           var blockLines = 0;
-          var stMax = columnFill(el, plh, colCount);
+          var stMax = columnFill(colsEl, plh, colCount);
           // EVERY column's bottom slot occupied at full height means the
           // text reaches the floor on its own — the box is full, whatever
           // else is true of it. That is the test that decides whether the
@@ -1456,7 +1679,7 @@
           for (var cf = 0; cf < colCount; cf++) {
             if (!stMax.full[cf]) allFull = false;
           }
-          if (allFull || el.scrollWidth > el.clientWidth + 1) {
+          if (allFull || colsEl.scrollWidth > colsEl.clientWidth + 1) {
             blockLines = maxLines;
           } else {
             var interiorFull = true;
@@ -1465,11 +1688,11 @@
             }
             blockLines = interiorFull && stMax.any[colCount - 1]
               ? maxLines
-              : pickColumnHeight(el, plh, maxLines, colCount);
+              : pickColumnHeight(colsEl, plh, maxLines, colCount);
           }
           if (blockLines) {
-            el.style.height = (blockLines * plh) + 'px';
-            var spills = el.scrollWidth > el.clientWidth + 1;
+            colsEl.style.height = (blockLines * plh) + 'px';
+            var spills = colsEl.scrollWidth > colsEl.clientWidth + 1;
             // No slot stretch. The excerpt keeps its 1.5 leading exactly,
             // whatever the box's sub-line remainder — feathering the
             // leading to reach the floor made the body's rhythm a
@@ -1487,14 +1710,14 @@
             // the cut existed.
             // Cut text spills into clipped phantom columns, widening the
             // scrollable area — the tell that an ellipsis is owed.
-            if (spills) truncateToWord(el);
+            if (spills) truncateToWord(colsEl);
             // The cut can leave the box a row taller than its ink (a
             // paragraph gap costs a slot of its own, so a single leftover
             // row can hold nothing). Shrink to the rows the ink really
             // occupies.
-            var seated = inkRows(el, colCount);
+            var seated = inkRows(colsEl, colCount);
             if (seated && seated < blockLines) {
-              el.style.height = (seated * plh + 1) + 'px';
+              colsEl.style.height = (seated * plh + 1) + 'px';
             }
             // Whatever ground the seated rows leave above the floor —
             // the grid's sub-line remainder, a structurally freed row —
@@ -1503,10 +1726,10 @@
           } else {
             // Content too short to floor every column at any height —
             // let it balance naturally and just cap what there is.
-            el.style.height = '';
-            el.style.columnFill = '';
-            el.style.maxHeight = (maxLines * plh) + 'px';
-            if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
+            colsEl.style.height = '';
+            colsEl.style.columnFill = '';
+            colsEl.style.maxHeight = (maxLines * plh) + 'px';
+            if (colsEl.scrollWidth > colsEl.clientWidth + 1) truncateToWord(colsEl);
           }
           return;
         }
@@ -1525,10 +1748,14 @@
         // its lines plus one gap slot.
         var scFirstP = el.querySelector('.card-preview');
         var scLh = parseFloat(getComputedStyle(scFirstP || el).lineHeight) || 21;
-        var scAvail = bandTop - GAP - dekBelowReserve - el.getBoundingClientRect().top;
+        var scWide = !!panel.closest('.duo-half--wide');
+        var scAvail = Math.min(
+          bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el),
+          bandCap);
         var scSlots = Math.floor(scAvail / scLh);
         if (scSlots < 1) {
-          el.style.display = 'none';
+          if (colsEl !== el) colsEl.style.display = 'none';
+          else el.style.display = 'none';
           var qd0 = topBox.querySelector('.duo-quote-divider');
           if (qd0) qd0.style.display = 'none';
           return;
@@ -1631,9 +1858,11 @@
           }
           scClone.parentNode.removeChild(scClone);
           if (!scAny) {
-            // Not even one line seats — hide the block and the quote
+            // Not even one line seats — hide the BODY wrapper only (the
+            // band still carries the byline and dek) and the quote
             // divider that would otherwise sit orphaned above it.
-            el.style.display = 'none';
+            if (colsEl !== el) colsEl.style.display = 'none';
+            else el.style.display = 'none';
             var qd1 = topBox.querySelector('.duo-quote-divider');
             if (qd1) qd1.style.display = 'none';
           } else {
@@ -1654,10 +1883,20 @@
             // slots the budget allows, and let truncateToWord settle any
             // remainder the way every other overflow on the card is
             // settled — cut to the last whole word, ellipsis joined on.
-            var scRows = Math.min(inkRows(el, 1) || scUsed, scSlots);
-            el.style.maxHeight = (scRows * scLh + 1) + 'px';
-            el.style.overflow = 'hidden';
-            if (el.scrollHeight > el.clientHeight + 1) truncateToWord(el);
+            // Cap on the LIVE seated content — wrapper ink plus the band's
+            // padding/byline/dek — rather than the walk's arithmetic,
+            // which could sit a line short and clip the bottom inset.
+            // NOT on the wide's band: it flex-stretches to fill its
+            // column whatever the text's length, and a content-height
+            // cap would fold the charcoal ground up around the ink.
+            if (!scWide) {
+              el.style.maxHeight = Math.ceil(
+                colsEl.getBoundingClientRect().height + blockVPad(el) + 1) + 'px';
+              el.style.overflow = 'hidden';
+              if (el.scrollHeight > el.clientHeight + 1) truncateToWord(el);
+            } else {
+              el.style.overflow = 'hidden';
+            }
             // The slot remainder under the seated rows goes to the
             // stack's gaps (see distributeStackSlack at the end of fit).
           }
@@ -1704,10 +1943,98 @@
     // The stacked (band-less) cells hand their leftover ground to the
     // stack's interior gaps, equally; the wides keep their own slack
     // passes below.
-    if (!band) distributeStackSlack(topBox, title, dek, limit);
+    // The stacked cells now pin the body BAND at fixed 24s (see THE BODY
+    // BAND in style.css); the equal-slack pass is retired for them.
+    // if (!band) distributeStackSlack(topBox, title, dek, limit);
 
     slackToTitle(panel, topBox, band, title);
     slackToBodyColumn(panel, topBox, band, title);
+
+    // Pin the footer colour strip at exactly GAP — run LAST, after the
+    // slack passes have finished moving the column, so nothing shifts
+    // under it. The seated grid's sub-line remainder folds into the
+    // band's bottom padding (under the dek); a small overshoot gives
+    // padding back the same way, floored at half the inset so the dek
+    // never sits tight on the band's edge.
+    // (Contra excepted: its ground centres the title/byline/dek block —
+    // pinning its band to the floor would fight the centring.)
+    // The grid's sub-line remainder is split EQUALLY on either side of
+    // the body text — half above (the byline's bottom margin), half
+    // below (the dek's top margin) — so the dek keeps its exact 24
+    // above the footer colour strip and the body floats with even air.
+    // (The wides excepted too: their band is the flex-stretched
+    // full-height column, pinned by CSS — and it holds no byline or dek
+    // to spread the remainder into.)
+    if (!band && !panel.closest('.duo-half--contra') && !panel.closest('.duo-half--wide')) {
+      var footBlock = topBox.querySelector('.card-preview-block');
+      if (footBlock && getComputedStyle(footBlock).display !== 'none') {
+        var footRem = (panelFloor(panel) - GAP) - footBlock.getBoundingClientRect().bottom;
+        if (Math.abs(footRem) > 0.5) {
+          var footBy = footBlock.querySelector('.card-meta--line');
+          var footDek = footBlock.querySelector('.card-dek');
+          var half1 = footRem / 2;
+          if (footBy) {
+            footBy.style.marginBottom =
+              Math.max(8, (parseFloat(getComputedStyle(footBy).marginBottom) || 0) + half1) + 'px';
+          }
+          if (footDek) {
+            footDek.style.marginTop =
+              Math.max(8, (parseFloat(getComputedStyle(footDek).marginTop) || 0) + (footBy ? half1 : footRem)) + 'px';
+          }
+          // An inline max-height cap (the single-column seat) would keep
+          // the spread from extending the block — raise it in step so
+          // the band's bottom edge really lands on the line.
+          var footMh = parseFloat(footBlock.style.maxHeight);
+          if (footRem > 0 && !isNaN(footMh)) {
+            footBlock.style.maxHeight = (footMh + footRem) + 'px';
+          }
+        }
+      }
+    }
+
+    // Centre the TITLE between the COURIER HEADER and the DEK FOOTER:
+    // the region runs from the lower of the two head corner blocks
+    // (author left, meta right) down to the dek's top (or the ground's
+    // foot where a cell prints no dek), and the title's box floats at
+    // its midpoint — clamped so it never touches either neighbour.
+    // Written as an inline margin-top, which overrides the title's top
+    // auto spring; its bottom auto absorbs the remainder. Wides
+    // included: their column runs the same header/footer anatomy.
+    if (panel.closest('.duo-half') && title && getComputedStyle(title).display !== 'none') {
+      var cgWide = !!panel.closest('.duo-half--wide');
+      var cgTop = topBox.getBoundingClientRect().top;
+      // The region's FOOT: the dek's top; failing that, the band's top
+      // (stacked) or the column's closing air (wide).
+      var cgBot;
+      if (cgWide) {
+        cgBot = panel.getBoundingClientRect().bottom - GAP;
+      } else {
+        var cgBlock = topBox.querySelector('.card-preview-block');
+        var cgShown = cgBlock && getComputedStyle(cgBlock).display !== 'none'
+          && cgBlock.getBoundingClientRect().height > 1;
+        cgBot = cgShown ? cgBlock.getBoundingClientRect().top : panel.getBoundingClientRect().bottom;
+      }
+      var cgDek = topBox.querySelector('.card-dek');
+      if (cgDek && getComputedStyle(cgDek).display !== 'none') {
+        cgBot = Math.min(cgBot, cgDek.getBoundingClientRect().top);
+      }
+      // The region's HEAD: the lower corner block's foot.
+      var cgHead = cgTop;
+      [].forEach.call(panel.querySelectorAll('.wide-corner'), function(wc){
+        if (getComputedStyle(wc).position !== 'absolute') return;
+        var wb = wc.getBoundingClientRect().bottom;
+        if (wb > cgHead) cgHead = wb;
+      });
+      var cgTitleTop = title.getBoundingClientRect().top;
+      var cgTitleH = title.getBoundingClientRect().height;
+      var cgWantTop = cgHead + ((cgBot - cgHead) - cgTitleH) / 2;
+      // Collision clamps: off the dek's head, off the corners' feet.
+      cgWantTop = Math.min(cgWantTop, cgBot - 16 - cgTitleH);
+      cgWantTop = Math.max(cgWantTop, cgHead + 8);
+      var cgMt = (parseFloat(getComputedStyle(title).marginTop) || 0)
+        + (cgWantTop - cgTitleTop);
+      if (isFinite(cgMt)) title.style.marginTop = Math.max(0, cgMt) + 'px';
+    }
 
     // Last: run the column rule from the panel's top border to the band's.
     if (band) fitColumnDivider(panel, topBox, band);

@@ -1104,23 +1104,8 @@ function renderNav(currentKey = 'home') {
 }
 
 function renderFooter() {
-  // One line, three groups: the name on the left (no copyright line —
-  // the name and date carry it), the social links — words now — centred,
-  // the founding date on the right, both texts in the cards' chip cut.
-  // The name and the date used to share the left group with a middot
-  // between them, against the rail's gloss on the right; the two halves
-  // of the imprint now stand at the two ends of the line instead, so the
-  // dot has nothing left to separate. Source order is left-to-right so
-  // the stacked narrow-window fallback reads the same way. The marks run
-  // Substack, Instagram, Email — the rail's own order (see .nav-social),
-  // so the page opens and closes on the same list.
-  return `<footer>
-  <div class="wrap foot-row">
-    <p class="foot-fine foot-chip">The New Critic</p>
-    <p class="foot-fine foot-marks foot-chip"><a class="site-social-link" href="https://substack.com/@thenewcritic" rel="noopener" aria-label="The New Critic on Substack">Substack</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="The New Critic on Instagram">Instagram</a><span class="foot-mark-dot" aria-hidden="true">·</span><a class="site-social-link" href="mailto:editors@thenewcritic.com" rel="noopener" aria-label="Email the editors">Email</a></p>
-    <p class="foot-fine foot-chip">est. May 2025</p>
-  </div>
-</footer>`;
+  // The footer was removed at the user's request.
+  return '';
 }
 
 function renderHeader(currentKey) {
@@ -1155,9 +1140,9 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
     ? post.previewParagraphs
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
-    ? `<div class="card-preview-block">${previewParas
+    ? `<div class="card-preview-block"><div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
-        .join('')}</div>`
+        .join('')}</div></div>`
     : '';
   const readNowHtml = post.preview
     ? `<a class="card-preview-cta duo-readon-btn pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on ${ARROW_HTML}</a>`
@@ -1259,9 +1244,9 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? post.previewParagraphs
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
-    ? `<div class="card-preview-block">${previewParas
+    ? `<div class="card-preview-block"><div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
-        .join('')}</div>`
+        .join('')}</div></div>`
     : '';
   // The byline as the panel's HEADER strip: a sibling ABOVE
   // .duo-panel-top rather than a member of its left column, so it runs
@@ -1322,6 +1307,45 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   const metaHtml = metaLineHtml
     ? `<p class="card-meta card-meta--line">${metaLineHtml}</p>`
     : '';
+  const isWide = halfClass.includes('duo-half--wide');
+  // EVERY cell runs the extrawide anatomy now: a body-only charcoal
+  // band (the wide's right column; the stacked cells' bottom region),
+  // the credit split into the coloured ground's corners — author +
+  // date top-left, likes + Share closing the ground's foot (see THE
+  // WIDE CORNERS in style.css) — and the dek under the title. Contra
+  // included: it prints no body text, so it simply prints no band —
+  // its billing dek and corners ride the coloured ground alone.
+  const splitCredit = true;
+  const bandHtml = previewHtml
+    ? (splitCredit
+        ? previewHtml
+        : previewHtml
+            .replace('<div class="card-preview-block">', `<div class="card-preview-block">${metaHtml || ''}`)
+            .replace(/<\/div>\s*$/, `${dekHtml || ''}</div>`))
+    : (!splitCredit && (metaHtml || dekHtml) ? `<div class="card-preview-block card-preview-block--metaonly">${metaHtml || ''}${dekHtml || ''}</div>` : '');
+  const cornerAuthor = splitCredit ? metaLine(post, { include: ['author'], caps: false, archiveLinks: true, authorPrefix }) : '';
+  // The corner date spells its month out in full — "August 12", not the
+  // bylines' "Aug 12" — same two precisions as metaDateText otherwise.
+  const cornerDateText = splitCredit
+    ? (post.date && !isNaN(post.date.getTime())
+        ? post.date.toLocaleDateString('en-US', post.date.getFullYear() < new Date().getFullYear()
+            ? { month: 'long', year: 'numeric' }
+            : { month: 'long', day: 'numeric' })
+        : (post.metaDate || ''))
+    : '';
+  const cornerDate = cornerDateText
+    ? `<a class="meta-date" href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(cornerDateText)}</a>`
+    : '';
+  // Top-left: author with the date stacked under it. The meta block —
+  // likes (heart + count) with the Share copy-link under it — closes
+  // the coloured ground's foot (src/copy-link.js is on every page that
+  // prints these cells; the fitter pins the block 24 above the band on
+  // the stacked cells, where the band's height varies per fit).
+  const cornerLikes = splitCredit ? metaLine(post, { include: ['likes'] }) : '';
+  const cornerShare = splitCredit ? copyLinkBtnHtml(post, 'wide-corner-share') : '';
+  const cornersHtml = splitCredit
+    ? `${(cornerAuthor || cornerDate) ? `<p class="card-meta wide-corner wide-corner--author">${cornerAuthor}${cornerDate}</p>` : ''}${(cornerLikes || cornerShare) ? `<div class="card-meta wide-corner wide-corner--meta">${cornerLikes ? `<p class="wide-corner-likes">${cornerLikes}</p>` : ''}${cornerShare}</div>` : ''}`
+    : '';
   // The footer band: kicker (and, on the homepage's essay/postscript
   // cells, the cover credit) at the left; at the right, the likes box
   // ahead of the corner box — same box the hero's header band gives
@@ -1380,7 +1404,6 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // the isPostscript gates there), but the arrangement matches the rest.
   // (The resting billing chip that sat over the cover is retired — the
   // covers rest bare now, and the panel carries every label.)
-  const isWide = halfClass.includes('duo-half--wide');
   // Every cell reads the stack — title → byline strip → excerpt → dek,
   // 24 of ink at the panel's head and foot, 36 between the interior
   // pairs (see PANEL INK RHYTHM in style.css). The dek CLOSES the
@@ -1395,15 +1418,16 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
+          ${cornersHtml}
           <div class="duo-panel-top">
             <div class="panel-col panel-col--left">
               ${titleHtml}
+              ${splitCredit ? dekHtml : ''}
             </div>
-            ${metaHtml ? `${metaHtml}<div class="card-byline-divider"></div>` : ''}
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
               ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
-              ${previewHtml}${dekHtml}
+              ${bandHtml}
             </div>
           </div>
         </div>
@@ -1594,6 +1618,7 @@ ${ogTags({
   })}
 <link rel="icon" href="favicon.png">
 ${leadPreload}
+<link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css">
 ${renderImgFadeScript()}
 </head>
@@ -1615,6 +1640,7 @@ ${renderFooter()}
 
 ${renderCaterpillarScript()}
 ${renderDuoPanelFitScript()}
+${renderCoverColorScript()}
 ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 </body>
@@ -1627,6 +1653,15 @@ ${renderLineDrawScript()}
 // renderPageShell's fixed script set.
 function renderDuoPanelFitScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+// Paints each open hover card with its cover's primary colour (src/
+// cover-color.js). Ships wherever the duo panels do.
+function renderCoverColorScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/cover-color.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
@@ -1707,6 +1742,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css">
 ${renderImgFadeScript()}
 </head>
@@ -1905,7 +1941,7 @@ function renderEssaysPage({ currentKey, label, posts }) {
     title: label,
     bodyHtml,
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
+    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript()
       + renderPostscriptIndexScript(),
   });
 }
@@ -2009,7 +2045,7 @@ ${headHtml}${rows
     bodyHtml,
     // The section's newest cover becomes its share card.
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
+    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript()
       + (headHtml ? renderContraFilterScript() : ''),
   });
 }
@@ -2091,7 +2127,7 @@ function renderPostscriptPage({ currentKey, label, posts }) {
     title: label,
     bodyHtml,
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCopyLinkScript() + renderLineDrawScript()
+    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript()
       + renderPostscriptIndexScript(),
   });
 }
@@ -2356,9 +2392,9 @@ function renderLedgerRow(post) {
         ? [post.preview]
         : [];
   const previewBlock = previewParas.length
-    ? `<div class="card-preview-block">${previewParas
+    ? `<div class="card-preview-block"><div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
-        .join('')}</div>`
+        .join('')}</div></div>`
     : '';
   const dekHtml = post.subtitle
     ? `<p class="card-dek">${post.sectionLabel === 'Contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
