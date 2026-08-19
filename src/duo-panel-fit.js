@@ -1901,6 +1901,18 @@
             // stack's gaps (see distributeStackSlack at the end of fit).
           }
         }
+        // The WIDE band's height is FIXED (flex-stretched to its
+        // column), so the budget's sub-line remainder — the fraction
+        // of a line no walk can seat — pooled under the last line as
+        // extra air past the 24 inset. Feather it into the leading
+        // instead: every slot opens by remainder/slots (a fraction of
+        // a pixel per line, capped at MAX_SLOT_STRETCH) and the last
+        // line lands on the inset. Only when the text FILLS its slots
+        // — a short excerpt ends where it ends, GAP is a minimum.
+        if (scWide && scAny && scUsed >= scSlots) {
+          var scUnit = Math.min(scLh * MAX_SLOT_STRETCH, scAvail / scUsed);
+          if (scUnit > scLh + 0.05) setSlot(el, scUnit);
+        }
       } else if (el.getBoundingClientRect().bottom > groupLimit) {
         cutting = true;
         el.style.display = 'none';

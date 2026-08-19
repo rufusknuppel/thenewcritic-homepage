@@ -39,6 +39,19 @@
   font-display: swap;
   src: url(fonts/archivo-black.woff2) format('woff2');
 }
+/* TRIAL — OPS Placard Bold (Our Polite Society), the Antenne Books
+   wordmark face: the site's titles and masthead wear it on trial.
+   ⚠ UNLICENSED: this file was pulled from Antenne's CDN for the
+   try-on; a webfont licence from ourpolitesocietytype.com is needed
+   before this ships. One bold cut; the weight range maps every
+   declared weight onto it. */
+@font-face {
+  font-family: 'OPS Placard';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(fonts/ops-placard-bold.woff2) format('woff2');
+}
 /* The excerpts' face — Playfair Display Medium (self-hosted OFL cuts
    from the variable family's 500 instance), with its real italic for
    the <em>-heavy excerpts. */
@@ -121,7 +134,8 @@
      tagline, titles, deks and byline strips. Playfair Display speaks
      the excerpts. (--display-face kept as an unused Archivo fallback.) */
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --title-face: 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* OPS Placard on TRIAL ahead of the Neue Haas it may replace. */
+  --title-face: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
   /* Bare SYSTEM Courier first — the Antenne Books move (they declare
      `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
@@ -280,11 +294,11 @@ a{ color: inherit; }
   letter-spacing: -0.02em;
   line-height: 1.4;
 }
-/* The whole rail RANGES LEFT now — masthead, section list, tagline
-   and socials on one axis (the right-ranged Garamond list is retired;
-   .site-nav's text-align:center stays as the fallback for anything
-   unlisted here). */
-.nav-wordmark, .nav-tagline, .nav-social, .nav-links{ text-align: left; }
+/* The rail's LISTS centre — sections and socials on the column's
+   middle axis; the masthead's fitted lines fill the measure either
+   way. */
+.nav-links, .nav-social{ text-align: center; }
+.nav-wordmark{ text-align: left; }
 /* The masthead group closes up: name, sections and mark read as one
    block, so the step under the wordmark is the same 16px the sections
    keep between themselves rather than the 24 that used to hold the mark
@@ -340,7 +354,22 @@ a{ color: inherit; }
 .nav-links-dead{ color: var(--white); cursor: default; }
 /* One blank line between Archive and About — the list's own leading of
    air, splitting the sections above from the site pages below. */
-.nav-links .nav-item--about{ margin-top: 1.5em; }
+/* EQUAL INK around the courier block: the box margins differ because
+   the faces do — courier caps float high in their 1.4 box while the
+   Garamond's ascenders hug theirs — so equal margins printed unequal
+   air. Rebalanced ink-to-ink (measured via canvas font metrics at
+   these sizes). */
+.nav-links .nav-item--about{ margin-top: 35.6px; }
+.nav-links .nav-item--tagline-first{ margin-top: 24.4px; }
+.nav-links .nav-item--tagline a{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--courier-size);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
 /* Each item is a title over a gloss, the same shape the cards use: white
    name, gray dek beneath. The <li> stays a plain block and the dek is a
    block inside it, which keeps the <a> INLINE — a flex column here would
@@ -420,7 +449,8 @@ a{ color: inherit; }
    given up by dropping the space it would have needed. */
 /* margin 0, not auto — the blockified marks range LEFT with the rail's
    masthead/tagline/socials axis now (auto centred them). */
-.nav-social a{ display: block; width: fit-content; margin: 0; padding-bottom: 0; }
+/* margin auto — the blockified marks centre with the rail's lists. */
+.nav-social a{ display: block; width: fit-content; margin: 0 auto; padding-bottom: 0; }
 /* The masthead: the name, and the head of the column. */
 .nav-wordmark{
   /* A block inside the home link, so the whole name is the click target.
@@ -434,25 +464,34 @@ a{ color: inherit; }
      set per line below. Arial's metrics run a hair narrower; each line
      lands within a pixel there. */
   font-family: var(--title-face); font-weight: 700;
-  letter-spacing: 0; text-transform: none;
+  /* ALL CAPS in the Placard trial — the wordmark shouts like Antenne's. */
+  letter-spacing: 0; text-transform: uppercase;
   line-height: 1;
   /* White at rest, like every other link in the rail; it blues WITH the
      mark on hover (see THE MASTHEAD). */
-  color: var(--white); margin: 0;
+  color: var(--white);
+  /* The CAP INK starts level with the cover image's top edge: at
+     106.28px/1 Placard's caps sit 23.05 below the line box top
+     (ascent 105 on a 106.3 box, half-leading -10.35, cap ascent 71.6)
+     — the negative margin hands that back. */
+  margin: -23.05px 0 0;
 }
+/* The FOOT half of the split name (CRI/TIC) closes the rail: no cap
+   correction (that aligns the head with the cover), and its box's
+   below-baseline air handed back so the ink sits on the rail's 48
+   bottom inset. */
+.nav-wordmark--foot{
+  margin: 0 0 -11.65px;
+}
+.wordmark--foot{ display: block; text-decoration: none; }
 /* Each word's measured stretch — see the note above. nowrap: a fitted
    line lands within a fraction of a pixel of the column and must never
    fold on that fraction. */
 .nav-wordmark-line{ display: block; white-space: nowrap; }
-.nav-wordmark-line:nth-child(1){ font-size: 54.02px; }
-/* NEW holds the accent PERMANENTLY — the one word of the masthead in
-   Klein at rest (the whole-wordmark hover still blues its siblings to
-   match). */
-/* All three lines the one white — the Klein NEW is retired. */
-.nav-wordmark-line:nth-child(2){ font-size: 54.02px; }
-.nav-wordmark-line:nth-child(3){ font-size: 54.02px; }
-/* One size for the whole name — the longest line (Critic) caps the
-   set, and the shorter lines underfill the rail at the same scale. */
+/* FOUR lines now — THE / NEW / CRI / TIC — and in Placard's
+   uniform-width caps every line fills the 132px rail at the same
+   measured size (132 x 100 / 124.2). All lines one white. */
+.nav-wordmark-line{ font-size: 106.28px; }
 /* The set's name closing the column under Subscribe, off a blank line:
    the rail's courier at the sections' size, two lines of it, on the 1.5
    leading the column keeps. The blank line is margin, not an empty

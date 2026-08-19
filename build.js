@@ -1054,8 +1054,14 @@ function renderNav(currentKey = 'home') {
   function navLink(l) {
     return `<li class="nav-item--${escapeHtml(l.key)}"><a href="${escapeHtml(l.href)}"${l.key === currentKey ? ' aria-current="page"' : ''}${l.href.startsWith('http') || l.href.startsWith('mailto:') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a></li>`;
   }
-  const linkKeys = ['essays', 'postscript', 'contra', 'archive', 'about'];
-  const links = SITE_LINKS.filter(l => linkKeys.includes(l.key)).map(navLink).join('\n      ')
+  const sectionKeys = ['essays', 'postscript', 'contra', 'archive'];
+  const links = SITE_LINKS.filter(l => sectionKeys.includes(l.key)).map(navLink).join('\n      ')
+    // The TAGLINE rides between the two Garamond groups — two courier
+    // lines pointing home (see .nav-item--tagline in style.css). The
+    // socials it replaced are gone for now.
+    + '\n      <li class="nav-item--tagline nav-item--tagline-first"><a href="./">The Young</a></li>'
+    + '\n      <li class="nav-item--tagline"><a href="./">American Magazine</a></li>'
+    + '\n      ' + SITE_LINKS.filter(l => l.key === 'about').map(navLink).join('')
     // Store and Events stand in the list but go nowhere yet — plain
     // spans, no href, no hover; they take the list's cut by inheritance
     // and turn into navLink entries the day they have destinations.
@@ -1088,16 +1094,20 @@ function renderNav(currentKey = 'home') {
   // style.css) since both point home.
   // (The "The Young American Magazine" tagline is retired from the
   // rail — the masthead stands alone.)
+  // The name SPLITS across the rail: THE/NEW at the head, CRI/TIC at
+  // the foot, the section list floating between them.
   return `<nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
-      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span><span class="nav-wordmark-line">Critic</span></span>
+      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span></span>
     </a>
   </div>
   <ul class="nav-links">
     ${links}
   </ul>
-  <p class="nav-social"><a href="https://substack.com/@thenewcritic" rel="noopener">Substack</a><a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a><a href="mailto:editors@thenewcritic.com">Email</a></p>
+  <a class="wordmark wordmark--foot" href="./" aria-label="The New Critic — home">
+    <span class="nav-wordmark nav-wordmark--foot"><span class="nav-wordmark-line">Cri</span><span class="nav-wordmark-line">tic</span></span>
+  </a>
 </nav>`;
 }
 
