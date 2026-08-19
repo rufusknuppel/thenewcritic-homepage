@@ -54,7 +54,7 @@
 <nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./" aria-label="The New Critic — home">
-      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span><span class="nav-wordmark-line">Critic</span></span>
+      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span></span>
     </a>
   </div>
   <ul class="nav-links">
@@ -62,12 +62,16 @@
       <li class="nav-item--postscript"><a href="postscript.html">Postscript</a></li>
       <li class="nav-item--contra"><a href="contra.html" aria-current="page">Contra</a></li>
       <li class="nav-item--archive"><a href="archive.html">Archive</a></li>
+      <li class="nav-item--tagline nav-item--tagline-first"><a href="./">The Young</a></li>
+      <li class="nav-item--tagline"><a href="./">American Magazine</a></li>
       <li class="nav-item--about"><a href="about.html">About</a></li>
       <li><span class="nav-links-dead">Store</span></li>
       <li><span class="nav-links-dead">Events</span></li>
       <li class="nav-item--subscribe"><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></li>
   </ul>
-  <p class="nav-social"><a href="https://substack.com/@thenewcritic" rel="noopener">Substack</a><a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a><a href="mailto:editors@thenewcritic.com">Email</a></p>
+  <a class="wordmark wordmark--foot" href="./" aria-label="The New Critic — home">
+    <span class="nav-wordmark nav-wordmark--foot"><span class="nav-wordmark-line">Cri</span><span class="nav-wordmark-line">tic</span></span>
+  </a>
 </nav>
 </div>
 
@@ -2417,6 +2421,18 @@
             // The slot remainder under the seated rows goes to the
             // stack's gaps (see distributeStackSlack at the end of fit).
           }
+        }
+        // The WIDE band's height is FIXED (flex-stretched to its
+        // column), so the budget's sub-line remainder — the fraction
+        // of a line no walk can seat — pooled under the last line as
+        // extra air past the 24 inset. Feather it into the leading
+        // instead: every slot opens by remainder/slots (a fraction of
+        // a pixel per line, capped at MAX_SLOT_STRETCH) and the last
+        // line lands on the inset. Only when the text FILLS its slots
+        // — a short excerpt ends where it ends, GAP is a minimum.
+        if (scWide && scAny && scUsed >= scSlots) {
+          var scUnit = Math.min(scLh * MAX_SLOT_STRETCH, scAvail / scUsed);
+          if (scUnit > scLh + 0.05) setSlot(el, scUnit);
         }
       } else if (el.getBoundingClientRect().bottom > groupLimit) {
         cutting = true;
