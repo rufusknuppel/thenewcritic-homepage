@@ -1086,9 +1086,8 @@ function renderNav(currentKey = 'home') {
   // used to stand under the name is gone; the name and the tagline are
   // the brand now, and they light together on hover (see THE MASTHEAD in
   // style.css) since both point home.
-  const taglineLines =
-    '<span class="nav-tagline-line">The Young</span>'
-    + '<span class="nav-tagline-line">American Magazine</span>';
+  // (The "The Young American Magazine" tagline is retired from the
+  // rail — the masthead stands alone.)
   return `<nav class="site-nav">
   <div class="nav-top">
     <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
@@ -1099,7 +1098,6 @@ function renderNav(currentKey = 'home') {
     ${links}
   </ul>
   <p class="nav-social"><a href="https://substack.com/@thenewcritic" rel="noopener">Substack</a><a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a><a href="mailto:editors@thenewcritic.com">Email</a></p>
-  <a class="nav-tagline" href="./">${taglineLines}</a>
 </nav>`;
 }
 

@@ -131,7 +131,9 @@
      Courier New and gets the thinner cut (accepted, as Antenne do). */
   --byline-face: Courier, 'courier-std', 'Courier New', monospace;
   /* Both Courier roles — byline strip and dek — sit at 14px. */
-  --courier-size: 14px;
+  /* ONE courier size — corners, tagline, socials, bylines, every
+     credit voice reads this token. */
+  --courier-size: 13px;
   /* Garamond Premier Pro, off the Adobe kit; Playfair (self-hosted)
      stays as the fallback so a kit outage degrades to a real serif,
      not Georgia. */
@@ -273,17 +275,16 @@ a{ color: inherit; }
   font-family: var(--byline-face);
   font-style: normal;
   font-weight: 400;
-  font-size: 13px;
+  font-size: var(--courier-size);
   text-transform: uppercase;
   letter-spacing: -0.02em;
   line-height: 1.4;
 }
-/* The rail RANGES now — masthead, tagline and socials LEFT, the
-   Garamond section list RIGHT (the single centred axis is retired;
+/* The whole rail RANGES LEFT now — masthead, section list, tagline
+   and socials on one axis (the right-ranged Garamond list is retired;
    .site-nav's text-align:center stays as the fallback for anything
    unlisted here). */
-.nav-wordmark, .nav-tagline, .nav-social{ text-align: left; }
-.nav-links{ text-align: right; }
+.nav-wordmark, .nav-tagline, .nav-social, .nav-links{ text-align: left; }
 /* The masthead group closes up: name, sections and mark read as one
    block, so the step under the wordmark is the same 16px the sections
    keep between themselves rather than the 24 that used to hold the mark
@@ -311,7 +312,10 @@ a{ color: inherit; }
      the mark and the tagline: this auto above, the socials' auto below,
      splitting the column's free height evenly. Absorbing the slack here
      is also what pins the tagline to the foot. */
-  margin: auto 0 0;
+  /* BOTH springs: the list centres alone in the rail's free stretch —
+     the socials moved under the tagline at the foot, so the auto pair
+     that used to bracket list-plus-socials brackets the list itself. */
+  margin: auto 0;
   padding: 0;
   /* The items are spaced by their own leading now — the wide dek's own
      1.2, with no gap on top of it — so the column's rhythm is one
@@ -398,7 +402,9 @@ a{ color: inherit; }
    pair to the list's auto above: together they centre the list-and-
    socials group in the column and pin the tagline to the foot. */
 .nav-social{
-  margin: 1.5em 0 auto;
+  /* Under the tagline at the rail's foot now — one line of air off its
+     last line, no spring (the section list's own autos hold the middle). */
+  margin: 8px 0 0;
   font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--chip-size);
   letter-spacing: var(--chip-track); text-transform: none;
   line-height: 1.5;
@@ -442,7 +448,8 @@ a{ color: inherit; }
 /* NEW holds the accent PERMANENTLY — the one word of the masthead in
    Klein at rest (the whole-wordmark hover still blues its siblings to
    match). */
-.nav-wordmark-line:nth-child(2){ font-size: 54.02px; color: var(--klein); }
+/* All three lines the one white — the Klein NEW is retired. */
+.nav-wordmark-line:nth-child(2){ font-size: 54.02px; }
 .nav-wordmark-line:nth-child(3){ font-size: 54.02px; }
 /* One size for the whole name — the longest line (Critic) caps the
    set, and the shorter lines underfill the rail at the same scale. */
@@ -466,7 +473,10 @@ a{ color: inherit; }
      box; re-derived for the caps below (14.18px at 1.1: the baseline
      rides ≈2.55px above its box bottom, and caps leave no descender
      ink under it). */
-  margin: 0 0 -3.13px;
+  /* Under the site title now, not at the rail's foot — a step of air
+     off the wordmark's last line (the old -3.13 foot ink correction
+     went with the move). */
+  margin: 10px 0 0;
   /* The COURIER credit register — the same cut the wide corners and
      bylines speak: system Courier at 400, caps, Antenne's -0.02em
      tighten. (It wore stretched Neue Haas before; the fitted per-line
@@ -490,8 +500,7 @@ a{ color: inherit; }
 .nav-tagline-line{ display: block; white-space: nowrap; }
 /* Both lines at the credit courier's own 13 — natural width, no
    stretch fitting (the courier register isn't a display voice). */
-.nav-tagline-line:first-child{ font-size: 13px; }
-.nav-tagline-line:last-child{ font-size: 13px; }
+.nav-tagline-line{ font-size: var(--courier-size); }
 
 /* The masthead takes no underline. It carried one once, per WORD — the
    name set one word to the line, a background on the <a> would have
@@ -2338,9 +2347,9 @@ a.likes:hover::after,
 .card .duo-half .duo-panel .panel-col--left .card-title{
   margin-top: 0;
   margin-bottom: 0;
-  /* Ranged left — the stacked words hang off the ground's left edge
-     (the shared title rule centres; these cells opt out). */
-  text-align: left;
+  /* CENTRED — every poster title hangs off its ground's middle axis
+     (they ranged left for a stretch; retired). */
+  text-align: center;
 }
 /* ---------- THE WIDE CORNERS ----------
    The wide's credit line splits into the coloured ground's corners:
@@ -2360,7 +2369,7 @@ a.likes:hover::after,
   font-family: var(--byline-face);
   font-weight: 400;
   font-style: normal;
-  font-size: 13px;
+  font-size: var(--courier-size);
   line-height: 1;
   letter-spacing: var(--chip-track);
   text-transform: none;
@@ -2422,12 +2431,10 @@ a.likes:hover::after,
 .card .duo-half .duo-panel .wide-corner-likes{
   margin: 0; padding: 0;
 }
-/* The heart prints the panel's ink (black on the cover colour) — and
-   FOLLOWS the count (flex order flips the markup's heart-first
-   arrangement), a step smaller than the band hearts. */
+/* The heart prints the panel's ink (black on the cover colour), a step
+   smaller than the band hearts, LEADING the count (markup order). */
 .card .duo-half .duo-panel .wide-corner--meta .likes-heart{
   fill: var(--white); height: 10px; width: auto;
-  order: 1;
 }
 /* The chain (and its copied-check) matches the heart's smaller cut. */
 .card .duo-half .duo-panel .wide-corner-share .copylink-icon,
@@ -2442,11 +2449,19 @@ a.likes:hover::after,
   color: var(--white); cursor: pointer;
   display: inline-flex; align-items: center;
 }
-/* The word leads, the chain (or its copied-check) follows — flex order
-   flips the markup's icon-first arrangement, and the label's stock
-   left margin becomes the gap on its right. */
-.card .duo-half .duo-panel .wide-corner-share .copylink-label{
-  order: -1; margin-left: 0; margin-right: 7px;
+/* The chain (or its copied-check) LEADS the word — the markup's own
+   icon-first order, the label's stock left margin as the gap. */
+/* Klein on hover — the courier credits blue like the site's other
+   links; the heart's fill follows its count. */
+.card .duo-half .duo-panel .wide-corner a:hover,
+.card .duo-half .duo-panel .wide-corner a:focus-visible,
+.card .duo-half .duo-panel .wide-corner-share:hover,
+.card .duo-half .duo-panel .wide-corner-share:focus-visible{
+  color: var(--klein);
+}
+.card .duo-half .duo-panel .wide-corner--meta a.likes:hover .likes-heart,
+.card .duo-half .duo-panel .wide-corner--meta a.likes:focus-visible .likes-heart{
+  fill: var(--klein);
 }
 /* ---------- THE GROUND DEK ----------
    The dek sits on the coloured ground, RIGHT-aligned under the title's
@@ -2459,25 +2474,28 @@ a.likes:hover::after,
   font-weight: 400;
   font-size: 20px;
   line-height: 1.2;
-  text-align: right;
+  /* Centred with the titles — the whole poster pair hangs off the
+     ground's middle axis (it ranged right for a stretch; retired). */
+  text-align: center;
   color: var(--white);
   margin: 16px 0 0;
   padding: 0;
 }
-/* The wide's dek reaches 6 into the column's 18px half-gutter — its
-   right edge lands 24 from the charcoal column (which bleeds 12 in
-   from the other side) — and PINS to the column's foot: margin-bottom
-   0 seats its box on the content edge, 24 (the panel's own bottom
-   padding) above the panel's corner. The title takes both springs and
-   centres alone above it. */
+/* The wide's dek PINS to the column's foot: margin-bottom 0 seats its
+   box on the content edge, 24 (the panel's own bottom padding) above
+   the panel's corner. The title takes both springs and centres alone
+   above it. (The -6px right reach into the gutter went with the
+   right-alignment — a centred dek keeps the symmetric measure.) */
 .card .duo-half--wide .duo-panel .panel-col--left .card-dek{
-  margin-right: -6px;
   margin-bottom: 0;
 }
 .card .duo-half--wide .duo-panel .panel-col--left .card-title{
   margin-top: auto;
   margin-bottom: auto;
 }
+/* (Every poster title centres now — see the shared left-col title
+   rule; the wide-only centring that sat here folded into it. A
+   right/centre/left staircase also ran for a moment; retired.) */
 /* The stacked dek keeps 24 of air at its foot — the ground's own
    closing measure against the band (and, on the open hero cards where
    the ground hugs its content, against the strip's bottom edge). */
