@@ -21,6 +21,41 @@
   font-display: swap;
   src: url(fonts/berlin-type-bold.woff2) format('woff2');
 }
+/* The display face — Archivo Black (self-hosted OFL cut from Google
+   Fonts): the panels' titles, deks and byline strips. One style only;
+   registered at BOTH 400 and 700 so the rules' font-weight:700 lands
+   on the real file rather than a synthetic bold of it. */
+@font-face {
+  font-family: 'Archivo Black';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/archivo-black.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Archivo Black';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/archivo-black.woff2) format('woff2');
+}
+/* The excerpts' face — Playfair Display Medium (self-hosted OFL cuts
+   from the variable family's 500 instance), with its real italic for
+   the <em>-heavy excerpts. */
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/playfair-display-medium.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url(fonts/playfair-display-medium-italic.woff2) format('woff2');
+}
 :root{
   /* The ground: a flat near-black gray, a shade darker and more
      neutral than the blue-slate it briefly ran — no texture (the cloth
@@ -78,6 +113,29 @@
      defaults to. */
   --body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --title: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* The panels' two voices (see the @font-face blocks above): Archivo
+     Neue Haas Grotesk Display, off the Adobe Fonts kit
+     (use.typekit.net/fnn8swo.css, linked in the page head by build.js —
+     the one externally-served face on the site; Adobe's license doesn't
+     allow self-hosting), speaks the DISPLAY throughout: masthead,
+     tagline, titles, deks and byline strips. Playfair Display speaks
+     the excerpts. (--display-face kept as an unused Archivo fallback.) */
+  --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --title-face: 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
+  /* Bare SYSTEM Courier first — the Antenne Books move (they declare
+     `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
+     Courier, drawn far darker than Courier New — the solid typewriter
+     black of the reference, at a plain 400. Kit Courier Std backs it
+     up where the system face is missing; Windows aliases "Courier" to
+     Courier New and gets the thinner cut (accepted, as Antenne do). */
+  --byline-face: Courier, 'courier-std', 'Courier New', monospace;
+  /* Both Courier roles — byline strip and dek — sit at 14px. */
+  --courier-size: 14px;
+  /* Garamond Premier Pro, off the Adobe kit; Playfair (self-hosted)
+     stays as the fallback so a kit outage degrades to a real serif,
+     not Georgia. */
+  --excerpt: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
   --mono: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The chip cut's own face. Every corner box, chip, panel header strip
      and footer band box on the site shares one declaration (see the nine
@@ -108,6 +166,9 @@
      the two never drift apart, and the single place to tune how many
      lines of an essay a card shows. */
   --panel-text: 13px;
+  /* The Garamond excerpts run 2px over the chip size; deks and every
+     other --panel-text context hold 13. */
+  --excerpt-size: 16px;
   --max: 1600px;
 }
 
@@ -195,6 +256,34 @@ a{ color: inherit; }
      the content beside it. */
   padding: 48px 24px 48px 48px;
 }
+/* The section list speaks the WIDE DEK's voice — italic Garamond at
+   the dek's own 20/400. (The caps-courier / sentence-garamond
+   alternation is retired; the courier register moved to the tagline
+   and the socials.) */
+.nav-links li :is(a, span){
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  text-transform: none;
+}
+/* The socials speak the credit courier — the tagline's exact cut:
+   system Courier 400 caps at 13, Antenne's -0.02em, 1.4 leading. */
+.nav-social a{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+/* The rail RANGES now — masthead, tagline and socials LEFT, the
+   Garamond section list RIGHT (the single centred axis is retired;
+   .site-nav's text-align:center stays as the fallback for anything
+   unlisted here). */
+.nav-wordmark, .nav-tagline, .nav-social{ text-align: left; }
+.nav-links{ text-align: right; }
 /* The masthead group closes up: name, sections and mark read as one
    block, so the step under the wordmark is the same 16px the sections
    keep between themselves rather than the 24 that used to hold the mark
@@ -224,11 +313,12 @@ a{ color: inherit; }
      is also what pins the tagline to the foot. */
   margin: auto 0 0;
   padding: 0;
-  /* The items are spaced by their own leading now — 1.5, with no gap on
-     top of it — so the column's rhythm is one number rather than a
-     line-height and a gap arguing with each other. */
+  /* The items are spaced by their own leading now — the wide dek's own
+     1.2, with no gap on top of it — so the column's rhythm is one
+     number rather than a line-height and a gap arguing with each
+     other, and the list stacks as tight as the dek's lines do. */
   display: flex; flex-direction: column; gap: 0;
-  line-height: 1.5;
+  line-height: 1.2;
   /* The items sit a step under the masthead, which is sized to the
      measure and untouched here. The links themselves take the chip cut —
      the same typewriter face, size and weight the band boxes, header
@@ -322,7 +412,9 @@ a{ color: inherit; }
    the foot of the rail ran to a different rhythm than its middle. The
    rule itself is held at 0% width here as everywhere, so nothing is
    given up by dropping the space it would have needed. */
-.nav-social a{ display: block; width: fit-content; margin: 0 auto; padding-bottom: 0; }
+/* margin 0, not auto — the blockified marks range LEFT with the rail's
+   masthead/tagline/socials axis now (auto centred them). */
+.nav-social a{ display: block; width: fit-content; margin: 0; padding-bottom: 0; }
 /* The masthead: the name, and the head of the column. */
 .nav-wordmark{
   /* A block inside the home link, so the whole name is the click target.
@@ -335,8 +427,8 @@ a{ color: inherit; }
      100px: THE 200, NEW 233.3, CRITIC 340.5; sizes are 157 × 100 / w,
      set per line below. Arial's metrics run a hair narrower; each line
      lands within a pixel there. */
-  font-family: var(--display); font-weight: 700;
-  letter-spacing: 0; text-transform: uppercase;
+  font-family: var(--title-face); font-weight: 700;
+  letter-spacing: 0; text-transform: none;
   line-height: 1;
   /* White at rest, like every other link in the rail; it blues WITH the
      mark on hover (see THE MASTHEAD). */
@@ -346,12 +438,14 @@ a{ color: inherit; }
    line lands within a fraction of a pixel of the column and must never
    fold on that fraction. */
 .nav-wordmark-line{ display: block; white-space: nowrap; }
-.nav-wordmark-line:nth-child(1){ font-size: 66.5px; }
+.nav-wordmark-line:nth-child(1){ font-size: 54.02px; }
 /* NEW holds the accent PERMANENTLY — the one word of the masthead in
    Klein at rest (the whole-wordmark hover still blues its siblings to
    match). */
-.nav-wordmark-line:nth-child(2){ font-size: 57.01px; color: var(--klein); }
-.nav-wordmark-line:nth-child(3){ font-size: 39.06px; }
+.nav-wordmark-line:nth-child(2){ font-size: 54.02px; color: var(--klein); }
+.nav-wordmark-line:nth-child(3){ font-size: 54.02px; }
+/* One size for the whole name — the longest line (Critic) caps the
+   set, and the shorter lines underfill the rail at the same scale. */
 /* The set's name closing the column under Subscribe, off a blank line:
    the rail's courier at the sections' size, two lines of it, on the 1.5
    leading the column keeps. The blank line is margin, not an empty
@@ -372,14 +466,14 @@ a{ color: inherit; }
      box; re-derived for the caps below (14.18px at 1.1: the baseline
      rides ≈2.55px above its box bottom, and caps leave no descender
      ink under it). */
-  margin: 0 0 -2.55px;
-  /* Display caps, stretched to the rail like the wordmark above: each
-     line at the measured size where it spans the column's 157px —
-     "THE YOUNG" 26.32px (596.4/100px), "AMERICAN MAGAZINE" 14.18px
-     (1107/100px), set per-line on .nav-tagline-line below. */
-  font-family: var(--display); font-weight: 700;
-  letter-spacing: 0; text-transform: uppercase;
-  line-height: 1.1;
+  margin: 0 0 -3.13px;
+  /* The COURIER credit register — the same cut the wide corners and
+     bylines speak: system Courier at 400, caps, Antenne's -0.02em
+     tighten. (It wore stretched Neue Haas before; the fitted per-line
+     sizes below drop to the credit 13.) */
+  font-family: var(--byline-face); font-weight: 400;
+  letter-spacing: -0.02em; text-transform: uppercase;
+  line-height: 1.4;
   /* An anchor now (it points home with the name and the mark — see THE
      MASTHEAD), so it has to be told to be the block the rail's margins
      were written for, and to drop the underline every other link here
@@ -394,9 +488,10 @@ a{ color: inherit; }
 /* nowrap: a fitted line lands within a fraction of a pixel of the
    column and must never be allowed to fold on that fraction. */
 .nav-tagline-line{ display: block; white-space: nowrap; }
-/* Each line's measured stretch — see the .nav-tagline note above. */
-.nav-tagline-line:first-child{ font-size: 22.3px; }
-.nav-tagline-line:last-child{ font-size: 12.01px; }
+/* Both lines at the credit courier's own 13 — natural width, no
+   stretch fitting (the courier register isn't a display voice). */
+.nav-tagline-line:first-child{ font-size: 13px; }
+.nav-tagline-line:last-child{ font-size: 13px; }
 
 /* The masthead takes no underline. It carried one once, per WORD — the
    name set one word to the line, a background on the <a> would have
@@ -826,7 +921,7 @@ section{ padding: 80px 0; }
      whole hover signal now that the glow is gone (see the reveal rule
      below), but it carries that on colour, not weight. The section accent
      drives the title and the band corners; the frame itself does not. */
-  border: 1px solid var(--line);
+  border: none;
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease;
@@ -1078,19 +1173,25 @@ section{ padding: 80px 0; }
      letter-spacing, and 4% of a line's width is a clipped edge. */
   letter-spacing: 0;
   text-align: center;
-  /* The title's own 700 — the dek is a second deck of the headline, not
-     a caption (it ran the excerpt's 500 before). */
-  font-weight: 700;
-  /* The dek closes the stack, under the excerpt: 36 of ink off the
-     excerpt's last baseline (its 4.75 ride above the box bottom + the
-     box's 1px seat slack) to the dek's cap — minus the dek's own
-     0.219em cap offset (em: fitFillDek writes the fitted size onto the
-     element). */
-  margin-top: calc(43px - 0.219em);
-  /* 24 of ink from the dek's last baseline to the panel's bottom edge:
-     the panel's 19.25 bottom padding pays most of it, this the rest,
-     minus the dek's own 0.167em baseline drop. */
-  margin-bottom: calc(4.75px - 0.167em);
+  /* Courier New, matching the byline — dek and credit line share the
+     typewriter cut. Plain 14px now, NOT stretch-fitted: it runs wall to
+     wall as ordinary wrapping text (the fitFillDek call is retired). */
+  /* Italic Garamond — the dek is the headline's whispered second deck,
+     in the body's own face slanted. */
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--courier-size);
+  line-height: 1.2;
+  text-transform: none;
+  /* 24 of ink from the body band's bottom edge to the dek's cap. Fixed
+     size, so plain px: 24 minus courier-new's 3.64 cap drop at 14/1.2.
+     (Dead where the in-band rule below overrides the margins.) */
+  margin-top: 20.36px;
+  /* Closes the panel; paired with the panel's bottom padding for the
+     foot (measured/tuned). 14px courier-new rides 2.5 above its box
+     bottom. */
+  margin-bottom: 4.25px;
 }
 /* The dek fused with its title as an eyebrow under it: no rule between
    them, a tight gap, and quiet styling (small, gray, roman) so the pair
@@ -1110,8 +1211,10 @@ section{ padding: 80px 0; }
   font-style: normal;
   font-weight: 500;
   font-size: var(--panel-text);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  /* Sentence case now — rendered as authored; the 0.04em caps tracking
+     went with the uppercase. */
+  letter-spacing: 0;
+  text-transform: none;
   line-height: 1.5;
   color: var(--white);
   margin: 0;
@@ -1131,11 +1234,11 @@ section{ padding: 80px 0; }
             see LINE_MAX_PER_PX in duo-panel-fit.js)
        18   ← title last baseline to the byline's caps, PINNED
               (the byline hangs off its title; the strip runs 18px
-              Helvetica 700 now, bigger than the chips' 13.76)
+              Archivo Black now, bigger than the chips' 13.76)
      byline strip (author · likes · date, closed by its 1px rule)
        48+  ← strip baseline to the excerpt's cap — the excerpt FLOATS:
               this gap and the one below it breathe equally
-     EXCERPT (Berlin, the chips' face and weight at the panel 13px)
+     EXCERPT (Garamond Premier Pro 700 at the panel 15px)
        48+  ← excerpt last baseline to the dek's cap (equal to the gap
               above by construction)
      DEK (closes the stack — stretch-fitted at the title's 700, floored
@@ -1162,14 +1265,21 @@ section{ padding: 80px 0; }
    title/byline/dek block in the ground.
 
    The measured offsets, from canvas font metrics for this stack:
-     title/dek (stretched, lh 1.1): cap top 0.219em below box top; last
-                      baseline 0.167em above box bottom (em of the
-                      fitted size the fitter writes onto the element)
-     chip strip (Berlin at 13.76px, lh 1): cap 5.75 below its text box
-                      top; boxes pad 10.35 over / 9.65 under; 8px
-                      below-baseline zone to the strip's foot
-     excerpt (Berlin at 13px, lh 1.5): cap 5.43 below its line box top;
-                      baseline 4.75 above its line box bottom
+     title (Neue Haas Grotesk Display 700, stretched, lh 1.1): cap top
+                      0.175em below box top; last baseline 0.21em
+                      above box bottom
+     dek (Archivo Black, stretched, lh 1.1): cap top 0.197em below box
+                      top; last baseline 0.215em above box bottom (em
+                      of the fitted size the fitter writes onto the
+                      element)
+     byline strip (Archivo Black at 18px, lh 1): cap 2.62 below its
+                      text box top; boxes pad 10.35 over / 9.65 under;
+                      12.65px below-baseline zone (3.0 ride + 9.65 pad)
+                      to the strip's foot — rendered values (font boxes
+                      round to whole px at text sizes)
+     excerpt (Garamond Premier Pro 700 at 15px, lh 1.5): cap 6.26
+                      below its line box top; baseline 6.75 above its
+                      line box bottom
    Each margin below is the wanted ink gap minus whichever of those
    applies — in em where the type's size can change, in px where it is
    pinned. */
@@ -1197,15 +1307,16 @@ section{ padding: 80px 0; }
 .card--feature .duo-panel .card-meta--line,
 .ticker-item .duo-panel .card-meta--line,
 .contra-lead .card-meta--line{
-  /* The title's own cut — Helvetica at 700, upright — so the strip
-     reads as the headline's own credit line. (It spoke Berlin with the
-     chips, then a synthetic italic of it; both retired.) */
-  font-family: var(--body);
-  font-weight: 700;
+  /* Courier Std, upright — the byline steps out of the display's
+     grotesk into a typewriter credit line. (It spoke Neue Haas, and
+     Archivo, Helvetica and Berlin before that; all retired.) */
+  font-family: var(--byline-face);
+  font-weight: 400;
   font-style: normal;
   /* Up from the chips' 13.76 — the credit line carries more weight
      under the title now. (The band chips elsewhere keep --chip-size.) */
-  font-size: 18px;
+  font-size: var(--courier-size);
+  /* Sentence case — the credit line reads as authored. */
   text-transform: none;
   letter-spacing: var(--chip-track);
   line-height: 1;
@@ -1614,6 +1725,12 @@ a.likes:hover::after,
 }
 .card--feature .card-title,
 .card--duo .card-title{
+  /* Neue Haas Grotesk Display, off the Adobe kit — the headline face
+     (the stretch fitter measures whatever face is computed, so the
+     swap is this one declaration; the ink-offset factors in the
+     margin calcs move with it). Deks and bylines keep Archivo. */
+  font-family: var(--title-face);
+  font-weight: 700;
   /* One size for the hero panel and the essay halves alike — the hero's
      centered square is essay-panel territory now, no hero-title-fit.js.
      overflow-wrap:normal (overriding the base .card-title's break-word)
@@ -1690,12 +1807,9 @@ a.likes:hover::after,
    contra travelling in an archive row or a split cell reads the same.
    The extra .card qualifier is what beats .card--quad-open above, which
    re-shows the block for the contra page's wider three-across squares. */
-/* Contra prints NO body: the title and its dek alone (the dek closed above
-   by its own top divider, with nothing below it — the quote rule and the
-   excerpt are dropped). The work is billed in the dek and the footer chip. */
-.card .duo-half--contra .duo-panel .card-preview-block,
-.card .duo-half--contra .duo-panel .duo-quote-divider,
-.card .duo-half--contra .duo-panel .preview-tagline{ display: none; }
+/* (Contra used to print NO body — the cols/divider/tagline hide that
+   sat here is retired: contra runs the full upright anatomy now, body
+   band included.) */
 .card--feature .card-meta,
 .card--duo .card-meta{ margin-top: 16px; }
 /* Subheading matches the subheading size used in the other card grids.
@@ -1747,20 +1861,23 @@ a.likes:hover::after,
 .card--feature .card-preview,
 .card--duo .card-preview,
 .arch-ledger-card .card-preview{
-  /* The chip face now — Berlin, the byline strip's own cut — white, at
-     the panels' 13px (the About page's old 14.9px was tried and walked
-     back; the dek pairing keeps the smaller cut — and the About page
-     borrows the SIZE back, see .about-panel .card-preview). The actual
-     line count that fits is computed live by duo-panel-fit.js off the
-     rendered box height, so this only sets how big the text reads, not
-     how many lines show. (The excerpt spoke Helvetica at 500 before.) */
-  font-family: var(--chip);
-  font-size: var(--panel-text); color: var(--white); line-height: 1.5; margin: 0;
-  /* The byline strip's weight exactly — body and chips one voice. */
-  font-weight: var(--chip-weight);
-  /* Set flush both edges, newspaper-column style — the ragged right
-     read loose against the stretch-fitted display around it. */
-  text-align: justify;
+  /* Garamond Premier Pro, off the Adobe kit — white, at the panels'
+     13px (the About page's old 14.9px was tried and walked back; the
+     dek pairing keeps the smaller cut — and the About page borrows
+     the SIZE back, see .about-panel .card-preview). The actual line
+     count that fits is computed live by duo-panel-fit.js off the
+     rendered box height, so this only sets how big the text reads,
+     not how many lines show. (Playfair 500 before this, Quattrocento
+     bold before that.) */
+  font-family: var(--excerpt);
+  font-size: var(--excerpt-size); color: var(--white); line-height: 1.2; margin: 0;
+  /* Regular; its real italic covers the excerpts' <em>s. On the black
+     band the roman holds its own — no need for the bold's extra ink. */
+  font-weight: 400;
+  /* Ranged left — the typewriter's own setting; justification pulled
+     Courier's fixed-width words apart into rivers (flush-both-edges
+     was the Berlin/Helvetica excerpts' cut). */
+  text-align: left;
   display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
   line-clamp: 7; -webkit-line-clamp: 7;
 }
@@ -1776,8 +1893,86 @@ a.likes:hover::after,
 .card--feature .card-preview + .card-preview,
 .card--duo .card-preview + .card-preview,
 .arch-ledger-card .card-preview + .card-preview{
-  margin-top: 1.5em;
+  margin-top: 1.2em;
   line-clamp: 10; -webkit-line-clamp: 10;
+}
+/* ---------- THE BODY BAND ----------
+   The excerpt reads white-on-black — a black band spanning the whole
+   card width, its top edge 24px below the byline and its bottom edge
+   24px above the dek (block margin-top and the dek's margin-top set
+   those two gaps; the fitter's slack pass is off so nothing perturbs
+   them). Full-bleed to the panel's side border on the stacked cells;
+   the wide cell's body column bleeds to the panel's right edge and its
+   own left. The body text carries 24px of padding inside the band
+   too, so the ink insets 24 from the black edges. --white is #000
+   inside the card, so the body colour is the literal cream here. */
+.card .duo-half .duo-panel .card-preview{ color: #F7F6F1; }
+/* The stacked cells — contra included — run the extrawide anatomy
+   TURNED UPRIGHT: the coloured ground on top (title, dek, corner
+   credits), the charcoal band below — body text only, full-bleed to
+   the panel's left, right and BOTTOM edges (margin-top:auto pins it to
+   the foot of the panel's flex column; the fitter decides its
+   height). */
+.card .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{
+  background: var(--paper);
+  margin: auto -24px -24px;
+  padding: 24px;
+}
+.card .duo-half--wide .duo-panel .card-preview-block{
+  background: var(--paper);
+  /* The FULL-HEIGHT charcoal column: flush with the panel's top edge
+     (the -16 swallows the panel's own top padding), bled 6 into the
+     middle gutter so the band's left inner padding can match the
+     right's 24, and bled -24 over the panel's bottom padding so the
+     column runs edge to edge — the body text sits inside its 24px
+     inset on all four sides. flex:1 stretches it down the column even
+     when the text ends early. */
+  margin: -16px -24px -24px -6px;
+  padding: 24px;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* The 900px no-JS backstop (max-height on every duo preview block)
+     clipped the essays hero's ~1050px column short of the floor — the
+     wide band is bounded by its flex column, not by content, so the
+     backstop has nothing to protect here. */
+  max-height: none;
+}
+/* The quote rule has no seat against the flush band — the band's own
+   top edge is the opening, on the wides and the stacked cells alike. */
+.card .duo-half .duo-panel .duo-quote-divider{ display: none; }
+/* The stacked (non-wide) panel-top becomes the wide's flex column
+   turned upright: title + dek centre in the coloured ground (the two
+   auto margins — title's top, band's top — split the free height),
+   the band pins to the foot. Replaces the grid for these cells; contra
+   keeps the grid and its own centring. */
+.card .duo-half:not(.duo-half--wide) .duo-panel-top{
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Structural clearance for the author corner: even a fit with zero
+     free height starts the headline below the two credit lines (24 +
+     two 13px lines + air, less the panel's own 16 above this box) —
+     the centring can never lay the title over the corner. */
+  padding-top: 40px;
+}
+.card .duo-half:not(.duo-half--wide) .duo-panel .duo-panel-top .card-title{
+  /* Both springs: the title centres ALONE in the ground (the dek is
+     pinned at the foot now); the fitter's centring pass fine-tunes
+     the top side against the corner blocks. */
+  margin-top: auto;
+  margin-bottom: auto;
+}
+/* ---------- DEK IN THE BAND ----------
+   The dek is the band's last line now (see build.js): inside the dark
+   ground under the body, spanning the full band width, LEFT-aligned,
+   24 of ink down from the body's last line; the band's 24 bottom padding
+   is the 24 under it. Overrides the old external (below-band) dek margins. */
+.card .duo-half .duo-panel .card-preview-block > .card-dek{
+  color: #F7F6F1;
+  text-align: right;
+  margin: 16.56px 0 0;
+  padding: 0;
 }
 /* (The excerpt once carried a 0.22px same-colour text-stroke on top of
    Medium for extra weight; retired — Medium alone is the wanted weight.) */
@@ -1791,10 +1986,10 @@ a.likes:hover::after,
    poorly across columns, and the fitter caps the whole block at a
    line-multiple max-height instead so the columns cut on a clean line
    boundary (see the multi-column branch in duo-panel-fit.js). */
-.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block,
-.card--feature .duo-panel .card-preview-block,
-.card--archive .archive-wide .duo-panel .card-preview-block,
-.arch-ledger-card .card-preview-block{
+.card--duo:not(.card--trio):not(.card--trio-flat):not(.card--split):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block .card-preview-cols,
+.card--feature .duo-panel .card-preview-block .card-preview-cols,
+.card--archive .archive-wide .duo-panel .card-preview-block .card-preview-cols,
+.arch-ledger-card .card-preview-block .card-preview-cols{
   column-count: 2;
   column-gap: 24px;
 }
@@ -1908,7 +2103,7 @@ a.likes:hover::after,
    and in caps, like the deks. The fitter sizes off the rendered box,
    so the wider capital setting just resolves to a smaller fitted size
    on long titles. */
-.duo-panel .card-title{ text-align: center; text-transform: uppercase; }
+.duo-panel .card-title{ text-align: center; text-transform: none; }
 /* The stretch-fitted title's lines (see fitFillTitle in
    duo-panel-fit.js): one block per line, each carrying its own
    measured font-size inline so it spans the column flush, the
@@ -1924,7 +2119,7 @@ a.likes:hover::after,
    to beat it on specificity, not just order. `auto` for the same reason
    as the wide cells above: count 1 is still a multicol container, and
    capped multicols hide their overflow in sideways phantom columns. */
-.card--split .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block{
+.card--split .duo-half:not(.duo-half--wide) .duo-panel .card-preview-block .card-preview-cols{
   column-count: auto;
 }
 /* ---------- THE STACK ----------
@@ -1952,7 +2147,7 @@ a.likes:hover::after,
   grid-column: 1 / -1;
 }
 /* The title opens the panel: 24 of ink from the panel's top edge to
-   its cap tops. Helvetica's line box hangs 0.219em of dead air above
+   its cap tops. Neue Haas's line box hangs 0.175em of dead air above
    the caps (half-leading plus the ascender's gap), so a flat margin
    printed a gap half again as large, and one that changed with the
    title's size — subtracting the offset in em holds the gap at every
@@ -1960,7 +2155,7 @@ a.likes:hover::after,
    border (both measured live).
    See PANEL INK RHYTHM for the whole stack. */
 .card .duo-half .duo-panel .card-title{
-  margin-top: calc(7px - 0.219em);
+  margin-top: calc(7px - 0.175em);
 }
 /* The quote rule has no seat in the stacked stack any more — the dek
    answers the byline strip directly and the band's own rule opens the
@@ -1978,11 +2173,12 @@ a.likes:hover::after,
 .duo-panel .duo-quote-divider + .card-preview-block{ margin-top: 17px; }
 /* Every non-wide cell runs title → byline strip → dek → footer band →
    excerpt at 36 of ink a step (24 opens the panel, 24 closes it). The
-   title's bottom step: 36 minus its own 0.167em baseline drop, the
-   strip's 10.35 box padding and the chip cut's 5.75 cap offset (Berlin
-   at 13.76px) — 19.9 of box. */
+   title's bottom step: 18 of ink minus its own 0.21em baseline drop
+   (Neue Haas at lh 1.1), the strip's 10.35 box padding and the
+   Archivo strip's 2.62 cap drop at 18px (rendered value — font boxes
+   round to whole px at text sizes). */
 .card .duo-half .duo-panel .card-title{
-  margin-bottom: calc(4.5px - 0.167em);
+  margin-bottom: calc(5.41px - 0.21em);
 }
 /* Contra centres its title/byline/dek block in the ground (no body
    text below — see the contra rules above), so the 24-from-the-top
@@ -1995,7 +2191,7 @@ a.likes:hover::after,
    strip's baseline — its 8px below-baseline zone + its 1px rule come
    off, and the dek's 0.219em cap offset in em. */
 .card .duo-half--contra .duo-panel .card-dek{
-  margin-top: calc(23.36px - 0.219em);
+  margin-top: 20.31px;
 }
 /* The excerpt FLOATS between the byline strip and the closing dek —
    36 of ink base on each side, and the fitter splits the leftover
@@ -2005,8 +2201,18 @@ a.likes:hover::after,
    zone, its 1px rule and the Berlin excerpt's 5.43 cap offset. (The
    hidden quote divider is the excerpt's DOM neighbour, hence the
    selector.) */
+/* ZERO, not the old 18px step (nor a spring of its own): the title
+   carries BOTH springs now (auto top and bottom margins — it centres
+   alone in the ground), so the dek and the band simply sit at the
+   column's foot in flow — dek, its 24, then the band running to the
+   panel's bottom edge. */
 .card .duo-half .duo-panel-top .duo-quote-divider + .card-preview-block{
-  margin-top: 29.93px;
+  margin-top: 0;
+}
+/* The wides override the step above: their band runs flush to the
+   panel's top edge (see THE WIDE COLUMNS). */
+.card .duo-half--wide .duo-panel-top .duo-quote-divider + .card-preview-block{
+  margin-top: -16px;
 }
 /* The excerpt closes the panel: 24 of ink from its last baseline to
    the panel's bottom edge. 19.25 of box (the Berlin excerpt's baseline
@@ -2014,7 +2220,7 @@ a.likes:hover::after,
    the fitter floors to (duo-panel-fit.js); this padding is the no-JS
    fallback of it. */
 .card .duo-half .duo-panel{
-  padding-bottom: 19.25px;
+  padding-bottom: 24px;
 }
 /* ---------- THE WIDE COLUMNS ----------
    The wide essay cells: the TITLE keeps a column of its own on the
@@ -2043,6 +2249,8 @@ a.likes:hover::after,
   flex: 1 1 0; min-width: 0;
 }
 .card .duo-half--wide .panel-col--left{
+  /* The stacked words range LEFT in their column. */
+  text-align: left;
   padding-right: 18px; position: relative;
   /* The title is the column's only tenant, centred in its height. */
   display: flex; flex-direction: column; justify-content: center;
@@ -2061,7 +2269,7 @@ a.likes:hover::after,
      above this box, the strip's boxes pad 10.35, and the 18px
      Helvetica caps hang 2.68 into their line — the negative top pulls
      the strip up so 17 + top + 13.03 = 24. */
-  position: absolute; top: -6.5px; left: calc(50% - 6px); right: -24px;
+  position: absolute; top: -7.05px; left: calc(50% - 6px); right: -24px;
   margin: 0;
 }
 .card .duo-half--wide .duo-panel .card-byline-divider{ display: none; }
@@ -2069,21 +2277,216 @@ a.likes:hover::after,
   /* Clears the overlaid strip and steps the excerpt ONE LINE of body
      text off the chips' baseline, the stacked cells' own gap — less
      the 5.07 the block's own margin-top rule (above) already carries. */
-  padding-left: 18px; padding-top: 33.32px;
+  padding-left: 18px; padding-top: 0;
+}
+/* ---------- BYLINE IN THE BAND ----------
+   The byline is the band's first line now (see build.js): it sits inside
+   the dark ground above the body, spanning the full band width (over the
+   multicol), 24 of ink down to the first body line. The old header seat
+   (-16/-24 bleed) and the wide cells' absolute pin are both undone. */
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line{
+  position: static; top: auto; left: auto; right: auto;
+  margin: 0 0 16.2px;
+  /* Condensed and ranged left: author, a dot, the date — one tight run
+     at the band's left edge, not the header's justified author|date. */
+  justify-content: flex-start;
+  gap: 0;
+}
+/* Cream on the dark band, like the body — the byline's var(--white) is
+   #000 inside the white card, invisible on the band's ground. */
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line,
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line a{
+  color: #F7F6F1;
+}
+/* The AUTHOR in caps; the date keeps sentence case beside it. */
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line .meta-author{
+  text-transform: uppercase;
+}
+/* Strip the header's boxes: no side padding, no vertical rules — a plain
+   condensed line. */
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line :is(.meta-author, .meta-date, .meta-kicker){
+  padding: 0;
+  margin: 0;   /* kill the header's auto push-right so they sit together */
+}
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line :is(.meta-author, .meta-date, .meta-kicker)::before,
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line :is(.meta-author, .meta-date, .meta-kicker)::after{
+  content: none;
+}
+/* The date ranges RIGHT, the author left — the byline spreads across
+   the band's full measure (the dot separator is retired with it). */
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line .meta-date{
+  margin-left: auto;
 }
 /* Half the card is no measure for sub-columns — the wide excerpt keeps
    one justified measure. (`auto`, NOT `1`: column-count:1 still makes
    a multicol container, whose height-capped overflow vanishes sideways
    into phantom columns and lies to every rect the fitter reads.) */
-.card .duo-half--wide .duo-panel .card-preview-block{
+.card .duo-half--wide .duo-panel .card-preview-block .card-preview-cols{
   column-count: auto;
 }
+/* The wide column's foot ran a pixel deep against the stacked cells'
+   exact 24 (measured live; some 1px of structure the shared margin
+   can't see) — the dek's bottom margin gives that pixel back here. */
+.card .duo-half--wide .duo-panel .card-dek{
+  margin-bottom: 3.25px;
+}
 /* The column's centring places the title; the stacked margins (which
-   now apply to every half) would only bias it. */
-.card .duo-half--wide .panel-col--left .card-title{
+   now apply to every half) would only bias it. Contra excepted — its
+   title keeps the centred contra arrangement. (The stacked cells'
+   own margin-top:auto — see the upright-column rule — outranks the
+   zero here by specificity.) */
+.card .duo-half .duo-panel .panel-col--left .card-title{
   margin-top: 0;
   margin-bottom: 0;
+  /* Ranged left — the stacked words hang off the ground's left edge
+     (the shared title rule centres; these cells opt out). */
+  text-align: left;
 }
+/* ---------- THE WIDE CORNERS ----------
+   The wide's credit line splits into the coloured ground's corners:
+   the AUTHOR pinned top-left, the date bottom-left, both 24 off their
+   edges at a small 13px — the ink is var(--white), which the panel
+   remaps to black, so they print black on the cover colour. (build.js
+   emits them as .wide-corner children of the panel, outside the band.) */
+.card .duo-half .duo-panel .wide-corner{
+  position: absolute;
+  left: 24px;
+  margin: 0;
+  padding: 0;
+  /* .card-meta's flex row would seat the stacked lines side by side —
+     the corners are plain blocks (the meta corner re-flexes itself,
+     column-wise, below). */
+  display: block;
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: var(--chip-track);
+  text-transform: none;
+  z-index: 4;
+}
+.card .duo-half .duo-panel .wide-corner,
+.card .duo-half .duo-panel .wide-corner a{
+  color: var(--white);
+  text-decoration: none;
+}
+.card .duo-half .duo-panel .wide-corner--author{
+  top: 24px;
+  text-transform: uppercase;
+}
+/* TOP-RIGHT: the META block — the likes (heart + count) with the
+   Share copy-link stacked under it, facing the author block across
+   the ground's head. Lines range right against the corner. */
+.card .duo-half .duo-panel .wide-corner--meta{
+  top: 24px;
+  right: 24px;
+  left: auto;
+  text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: flex-end;
+  /* Tight stack — the corners' lines close up. */
+  gap: 4px;
+}
+/* On the wide, the coloured box ends at the charcoal column — the meta
+   block's right edge lands 24 from the band (the same seat the dek
+   keeps), not at the panel's edge behind it. */
+.card .duo-half--wide .duo-panel .wide-corner--meta{
+  right: calc(50% + 12px);
+}
+/* The credit courier is SYSTEM Courier at its plain 400 (see
+   --byline-face) — Apple's dark cut carries the wanted ink honestly,
+   so every synthetic boost (0.3px stroke, 0.5px shadow, Std's 700)
+   that cycled through here is retired. The one dressing kept is
+   Antenne's own: their --tracking-def, a -0.02em tighten on the
+   credit voices (wide corners, band bylines, contra lead). */
+.card .duo-half .duo-panel .wide-corner,
+.card .duo-half .duo-panel .card-preview-block > .card-meta--line,
+.contra-lead .card-meta--line{
+  letter-spacing: -0.02em;
+}
+/* Strip any inherited box dressing off the corner spans. */
+.card .duo-half .duo-panel .wide-corner :is(.meta-author, .meta-date){
+  padding: 0; margin: 0;
+}
+.card .duo-half .duo-panel .wide-corner :is(.meta-author, .meta-date)::before,
+.card .duo-half .duo-panel .wide-corner :is(.meta-author, .meta-date)::after{
+  content: none;
+}
+/* The date stacks UNDER the author — same block, its own line. */
+.card .duo-half .duo-panel .wide-corner--author :is(.meta-author, .meta-date){
+  display: block;
+}
+.card .duo-half .duo-panel .wide-corner--author .meta-date{
+  margin-top: 4px;
+}
+.card .duo-half .duo-panel .wide-corner-likes{
+  margin: 0; padding: 0;
+}
+/* The heart prints the panel's ink (black on the cover colour) — and
+   FOLLOWS the count (flex order flips the markup's heart-first
+   arrangement), a step smaller than the band hearts. */
+.card .duo-half .duo-panel .wide-corner--meta .likes-heart{
+  fill: var(--white); height: 10px; width: auto;
+  order: 1;
+}
+/* The chain (and its copied-check) matches the heart's smaller cut. */
+.card .duo-half .duo-panel .wide-corner-share .copylink-icon,
+.card .duo-half .duo-panel .wide-corner-share .copylink-check{
+  height: 10px;
+}
+/* The Share button, stripped to a bare credit line: no chrome, the
+   corner's own courier, chain icon + word at the panel ink. */
+.card .duo-half .duo-panel .wide-corner-share{
+  background: none; border: none; padding: 0; margin: 0;
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: var(--white); cursor: pointer;
+  display: inline-flex; align-items: center;
+}
+/* The word leads, the chain (or its copied-check) follows — flex order
+   flips the markup's icon-first arrangement, and the label's stock
+   left margin becomes the gap on its right. */
+.card .duo-half .duo-panel .wide-corner-share .copylink-label{
+  order: -1; margin-left: 0; margin-right: 7px;
+}
+/* ---------- THE GROUND DEK ----------
+   The dek sits on the coloured ground, RIGHT-aligned under the title's
+   poster stack — the headline's whispered second deck in the body face
+   slanted, black on the cover colour. Every cell but contra (whose dek
+   stays in its metaonly band). Outranks the stacked dek rule on order. */
+.card .duo-half .duo-panel .panel-col--left .card-dek{
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.2;
+  text-align: right;
+  color: var(--white);
+  margin: 16px 0 0;
+  padding: 0;
+}
+/* The wide's dek reaches 6 into the column's 18px half-gutter — its
+   right edge lands 24 from the charcoal column (which bleeds 12 in
+   from the other side) — and PINS to the column's foot: margin-bottom
+   0 seats its box on the content edge, 24 (the panel's own bottom
+   padding) above the panel's corner. The title takes both springs and
+   centres alone above it. */
+.card .duo-half--wide .duo-panel .panel-col--left .card-dek{
+  margin-right: -6px;
+  margin-bottom: 0;
+}
+.card .duo-half--wide .duo-panel .panel-col--left .card-title{
+  margin-top: auto;
+  margin-bottom: auto;
+}
+/* The stacked dek keeps 24 of air at its foot — the ground's own
+   closing measure against the band (and, on the open hero cards where
+   the ground hugs its content, against the strip's bottom edge). */
+.card .duo-half:not(.duo-half--wide) .duo-panel-top .card-dek{
+  margin-bottom: 24px;
+}
+/* (Contra's band is back, so its dek keeps the stacked 24 at the foot
+   like everyone else — the mb:auto centring rule that sat here is
+   retired.) */
 /* When the excerpt overflows the last column, the fitter truncates the
    text itself at the last fully-visible word and joins the ellipsis onto
    it inline (see truncateToWord in duo-panel-fit.js / ledger.js) — no
@@ -2168,6 +2571,9 @@ a.likes:hover::after,
   .duo-half--wide .panel-col{ display: contents; }
   .duo-half--wide .duo-panel .card-meta--line{ position: static; }
   .duo-half--wide .panel-col--right{ padding: 0; }
+  /* The corner credits re-enter the flow — nothing to pin to when the
+     panel flows under the cover. */
+  .duo-half .duo-panel .wide-corner{ position: static; margin: 0 0 6px; }
   /* The hero panel's portrait geometry resets with it — aspect-ratio on
      the now-static box would fix its height off its width. */
   .card--feature .duo-panel{ aspect-ratio: auto; }
@@ -2177,7 +2583,7 @@ a.likes:hover::after,
      bleed margins reset with it. Essay excerpts drop back to one column
      with the static clamp. */
   .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview-block,
-  .card--feature .duo-panel .card-preview-block{ column-count: auto; }
+  .card--feature .duo-panel .card-preview-block .card-preview-cols{ column-count: auto; }
   .card--duo:not(.card--trio):not(.card--quad):not(.card--archive) .duo-panel .card-preview,
   .card--feature .duo-panel .card-preview{
     display: -webkit-box; overflow: hidden;
@@ -3225,8 +3631,8 @@ body.about-body main{ flex: 1 0 auto; }
 /* Body in the same centred courier — one voice from the head's column
    to the panel's last line. */
 .about-panel .card-preview{
-  font-family: var(--chip); font-weight: var(--chip-weight);
-  font-size: var(--panel-text); color: var(--white); line-height: 1.5;
+  font-family: var(--excerpt); font-weight: 400;
+  font-size: var(--excerpt-size); color: var(--white); line-height: 1.5;
   margin: 0; display: block; text-align: center;
 }
 /* The letter speaks in the page's courier like everything else (it used
@@ -4036,7 +4442,7 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   .arch-ledger-card .card-dek,
   .arch-ledger-card .card-preview-block,
   .arch-ledger-card-text .panel-band--bottom .pc{ opacity: 1; transition: none; }
-  .arch-ledger-card .card-preview-block{ column-count: auto; }
+  .arch-ledger-card .card-preview-block .card-preview-cols{ column-count: auto; }
   .arch-ledger-card-image a{ position: static; }
   .arch-ledger-card-image img,
   .arch-ledger-card-image .card-image--blank{ height: auto; aspect-ratio: 3/2; }
