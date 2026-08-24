@@ -805,25 +805,50 @@
       while (pCol && getComputedStyle(pCol).display === 'contents') pCol = pCol.parentElement;
       if (pCol) {
         var pColTop = pCol.getBoundingClientRect().top;
-        // HEAD: the lower corner block's foot + air, measured from the
-        // column's top.
-        var headRes = 0;
+        // The title ANCHORS the ground's top-left, sharing the top band
+        // with the author corner at the right — so the corner reserves
+        // WIDTH from the measure, not height from the budget: the lines
+        // stop 24 short of the corner's left edge.
+        var cornW = 0;
         [].forEach.call(panel.querySelectorAll('.wide-corner'), function(wc){
           if (getComputedStyle(wc).position !== 'absolute') return;
-          var hb = wc.getBoundingClientRect().bottom - pColTop + 16;
-          if (hb > headRes) headRes = hb;
+          var ww = wc.getBoundingClientRect().width;
+          if (ww > cornW) cornW = ww;
         });
+        if (cornW) availW -= cornW + 24;
         // FOOT: the wide closes on the panel's 24 padding (GAP); the
         // stacked cells on their band's reserved share. Then the dek
-        // block — box, 16 top margin, 24 seat — and 16 of air over it.
+        // block — box, margins, seat — and 16 of air over it.
         var footRes = wideTitle ? GAP : Math.max(44, panel.clientHeight * BAND_SHARE);
         var dekRes = panel.querySelector('.panel-col--left .card-dek');
         if (dekRes && getComputedStyle(dekRes).display !== 'none') {
           footRes += dekRes.getBoundingClientRect().height + 16 + 24 + 16;
         }
-        maxH = floorY - pColTop - headRes - footRes;
+        // The IN-FLOW courier blocks — the mega's kicker above the
+        // title, the credit below it — each take their box plus a 16
+        // step out of the title's ground. Left column only: the mega's
+        // credit rides the body column and costs the title nothing.
+        var flowRes = 0;
+        var flowMega = !!panel.closest('.duo-half--mega');
+        [].forEach.call(panel.querySelectorAll('.panel-col--left :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under)'), function(fl){
+          if (getComputedStyle(fl).display === 'none') return;
+          // The mega's rows carry their true cost in their MARGINS —
+          // the hoisted kicker's negative top margin cancels its
+          // whole box (it rides above the cell and takes nothing
+          // from the column), so the flat box+16 count starved the
+          // title budget and printed the poster visibly small.
+          if (flowMega) {
+            var fcs = getComputedStyle(fl);
+            flowRes += Math.max(0, fl.getBoundingClientRect().height
+              + (parseFloat(fcs.marginTop) || 0) + (parseFloat(fcs.marginBottom) || 0));
+            return;
+          }
+          flowRes += fl.getBoundingClientRect().height + 16;
+        });
+        maxH = floorY - pColTop - footRes - flowRes;
       }
     }
+    var posterFit = poster;
     stretchFill(title, availW, maxH, {
       maxLines: stackTitle ? 6 : 2,
       preferMostLines: stackTitle,
@@ -841,6 +866,59 @@
       maxSize: poster && !wideTitle ? 84 : 0,
       lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
     });
+    // The CAP INK lands on the ground's 24 line, not the line box: the
+    // title face's caps sit well below their box top (a fraction of
+    // the fitted size — Placard's ~0.27 at lh 1.1), so the box is
+    // pulled up by exactly that measured offset.
+    if (posterFit) {
+      var capSize = parseFloat(title.style.fontSize) || 0;
+      if (capSize) {
+        var capCs = getComputedStyle(title);
+        measureCtx.font = capCs.fontWeight + ' ' + capSize + 'px ' + capCs.fontFamily;
+        var capM = measureCtx.measureText('H');
+        var capBox = capSize * 1.1;
+        var capOff = (capBox - (capM.fontBoundingBoxAscent + capM.fontBoundingBoxDescent)) / 2
+          + capM.fontBoundingBoxAscent - capM.actualBoundingBoxAscent;
+        if (isFinite(capOff) && capOff > 0) {
+          title.style.marginTop = (-capOff).toFixed(2) + 'px';
+        }
+      }
+    }
+    // The mega's stack is UNIFORM: the longest line's fill sets every
+    // line (the per-line wood-type fill was tried and retired) — but
+    // sized by PAINTED ink, not advance width: the fill above leaves
+    // the last glyph's right bearing as dead air short of the 24
+    // line, so the uniform size rescales by painted-vs-available.
+    if (posterFit && title.closest('.duo-half--mega')) {
+      var inkCs = getComputedStyle(title);
+      var inkCaps = inkCs.textTransform === 'uppercase';
+      var inkLns = title.querySelectorAll('.title-line');
+      var inkBest = 0;
+      [].forEach.call(inkLns, function(ln){
+        var s0 = parseFloat(ln.style.fontSize || inkCs.fontSize) || 0;
+        if (!s0) return;
+        var t = inkCaps ? ln.textContent.toUpperCase() : ln.textContent;
+        measureCtx.font = inkCs.fontWeight + ' ' + s0 + 'px ' + inkCs.fontFamily;
+        var mm = measureCtx.measureText(t);
+        var painted = (mm.actualBoundingBoxLeft || 0) + (mm.actualBoundingBoxRight || 0);
+        if (painted > inkBest) inkBest = painted;
+      });
+      if (inkBest > 0 && inkLns.length) {
+        var inkS0 = parseFloat(inkLns[0].style.fontSize || inkCs.fontSize) || 0;
+        var inkF = availW / inkBest;
+        // The width fill must not overrun the HEIGHT budget: the
+        // short panes bind on height, and the dek below prints whole
+        // by contract (see the walk's mega exemption) — the title is
+        // what yields, so the rescale caps at the budget the
+        // stretchFill above already honoured.
+        var inkTH = title.getBoundingClientRect().height;
+        if (inkTH > 0 && isFinite(maxH) && maxH > 0 && inkTH * inkF > maxH) {
+          inkF = maxH / inkTH;
+        }
+        var inkS = inkS0 * inkF;
+        [].forEach.call(inkLns, function(ln){ ln.style.fontSize = inkS.toFixed(2) + 'px'; });
+      }
+    }
   }
 
   // The stacked dek follows the title's logic (stretch-filled lines —
@@ -1394,6 +1472,9 @@
     // ...and into the byline's bottom margin — both restored per fit.
     var meta0 = topBox.querySelector('.card-preview-block .card-meta--line');
     if (meta0) meta0.style.marginBottom = '';
+    // The credit row's ink-midpoint seat is re-solved every fit.
+    var credReset = topBox.querySelector('.ground-credit');
+    if (credReset) credReset.style.marginTop = '';
     var paras = topBox.querySelectorAll('.card-preview');
 
     // Reset any previous fit so a refit measures the natural layout.
@@ -1552,13 +1633,33 @@
       // The in-flow band is chrome, not content: never clamped, never
       // cut — the budgets above already count its height.
       if (el.classList.contains('panel-band')) return;
+      // So are the ground's ruled courier rows — the kicker sits flush
+      // on the card's top edge and the foot row flush on its bottom
+      // (deliberately AT the walk's floor line), and the title budget
+      // already reserves all three.
+      if (el.classList.contains('ground-kicker')
+        || el.classList.contains('ground-credit')
+        || el.classList.contains('ground-under')
+        || el.classList.contains('ground-foot')) return;
       if (el === dek) {
+        // The MEGA prints its dek WHOLE, always: the poster budget
+        // reserves the dek's full height before the title is sized,
+        // so the TITLE yields room — clamping the quote to protect
+        // type that already ceded to it would be backwards.
+        if (el.closest('.duo-half--mega')) return;
         // A stretch-fitted dek sized itself to its budget already; the
         // whole-element clamp would fight the per-line spans.
         if (el.__stretched) return;
         // Clamping (or even hiding) the dek to protect the title is not a
         // cut — everything after it shifts up and keeps its shot.
-        var dekLim = groupLimit - reserve;
+        // The ink-aligned dek's box legitimately crosses the GAP line
+        // by its below-baseline hand-back (the negative bottom margin
+        // that seats the BASELINE at 24) — its descenders live in the
+        // foot padding. Fold that overshoot into the limit, or the
+        // guard reads it as overflow and clamps the dek: lines cut to
+        // "that is…" and the clamp's overflow:hidden shearing the g's.
+        var dekMb0 = parseFloat(getComputedStyle(el).marginBottom) || 0;
+        var dekLim = groupLimit - reserve - Math.min(0, dekMb0) + 1;
         // A dek that can't fit even one line just goes — .card-byline-divider
         // stays put regardless: it closes the byline header strip above the
         // TITLE now, nothing to do with the dek.
@@ -1723,6 +1824,34 @@
             // the grid's sub-line remainder, a structurally freed row —
             // is handed to the stack's gaps afterwards (see
             // distributeStackSlack at the end of fit).
+            // Except on THE MEGA PLATE, which has no title to hand it
+            // to: its body must CLOSE ON THE FOOT (the dek's line —
+            // the block's bottom pad already seats the descender), so
+            // the sub-line remainder feathers into the leading here,
+            // capped at the general slot stretch.
+            if (el.closest('.duo-half--mega')) {
+              var mgRows = (seated && seated < blockLines) ? seated : blockLines;
+              var mgCs = getComputedStyle(el);
+              var mgAvail = el.clientHeight
+                - (parseFloat(mgCs.paddingTop) || 0)
+                - (parseFloat(mgCs.paddingBottom) || 0);
+              if (mgRows > 0 && mgAvail > 0) {
+                var mgUnit = Math.min(mgAvail / mgRows, plh * MAX_SLOT_STRETCH);
+                if (mgUnit > plh) {
+                  setSlot(el, mgUnit);
+                  colsEl.style.height = (mgRows * mgUnit) + 'px';
+                  // The stretch re-flows the columns — what the cut
+                  // above seated at the natural leading spills again
+                  // at the taller slot, carrying the ellipsis off
+                  // into the clipped phantom columns. Re-cut at the
+                  // feathered grid so the tail (and its …) lands
+                  // back inside the last visible column.
+                  if (colsEl.scrollWidth > colsEl.clientWidth + 1) {
+                    truncateToWord(colsEl);
+                  }
+                }
+              }
+            }
           } else {
             // Content too short to floor every column at any height —
             // let it balance naturally and just cap what there is.
@@ -2004,52 +2133,144 @@
       }
     }
 
-    // Centre the TITLE between the COURIER HEADER and the DEK FOOTER:
-    // the region runs from the lower of the two head corner blocks
-    // (author left, meta right) down to the dek's top (or the ground's
-    // foot where a cell prints no dek), and the title's box floats at
-    // its midpoint — clamped so it never touches either neighbour.
-    // Written as an inline margin-top, which overrides the title's top
-    // auto spring; its bottom auto absorbs the remainder. Wides
-    // included: their column runs the same header/footer anatomy.
-    if (panel.closest('.duo-half') && title && getComputedStyle(title).display !== 'none') {
-      var cgWide = !!panel.closest('.duo-half--wide');
-      var cgTop = topBox.getBoundingClientRect().top;
-      // The region's FOOT: the dek's top; failing that, the band's top
-      // (stacked) or the column's closing air (wide).
-      var cgBot;
-      if (cgWide) {
-        cgBot = panel.getBoundingClientRect().bottom - GAP;
+    // (The title-centring pass is retired: the title anchors the
+    // ground's top-left now, beside the author corner, and the dek's
+    // auto top margin carries the spring below it.)
+
+    // The META corner (likes + Share) closes the coloured ground's
+    // bottom-right — 24 above wherever the band's top landed this fit
+    // on the stacked cells; the wide keeps its CSS bottom:24 (its
+    // ground runs the full column height).
+    var metaCorner = panel.querySelector('.wide-corner--meta');
+    if (metaCorner) {
+      metaCorner.style.bottom = '';
+      if (!panel.closest('.duo-half--wide') && getComputedStyle(metaCorner).position === 'absolute') {
+        var mcBlock = topBox.querySelector('.card-preview-block');
+        var pb = panel.getBoundingClientRect().bottom;
+        var mcShown = mcBlock && getComputedStyle(mcBlock).display !== 'none'
+          && mcBlock.getBoundingClientRect().height > 1;
+        var mcTop = mcShown ? mcBlock.getBoundingClientRect().top : pb;
+        // 22, not 24: the courier BASELINE rides 2 above its box bottom
+        // — ink-to-band lands at 24 (matching the CSS bottom seat).
+        metaCorner.style.bottom = Math.max(22, pb - mcTop + 22) + 'px';
+      }
+    }
+
+    // THE GROUND INK LAYOUT: between the kicker row (or the card's top
+    // edge) and the foot row, three things are solved together — the
+    // credit row's seat, the title's ink centred in the band above it,
+    // and the dek's ink centred in the band below it. The system has a
+    // closed form: with C = the credit row's top,
+    //   C = (K + F - rowH + titleInk - dekInk) / 2
+    // the air under the title's ink equals the air over the dek's, and
+    // centring both bands keeps the credit at the ink midpoint. All
+    // positions anchor off K (fixed, top) and F (fixed: the foot row is
+    // flush on the card's foot); the dek's auto spring absorbs the
+    // shuffling.
+    var credRow = topBox.querySelector('.panel-col--left .ground-credit');
+    var credDek = topBox.querySelector('.panel-col--left .card-dek');
+    var footRow = topBox.querySelector('.panel-col--left .ground-foot');
+    if (credRow && getComputedStyle(credRow).display === 'none') credRow = null;
+    if (footRow && getComputedStyle(footRow).display === 'none') footRow = null;
+    if (title && credDek
+        && getComputedStyle(title).display !== 'none'
+        && getComputedStyle(credDek).display !== 'none') {
+      var kickRow = topBox.querySelector('.ground-kicker');
+      var underRow = topBox.querySelector('.panel-col--left .ground-under');
+      var K = (underRow && getComputedStyle(underRow).display !== 'none')
+        ? underRow.getBoundingClientRect().bottom
+        : (kickRow && getComputedStyle(kickRow).display !== 'none')
+        ? kickRow.getBoundingClientRect().bottom
+        : panel.getBoundingClientRect().top;
+      // Without a foot row (the mega sheds likes/Share) the ground's
+      // own foot edge bounds the airs instead.
+      var F = footRow
+        ? footRow.getBoundingClientRect().top
+        : credDek.closest('.panel-col--left').getBoundingClientRect().bottom;
+      // Title ink: first line's cap top to last line's baseline.
+      var tLines = title.querySelectorAll('.title-line');
+      var firstLn = tLines.length ? tLines[0] : title;
+      var lastLn = tLines.length ? tLines[tLines.length - 1] : title;
+      var sT = parseFloat((firstLn.style && firstLn.style.fontSize) || getComputedStyle(title).fontSize) || 0;
+      var csT = getComputedStyle(title);
+      measureCtx.font = csT.fontWeight + ' ' + sT + 'px ' + csT.fontFamily;
+      var mT = measureCtx.measureText('H');
+      var halfT = (sT * 1.1 - (mT.fontBoundingBoxAscent + mT.fontBoundingBoxDescent)) / 2;
+      var capT = halfT + mT.fontBoundingBoxAscent - mT.actualBoundingBoxAscent;
+      var rideT = halfT + mT.fontBoundingBoxDescent;
+      var tInkTop = firstLn.getBoundingClientRect().top + capT;
+      var tInkBot = lastLn.getBoundingClientRect().bottom - rideT;
+      var tInk = tInkBot - tInkTop;
+      // Dek ink: cap top of its first line to the last line's baseline
+      // (the bottom of an 'a', not a 'y').
+      var csD = getComputedStyle(credDek);
+      measureCtx.font = csD.fontStyle + ' ' + csD.fontWeight + ' '
+        + parseFloat(csD.fontSize) + 'px ' + csD.fontFamily;
+      var mD = measureCtx.measureText('A');
+      var lhD = parseFloat(csD.lineHeight) || 24;
+      var halfD = (lhD - (mD.fontBoundingBoxAscent + mD.fontBoundingBoxDescent)) / 2;
+      var capD = halfD + mD.fontBoundingBoxAscent - mD.actualBoundingBoxAscent;
+      var rideD = halfD + mD.fontBoundingBoxDescent;
+      var dR = credDek.getBoundingClientRect();
+      var dInkTop = dR.top + capD;
+      var dInk = (dR.bottom - rideD) - dInkTop;
+      var wantTIT, wantDIT;
+      if (credRow) {
+        var rowH = credRow.getBoundingClientRect().height;
+        // The fixpoint.
+        var C = (K + F - rowH + tInk - dInk) / 2;
+        // Title: centre its ink in [K, C].
+        wantTIT = K + ((C - K) - tInk) / 2;
+        // Dek: centre its ink in [C + rowH, F].
+        wantDIT = (C + rowH) + ((F - (C + rowH)) - dInk) / 2;
       } else {
-        var cgBlock = topBox.querySelector('.card-preview-block');
-        var cgShown = cgBlock && getComputedStyle(cgBlock).display !== 'none'
-          && cgBlock.getBoundingClientRect().height > 1;
-        cgBot = cgShown ? cgBlock.getBoundingClientRect().top : panel.getBoundingClientRect().bottom;
+        // No credit row on this ground (the mega bills it over the body
+        // column instead) — the dek PINS to the column's foot: its
+        // DESCENDER bottom exactly ON the foot edge (the cover's
+        // bottom — nothing dips past the picture's line), and the
+        // TITLE's ink CENTRES in the air between the courier's
+        // BASELINE above it and the dek's cap (the row's box bottom
+        // carries its 6 pad + 4.6 ride — measuring from the box
+        // printed the top air fat).
+        var descD = measureCtx.measureText('gjpqy').actualBoundingBoxDescent || 0;
+        wantDIT = F - dInk - descD;
+        var Kink = underRow ? K - 10.6 : K;
+        wantTIT = Kink + ((wantDIT - Kink) - tInk) / 2;
       }
-      var cgDek = topBox.querySelector('.card-dek');
-      if (cgDek && getComputedStyle(cgDek).display !== 'none') {
-        cgBot = Math.min(cgBot, cgDek.getBoundingClientRect().top);
+      var deltaT = wantTIT - tInkTop;
+      var mtT = (parseFloat(getComputedStyle(title).marginTop) || 0) + deltaT;
+      if (isFinite(mtT)) title.style.marginTop = mtT.toFixed(2) + 'px';
+      if (credRow) {
+        // Credit: pinned at C — the margin bridges from the title's box
+        // bottom (re-read AFTER its margin moved it; the rect already
+        // carries the shift) to the seat.
+        var credMt = C - title.getBoundingClientRect().bottom;
+        if (isFinite(credMt)) credRow.style.marginTop = credMt.toFixed(2) + 'px';
       }
-      // The region's HEAD: the lower corner block's foot.
-      var cgHead = cgTop;
-      [].forEach.call(panel.querySelectorAll('.wide-corner'), function(wc){
-        if (getComputedStyle(wc).position !== 'absolute') return;
-        var wb = wc.getBoundingClientRect().bottom;
-        if (wb > cgHead) cgHead = wb;
-      });
-      var cgTitleTop = title.getBoundingClientRect().top;
-      var cgTitleH = title.getBoundingClientRect().height;
-      var cgWantTop = cgHead + ((cgBot - cgHead) - cgTitleH) / 2;
-      // Collision clamps: off the dek's head, off the corners' feet.
-      cgWantTop = Math.min(cgWantTop, cgBot - 16 - cgTitleH);
-      cgWantTop = Math.max(cgWantTop, cgHead + 8);
-      var cgMt = (parseFloat(getComputedStyle(title).marginTop) || 0)
-        + (cgWantTop - cgTitleTop);
-      if (isFinite(cgMt)) title.style.marginTop = Math.max(0, cgMt) + 'px';
+      // The dek anchors off the foot, so its bottom margin moves it.
+      var deltaD = wantDIT - dInkTop;
+      var mbD = (parseFloat(getComputedStyle(credDek).marginBottom) || 0) - deltaD;
+      if (isFinite(mbD)) credDek.style.marginBottom = mbD.toFixed(2) + 'px';
     }
 
     // Last: run the column rule from the panel's top border to the band's.
     if (band) fitColumnDivider(panel, topBox, band);
+
+    // THE HOVER SWAP (mega): on hover the COVER replaces the TITLE —
+    // the CSS moves the pane into the title's own box, which only the
+    // fitter knows. Published as vars on the cell AFTER every seat has
+    // settled (the ground-ink solver above is the title's last mover).
+    var swapHalf = panel.closest('.duo-half--mega');
+    if (swapHalf && title && getComputedStyle(title).display !== 'none') {
+      var swapHR = swapHalf.getBoundingClientRect();
+      var swapTR = title.getBoundingClientRect();
+      if (swapHR.width && swapTR.width) {
+        swapHalf.style.setProperty('--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px');
+        swapHalf.style.setProperty('--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px');
+        swapHalf.style.setProperty('--mega-title-w', swapTR.width.toFixed(2) + 'px');
+        swapHalf.style.setProperty('--mega-title-h', swapTR.height.toFixed(2) + 'px');
+      }
+    }
 
     // A full box lands its last line exactly GAP over the band — the
     // sub-line remainder is feathered into the leading by the slot

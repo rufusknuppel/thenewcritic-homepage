@@ -1056,11 +1056,9 @@ function renderNav(currentKey = 'home') {
   }
   const sectionKeys = ['essays', 'postscript', 'contra', 'archive'];
   const links = SITE_LINKS.filter(l => sectionKeys.includes(l.key)).map(navLink).join('\n      ')
-    // The TAGLINE rides between the two Garamond groups — two courier
-    // lines pointing home (see .nav-item--tagline in style.css). The
-    // socials it replaced are gone for now.
-    + '\n      <li class="nav-item--tagline nav-item--tagline-first"><a href="./">The Young</a></li>'
-    + '\n      <li class="nav-item--tagline"><a href="./">American Magazine</a></li>'
+    // (The courier tagline that rode between the two Garamond groups is
+    // retired from the rail — it heads the MEGA HERO's masthead row now,
+    // see renderMegaHero.)
     + '\n      ' + SITE_LINKS.filter(l => l.key === 'about').map(navLink).join('')
     // Store and Events stand in the list but go nowhere yet — plain
     // spans, no href, no hover; they take the list's cut by inheritance
@@ -1096,18 +1094,20 @@ function renderNav(currentKey = 'home') {
   // rail — the masthead stands alone.)
   // The name SPLITS across the rail: THE/NEW at the head, CRI/TIC at
   // the foot, the section list floating between them.
-  return `<nav class="site-nav">
-  <div class="nav-top">
-    <a class="wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
-      <span class="nav-wordmark"><span class="nav-wordmark-line">The</span><span class="nav-wordmark-line">New</span></span>
-    </a>
-  </div>
-  <ul class="nav-links">
-    ${links}
-  </ul>
-  <a class="wordmark wordmark--foot" href="./" aria-label="The New Critic — home">
-    <span class="nav-wordmark nav-wordmark--foot"><span class="nav-wordmark-line">Cri</span><span class="nav-wordmark-line">tic</span></span>
+  // THE TOP HEADER (experiment): the rail turned horizontal — the name
+  // on ONE line across the top, then the section list spread between
+  // two rules (see THE TOP HEADER in style.css).
+  return `<nav class="site-nav site-nav--top">
+  <a class="wordmark topbar-wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
+    <span class="topbar-name">The New Critic</span>
   </a>
+  <div class="topbar-rail">
+    <p class="topbar-tagline">The Young American Magazine</p>
+    <ul class="nav-links topbar-links">
+      ${links}
+    </ul>
+  </div>
+  <div class="rail-mark" aria-hidden="true"><span>The</span><span>New</span><span>Cri</span><span>tic</span></div>
 </nav>`;
 }
 
@@ -1344,15 +1344,41 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   const cornerDate = cornerDateText
     ? `<a class="meta-date" href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(cornerDateText)}</a>`
     : '';
-  // Top-left: author with the date stacked under it. The meta block —
-  // likes (heart + count) with the Share copy-link under it — closes
-  // the coloured ground's foot (src/copy-link.js is on every page that
-  // prints these cells; the fitter pins the block 24 above the band on
-  // the stacked cells, where the band's height varies per fit).
-  const cornerLikes = splitCredit ? metaLine(post, { include: ['likes'] }) : '';
-  const cornerShare = splitCredit ? copyLinkBtnHtml(post, 'wide-corner-share') : '';
-  const cornersHtml = splitCredit
-    ? `${(cornerAuthor || cornerDate) ? `<p class="card-meta wide-corner wide-corner--author">${cornerAuthor}${cornerDate}</p>` : ''}${(cornerLikes || cornerShare) ? `<div class="card-meta wide-corner wide-corner--meta">${cornerLikes ? `<p class="wide-corner-likes">${cornerLikes}</p>` : ''}${cornerShare}</div>` : ''}`
+  const isMega = halfClass.includes('duo-half--mega');
+  // The credit rides IN THE FLOW now — author leading, the date closing
+  // the row (the corner blocks and the likes/Share meta are retired).
+  // The MEGA flips the pair: its credit heads the BODY column, and the
+  // date leads so it can seat flush on the cover's right edge.
+  // Likes and Share (the foot row's pair on the stacked cells; the
+  // mega hangs them into its band's middle instead — see below).
+  const footLikes = splitCredit ? metaLine(post, { include: ['likes'] }) : '';
+  const footShare = splitCredit ? copyLinkBtnHtml(post, 'ground-share') : '';
+  // The credit row: AUTHOR at the left, DATE closing the right —
+  // every cell, the mega's body-column row included.
+  const creditHtml = splitCredit && (cornerAuthor || cornerDate)
+    ? (isMega
+        ? `<p class="card-meta ground-credit">${cornerAuthor}</p>`
+        : `<p class="card-meta ground-credit">${cornerAuthor}${cornerDate}</p>`)
+    : '';
+  // The mega's DATE moves UNDER the divider — a second courier row at
+  // the body column's head, right-aligned on the body measure.
+  const dateUnderHtml = isMega && cornerDate
+    ? `<p class="card-meta ground-under ground-under--date">${cornerDate}</p>`
+    : '';
+  const cornersHtml = '';
+  // The MEGA HERO's kicker ROW over the title: "The Latest" above the
+  // divider, and the post's TOPIC back on a second courier row UNDER
+  // it, below the divider, linking into the archive.
+  const kickerHtml = isMega
+    ? `<p class="card-meta ground-kicker"><span class="ground-kicker-line">The Latest</span></p>`
+    : '';
+  const underKickerHtml = isMega && post.kicker
+    ? `<p class="card-meta ground-under ground-under--kicker"><a class="ground-kicker-line" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></p>`
+    : '';
+  // The FOOT row closes the ground under the dek: likes at the left,
+  // Share at the right — the same ruled courier row as the others.
+  const footHtml = (footLikes || footShare)
+    ? `<p class="card-meta ground-foot">${footLikes ? `<span class="ground-likes">${footLikes}</span>` : ''}${footShare}</p>`
     : '';
   // The footer band: kicker (and, on the homepage's essay/postscript
   // cells, the cover credit) at the left; at the right, the likes box
@@ -1429,11 +1455,16 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
           ${cornersHtml}
           <div class="duo-panel-top">
             <div class="panel-col panel-col--left">
+              ${kickerHtml}
+              ${underKickerHtml}
               ${titleHtml}
+              ${isMega ? '' : creditHtml}
               ${splitCredit ? dekHtml : ''}
+              ${splitCredit && !isMega ? footHtml : ''}
             </div>
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
+              ${isMega ? creditHtml + dateUnderHtml : ''}
               ${previewParas.length ? '<div class="duo-quote-divider"></div>' : ''}
               ${bandHtml}
             </div>
@@ -1518,6 +1549,38 @@ function renderArchiveMosaic(posts, opts) {
 // renderListPage/renderArchivePage below are still live — the essays/
 // postscript/contra/archive pages are unaffected.
 
+// THE MEGA HERO: the page opens on one essay stretched across the whole
+// content column, cut into FIFTHS — the hover card's coloured ground on
+// the left two (title, corners, dek), the charcoal body excerpt in the
+// middle one, the cover filling the right two. Structurally it IS a wide
+// duo cell (same markup path, same fitter), always open, with the panel
+// covering the left three fifths and the cover showing beside it; its
+// height runs to the bottom of the rail's TIC (see .card--mega in
+// style.css).
+function renderMegaHero(post) {
+  if (!post) return '';
+  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html' }, 'duo-half--wide duo-half--mega');
+  // (The hero's masthead row is retired — the top header carries the
+  // brand; the hero opens straight on its courier band.)
+  return `<section class="card card--duo card--split card--mega">
+        ${half}</section>`;
+}
+
+// THE SECTION SHELVES: two half-page boxes side by side under the
+// hero. The first is INTERVIEWS — the label in the dek's voice at the
+// box's left, the latest postscript as a live hover cell taking the
+// box's right half. (The second box comes next.)
+function renderShelvesRow(psPost) {
+  if (!psPost) return '';
+  const psHalf = renderDuoHalf(psPost, { tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'postscript.html' });
+  return `<section class="card card--duo card--split card--shelves">
+        <div class="section-box section-box--interviews">
+          <p class="section-box-label">Interviews</p>
+          ${psHalf}
+        </div>
+      </section>`;
+}
+
 function renderHomepage({ essays = [], postscripts = [], contras = [], archives = [] }) {
   // The lead essay (top-left, two thirds wide) is the first cover the
   // visitor sees — preloaded the way the old hero was.
@@ -1571,12 +1634,18 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       }));
     }
   };
-  if (essays[0] || postscripts[0]) {
-    blocks.push(renderSplitRow(essays[0], postscripts[0]));
+  // The mega hero opens the page on the lead essay; every essay row
+  // below works from the REST so the lead's cover doesn't print twice.
+  blocks.push(renderMegaHero(essays[0]));
+  // The section shelves ride directly under the hero.
+  blocks.push(renderShelvesRow(postscripts[0]));
+  const rest = essays.slice(1);
+  if (rest[0] || postscripts[0]) {
+    blocks.push(renderSplitRow(rest[0], postscripts[0]));
   }
-  essayPair(essays.slice(1, 3));
+  essayPair(rest.slice(1, 3));
   contraRow(contras.slice(0, 3));
-  essayPair(essays.slice(3, 5));
+  essayPair(rest.slice(3, 5));
   const psTrio = postscripts.slice(1, 4);
   if (psTrio.length) {
     blocks.push(renderDuoCard(psTrio, {
@@ -1587,11 +1656,11 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       padTo: 3,
     }));
   }
-  essayPair(essays.slice(5, 7));
+  essayPair(rest.slice(5, 7));
   contraRow(contras.slice(3, 6));
-  essayPair(essays.slice(7, 9));
-  if (essays[9] || postscripts[4]) {
-    blocks.push(renderSplitRow(essays[9], postscripts[4], { flip: true }));
+  essayPair(rest.slice(7, 9));
+  if (rest[9] || postscripts[4]) {
+    blocks.push(renderSplitRow(rest[9], postscripts[4], { flip: true }));
   }
   const archiveOpts = { tag: 'From the Essay', btnLabel: 'From the Archive', btnHref: 'archive.html' };
   if (archives[0] || archives[1]) {
@@ -1651,8 +1720,18 @@ ${renderDuoPanelFitScript()}
 ${renderCoverColorScript()}
 ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
+${renderRailFixScript()}
 </body>
 </html>`;
+}
+
+// The held head — the mini-rail and the hero's courier line hold at 48
+// on scroll while the hero slides under the divider (src/rail-fix.js).
+function renderRailFixScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/rail-fix.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
 }
 
 // The duo/trio/quad row panels live on the homepage and the essays/
@@ -1669,6 +1748,10 @@ ${js}
 // Paints each open hover card with its cover's primary colour (src/
 // cover-color.js). Ships wherever the duo panels do.
 function renderCoverColorScript() {
+  // RETIRED with the coloured grounds — the panels sit on the page's
+  // dark paper now; src/cover-color.js stays for a revival.
+  return '';
+
   const js = fs.readFileSync(path.join(__dirname, 'src/cover-color.js'), 'utf8');
   return `<script>
 ${js}

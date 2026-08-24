@@ -356,6 +356,9 @@ module.exports = {
     kicker: 'Phonelessness',
     author: 'Rufus Knuppel',
   },
+  'the-striver-class': {
+    kicker: 'Law School Elites',
+  },
   'the-doctor-of-girlhood': {
     kicker: 'Books',
   },
