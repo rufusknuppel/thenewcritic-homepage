@@ -2838,6 +2838,24 @@
         swapHalf.style.setProperty('--mega-title-w', swapTR.width.toFixed(2) + 'px');
         swapHalf.style.setProperty('--mega-title-h', swapTR.height.toFixed(2) + 'px');
       }
+      // And the plate's TRUE ink foot: the cut can leave the column
+      // box a structural row taller than its text (a paragraph gap
+      // costs a slot no line can use), so centring against the box
+      // read low. The deepest paragraph fragment's bottom is the
+      // real last line — published as the swap's bottom inset.
+      var swapCols = swapHalf.querySelector('.card-preview-cols');
+      if (swapCols) {
+        var swapCB = swapCols.getBoundingClientRect();
+        var swapInk = 0;
+        [].forEach.call(swapCols.querySelectorAll('.card-preview'), function(p){
+          var pb = p.getBoundingClientRect().bottom;
+          if (pb > swapInk) swapInk = pb;
+        });
+        if (swapInk > swapCB.top && swapHR.height) {
+          swapHalf.style.setProperty('--mega-plate-foot',
+            (swapHR.bottom - Math.min(swapInk, swapCB.bottom)).toFixed(2) + 'px');
+        }
+      }
     }
 
     // A full box lands its last line exactly GAP over the band — the
