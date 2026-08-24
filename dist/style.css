@@ -2745,9 +2745,9 @@ a.likes:hover::after,
 }
 /* (The mega's title and dek range LEFT with the shared left-col
    rules — the centring override is retired.) */
-/* (The hero's ALL-CAPS transform is retired — the poster prints
-   sentence case like every other cell; the fitter measures whatever
-   case renders.) */
+/* The hero's poster prints ALL CAPS again (the fitter measures the
+   transformed case). */
+.card .duo-half--mega .duo-panel .card-title{ text-transform: uppercase; }
 /* ONE divider: the full-width rule at the hero's HEAD, the courier
    band riding above it. (The foot rule was tried and retired.) */
 .card .duo-half--mega .duo-panel::before{
@@ -2887,11 +2887,12 @@ a.likes:hover::after,
 .card .duo-half--mega:has(.card-image-link:focus-visible) .duo-card-image{
   /* The pane keeps the TITLE'S dimensions but CENTRES between the
      BODY TEXT'S ink bounds — the zone from the text's cap line (the
-     rule's 1 + its 48 step) down to its foot line (48 over the
-     plate's bottom), auto vertical margins splitting the difference
-     — the dek stands down with the poster, so the picture holds the
-     ground alone. */
-  inset: 49px auto 48px var(--mega-title-l, calc(40% - 38.4px));
+     rule's 1 + its 48 step) down to its TRUE last line (the fitter
+     publishes --mega-plate-foot: the cut can leave the column box a
+     dead row taller than its ink, so the box edge reads low), auto
+     vertical margins splitting the difference — the dek stands down
+     with the poster, so the picture holds the ground alone. */
+  inset: 49px auto var(--mega-plate-foot, 48px) var(--mega-title-l, calc(40% - 38.4px));
   margin: auto 0;
   width: var(--mega-title-w, auto);
   height: var(--mega-title-h, auto);
