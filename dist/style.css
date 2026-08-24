@@ -2745,9 +2745,15 @@ a.likes:hover::after,
 }
 /* (The mega's title and dek range LEFT with the shared left-col
    rules — the centring override is retired.) */
-/* The hero's poster prints ALL CAPS again (the fitter measures the
-   transformed case). */
-.card .duo-half--mega .duo-panel .card-title{ text-transform: uppercase; }
+/* The hero's poster prints SENTENCE CASE in GARAMOND — the excerpt's
+   own Premier Pro, roman at 400, traded in for Placard on this one
+   ground. (The fitter measures whatever face and case render, so
+   the fill, the cap-ink seat and the solver all follow.) */
+.card .duo-half--mega .duo-panel .card-title{
+  font-family: var(--excerpt);
+  font-weight: 400;
+  font-style: normal;
+}
 /* ONE divider: the full-width rule at the hero's HEAD, the courier
    band riding above it. (The foot rule was tried and retired.) */
 .card .duo-half--mega .duo-panel::before{
