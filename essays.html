@@ -57,6 +57,7 @@
   </a>
   <div class="topbar-rail">
     <p class="topbar-tagline">The Young American Magazine</p>
+    <p class="topbar-tagline-under">By For and About Gen Z</p>
     <ul class="nav-links topbar-links">
       <li class="nav-item--essays"><a href="essays.html" aria-current="page">Essays</a></li>
       <li class="nav-item--postscript"><a href="postscript.html">Postscript</a></li>
@@ -67,8 +68,8 @@
       <li><span class="nav-links-dead">Events</span></li>
       <li class="nav-item--subscribe"><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></li>
     </ul>
+    <a class="rail-mark" href="./" aria-label="The New Critic — home"><span aria-hidden="true">The</span><span aria-hidden="true">New</span><span aria-hidden="true">Cri</span><span aria-hidden="true">tic</span></a>
   </div>
-  <div class="rail-mark" aria-hidden="true"><span>The</span><span>New</span><span>Cri</span><span>tic</span></div>
 </nav>
 </div>
 
@@ -91,7 +92,7 @@
               <h3 class="card-title"><a href="https://www.thenewcritic.com/p/the-striver-class" rel="noopener">The Striver Class</a></h3>
               <p class="card-meta ground-credit"><a class="meta-author" href="archive.html#sort=author&amp;post=the-striver-class">overlocked</a><a class="meta-date" href="archive.html#sort=date&amp;post=the-striver-class">August 12</a></p>
               <p class="card-dek">“Just as I saw the social ladder as a kind of ethnography, my other classmates saw it as a winnable game. And it is winnable, that is the unspeakable thrill of it.”</p>
-              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/the-striver-class" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">301</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/the-striver-class" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
+              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/the-striver-class" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">302</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/the-striver-class" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
             </div>
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
@@ -1883,6 +1884,37 @@
     return deepest;
   }
 
+  // inkRows PER COLUMN: how deep each column's text really reaches,
+  // as an array — the mega's bottom-flush walk needs to know the
+  // LEFT column's floor, not just the block's deepest.
+  function inkRowsPerColumn(el, cols) {
+    var r = el.getBoundingClientRect();
+    var first = el.querySelector('.card-preview');
+    var lh = parseFloat(getComputedStyle(first || el).lineHeight) || 1;
+    var gapW = parseFloat(getComputedStyle(el).columnGap) || 0;
+    var colW = (r.width - gapW * (cols - 1)) / cols;
+    var per = [];
+    for (var z = 0; z < cols; z++) per.push(0);
+    [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
+      if (getComputedStyle(p).display === 'none') return;
+      var w = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null, false);
+      var n;
+      while ((n = w.nextNode())) {
+        var rg = document.createRange();
+        rg.selectNodeContents(n);
+        var rs = rg.getClientRects();
+        for (var i = 0; i < rs.length; i++) {
+          if (rs[i].width < 1) continue;
+          var ci = Math.floor((rs[i].left - r.left + 1) / (colW + gapW));
+          if (ci < 0 || ci >= cols) continue;
+          var row = Math.round((rs[i].top - r.top) / lh) + 1;
+          if (row > per[ci]) per[ci] = row;
+        }
+      }
+    });
+    return per;
+  }
+
   // Decides how many lines tall a multi-column block stands. The rule:
   // every column runs full — top line against the divider, bottom line
   // in the slot against the footer gap, line grids aligned (the CSS sets
@@ -3229,6 +3261,11 @@
         // budgets and caps run on the block (whose blockVPad reserves the
         // padding, the byline and the dek).
         var colsEl = el.querySelector('.card-preview-cols') || el;
+        // The PRISTINE text, captured before any pass's cut touches
+        // it — the mega's bottom-flush walk (and every repeat fit
+        // pass) restores from here, so cuts never compound.
+        if (!colsEl.__megaFull) colsEl.__megaFull = colsEl.innerHTML;
+        else if (el.closest('.duo-half--mega')) colsEl.innerHTML = colsEl.__megaFull;
         var colCount = parseInt(getComputedStyle(colsEl).columnCount, 10) || 1;
         // Every duo half but contra runs its band FLUSH to the panel's
         // bottom edge now (the wide's full-height column; the stacked
@@ -3264,6 +3301,32 @@
           var budget = Math.min(
             bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el),
             bandCap);
+          // THE MEGA PLATE'S budget runs to its DEK'S BASELINE (ink
+          // bottom, descenders excluded) — the generic reserve above
+          // holds room the hero's excerpt is meant to occupy.
+          if (el.closest('.duo-half--mega')) {
+            var bdk = el.closest('.duo-panel') && el.closest('.duo-panel').querySelector('.card-dek');
+            var bCover = el.closest('.duo-half--mega').querySelector('.duo-card-image');
+            if (bdk && bCover) {
+              // The dek's baseline DERIVED, not measured: the solver
+              // (later in this pass) seats the dek's descender ink ON
+              // the cover's foot, so baseline = foot - descender —
+              // stable before the seat exists.
+              var bdcs = getComputedStyle(bdk);
+              var bdctx = document.createElement('canvas').getContext('2d');
+              bdctx.font = bdcs.fontStyle + ' ' + bdcs.fontWeight + ' ' + bdcs.fontSize + ' ' + bdcs.fontFamily;
+              var bdBase = bCover.getBoundingClientRect().bottom
+                - (bdctx.measureText('gjpqy').actualBoundingBoxDescent || 0);
+              var bpcs = getComputedStyle(firstP || el);
+              var bpctx = document.createElement('canvas').getContext('2d');
+              bpctx.font = bpcs.fontStyle + ' ' + bpcs.fontWeight + ' ' + bpcs.fontSize + ' ' + bpcs.fontFamily;
+              var bpm = bpctx.measureText('Mx');
+              var bBelow = (plh - (bpm.fontBoundingBoxAscent + bpm.fontBoundingBoxDescent)) / 2 + bpm.fontBoundingBoxDescent;
+              var bTop = el.getBoundingClientRect().top + (parseFloat(getComputedStyle(el).paddingTop) || 0);
+              var inkBudget = bdBase + bBelow - bTop;
+              if (inkBudget > 0) budget = inkBudget;
+            }
+          }
           var maxLines = Math.floor(budget / plh);
           if (maxLines < 1) {
             // No room for even one body line — hide the BODY only (the
@@ -3372,21 +3435,79 @@
               var mgAvail = el.clientHeight
                 - (parseFloat(mgCs.paddingTop) || 0)
                 - (parseFloat(mgCs.paddingBottom) || 0);
-              if (mgRows > 0 && mgAvail > 0) {
-                var mgUnit = Math.min(mgAvail / mgRows, plh * MAX_SLOT_STRETCH);
-                if (mgUnit > plh) {
-                  setSlot(el, mgUnit);
-                  colsEl.style.height = (mgRows * mgUnit) + 'px';
-                  // The stretch re-flows the columns — what the cut
-                  // above seated at the natural leading spills again
-                  // at the taller slot, carrying the ellipsis off
-                  // into the clipped phantom columns. Re-cut at the
-                  // feathered grid so the tail (and its …) lands
-                  // back inside the last visible column.
-                  if (colsEl.scrollWidth > colsEl.clientWidth + 1) {
-                    truncateToWord(colsEl);
-                  }
+              // The floor is the HERO DEK'S BASELINE (ink bottom,
+              // descenders excluded), not the block's bottom pad —
+              // same rule as the latest plates: the body's last
+              // baseline seats on the dek's own.
+              var mgDek = el.closest('.duo-panel') && el.closest('.duo-panel').querySelector('.card-dek');
+              var mgCover = el.closest('.duo-half--mega').querySelector('.duo-card-image');
+              if (mgDek && mgCover) {
+                var mgTop = el.getBoundingClientRect().top + (parseFloat(mgCs.paddingTop) || 0);
+                // Derived like the budget above: baseline = the
+                // cover's foot less the dek face's descender (the
+                // solver's own seat), stable at any point in the pass.
+                var mdcs = getComputedStyle(mgDek);
+                var mdctx = document.createElement('canvas').getContext('2d');
+                mdctx.font = mdcs.fontStyle + ' ' + mdcs.fontWeight + ' ' + mdcs.fontSize + ' ' + mdcs.fontFamily;
+                var mgDekBaseline = mgCover.getBoundingClientRect().bottom
+                  - (mdctx.measureText('gjpqy').actualBoundingBoxDescent || 0);
+                var mpcs = getComputedStyle(colsEl.querySelector('p') || colsEl);
+                var mpctx = document.createElement('canvas').getContext('2d');
+                mpctx.font = mpcs.fontStyle + ' ' + mpcs.fontWeight + ' ' + mpcs.fontSize + ' ' + mpcs.fontFamily;
+                var mpm = mpctx.measureText('Mx');
+                var mgBoxBelow = (plh - (mpm.fontBoundingBoxAscent + mpm.fontBoundingBoxDescent)) / 2 + mpm.fontBoundingBoxDescent;
+                var mgInkAvail = mgDekBaseline + mgBoxBelow - mgTop;
+                if (mgInkAvail > 0) mgAvail = mgInkAvail;
+                // Persist the deeper floor into the block's own pad:
+                // the row CUT earlier in fit() reads it, so the next
+                // pass (fonts/load always re-run fitAll) seats the
+                // full extra rows instead of stretch-capping.
+                var mgPadB = el.getBoundingClientRect().bottom - (mgDekBaseline + mgBoxBelow);
+                if (mgPadB >= 0 && Math.abs(mgPadB - (parseFloat(mgCs.paddingBottom) || 0)) > 0.5) {
+                  el.style.paddingBottom = mgPadB.toFixed(2) + 'px';
                 }
+              }
+              // BOTTOM-FLUSH COLUMNS: both columns' last lines must
+              // land on the same bottom row — a paragraph gap falling
+              // at the left column's foot otherwise leaves it a row
+              // short of the right. Walk the row count down (restoring
+              // the full text each try — this also makes repeat passes
+              // idempotent) until every inked column ends ON the cut
+              // row; the feather below then stretches the survivors to
+              // the dek-baseline floor.
+              // BOTTOM-FLUSH COLUMNS: both columns' last lines must
+              // land on the same bottom row — a paragraph gap falling
+              // at the left column's foot otherwise leaves it a row
+              // short of the right. Walk the row count down, testing
+              // each candidate AT ITS OWN FEATHERED UNIT (the stretch
+              // re-flows the columns, so flushness at the natural
+              // leading proves nothing), restoring the full text each
+              // try — which also makes repeat passes idempotent.
+              if (!colsEl.__megaFull) colsEl.__megaFull = colsEl.innerHTML;
+              if (mgRows > 0 && mgAvail > 0) {
+                var mgBest = 0, mgBestUnit = 0;
+                for (var mk = mgRows; mk >= Math.max(1, mgRows - 3); mk--) {
+                  var tryUnit = Math.max(plh, Math.min(mgAvail / mk, plh * MAX_SLOT_STRETCH));
+                  colsEl.innerHTML = colsEl.__megaFull;
+                  setSlot(el, tryUnit);
+                  colsEl.style.height = (mk * tryUnit) + 'px';
+                  if (colsEl.scrollWidth > colsEl.clientWidth + 1) truncateToWord(colsEl);
+                  // FLUSH = every inked column ends on the SAME row
+                  // (the absolute index drifts a hair under the
+                  // feathered grid's rounding; equality is what the
+                  // eye reads).
+                  var perCol = inkRowsPerColumn(colsEl, colCount);
+                  var flushOK = perCol[0] > 0;
+                  for (var pc = 1; pc < perCol.length; pc++) {
+                    if (perCol[pc] && perCol[pc] !== perCol[0]) flushOK = false;
+                  }
+                  if (flushOK) { mgBest = mk; mgBestUnit = tryUnit; break; }
+                }
+                if (!mgBest) { mgBest = mgRows; mgBestUnit = Math.max(plh, Math.min(mgAvail / mgRows, plh * MAX_SLOT_STRETCH)); }
+                colsEl.innerHTML = colsEl.__megaFull;
+                setSlot(el, mgBestUnit);
+                colsEl.style.height = (mgBest * mgBestUnit) + 'px';
+                if (colsEl.scrollWidth > colsEl.clientWidth + 1) truncateToWord(colsEl);
               }
             }
           } else {
@@ -3901,7 +4022,188 @@
     }
   }
 
+  // THE LATEST ROW's postscript title fills its matter like the
+  // hero's poster: stretch-fitted over up to three lines in the room
+  // the bottom-pinned dek leaves (the dek rides margin-top:auto to
+  // the matter's foot — the cover's own bottom line).
+  function fitLatestTitle() {
+    var cell = document.querySelector('.latest-cell--ps');
+    if (!cell) return;
+    var title = cell.querySelector('.latest-title');
+    var matter = cell.querySelector('.latest-matter');
+    if (!title || !matter) return;
+    if (title.__fullHTML) { title.innerHTML = title.__fullHTML; title.__stretched = false; }
+    title.style.fontSize = '';
+    var dek = cell.querySelector('.latest-dek');
+    var availW = matter.clientWidth;
+    var maxH = matter.clientHeight
+      - (dek ? dek.getBoundingClientRect().height + 24 : 0);
+    if (availW > 0 && maxH > 40) {
+      stretchFill(title, availW, maxH, {
+        maxLines: 3,
+        preferMostLines: true,
+        lineMax: availW * LINE_MAX_PER_PX,
+      });
+    }
+    // The hover swap prints SQUARE: both dimensions set here to the
+    // matter's SMALLER side (the column is taller than wide, so the
+    // width binds) — auto sizes on a replaced element resolve through
+    // the IMAGE's intrinsic ratio, which beats the CSS aspect-ratio,
+    // and the global img max-width caps anything wider; a real pixel
+    // square sidesteps both.
+    var swapEl = cell.querySelector('.latest-swap');
+    if (swapEl && matter.clientHeight > 0 && matter.clientWidth > 0) {
+      var swapSide = Math.min(matter.clientWidth, matter.clientHeight);
+      swapEl.style.width = swapSide + 'px';
+      swapEl.style.height = swapSide + 'px';
+    }
+    // The plates cut on a CLEAN LINE and END ON AN ELLIPSIS, hero-
+    // fashion: whatever sub-row remainder the cover's height leaves
+    // under the last full row folds into the bottom padding (so the
+    // open text never shears mid-glyph), and the paragraph straddling
+    // the floor is trimmed to its last fitting word with the … the
+    // cut owes.
+    [].forEach.call(document.querySelectorAll('.card--latest .latest-plate'), function(pl){
+      if (!pl.__fullHTML) pl.__fullHTML = pl.innerHTML;
+      else pl.innerHTML = pl.__fullHTML;
+      pl.style.paddingBottom = '';
+      // EVERY LATEST PLATE fills DOWN TO ITS OWN DEK'S INK: the
+      // floor is the baseline (ink bottom, descenders excluded) of
+      // the post's own dek — hidden during the hover, but its seat
+      // stands — and the plate's last line seats ITS baseline there.
+      // Both baselines are recovered from canvas metrics of each
+      // face at its leading. (The hero's plate does the same in the
+      // mega feather branch of fit().)
+      var psCell = pl.closest('.latest-cell');
+      if (psCell) {
+        var ownDek = psCell.querySelector('.latest-dek');
+        if (ownDek) {
+          var dctx = document.createElement('canvas').getContext('2d');
+          var dcs = getComputedStyle(ownDek);
+          dctx.font = dcs.fontStyle + ' ' + dcs.fontWeight + ' ' + dcs.fontSize + ' ' + dcs.fontFamily;
+          var dm = dctx.measureText('Mx');
+          var dlh = parseFloat(dcs.lineHeight) || parseFloat(dcs.fontSize) * 1.2;
+          var dekBaseline = ownDek.getBoundingClientRect().bottom
+            - ((dlh - (dm.fontBoundingBoxAscent + dm.fontBoundingBoxDescent)) / 2 + dm.fontBoundingBoxDescent);
+          var pp0 = pl.querySelector('.latest-plate-p');
+          if (pp0) {
+            var pctx = document.createElement('canvas').getContext('2d');
+            var ppcs = getComputedStyle(pp0);
+            pctx.font = ppcs.fontStyle + ' ' + ppcs.fontWeight + ' ' + ppcs.fontSize + ' ' + ppcs.fontFamily;
+            var pm = pctx.measureText('Mx');
+            var pplh = parseFloat(ppcs.lineHeight) || parseFloat(ppcs.fontSize) * 1.2;
+            var boxBelowBaseline = (pplh - (pm.fontBoundingBoxAscent + pm.fontBoundingBoxDescent)) / 2 + pm.fontBoundingBoxDescent;
+            var floorPad = pl.getBoundingClientRect().bottom - (dekBaseline + boxBelowBaseline);
+            if (floorPad >= 0) pl.style.paddingBottom = floorPad.toFixed(2) + 'px';
+          }
+        }
+      }
+      var pcs = getComputedStyle(pl);
+      var padT = parseFloat(pcs.paddingTop) || 0;
+      var padB = parseFloat(pcs.paddingBottom) || 0;
+      var p0 = pl.querySelector('.latest-plate-p');
+      var plh = p0 ? (parseFloat(getComputedStyle(p0).lineHeight) || 19.2) : 19.2;
+      var avail = pl.clientHeight - padT - padB;
+      if (avail <= plh) return;
+      // FEATHERED to the floor, hero logic: the sub-row remainder
+      // stretches into the leading (capped at the general slot
+      // stretch) so the last row lands ON the 48 line instead of a
+      // part-row of dead air short of it.
+      var rows = Math.floor(avail / plh);
+      // The RENDERED unit — the rounded value the style carries — is
+      // what the floor must be built from: the raw quotient ran a
+      // half-pixel short over 23 rows and the cut sacrificed a whole
+      // line to the rounding.
+      var unit = parseFloat(Math.min(avail / rows, plh * MAX_SLOT_STRETCH).toFixed(3));
+      [].forEach.call(pl.querySelectorAll('.latest-plate-p'), function(p, i){
+        p.style.lineHeight = unit + 'px';
+        if (i) p.style.marginTop = unit + 'px';
+        p.style.marginBottom = '0';
+      });
+      // Where the plate opens FLUSH (contra, padding-top 0) the first
+      // line seats its INK on the top edge with nothing shaved: the
+      // stylesheet's -4.33 assumed the resting leading, but the
+      // feathered unit grows the half-leading and the ascenders were
+      // clipping under the cover's overflow — measure the true
+      // line-box-to-ink offset at the rendered unit and climb
+      // exactly that instead.
+      if (p0 && !padT) {
+        var fcs = getComputedStyle(p0);
+        var fctx = document.createElement('canvas').getContext('2d');
+        fctx.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
+        var fm = fctx.measureText((p0.textContent || 'Mx').slice(0, 24));
+        var fhalf = (unit - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2;
+        p0.style.marginTop = (-(fhalf + fm.fontBoundingBoxAscent - fm.actualBoundingBoxAscent)).toFixed(2) + 'px';
+        // Measure the RENDERED seat and hand back any remaining
+        // overshoot (fractional layout can still shave a hair).
+        var inkTop = p0.getBoundingClientRect().top + fhalf + fm.fontBoundingBoxAscent - fm.actualBoundingBoxAscent;
+        var over = pl.getBoundingClientRect().top - inkTop;
+        if (over > 0) {
+          p0.style.marginTop = (parseFloat(p0.style.marginTop) + over).toFixed(2) + 'px';
+        }
+      }
+      var floorLine = pl.getBoundingClientRect().top + padT + rows * unit + 2;
+      var cutDone = false;
+      [].forEach.call(pl.querySelectorAll('.latest-plate-p'), function(p){
+        if (cutDone) { p.style.display = 'none'; return; }
+        var r = p.getBoundingClientRect();
+        if (r.bottom <= floorLine) return;
+        if (r.top >= floorLine - 1) { p.style.display = 'none'; cutDone = true; return; }
+        var words = p.textContent.trim().split(/\s+/);
+        while (words.length && p.getBoundingClientRect().bottom > floorLine) {
+          words.pop();
+          p.textContent = words.join(' ') + '…';
+        }
+        cutDone = true;
+      });
+      // The plate ALWAYS closes on the … it owes — whether the cut
+      // trimmed a straddling paragraph, fell clean BETWEEN paragraphs,
+      // or the whole preview fit (the preview is itself a cut of the
+      // post). The trailing period trades for it, in the last TEXT
+      // node so inline markup holds.
+      var visP = [].filter.call(pl.querySelectorAll('.latest-plate-p'), function(p){
+        return p.style.display !== 'none';
+      });
+      var lastVis = visP[visP.length - 1];
+      if (lastVis && !/…\s*$/.test(lastVis.textContent)) {
+        var tw = document.createTreeWalker(lastVis, NodeFilter.SHOW_TEXT, null);
+        var lastText = null;
+        while (tw.nextNode()) lastText = tw.currentNode;
+        if (lastText) lastText.nodeValue = lastText.nodeValue.replace(/[.\s]*$/, '') + '…';
+      }
+    });
+  }
+
+  // THE BANDS CENTRE ON INK, measured from the RENDERED face at run
+  // time (static constants drifted between the fallback courier and
+  // the real one): the first item is the reference — Arts for the
+  // head band, the colophon's first entry for the foot — its ink
+  // span (ascender/cap top to its true bottom) is seated on the
+  // band's middle, and every sibling rides the same shift. Re-runs
+  // with every fit pass, so late fonts correct themselves.
+  function inkCenterBands() {
+    [].forEach.call(document.querySelectorAll('.dek-band'), function(band){
+      var items = band.children;
+      if (!items.length) return;
+      var cs = getComputedStyle(items[0]);
+      var ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var sample = (items[0].textContent || 'Mx').trim();
+      if (cs.textTransform === 'uppercase') sample = sample.toUpperCase();
+      var m = ctx.measureText(sample);
+      var lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2;
+      var half = (lh - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2;
+      var inkTop = half + m.fontBoundingBoxAscent - m.actualBoundingBoxAscent;
+      var inkBottom = half + m.fontBoundingBoxAscent + m.actualBoundingBoxDescent;
+      var shift = (lh / 2) - ((inkTop + inkBottom) / 2);
+      for (var i = 0; i < items.length; i++) {
+        items[i].style.top = shift.toFixed(2) + 'px';
+      }
+    });
+  }
+
   function fitAll() {
+    inkCenterBands();
     fitHeroLink(); // before the panels: the hero panel pins to the fitted link
     fitContraLead(); // before too: the lead's height moves every row below it
     // Re-queried every pass, not captured once: the ticker clones its whole
@@ -3909,6 +4211,13 @@
     // load would leave every cloned berth's panel unfitted — its title stuck
     // at the CSS size while the original's filled its box.
     [].forEach.call(document.querySelectorAll('.duo-panel'), fit);
+    fitLatestTitle();
+    // Every fit pass can move document seats (fonts, images, fitted
+    // titles) — announce it so rail-fix re-measures its anchors and
+    // rebuilds the held clones on the FINAL geometry, not the first
+    // paint's (stale anchors made the held couriers jump at the
+    // lock-in).
+    try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
 
   (function(){
