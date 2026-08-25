@@ -92,6 +92,10 @@ function applyContentOverrides(posts) {
     if (o.date) p.metaDate = o.date;
     if (o.kicker) p.kicker = o.kicker;
     if (o.focal) p.focal = o.focal;
+    // The interview subject's display name — locked, so the dek
+    // parser (applyDekBylines, which runs after) can't overwrite it
+    // with whatever alias the feed's dek used.
+    if (o.psName) { p.psName = o.psName; p.psNameLocked = true; }
     if (o.preview) {
       const paras = Array.isArray(o.preview) ? o.preview : [o.preview];
       p.preview = paras[0];
@@ -179,9 +183,11 @@ function applyDekBylines(posts) {
         // page's index scroll lists every interviewee by name (see
         // renderPostscriptPage). Serial style: commas between the
         // early names, the ampersand only before the last ("A, B & C").
-        p.psName = names.length > 2
-          ? `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`
-          : names.join(' & ');
+        if (!p.psNameLocked) {
+          p.psName = names.length > 2
+            ? `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`
+            : names.join(' & ');
+        }
         // The issue number goes with the names: the dek is "on <subject>"
         // and nothing more. The number belongs to the post's own page,
         // and repeating it here spent a third of the dek's measure
@@ -1103,11 +1109,12 @@ function renderNav(currentKey = 'home') {
   </a>
   <div class="topbar-rail">
     <p class="topbar-tagline">The Young American Magazine</p>
+    <p class="topbar-tagline-under">By For and About Gen Z</p>
     <ul class="nav-links topbar-links">
       ${links}
     </ul>
+    <a class="rail-mark" href="./" aria-label="The New Critic — home"><span aria-hidden="true">The</span><span aria-hidden="true">New</span><span aria-hidden="true">Cri</span><span aria-hidden="true">tic</span></a>
   </div>
-  <div class="rail-mark" aria-hidden="true"><span>The</span><span>New</span><span>Cri</span><span>tic</span></div>
 </nav>`;
 }
 
@@ -1581,6 +1588,82 @@ function renderShelvesRow(psPost) {
       </section>`;
 }
 
+// THE LATEST ROW: under the hero's long breath, the latest postscript
+// (left, the remaining two thirds) beside the latest contra (the right
+// third, 48 of air between them) — both in the HERO'S OWN DRESS:
+// courier meta on either side of a tailless rule (the section label
+// and author above it, the topic and date below), Garamond
+// sentence-case titles, the dek's voice underneath. The postscript
+// runs its cover PORTRAIT in the left column with the title/dek
+// column beside it; the contra stacks a SQUARE cover over its text.
+function renderLatestRow(psPost, contraPost) {
+  if (!psPost && !contraPost) return '';
+  const courierHead = (post, labelHtml, authorPrefix) => {
+    // The postscript names its SUBJECT ("w/ Jasmine Sun"), not the
+    // interviewer byline — psName when the dek carried one.
+    const authorName = post.psName ? post.psName.toUpperCase() : authorDisplay(post, true);
+    const author = bylineName(post) || post.psName
+      ? `<span><a href="${escapeHtml(archiveHref(post, 'author'))}">${escapeHtml(`${authorPrefix}${authorName}`)}</a></span>`
+      : '';
+    const kicker = post.kicker
+      ? `<span><a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></span>`
+      : '<span></span>';
+    const dateText = metaDateText(post);
+    const date = dateText
+      ? `<span><a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText.toUpperCase())}</a></span>`
+      : '';
+    return `<p class="latest-courier"><span>${labelHtml}</span>${author}</p>
+        <div class="latest-rule"></div>
+        <p class="latest-courier latest-courier--under">${kicker}${date}</p>`;
+  };
+  const coverImg = (post) => post.image
+    ? `<img class="card-image" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">`
+    : '';
+  // THE HOVER PAIR, the hero's own trade at cell scale: a body-text
+  // PLATE inside the cover's link (its box exactly, so hovering the
+  // open text still reads as hovering the link), and a SWAP image
+  // pinned over the title/dek matter — on hover the plate opens over
+  // the cover and the cover's picture replaces the words.
+  const plate = (post) => {
+    // The FULL preview, like the hero's plate — the fitter cuts it to
+    // the box with the ellipsis the cut owes (see the latest-plate
+    // pass in duo-panel-fit.js); slicing here left short plates
+    // ending without their … .
+    const paras = post.previewParagraphs && post.previewParagraphs.length
+      ? post.previewParagraphs
+      : (post.preview ? [post.preview] : []);
+    return paras.length
+      ? `<span class="latest-plate">${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}</span>`
+      : '';
+  };
+  const swapImg = (post) => post.image
+    ? `<img class="latest-swap" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">`
+    : '';
+  const matter = (post, dekHtml) => `<div class="latest-matter">
+            <h3 class="latest-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+            ${dekHtml}
+            ${swapImg(post)}
+          </div>`;
+  const ps = psPost ? `<div class="latest-cell latest-cell--ps">
+        <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}${plate(psPost)}</a>
+        <div class="latest-col">
+          ${courierHead(psPost, '<a href="postscript.html">Postscript</a>', 'w/ ')}
+          ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '')}
+        </div>
+      </div>` : '';
+  const contra = contraPost ? `<div class="latest-cell latest-cell--contra">
+        <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}${plate(contraPost)}</a>
+        <div class="latest-col">
+          ${courierHead(contraPost, '<a href="contra.html">Contra</a>', '')}
+          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '')}
+        </div>
+      </div>` : '';
+  return `<section class="card card--latest">
+        ${ps}
+        ${contra}
+      </section>`;
+}
+
 function renderHomepage({ essays = [], postscripts = [], contras = [], archives = [] }) {
   // The lead essay (top-left, two thirds wide) is the first cover the
   // visitor sees — preloaded the way the old hero was.
@@ -1634,44 +1717,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       }));
     }
   };
-  // The mega hero opens the page on the lead essay; every essay row
-  // below works from the REST so the lead's cover doesn't print twice.
+  // The mega hero opens the page on the lead essay. The OLD below-
+  // hero assembly (shelves row, split rows, essay pairs, contra
+  // rows, the postscript trio, the archive rows) was cleared — it
+  // lives in git history at 73f10d7 — and the new composition begins
+  // below with the latest row.
   blocks.push(renderMegaHero(essays[0]));
-  // The section shelves ride directly under the hero.
-  blocks.push(renderShelvesRow(postscripts[0]));
-  const rest = essays.slice(1);
-  if (rest[0] || postscripts[0]) {
-    blocks.push(renderSplitRow(rest[0], postscripts[0]));
-  }
-  essayPair(rest.slice(1, 3));
-  contraRow(contras.slice(0, 3));
-  essayPair(rest.slice(3, 5));
-  const psTrio = postscripts.slice(1, 4);
-  if (psTrio.length) {
-    blocks.push(renderDuoCard(psTrio, {
-      tag: 'From the Interview',
-      btnLabel: 'Postscript',
-      btnHref: 'postscript.html',
-      extraClass: 'card--trio-flat',
-      padTo: 3,
-    }));
-  }
-  essayPair(rest.slice(5, 7));
-  contraRow(contras.slice(3, 6));
-  essayPair(rest.slice(7, 9));
-  if (rest[9] || postscripts[4]) {
-    blocks.push(renderSplitRow(rest[9], postscripts[4], { flip: true }));
-  }
-  const archiveOpts = { tag: 'From the Essay', btnLabel: 'From the Archive', btnHref: 'archive.html' };
-  if (archives[0] || archives[1]) {
-    blocks.push(renderDuoCard(archives.slice(0, 2), { ...archiveOpts, padTo: 2 }));
-  }
-  if (archives[2] || archives[3]) {
-    blocks.push(renderSplitRow(archives[2], archives[3], {
-      wideOpts: archiveOpts,
-      narrowOpts: archiveOpts,
-    }));
-  }
+  // The latest postscript and contra, in the hero's dress (see
+  // renderLatestRow above).
+  blocks.push(renderLatestRow(postscripts[0], contras[0]));
   const duoHtml = blocks
     .map((block, i) => `
   <div class="wrap">
@@ -1705,11 +1759,49 @@ ${renderImgFadeScript()}
 
 ${renderHeader()}
 
+<!-- THE HEAD RULE: a full-measure divider under the masthead — 48
+     from the name's ink to the line, 48 from the line to the hero
+     courier's cap ink (the hero's own margin pays that side). -->
+<div class="head-rule" aria-hidden="true"></div>
+
+<!-- THE DEK BAND: a 48 white ribbon between the header and the
+     middle — the section topics in the dek's own voice, evenly
+     spread across the full measure. -->
+<nav class="dek-band" aria-label="Topics">
+  <a href="./">Arts</a>
+  <a href="./">Culture</a>
+  <a href="./">Education</a>
+  <a href="./">Ideas</a>
+  <a href="./">Politics</a>
+  <a href="./">Religion</a>
+  <a href="./">Technology</a>
+</nav>
+
 <main id="main">
 
   <div class="page-rows" id="top">
 ${duoHtml}
   </div>
+
+  <!-- THE FOOT BAND: the dek band's twin closing the middle — the
+       old footer's colophon in courier, evenly spread. -->
+  <nav class="dek-band dek-band--foot" aria-label="Colophon">
+    <span>Est. May 2025</span>
+    <a href="https://www.thenewcritic.com" rel="noopener">Substack</a>
+    <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>
+    <a href="mailto:editors@thenewcritic.com">Email</a>
+    <span>&copy; ${new Date().getFullYear()} The New Critic</span>
+  </nav>
+
+  <!-- THE REPRINT: the masthead again at full width, closing the
+       front page — a rule 48 under the last row, the name beneath
+       it. As it scrolls up it RELEASES the rail (src/rail-fix.js
+       pushes the sticky away, footer-fashion) and the foot mark
+       stands down. -->
+  <section class="reprint">
+    <div class="reprint-rule" aria-hidden="true"></div>
+    <a class="reprint-name" href="./" aria-label="The New Critic — home">The New Critic</a>
+  </section>
 
 </main>
 

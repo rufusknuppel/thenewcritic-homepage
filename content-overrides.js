@@ -15,6 +15,14 @@
 //   focal   — CSS object-position for the cover crop, e.g. 'center 20%'
 
 module.exports = {
+  'jasmine-suns-project-of-self-transformation': {
+    kicker: 'Becoming a Tech Reporter',
+    psName: 'Jasmine Sun',
+    // U+2011 non-breaking hyphen: the compound sets whole, which lands
+    // the three-line stack Jasmine Sun’s / Project of /
+    // Self‑Transformation in the latest row's fitted title.
+    title: 'Jasmine Sun’s Project of Self‑Transformation',
+  },
   'manifest-man': {
     kicker: 'Rationalist Workshop',
   },
