@@ -83,7 +83,13 @@
   /* The ground: a flat near-black gray, a shade darker and more
      neutral than the blue-slate it briefly ran — no texture (the cloth
      tiles are retired, see --cloth below). Type prints in cream. */
-  --paper: #121417;
+  /* The GOLD ground (the middle-era #F5CF5F, now the whole site's):
+     every mask, clone and plate grounds on this token, so the page
+     stays coherent wherever the ground goes. */
+  --paper: #F5CF5F;
+  /* The CHROME's charcoal — the header, footer and their courier
+     bands keep the old dark ground around the gold middle. */
+  --chrome: #121417;
   --surface: #040507;
   --surface-2: #0A0B10;
   --white: #FFFFFF;
@@ -1976,7 +1982,10 @@ a.likes:hover::after,
    own left. The body text carries 24px of padding inside the band
    too, so the ink insets 24 from the black edges. --white is #000
    inside the card, so the body colour is the literal cream here. */
-.card .duo-half .duo-panel .card-preview{ color: #FFFFFF; }
+/* var(--white), not the literal: the gold middle remaps the token to
+   charcoal, and the BODY TEXT must follow the ink like everything
+   else (the literal was invisible to the remap). */
+.card .duo-half .duo-panel .card-preview{ color: var(--white); }
 /* The stacked cells — contra included — run the extrawide anatomy
    TURNED UPRIGHT: the coloured ground on top (title, dek, corner
    credits), the charcoal band below — body text only, full-bleed to
@@ -2730,10 +2739,11 @@ a.likes:hover::after,
 .card .duo-half--mega{
   /* The cell ENDS ON THE COVER'S FOOT: the cover's raised seat
      (-18.13, see .duo-card-image) + the pane's height — its width
-     is 0.6 of the card + 14.4 (the card spans 100vw - 275.6 - 24
-     now), over the 10:7 aspect: (60vw - 165.36px) * 0.7. The dek's
+     is now two thirds of the card less 48 (the cover opens on the
+     middle third's line), over the 10:7 aspect:
+     (66.6667vw - 247.73px) * 0.7, less the 18.13 raise. The dek's
      LAST BASELINE and the cell's foot close on this same edge. */
-  height: calc(42vw - 133.88px);
+  height: calc(46.6667vw - 191.55px);
   /* In the mega's COLUMN flex the half's row-era basis would collapse
      it — auto hands the height back to the calc above. */
   flex: 0 0 auto;
@@ -2747,8 +2757,15 @@ a.likes:hover::after,
      reached edge). The body column's resting seat is retired; the
      excerpt prints over the cover on hover (see below). LANDSCAPE
      pane, 10:7. */
-  position: absolute; inset: -18.13px 24px auto calc(40% - 38.4px);
-  aspect-ratio: 10 / 7;
+  /* The cover's LEFT now opens ON THE MIDDLE THIRD'S line — the seat
+     the latest rows' centre column keeps (row content splits in
+     equal thirds; 100%/3 + 24 restates the second third's left
+     against the half's own box, within 0.05 at any width). The TOP
+     opens UNDER THE RULE now (1px — the head rule's own line, so
+     the cover's rule and the title column's are one line), the foot
+     holds the cell's: the image is SHORTENED, not moved. */
+  position: absolute; inset: 1px 24px 0 calc(100% / 3 + 24px);
+  aspect-ratio: auto;
   /* inset sizes the box — the duo frame's own width/height rules must
      stand down. */
   width: auto; height: auto;
@@ -2772,9 +2789,9 @@ a.likes:hover::after,
   /* NO TAILS, and NO RULE OVER THE COVER: the rule runs ink to ink
      across the TITLE COLUMN only — from the courier's left ink edge
      (the panel's 24 inset) to the author's right-aligned ink (the
-     title measure's end, 40% - 86.4 of the card) — and BREAKS
-     there; the cover rides ruleless. */
-  left: 24px; right: calc(60% + 86.4px);
+     title measure's end, 48 left of the cover's third line) — and
+     BREAKS there; the cover rides ruleless. */
+  left: 24px; right: calc(200% / 3 + 24px);
   top: 0;
   height: 1px;
   background: var(--white);
@@ -2796,6 +2813,9 @@ a.likes:hover::after,
 .card .duo-half--mega:has(.card-image-link:focus-visible) .duo-panel .panel-col--right :is(.ground-credit, .ground-under){
   right: 0;
   pointer-events: none;
+  /* Over the COVER HEAD's 6: the slid author lands ON that row, and
+     its opaque ground was painting the arrival out. */
+  z-index: 7;
 }
 .card .duo-half--mega .duo-card-image .card-image-link,
 .card .duo-half--mega .duo-card-image .card-image{
@@ -2855,7 +2875,7 @@ a.likes:hover::after,
    falling through to the image is what drives the reveal. */
 .card.card--mega .duo-half--mega .duo-panel .card-preview-block{
   position: absolute;
-  inset: -18.13px 24px 0 calc(40% - 38.4px);
+  inset: 1px 24px 0 calc(100% / 3 + 24px);
   margin: 0;
   /* The body's cap INK 48 under the DIVIDER: the block's top rides
      18.13 above the panel (the cover's raised seat), the rule's 1
@@ -2865,7 +2885,9 @@ a.likes:hover::after,
      last row's descender ink lands exactly 48 over the plate's
      bottom edge (the 16px line's 4.6 ride less its 4.43 descender,
      plus the 48). */
-  padding: 62.8px 0 48.17px;
+  /* 43.67 now: the block opens at the RULE (top 1px), so the cap-ink
+     seat is the 48 step less the 16px line's 4.33 cap offset. */
+  padding: 43.67px 0 48.17px;
   /* The open panel grounds in the PAGE'S OWN PAPER — the site
      background, opaque, so the plate reads as the page opening
      rather than a foreign surface. */
@@ -2932,12 +2954,12 @@ a.likes:hover::after,
   background: var(--paper);
   margin: -16px 0 -24px -24px;
   padding: 24px;
-  /* The ground ends 24 SHORT of the cover's left edge (40% - 38.4 of
-     the card, see .duo-card-image; -19.2 restates it against the
-     panel's 48-narrower content box, -24 the standoff) — with its
-     own 24 inset the title/dek measure ends 48 from the image, on
-     the same line the courier pair right-aligns to. */
-  flex: 0 0 calc(40% - 43.2px);
+  /* The ground ends 24 SHORT of the cover's left edge (the middle
+     third's line now — 100%/3 + 16 restates that seat against the
+     panel's 48-narrower content box) — with its own 24 inset the
+     title/dek measure ends 48 from the image, on the same line the
+     courier pair right-aligns to. */
+  flex: 0 0 calc(100% / 3 + 16px);
 }
 /* The rows bleed edge to edge of the ground (its own 24 insets), text
    keeping its 24 — and run RULELESS on the mega: the white dividers
@@ -3092,6 +3114,21 @@ a.likes:hover::after,
   top: 66.13px;
   z-index: 4;
 }
+/* THE LEFT FLANK: the title face's hooked glyphs (the J of Jasmine)
+   paint LEFT of their box origin — outside the courier's masking
+   span — so a sliver of ink survived the held mask at the column's
+   left edge. A narrow paper strip on the head's left flank, running
+   the full held zone's height, grounds it out; at rest it sits in
+   the empty gutter, invisible. */
+.latest-courier:not(.latest-courier--under)::after{
+  content: '';
+  position: absolute;
+  top: -35.93px; bottom: 0;
+  right: 100%;
+  width: 12px;
+  background: var(--paper);
+  z-index: -1;
+}
 .latest-cover{ z-index: 5; }
 /* On the open plate the postscript's category and kicker SLIDE LEFT
    into the cover's span, and the rule DRAWS its reverse extension
@@ -3120,7 +3157,7 @@ a.likes:hover::after,
    slide travels): the plate's columns scroll under the held rule
    and vanish, hero-fashion. z -1 keeps the row's own slid ink in
    print — the row's 6 lifts the whole unit over the plate's 5. */
-.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-courier:not(.latest-courier--under)::before{
+.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-courier:not(.latest-courier--under)::before{
   left: calc(-100% - 48px);
   bottom: 0;
   height: auto;
@@ -3138,9 +3175,98 @@ a.likes:hover::after,
    6.07 cap offset), the hero's own courier-to-cover seat. */
 /* Opens on the CELL TOP — the same line the contra's square opens
    on (the old 12.07 courier-ink seat retired with the alignment). */
-.latest-cover--portrait{ flex: 0 0 calc(50% - 24px); aspect-ratio: 3 / 4; margin-top: 0; }
+/* THE COVER COLUMN: each cover now stands in its own column with a
+   COVER HEAD above it — likes / Share over a rule ON the image's
+   top edge. The wrapper takes the cover's old flex seat (the cover
+   fills it), and the head HOISTS on a negative margin so the
+   image's own seat never moves; being a real .latest-courier +
+   .latest-rule pair in flow, the head pins at the held seats and
+   is pushed off by the wrapper's foot — the image scrolls under
+   its own rule exactly as text does under the metas'. */
+.latest-cover-col{ position: relative; min-width: 0; }
+/* The WRAPPER carries the cover's old box (its aspect, its flex
+   seat) — the head takes the top 31.2 of it and the image fills the
+   REST: shorter by the head's own height, foot on the same line,
+   its rule dead level with the meta rules'. */
+.latest-cover-col--portrait{ flex: 0 0 calc(50% - 24px); aspect-ratio: 3 / 4; }
+.latest-cover-col--square{ aspect-ratio: 1 / 1; }
+.latest-cover--portrait{ flex: none; width: 100%; aspect-ratio: auto; height: calc(100% - 31.2px); margin-top: 0; }
 /* The contra's cover sits SQUARE over its meta. */
-.latest-cover--square{ aspect-ratio: 1 / 1; width: 100%; }
+.latest-cover--square{ aspect-ratio: auto; height: calc(100% - 31.2px); width: 100%; }
+/* The head rides OVER the covers' 5 (its own image must ground out
+   under it, and the open plate's text runs beneath the pinned rule,
+   hero-fashion). The reverse draw stays the META rule's own — the
+   cover head's rule spans its image and nothing more. */
+/* (Doubled class: the base sticky rule's :not() weighs a class, and
+   its z 4 must lose to this 6 — the head prints over its own cover's
+   5, or the image would ride over its own rule.) The head sits IN
+   FLOW now: its rule lands on the same line as the meta rules, and
+   the image below starts 31.2 in — SHORTENED, its foot held. */
+.latest-courier.latest-courier--cover{
+  z-index: 6;
+  /* The inline-flex likes/Share boxes inflate the baseline line box
+     past the courier row's own 30.2 — pin the box and centre the
+     pair instead, so the hoist arithmetic stays exact. */
+  height: calc(var(--courier-size) * 1.4 + 12px);
+  align-items: center;
+}
+.latest-cover-col .latest-rule,
+.mega-cover-head .latest-rule{ z-index: 6; }
+.latest-cover-col .latest-rule::before,
+.mega-cover-head .latest-rule::before{ content: none; }
+/* The PAIR'S DRESS: the likes heart and the Share button in the
+   courier row's own voice — white ink, Klein on the pointer. The
+   button resets to bare type (buttons inherit nothing). */
+.latest-courier--cover .likes{
+  display: inline-flex; align-items: center; gap: 5px;
+  /* COUNT first, heart after — the number leads the pair. */
+  flex-direction: row-reverse;
+  color: var(--white); text-decoration: none; transition: color .15s ease;
+}
+/* THE AUTHOR'S ARRIVAL: on the open plate the sliding author lands
+   on this row's line — the likes and Share stand down for it. */
+.latest-courier--cover :is(.cover-likes, .cover-share){
+  transition: opacity .3s ease;
+}
+.latest-courier--cover .cover-share{
+  transition: color .15s ease, opacity .3s ease;
+}
+.card--mega:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .mega-cover-head :is(.cover-likes, .cover-share){
+  opacity: 0;
+  pointer-events: none;
+}
+/* The POSTSCRIPT cells' pairs stand down the same way: the sliding
+   category lands on this row's line (both directions — the rev cell
+   mirrors the reach), and the arriving ink must not overstrike the
+   count. Contra keeps its pair — nothing arrives there. */
+.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-courier--cover :is(.cover-likes, .cover-share){
+  opacity: 0;
+  pointer-events: none;
+}
+/* And the sliding category carries its own paper chip — mid-fade
+   the count is still half-lit, and the arriving ink wipes over it
+   clean. Gold on gold: invisible at rest, in the gap, and on the
+   head band alike. */
+.latest-cell--ps .latest-col .latest-courier:not(.latest-courier--under) span:first-child{
+  background: var(--paper);
+}
+.latest-courier--cover .likes-heart{ height: 12px; width: auto; fill: var(--white); transition: fill .15s ease; }
+.latest-courier--cover .likes:hover,
+.latest-courier--cover .likes:focus-visible{ color: var(--klein); }
+.latest-courier--cover .likes:hover .likes-heart,
+.latest-courier--cover .likes:focus-visible .likes-heart{ fill: var(--klein); }
+.latest-courier--cover .cover-share{
+  display: inline-flex; align-items: center;
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: var(--white); cursor: pointer; transition: color .15s ease;
+}
+.latest-courier--cover .cover-share:hover,
+.latest-courier--cover .cover-share:focus-visible{ color: var(--klein); }
+.latest-courier--cover :is(.copylink-icon, .copylink-check){
+  width: 12px; height: 12px; stroke: currentColor; fill: none;
+  stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
 /* The hero poster's own voice, at row scale. */
 .latest-title{
   margin: 0;
@@ -3193,17 +3319,55 @@ a.likes:hover::after,
    less the 16px line's 4.33 cap offset. */
 .latest-cell--ps .latest-plate{
   /* Text opens 48 under the drawn rule (the hero's own seat): the
-     rule's foot sits 31.2 into the plate now that the cover opens on
-     the CELL top (the old 62.8 assumed the retired 12.07 seat), plus
-     48, less the 16px line's 4.33 cap offset. */
-  padding-top: 74.87px;
+     rule's foot IS the plate's top edge now (the cover opens under
+     its own head), so 48 less the 16px line's 4.33 cap offset. */
+  padding-top: 43.67px;
   padding-bottom: 48px;
 }
-/* The contra's body starts RIGHT AT THE COVER'S TOP LINE — no head
-   pad; the first line's 4.33 cap offset climbs back so the ink sits
-   on the edge itself. */
-.latest-cell--contra .latest-plate{ padding-top: 0; padding-bottom: 24px; }
-.latest-cell--contra .latest-plate-p:first-child{ margin-top: -4.33px; }
+/* The contra's body opens 48 UNDER THE RULE like the postscript's —
+   the cover's top edge IS the head rule now, and the old flush seat
+   crammed the first line's ascenders against it. 48 less the 16px
+   line's 4.33 cap offset. */
+.latest-cell--contra .latest-plate{ padding-top: 43.67px; padding-bottom: 24px; }
+/* THE CONTRA LIFT (hover): the body's cut ends short of the cover's
+   foot, so on hover the whole courier block RIDES UP to sit 24
+   under the text's descender ink — the same 24 it keeps under the
+   cover at rest — and the swap image grows UPWARD by the same air
+   (its foot holds the cell's), keeping its own 24 off the lifted
+   block: the freed room fills with image instead of dead ground.
+   The lift is measured live from the rendered cut (--contra-lift,
+   duo-panel-fit.js). GATED off while the row's head is pinned
+   (body.latest-held, rail-fix.js): a lifted PINNED head would fly
+   off the viewport, and the mask-above must keep masking there. */
+.latest-cell--contra .latest-col :is(.latest-courier, .latest-rule){
+  transition: transform .3s ease;
+}
+.card--latest:not(.row-held) .latest-cell--contra:has(.latest-cover:is(:hover, :focus-visible)) .latest-col :is(.latest-courier, .latest-rule){
+  transform: translateY(calc(-1 * var(--contra-lift, 0px)));
+}
+/* The lifted UNDER ROW must print on the open plate (the cover's 5
+   would swallow it — the meta and rule already rise on the shared
+   hover rules above; a flex item takes z-index unpositioned). */
+.card--latest:not(.row-held) .latest-cell--contra:has(.latest-cover:is(:hover, :focus-visible)) .latest-courier--under{
+  z-index: 6;
+}
+/* The mask-above stands DOWN for the ride: lifted, it would paint
+   the page's ground over the text's last line 35.93 above the box. */
+.card--latest:not(.row-held) .latest-cell--contra:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-courier:not(.latest-courier--under)::before{
+  content: none;
+}
+/* The swap follows: its top climbs the same lift while its foot
+   holds, printing over the cover's 5 where it now reaches. */
+.latest-cell--contra .latest-swap{
+  transition: opacity .3s ease, top .3s ease;
+}
+.card--latest:not(.row-held) .latest-cell--contra:has(.latest-cover:is(:hover, :focus-visible)) .latest-swap{
+  top: calc(-1 * var(--contra-lift, 0px));
+  /* The base 100% would ride the whole box up — GROW by the lift
+     instead, so the foot holds the cell's own. */
+  height: calc(100% + var(--contra-lift, 0px));
+  z-index: 6;
+}
 /* The postscript's hover image prints SQUARE, vertically centred in
    the matter — sized by the matter's height, on its left edge. */
 .latest-cell--ps .latest-swap{
@@ -3246,7 +3410,7 @@ a.likes:hover::after,
    rule is 58% of the cell less the gap; the reach is 42% plus it). */
 /* (The rule is STICKY now — see the rolling held head above — which
    is a positioned ancestor for the draw pseudo just the same.) */
-.latest-cell--ps .latest-rule::before{
+.latest-cell--ps .latest-col .latest-rule::before{
   content: '';
   position: absolute;
   top: 0;
@@ -3256,7 +3420,7 @@ a.likes:hover::after,
   background: var(--white);
   transition: width .3s ease;
 }
-.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-rule::before{
+.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-rule::before{
   width: calc(100% + 48px);
 }
 /* And the CATEGORY and KICKER ride the line out together — the
@@ -3264,18 +3428,21 @@ a.likes:hover::after,
    left item travels the same reach (the cover + the 48), the
    category landing flush on the cell's left edge above the drawn
    rule, the kicker beneath it. */
-.latest-cell--ps .latest-courier span:first-child{
+.latest-cell--ps .latest-col .latest-courier span:first-child{
   position: relative;
   left: 0;
   transition: left .3s ease;
 }
-.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-courier span:first-child{
+.latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-courier span:first-child{
   /* One column plus the gap: with the row's EQUAL THIRDS the slide's
      reach is exactly the meta column's own width + 48, landing the
      category on the cover's left edge (the old 72.414% was the 42%
      era's tuning and fell short). */
   left: calc(-100% - 48px);
 }
+/* (The author and date HOLD their seats on hover — the ride to the
+   cover head belongs to the HEROES' credits alone; a PS author that
+   slid read as the header falling apart.) */
 /* ---------- THE REPRINT ----------
    The masthead AGAIN at full width, closing the front page: a rule
    48 under the last row's foot — EDGE TO EDGE, the head rule's own
@@ -3297,12 +3464,15 @@ a.likes:hover::after,
      growing the page a horizontal scrollbar. Clip the X only; the
      Y stays visible for the name's climbing box. */
   overflow-x: clip;
-  margin-top: 0;
-  padding-top: 0;
-  /* 48 below the NAME'S INK, not its box — the box runs under the
-     baseline by 0.10088 of the size (the head rule's own ratio),
-     climbed back here. */
-  padding-bottom: calc(48px - 0.10088 * var(--masthead-size));
+  /* 48 of the MIDDLE'S OWN GROUND before the chrome begins — the
+     last row's foot keeps its air on the gold side of the boundary. */
+  margin-top: 48px;
+  /* And 48 inside the charcoal before the name's cap ink (the name's
+     climb margin measures against this — see .reprint-name). */
+  padding-top: 48px;
+  /* The foot band hugs the name's ink from below (its own negative
+     margin climbs the below-ink box) — no closing pad of our own. */
+  padding-bottom: 0;
 }
 .reprint-rule{
   height: 1px;
@@ -3323,8 +3493,11 @@ a.likes:hover::after,
   color: var(--white);
   text-align: center;
   transform: translateX(var(--masthead-ink-shift));
-  /* Cap ink 48 under the rule — Placard's 0.217 offset climbed back. */
-  margin-top: calc(48px - 0.217 * var(--masthead-size));
+  /* Cap ink 48 under the CHARCOAL'S TOP EDGE — the reprint's 48 head
+     pad plus the rule already carry the air, so the margin climbs
+     the whole box-to-cap offset (Placard's 0.217) and the rule's 1
+     back out. */
+  margin-top: calc(-1px - 0.217 * var(--masthead-size));
   /* A LIVE LINK HOME now: pointer restored (the section stays inert)
      but only from the CAP INK down — the box's empty head zone
      climbs over the foot band, and an unclipped hit area stole the
@@ -5412,32 +5585,57 @@ main, footer{ margin-left: 0; }
      ground — the box stays for the spacing it set (every seat below
      rides on it), but the boundary is the ground change itself. */
   background: transparent;
-  margin: calc(48px - 0.10088 * var(--masthead-size)) 0 0;
+  /* The band rides FLUSH under the title's ink now (its old 48 air
+     is retired): the negative margin climbs the name's below-ink
+     box and the rule's own 1px. (The header's remaining 27.41 flow
+     strut is climbed by the BAND's own margin below — a deeper
+     margin here is swallowed by the chrome's margin collapse.) */
+  margin: calc(-1px - 0.10088 * var(--masthead-size)) 0 0;
 }
-/* THE DEK BAND: a 48 GOLD ribbon between the dark header and the
-   middle's white ground (the two grounds traded places) — the
-   section topics set in the dek's own voice (Garamond italic 20),
-   spread evenly edge to edge inside 48 side margins. Centred on the
-   INK OF ARTS (ascender top to baseline, no descender pull — the
-   0.96 hands back the italic face's descender bias), not the font
-   box that Technology's tail would drag. */
+/* THE DEK BAND: a 48 KLEIN ribbon between the dark header and the
+   middle's ground (gold tried and retired; the Garamond topics
+   too) — ALL COURIER now, the foot band's own dress: the magazine
+   line on the left, the day's date in the middle, the tagline
+   closing the right, spread edge to edge inside 48 side margins.
+   Centred on the first item's ink (the static offset is only the
+   no-JS fallback — duo-panel-fit.js re-measures the rendered face
+   and sets the true shift inline). */
 .dek-band{
   height: 48px;
-  background: #F5CF5F;
+  /* The seat for the GLYPH-ANCHORED items (alignBands in
+     duo-panel-fit.js goes absolute against the band's own box). */
+  position: relative;
+  /* The bands belong to the CHROME: charcoal like the header and
+     footer they hug, white type. */
+  background: var(--chrome);
+  /* The last 27.41 of the climb to the title's ink rides here (the
+     head band only overrides it back to 0 below for the foot): the
+     head-rule's 1px box blocks the chrome's margin collapse, so
+     this one actually lands. */
+  margin-top: -27.41px;
   color: var(--white);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 48px;
-  font-family: var(--excerpt);
-  font-style: italic;
+  font-family: var(--byline-face);
+  font-style: normal;
   font-weight: 400;
-  font-size: 20px;
-  line-height: 1.2;
+  font-size: var(--courier-size);
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
-.dek-band :is(a, span){ position: relative; top: 0.96px; }
-/* The TOPICS are LIVE LINKS (home, for now) — white on the gold,
-   Klein on the pointer, the site's own trade. */
+.dek-band :is(a, span){ position: relative; top: -0.54px; }
+/* TRUE CENTRE for the date: the flanks take equal shares of the
+   band, so the middle item seats on the exact centre line whatever
+   the two flank lines' lengths. Head band only — the foot's five
+   entries keep their even spread. */
+.dek-band:not(.dek-band--foot) > :first-child{ flex: 1 0 0; text-align: left; }
+.dek-band:not(.dek-band--foot) > :last-child{ flex: 1 0 0; text-align: right; }
+/* The TOPICS are LIVE LINKS (home, for now) — white on the Klein
+   ground; the pointer trades to the page's own ink (Klein-on-Klein
+   would vanish). */
 .dek-band:not(.dek-band--foot) a{
   color: var(--white);
   text-decoration: none;
@@ -5454,7 +5652,11 @@ main, footer{ margin-left: 0; }
    row's foot; the reprint's rule sits flush beneath it, mirroring
    the head rule against the band above. */
 .dek-band--foot{
-  margin-top: 48px;
+  /* UNDER the reprint's name now (the head band's mirror): the
+     negative margin climbs the name's below-ink box, so the band's
+     top is the footer title's own ink line; the band's 48 is the
+     page's closing air. */
+  margin-top: calc(0px - 0.10088 * var(--masthead-size));
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
@@ -5490,7 +5692,13 @@ main, footer{ margin-left: 0; }
   top: 41.93px;
   z-index: 50;
   height: 0;
-  width: max-content;
+  /* ONE AXIS for everything in the rail: the box spans the whole
+     reserved strip (page edge 24 to the rows' 251.6 reservation),
+     so the centred list and the mark (centre 125.8 off the box
+     edge = the strip's own middle) share a centre line — the old
+     max-content box centred the list on its own width instead,
+     always a little off the mark's axis. */
+  width: 251.6px;
   /* The rail sits BELOW the head rule AND the dek band now, its
      tagline's cap ink 48 under the band's foot — the same seat the
      hero's courier keeps, so the two bands share one line again
@@ -5502,8 +5710,13 @@ main, footer{ margin-left: 0; }
      max-content box to the 24 seat from the right edge, so the
      tagline's INK closes on the site title's final C (the wordmark's
      48 inset), its 24 margin paying the difference. */
-  margin: calc(138.93px - 0.10088 * var(--masthead-size)) 24px
-          calc(0.10088 * var(--masthead-size) - 138.93px - (100vh - 472.54px)) auto;
+  /* 89.93 now: the band's old 48+1 air under the title is retired
+     (the band hugs the ink), and the rail's bridge shortens by
+     exactly that — the header's flow strut sits below this anchor
+     and never entered the bridge (tuned by rendered pixels: the
+     tagline's ink level with the hero courier's). */
+  margin: calc(89.93px - 0.10088 * var(--masthead-size)) 24px
+          calc(0.10088 * var(--masthead-size) - 89.93px - (100vh - 472.54px)) auto;
   /* The box now RUNS TO THE MARK'S SEAT (its height is the mark's
      own top offset), a flex column: the courier block holds the
      head, and the section list centres itself in the air between
@@ -5553,7 +5766,7 @@ main, footer{ margin-left: 0; }
 /* The section strip: every item on one row, spread to the ends,
    between two full-width rules. The rail's stacked-column moves
    (auto springs, group steps) all reset. */
-.site-nav--top .nav-links{
+:is(.site-nav--top, .topbar-rail--left) .nav-links{
   display: flex;
   flex-direction: column;
   /* CENTRED on the rail's axis. Essays' cap INK 24 under the rule
@@ -5569,11 +5782,11 @@ main, footer{ margin-left: 0; }
   line-height: 1.4;
   text-align: center;
 }
-.site-nav--top .nav-links li{ margin: 0; }
-.site-nav--top .nav-links .nav-item--about{ margin-top: 0; }
+:is(.site-nav--top, .topbar-rail--left) .nav-links li{ margin: 0; }
+:is(.site-nav--top, .topbar-rail--left) .nav-links .nav-item--about{ margin-top: 0; }
 /* The list speaks the DEK — the tagline and the items swapped
    voices: courier tagline over the rule, Garamond italic list under. */
-.site-nav--top .nav-links li :is(a, span){
+:is(.site-nav--top, .topbar-rail--left) .nav-links li :is(a, span){
   font-family: var(--excerpt);
   font-style: italic;
   font-weight: 400;
@@ -5658,14 +5871,22 @@ body.courier-pinned::after{
 body.rail-fixed:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover)::after{
   background-size: calc(100% - 347.6px) 1px;
 }
-/* Keyed on courier-held, not rail-fixed: the clone is VISIBLE from
-   the held swap on — ~31 of scroll before the rail's own hold — and
-   must keep the slid seat through that window too. */
-body.courier-held:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-credit{
+/* Keyed on the clone's own held state, not rail-fixed: the clone is
+   VISIBLE from the held swap on — ~31 of scroll before the rail's
+   own hold — and must keep the slid seat through that window too.
+   (Per-mega now: each hero's hover drives only ITS OWN clones.) */
+body:has(.card--mega:not(.card--mega-rev) .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-credit:not(.clone-rev){
   left: auto !important;
-  right: 275.6px;
+  /* !important on BOTH sides: rail-fix anchors every clone inline,
+     and an inline seat beats any plain rule — without this the held
+     author never left its rest anchor. On un-hover the rule stands
+     down, the inline seat returns, and the transition rides it back. */
+  right: 275.6px !important;
   pointer-events: none;
 }
+/* (The REV hero's held ride lives with the other clone-rev rules
+   below: the ESSAY clone slides to the cover's line, the kicker
+   clone holds the author — see THE PAIR'S RIDE, HELD.) */
 /* THE LEFT COLUMN: a permanent opaque ground under the rail — its
    width runs to the hero's left edge (24 wrap + 323.6 seat), so
    anything scrolling up the page passes UNDER the rail and the mark,
@@ -5698,7 +5919,7 @@ body::before{
    — the same seats they kept in flow. */
 .card .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under){
   position: absolute;
-  right: calc(60% + 62.4px);
+  right: calc(200% / 3);
   margin: 0;
   padding: 6px 24px;
   justify-content: flex-end;
@@ -5706,6 +5927,16 @@ body::before{
      when they slide over it on hover. */
   z-index: 4;
   transition: right .3s ease;
+}
+/* The AUTHOR row carries its own paper chip: it rides the band
+   ABOVE the divider — the likes/Share band — and the arrival wipes
+   over the fading pair instead of overstriking it mid-fade. Gold on
+   gold, invisible at rest and across the whole ride. (The DATE row
+   stays transparent: its box top sits ON the divider rule, and a
+   ground there gaps the line; it rides below the band and never
+   crosses the pair anyway.) */
+.card .duo-half--mega .duo-panel .panel-col--right .ground-credit{
+  background: var(--paper);
 }
 .card .duo-half--mega .duo-panel .panel-col--right .ground-credit{
   top: calc(0px - (var(--courier-size) * 1.4 + 12px));
@@ -5721,7 +5952,7 @@ body::before{
    with the scroll — indistinguishable from the page — until they
    reach the held line and pin, staying until the hero's foot passes
    the divider COMPLETELY — then fade, no ride, no snap. */
-body.courier-held .duo-half--mega .duo-panel :is(.ground-kicker, .ground-credit){
+.duo-half--mega.mega-held .duo-panel :is(.ground-kicker, .ground-credit){
   visibility: hidden;
 }
 /* The clones live at body level, outside the panel scope — they
@@ -5756,7 +5987,12 @@ body.courier-held .duo-half--mega .duo-panel :is(.ground-kicker, .ground-credit)
   z-index: 35;
   visibility: hidden;
   opacity: 1;
-  transition: opacity 0.25s ease;
+  /* left/right ride with opacity: the held-hover author slide must
+     ANIMATE like the live row's, not snap — each group's clones are
+     anchored (inline, rail-fix.js) by the side their slide animates,
+     so the interpolation is always length-to-length, never from
+     auto. */
+  transition: opacity 0.25s ease, left .3s ease, right .3s ease;
 }
 .courier-clone a{ color: var(--white); text-decoration: none; }
 .courier-clone a:hover,
@@ -5789,10 +6025,46 @@ body.courier-held .duo-half--mega .duo-panel :is(.ground-kicker, .ground-credit)
   left: 24px; right: 24px; top: 100%;
   height: 1px;
   background: var(--white);
-  transition: right .3s ease;
+  transition: left .3s ease, right .3s ease;
 }
-body:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker::after{
+body:has(.card--mega:not(.card--mega-rev) .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker:not(.clone-rev)::after{
   right: var(--stripe-extend, 24px);
+}
+/* THE REV KICKER CLONE keeps its original's dress: the clone lives
+   at body level, outside the card scope whose rules right-align the
+   label — restated here so ESSAY holds the line's far end instead of
+   sliding under the credit clone's ground. The right pad stands down
+   like the original's (its ink closes on the box edge itself). */
+.courier-clone.clone-rev.ground-kicker{
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
+/* And its held rule holds the static rule's exact ink span — 24 in
+   from the box's left (the text ink line) to the box's RIGHT EDGE
+   (the rev row bleeds only leftward, so its right edge already sits
+   on the 1300 ink line; the base ::after's right 24 shrank the rule
+   at the swap). */
+.courier-clone.clone-rev.ground-kicker::after{
+  left: 24px;
+  right: 0;
+}
+/* THE PAIR'S RIDE, HELD (rev): the ESSAY clone takes the ride —
+   left to the cover's line, its ink opening on the cover's left
+   edge like the live row's — while the kicker clone holds the
+   author at the line's far end. Keyed on hover alone, like the
+   lead's credit clone: the clone pre-positions while invisible so
+   the held swap never replays the slide; !important beats the
+   inline rest anchor (rail-fix.js), and on un-hover the anchor
+   returns and the transition rides it back. */
+body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-credit.clone-rev{
+  left: 24px !important;
+  pointer-events: none;
+}
+/* The REV hero's held rule extends LEFT to its cover's line instead
+   (--stripe-extend carries the mirrored offset, set per clone). */
+body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker.clone-rev::after{
+  left: var(--stripe-extend, 24px);
 }
 /* With the plate OPEN under the held head, its columns run beneath
    the extended rule's whole span — so the kicker clone's mask grows
@@ -5801,17 +6073,23 @@ body:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .couri
    The excerpt text scrolls under the held rule and vanishes; the
    credit clone rides above it in paint order, so the slid author
    stays in print. */
-body:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker::before{
+body:has(.card--mega:not(.card--mega-rev) .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker:not(.clone-rev)::before{
   top: -35.93px; bottom: 0;
   height: auto;
   right: var(--stripe-extend, 0px);
   transition: right .3s ease;
 }
+body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker.clone-rev::before{
+  top: -35.93px; bottom: 0;
+  height: auto;
+  left: var(--stripe-extend, 0px);
+  transition: left .3s ease;
+}
 .courier-clone :is(.meta-author, .meta-date){ margin: 0; padding: 0; }
 .courier-clone :is(.meta-author, .meta-date)::before,
 .courier-clone :is(.meta-author, .meta-date)::after{ content: none; }
-body.courier-held .courier-clone{ visibility: visible; }
-body.courier-pinned .courier-clone{
+.courier-clone.is-held{ visibility: visible; }
+.courier-clone.is-pinned{
   position: fixed;
   top: 35.93px;
 }
@@ -5822,7 +6100,7 @@ body.courier-pinned .courier-clone{
    reverse scroll pulls the whole head back down to its pin like a
    curtain. (After the pinned rule, so it wins the tie while both
    classes are set.) */
-body.hero-gone .courier-clone{
+.courier-clone.is-gone{
   position: absolute;
   top: var(--clone-push-top, 200vh);
 }
@@ -5862,6 +6140,219 @@ body.hero-gone .courier-clone{
    The middle wears the site's own dress again — charcoal ground,
    white text and lines (the inversion experiment retired; only the
    gold dek bands keep their trade). What SURVIVES of that era is
+/* ---------- THE SECOND HERO (mirrored) ----------
+   .card--mega-rev flips the composition — COVER LEFT, GROUND RIGHT —
+   by restating every directional seat of the mega's anatomy against
+   the other edge. Everything symmetric (heights, hoists, the swap's
+   fitter-measured vars, the courier dress) rides through unchanged.
+   The block sits LATE in the file so its mirrors outrank the base
+   seats wherever specificity ties. */
+/* The cover crosses to the left: 24 off the card's left edge, its
+   right edge ending where the base cover's left began. */
+.card--mega-rev .duo-half--mega .duo-card-image{
+  inset: 1px calc(100% / 3 + 24px) 0 24px;
+}
+/* The open plate rides the cover's mirrored box. */
+.card.card--mega-rev .duo-half--mega .duo-panel .card-preview-block{
+  inset: 1px calc(100% / 3 + 24px) 0 24px;
+}
+/* The head rule spans the TITLE column's side — now the right: from
+   the author's left-aligned ink to the courier's right ink edge. On
+   hover it extends LEFT to the cover's edge. */
+.card--mega-rev .duo-half--mega .duo-panel::before{
+  left: calc(200% / 3 + 24px);
+  right: 24px;
+  transition: left .3s ease;
+}
+.card .card--mega-rev .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel::before,
+.card--mega-rev .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel::before,
+.card--mega-rev .duo-half--mega:has(.card-image-link:focus-visible) .duo-panel::before{
+  left: 24px;
+  right: 24px;
+}
+/* The columns trade ends: row-reverse pins the title ground to the
+   card's RIGHT edge (its flex-start is the right in reverse). */
+.card--mega-rev .duo-half--mega .duo-panel-top{
+  flex-direction: row-reverse;
+}
+/* The title ground grows from the card's RIGHT edge instead — the
+   negative margins climb the panel's paddings on the mirrored side,
+   and the rows bleed to the ground's LEFT edge. */
+.card--mega-rev .duo-half--mega .duo-panel .panel-col--left{
+  margin: -16px -24px -24px 0;
+}
+.card--mega-rev .duo-half--mega .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under){
+  margin-right: 0;
+  padding-right: 0;
+  margin-left: -24px;
+  padding-left: 24px;
+}
+/* The LINE trades ends with the mirror: the author/date pair holds
+   the cover's side (left, the absolute rows below), so the LABEL and
+   TOPIC close the line's far end — right-aligned, their ink ending
+   24 inside the card's edge, the exact mirror of the base label's
+   48 left ink. Without this both ends print on the same left edge
+   and the line reads as overstruck type. */
+.card--mega-rev .duo-half--mega .duo-panel .panel-col--left :is(.ground-kicker, .ground-under){
+  justify-content: flex-end;
+  text-align: right;
+}
+/* The left col's under row carries its own base margins (the -16
+   hoist rule outranks the shared bleed mirror) — restate its
+   horizontal mirror at the same weight so the topic's ink closes on
+   the 1300 line with the label's, not the card edge. */
+.card--mega-rev .duo-half--mega .duo-panel .panel-col--left .ground-under{
+  margin-left: -24px;
+  margin-right: 0;
+  padding-left: 24px;
+  padding-right: 0;
+}
+/* The author/date pair anchors off the LEFT now — their boxes open
+   where the cover ends (60% + 62.4 from the left mirrors the base's
+   from the right), text leading from the left, sliding LEFT to the
+   cover's edge on hover. */
+.card--mega-rev .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under){
+  right: auto;
+  left: calc(200% / 3);
+  justify-content: flex-start;
+  /* The ride animates on LEFT here (the shared base transitions
+     right — the lead's sliding side). */
+  transition: left .3s ease;
+}
+/* ON HOVER the pair takes the ride (the lead's author slide,
+   mirrored): ESSAY and the topic slide LEFT with the extending rule,
+   their ink opening on the cover's left edge at the line's far end —
+   the author and date HOLD their title-column seats. The shared lead
+   hover rule above already stands the pair's pointer down and lifts
+   it to 7 for the ride; right:auto undoes that rule's right:0 so the
+   box (and its paper chip) stays ink-sized instead of stretching the
+   full row. */
+.card--mega-rev .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel .panel-col--right :is(.ground-credit, .ground-under),
+.card--mega-rev .duo-half--mega:has(.card-image-link:focus-visible) .duo-panel .panel-col--right :is(.ground-credit, .ground-under){
+  left: 0;
+  right: auto;
+}
+/* (The author and date HOLD their title-column seats now — their
+   old ride to the cover is retired; the ESSAY pair took the ride,
+   see the hover rule above.) */
+/* The rev hero joins the flow mid-page: the base -61.88 was tuned
+   against the header's seat — this one seats its COURIER CAP INK
+   exactly 48 under the latest row's foot (tuned live: 48 target on
+   a 110.87 rendered gap at 48, collapse-corrected at -14.87/72). The foot keeps the base's own -57
+   join to the row beneath. */
+.card.card--mega.card--mega-rev{
+  margin-top: -38.88px;
+}
+
+/* ---------- THE SECOND LATEST ROW (mirrored) ----------
+   .card--latest-rev mirrors the pair — CONTRA LEFT, POSTSCRIPT
+   RIGHT — and inside the postscript cell the columns reverse: text
+   left, cover right. Every directional hover reach flips with it:
+   the drawn rule extends RIGHT, the sliding meta items are the
+   RIGHT-side pair (author, date) landing on the cell's right edge,
+   and the held-hover mask grows rightward. */
+.card--latest-rev .latest-cell--ps{
+  flex-direction: row-reverse;
+}
+/* The square hover image prints on the matter's RIGHT edge. */
+.card--latest-rev .latest-cell--ps .latest-swap{
+  left: auto;
+  right: 0;
+}
+/* The reverse draw extends RIGHT from the rule's right end. (Meta
+   column only — the cover head's rule spans its image and no more.) */
+.card--latest-rev .latest-cell--ps .latest-col .latest-rule::before{
+  right: auto;
+  left: 100%;
+}
+/* The SLIDING PAIR TRADES here: the AUTHOR and DATE take the ride —
+   right across the column and the gap, the author's right ink
+   closing on the cell's right edge over the standing-down count —
+   while the CATEGORY and KICKER hold their seats. The base hover
+   rule still reaches these cells' first-childs, so it is stood down
+   explicitly. */
+.card--latest-rev .latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-courier span:first-child{
+  left: 0;
+}
+.card--latest-rev .latest-cell--ps .latest-col .latest-courier span + span{
+  position: relative;
+  left: 0;
+  transition: left .3s ease;
+}
+.card--latest-rev .latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-courier span + span{
+  /* One column plus the gap, the base category's reach mirrored:
+     the span's right edge rides from the column's right end to the
+     cover's right edge — the cell's own. */
+  left: calc(100% + 48px);
+}
+/* The arriving author's paper chip (the base category's, mirrored). */
+.card--latest-rev .latest-cell--ps .latest-col .latest-courier:not(.latest-courier--under) span + span{
+  background: var(--paper);
+}
+/* And the arriving DATE rides over the open plate like the base
+   kicker — its span takes the print level the kicker's rule gives
+   the base row. */
+.card--latest-rev .latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-courier--under span + span{
+  z-index: 6;
+}
+/* The held-hover mask grows RIGHTWARD across the plate's reach. */
+.card--latest-rev .latest-cell--ps:has(.latest-cover:is(:hover, :focus-visible)) .latest-col .latest-courier:not(.latest-courier--under)::before{
+  left: 0;
+  right: calc(-100% - 48px);
+}
+
+/* THE MEGA COVER HEAD: the heroes' covers carry the same likes /
+   Share head on their own top edge. The wrapper seats absolutely on
+   the COVER'S exact box — apart from the frame, which relocates
+   into the title's box on the hover swap — and the head inside is
+   a real courier + rule pair IN FLOW, hoisted by its own height:
+   native sticky pins it at the held seats, and the wrapper's foot
+   (the cover's own) pushes it off, no clone machinery needed. The
+   wrapper's pointer stands down so the cover hover reads through;
+   only the pair itself takes the pointer. */
+.card .duo-half--mega .mega-cover-head{
+  position: absolute;
+  /* The row IN FLOW at the wrapper's top: -30.2 seats its foot ON
+     the rule line (0..1) level with the hero's own rows; bottom 0
+     runs the wrapper to the cover's foot, the sticky's push-off. */
+  inset: -30.2px 24px 0 calc(100% / 3 + 24px);
+  display: block;
+  pointer-events: none;
+  z-index: 6;
+}
+.card--mega-rev .duo-half--mega .mega-cover-head{
+  inset: -30.2px calc(100% / 3 + 24px) 0 24px;
+}
+.mega-cover-head :is(.likes, .cover-share){ pointer-events: auto; }
+/* ON HOVER the un-held head STANDS DOWN in the stack: the panel is
+   its own stacking context at z 3, so the head's 6 painted its
+   opaque courier ground over the arriving author no matter the
+   author's z INSIDE the panel. Dropped below the panel, the arrival
+   prints; the head's own line is redrawn on the same pixels by the
+   panel's extended rule, and a PINNED head keeps its 6 — the clones
+   at 35 carry the arrival there. */
+.card--mega:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .mega-cover-head:not(.head-held),
+.card--mega:has(.duo-half--mega .card-image-link:focus-visible) .mega-cover-head:not(.head-held){
+  z-index: 2;
+}
+/* THE MASKS ONLY EXIST WHILE HELD: a head's mask-above overhangs
+   35.93 past its row at rest, and at narrow widths that reach eats
+   the dek above it (Manifest Man's dek under row 2's mask). A head
+   that isn't holding masks nothing anyway — so every cover-head and
+   meta-head mask and flank stands down until its row actually pins
+   (.row-held on the latest rows, .head-held on the mega heads, both
+   flipped by rail-fix.js at the pin scroll exactly, where the flip
+   changes nothing visible). */
+.card--latest:not(.row-held) .latest-courier:not(.latest-courier--under)::before,
+.card--latest:not(.row-held) .latest-courier:not(.latest-courier--under)::after{
+  content: none;
+}
+.mega-cover-head:not(.head-held) .latest-courier--cover::before,
+.mega-cover-head:not(.head-held) .latest-courier--cover::after{
+  content: none;
+}
+
+/* ---------- THE FRONT-PAGE GROUND ----------
    the chrome architecture it built: no full-width mask band (covers
    ride visibly over the held zone; text is painted out by the held
    rows' own grounds and mask-above pseudos — clones for the hero,
@@ -5870,10 +6361,141 @@ body.hero-gone .courier-clone{
    on the kicker clone, and no opaque sidebar strip. */
 main:has(.card--mega){
   background: var(--paper);
+  /* THE GOLD MIDDLE'S INK IS CHARCOAL: the token remap flips every
+     var(--white) — couriers, titles, deks, plates, rules — to the
+     chrome's dark, in one move; the reprint and colophon band scope
+     it back below (they are chrome, white on charcoal). The muted
+     and faint greys go with it: BODY TEXT is charcoal too. */
+  --white: #121417;
+  --muted: #121417;
+  --faint: #121417;
   /* flow-root: the hero's negative head margin must not collapse
      OUT and drag the ground's box up over the head rule. */
   display: flow-root;
 }
-main:has(.card--mega) .reprint{ background: var(--paper); }
+main:has(.card--mega) :is(.reprint, .dek-band--foot, .subscribe-band){ --white: #FFFFFF; --muted: #938F86; --faint: #5A574F; }
+main:has(.card--mega) .reprint{ background: var(--chrome); }
+/* The page around the gold middle is CHROME again. */
+body:has(.card--mega){ background: var(--chrome); }
+/* The rail and the held clones live OUTSIDE main but ride the gold
+   middle — their ink follows the middle's charcoal. */
+body:has(.card--mega) .site-nav--top .topbar-rail{ --white: #121417; }
+body:has(.card--mega) .courier-clone{ --white: #121417; }
 body:has(.card--mega).rail-fixed::after{ content: none; }
 body:has(.card--mega)::before{ content: none; }
+
+/* ---------- THE SUBSCRIBE BAND ----------
+   The header said again mid-page, under the second hero: the chrome
+   block FULL BLEED (the margins climb the wrap's 24/48 gutters and,
+   past --max, the wrap's own centring gap), SUBSCRIBE centred in
+   the masthead voice where the name stands above, and one courier
+   line whose ink opens on the S's own left ink — glyph-seated by
+   alignBands (duo-panel-fit.js), the head band's T-stem trick.
+   Margin-top 0: the row-divider's 24 lands the charcoal's top
+   exactly where a latest row's box would sit — 48 under the hero's
+   visible foot, the -57 join's own arithmetic. Margin-bottom 23:
+   with the next divider's 1 + 24 the row below keeps its 48. */
+.subscribe-band{
+  background: var(--chrome);
+  margin: 0
+    calc(-48px - max(0px, (100vw - var(--max)) / 2))
+    23px
+    calc(-24px - max(0px, (100vw - var(--max)) / 2));
+  /* The HEAD BAND's own 48 box is the space before the cap ink now
+     (the name's climb margin measures against its foot) — no pad. */
+  padding-top: 0;
+  padding-bottom: 0;
+  /* The name's empty advance box past its ink was the reprint's
+     horizontal-scrollbar lesson — clip the X only. */
+  overflow-x: clip;
+}
+.subscribe-name{
+  display: block;
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+  font-size: var(--masthead-size);
+  color: var(--white);
+  text-align: center;
+  /* Cap ink 48 under the charcoal's top edge: the margin climbs the
+     box-to-cap offset (Placard's 0.217) back out of the head pad.
+     No rule box between here and the pad, so no -1. */
+  margin-top: calc(0px - 0.217 * var(--masthead-size));
+  /* ABOVE the bands in paint: they are positioned (the aligner's
+     seat), so their charcoal grounds were printing over the round
+     caps' overshoot — the S's crown ends exactly ON the head band's
+     foot and was getting shaved. Positioned, the name paints in DOM
+     order again (under the foot band, which comes later and keeps
+     its own line's hits). */
+  position: relative;
+  /* And the reprint's clip: the box's empty head zone climbed over
+     the head band's line taking its hits — clipped to 0.017 of the
+     size above the cap line, room for the crowns' overshoot. */
+  clip-path: inset(calc(0.2 * var(--masthead-size)) 0 0 0);
+  text-decoration: none;
+  transition: color .15s ease;
+}
+.subscribe-name:hover,
+.subscribe-name:focus-visible{ color: var(--klein); }
+/* The statement SPLITS around the word (one line overran the
+   measure at narrow widths — the split is the fix, not a smaller
+   courier): the first clause rides the HEAD band, whose 48 box IS
+   the chrome's opening air — its foot on the cap ink line; the
+   rest rides the FOOT band hugging the baseline ink from below,
+   the head band pattern. Both open on the S's own ink (alignBands).
+   Both override the generic band's -27.41 header strut, which this
+   clean stack doesn't carry. */
+.dek-band--subscribe-head{
+  margin-top: 0;
+}
+.dek-band--subscribe-foot{
+  margin-top: calc(0px - 0.10088 * var(--masthead-size));
+}
+/* No-JS fallback seat: one line, reading left inside the band's own
+   inset (the aligner re-seats it on the S when it runs). The
+   single child is both first and last, so the generic band's
+   :last-child right-align must be stood down. */
+.dek-band.dek-band--subscribe > span:first-child{
+  flex: 1 0 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* ---------- THE LEFT RAIL (the sidebar reprinted) ----------
+   The right rail ENDS ITS RIDE at the subscribe band (rail-fix.js
+   releases it there — the band carries it away keeping the mark's
+   48 air), and the same column reappears on the LEFT for the second
+   movement: document-anchored by rail-fix (top 48 under the band's
+   charcoal — the rev latest row's own line — and the box running to
+   the mark's seat, whose foot rides 48 above the reprint's rule),
+   riding with the page like content. Same 251.6 strip, same centred
+   axis, mirrored to the page's left edge. */
+.topbar-rail--left{
+  position: absolute;
+  left: 24px;
+  width: 251.6px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+/* The mark BELOW the box on the left axis — the box ends at the
+   mark's top, the right rail's own build; centre 125.8 off the box
+   edge is the strip's middle, the translate trading box-left for
+   centre. */
+.topbar-rail--left .rail-mark{
+  right: auto;
+  left: 125.8px;
+  transform: translateX(-50%);
+  top: 100%;
+}
+/* THE SECOND MOVEMENT'S RESERVATION: under the subscribe band the
+   strip trades sides — the rev latest row mirrors the base row's
+   margins so the LEFT rail takes the column the right one held
+   above. */
+.card.card--latest.card--latest-rev{
+  margin-left: 251.6px;
+  margin-right: 24px;
+}
