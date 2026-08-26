@@ -12,6 +12,10 @@ const path = require('path');
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
 
+// Stamped into the stylesheet link on every build — browsers cache
+// the un-versioned style.css hard, and every design pass was needing
+// a manual hard refresh to show.
+const BUILD_STAMP = Date.now().toString(36);
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
 const SITE_TAGLINE = 'The Young American Magazine';
@@ -1051,7 +1055,9 @@ function dekHtml(text) {
   return escapeHtml(text).replace(/\n/g, '<br>');
 }
 
-function renderNav(currentKey = 'home') {
+// The rail's link list, extracted from renderNav so the LEFT rail
+// (the homepage's reprinted sidebar) can set the identical list.
+function railLinks(currentKey = 'home') {
   // The sidebar no longer prints each item's gloss (l.dek stays set on
   // SITE_LINKS — the section pages' own title/dek pair still reads it,
   // see renderListPage/renderPostscriptPage) — every item is now just
@@ -1074,7 +1080,11 @@ function renderNav(currentKey = 'home') {
     // Subscribe rides in the list now — the one item that keeps a place
     // in the collapsed bar (see the ≤720px rules in style.css).
     + `\n      <li class="nav-item--subscribe"><a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></li>`;
+  return links;
+}
 
+function renderNav(currentKey = 'home') {
+  const links = railLinks(currentKey);
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
   // The masthead IS the brand — the framed-bird mark that used to sit
   // above it is gone, so the name carries the home link itself. It sets
@@ -1108,14 +1118,19 @@ function renderNav(currentKey = 'home') {
     <span class="topbar-name">The New Critic</span>
   </a>
   <div class="topbar-rail">
-    <p class="topbar-tagline">The Young American Magazine</p>
-    <p class="topbar-tagline-under">By For and About Gen Z</p>
-    <ul class="nav-links topbar-links">
-      ${links}
-    </ul>
-    <a class="rail-mark" href="./" aria-label="The New Critic — home"><span aria-hidden="true">The</span><span aria-hidden="true">New</span><span aria-hidden="true">Cri</span><span aria-hidden="true">tic</span></a>
+    ${railInner(links)}
   </div>
 </nav>`;
+}
+
+// The rail's inner dress — the section list and the stacked foot
+// mark — extracted so the LEFT rail (the sidebar reprinted under
+// the subscribe band on the homepage) sets the exact same column.
+function railInner(links) {
+  return `<ul class="nav-links topbar-links">
+      ${links}
+    </ul>
+    <a class="rail-mark" href="./" aria-label="The New Critic — home"><span aria-hidden="true">The</span><span aria-hidden="true">New</span><span aria-hidden="true">Cri</span><span aria-hidden="true">tic</span></a>`;
 }
 
 function renderFooter() {
@@ -1232,7 +1247,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
 // modifier (e.g. card--trio for the 1:2 portrait postscript row).
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
-function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showArtInBand = true, showDek = true, restChipArt = false }, halfClass = '') {
+function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showArtInBand = true, showDek = true, restChipArt = false, megaLabel = 'The Latest', megaSwapMeta = false }, halfClass = '') {
   // Section accent: essays pink, postscript purple, contra green, carried
   // as a --accent custom property on the cell (see .duo-half--essay etc.
   // in style.css) so every hover effect inside the card — title, glows,
@@ -1362,25 +1377,37 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   const footShare = splitCredit ? copyLinkBtnHtml(post, 'ground-share') : '';
   // The credit row: AUTHOR at the left, DATE closing the right —
   // every cell, the mega's body-column row included.
+  // megaSwapMeta (the REV hero): the PAIRS trade rows — the label and
+  // topic take the sliding absolute rows at the cover's side, while
+  // the author and date hold the title column's far end. Classes and
+  // geometry stay put; only the content swaps, so the clones and
+  // every hover slide keep working unchanged.
+  const topicLink = post.kicker
+    ? `<a class="ground-kicker-line" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>`
+    : '';
   const creditHtml = splitCredit && (cornerAuthor || cornerDate)
     ? (isMega
-        ? `<p class="card-meta ground-credit">${cornerAuthor}</p>`
+        ? (megaSwapMeta
+            ? `<p class="card-meta ground-credit"><span class="ground-kicker-line">${escapeHtml(megaLabel)}</span></p>`
+            : `<p class="card-meta ground-credit">${cornerAuthor}</p>`)
         : `<p class="card-meta ground-credit">${cornerAuthor}${cornerDate}</p>`)
     : '';
   // The mega's DATE moves UNDER the divider — a second courier row at
   // the body column's head, right-aligned on the body measure.
-  const dateUnderHtml = isMega && cornerDate
-    ? `<p class="card-meta ground-under ground-under--date">${cornerDate}</p>`
+  // (Swapped mega: the TOPIC rides here instead.)
+  const dateUnderHtml = isMega && (megaSwapMeta ? topicLink : cornerDate)
+    ? `<p class="card-meta ground-under ground-under--date">${megaSwapMeta ? topicLink : cornerDate}</p>`
     : '';
   const cornersHtml = '';
   // The MEGA HERO's kicker ROW over the title: "The Latest" above the
   // divider, and the post's TOPIC back on a second courier row UNDER
-  // it, below the divider, linking into the archive.
+  // it, below the divider, linking into the archive. (Swapped mega:
+  // the AUTHOR heads the title column, the DATE under it.)
   const kickerHtml = isMega
-    ? `<p class="card-meta ground-kicker"><span class="ground-kicker-line">The Latest</span></p>`
+    ? `<p class="card-meta ground-kicker"><span class="ground-kicker-line">${megaSwapMeta ? cornerAuthor : escapeHtml(megaLabel)}</span></p>`
     : '';
-  const underKickerHtml = isMega && post.kicker
-    ? `<p class="card-meta ground-under ground-under--kicker"><a class="ground-kicker-line" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></p>`
+  const underKickerHtml = isMega && (megaSwapMeta ? cornerDate : post.kicker)
+    ? `<p class="card-meta ground-under ground-under--kicker">${megaSwapMeta ? cornerDate : topicLink}</p>`
     : '';
   // The FOOT row closes the ground under the dek: likes at the left,
   // Share at the right — the same ruled courier row as the others.
@@ -1455,6 +1482,8 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // title facing from a centred column on the left (the CSS pins the
   // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
+        ${isMega ? `<span class="mega-cover-head"><p class="latest-courier latest-courier--cover"><span class="cover-likes">${metaLine(post, { include: ['likes'] })}</span>${copyLinkBtnHtml(post, 'cover-share')}</p>
+        <div class="latest-rule"></div></span>` : ''}
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
@@ -1564,12 +1593,14 @@ function renderArchiveMosaic(posts, opts) {
 // covering the left three fifths and the cover showing beside it; its
 // height runs to the bottom of the rail's TIC (see .card--mega in
 // style.css).
-function renderMegaHero(post) {
+function renderMegaHero(post, { rev = false, label = 'The Latest' } = {}) {
   if (!post) return '';
-  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html' }, 'duo-half--wide duo-half--mega');
+  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html', megaLabel: label, megaSwapMeta: rev }, 'duo-half--wide duo-half--mega');
   // (The hero's masthead row is retired — the top header carries the
   // brand; the hero opens straight on its courier band.)
-  return `<section class="card card--duo card--split card--mega">
+  // The REV hero mirrors the composition — cover left, ground right
+  // (see THE SECOND HERO in style.css).
+  return `<section class="card card--duo card--split card--mega${rev ? ' card--mega-rev' : ''}">
         ${half}</section>`;
 }
 
@@ -1596,7 +1627,7 @@ function renderShelvesRow(psPost) {
 // sentence-case titles, the dek's voice underneath. The postscript
 // runs its cover PORTRAIT in the left column with the title/dek
 // column beside it; the contra stacks a SQUARE cover over its text.
-function renderLatestRow(psPost, contraPost) {
+function renderLatestRow(psPost, contraPost, rev = false) {
   if (!psPost && !contraPost) return '';
   const courierHead = (post, labelHtml, authorPrefix) => {
     // The postscript names its SUBJECT ("w/ Jasmine Sun"), not the
@@ -1644,21 +1675,44 @@ function renderLatestRow(psPost, contraPost) {
             ${dekHtml}
             ${swapImg(post)}
           </div>`;
+  // THE COVER HEAD: every cover carries the meta idiom on its own top
+  // edge — likes at the left, Share at the right, over a rule ON the
+  // image's top line. The row is a .latest-courier, so it inherits
+  // the whole rolling-head machinery: it pins at the held seats and
+  // the IMAGE scrolls under it like text (see .latest-courier--cover
+  // in style.css for the z lift over the covers' 5).
+  const coverHead = (post) => `<p class="latest-courier latest-courier--cover"><span class="cover-likes">${metaLine(post, { include: ['likes'] })}</span>${copyLinkBtnHtml(post, 'cover-share')}</p>
+        <div class="latest-rule"></div>`;
   const ps = psPost ? `<div class="latest-cell latest-cell--ps">
-        <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}${plate(psPost)}</a>
+        <div class="latest-cover-col latest-cover-col--portrait">
+          ${coverHead(psPost)}
+          <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}${plate(psPost)}</a>
+        </div>
         <div class="latest-col">
           ${courierHead(psPost, '<a href="postscript.html">Postscript</a>', 'w/ ')}
           ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '')}
         </div>
       </div>` : '';
   const contra = contraPost ? `<div class="latest-cell latest-cell--contra">
-        <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}${plate(contraPost)}</a>
+        <div class="latest-cover-col latest-cover-col--square">
+          ${coverHead(contraPost)}
+          <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}${plate(contraPost)}</a>
+        </div>
         <div class="latest-col">
           ${courierHead(contraPost, '<a href="contra.html">Contra</a>', '')}
           ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '')}
         </div>
       </div>` : '';
-  return `<section class="card card--latest">
+  // The REV row mirrors the pair: contra LEFT, postscript RIGHT with
+  // its cover/text columns reversed (see .card--latest-rev in
+  // style.css — the modifier flips the PS cell's flex and every
+  // directional hover reach).
+  return rev
+    ? `<section class="card card--latest card--latest-rev">
+        ${contra}
+        ${ps}
+      </section>`
+    : `<section class="card card--latest">
         ${ps}
         ${contra}
       </section>`;
@@ -1726,6 +1780,25 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   blocks.push(renderLatestRow(postscripts[0], contras[0]));
+  // THE SECOND MOVEMENT: the next essay as a MIRRORED hero (cover
+  // left, ground right, labelled Essay), then the next contra/
+  // postscript pair with the row mirrored the same way.
+  blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essay' }));
+  // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
+  // block full-bleed, SUBSCRIBE in the masthead voice centred where
+  // the name stands above, and one courier line whose ink opens on
+  // the S's own left ink (glyph-seated by alignBands in
+  // duo-panel-fit.js, the head band's T-stem trick).
+  blocks.push(`<section class="subscribe-band">
+        <div class="dek-band dek-band--subscribe dek-band--subscribe-head">
+          <span>New Critic paid subscribers get access to Postscript, our interview series, Contra, our criticism section,</span>
+        </div>
+        <a class="subscribe-name" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
+        <div class="dek-band dek-band--subscribe dek-band--subscribe-foot">
+          <span>and exclusive New Critic parties for only $30 a year</span>
+        </div>
+      </section>`);
+  blocks.push(renderLatestRow(postscripts[1], contras[1], true));
   const duoHtml = blocks
     .map((block, i) => `
   <div class="wrap">
@@ -1750,7 +1823,7 @@ ${ogTags({
 <link rel="icon" href="favicon.png">
 ${leadPreload}
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderImgFadeScript()}
 </head>
 <body>
@@ -1767,14 +1840,10 @@ ${renderHeader()}
 <!-- THE DEK BAND: a 48 white ribbon between the header and the
      middle — the section topics in the dek's own voice, evenly
      spread across the full measure. -->
-<nav class="dek-band" aria-label="Topics">
-  <a href="./">Arts</a>
-  <a href="./">Culture</a>
-  <a href="./">Education</a>
-  <a href="./">Ideas</a>
-  <a href="./">Politics</a>
-  <a href="./">Religion</a>
-  <a href="./">Technology</a>
+<nav class="dek-band" aria-label="Masthead line">
+  <a href="./">The Young American Magazine</a>
+  <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+  <span>By, For, and About Generation Z</span>
 </nav>
 
 <main id="main">
@@ -1783,15 +1852,15 @@ ${renderHeader()}
 ${duoHtml}
   </div>
 
-  <!-- THE FOOT BAND: the dek band's twin closing the middle — the
-       old footer's colophon in courier, evenly spread. -->
-  <nav class="dek-band dek-band--foot" aria-label="Colophon">
-    <span>Est. May 2025</span>
-    <a href="https://www.thenewcritic.com" rel="noopener">Substack</a>
-    <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>
-    <a href="mailto:editors@thenewcritic.com">Email</a>
-    <span>&copy; ${new Date().getFullYear()} The New Critic</span>
-  </nav>
+  <!-- THE LEFT RAIL: the sidebar REPRINTED for the second movement —
+       the right rail ends its ride at the subscribe band (rail-fix
+       releases it there), and the same column reappears on the LEFT
+       under the band: document-anchored (rail-fix seats it 48 under
+       the charcoal, the mark's foot 48 above the reprint's rule),
+       riding with the page like content. -->
+  <div class="topbar-rail topbar-rail--left">
+    ${railInner(railLinks('home'))}
+  </div>
 
   <!-- THE REPRINT: the masthead again at full width, closing the
        front page — a rule 48 under the last row, the name beneath
@@ -1802,6 +1871,17 @@ ${duoHtml}
     <div class="reprint-rule" aria-hidden="true"></div>
     <a class="reprint-name" href="./" aria-label="The New Critic — home">The New Critic</a>
   </section>
+
+  <!-- THE FOOT BAND: the colophon in courier, UNDER the reprint's
+       name now — the head band's mirror, hugging the footer title's
+       ink from below and closing the page. -->
+  <nav class="dek-band dek-band--foot" aria-label="Colophon">
+    <span>Est. May 2025</span>
+    <a href="https://www.thenewcritic.com" rel="noopener">Substack</a>
+    <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>
+    <a href="mailto:editors@thenewcritic.com">Email</a>
+    <span>&copy; ${new Date().getFullYear()} The New Critic</span>
+  </nav>
 
 </main>
 
@@ -1926,7 +2006,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderImgFadeScript()}
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>

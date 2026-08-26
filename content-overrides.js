@@ -26,6 +26,9 @@ module.exports = {
   'manifest-man': {
     kicker: 'Rationalist Workshop',
   },
+  'present-at-the-creation': {
+    kicker: 'Monitoring the Situation',
+  },
   'change-my-mind': {
     kicker: 'Political Betrayal',
     author: 'Shabbos Kestenbaum',

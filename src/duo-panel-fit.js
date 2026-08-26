@@ -893,7 +893,9 @@
       // budget, and capping it under those printed visibly small in
       // the big ground. No scaling floor anywhere (it printed wider
       // than the column — the real floor is depth, which the
-      // competition finds).
+      // competition finds). (The MEGA's one-scale ceiling lives in
+      // the painted-ink rescale below — a cap here is washed out by
+      // that pass's own fill.)
       maxSize: poster && !wideTitle ? 84 : 0,
       lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
     });
@@ -947,6 +949,12 @@
           inkF = maxH / inkTH;
         }
         var inkS = inkS0 * inkF;
+        // ONE SCALE for every hero: the print size also ceilings at
+        // the THREE-LINE stack's height fill (maxH / 3.3) — The
+        // Striver Class's own bound — so a shorter title (Manifest
+        // Man's two lines) can't print bigger than the three-line
+        // posters around it.
+        if (isFinite(maxH) && maxH > 0) inkS = Math.min(inkS, maxH / 3.3);
         [].forEach.call(inkLns, function(ln){ ln.style.fontSize = inkS.toFixed(2) + 'px'; });
       }
     }
@@ -2489,8 +2497,9 @@
   // the bottom-pinned dek leaves (the dek rides margin-top:auto to
   // the matter's foot — the cover's own bottom line).
   function fitLatestTitle() {
-    var cell = document.querySelector('.latest-cell--ps');
-    if (!cell) return;
+    // EVERY postscript cell — the lead row's and the mirrored second
+    // row's — fits its own title and squares its own swap.
+    [].forEach.call(document.querySelectorAll('.latest-cell--ps'), function(cell){
     var title = cell.querySelector('.latest-title');
     var matter = cell.querySelector('.latest-matter');
     if (!title || !matter) return;
@@ -2505,6 +2514,11 @@
         maxLines: 3,
         preferMostLines: true,
         lineMax: availW * LINE_MAX_PER_PX,
+        // Ceilinged at the STACKED CELLS' own 84 (the house poster
+        // cap): the hero-scale ceiling read too big at row width —
+        // a short title (Present at the Creation) fills to it, the
+        // long ones (Jasmine's) stay bound by their own words.
+        maxSize: 84,
       });
     }
     // The hover swap prints SQUARE: both dimensions set here to the
@@ -2519,6 +2533,7 @@
       swapEl.style.width = swapSide + 'px';
       swapEl.style.height = swapSide + 'px';
     }
+    });
     // The plates cut on a CLEAN LINE and END ON AN ELLIPSIS, hero-
     // fashion: whatever sub-row remainder the cover's height leaves
     // under the last full row folds into the bottom padding (so the
@@ -2633,6 +2648,26 @@
         while (tw.nextNode()) lastText = tw.currentNode;
         if (lastText) lastText.nodeValue = lastText.nodeValue.replace(/[.\s]*$/, '') + '…';
       }
+      // THE CONTRA LIFT: the cut ends well short of the cover's foot
+      // (the preview is one paragraph), so the hover rides the
+      // courier block up to 24 under the text's descender ink — the
+      // lift is the air between that ink and the plate's foot,
+      // measured here from the rendered cut and handed to the CSS
+      // (the hover rules translate the block and grow the swap by
+      // exactly this). Descender ink, not the line box: the block's
+      // 24 reads off the text the eye sees end.
+      var contraCell = pl.closest('.latest-cell--contra');
+      if (contraCell && lastVis) {
+        var lcs = getComputedStyle(lastVis);
+        var lctx = document.createElement('canvas').getContext('2d');
+        lctx.font = lcs.fontStyle + ' ' + lcs.fontWeight + ' ' + lcs.fontSize + ' ' + lcs.fontFamily;
+        var lm = lctx.measureText('Mx');
+        var lhalf = (unit - (lm.fontBoundingBoxAscent + lm.fontBoundingBoxDescent)) / 2;
+        var lBaseline = lastVis.getBoundingClientRect().bottom - lhalf - lm.fontBoundingBoxDescent;
+        var lInk = lBaseline + (lctx.measureText('gjpqy').actualBoundingBoxDescent || lm.fontBoundingBoxDescent);
+        var lift = pl.getBoundingClientRect().bottom - lInk;
+        contraCell.style.setProperty('--contra-lift', Math.max(0, lift).toFixed(2) + 'px');
+      }
     });
   }
 
@@ -2664,8 +2699,153 @@
     });
   }
 
+  // THE BANDS' GLYPH SEATS: band items align to FEATURES OF THE
+  // MASTHEAD GLYPHS above them — the T's stem-left at its bottom
+  // (narrower than the crossbar, so only a pixel scan of the
+  // rendered glyph knows it), the W's bottom-right vertex, the N's
+  // left stem, the C's leftmost ink. Head band: the magazine line on
+  // the T, the date closing on the W. Foot band: Est on the T,
+  // Substack on the N, Instagram closing on the W, Email on the C —
+  // the copyright keeps the flex-end flow, like the head's tagline.
+  // Anchored items go absolute at fitter-measured seats; re-run
+  // every pass (fonts landing move both the glyphs and the seats).
+  function alignBandTo(band, name, spec) {
+    // < not <=: a band may be ALL anchored items (the subscribe
+    // band's single line) — only bail when the spec names children
+    // the band doesn't have.
+    if (!band || !name || band.children.length < spec.length) return;
+    var textNode = name.firstChild;
+    while (textNode && textNode.nodeType !== 3) textNode = textNode.firstChild || textNode.nextSibling;
+    if (!textNode) return;
+    var text = textNode.nodeValue.toUpperCase();
+    var ncs = getComputedStyle(name);
+    var size = parseFloat(ncs.fontSize);
+    if (!size) return;
+    var scanSize = 200;
+    // Pixel-scan a glyph for an ink edge: 'left-bottom'/'right-bottom'
+    // read the bottom band (baseline up 5%), 'left-full' the whole
+    // cap height. Returns the offset from the glyph origin at the
+    // rendered scale.
+    function glyphScan(ch, edge) {
+      var c = document.createElement('canvas');
+      c.width = 340; c.height = 280;
+      var g = c.getContext('2d');
+      g.font = ncs.fontWeight + ' ' + scanSize + 'px ' + ncs.fontFamily;
+      g.textBaseline = 'alphabetic';
+      g.fillStyle = '#000';
+      var x0 = 60, y0 = 240;
+      g.fillText(ch, x0, y0);
+      var img;
+      try { img = g.getImageData(0, 0, 340, 280).data; } catch (e) { return null; }
+      var right = edge === 'right-bottom';
+      var yFrom = edge === 'left-full' ? Math.round(y0 - 0.8 * scanSize) : Math.round(y0 - 0.05 * scanSize);
+      var found = null;
+      for (var y = yFrom; y <= y0 - 1; y++) {
+        for (var xi = 0; xi < 340; xi++) {
+          var x = right ? 339 - xi : xi;
+          if (img[(y * 340 + x) * 4 + 3] > 40) {
+            if (found === null || (right ? x > found : x < found)) found = x;
+            break;
+          }
+        }
+      }
+      return found === null ? null : (found - x0) * (size / scanSize);
+    }
+    function inkOf(el) {
+      var cs = getComputedStyle(el);
+      var g = document.createElement('canvas').getContext('2d');
+      g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var t = el.textContent;
+      if (cs.textTransform === 'uppercase') t = t.toUpperCase();
+      var m = g.measureText(t);
+      return { left: (m.actualBoundingBoxLeft || 0), right: (m.actualBoundingBoxRight || m.width) };
+    }
+    var bandRect = band.getBoundingClientRect();
+    var rng = document.createRange();
+    var ok = true;
+    var seats = spec.map(function(s) {
+      if (s.between) return 0;
+      var idx = s.nth ? nthIndex(text, s.char, s.nth) : text.indexOf(s.char);
+      if (idx < 0) { ok = false; return null; }
+      rng.setStart(textNode, idx); rng.setEnd(textNode, idx + 1);
+      var box = rng.getBoundingClientRect();
+      var off = glyphScan(s.char, s.edge);
+      if (off === null) { ok = false; return null; }
+      return box.left + off;
+    });
+    if (!ok) return;
+    band.style.justifyContent = 'flex-end';
+    function seatVertically(el) {
+      var lh = parseFloat(getComputedStyle(el).lineHeight) || 24;
+      // inkCenterBands just wrote the bare centring shift — restate
+      // it against the band's own box for the absolute seat.
+      var shift = parseFloat(el.style.top) || 0;
+      el.style.position = 'absolute';
+      el.style.top = ((bandRect.height - lh) / 2 + shift).toFixed(2) + 'px';
+    }
+    // Glyph-anchored seats first...
+    spec.forEach(function(s, k) {
+      if (s.between) return;
+      var el = band.children[s.item];
+      seatVertically(el);
+      var ink = inkOf(el);
+      el.style.left = (s.align === 'right'
+        ? seats[k] - bandRect.left - ink.right
+        : seats[k] - bandRect.left + ink.left).toFixed(2) + 'px';
+    });
+    // ...then the BETWEEN seats: ink-centred exactly between the two
+    // named neighbours' ink edges (read after their own seating).
+    spec.forEach(function(s) {
+      if (!s.between) return;
+      var el = band.children[s.item];
+      var a = band.children[s.between[0]], b = band.children[s.between[1]];
+      var aInk = inkOf(a), bInk = inkOf(b);
+      var aRight = a.getBoundingClientRect().left + aInk.right;
+      var bLeft = b.getBoundingClientRect().left - bInk.left;
+      var mid = (aRight + bLeft) / 2;
+      seatVertically(el);
+      var ink = inkOf(el);
+      el.style.left = (mid - bandRect.left - (ink.right - ink.left) / 2).toFixed(2) + 'px';
+    });
+  }
+  function nthIndex(text, ch, nth) {
+    var i = -1;
+    for (var n = 0; n < nth; n++) { i = text.indexOf(ch, i + 1); if (i < 0) return -1; }
+    return i;
+  }
+  function alignBands() {
+    alignBandTo(
+      document.querySelector('.dek-band:not(.dek-band--foot)'),
+      document.querySelector('.topbar-name'),
+      [
+        { item: 0, char: 'T', edge: 'left-bottom', align: 'left' },
+        // The date's INK OPENS on the N's left stem (New's N).
+        { item: 1, char: 'N', edge: 'left-bottom', align: 'left' }
+      ]);
+    alignBandTo(
+      document.querySelector('.dek-band--foot'),
+      document.querySelector('.reprint-name'),
+      [
+        { item: 0, char: 'T', edge: 'left-bottom', align: 'left' },
+        { item: 1, char: 'N', edge: 'left-bottom', align: 'left' },
+        // Email takes the W's bottom-right vertex; Instagram centres
+        // its ink EXACTLY BETWEEN Substack's end and Email's start.
+        { item: 3, char: 'W', edge: 'right-bottom', align: 'right' },
+        { item: 2, between: [1, 3] }
+      ]);
+    // The SUBSCRIBE bands: the statement splits around the word —
+    // first clause above, the rest below — each line's courier ink
+    // opening on the S's own leftmost ink (left-full — the S's
+    // widest point sits mid-height, not in the bottom scan band).
+    var subName = document.querySelector('.subscribe-name');
+    var subSpec = [{ item: 0, char: 'S', edge: 'left-full', align: 'left' }];
+    alignBandTo(document.querySelector('.dek-band--subscribe-head'), subName, subSpec);
+    alignBandTo(document.querySelector('.dek-band--subscribe-foot'), subName, subSpec);
+  }
+
   function fitAll() {
     inkCenterBands();
+    alignBands();
     fitHeroLink(); // before the panels: the hero panel pins to the fitted link
     fitContraLead(); // before too: the lead's height moves every row below it
     // Re-queried every pass, not captured once: the ticker clones its whole
