@@ -33,20 +33,26 @@
   // the title fit (reserve) and the body budget (cap) so the two
   // never fight over the same pixels.
   var BAND_SHARE = 0.38;
-  // When a block's text fills every line slot its box allows, the sub-line
-  // remainder (box height mod line-height) is distributed into the leading
-  // instead of piling up as dead space over the band: each slot may open
-  // by up to this factor so the last line sits ON the floor. 15% of a
-  // 20.8px line is ~3px a slot — feathering, not double-spacing.
-  var MAX_SLOT_STRETCH = 1.15;
-  // The re-seat after a cut (see the multi-column branch) is allowed a
-  // little more than the general feather. It is closing a STRUCTURAL
-  // shortfall — a leftover row no paragraph can start in, because the
-  // gap costs a slot of its own — rather than distributing a sub-line
-  // remainder, and at 1.15 it lands half a line short of the floor and
-  // leaves exactly the hole it was meant to close. 1.25 of a 1.5 leading
-  // is 1.88, a hair looser than the 1.73 its neighbours already run at.
-  var RESEAT_SLOT_STRETCH = 1.25;
+  // ONE LEADING FOR ALL BODY TEXT. When a block's text filled every
+  // line slot its box allows, the sub-line remainder (box height mod
+  // line-height) used to be FEATHERED into the leading — each slot
+  // opening by up to 15% so the last line sat exactly ON the floor.
+  // It bought a clean foot at the price of the page's one measure:
+  // every plate and excerpt then read at whatever leading its own box
+  // happened to divide into, and the same 16px Garamond ran at 19.2,
+  // 19.27, 19.82 and 20.67 in four cells of the same page. Held at 1
+  // the slot is always the stylesheet's own — 19.2, the 1.2 both
+  // .latest-plate-p and .card-preview are specified at — and the
+  // remainder stays where it falls, as air at the foot. The rest of
+  // the machinery is untouched: rows are still counted, cuts still
+  // made and blocks still seated on this unit; it simply never
+  // stretches. (The same objection retired feathering from the
+  // stack's gaps once already — see distributeStackSlack: it made the
+  // excerpt's rhythm a function of how the box divided.)
+  var MAX_SLOT_STRETCH = 1;
+  // (RESEAT_SLOT_STRETCH went with it — the re-seat after a cut was
+  // the one place allowed to open wider still, and it has had no
+  // caller since the multi-column branch was rewritten.)
 
   // Applies a stretched slot to a preview block's paragraphs: line-height
   // and the between-paragraph gap both become `unit`, so the paragraph
@@ -956,6 +962,37 @@
         // posters around it.
         if (isFinite(maxH) && maxH > 0) inkS = Math.min(inkS, maxH / 3.3);
         [].forEach.call(inkLns, function(ln){ ln.style.fontSize = inkS.toFixed(2) + 'px'; });
+        // AND THE RENDERED INK IS BROUGHT INSIDE THE MARGIN. The fill
+        // above sizes from CANVAS metrics, which are an estimate of
+        // the painted box — kerning and the face's own side bearings
+        // put the real thing a little wider, and Collegiate Value
+        // printed 6.7 past the card's right margin while measuring as
+        // a fit. Read what actually landed and take the ratio back if
+        // it overhangs; reading the rect here forces the layout the
+        // lines above just asked for, so this sees the truth.
+        var pb = title.getBoundingClientRect();
+        if (pb.width) {
+          var prg = document.createRange();
+          prg.selectNodeContents(title);
+          var pL = Infinity, pR = -Infinity;
+          [].forEach.call(prg.getClientRects(), function (r) {
+            if (!r.width) return;
+            if (r.left < pL) pL = r.left;
+            if (r.right > pR) pR = r.right;
+          });
+          if (pR !== -Infinity) {
+            var pOver = Math.max(pR - pb.right, pb.left - pL);
+            if (pOver > 0.05) {
+              var pRatio = pb.width / (pb.width + pOver);
+              if (isFinite(pRatio) && pRatio < 1) {
+                [].forEach.call(inkLns, function(ln){
+                  var ls = parseFloat(ln.style.fontSize) || inkS;
+                  ln.style.fontSize = (ls * pRatio).toFixed(2) + 'px';
+                });
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -2527,12 +2564,9 @@
     // the IMAGE's intrinsic ratio, which beats the CSS aspect-ratio,
     // and the global img max-width caps anything wider; a real pixel
     // square sidesteps both.
-    var swapEl = cell.querySelector('.latest-swap');
-    if (swapEl && matter.clientHeight > 0 && matter.clientWidth > 0) {
-      var swapSide = Math.min(matter.clientWidth, matter.clientHeight);
-      swapEl.style.width = swapSide + 'px';
-      swapEl.style.height = swapSide + 'px';
-    }
+    // (The open picture's box is fitCurtainVars' business now that it
+    // rides inside the curtain — an inline width/height set here is an
+    // inline style and would outrank the --sw-* seat.)
     });
     // The plates cut on a CLEAN LINE and END ON AN ELLIPSIS, hero-
     // fashion: whatever sub-row remainder the cover's height leaves
@@ -2552,6 +2586,13 @@
       // face at its leading. (The hero's plate does the same in the
       // mega feather branch of fit().)
       var psCell = pl.closest('.latest-cell');
+      // NOT the turned-over review: its plate is the card's own foot
+      // and its dek stands ABOVE it, so the dek-ink floor would land
+      // deep inside the box — a 215px padding with no room left to
+      // clamp into, and the body sheared on the overflow. Its floor
+      // is its own box; the stylesheet's 43.67 foot pad stands and
+      // the clamp below cuts the text on a clean line inside it.
+      if (psCell && psCell.classList.contains('latest-cell--contra-rev')) psCell = null;
       if (psCell) {
         var ownDek = psCell.querySelector('.latest-dek');
         if (ownDek) {
@@ -2648,26 +2689,12 @@
         while (tw.nextNode()) lastText = tw.currentNode;
         if (lastText) lastText.nodeValue = lastText.nodeValue.replace(/[.\s]*$/, '') + '…';
       }
-      // THE CONTRA LIFT: the cut ends well short of the cover's foot
-      // (the preview is one paragraph), so the hover rides the
-      // courier block up to 24 under the text's descender ink — the
-      // lift is the air between that ink and the plate's foot,
-      // measured here from the rendered cut and handed to the CSS
-      // (the hover rules translate the block and grow the swap by
-      // exactly this). Descender ink, not the line box: the block's
-      // 24 reads off the text the eye sees end.
-      var contraCell = pl.closest('.latest-cell--contra');
-      if (contraCell && lastVis) {
-        var lcs = getComputedStyle(lastVis);
-        var lctx = document.createElement('canvas').getContext('2d');
-        lctx.font = lcs.fontStyle + ' ' + lcs.fontWeight + ' ' + lcs.fontSize + ' ' + lcs.fontFamily;
-        var lm = lctx.measureText('Mx');
-        var lhalf = (unit - (lm.fontBoundingBoxAscent + lm.fontBoundingBoxDescent)) / 2;
-        var lBaseline = lastVis.getBoundingClientRect().bottom - lhalf - lm.fontBoundingBoxDescent;
-        var lInk = lBaseline + (lctx.measureText('gjpqy').actualBoundingBoxDescent || lm.fontBoundingBoxDescent);
-        var lift = pl.getBoundingClientRect().bottom - lInk;
-        contraCell.style.setProperty('--contra-lift', Math.max(0, lift).toFixed(2) + 'px');
-      }
+      // (THE CONTRA LIFT is retired — see the note in style.css. It
+      // measured the air between the plate's last descender and the
+      // plate's foot so the hover could ride the review's courier
+      // block up into it; the block moved out of the text column
+      // with the head, and the only thing left reading this was the
+      // swap image, sliding for no reason.)
     });
   }
 
@@ -2813,6 +2840,515 @@
     for (var n = 0; n < nth; n++) { i = text.indexOf(ch, i + 1); if (i < 0) return -1; }
     return i;
   }
+  // SUBSCRIBE SET TO THE MEASURE: the word is tracked out until its
+  // INK spans the same 48-to-48 the masthead's does — the wordmark
+  // fills the measure by SIZE (its vw font scale), but this one has
+  // to fill it by LETTER-SPACING, since its size is borrowed from
+  // the masthead and its string is a different length. Measured off
+  // the rendered face each pass, so a late font or a resize re-fits.
+  function fitSubscribeName() {
+    [].forEach.call(document.querySelectorAll('.banner-name'), fitOneBannerName);
+  }
+  // A line's TRUE ink edges, read from layout: the first and last
+  // characters' own boxes give the glyph origins, and the face's
+  // bearings give the ink inside them. No modelling of how the line
+  // is centred, which is where the banners' own seat went wrong.
+  function inkSpanOf(el) {
+    var tn = el.firstChild;
+    if (!tn || tn.nodeType !== 3) return null;
+    var cs = getComputedStyle(el);
+    var text = tn.nodeValue;
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    if (!text.length) return null;
+    var g = document.createElement('canvas').getContext('2d');
+    g.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var ls = parseFloat(cs.letterSpacing) || 0;
+    var r1 = document.createRange(); r1.setStart(tn, 0); r1.setEnd(tn, 1);
+    var rN = document.createRange(); rN.setStart(tn, text.length - 1); rN.setEnd(tn, text.length);
+    var a = r1.getBoundingClientRect(), b = rN.getBoundingClientRect();
+    var mL = g.measureText(text.charAt(0));
+    var mR = g.measureText(text.charAt(text.length - 1));
+    return {
+      left: a.left - (mL.actualBoundingBoxLeft || 0),
+      right: b.right - ls - (mR.width - mR.actualBoundingBoxRight)
+    };
+  }
+
+  function fitOneBannerName(el) {
+    if (!el) return;
+    var cs = getComputedStyle(el);
+    var size = parseFloat(cs.fontSize);
+    if (!size) return;
+    var text = el.textContent || '';
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    if (text.length < 2) return;
+    var g = document.createElement('canvas').getContext('2d');
+    g.font = cs.fontWeight + ' ' + size + 'px ' + cs.fontFamily;
+    var m = g.measureText(text);
+    var leftBearing = m.actualBoundingBoxLeft || 0;
+    var naturalInk = leftBearing + m.actualBoundingBoxRight;
+    if (!naturalInk) return;
+    var band = el.parentNode.getBoundingClientRect();
+    // THE TARGET IS THE MASTHEAD'S OWN INK, not a nominal 48: the two
+    // are measured the same way here, so matching the wordmark
+    // directly can't drift on a bearing convention the way a bare
+    // number does — it read 5.9 wider than the masthead when the
+    // margin was assumed rather than measured.
+    var mast = document.querySelector('.topbar-name');
+    var targetLeft = band.left + 48;
+    var target = band.width - 96;
+    if (mast) {
+      var mi = inkSpanOf(mast);
+      if (mi) { targetLeft = mi.left; target = mi.right - mi.left; }
+    }
+    // CSS lays a space after EVERY letter, the last one included, so
+    // the ink grows by only (n-1) of them — track on that count or
+    // the word runs a full space wide.
+    var ls = (target - naturalInk) / (text.length - 1);
+    el.style.letterSpacing = ls.toFixed(3) + 'px';
+    // THE POSITION IS READ, NOT MODELLED. Deriving where the tracked
+    // line starts means predicting how the browser centres a line whose
+    // last letter carries a trailing space — and that prediction was
+    // wrong by half the tracking, which pushed every banner right by
+    // that much (STORE worst, its tracking being widest). A Range over
+    // the FIRST CHARACTER is real layout: its box opens on that
+    // glyph's own origin, so the ink opens one bearing further along.
+    el.style.transform = 'none';
+    var tn = el.firstChild;
+    if (!tn || tn.nodeType !== 3) return;
+    var rng = document.createRange();
+    rng.setStart(tn, 0); rng.setEnd(tn, 1);
+    var firstBox = rng.getBoundingClientRect();
+    var firstBearing = g.measureText(text.charAt(0)).actualBoundingBoxLeft || 0;
+    var inkLeft = firstBox.left - firstBearing;
+    var shift = targetLeft - inkLeft;
+    el.style.transform = 'translateX(' + shift.toFixed(2) + 'px)';
+  }
+
+  // EVERY ROW STANDS THE HERO'S HEIGHT. The rows settle at whatever
+  // their own text needs — a wider column takes fewer lines, three
+  // cells take more than two — so left alone they step up and down the
+  // page. The HERO's cell is the page's fixed measure (its height is a
+  // vw calc, not content), so it is the one thing worth matching, and
+  // every row takes it as a floor. Re-read each pass, cleared first so
+  // a previous pass's floor is never what gets measured.
+  function fitRowHeights() {
+    var hero = document.querySelector('.card--mega .duo-half--mega');
+    var rows = [].slice.call(document.querySelectorAll('.card--latest'));
+    var squares = [].slice.call(document.querySelectorAll('.latest-cover-col--square'));
+    rows.forEach(function(r){ r.style.minHeight = ''; });
+    // Cleared BEFORE the hero is read: a cap from the last pass would
+    // otherwise be what this one measures.
+    squares.forEach(function(s){ s.style.height = ''; });
+    if (!hero) return;
+    var h = hero.getBoundingClientRect().height;
+    if (!h) return;
+    // THE CONTRA'S PICTURE TAKES WHAT THE ROW HAS LEFT. A floor can
+    // only push a short row up; a review row that runs TALLER than
+    // the hero can only be brought down by taking it off something,
+    // and the one thing in the cell that isn't words is the picture.
+    // Its square is width-driven, so it gives the excess back and
+    // stands a RECTANGLE instead.
+    //
+    // PER CELL, not per row and not per page. The excess is a
+    // property of ONE review's words, not of its neighbours': in the
+    // first trio only the Rodrigo piece runs a two-line title over a
+    // two-line dek, and charging its 59 to all three shrank two
+    // pictures that owed nothing. Each cell settles its own now —
+    // every review keeps its words on the cell's own foot, and only
+    // the one that needs the room takes it off its picture.
+    //
+    // NATURAL BOTTOM, and it has to be taken with the words' own
+    // column UNSPRUNG. A cell is stretched to its row and its text
+    // column springs to fill whatever is left, so at rest every cell
+    // in a row reports the same foot no matter how few lines it
+    // actually carries — measure it as it stands and all three
+    // reviews look equally hungry. Pinned to its content for the
+    // reading, the column tells the truth, and only the review whose
+    // words really run long shows an excess.
+    rows.forEach(function(r){
+      [].forEach.call(r.querySelectorAll('.latest-cell--contra'), function(cell){
+        var sq = cell.querySelector('.latest-cover-col--square');
+        var col = cell.querySelector('.latest-col');
+        if (!sq || !col) return;
+        var flex = col.style.flex;
+        col.style.flex = '0 0 auto';
+        // The LOWEST thing standing in the cell — the words on a plain
+        // review, the PICTURE on a turned-over one, where the billing
+        // holds the head and the picture closes the foot alone.
+        //
+        // READ IN LAYOUT COORDINATES, not viewport ones. The head and
+        // its rule are STICKY: pinned, their client rects report where
+        // the scroll has carried them, not the seat they hold in the
+        // cell — so measured off rects this whole reading changes with
+        // the scroll position, and a fit that happened to run scrolled
+        // capped every picture to the worst cell in the row (or, on a
+        // row far up the page, not at all). offsetTop is the flow seat
+        // and it does not move.
+        var bottom = 0;
+        var cellTop = cell.getBoundingClientRect().top;
+        [].forEach.call(cell.children, function(e){
+          var ecs = getComputedStyle(e);
+          if (ecs.display === 'none') return;
+          // Skip the STICKY pair. Pinned, their rects report where the
+          // scroll has carried them rather than the seat they hold, so
+          // a fit that ran scrolled read the whole cell wrong — capping
+          // every picture in a row to its worst cell, or not at all.
+          // They stand at the cell's head and are never its lowest
+          // thing anyway. (offsetTop would dodge the stick too, but it
+          // rounds to whole pixels and the cap needs the fraction.)
+          if (ecs.position === 'sticky') return;
+          var b = e.getBoundingClientRect().bottom - cellTop + (parseFloat(ecs.marginBottom) || 0);
+          if (b > bottom) bottom = b;
+        });
+        var over = bottom - h;
+        col.style.flex = flex;
+        if (over <= 0.5) return;
+        var cur = sq.getBoundingClientRect().height;
+        if (cur > over) sq.style.height = (cur - over).toFixed(2) + 'px';
+      });
+    });
+    rows.forEach(function(r){
+      if (r.getBoundingClientRect().height < h) r.style.minHeight = h.toFixed(2) + 'px';
+    });
+  }
+
+  // THE COURIER SPANS THE WHOLE RULE. The line under the head runs
+  // from the text column's own ink, across the 48 gap, to the
+  // picture's far edge — two pieces drawn separately, one line to
+  // read — and the head belongs on that whole measure, not on the
+  // cover's share of it: kicker closing one end, date the other, the
+  // author centred in the span between. The cover's head keeps its
+  // BOX (the held clones' bridge is measured off its rule, and the
+  // sticky's push-off is the cover's own foot); only the ROW inside
+  // it, and the category under it, stretch — by negative margins and
+  // negative insets, so nothing in the flow moves an inch. Measured,
+  // because the two columns are seated by flex bases, aspect ratios
+  // and vw calcs that differ row by row.
+  function fitCourierSpan() {
+    [].forEach.call(document.querySelectorAll('.latest-courier--cover'), function (row) {
+      var host = row.closest('.duo-half--mega, .latest-cell');
+      if (!host) return;
+      // The UNDER ROW rides the same measure as the head above it —
+      // where it is absolute. The contra's prints in flow under its
+      // picture and needs no seating at all.
+      var cat = host.querySelector('.cover-under');
+      if (cat && getComputedStyle(cat).position !== 'absolute') cat = null;
+      row.style.marginLeft = '';
+      row.style.marginRight = '';
+      if (cat) { cat.style.left = ''; cat.style.right = ''; }
+      // THE RULE'S OWN EXTENT, read off the rule where it is a real
+      // element and off the column it runs the length of where it is
+      // a pseudo (the hero's divider, which opens on the title
+      // column's ink and closes on the cover's edge).
+      var L = Infinity, R = -Infinity;
+      [].forEach.call(host.querySelectorAll('.latest-rule'), function (el) {
+        var b = el.getBoundingClientRect();
+        // A rule that isn't drawn has no seat to contribute — and its
+        // empty rect sits at the VIEWPORT'S origin, so taken into the
+        // union it drags the head's left edge to x 0 and prints the
+        // kicker out in the margin, a whole cell wide of its own box.
+        // (The turned-over reviews hide their foot rule.)
+        if (!b.width) return;
+        if (b.left < L) L = b.left;
+        if (b.right > R) R = b.right;
+      });
+      var col = host.querySelector('.panel-col--left') || host.querySelector('.latest-col');
+      if (col) {
+        var cb = col.getBoundingClientRect();
+        var cs = getComputedStyle(col);
+        var cl = cb.left + (parseFloat(cs.paddingLeft) || 0);
+        var cr = cb.right - (parseFloat(cs.paddingRight) || 0);
+        if (cl < L) L = cl;
+        if (cr > R) R = cr;
+      }
+      if (!isFinite(L) || !isFinite(R)) return;
+      var rr = row.getBoundingClientRect();
+      if (L < rr.left - 0.5) row.style.marginLeft = (L - rr.left).toFixed(2) + 'px';
+      if (R > rr.right + 0.5) row.style.marginRight = (rr.right - R).toFixed(2) + 'px';
+      if (cat) {
+        var box = cat.offsetParent || cat.parentElement;
+        if (box) {
+          var bb = box.getBoundingClientRect();
+          cat.style.left = (L - bb.left).toFixed(2) + 'px';
+          cat.style.right = (bb.right - R).toFixed(2) + 'px';
+        }
+      }
+    });
+  }
+
+  // THE PICTURE CLOSES ON THE LAST LINE, NOT ON THE BOX. Open, the
+  // plate takes the cover's box and the picture drops to the matter's,
+  // so the review's foot is a strip at the card's bottom with a field
+  // of dead ground above it; --contra-fill is what the picture grows
+  // UP by to close that field (the CSS pays it as a negative top and
+  // an equal addition to the height).
+  //
+  // It used to close on the PLATE'S OWN EDGE, which is only the right
+  // seat when the body text runs the whole plate. It does not: the
+  // text cuts on a clean row and whatever sub-row the cover's height
+  // leaves over stands empty under the last line — 56 to 77px of it,
+  // where the body opens on 13 under its courier. So the floor is the
+  // LAST RENDERED LINE'S own box now, and the air laid under it is the
+  // air the head keeps, read off the same page rather than named:
+  // the first line's box top over the seat the billing takes when it
+  // rides up on hover (the plate's top edge plus that row's height).
+  // Both ends then hold the same distance whatever the picture's
+  // height leaves over.
+  //
+  // Measured AFTER fitLatestTitle — the plate's text is re-cut there
+  // every pass, and a last line read before the cut is not the one the
+  // reader sees.
+  function fitContraFill() {
+    [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
+      if (cell.classList.contains('latest-cell--contra-rev')) return;
+      var plate = cell.querySelector('.latest-plate');
+      var matter = cell.querySelector('.latest-matter');
+      var under = cell.querySelector('.cover-under');
+      if (!plate || !matter || !under) return;
+      var pRect = plate.getBoundingClientRect();
+      // Fallback is the old seat — the plate's own edge — so a plate
+      // with no rendered text still closes somewhere sane.
+      var floor = pRect.bottom;
+      var air = 0;
+      var paras = [].filter.call(plate.querySelectorAll('.latest-plate-p'), function (p) {
+        return p.getClientRects().length;
+      });
+      if (paras.length) {
+        var rl = document.createRange();
+        rl.selectNodeContents(paras[paras.length - 1]);
+        var tail = [].filter.call(rl.getClientRects(), function (r) { return r.height; });
+        var rf = document.createRange();
+        rf.selectNodeContents(paras[0]);
+        var head = [].filter.call(rf.getClientRects(), function (r) { return r.height; });
+        if (tail.length && head.length) {
+          floor = tail[tail.length - 1].bottom;
+          air = head[0].top - (pRect.top + under.getBoundingClientRect().height);
+        }
+      }
+      cell.style.setProperty('--contra-fill', Math.max(0,
+        matter.getBoundingClientRect().top - (floor + Math.max(0, air))
+      ).toFixed(2) + 'px');
+    });
+  }
+
+  // THE TURNED-OVER REVIEW'S OPEN GEOMETRY. On hover a rev cell flips
+  // back to the standard order (text above, picture closing the foot —
+  // see THE TURN UNDOES ITSELF in style.css), and the swap needs a
+  // measured top: the last rendered line of the plate's cut text, plus
+  // the head's own air, in the FLIPPED layout. The flip is held for
+  // one frame with the .rev-flip class — the same rules the hover
+  // wears — measured, and released.
+  // THE CURTAIN'S SEATS. The hem is a cell-level pseudo (THE CURTAIN,
+  // style.css) stating the clip edge in the cell's own frame:
+  // --plate-top and --plate-h, the plate's box against its cell (or
+  // the hero's preview block against its half), measured after the
+  // rows are levelled so the boxes are final.
+  // THE HEM'S OWN MEASURE: the union of the host's drawn rules, so
+  // the descending line lands on EXACTLY the span the standing rule
+  // keeps. The cells' rules already union to the whole cell (the
+  // postscript's pair plus its bridge, the review's full-width
+  // pair), so they read 0/0; the HERO's single rule spans its cover
+  // alone, and its hem overhung by the title column's whole width
+  // until this seated it. Sticky rules are safe to read here — the
+  // stick is vertical, and only the horizontal span is wanted — but
+  // an undrawn rule's rect sits at the viewport origin, so
+  // zero-width ones are skipped (the turned-over review's hidden
+  // foot rule, the lesson from fitCourierSpan).
+  function fitCurtainVars() {
+    // Every seat the curtain must reproduce, read off the RESTING card
+    // — the only state that still exists in the layout, now that
+    // nothing moves on hover. The curtain's box is the rule's own
+    // span; inside it the text keeps the column the plate used to
+    // own and the open picture takes the box the swap used to fly to.
+    function ruleSpan(host, hb) {
+      var L = Infinity, R = -Infinity;
+      [].forEach.call(host.querySelectorAll('.latest-rule'), function (el) {
+        if (getComputedStyle(el).display === 'none') return;
+        var b = el.getBoundingClientRect();
+        if (!b.width) return;                  // an undrawn rule sits at the origin
+        if (b.left < L) L = b.left;
+        if (b.right > R) R = b.right;
+      });
+      var panel = host.querySelector('.duo-panel');
+      if (panel) {                             // the hero's divider is a PSEUDO
+        var ds = getComputedStyle(panel, '::before');
+        var dw = parseFloat(ds.width);
+        if (ds.content !== 'none' && dw > 40 && parseFloat(ds.height) <= 2) {
+          var px = panel.getBoundingClientRect();
+          var dl = px.left + (parseFloat(ds.left) || 0);
+          if (dl < L) L = dl;
+          if (dl + dw > R) R = dl + dw;
+        }
+      }
+      return L === Infinity ? null : { l: L, r: R };
+    }
+    function seat(host, plate, textBox, swapBox, swapEl) {
+      if (!plate || !textBox) return;
+      var hb = host.getBoundingClientRect();
+      var sp = ruleSpan(host, hb);
+      var L = sp ? sp.l : textBox.left, R = sp ? sp.r : textBox.right;
+      host.style.setProperty('--hem-l', Math.max(0, L - hb.left).toFixed(2) + 'px');
+      host.style.setProperty('--hem-r', Math.max(0, hb.right - R).toFixed(2) + 'px');
+      var top = textBox.top - hb.top;
+      host.style.setProperty('--curtain-top', top.toFixed(2) + 'px');
+      host.style.setProperty('--curtain-bot', hb.height.toFixed(2) + 'px');
+      // The writing's own column, as padding inside the wider curtain.
+      host.style.setProperty('--tx-l', Math.max(0, textBox.left - L).toFixed(2) + 'px');
+      host.style.setProperty('--tx-r', Math.max(0, R - textBox.right).toFixed(2) + 'px');
+      // The open picture, in the curtain's own frame.
+      if (swapEl && swapBox && swapBox.width > 0) {
+        swapEl.style.setProperty('--sw-l', (swapBox.left - L).toFixed(2) + 'px');
+        swapEl.style.setProperty('--sw-t', (swapBox.top - (hb.top + top)).toFixed(2) + 'px');
+        swapEl.style.setProperty('--sw-w', swapBox.width.toFixed(2) + 'px');
+        swapEl.style.setProperty('--sw-h', swapBox.height.toFixed(2) + 'px');
+      }
+    }
+    [].forEach.call(document.querySelectorAll('.latest-cell'), function (cell) {
+      var plate = cell.querySelector('.latest-plate');
+      if (!plate) return;
+      var cover = cell.querySelector('.latest-cover');
+      var matter = cell.querySelector('.latest-matter');
+      // The open picture kept the matter's smaller side, squared, on
+      // the matter's leading edge (mirrored rows use its right).
+      var sw = null;
+      if (matter) {
+        var mb = matter.getBoundingClientRect();
+        var side = Math.min(mb.width, mb.height);
+        var rev = !!cell.closest('.card--latest-rev');
+        sw = { left: rev ? mb.right - side : mb.left,
+               top: mb.top + (mb.height - side) / 2, width: side, height: side };
+      }
+      // A REVIEW'S open picture is not a square on the matter — it
+      // fills whatever the cut text leaves, from the body's last line
+      // down to the card's foot, on the whole measure. (This is the
+      // old --contra-fill, restated now that the picture rides in the
+      // curtain: same floor, same air, same result.)
+      if (cell.classList.contains('latest-cell--contra')) {
+        var cb2 = cell.getBoundingClientRect();
+        var under2 = cell.querySelector('.cover-under');
+        var paras2 = [].filter.call(plate.querySelectorAll('.latest-plate-p'), function (pp) {
+          return pp.style.display !== 'none' && pp.getClientRects().length;
+        });
+        if (paras2.length && under2) {
+          var pr2 = plate.getBoundingClientRect();
+          var rl2 = document.createRange();
+          rl2.selectNodeContents(paras2[paras2.length - 1]);
+          var tail2 = [].filter.call(rl2.getClientRects(), function (r) { return r.height; });
+          var rf2 = document.createRange();
+          rf2.selectNodeContents(paras2[0]);
+          var head2 = [].filter.call(rf2.getClientRects(), function (r) { return r.height; });
+          if (tail2.length && head2.length) {
+            var air2 = Math.max(0, head2[0].top - (pr2.top + under2.getBoundingClientRect().height));
+            var top2 = tail2[tail2.length - 1].bottom + air2;
+            sw = { left: cb2.left, top: top2, width: cb2.width, height: Math.max(0, cb2.bottom - top2) };
+          }
+        }
+      }
+      seat(cell, plate, cover ? cover.getBoundingClientRect() : null, sw, plate.querySelector('.latest-swap'));
+    });
+    [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (half) {
+      var plate = half.querySelector('.card-preview-block');
+      if (!plate) return;
+      // The hero's text column is the RESTING picture's box; its open
+      // picture takes the poster's, which the title fitter has already
+      // seated.
+      var img = half.querySelector('.duo-card-image');
+      var title = half.querySelector('.card-title');
+      seat(half, plate, img ? img.getBoundingClientRect() : null,
+           title ? title.getBoundingClientRect() : null, half.querySelector('.mega-swap'));
+    });
+  }
+
+
+
+
+  function fitRevFlip() {
+    [].forEach.call(document.querySelectorAll('.latest-cell--contra-rev'), function (cell) {
+      var plate = cell.querySelector('.latest-plate');
+      var under = cell.querySelector('.cover-under');
+      if (!plate || !under) return;
+      cell.classList.add('rev-flip');
+      var cellTop = cell.getBoundingClientRect().top;
+      var top = null;
+      var paras = [].filter.call(plate.querySelectorAll('.latest-plate-p'), function (p) {
+        return p.style.display !== 'none' && p.getClientRects().length;
+      });
+      if (paras.length) {
+        var rl = document.createRange();
+        rl.selectNodeContents(paras[paras.length - 1]);
+        var tail = [].filter.call(rl.getClientRects(), function (r) { return r.height; });
+        var rf = document.createRange();
+        rf.selectNodeContents(paras[0]);
+        var head = [].filter.call(rf.getClientRects(), function (r) { return r.height; });
+        if (tail.length && head.length) {
+          var air = head[0].top - under.getBoundingClientRect().bottom;
+          top = tail[tail.length - 1].bottom + Math.max(0, air) - cellTop;
+        }
+      }
+      if (top === null) top = plate.getBoundingClientRect().bottom - cellTop;
+      cell.classList.remove('rev-flip');
+      cell.style.setProperty('--rev-swap-top', top.toFixed(2) + 'px');
+    });
+  }
+
+  // THE REVIEW'S TWO RULES, AND THE DISTANCE BETWEEN THEM. A contra
+  // prints one rule under its head and a second on the foot of its
+  // picture; on hover the second rides up onto the first so the pair
+  // reads as one line with the courier above it and the date below —
+  // an essay's own arrangement. The ride is exactly the gap between
+  // the two rules, which is the picture's height, which the row cap
+  // sets pass by pass (see fitRowHeights) — so it is measured here,
+  // after the cap, and never modelled. The head and its rule are
+  // STICKY: pinned, their rects lie about the flow seat this
+  // measures to, so both are read released.
+  function fitContraJoin() {
+    [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
+      var head = cell.querySelector('.latest-courier--cover');
+      var headRule = cell.querySelector(':scope > .latest-rule:not(.latest-rule--foot)');
+      var foot = cell.querySelector('.latest-rule--foot');
+      if (!head || !headRule || !foot) return;
+      // A turned-over review draws no foot rule and has no arrival to
+      // make — its billing already sits where the hover would put it.
+      // Left unguarded this reads a hidden rule's empty rect and hands
+      // the CSS a nonsense distance.
+      if (cell.classList.contains('latest-cell--contra-rev')) return;
+      var hp = head.style.position;
+      var rp = headRule.style.position;
+      head.style.position = 'static';
+      headRule.style.position = 'static';
+      var join = foot.getBoundingClientRect().top - headRule.getBoundingClientRect().top;
+      head.style.position = hp;
+      headRule.style.position = rp;
+      cell.style.setProperty('--contra-join', Math.max(0, join).toFixed(2) + 'px');
+    });
+  }
+
+  // SHARE OPENS ON THE BODY TEXT. Likes hold the cell's right end, so
+  // the other half of the pair takes the text column's own left edge —
+  // the seat directly under the courier row that now stands empty
+  // there. Where the words run down the left (the plain hero, the
+  // mirrored postscript) that is the cell's own margin and nothing
+  // moves; where the picture leads, share crosses the cover to open on
+  // the words instead of floating over the photograph. Padding, not a
+  // left: the right end stays exactly where the likes hold it.
+  // Measured, not modelled — the columns are seated by flex bases and
+  // vw calcs no constant here could track.
+  function fitShareSeat() {
+    [].forEach.call(document.querySelectorAll('.hover-meta'), function (meta) {
+      meta.style.paddingLeft = '';
+      var cell = meta.closest('.duo-half--mega, .latest-cell');
+      if (!cell) return;
+      var col = cell.querySelector('.panel-col--left') || cell.querySelector('.latest-col');
+      if (!col) return;
+      // The column's INK, not its box: the hero's title column carries
+      // 24 of its own padding, and share belongs on the letters.
+      var pad = parseFloat(getComputedStyle(col).paddingLeft) || 0;
+      var inset = col.getBoundingClientRect().left + pad - meta.getBoundingClientRect().left;
+      if (inset > 1) meta.style.paddingLeft = inset.toFixed(2) + 'px';
+    });
+  }
+
   function alignBands() {
     alignBandTo(
       document.querySelector('.dek-band:not(.dek-band--foot)'),
@@ -2820,7 +3356,10 @@
       [
         { item: 0, char: 'T', edge: 'left-bottom', align: 'left' },
         // The date's INK OPENS on the N's left stem (New's N).
-        { item: 1, char: 'N', edge: 'left-bottom', align: 'left' }
+        { item: 1, char: 'N', edge: 'left-bottom', align: 'left' },
+        // And the tagline on the C of CRITIC — left-full, the C's
+        // leftmost ink sitting at mid-height rather than on its foot.
+        { item: 2, char: 'C', edge: 'left-full', align: 'left' }
       ]);
     alignBandTo(
       document.querySelector('.dek-band--foot'),
@@ -2833,19 +3372,23 @@
         { item: 3, char: 'W', edge: 'right-bottom', align: 'right' },
         { item: 2, between: [1, 3] }
       ]);
-    // The SUBSCRIBE bands: the statement splits around the word —
-    // first clause above, the rest below — each line's courier ink
-    // opening on the S's own leftmost ink (left-full — the S's
-    // widest point sits mid-height, not in the bottom scan band).
-    var subName = document.querySelector('.subscribe-name');
-    var subSpec = [{ item: 0, char: 'S', edge: 'left-full', align: 'left' }];
-    alignBandTo(document.querySelector('.dek-band--subscribe-head'), subName, subSpec);
-    alignBandTo(document.querySelector('.dek-band--subscribe-foot'), subName, subSpec);
+    // The SUBSCRIBE band's line opens on the S of the word above it —
+    // the same glyph seat the head band's items take, read off the
+    // tracked letter's own box.
+    [].forEach.call(document.querySelectorAll('.page-banner'), function(b){
+      alignBandTo(b.querySelector('.dek-band--banner'), b.querySelector('.banner-name'),
+        [{ item: 0, char: 'S', edge: 'left-full', align: 'left' }]);
+    });
   }
 
   function fitAll() {
     inkCenterBands();
     alignBands();
+    fitSubscribeName();
+    fitRowHeights();
+    fitContraJoin();
+    fitCourierSpan();
+    fitShareSeat();
     fitHeroLink(); // before the panels: the hero panel pins to the fitted link
     fitContraLead(); // before too: the lead's height moves every row below it
     // Re-queried every pass, not captured once: the ticker clones its whole
@@ -2854,6 +3397,9 @@
     // at the CSS size while the original's filled its box.
     [].forEach.call(document.querySelectorAll('.duo-panel'), fit);
     fitLatestTitle();
+    fitContraFill();
+    fitRevFlip();
+    fitCurtainVars();
     // Every fit pass can move document seats (fonts, images, fitted
     // titles) — announce it so rail-fix re-measures its anchors and
     // rebuilds the held clones on the FINAL geometry, not the first
