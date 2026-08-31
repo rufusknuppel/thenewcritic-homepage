@@ -1379,7 +1379,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? post.previewParagraphs
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
-    ? `<div class="card-preview-block"><div class="plate-curtain">${post.image ? `<img class="mega-swap" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : ''}<div class="card-preview-cols">${previewParas
+    ? `<div class="card-preview-block"><div class="plate-curtain"><div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
         .join('')}</div></div></div>`
     : '';
@@ -1595,8 +1595,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         ${isMega ? `<span class="mega-cover-head"><p class="latest-courier latest-courier--cover">${coverHeadPair(post)}</p>
-        <div class="latest-rule"></div></span>
-        ${coverUnderPair(post, `<a href="essays.html">${escapeHtml(megaLabel || 'Essays')}</a>`)}` : ''}
+        <div class="latest-rule"></div></span>` : ''}
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
@@ -1619,6 +1618,21 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             </div>
           </div>
         </div>
+        <!-- THE BILLING CLOSES THE PICTURE'S FOOT — the contra's
+             arrangement, on the hero's scale: kicker and author over the
+             cover's top corners, date and section under its bottom two,
+             on a foot rule of the row's own drawing (.cover-under::before
+             in style.css). It rides up onto the head rule when the plate
+             opens, the way the review's does.
+             AND IT SITS AFTER THE PANEL. It used to follow the
+             head, which was fine while the panel rode at 3 and the row
+             at 4 printed over it — but the panel took 5 so the curtain
+             could cover the artwork, and its left column carries an
+             opaque ground: the hero's date went under it. As the later
+             sibling at the panel's own 5 it prints again, and being
+             under the courier's 6 it still passes beneath the held
+             head on scroll rather than over it. -->
+        ${isMega ? coverUnderPair(post, `<a href="essays.html">${escapeHtml(megaLabel || 'Essays')}</a>`) : ''}
       </div>`;
 }
 
@@ -1794,14 +1808,10 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   const coverImg = (post) => post.image
     ? `<img class="card-image" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">`
     : '';
-  // THE HOVER PAIR, the hero's own trade at cell scale: a body-text
-  // PLATE inside the cover's link (its box exactly, so hovering the
-  // open text still reads as hovering the link), and a SWAP image
-  // pinned over the title/dek matter — on hover the plate opens over
-  // the cover and the cover's picture replaces the words.
-  const swapImg = (post) => post.image
-    ? `<img class="latest-swap" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">`
-    : '';
+  // THE PLATE, the card's covered body text: on hover the artwork
+  // slides over the title/dek matter and this stands revealed where
+  // the picture was (see THE PICTURE SLIDES in style.css). No flown
+  // swap image any more — the artwork makes the journey itself.
   const plate = (post) => {
     // The FULL preview, like the hero's plate — the fitter cuts it to
     // the box with the ellipsis the cut owes (see the latest-plate
@@ -1815,12 +1825,9 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
     // unclipped hit box, so the hover that holds on it never loses
     // the pointer mid-draw.
     return paras.length
-      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${swapImg(post)}${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}</span></a>`
+      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}</span></a>`
       : '';
   };
-  // (The open picture rides in the CURTAIN now — see plate() — so it
-  // is revealed by the same wipe as the open text and the descending
-  // rule never crosses it.)
   const matter = (post, dekHtml) => `<div class="latest-matter">
             <h3 class="latest-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             ${dekHtml}
@@ -1831,12 +1838,25 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   // the whole rolling-head machinery: it pins at the held seats and
   // the IMAGE scrolls under it like text (see .latest-courier--cover
   // in style.css for the z lift over the covers' 5).
-  const coverHead = (post, opts) => `<p class="latest-courier latest-courier--cover">${coverHeadPair(post, opts)}</p>
-        <div class="latest-rule"></div>`;
+  // `rule: false` for the REVIEWS. Their picture travels DOWN the page
+  // and shrinks as it goes, and a separate 1px element cannot keep step
+  // with it: the travel is a compositor transform and the shrink is a
+  // main-thread height, so mid-slide the foot rule detached from the
+  // edge it draws. The picture's own BORDER draws both edges instead —
+  // it is part of the box, so it cannot come apart from it. (The
+  // postscripts keep their rules: their picture only travels sideways,
+  // and the rules travel with it on the same transform.)
+  const coverHead = (post, { rule = true, ...opts } = {}) => `<p class="latest-courier latest-courier--cover">${coverHeadPair(post, opts)}</p>${rule ? `
+        <div class="latest-rule"></div>` : ''}`;
   const ps = psPost ? `<div class="latest-cell latest-cell--ps">
         <div class="latest-cover-col latest-cover-col--portrait">
           ${coverHead(psPost, { authorPrefix: 'w/ ' })}
           <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}</a>
+          <!-- THE FOOT RULE, the contra's own: the postscript's billing
+               reads UNDER the picture now, on the picture's bottom edge,
+               so the courier stands on all four of the cover's corners —
+               kicker and subject above, date and section below. -->
+          <div class="latest-rule latest-rule--foot"></div>
           ${coverUnderPair(psPost, '<a href="postscript.html">Postscript</a>')}
         </div>
         <div class="latest-col">
@@ -1846,11 +1866,10 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
         ${plate(psPost)}
       </div>` : '';
   const contra = contraPost ? `<div class="latest-cell latest-cell--contra">
-        ${coverHead(contraPost)}
+        ${coverHead(contraPost, { rule: false })}
         <div class="latest-cover-col latest-cover-col--square">
           <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}</a>
         </div>
-        <div class="latest-rule latest-rule--foot"></div>
         ${coverUnderPair(contraPost, '<a href="contra.html">Contra</a>')}
         <div class="latest-col">
           ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '')}
@@ -2103,6 +2122,7 @@ ${renderFooter()}
 
 ${renderCaterpillarScript()}
 ${renderDuoPanelFitScript()}
+${renderCardOpenScript()}
 ${renderCoverColorScript()}
 ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
@@ -2115,6 +2135,16 @@ ${renderRailFixScript()}
 // on scroll while the hero slides under the divider (src/rail-fix.js).
 function renderRailFixScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/rail-fix.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+// A post card opens on its COVER and closes only when the pointer leaves
+// the card entirely (src/card-open.js) — a state :has() cannot express,
+// having no memory of how it began.
+function renderCardOpenScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/card-open.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;

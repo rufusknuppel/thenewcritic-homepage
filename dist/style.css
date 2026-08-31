@@ -83,11 +83,11 @@
   /* The ground: a flat near-black gray, a shade darker and more
      neutral than the blue-slate it briefly ran — no texture (the cloth
      tiles are retired, see --cloth below). Type prints in cream. */
-  /* THE GOLD GROUND is back — the page's original yellow (the deeper
-     #ADD8E6, the pale blue #EFF3FC, charcoal and white all retired in
-     their turn): every mask, clone and plate grounds on this token,
-     so the page stays coherent wherever the ground goes. */
-  --paper: #F8F8FF;
+  /* THE BLOOD RED GROUND (the vermilion #E23D1F, the gold #FBBF00,
+     the deeper #ADD8E6, the pale blue #EFF3FC, charcoal and white all
+     retired in their turn): every mask and plate grounds on this
+     token, so the page stays coherent wherever the ground goes. */
+  --paper: #8A0F0A;
   /* The CHROME's charcoal — the header, footer and their courier
      bands keep the old dark ground around the gold middle. */
   --chrome: #121417;
@@ -2780,7 +2780,10 @@ a.likes:hover::after,
      opens UNDER THE RULE now (1px — the head rule's own line, so
      the cover's rule and the title column's are one line), the foot
      holds the cell's: the image is SHORTENED, not moved. */
-  position: absolute; inset: 1px 24px 0 calc(100% / 3 + 24px);
+  /* The FOOT now yields 31.2 to the billing row and its rule, the way
+     the head yielded its own — the picture SHORTENED between two
+     courier lines, not moved. */
+  position: absolute; inset: 1px 24px 31.2px calc(100% / 3 + 24px);
   aspect-ratio: auto;
   /* inset sizes the box — the duo frame's own width/height rules must
      stand down. */
@@ -2825,10 +2828,23 @@ a.likes:hover::after,
    the same line, riding above the plate's ground. Their pointer
    stands down while slid so the reveal doesn't flicker under its own
    furniture. */
-.card .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel::before,
-.card .duo-half--mega:has(.card-image-link:focus-visible) .duo-panel::before{
-  right: 24px;
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. The divider drew the title
+   column's half of the head rule and stretched it on hover; the picture
+   covers that column now, and its own rule travels with it.) */
+
+/* AT REST IT DOES NOT PRINT AT ALL. The head rule is the PICTURE'S own
+   top edge now, and the courier that justifies it stands on the
+   picture's two corners — so this half of the line, crossing the title
+   column with nothing above it, was a rule overhanging into empty
+   space. It keeps its BOX: the curtain's hem is measured off this
+   pseudo (ruleSpan, duo-panel-fit.js) and the courier's open span with
+   it, and an undrawn rule that still occupies its seat costs those
+   nothing. Open, the courier goes back across the whole card and the
+   line comes with it. */
+.card .duo-half--mega .duo-panel::before{
+  background: transparent;
 }
+
 .card .duo-half--mega .duo-card-image .card-image-link,
 .card .duo-half--mega .duo-card-image .card-image{
   display: block; width: 100%; height: 100%; object-fit: cover;
@@ -2899,7 +2915,7 @@ a.likes:hover::after,
      plus the 48). */
   /* 43.67 now: the block opens at the RULE (top 1px), so the cap-ink
      seat is the 48 step less the 16px line's 4.33 cap offset. */
-  padding: 43.67px 0 48.17px;
+  padding: 43.67px 0 48px;
   /* The open panel grounds in the PAGE'S OWN PAPER — the site
      background, opaque, so the plate reads as the page opening
      rather than a foreign surface. */
@@ -2925,10 +2941,7 @@ a.likes:hover::after,
    so only the cover can open it) — the cover swaps into the title's
    box on hover, and without this the pointer it leaves behind would
    close the state it stands on. */
-.card .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel .card-preview-block,
-.card .duo-half--mega:has(.card-image-link:focus-visible) .duo-panel .card-preview-block{
-  pointer-events: auto;
-}
+/* (The body's pointer is granted with its seat — see THE PICTURE SLIDES.) */
 /* The hero's curtain is painted always too, for the same reason as
    the cells' (see .latest-plate): a snapping opacity cannot ride
    back up. The clip governs both directions. */
@@ -2952,6 +2965,18 @@ a.likes:hover::after,
   background: var(--paper);
   margin: -16px 0 -24px -24px;
   padding: 24px;
+  /* AND IT CLOSES ON THE PICTURE'S FOOT — the postscript column's own
+     correction, at the hero's scale. The dek pins its last line to the
+     cover's bottom line and the title fills the room above it, and that
+     line is 31.2 higher than the cell's since the billing took the row.
+     The foot pass bounds both airs by this column's CONTENT edge (F, in
+     duo-panel-fit.js), so the shortening is stated here as exactly that
+     31.2 and nothing else — NOT 24 + 31.2: the pass used to read the
+     border box, where the old 24 never counted, and adding it would
+     carry the words a whole extra inset up the page. (The paper GROUND
+     still runs to the cell's foot — it is the panel's field, not the
+     text's measure.) */
+  padding-bottom: 31.2px;
   /* The ground ends 24 SHORT of the cover's left edge (the middle
      third's line now — 100%/3 + 16 restates that seat against the
      panel's 48-narrower content box) — with its own 24 inset the
@@ -3064,6 +3089,16 @@ a.likes:hover::after,
    own 48 gap. */
 .latest-cell--contra{ flex: 0 0 calc((100% - 96px) / 3); display: flex; flex-direction: column; }
 .latest-col{ flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+/* THE COLUMN CLOSES ON THE PICTURE'S FOOT, not the cell's. The dek
+   pins to "the cover's own bottom line" on an auto margin and the
+   title centres in the room above it (see .latest-matter) — and that
+   line moved UP 31.2 when the picture yielded its foot to the billing
+   row, while the column went on running to the cell's edge. The words
+   were left hanging a courier row below the artwork they stand beside.
+   Paid as padding on the column, so the matter's flex box shortens
+   with it and every seat inside — the dek's baseline, the title's two
+   auto margins — recentres against the image on its own. */
+.latest-cell--ps .latest-col{ padding-bottom: 31.2px; }
 .latest-cell--contra .latest-col{ margin-top: 24px; }
 /* The matter holds the words — and the hover swap pinned over them.
    A flex column, HERO LOGIC: the dek pins to the foot (the cover's
@@ -3110,46 +3145,27 @@ a.likes:hover::after,
    zone, so TEXT scrolls under it invisibly — while COVERS (z 5,
    below) ride over the whole held zone. At rest the pseudo hides in
    the 48 gap above (postscript) or under the cover (contra). */
+/* THE HEAD NO LONGER HOLDS. The row used to PIN at the hero's held
+   seat and carry a paper mask above it, so the card's own text scrolled
+   under it invisibly while the covers rode over. The post cards scroll
+   like anything else on the page now: the row travels with its card,
+   and the masthead's own band covers whatever passes beneath it.
+   RELATIVE, not static: the row's rank is real — the slide's z work
+   reads it — and only its scroll behaviour is gone. */
 .latest-courier:not(.latest-courier--under){
   /* THE ROW HOLDS ITS HEIGHT EMPTY. The text column's head carries no
      ink any more — kicker, author and date all read on the cover's
      line — but its RULE has to land on the cover's rule, so the row
      must still stand its own 30.2 with nothing in it. */
   min-height: calc(var(--courier-size) * 1.4 + 12px);
-  position: sticky;
-  top: 35.93px;
+  position: relative;
   z-index: 4;
   background: var(--paper);
 }
-.latest-courier:not(.latest-courier--under)::before{
-  content: '';
-  position: absolute;
-  /* The full held zone, for the same reason as the clones' (see
-     THE HELD COURIER): across the bridge the row has no ground of
-     its own, so this must carry its height too. z -1 puts it behind
-     the row's own paper — at z auto a positioned pseudo would paint
-     over the row's own text. */
-  left: 0; right: 0; top: -35.93px; bottom: 0;
-  height: auto;
-  background: var(--paper);
-  z-index: -1;
-}
-/* The postscript's mask reaches ACROSS ITS BRIDGE too — the 48 of
-   column gap the rule now spans, which would otherwise leave that
-   segment printing in the held zone as a stray nub. The cover
-   column's own mask takes over at its edge. (Text column only: the
-   cover head is a .latest-courier as well, and its mask belongs to
-   the picture's own span.) */
-.latest-cell--ps .latest-col .latest-courier:not(.latest-courier--under)::before{
-  left: -48px;
-}
-.card--latest-rev .latest-cell--ps .latest-col .latest-courier:not(.latest-courier--under)::before{
-  left: 0;
-  right: -48px;
-}
+/* (THE MASK-ABOVE AND ITS BRIDGE ARE RETIRED with the hold — there is
+   no held zone left for anything to scroll under.) */
 .latest-rule{
-  position: sticky;
-  top: 66.13px;
+  position: relative;
   z-index: 4;
 }
 /* THE LEFT FLANK: the title face's hooked glyphs (the J of Jasmine)
@@ -3158,15 +3174,8 @@ a.likes:hover::after,
    left edge. A narrow paper strip on the head's left flank, running
    the full held zone's height, grounds it out; at rest it sits in
    the empty gutter, invisible. */
-.latest-courier:not(.latest-courier--under)::after{
-  content: '';
-  position: absolute;
-  top: -35.93px; bottom: 0;
-  right: 100%;
-  width: 12px;
-  background: var(--paper);
-  z-index: -1;
-}
+/* (And the left flank, which grounded the title face's hooked glyphs
+   out of that same held zone.) */
 .latest-cover{ z-index: 5; }
 /* On the open plate the postscript's category and kicker SLIDE LEFT
    into the cover's span, and the rule DRAWS its reverse extension
@@ -3177,9 +3186,8 @@ a.likes:hover::after,
    pinned meta line's mask as it scrolled past. The contra pair
    rises the same way, so its open plate scrolls UNDER its pinned
    header instead of over it. */
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-courier:not(.latest-courier--under){
-  z-index: 7;
-}
+/* (RETIRED — the review slides now; see THE PICTURE SLIDES. the open card's courier lift) */
+
 /* THE COVER'S OWN LINE OUTRANKS THE MASKS while the card is open.
    The lift above raises every head row to 7 — cover courier and the
    text column's empty one alike — and DOM order then let the text
@@ -3188,24 +3196,15 @@ a.likes:hover::after,
    the ink stands one over the rows that only carry paper. */
 /* (The :not() below is specificity ballast — the lift above carries
    one and would outweigh this rule without it.) */
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-courier--cover:not(.latest-courier--under){
-  z-index: 8;
-}
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-rule{
-  z-index: 6;
-}
+/* (RETIRED — the review slides now; see THE PICTURE SLIDES. and its rules') */
+
 /* With the plate open, the PS meta line's mask grows to the FULL
    BAND across the drawn rule's whole reach (the same cover + 48 the
    slide travels): the plate's columns scroll under the held rule
    and vanish, hero-fashion. z -1 keeps the row's own slid ink in
    print — the row's 6 lifts the whole unit over the plate's 5. */
-.latest-cell--ps:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-col .latest-courier:not(.latest-courier--under)::before{
-  left: calc(-100% - 48px);
-  bottom: 0;
-  height: auto;
-  top: -35.93px;
-  z-index: -1;
-}
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the text column's mask reach) */
+
 .latest-courier a{ color: var(--white); text-decoration: none; transition: color .15s ease; }
 .latest-courier a:hover,
 .latest-courier a:focus-visible{ color: var(--klein); }
@@ -3232,7 +3231,13 @@ a.likes:hover::after,
    its rule dead level with the meta rules'. */
 .latest-cover-col--portrait{ flex: 0 0 calc(50% - 24px); aspect-ratio: 3 / 4; }
 .latest-cover-col--square{ aspect-ratio: 1 / 1; }
-.latest-cover--portrait{ flex: none; width: 100%; aspect-ratio: auto; height: calc(100% - 31.2px); margin-top: 0; }
+/* AND THE FOOT TAKES THE SAME 31.2 NOW. The postscript reads its
+   billing under the picture, on a foot rule — the contra's own
+   arrangement — so the courier stands on all four of the cover's
+   corners. The column is unchanged: head 30.2 + rule 1 above, rule 1
+   + billing 30.2 below, and the picture is SHORTENED between them,
+   both its edges holding the lines they always held. */
+.latest-cover--portrait{ flex: none; width: 100%; aspect-ratio: auto; height: calc(100% - 62.4px); margin-top: 0; }
 /* The contra's cover sits SQUARE over its meta. */
 .latest-cover--square{ aspect-ratio: auto; height: calc(100% - 31.2px); width: 100%; }
 /* THE COLUMN IS THE PICTURE NOW. Both the -31.2 above and the pull-
@@ -3260,6 +3265,14 @@ a.likes:hover::after,
    the image below starts 31.2 in — SHORTENED, its foot held. */
 .latest-courier.latest-courier--cover{
   z-index: 6;
+  /* THE INK ON THE PICTURE'S TOP TWO CORNERS. The row still spans the
+     whole rule — its ::before is the held head's paper mask and its
+     ::after the gutter flank, and both resolve against this box — so
+     the seat is paid in PADDING, measured per row (--ink-l/--ink-r,
+     fitCourierSpan). A review's picture already runs the whole
+     measure and its pads come out zero. */
+  padding-left: var(--ink-l, 0px);
+  padding-right: var(--ink-r, 0px);
   /* The inline-flex likes/Share boxes inflate the baseline line box
      past the courier row's own 30.2 — pin the box and centre the
      pair instead, so the hoist arithmetic stays exact. */
@@ -3431,56 +3444,6 @@ a.likes:hover::after,
    picture rises to the plate's edge on hover it opens under the body
    on exactly the gap the body opens under the courier. */
 .latest-cell--contra .latest-plate{ padding-top: 43.67px; padding-bottom: 43.67px; }
-/* THE CONTRA LIFT IS RETIRED. It rode the review's courier block up
-   to sit 24 under the plate's last descender, and grew the swap
-   image upward by the same air so the freed room filled with picture
-   instead of dead ground. The block it lifted was the courier and
-   rule in the TEXT column, and a review has carried neither since
-   its head moved out to run the whole block — so all that survived
-   the change was the swap, still climbing and still growing on every
-   hover: the slide with no reason left for it. The measure went with
-   the rules (--contra-lift, duo-panel-fit.js). The swap simply
-   arrives at its own box now, and fades. */
-.latest-cell--contra .latest-swap{
-  transition: opacity .3s ease;
-}
-/* THE PICTURE FILLS WHAT THE WORDS LEAVE. Open, the plate takes the
-   cover's box and the picture drops to the matter's — a strip at the
-   card's foot with a field of dead ground between it and the last
-   line. It grows UP to the LAST RENDERED LINE instead (--contra-fill,
-   measured per cell in duo-panel-fit.js, after the plate is cut), and
-   stops the same distance under it that the body keeps under its
-   billing — so the review reads on one air at both ends however much
-   sub-row the picture's height leaves over. Its foot holds the card's.
-   The grown picture crosses INTO the cover's box, which is why the
-   z-index below is load-bearing: the cover stands at 5, the plate
-   inside it, and the swap has to print over both.
-   AND IT TAKES THE POINTER while it stands there: the reader's
-   pointer has to be able to travel onto the picture it just grew
-   without closing the card under itself, so the open state is held
-   by the cover OR the picture (see the trigger throughout — the
-   swap is pointer-dead until the card opens, so it can never open
-   one). */
-.card--latest .latest-cell--contra:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-swap{
-  z-index: 6;
-  pointer-events: auto;
-}
-/* (THE CONTRA FILL IS RETIRED. It grew the picture upward from the
-   matter by --contra-fill; the picture rides in the CURTAIN now and
-   its box is measured whole (--sw-*, fitCurtainVars) — this rule
-   outranked that seat and stretched the artwork over the whole
-   card.) */
-/* AND THE FOOT RULE STANDS DOWN. It draws the picture's own bottom
-   edge; with the plate open over the picture there is no edge left
-   for it to draw, and it hung across the open text as a line from
-   the state before. The head's rule is the only one the hover
-   keeps — courier above it, date and section below. */
-.latest-cell--contra:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-rule--foot{
-  opacity: 0;
-}
-/* The postscript's hover image prints SQUARE, vertically centred in
-   the matter — sized by the matter's height, on its left edge. */
-/* (The postscript's square is measured too — see --sw-*.) */
 .latest-plate-p{
   display: block;
   margin: 0 0 19.2px;
@@ -3490,16 +3453,6 @@ a.likes:hover::after,
   font-size: 16px;
   line-height: 19.2px;
   color: var(--white);
-}
-.latest-swap{
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity .3s ease;
-  pointer-events: none;
 }
 /* (Nothing in the resting card stands down any more — the curtain
    covers it as it passes.) */
@@ -3524,9 +3477,23 @@ a.likes:hover::after,
   background: var(--white);
   transition: width .3s ease;
 }
-.latest-cell--ps:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-col .latest-rule::before{
-  width: calc(100% + 48px);
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the reverse rule draw) */
+
+/* AND AT REST NEITHER PRINTS — the text column's rule nor the bridge
+   that crosses the gap to reach it. The hero's divider is doing the
+   same thing for the same reason: the line belongs to the picture's
+   top edge, where the courier stands, and everything past the
+   picture's right ink was rule with nothing over it. Both keep their
+   boxes — the rule is the sticky one that pins and masks on scroll,
+   and the hem's span is measured off it — and simply don't draw.
+   Open, the courier crosses the whole cell again and the rule is
+   drawn back under it, bridge and all. */
+.latest-cell--ps .latest-col > .latest-rule,
+.latest-cell--ps .latest-col .latest-rule::before{
+  background: transparent;
 }
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. and the paint that came with it) */
+
 /* And the CATEGORY and KICKER ride the line out together — the
    hero's sliding author/date pair, mirrored: on hover each row's
    left item travels the same reach (the cover + the 48), the
@@ -6006,33 +5973,8 @@ body::after{
      masthead's own links. */
   pointer-events: none;
   height: calc(35.93px + var(--courier-size) * 1.4 + 13px);
-  /* The held divider keeps the GUTTER GAPS: the rail's own short rule
-     draws its segment, and this paints only the CONTENT column's —
-     from the hero's left edge to the 48 right gutter — as a bottom
-     stripe (the extra 1px of height is the rule's row). */
-  /* NO RULE IN THE BASE. It used to draw here and be erased again by
-     .rail-fixed, which was harmless while the whole band was gated on
-     that same class. It is not any more: the ground opens on the
-     scroll timeline, exactly at the threshold, while the class still
-     lands a few frames later — so the band came up WITH the rule
-     already drawn and then took it back, which reads as a white line
-     flashing across the head. The rule belongs to the pin alone
-     (body.courier-pinned, below), the only state that wants it. */
-  background-repeat: no-repeat;
-  /* Trimmed to the hero rule's own tailless span: it opens on the
-     courier's left ink (the hero's 24 seat + the 24 inset) and
-     closes on the author's right-aligned ink (40% - 86.4 of the
-     card, the card spanning 100vw - 299.6) — the cover's span holds
-     NO rule, at rest or held. */
-  /* MEASURED, not modelled: the band continues the hero's own rule,
-     so it takes that rule's exact left and width (--held-l/--held-w,
-     published at the pin by rail-fix.js). The old constants were
-     tuned for the geometry before the sidebar margins doubled and
-     the wrap's cap became the viewport, and had been ending well
-     short of the line they continue — which is what left the held
-     author's ink hanging past the end of its own rule. */
-  background-position: var(--held-l, 48px) bottom;
-  background-size: var(--held-w, calc(40vw - 230.24px)) 1px;
+  /* A plain paper mask, no rule of its own: the held-rule stripe and
+     its pin state are gone with the scroll-pinning (git holds them). */
   background-color: var(--paper);
   z-index: 30;
   /* Its own layer: a fixed box repainted a frame behind the content
@@ -6040,13 +5982,6 @@ body::after{
      head at speed. */
   will-change: opacity, transform;
 }
-/* The held STRIPE waits for the couriers: since the head rule
-   pushed the hero below the rail's line, the rail holds first and
-   the courier rows arrive 1:1 later (riding clones, src/rail-fix.js)
-   — the stripe prints only at the PIN, the instant the hero's own
-   divider reaches the band's bottom edge, covering it seamlessly.
-   (One class + pseudo, so the reprint release's doubled
-   background-image: none above still outranks it.) */
 /* THE CLASS STILL REVEALS IT, and does so with !important — an
    important author declaration outranks a running animation, so the
    band is guaranteed visible whenever the class is set no matter
@@ -6072,37 +6007,6 @@ body.rail-fixed::after{ opacity: 1 !important; }
     animation-range: var(--fix-at, 200vh) calc(var(--fix-at, 200vh) + 1px);
   }
 }
-/* (The old erase-it-again rule is retired: the base draws no rule at
-   all now, so there is nothing left to take back — and nothing to
-   flash while the class catches up with the scroll.) */
-body.courier-pinned::after{
-  background-image: linear-gradient(var(--white), var(--white));
-}
-/* THE OPEN PLATE HOLDS ITS SWEEP on scroll: with the excerpt open,
-   the held divider keeps the extended run — 48 in from the left to
-   the cover's right line (100% - 299.6, the 48 open) — and the
-   author's held clone keeps the slid seat, its ink closing on that
-   same line (box right 275.6 = the 299.6 less the row's 24 inset;
-   the !important outranks the clone's captured inline left) — until
-   the hero passes completely under, when body.hero-gone fades the
-   clones as ever. The slid clone's pointer stands down like the
-   live row's, so the hold can't flicker under its own name. */
-body.rail-fixed:has(.duo-half--mega :is(.duo-card-image, .card-preview-block):hover)::after{
-  /* The open sweep opens at the page's own 48 and closes on the same
-     line the held rule closes on — stated from the measured rule
-     (--held-l + --held-w) rather than from the old 347.6 constant,
-     which was tuned for the pre-doubled margins and would now start
-     from the measured left and run clean off the page. */
-  background-position: 48px bottom;
-  background-size: calc(var(--held-l, 48px) + var(--held-w, calc(40vw - 230.24px)) - 48px) 1px;
-}
-/* Keyed on the clone's own held state, not rail-fixed: the clone is
-   VISIBLE from the held swap on — ~31 of scroll before the rail's
-   own hold — and must keep the slid seat through that window too.
-   (Per-mega now: each hero's hover drives only ITS OWN clones.) */
-/* (The REV hero's held ride lives with the other clone-rev rules
-   below: the ESSAY clone slides to the cover's line, the kicker
-   clone holds the author — see THE PAIR'S RIDE, HELD.) */
 /* THE LEFT COLUMN: a permanent opaque ground under the rail — its
    width runs to the hero's left edge (24 wrap + 323.6 seat), so
    anything scrolling up the page passes UNDER the rail and the mark,
@@ -6164,161 +6068,8 @@ body::before{
   top: 0;
 }
 
-/* THE HELD COURIER is a fixed CLONE pair (src/rail-fix.js): the
-   originals swap invisible the moment they'd slip under the mask
-   band (the clones sit exactly on them at that instant, so the
-   trade is seamless and nothing reflows). The clones then RIDE 1:1
-   with the scroll — indistinguishable from the page — until they
-   reach the held line and pin, staying until the hero's foot passes
-   the divider COMPLETELY — then fade, no ride, no snap. */
-.duo-half--mega.mega-held .duo-panel :is(.ground-kicker, .ground-credit){
-  visibility: hidden;
-}
-/* The clones live at body level, outside the panel scope — they
-   carry the ground rows' whole courier dress themselves. ABSOLUTE
-   at the originals' own document seat (rail-fix.js sets the
-   anchor): during the ride they ARE the page, compositor-scrolled —
-   no per-frame JS, no bounce — and flip to viewport-fixed only at
-   the pin, where the two modes coincide exactly. */
-.courier-clone{
-  position: absolute;
-  top: var(--clone-doc-top, 200vh);
-  /* THE CLONE STANDS ITS ROW'S HEIGHT EMPTY. It is a copy of the
-     hero's head row lifted out to the body, so the rule that closes
-     the panel's own head rows can't reach it — and the rows it
-     copies carry no ink of their own any more (kicker, author and
-     date all read on the cover's line). Left to the padding alone it
-     collapsed to 12, which put the HELD rule 18.2 above the cover's
-     and struck it clean through the courier's ink. */
-  min-height: calc(var(--courier-size) * 1.4 + 12px);
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  padding: 6px 24px;
-  /* NO GROUND. The clone used to carry its own paper (the full-width
-     mask band went transparent so covers could ride over the held
-     zone), and it was the only thing painting out text that scrolled
-     under the head across the TITLE column. The cover's head now
-     spans the whole rule, ground and mask-above included, so that
-     work is done a layer down — and the clone's paper, riding at 35
-     over everything in the card, was painting out the kicker's own
-     ink where it reaches across that column. It draws its RULE and
-     nothing else — and takes no pointer either, or an empty copy of
-     an empty row would swallow the clicks meant for the live
-     courier's links underneath it. */
-  background: transparent;
-  pointer-events: none;
-  border: 0;
-  font-family: var(--byline-face);
-  font-weight: 400;
-  font-style: normal;
-  font-size: var(--courier-size);
-  line-height: 1.4;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  text-align: left;
-  color: var(--white);
-  z-index: 35;
-  visibility: hidden;
-  opacity: 1;
-  /* left/right ride with opacity: the held-hover author slide must
-     ANIMATE like the live row's, not snap — each group's clones are
-     anchored (inline, rail-fix.js) by the side their slide animates,
-     so the interpolation is always length-to-length, never from
-     auto. */
-  transition: opacity 0.25s ease, left .3s ease, right .3s ease;
-}
-.courier-clone a{ color: var(--white); text-decoration: none; }
-.courier-clone a:hover,
-.courier-clone a:focus-visible{ color: var(--klein); }
-/* THE MASK-ABOVE IS RETIRED FROM THE CLONE. It painted the whole
-   held zone out across the row's span — and across the bridge, where
-   the clone has no box — so text could slide under the held head and
-   away. The cover's head now spans the WHOLE RULE and carries that
-   same mask itself (top -35.93 to its own foot, gated on .head-held),
-   one layer down and one span wider, so the clone's copy is doing no
-   work the head isn't. It was doing harm: riding at z 35, its paper
-   painted out the kicker's own ink where the stretched courier
-   reaches across the title column — the head held, and the kicker
-   went missing until the row let go. */
-/* THE HELD RULE rides ON the kicker clone now (the body::after
-   stripe is retired on the front page): a 1px foot pseudo on the
-   rule's own tailless span — the clone's box carries 24 side
-   insets, so 24 in from each edge is ink 48 to the author's close.
-   It rides, pins and curtains with the clone as ONE unit. On the
-   open plate's held hover it extends to the cover's right line
-   (--stripe-extend, set per-clone by rail-fix.js). */
-.courier-clone.ground-kicker::after{
-  content: '';
-  position: absolute;
-  /* The right end reaches the COVER'S OWN head rule (--stripe-bridge,
-     measured per clone by rail-fix) so the held line stays connected
-     across the gap, exactly as the static rule is at rest. */
-  left: 24px; right: var(--stripe-bridge, 24px); top: 100%;
-  height: 1px;
-  background: var(--white);
-  transition: left .3s ease, right .3s ease;
-}
-body:has(.card--mega:not(.card--mega-rev) .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker:not(.clone-rev)::after{
-  right: var(--stripe-extend, 24px);
-}
-/* THE REV KICKER CLONE keeps its original's dress: the clone lives
-   at body level, outside the card scope whose rules right-align the
-   label — restated here so ESSAY holds the line's far end instead of
-   sliding under the credit clone's ground. The right pad stands down
-   like the original's (its ink closes on the box edge itself). */
-.courier-clone.clone-rev.ground-kicker{
-  justify-content: flex-end;
-  text-align: right;
-  padding-right: 0;
-}
-/* And its held rule holds the static rule's exact ink span — 24 in
-   from the box's left (the text ink line) to the box's RIGHT EDGE
-   (the rev row bleeds only leftward, so its right edge already sits
-   on the 1300 ink line; the base ::after's right 24 shrank the rule
-   at the swap). */
-.courier-clone.clone-rev.ground-kicker::after{
-  /* Mirrored: the LEFT end crosses to the cover's head rule. */
-  left: var(--stripe-bridge, 24px);
-  right: 0;
-}
-/* THE PAIR'S RIDE, HELD (rev): the ESSAY clone takes the ride —
-   left to the cover's line, its ink opening on the cover's left
-   edge like the live row's — while the kicker clone holds the
-   author at the line's far end. Keyed on hover alone, like the
-   lead's credit clone: the clone pre-positions while invisible so
-   the held swap never replays the slide; !important beats the
-   inline rest anchor (rail-fix.js), and on un-hover the anchor
-   returns and the transition rides it back. */
-/* The REV hero's held rule extends LEFT to its cover's line instead
-   (--stripe-extend carries the mirrored offset, set per clone). */
-body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-block):hover) .courier-clone.ground-kicker.clone-rev::after{
-  left: var(--stripe-extend, 24px);
-}
-/* (The clone mask's hover growth went with the mask: with the plate
-   open under a held head, the excerpt scrolling beneath the rule is
-   painted out by the head's own mask, which already spans the whole
-   measure in every state.) */
-.courier-clone :is(.meta-author, .meta-date){ margin: 0; padding: 0; }
-.courier-clone :is(.meta-author, .meta-date)::before,
-.courier-clone :is(.meta-author, .meta-date)::after{ content: none; }
-.courier-clone.is-held{ visibility: visible; }
-.courier-clone.is-pinned{
-  position: fixed;
-  top: 35.93px;
-}
-/* THE CURTAIN: when the hero is scrolled by, the held head doesn't
-   fade — it is LEFT ON THE HERO'S BOTTOM: past goneAt the clones
-   flip to a document anchor seated so their rule's foot rides
-   exactly on the hero's foot, off the top 1:1 with the page — and
-   reverse scroll pulls the whole head back down to its pin like a
-   curtain. (After the pinned rule, so it wins the tie while both
-   classes are set.) */
-.courier-clone.is-gone{
-  position: absolute;
-  top: var(--clone-push-top, 200vh);
-}
+/* (The held courier clones and their ride are gone with the
+   scroll-pinning — post cards scroll 1:1 now. Git holds them.) */
 .rail-mark{
   /* THE MARK LEADS ITS COLUMN, in flow at the rail's head (it used
      to hang absolutely at the foot, seated 48 off the viewport
@@ -6358,7 +6109,7 @@ body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-bloc
 /* The cover crosses to the left: 24 off the card's left edge, its
    right edge ending where the base cover's left began. */
 .card--mega-rev .duo-half--mega .duo-card-image{
-  inset: 1px calc(100% / 3 + 24px) 0 24px;
+  inset: 1px calc(100% / 3 + 24px) 31.2px 24px;
 }
 /* (No mirrored plate box: the curtain takes the rule's whole span in
    both builds, and the text's column inside it is measured.) */
@@ -6371,12 +6122,8 @@ body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-bloc
   right: 24px;
   transition: left .3s ease;
 }
-.card .card--mega-rev .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel::before,
-.card--mega-rev .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .duo-panel::before,
-.card--mega-rev .duo-half--mega:has(.card-image-link:focus-visible) .duo-panel::before{
-  left: 24px;
-  right: 24px;
-}
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the mirrored divider's stretch) */
+
 /* The columns trade ends: row-reverse pins the title ground to the
    card's RIGHT edge (its flex-start is the right in reverse). */
 .card--mega-rev .duo-half--mega .duo-panel-top{
@@ -6504,10 +6251,8 @@ body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-bloc
   background: var(--paper);
 }
 /* The held-hover mask grows RIGHTWARD across the plate's reach. */
-.card--latest-rev .latest-cell--ps:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-col .latest-courier:not(.latest-courier--under)::before{
-  left: 0;
-  right: calc(-100% - 48px);
-}
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. its mirror) */
+
 
 /* THE MEGA COVER HEAD: the heroes' covers carry the same likes /
    Share head on their own top edge. The wrapper seats absolutely on
@@ -6541,58 +6286,9 @@ body:has(.card--mega-rev .duo-half--mega :is(.duo-card-image, .card-preview-bloc
    head row. The head holds its 6 in every state; the rows it would
    have hidden are empty, and the panel's extended rule redraws on the
    same pixels as the head's own.) */
-/* THE MASKS ONLY EXIST WHILE HELD: a head's mask-above overhangs
-   35.93 past its row at rest, and at narrow widths that reach eats
-   the dek above it (Manifest Man's dek under row 2's mask). A head
-   that isn't holding masks nothing anyway — so every cover-head and
-   meta-head mask and flank stands down until its row actually pins
-   (.head-held, carried by each head itself — one row-wide flag made
-   the covers ride unmasked under a pinned head in mirrored rows —
-   flipped by rail-fix.js at the pin scroll exactly, where the flip
-   changes nothing visible). */
-/* THE OVERHANG OPENS ON THE SCROLL ITSELF, not on the class. Gated
-   on .head-held the mask did not exist until a main-thread listener
-   said so, and the compositor scrolls ahead of that listener: for a
-   few frames the head was pinned with no mask above it, and whatever
-   the card had already carried past — the date and section row, most
-   visibly — printed over the held head. Stepped at the head's own pin
-   scroll (--head-at, published per head by rail-fix.js) it can never
-   be late. At rest the overhang is ZERO, which is what the class was
-   protecting: a mask reaching 35.93 above an unpinned head ate the
-   dek of the row above it. The box itself is always there, so the
-   head's own span is covered either way. */
-.card--latest .latest-courier:not(.latest-courier--under)::before,
-.card--latest .latest-courier:not(.latest-courier--under)::after,
-.mega-cover-head .latest-courier--cover::before,
-.mega-cover-head .latest-courier--cover::after{
-  top: 0;
-}
-@supports (animation-timeline: scroll(root block)){
-  .card--latest .latest-courier:not(.latest-courier--under)::before,
-  .card--latest .latest-courier:not(.latest-courier--under)::after,
-  .mega-cover-head .latest-courier--cover::before,
-  .mega-cover-head .latest-courier--cover::after{
-    /* Stepped for the same reason as the band: a partial overhang is
-       a partial mask, and the row travelling past it shows through
-       the difference. */
-    animation: head-overhang steps(1, jump-start) both;
-    animation-timeline: scroll(root block);
-    animation-range: var(--head-at, 200vh) calc(var(--head-at, 200vh) + 1px);
-  }
-}
-/* The class still opens it too — an important author declaration
-   outranks a running animation, so the overhang is there whenever
-   EITHER says so and the worst case is the old behaviour, never a
-   mask that never opens. */
-.card--latest .latest-courier:not(.latest-courier--under).head-held::before,
-.card--latest .latest-courier:not(.latest-courier--under).head-held::after,
-.mega-cover-head.head-held .latest-courier--cover::before,
-.mega-cover-head.head-held .latest-courier--cover::after{
-  top: -35.93px !important;
-}
-@keyframes head-overhang{
-  to{ top: -35.93px; }
-}
+/* (THE OVERHANG, ITS SCROLL TIMELINE AND ITS .head-held GATE ARE ALL
+   RETIRED with the hold. The mask they opened does not exist any more:
+   nothing pins, so nothing has a held zone to be masked above.) */
 
 /* ---------- THE FRONT-PAGE GROUND ----------
    the chrome architecture it built: no full-width mask band (covers
@@ -6612,14 +6308,14 @@ main:has(.card--mega){
      charcoal, where a seam cannot show. Unmeasured, every stop sits
      at 100% and the page is gold from end to end, exactly as it was
      before the movements took their colours. */
-  /* ONE TERRACOTTA GROUND for every movement now — the four-colour
+  /* ONE BLOOD RED GROUND for every movement now — the four-colour
      experiment stands down, but the stops and the per-movement
      tokens keep their machinery so the sections can trade colours
      again by editing four lines. */
-  --g1: #F8F8FF;
-  --g2: #F8F8FF;
-  --g3: #F8F8FF;
-  --g4: #F8F8FF;
+  --g1: #8A0F0A;
+  --g2: #8A0F0A;
+  --g3: #8A0F0A;
+  --g4: #8A0F0A;
   --s1: 100%;
   --s2: 100%;
   --s3: 100%;
@@ -6648,18 +6344,17 @@ main:has(.card--mega){
    masks in its own colour instead of printing the first movement's
    gold over a green one. (The gradient above is only what the reader
    sees between the blocks; this is what the blocks paint with.) */
-.m--latest{ --paper: #F8F8FF; }
-.m--essays{ --paper: #F8F8FF; }
-.m--postscript{ --paper: #F8F8FF; }
-.m--contra{ --paper: #F8F8FF; }
+.m--latest{ --paper: #8A0F0A; }
+.m--essays{ --paper: #8A0F0A; }
+.m--postscript{ --paper: #8A0F0A; }
+.m--contra{ --paper: #8A0F0A; }
 main:has(.card--mega) :is(.reprint, .dek-band--foot, .page-banner){ --white: #FFFFFF; --muted: #938F86; --faint: #5A574F; }
 main:has(.card--mega) .reprint{ background: var(--chrome); }
 /* The page around the light middle is CHROME. */
 body:has(.card--mega){ background: var(--chrome); }
-/* The rail and the held clones live OUTSIDE main but ride the light
-   middle — their ink follows the middle's charcoal. */
+/* The rail lives OUTSIDE main but rides the light middle — its ink
+   follows the middle's charcoal. */
 body:has(.card--mega) .site-nav--top .topbar-rail{ --white: #121417; }
-body:has(.card--mega) .courier-clone{ --white: #121417; }
 body:has(.card--mega).rail-fixed::after{ content: none; }
 body:has(.card--mega)::before{ content: none; }
 
@@ -6866,33 +6561,24 @@ body:has(.card--mega)::before{ content: none; }
 }
 /* THE MIDDLE REVIEW TURNS OVER. In each contra trio the centre cell
    reads title-first — words, then picture — so the three don't march
-   in step. The HEAD stays at the block's top with its rule: it is the
-   block's header, and its own scroll runs the whole cell either way.
-   Everything the picture owns travels with it, in its own order: the
-   cover, the foot rule on its bottom edge, and the date/section line
-   under that. The matter keeps the growth, so the picture and its
-   line close the cell's foot the way the outer cells' matter does.
+   in step. It reads exactly like its neighbours otherwise, TURNED: the
+   whole four-cornered unit goes to the foot together, kicker and author
+   over the picture's top two corners and date and section under its
+   bottom two, and the words take the head. The head courier used to
+   stay up top with the billing under it while the picture went down
+   alone — which left the one review in the trio reading its corners
+   nowhere near the artwork they belong to.
    Flex order alone — every contra ships the one markup. */
-.latest-cell--contra-rev > .latest-courier--cover{ order: 1; }
-.latest-cell--contra-rev > .latest-rule:not(.latest-rule--foot){ order: 2; }
-/* THE BILLING STAYS AT THE HEAD. Turning the cell over used to carry
-   the date and section down with the picture, so the one review in
-   the trio that reads words-first was also the only one reading its
-   billing last. It holds the standard seat instead — 1 under the
-   head rule, where every essay and postscript keeps it. */
-.latest-cell--contra-rev > .cover-under{ order: 3; }
 .latest-cell--contra-rev > .latest-col{
-  order: 4;
-  /* The standard 24 under the billing line, and the same again to
-     open the picture below the words. */
-  margin-top: 24px;
-  margin-bottom: 24px;
+  order: 1;
+  margin-top: 0;
+  /* The 48 under the dek that every other review keeps — here it opens
+     the picture below the words rather than closing the card. */
+  margin-bottom: 48px;
 }
-.latest-cell--contra-rev > .latest-cover-col{ order: 5; }
-/* AND THE FOOT RULE GOES WITH THE TURN. It draws the PICTURE'S bottom
-   edge; down here that edge is the card's own foot, and there is
-   nothing left below it to divide. */
-.latest-cell--contra-rev > .latest-rule--foot{ display: none; }
+.latest-cell--contra-rev > .latest-courier--cover{ order: 2; }
+.latest-cell--contra-rev > .latest-cover-col{ order: 3; }
+.latest-cell--contra-rev > .cover-under{ order: 4; }
 
 /* THE TURN UNDOES ITSELF ON HOVER. Every review opens the same way
    now — courier, billing, body text, PICTURE AT THE FOOT — whichever
@@ -6905,21 +6591,7 @@ body:has(.card--mega)::before{ content: none; }
    there. .rev-flip is the fitter's measure key: the same layout,
    held for one frame at rest so --rev-swap-top can be read where the
    hover will spend it (see fitRevFlip, duo-panel-fit.js). */
-.latest-cell--contra-rev:is(.rev-flip, :has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover))) > .latest-col{
-  order: 5;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-.latest-cell--contra-rev:is(.rev-flip, :has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover))) > .latest-cover-col{ order: 4; }
-/* The billing stands IN FLOW here (30.2 of it), where the outer
-   cells overlay theirs on the plate — so the plate's own head pad
-   gives that 30.2 back: 43.67 less the billing row's 30.2. The body
-   ink then seats at the same 12.97 under the billing everywhere. */
-.latest-cell--contra-rev:is(.rev-flip, :has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover))) .latest-plate{ padding-top: 13.47px; }
-/* The matter stands down as containing block so the swap can seat
-   against the CELL: top at the measured line (--rev-swap-top), foot
-   on the card's own. */
-.latest-cell--contra-rev:is(.rev-flip, :has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover))) .latest-matter{ position: static; }
+/* (RETIRED — the review slides now; see THE PICTURE SLIDES. the turn's undoing on hover: the picture simply rises) */
 /* (And the turned-over review's own flip seat, retired with it — the
    measured box covers both builds.) */
 
@@ -6982,12 +6654,8 @@ body:has(.card--mega)::before{ content: none; }
    reversed — a phantom indent before SHARE's ink, off the measure it
    is supposed to open. The row's gap carries the spacing now. */
 .hover-meta .under-share .copylink-label{ margin-left: 0; }
-.card--mega .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .hover-meta,
-.card--mega .duo-half--mega:has(.card-image-link:focus-visible) .hover-meta,
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .hover-meta{
-  opacity: 1;
-  pointer-events: auto;
-}
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .hover-meta,
+
 .latest-courier--cover .cover-author a{
   color: var(--white); text-decoration: none; transition: color .15s ease;
 }
@@ -7011,12 +6679,54 @@ body:has(.card--mega)::before{ content: none; }
    the kicker and author open. Absolute: the rule IS the picture's
    top edge, and an in-flow row here would push the cover down and
    take every levelled height with it. */
-/* THE HERO'S ROW seats on the half, not the head: the head rides at
-   6 so its courier and rule print over the picture, and anything
-   inside it rides there too. Out here it takes the picture's own top
-   line (1, the image's) and the picture, later in the flow, covers
-   it. */
-.duo-half--mega > .cover-under{ top: 1px; }
+/* THE HERO'S ROW CLOSES THE PICTURE'S FOOT — the contra's own
+   arrangement, so the courier stands on all four corners of the
+   cover: kicker and author over the top two, date and section under
+   the bottom two, each pair on its own rule. It seats on the HALF,
+   not the head (the head rides at 6 so its courier and rule print
+   over the picture, and anything inside it rides there too), and it
+   takes the picture's exact measure — the same inset the cover keeps,
+   mirrored with it. */
+.duo-half--mega > .cover-under{
+  top: auto;
+  bottom: 0;
+  left: calc(100% / 3 + 24px);
+  right: 24px;
+}
+.card--mega-rev .duo-half--mega > .cover-under{
+  left: 24px;
+  right: calc(100% / 3 + 24px);
+}
+/* ITS OWN FOOT RULE. The cells draw theirs with a .latest-rule--foot
+   in flow; the hero's row is absolute over an absolute picture, so it
+   draws the line itself, on the picture's bottom edge (-1: the line
+   IS that edge, the way the head rule is the top one). */
+.duo-half--mega > .cover-under::before{
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 1px;
+  background: var(--white);
+}
+/* AND ON HOVER IT RIDES TO THE HEAD RULE, exactly as the review's
+   does: the picture gives way to the open plate, its foot edge stops
+   existing, and the billing is simply already in the seat an essay
+   keeps it in — 1 under the divider, across the whole half, the line
+   under the courier. Nothing slides and nothing fades (see THE TRADE
+   IS INSTANT); the foot rule it drew stands down with the edge it was
+   drawing. */
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the billing's ride to the head rule) */
+/* AND THE HEAD'S INK GOES WITH IT — the pad that held it on the
+   picture's corners is spent back, so the two courier lines close on
+   the same two ends the way they always did while the card is open.
+   (The picture has left the cover's seat by then; there are no
+   corners left to stand on.) */
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. The courier no longer
+   crosses the card when the card opens: it rides with the picture, so
+   its ink stays on the picture's own two corners the whole way over.) */
+
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the billing's foot rule stood down) */
+
 .cover-under{
   position: absolute;
   /* The courier's 30.2 and its rule: the line lands directly under
@@ -7055,28 +6765,12 @@ body:has(.card--mega)::before{ content: none; }
 .cover-under a{ color: var(--white); text-decoration: none; transition: color .15s ease; }
 .cover-under a:is(:hover, :focus-visible){ color: var(--klein); }
 
-/* THE SECTION NAME KEEPS ITS COUNSEL until the pointer asks. On the
-   essays and postscripts the under row prints over the picture's own
-   top edge, and the section is the one item on it a reader can
-   already infer from the movement they are standing in — so it holds
-   dark over the art and arrives when the plate opens. The DATE stays
-   in print. The contras keep theirs standing: their row reads on
-   paper under the picture, not over it, so nothing is in its way.
-   Pointer stands down with the ink — an invisible link must not take
-   a click — but focus still reveals it, so the keyboard can reach
-   the section from here. */
-:is(.duo-half--mega, .latest-cell--ps) .cover-cat{
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s ease;
-}
-.card--mega .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover) .cover-cat,
-.card--mega .duo-half--mega:has(.card-image-link:focus-visible) .cover-cat,
-.latest-cell--ps:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .cover-cat,
-:is(.duo-half--mega, .latest-cell--ps) .cover-cat:focus-within{
-  opacity: 1;
-  pointer-events: auto;
-}
+/* (THE SECTION NAME'S WITHHOLDING IS RETIRED. It hid on the essays
+   and postscripts because their under row printed over the picture's
+   own top edge, and dark ink on artwork reads as a smudge — the
+   contras, whose row has always read on paper UNDER the picture, kept
+   theirs standing. Every section reads the contra's arrangement now,
+   so every section keeps its name in print.) */
 
 /* THE CONTRA'S UNDER ROW rides UNDER THE PICTURE instead — its cover
    is a square with the whole cell's measure, so there is no column
@@ -7085,14 +6779,46 @@ body:has(.card--mega)::before{ content: none; }
    head draws, in the same seat relative to its row (rule, then the
    row directly under it), but STATIC — the head's rule pins and this
    one must not. */
+/* The review's billing keeps its in-flow seat but takes a RANK: it
+   travels down over the title and dek, and a static box loses to the
+   matter's relative one however late it comes in the DOM. inset: auto
+   because relative revives the base row's 31.2 as a real offset. Held
+   at 5, under the courier's 6, so the pinned head's mask still paints
+   it out as it scrolls past. */
 .latest-cell--contra .cover-under{
-  position: static;
+  position: relative;
+  inset: auto;
+  z-index: 5;
   padding-left: 0;
   padding-right: 0;
 }
+/* THE POSTSCRIPT TAKES THE SAME SEAT, in its own column. Its picture
+   yields 31.2 at the foot (see .latest-cover--portrait) and the row
+   closes the column there, under a foot rule in flow — so the cover
+   carries courier on all four corners, the review's arrangement at
+   the postscript's scale. Absolute, not static: the row must be able
+   to ride to the head rule when the plate opens, and both seats are
+   simply STATED here rather than measured — the reserved 31.2 makes
+   the rest seat as exact as the head's. */
+.latest-cell--ps .cover-under{
+  top: auto;
+  bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+/* AND ON HOVER IT RIDES TO THE HEAD RULE. The picture gives way to the
+   open plate and its bottom edge stops existing; the billing is
+   already in the essay's own seat — 31.2, the courier's 30.2 and its
+   rule — so the open card reads courier, rule, courier. The foot rule
+   stands down with the edge it drew (below). */
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the postscript billing's ride) */
+
 .latest-rule--foot{
-  position: static;
-  z-index: auto;
+  /* Ranked with the billing it carries, and for the same reason — it
+     comes down over the words too. Still under the courier's 6, so the
+     held head's mask paints it out like any other matter. */
+  position: relative;
+  z-index: 5;
   /* It stands down on hover (opacity 0, below) — on the same .3s
      the plate and swap fade on, not a snap of its own. */
   transition: opacity .3s ease;
@@ -7109,9 +6835,8 @@ body:has(.card--mega)::before{ content: none; }
    the open plate was swallowing whichever half stood over the
    picture. The row rides at 6 over the cover's 5, the contra's own
    arrangement. */
-.latest-cell--ps:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .cover-under{
-  z-index: 6;
-}
+/* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. and its lift over the plate) */
+
 /* ON HOVER THE REVIEW READS LIKE AN ESSAY. The picture gives way to
    the plate, and the date and section simply APPEAR on the head
    rule's own under-line — the seat an essay keeps them in — so the
@@ -7124,19 +6849,7 @@ body:has(.card--mega)::before{ content: none; }
    5 or the open plate's box would swallow it. HELD, the arrival
    stands down: the head's rule is pinned then, and no longer the
    seat this measures to. */
-.latest-cell--contra:not(.latest-cell--contra-rev):not(:has(.latest-courier--cover.head-held)):has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .cover-under{
-  transform: translateY(calc(-1 * var(--contra-join, 0px)));
-  /* Relative ONLY to carry the rank — with its offsets cleared. Both
-     boxes inherit a seat from the rules they are: the foot rule
-     carries .latest-rule's sticky top of 66.13 and the under row the
-     31.2 it takes when it is absolute over a picture. Static, those
-     are inert; the moment this makes them relative they become real
-     offsets, and the pair landed 66 and 31 low with the ride already
-     paid. */
-  position: relative;
-  inset: auto;
-  z-index: 6;
-}
+/* (RETIRED — the review slides now; see THE PICTURE SLIDES. the billing's ride onto the head rule: it travels with the picture) */
 
 /* The HERO's row rides the panel's measure — its 24 insets are the
    courier rows' own, so SHARE opens on the label's ink and LIKES
@@ -7159,10 +6872,10 @@ body:has(.card--mega)::before{ content: none; }
    and the image LOAD fade keep their own). */
 .duo-panel,
 .card.card--mega .duo-half--mega .duo-panel .card-preview-block,
+.latest-courier--cover,
+.cover-under,
 .latest-courier--cover :is(.cover-kicker, .cover-author),
 .latest-plate,
-.latest-swap,
-.latest-cell--contra .latest-swap,
 .latest-cell--contra-rev .latest-cover-col--square::before,
 .latest-cell--contra-rev .latest-cover-col--square::after,
 .hover-meta,
@@ -7177,9 +6890,7 @@ body:has(.card--mega)::before{ content: none; }
 .latest-cell--ps .latest-col .latest-courier span:first-child,
 .card--latest-rev .latest-cell--ps .latest-col .latest-courier span + span,
 .card .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under),
-.card--mega-rev .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under),
-.courier-clone,
-.courier-clone.ground-kicker::after{
+.card--mega-rev .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under){
   transition: none;
 }
 
@@ -7229,7 +6940,20 @@ body:has(.card--mega)::before{ content: none; }
   padding-right: var(--tx-r, 0px);
   background: var(--paper);
   overflow: hidden;
-  clip-path: inset(0 0 calc(var(--reveal, 1) * 100%) 0);
+  /* NO CLIP ANYWHERE. No body is drawn down over anything now: each
+     stands finished in the seat its picture clears, and the picture is
+     simply slid off it. A clip would hide the very text the slide is
+     uncovering — and it removes hit-testing with the paint, so the
+     revealed column could not hold the pointer that revealed it. */
+  clip-path: none;
+  /* AND NO SIDE INSET. --tx-l/--tx-r held the writing in its own
+     column inside a curtain that spanned the whole rule — 380 of pad
+     on the hero, 380 on the postscript. The block IS the writing's
+     column now (it is the seat the picture clears, nothing wider), so
+     the pads are the block's whole measure and the text was laid out
+     in a box of zero width: a seat that opened on nothing at all. */
+  padding-left: 0;
+  padding-right: 0;
 }
 /* The hosts hand their ground to the curtain — a paper ground of
    their own would cover the picture whole the instant the trade
@@ -7238,15 +6962,12 @@ body:has(.card--mega)::before{ content: none; }
 .latest-plate{ background: transparent; }
 .card.card--mega .duo-half--mega .duo-panel .card-preview-block{ background: transparent; }
 /* The reveal's clock lives where the value is set. */
-.latest-cell,
-.card--mega .duo-half--mega{
-  transition: --reveal .4s ease;
-}
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)),
-.card--mega .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover),
-.card--mega .duo-half--mega:has(.card-image-link:focus-visible){
-  --reveal: 0;
-}
+/* (THE CURTAIN IS RETIRED OUTRIGHT. The reviews were the last section
+   pulling a plate down over their artwork; they slide theirs down the
+   page now instead, so --reveal, its clock, its clip and its hem have
+   nothing left to draw. @property --reveal stays declared: an unused
+   registration costs nothing and the initial value keeps any stray
+   reference honest.) */
 
 /* THE HEM IS PERMANENT, so it can ride back UP. Gated on :has() its
    content vanished the instant the pointer left — the curtain rode
@@ -7257,39 +6978,283 @@ body:has(.card--mega)::before{ content: none; }
    its own and travels in both directions with the draw. (At rest the
    seat parks it ON the head rule anyway; the step covers the case
    where that rule has pinned away up the page.) */
-.latest-cell::after,
-.card--mega .duo-half--mega::after{
-  opacity: calc((1 - var(--reveal, 1)) * 1000);
-  content: '';
-  position: absolute;
-  /* THE RESTING CARD'S OWN RULE, to the pixel (--hem-l/--hem-r,
-     measured in duo-panel-fit.js as the union of every line the card
-     draws at rest — on the hero that is the title column's divider
-     AND the cover's head rule, which is why the pair reads as one
-     measure across both columns). */
-  left: var(--hem-l, 0px);
-  right: var(--hem-r, 0px);
-  height: 1px;
-  background: var(--white);
-  z-index: 7;
-  pointer-events: none;
-  /* FROM THE HEAD RULE'S LINE TO THE CARD'S FOOT, in the card's own
-     percentages — no measured plate height to go stale: at rest it
-     parks on the head rule (invisible, coincident with it) and open
-     it lands on the card's last line. */
-  /* The plate's own box, top to bottom: the hem starts on the rule
-     the curtain hangs from and lands on the picture's bottom edge —
-     the card's foot where the picture closes it. */
-  top: calc(
-    var(--curtain-top, 31.2px)
-    + (var(--curtain-bot, 100%) - var(--curtain-top, 31.2px)) * (1 - var(--reveal, 1))
-    - 1px);
-}
+/* (RETIRED WITH THE CURTAIN — every section slides now. the hem the curtain rode) */
 @media (prefers-reduced-motion: reduce){
   .latest-cell,
   .card--mega .duo-half--mega{ transition: none; }
+  /* The slide stands down with it — the card still opens, it simply
+     arrives rather than travels. */
+  .latest-cell--ps .latest-cover-col > *,
+  .latest-cell--ps .latest-courier--cover > *,
+  .card .duo-half--mega :is(.duo-card-image, .cover-under, .mega-cover-head .latest-rule),
+  .card .duo-half--mega .mega-cover-head .latest-courier--cover > *,
+  .latest-cell--contra > *{ transition: none; }
 }
 
+
+/* ---------- THE PICTURE SLIDES ----------
+   The essay's and the postscript's hover, entire.
+
+   The picture and the two courier lines that bracket it are ONE UNIT —
+   kicker and author over its top corners, date and section under its
+   bottom two — and on the pointer that unit TRAVELS across the card,
+   .4s, far enough that its leading edge lands on the card's own far
+   content edge. That distance is also exactly far enough to cover the
+   title and the dek, whatever the two columns happen to measure.
+
+   Behind it, in the seat it vacates, the body text has been standing
+   all along: finished, unclipped, simply COVERED. The slide does not
+   draw the text on — it uncovers it. Off the text again, the unit
+   travels home and the words come back.
+
+   Both distances are measured per card (fitSlideSlots, in
+   duo-panel-fit.js): --slide is the reach, --slot-* the seat the body
+   stands in, which is the part of the picture's own box the travel
+   actually clears. Nothing is derived from the ratio of the two
+   columns — the postscript's are equal, the pair rows' are not, and the
+   hero's picture is nearly twice its title's measure.
+
+   A TRANSFORM, not a change of seat: it runs on the compositor, where
+   this page has learnt to put anything that must not stutter. */
+
+/* THE OPEN STATE IS A CLASS, not a :has() on the pointer. The COVER
+   opens the card and nothing else does — a pointer arriving on the
+   title has asked for nothing — but once it IS open the whole card is
+   the reader's, and only leaving the card closes it. Those are two
+   different questions about one state, and :has() can only answer the
+   second by re-asking the first every frame. src/card-open.js holds it:
+   .is-open on the cover's mouseenter, off on the card's mouseleave.
+   The keyboard path stays here, alongside it. */
+
+/* THE POSTSCRIPT'S UNIT IS ALREADY ONE BOX — the cover column carries
+   the head courier, the head rule, the artwork, the foot rule and the
+   billing — so the column itself is what travels. */
+/* THE ROW DOES NOT TRAVEL — ITS INK DOES. The head courier's BOX is
+   the whole card's rule span (it carries the held head's paper mask and
+   the gutter flank, which is why it kept that measure when the ink moved
+   onto the picture's corners — see fitCourierSpan). Carry the box across
+   the card and the mask goes with it: on a mirrored row the postscript's
+   head reached into the review beside it and painted its header out.
+   So everything whose box IS the picture's travels — the artwork, both
+   rules, the billing — and inside the head row only the two ink spans
+   do. Every mask stays exactly where it was drawn. */
+.latest-cell--ps .latest-cover-col > :not(.latest-courier--cover),
+.latest-cell--ps .latest-courier--cover > :is(.cover-kicker, .cover-author){
+  transition: transform .4s ease;
+}
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-cover-col > :not(.latest-courier--cover),
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-courier--cover > :is(.cover-kicker, .cover-author){
+  transform: translateX(var(--slide, 0px));
+}
+.latest-cell--ps .latest-cover-col{
+  /* AND IT OUTRANKS THE TEXT COLUMN IT LANDS ON. A transform makes its
+     element a STACKING CONTEXT, so the moment the column began to
+     travel it stopped competing piece by piece — the cover's 5, the
+     courier's 6 — and started competing as one box at z auto. Auto
+     against the text column's auto is DOM order, and the cover column
+     comes first: the picture landed UNDERNEATH the very column it was
+     sent to cover. The title and dek printed straight through the
+     artwork, and the empty courier row's paper mask, which sits over
+     that column at 6, painted the arriving head courier out
+     altogether. One rank over that 6 puts the whole unit back on top,
+     still far below the head band's 30. */
+  z-index: 7;
+  /* AND ITS OWN BOX TAKES NO POINTER. The column stopped travelling
+     when the head row's box had to be left behind, so it stays where it
+     is — an empty, transparent box at 7 standing over the very band its
+     picture has just uncovered. It caught every pointer that landed on
+     the revealed words, and being no trigger itself the card shut the
+     moment the reader's hand moved onto the text. The picture, the
+     courier's ink and the billing's links keep theirs; only the wrapper
+     stands down, exactly as .mega-cover-head already does. */
+  pointer-events: none;
+}
+.latest-cell--ps .latest-cover-col > *{ pointer-events: auto; }
+
+/* THE HERO'S IS THREE ABSOLUTES over the same box — head, artwork,
+   billing — travelling on the one distance. (Both of these outrank the
+   TRADE IS INSTANT block, which names .cover-under and the cover
+   courier: their trade is instant, their journey is not.) */
+/* The hero reads the same rule: its artwork, its billing and its head
+   RULE travel (each of those boxes is the picture's own), and inside the
+   head row only the ink. Its row reaches 380 past the card on the way
+   over otherwise — off the page's own margin and onto the rail. */
+.card .duo-half--mega :is(.duo-card-image, .cover-under, .mega-cover-head .latest-rule),
+.card .duo-half--mega .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-author){
+  transition: transform .4s ease;
+}
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) :is(.duo-card-image, .cover-under, .mega-cover-head .latest-rule),
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-author){
+  transform: translateX(var(--slide, 0px));
+}
+/* THE UNIT OUTRANKS THE PANEL. It is about to stand over the title and
+   the dek, and the hero's title column carries an opaque ground inside
+   a panel that holds the picture's own 5 and comes later in the DOM: at
+   5 the artwork would travel UNDER the words it is meant to cover. Held
+   well below the head band's 30 and the courier clones' 35, so the
+   scroll machinery is untouched, and the billing keeps its rank under
+   the head — whose mask must still paint it out as it passes.
+   (The postscript needs none of this: its matter carries no z at all,
+   and the cover's own 5 has always beaten it.) */
+.card .duo-half--mega .duo-card-image{ z-index: 8; }
+.card .duo-half--mega .mega-cover-head{ z-index: 9; }
+.duo-half--mega > .cover-under{ z-index: 8; }
+
+/* THE BODY STANDS IN THE PICTURE'S SEAT — under the picture, painted at
+   rest, never faded. */
+.latest-cell--ps .latest-plate{
+  top: var(--slot-t, 0px);
+  left: var(--slot-l, 0px);
+  width: var(--slot-w, 0px);
+  height: var(--slot-h, 0px);
+  right: auto;
+  bottom: auto;
+  /* Under the cover's 5 and the couriers' 6: it is the thing being
+     covered. */
+  z-index: 1;
+  /* And it takes the pointer ALWAYS. At rest the picture stands over it
+     and takes every pointer itself; the moment the picture has moved
+     off, the reader's hand is on the text, and the text is what holds
+     the card open — which is what lets the unit travel home when the
+     pointer leaves the WORDS rather than the artwork. */
+  pointer-events: auto;
+}
+.card.card--mega .duo-half--mega .duo-panel .card-preview-block{
+  inset: auto;
+  top: var(--slot-t, 0px);
+  left: var(--slot-l, 0px);
+  width: var(--slot-w, 0px);
+  height: var(--slot-h, 0px);
+  opacity: 1;
+  /* AND IT TAKES THE POINTER. Stated at the base rule's own weight, and
+     after it: that rule holds pointer-events: none at four classes, so
+     a lighter override never landed at all — the revealed column was
+     not hit-testable, and the card shut the instant the picture slid
+     out from under the reader's hand. At rest the picture stands over
+     this and takes every pointer itself. */
+  pointer-events: auto;
+}
+/* ONE COLUMN, not two. The hero's excerpt ran two across the whole
+   pane; the seat it stands in now is the width the travel clears —
+   a third of the card — and two columns of it would be a pair of
+   gutters with words between them. */
+.card.card--mega .duo-half--mega .duo-panel .card-preview-block .card-preview-cols{
+  column-count: 1;
+}
+/* And they carry their own paper again: the curtain that used to hold
+   the ground for them is not drawn over them any more. */
+.latest-cell--ps .latest-plate,
+.card.card--mega .duo-half--mega .duo-panel .card-preview-block{
+  background: var(--paper);
+}
+/* ---------- AND THE REVIEW COMES DOWN THE PAGE ----------
+   Same rule, other axis. A review's picture is a square on the cell's
+   whole measure, so there is no column beside it to slide into: its
+   words are UNDER it, and the unit travels DOWN over them, uncovering a
+   band of body text where the artwork stood.
+
+   The unit is the whole four-cornered thing again — head courier, head
+   rule, artwork, foot rule, billing — and it travels to the far end of
+   the band it stands in, which is the cell. TURNED OVER, only the
+   artwork travels: there the head is the block's own header rather than
+   the picture's frame (see THE MIDDLE REVIEW TURNS OVER), so it holds
+   its seat and the picture rises alone out of the foot, over the words,
+   uncovering its band at the bottom instead. */
+/* THE UNIT TRAVELS IN THE FLOW, and this is the whole reason why.
+   Everything else on the page slides on a transform, which the
+   compositor owns — but a review's picture also CONTRACTS as it goes,
+   and a height is a main-thread layout. Two clocks: the courier rode
+   the compositor's while the billing rode the compositor's PLUS the
+   main thread's, and under load they came apart. Put the travel in the
+   flow as well and every piece is laid out in the same pass, from the
+   same three numbers, on the same easing — the block cannot desynchronise
+   with itself no matter what either thread is doing.
+      --slide       the space that OPENS above the unit (negative on a
+                    turned-over review, which rises instead)
+      --sq-open     the artwork's height while the card is open
+      --sq-rest     its height at rest
+   The billing's margin closes the sum: +slide - shrink + (shrink -
+   slide) is zero at every instant, so the cell's height and the words
+   below it never move a pixel while the unit travels over them. */
+.latest-cell--contra > .latest-courier--cover{ transition: margin-top .4s ease; }
+.latest-cell--contra > .latest-cover-col--square{ transition: height .4s ease; }
+.latest-cell--contra > .cover-under{ transition: margin-bottom .4s ease; }
+/* AND THE COLUMN TAKES A RANK, the postscript's lesson again: a
+   transform makes its element a stacking context, so the artwork stops
+   competing on its own 5 and starts competing as one box at auto —
+   which loses to the matter's relative box, later in the DOM. The title
+   printed straight through the picture that had come down over it. At 5
+   the unit reads as it always did: over the words, under its own
+   courier's 6. */
+.latest-cell--contra .latest-cover-col{ z-index: 5; }
+/* AND THE PICTURE HALVES AS IT GOES. A square takes most of a review,
+   which left the band it clears a bare three lines — so the artwork
+   gives half its height back on the way over, the unit travels that
+   much further to close on the cell's foot, and the band takes every
+   pixel of it. Both heights are measured (--sq-rest at the row cap,
+   --sq-open in fitSlideSlots, which floors the shrink at whatever the
+   unit must still cover); the height itself is stated here so the same
+   .4s carries it. HEIGHT and not a scale: the image is object-fit
+   cover, so a shorter box re-crops the artwork where a scaleY would
+   squash it. */
+.latest-cell--contra .latest-cover-col--square{
+  height: var(--sq-rest, auto);
+}
+/* THE SHRINK MUST NOT REACH THE FLOW — but it must reach the BILLING.
+   Taken as height alone it shortened the cell, which shortened the row,
+   which lifted every card below it: the whole page moved on one hover.
+   The first answer gave the height back as a margin on the column and
+   carried the billing down on a transform of its own, and that is what
+   put the picture's foot and the line under it out of step — a height is
+   a main-thread layout and a transform runs on the compositor, so under
+   load the two drift and the edge comes apart.
+   The compensation belongs on the BILLING instead. The column simply
+   gets shorter; the billing follows it up IN FLOW, in the same layout
+   pass, so it can never separate from the edge it sits on — and its own
+   margin gives the cell back what the column gave up, so the words below
+   it and the row around it never move. One transform for the whole unit,
+   and the only thing that changes size is the artwork. */
+.latest-cell--contra:is(.is-open, :has(.latest-cover:focus-visible)) .latest-cover-col--square{
+  height: var(--sq-open, var(--sq-rest, auto));
+}
+.latest-cell--contra:is(.is-open, :has(.latest-cover:focus-visible)) > .cover-under{
+  margin-bottom: calc(var(--sq-rest, 0px) - var(--sq-open, var(--sq-rest, 0px)) - var(--slide, 0px));
+}
+.latest-cell--contra:is(.is-open, :has(.latest-cover:focus-visible)) > .latest-courier--cover{
+  margin-top: var(--slide, 0px);
+}
+
+/* THE BODY STANDS IN THE BAND THE UNIT CLEARS — under it at rest,
+   painted, never faded, and taking the pointer so the reader's hand on
+   the words is what holds the card open. It opens 48 UNDER the band's
+   top edge, the postscript's own seat and paid the same way: 43.67 of
+   pad, which is the 48 less the 16px line's 4.33 cap offset, so the air
+   the reader sees above the ink is 48 and not 52. The square gives the
+   room back — see the 48 under the dek below. */
+.latest-cell--contra .latest-plate{
+  top: var(--slot-t, 0px);
+  left: var(--slot-l, 0px);
+  width: var(--slot-w, 0px);
+  height: var(--slot-h, 0px);
+  right: auto;
+  bottom: auto;
+  padding: 43.67px 0 0;
+  z-index: 1;
+  pointer-events: auto;
+  background: var(--paper);
+}
+/* AND 48 UNDER THE DEK, at the other end of the card. The review's
+   words closed flush on the cell's foot; they stand 48 clear of it now.
+   The picture pays for it — the row cap gives the square whatever the
+   cell has left over once the words are seated (fitRowHeights), so the
+   square comes down 48 and the band the slide clears goes UP by the
+   same, which is what leaves room for the 48 asked of its head.
+   (The TURNED-OVER review keeps its own spacing: its dek is followed by
+   the picture, not by the card's foot, and the 24 between them is the
+   turn's own step.) */
+.latest-cell--contra:not(.latest-cell--contra-rev) .latest-col{
+  padding-bottom: 48px;
+}
 
 /* The head band's reveal (see ALWAYS PAINTED above). */
 @keyframes band-hold{
@@ -7358,37 +7323,157 @@ body:has(.card--mega)::before{ content: none; }
 }
 
 
-/* ---------- THE OPEN PICTURE, INSIDE THE CURTAIN ----------
-   The cells' swap and the hero's own copy both ride in the curtain,
-   so the wipe reveals the open PICTURE, the open TEXT and the hem
-   together and takes them back the same way. The resting picture
-   never moves and the resting poster never hides — the curtain simply
-   passes over them, which is why the descending rule no longer cuts
-   across artwork. Boxes measured in fitCurtainVars. */
-.latest-plate .latest-swap,
-.card-preview-block .mega-swap{
-  position: absolute;
-  opacity: 1;
-  pointer-events: none;
-  left: var(--sw-l, 0px);
-  top: var(--sw-t, 0px);
-  width: var(--sw-w, 0px);
-  height: var(--sw-h, 0px);
-  object-fit: cover;
-  margin: 0;
-  max-width: none;
-  transform: none;
+/* ---------- A LINE AROUND EVERY PICTURE ----------
+   One rule's weight around each cover and each hover picture, in the
+   same ink the rules draw with (--white, which the front page turns to
+   the chrome). A BORDER — and it costs the layout nothing because the
+   page is border-box throughout: the line is drawn inside each
+   picture's own measured box, so the row caps, the curtain's seats and
+   the courier spans all stand exactly where they were. Drawn inside
+   also keeps it flush with the head rule already on that same top edge
+   (they read as one line, not two) and inside the curtain's clip, so
+   an open picture's frame is revealed with the picture rather than
+   ahead of it. */
+.latest-cover,
+.card .duo-half--mega .duo-card-image{
+  border: 1px solid var(--white);
 }
-/* Open, the curtain takes the pointer so the card cannot shut under
-   the reader's own hand as the picture is covered. */
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)) .latest-plate{ pointer-events: auto; }
-/* THE BILLING RIDES OVER THE CURTAIN — but only while the card is
-   open AND its head is not holding: at 4 the curtain would swallow
-   the date and section, and lifted unconditionally it printed over
-   the pinned head's mask on scroll (the fault that put the contra's
-   billing across its own header). */
-.latest-cell:has(:is(.latest-cover:is(:hover, :focus-visible), .latest-swap:hover, .latest-plate:hover)):not(:has(.latest-courier--cover.head-held)) .cover-under,
-.card--mega .duo-half--mega:has(:is(.duo-card-image, .card-preview-block):hover):not(:has(.latest-courier--cover.head-held)) .cover-under,
-.card--mega .duo-half--mega:has(.card-image-link:focus-visible):not(:has(.latest-courier--cover.head-held)) .cover-under{
-  z-index: 7;
+/* EXCEPT THE TOP EDGE, WHERE THE HEAD RULE ALREADY DRAWS IT. Every
+   cover that opens under its own courier has that rule seated exactly
+   on its top line — measured at a gap of 0 — so a border there is the
+   same line drawn twice, printing 2px where the page keeps 1. The
+   rule stays (it is the sticky one that holds and masks on scroll)
+   and the border stands down on that side alone.
+   The TURNED-OVER review is the exception's exception: its picture
+   closes the card with no rule above it, so it keeps all four. */
+/* THE REVIEW IS THE EXCEPTION NOW: it draws no rules at all, so its
+   picture keeps its border on all four sides — those two edges ARE the
+   lines the rules used to draw, and being part of the box they travel
+   and shrink with it to the pixel. */
+.latest-cell--ps .latest-cover,
+.card .duo-half--mega .duo-card-image{
+  border-top: 0;
 }
+/* AND THE REVIEW'S FOOT, for the same reason: a contra draws a rule on
+   its picture's bottom edge to carry the date and section beneath it,
+   seated there at a gap of 0 — so that side is spoken for too. (The
+   turned-over review draws no foot rule at all, its picture closing
+   the card, so it keeps that edge.) */
+/* Every picture that carries a billing line under it is spoken for on
+   that side now — the reviews, the postscripts, and the heroes, whose
+   row draws the line itself. */
+.latest-cell--ps .latest-cover,
+.card .duo-half--mega .duo-card-image{
+  border-bottom: 0;
+}
+
+
+/* The hero's billing takes the PANEL'S OWN LEVEL so it can print over
+   that column's ground (it is the later sibling now, so an equal 5
+   wins), while staying under the courier's 6 — the head's mask must
+   still paint it out as it scrolls past. */
+.duo-half--mega > .cover-under{ z-index: 5; }
+
+
+/* (THE BILLING NO LONGER FOLLOWS THE PICTURE. It used to turn over
+   where the cover stood on the left, so the date crossed to sit under
+   the AUTHOR — which it could do because the row then spanned the
+   whole card and its two ends fell under the head's two. The row is
+   on the PICTURE'S OWN MEASURE now, closing its bottom two corners,
+   and the four corners read the one way every review has always read
+   them: kicker over date at the left, author over section at the
+   right, whichever side the picture is on.) */
+
+
+/* ---------- THE INK ON THE BLOOD RED ----------
+   The ground changed and the ink follows it. Three decisions, stated
+   in one place rather than scattered through the rules each element
+   already carries:
+
+   THE PAGE READS IN WHITE and TITLES IN CHARCOAL. The writing is
+   white — the Garamond deks, previews and plates, the Courier head
+   rows and billings and corner words, and the site's own names on
+   the chrome. The TITLES are charcoal, both display voices of them:
+   the Garamond posters and the Placard marks down the sidebar, cut
+   into the ground rather than laid on it.
+
+   And in LITERAL white: --white is the ink TOKEN, and the light
+   middle remaps it to charcoal (see the movements' grounds above),
+   so a line written var(--white) would follow the ground back down
+   to near-black. #FFFFFF is stated outright — the words are white on
+   the blood red whatever the token does around it. The RULES keep
+   the token, and keep the charcoal with it: the line work is not
+   type and does not follow the type's colour.
+
+   KLEIN IS THE POINTER'S COLOUR ALONE now, which is where it stood
+   before the ground went red: every one of these lights to blue
+   under the hand and rests in white. */
+
+/* THE GARAMOND — the deks under the titles, the heroes' previews and
+   the cells' body plates (and the italic and the links inside them,
+   which inherit). The high-specificity restatements are the seats
+   the panel scope already holds them in; stated at the same weight
+   here so this block settles the question in one place. */
+.latest-dek,
+.card-dek,
+.latest-plate-p,
+.card-preview{ color: #FFFFFF; }
+
+/* THE TITLES ARE CUT INTO THE GROUND. Both display voices — the
+   Garamond posters and the Placard marks down the sidebar — take the
+   page's own charcoal, so they read as something stamped INTO the
+   blood red rather than laid on top of it, while the writing around
+   them stays white. The site's NAMES are the exception and keep their
+   white: the masthead, the mid-page banners and the footer's reprint
+   all stand on the charcoal chrome, where charcoal type would be
+   charcoal on charcoal. */
+.card-title,
+.latest-title,
+.rail-mark{ color: var(--chrome); }
+.card--duo .duo-panel .card-dek,
+.card--feature .duo-panel .card-dek,
+.card .duo-half .duo-panel .panel-col--left .card-dek,
+.card--feature .card-preview,
+.card--duo .card-preview,
+.card .duo-half .duo-panel .card-preview{ color: #FFFFFF; }
+.duo-panel .card-title a{ color: inherit; }
+.latest-title a:hover,
+.latest-title a:focus-visible,
+.duo-panel .card-title a:hover,
+.duo-panel .card-title a:focus-visible{ color: var(--klein); }
+
+/* THE COURIER — every meta line the page sets in Courier: the cells'
+   head rows and billings, the heroes' ground rows, the section word
+   that closes the picture's fourth corner. */
+.latest-courier,
+.cover-under,
+.cover-cat,
+.card .duo-half .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under){
+  color: #FFFFFF;
+}
+.latest-courier a,
+.cover-under a,
+.latest-courier--cover :is(.cover-kicker, .cover-author) a{ color: #FFFFFF; }
+
+/* AND THE SIDEBAR'S OWN LISTS, Garamond like the rest: the rail's
+   links (Archive, About, the section roll) and the two that are set
+   dead. The current page keeps its Klein — that rule carries an
+   attribute and outranks this one, which is what makes "you are
+   here" the one word in the column that is not white. */
+.nav-links a,
+.nav-social a,
+.nav-links-dead{ color: #FFFFFF; }
+
+/* THE SITE'S OWN NAMES, in white on the charcoal chrome they stand on.
+   (The sidebar's marks are Placard too, but they stand on the blood
+   red and are charcoal with the titles — see above.) */
+.banner-name,
+.reprint-name,
+.site-nav--top .topbar-name{ color: #FFFFFF; }
+.rail-mark:hover,
+.rail-mark:focus-visible,
+.banner-name:hover,
+.banner-name:focus-visible,
+.reprint-name:hover,
+.reprint-name:focus-visible,
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: var(--klein); }

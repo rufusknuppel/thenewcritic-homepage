@@ -37,148 +37,20 @@
       before: document.querySelector(el.getAttribute('data-before'))
     };
   });
-  // PER-MEGA GROUPS: every hero on the page (the lead and the
-  // mirrored second) runs its own clone machinery — its own document
-  // seat, its own curtain, its own held/pinned/gone state, toggled
-  // as classes on its half (originals) and its clones. The rev hero
-  // marks its clones so the mirrored hover rules find them.
-  var megaGroups = [].slice.call(document.querySelectorAll('.card--mega')).map(function(card){
-    var half = card.querySelector('.duo-half--mega');
-    if (!half) return null;
-    return {
-      half: half,
-      rev: card.classList.contains('card--mega-rev'),
-      rows: [].slice.call(half.querySelectorAll(
-        '.duo-panel .ground-kicker, .duo-panel .panel-col--right .ground-credit')),
-      clones: [],
-      docTop: 0,
-      goneAt: Infinity
-    };
-  }).filter(Boolean);
-  // PER-ROW LATEST HEADS (native sticky): past a row's own pin its
-  // CONTRA LIFT stands down (.row-held gates it in CSS) — a lifted
-  // PINNED head would translate off the viewport, and its mask-above
-  // must keep masking the held zone.
-  var latestRows = [].slice.call(document.querySelectorAll('.card--latest')).map(function(row){
-    return {
-      row: row,
-      // The CONTRA's own head, named explicitly: this gate exists for
-      // the contra lift, and a bare `.latest-col .latest-courier`
-      // picked whichever cell led the DOM — the postscript's in a
-      // base row, the contra's in a mirrored one.
-      head: row.querySelector('.latest-cell--contra .latest-col .latest-courier:not(.latest-courier--under)'),
-      docTop: Infinity
-    };
-  });
-  // EVERY STICKY HEAD GATES ITS OWN MASK. One row-wide flag couldn't:
-  // the heads in a row pin at different scrolls (a contra's text head
-  // sits below its cover), so a single flag either armed the masks
-  // early — painting them over the artwork above — or late, which let
-  // the COVERS ride under a pinned head unmasked. Each head now
-  // carries its own.
-  var latestHeads = [].slice.call(document.querySelectorAll(
-    '.card--latest .latest-courier:not(.latest-courier--under)')).map(function(el){
-    return { el: el, docTop: Infinity };
-  });
-  // The MEGA COVER HEADS hold their own masks' gate (.head-held):
-  // like the rows', the mask may only exist once the head pins.
-  var megaHeads = [].slice.call(document.querySelectorAll('.mega-cover-head')).map(function(h){
-    return { el: h, row: h.querySelector('.latest-courier--cover'), docTop: Infinity };
-  });
+  // (THE HELD MACHINERY IS GONE. The hero courier clones, the per-row
+  // and per-head hold flags and every anchor they measured are retired
+  // with the scroll-pinning: post cards scroll 1:1 now, so there is
+  // nothing to clone, flag or anchor. Git holds it all against a
+  // change of mind.)
   var fixAt = 0;
   var releaseAt = Infinity;
   var releasedNow = false;
-  // The couriers sit BELOW the rail's line (the head rule pushed the
-  // hero down), so they get their own thresholds: swapped to clones
-  // the instant they'd slip under the mask band (its bottom rides at
-  // 67.13), riding 1:1 at the originals' own document seat, pinned
-  // at the held line.
-  function buildClones(g){
-    for (var i = 0; i < g.clones.length; i++) g.clones[i].remove();
-    g.clones = g.rows.map(function(r){
-      var rect = r.getBoundingClientRect();
-      var c = r.cloneNode(true);
-      c.classList.add('courier-clone');
-      if (g.rev) c.classList.add('clone-rev');
-      // Anchor by the SLIDING side: the held-hover slide animates the
-      // lead hero's clones on `right`, the rev hero's on `left` — the
-      // rest anchor must be the same property, or the transition
-      // starts from auto and snaps instead of sliding.
-      if (g.rev) {
-        c.style.left = (rect.left) + 'px';
-      } else {
-        c.style.left = 'auto';
-        c.style.right = (window.innerWidth - rect.right) + 'px';
-      }
-      c.style.width = rect.width + 'px';
-      c.style.margin = '0';
-      // The held-hover stripe extension: how far the rule must reach
-      // past this clone's box edge to close on ITS OWN cover's line.
-      // Read from THIS hero's half rather than the page edges — the
-      // old constants (299.6 from the right, 48 from the left) were
-      // the lead hero's seat, and every hero in the second movement
-      // stands 251.6 further in, so the rule closed short or long.
-      // The half's box, not the picture's: on hover the cover leaves
-      // its box entirely, and the cover's rest edges are its half's
-      // own, 24 inside (the insets the mega covers are seated by).
-      var hr = g.half.getBoundingClientRect();
-      c.style.setProperty('--stripe-extend', g.rev
-        ? ((hr.left + 24) - rect.left).toFixed(2) + 'px'
-        : (rect.right - (hr.right - 24)).toFixed(2) + 'px');
-      // THE BRIDGE, at rest: held, the hero's divider is THIS clone's
-      // own foot rule, and it used to stop at the clone's box like the
-      // static rule once did — so the line broke again the moment the
-      // head pinned. Reach it across to the cover's head rule (which
-      // pins on the same line, 66.13) so the connection survives the
-      // swap. Measured off that rule itself; its horizontal seat
-      // doesn't move with the scroll.
-      var headRule = g.half.querySelector('.mega-cover-head .latest-rule');
-      if (headRule) {
-        var hrr = headRule.getBoundingClientRect();
-        // Each side is an OFFSET INWARD from its own box edge, so the
-        // two are not mirror images of one another: `right: b` puts
-        // the end at clone.right - b, while `left: b` puts it at
-        // clone.left + b. The rev arm needs the opposite sign, and
-        // with it flipped its rule sat 24 INSIDE the box instead of
-        // reaching 24 past it — a 48 miss, which is what broke the
-        // mirrored heroes' held line.
-        c.style.setProperty('--stripe-bridge', g.rev
-          ? (hrr.right - rect.left).toFixed(2) + 'px'
-          : (rect.right - hrr.left).toFixed(2) + 'px');
-      }
-      document.body.appendChild(c);
-      return c;
-    });
-  }
   function apply(){
     var y = window.scrollY;
     document.body.classList.toggle('rail-fixed', y >= fixAt);
-    megaGroups.forEach(function(g){
-      var held = y >= g.docTop - 67.13;
-      var pinned = y >= g.docTop - 35.93;
-      var gone = y >= g.goneAt;
-      g.half.classList.toggle('mega-held', held);
-      // The band's rule takes the span of whichever hero is holding.
-      if (pinned && !gone && g.ruleW) {
-        document.documentElement.style.setProperty('--held-l', g.ruleL.toFixed(2) + 'px');
-        document.documentElement.style.setProperty('--held-w', g.ruleW.toFixed(2) + 'px');
-      }
-      for (var i = 0; i < g.clones.length; i++) {
-        var cl = g.clones[i].classList;
-        cl.toggle('is-held', held);
-        cl.toggle('is-pinned', pinned);
-        cl.toggle('is-gone', gone);
-      }
-    });
-    latestRows.forEach(function(l){
-      if (l.head) l.row.classList.toggle('row-held', y >= l.docTop - 35.93);
-    });
-    latestHeads.forEach(function(h){
-      h.el.classList.toggle('head-held', y >= h.docTop - 35.93);
-    });
-    megaHeads.forEach(function(m){
-      if (m.row) m.el.classList.toggle('head-held', y >= m.docTop - 35.93);
-    });
+    // (The per-card held flags — mega-held, row-held, head-held — and the
+    //  band's rule span are retired with the hold. Nothing on a post card
+    //  pins any more, so there is no held state to flag.)
     // THE RELEASE: past the contact scroll the sidebar column goes
     // document-absolute and rides away. THE HANDOFF IS MEASURED, not
     // assumed: the anchor measure() precomputes is where the rail
@@ -257,76 +129,6 @@
       var foot = t.before.getBoundingClientRect().top + window.scrollY;
       t.el.style.top = top.toFixed(2) + 'px';
       t.el.style.height = Math.max(0, foot - 48 - top).toFixed(2) + 'px';
-    });
-    latestRows.forEach(function(l){
-      if (!l.head) return;
-      // The rail's own trick: sticky may be HOLDING right now, so the
-      // rect lies — measure the flow seat with the stick released.
-      var lprev = l.head.style.position;
-      l.head.style.position = 'static';
-      l.docTop = l.head.getBoundingClientRect().top + window.scrollY;
-      l.head.style.position = lprev;
-    });
-    latestHeads.forEach(function(h){
-      var hp = h.el.style.position;
-      h.el.style.position = 'static';
-      h.docTop = h.el.getBoundingClientRect().top + window.scrollY;
-      h.el.style.position = hp;
-      // THE PIN SCROLL, published for the mask itself. The mask-above
-      // used to exist only while .head-held was set, and that class
-      // rides the main thread while the compositor scrolls ahead of
-      // it — so on a real scroll there was a window where the head
-      // was already pinned and its mask was not yet there, and the
-      // billing row travelling up past the head printed straight
-      // over it. The mask opens its overhang off a scroll timeline
-      // now (see THE MASKS, style.css) and cannot arrive late.
-      h.el.style.setProperty('--head-at', (h.docTop - 35.93).toFixed(2) + 'px');
-    });
-    megaHeads.forEach(function(m){
-      if (!m.row) return;
-      var mp = m.row.style.position;
-      m.row.style.position = 'static';
-      m.docTop = m.row.getBoundingClientRect().top + window.scrollY;
-      m.row.style.position = mp;
-      // THE HERO'S HEAD NEEDS ITS PIN SCROLL TOO. The mask's overhang
-      // opens off a scroll timeline now (see THE MASKS, style.css) and
-      // reads --head-at for the scroll to open at; only the cells' own
-      // heads were publishing it, so every hero fell back to the 200vh
-      // default and its mask never opened at all — the date and
-      // section row simply walked over the held head instead of under
-      // it. Custom properties inherit, so setting it on the head span
-      // reaches the courier's pseudo inside it.
-      m.el.style.setProperty('--head-at', (m.docTop - 35.93).toFixed(2) + 'px');
-    });
-    megaGroups.forEach(function(g){
-      if (!g.rows.length) return;
-      // Gone only when this hero's FOOT crosses the held divider line.
-      g.goneAt = g.half.getBoundingClientRect().bottom + window.scrollY - 67.13;
-      g.docTop = g.rows[0].getBoundingClientRect().top + window.scrollY;
-      // THE HELD DIVIDER'S OWN MEASURE. The band draws the hero's rule
-      // onward as the hero passes under it, and it used to do that from
-      // a constant (40vw - 230.24) tuned for the old geometry — before
-      // the sidebar margins doubled and the wrap's cap became the
-      // viewport. It has been ending ~1100 short of the rule it is
-      // continuing ever since, which leaves the held author's ink
-      // hanging well past the end of its own line. Measured per hero
-      // (horizontal only, so the stick cannot lie about it) and
-      // published at the pin.
-      var mr = g.half.querySelector('.latest-rule');
-      if (mr) {
-        var mb = mr.getBoundingClientRect();
-        if (mb.width) { g.ruleL = mb.left; g.ruleW = mb.width; }
-      }
-      buildClones(g);
-      // Per-clone anchors: the ride seat (the originals' own document
-      // top) and THE CURTAIN — past goneAt the clones sit at a
-      // document anchor with box top 31.2 above the hero's foot, so
-      // their rule's 1px foot rides exactly ON it, continuous with
-      // the pin at the flip and reversible on the way back.
-      for (var i = 0; i < g.clones.length; i++) {
-        g.clones[i].style.setProperty('--clone-doc-top', g.docTop.toFixed(2) + 'px');
-        g.clones[i].style.setProperty('--clone-push-top', (g.goneAt + 35.93).toFixed(2) + 'px');
-      }
     });
     apply();
   }

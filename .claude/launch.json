@@ -3,8 +3,10 @@
   "configurations": [
     {
       "name": "serve-dist",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "dist"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "serve.js"
+      ],
       "port": 8765,
       "autoPort": true
     }
