@@ -34,7 +34,11 @@
     return {
       el: el,
       after: document.querySelector(el.getAttribute('data-after')),
-      before: document.querySelector(el.getAttribute('data-before'))
+      before: document.querySelector(el.getAttribute('data-before')),
+      // Optional: open on THIS element's top instead of the one above's
+      // foot (see the note in measure()).
+      from: el.getAttribute('data-from')
+        ? document.querySelector(el.getAttribute('data-from')) : null
     };
   });
   // (THE HELD MACHINERY IS GONE. The hero courier clones, the per-row
@@ -124,11 +128,29 @@
       }
     }
     railTracks.forEach(function(t){
-      if (!t.after || !t.before) return;
-      var top = t.after.getBoundingClientRect().bottom + window.scrollY + 48 - 16.2;
+      if ((!t.after && !t.from) || !t.before) return;
+      // THE TRACK CLOSES ON BOTH BANNERS. It used to open 31.8 below
+      // the block above (48 less the mark's own cap offset) and stop 48
+      // short of the one below — seats for a column of TYPE standing in
+      // the red. The track carries the charcoal ground now, so those
+      // two gaps are red slots between one charcoal block and the next;
+      // it runs edge to edge instead, and the 48 the mark wants is
+      // inside it, kept by the rail that rides within.
+      // A TRACK OPENS ON ITS MOVEMENT'S GROUND, and the two kinds of
+      // track find that line differently. A banner interrupts the red:
+      // the ground resumes at its box's foot, and the 23 of margin
+      // under it is already red — measure to the margin edge there and
+      // the charcoal breaks. The MASTHEAD does not interrupt anything:
+      // everything under it is black to the top of main, including the
+      // whole 325 the opening's fold adds, so its track has to open on
+      // main itself. That one names its own line with data-from; the
+      // rest close on the banner above them, as they always did.
+      var top = t.from
+        ? t.from.getBoundingClientRect().top + window.scrollY
+        : t.after.getBoundingClientRect().bottom + window.scrollY;
       var foot = t.before.getBoundingClientRect().top + window.scrollY;
       t.el.style.top = top.toFixed(2) + 'px';
-      t.el.style.height = Math.max(0, foot - 48 - top).toFixed(2) + 'px';
+      t.el.style.height = Math.max(0, foot - top).toFixed(2) + 'px';
     });
     apply();
   }

@@ -6,19 +6,27 @@
    self-hosted below at 400/700 — it replaced the carried Courier, and
    with it the Typekit kit that existed only to serve Courier's italic.
    No italic cut ships with Berlin Type; the browser's synthetic
-   oblique covers the few italic labels (masthead roles, chip <em>s). */
+   oblique covers the few italic labels (masthead roles, chip <em>s).
+
+   BLOCK, NOT SWAP, on every self-hosted face. Swap painted the first
+   frame in the fallback, the fitters measured THOSE metrics, and when
+   the real cut landed the fonts.ready refit re-seated every courier
+   corner and title on screen — the load-time realign. These files are
+   same-origin and tiny, warmed by the head's font gate before the body
+   parses, so block's hold is never actually seen; it only guarantees
+   that nothing paints in a face the page is about to take back. */
 @font-face {
   font-family: 'Berlin Type';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/berlin-type-regular.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Berlin Type';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/berlin-type-bold.woff2) format('woff2');
 }
 /* The display face — Archivo Black (self-hosted OFL cut from Google
@@ -29,14 +37,14 @@
   font-family: 'Archivo Black';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/archivo-black.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Archivo Black';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/archivo-black.woff2) format('woff2');
 }
 /* TRIAL — OPS Placard Bold (Our Polite Society), the Antenne Books
@@ -49,7 +57,7 @@
   font-family: 'OPS Placard';
   font-style: normal;
   font-weight: 100 900;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/ops-placard-bold.woff2) format('woff2');
 }
 /* The excerpts' face — Playfair Display Medium (self-hosted OFL cuts
@@ -59,38 +67,78 @@
   font-family: 'Playfair Display';
   font-style: normal;
   font-weight: 500;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/playfair-display-medium.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Playfair Display';
   font-style: italic;
   font-weight: 500;
-  font-display: swap;
+  font-display: block;
   src: url(fonts/playfair-display-medium-italic.woff2) format('woff2');
 }
 :root{
   /* THE MASTHEAD SIZE: sized so the name's INK — the T's left stem
      to the final C's right bowl, not the advance box — spans
-     exactly 100vw - 96 (measured ink width 5.74403 per size unit in
-     Placard 700). Every masthead-relative seat (cap margins, the
-     head rule, the rail's drop) rides this one token. */
-  --masthead-size: calc(17.4094vw - 16.713px);
+     exactly 100vw - 96. The face is TRAJAN now, and it is a Roman
+     with proportional widths where Placard was a condensed poster
+     face: THE NEW CRITIC measures 9.379 of ink per size unit in
+     trajan-pro-3 400 against Placard 700's 5.744, so the same
+     measure resolves to a name a little over half the old size.
+     Every masthead-relative seat (cap margins, the head rule, the
+     rail's drop) rides this one token, and the four ratios below
+     are re-measured off the new face with it. */
+  /* THE NAMES' FACE: the banners and the reprint wear Trajan. (The
+     masthead prints Placard on its foil, the sidebar marks are back
+     in Placard, and the titles are Garamond again — this token is
+     the mid-page and foot names' alone now.) */
+  --name-face: 'trajan-pro-3', 'garamond-premier-pro', Georgia, serif;
+  --masthead-size: calc(10.6621vw - 10.2356px);
+  /* THE TOP HEADER'S OWN SIZE: the header's name is ALL PLACARD now
+     (see THE FOIL HEADER), the condensed poster face — THE NEW
+     CRITIC measures 5.744 of ink per size unit in Placard 700
+     against Trajan's 9.379, so the same 100vw - 96 measure resolves
+     to a name nearly two-thirds larger: (100vw - 96)/5.744. The
+     reprint and the banners stay all-Trajan on the old token — only
+     the header's seats ride this one. The ink-shift takes Placard's
+     own empirical correction back (+0.006 of the size, from the
+     Placard-era masthead), on the new slope. */
+  --masthead-size-top: 17.6vw; /* all-Placard: 100vw/5.744 fills edge to edge; a shade over so the first and last letters crop at the edges, album-cover fashion */
+  --masthead-ink-shift-top: calc(0.10446vw - 0.10028px); /* Placard's +0.006 on the slope */
+  /* The baked no-JS pour, shared by every foil block (header,
+     banners, reprint) — src/foil-pour.js overrides it per visit
+     through --foil-uri. */
+  --foil-fallback: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1400' height='300' viewBox='0 0 1400 300' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='.3'%3E%3Cstop offset='0' stop-color='%238f8c88'/%3E%3Cstop offset='.18' stop-color='%23d3d0ca'/%3E%3Cstop offset='.38' stop-color='%23a39f9a'/%3E%3Cstop offset='.55' stop-color='%23e6e2dc'/%3E%3Cstop offset='.72' stop-color='%23989591'/%3E%3Cstop offset='.88' stop-color='%23ccc8c2'/%3E%3Cstop offset='1' stop-color='%238b8884'/%3E%3C/linearGradient%3E%3ClinearGradient id='t' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23c98f83' stop-opacity='.5'/%3E%3Cstop offset='.22' stop-color='%238fa7cf' stop-opacity='.4'/%3E%3Cstop offset='.45' stop-color='%23d2bb82' stop-opacity='.45'/%3E%3Cstop offset='.68' stop-color='%2386b8a2' stop-opacity='.35'/%3E%3Cstop offset='1' stop-color='%23bd8fae' stop-opacity='.45'/%3E%3C/linearGradient%3E%3Cfilter id='f1' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.045' numOctaves='4' seed='7'/%3E%3CfeDiffuseLighting lighting-color='%23ffffff' surfaceScale='3.2' diffuseConstant='1'%3E%3CfeDistantLight azimuth='225' elevation='60'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Cfilter id='f2' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.014' numOctaves='3' seed='3'/%3E%3CfeDiffuseLighting lighting-color='%23ffffff' surfaceScale='4' diffuseConstant='1'%3E%3CfeDistantLight azimuth='235' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3C/defs%3E%3Crect width='1400' height='300' fill='url(%23g)'/%3E%3Crect width='1400' height='300' filter='url(%23f2)' opacity='.55' style='mix-blend-mode:soft-light'/%3E%3Crect width='1400' height='300' filter='url(%23f1)' opacity='.6' style='mix-blend-mode:soft-light'/%3E%3Crect width='1400' height='300' fill='url(%23t)' style='mix-blend-mode:overlay'/%3E%3C/svg%3E");
   /* The centring correction: text-align centres the ADVANCE box,
      whose side bearings are unequal — this slides the ink itself
-     onto the 48 seats (same slope as the size). */
-  --masthead-ink-shift: calc(0.10332vw - 0.0992px);
+     onto the 48 seats (same slope as the size). Trajan's bearings
+     pull the other way from Placard's — the correction is -0.02498
+     of the size where Placard's was +0.006, measured off the
+     rendered line (the ink read 54.2 clear at the left and 41.8 at
+     the right before this) rather than derived from the face. */
+  --masthead-ink-shift: calc(-0.26629vw + 0.25564px);
+  /* AND THE REPRINT TAKES A DIFFERENT ONE, for a reason worth
+     writing down: the header's name is centred inside a box the
+     page's 48 gutters have already narrowed to exactly the ink's
+     own measure, so its ADVANCE box (0.087 of the size wider than
+     the ink, all bearings) overflows that box and the browser hangs
+     the overflow off the right — half of it, 0.0435 of the size, is
+     in the header's number above. The footer's name is centred in
+     the full-width page instead, nothing overflows, and it wants
+     the plain bearing correction: +0.0185 of the size. */
+  --reprint-ink-shift: calc(0.19725vw - 0.18936px);
   /* The ground: a flat near-black gray, a shade darker and more
      neutral than the blue-slate it briefly ran — no texture (the cloth
      tiles are retired, see --cloth below). Type prints in cream. */
-  /* THE BLOOD RED GROUND (the vermilion #E23D1F, the gold #FBBF00,
-     the deeper #ADD8E6, the pale blue #EFF3FC, charcoal and white all
-     retired in their turn): every mask and plate grounds on this
-     token, so the page stays coherent wherever the ground goes. */
-  --paper: #8A0F0A;
+  /* THE TAN GROUND (the blood red #9E1712, the vermilion #E23D1F,
+     the gold #FBBF00, the deeper #ADD8E6, the pale blue #EFF3FC,
+     charcoal and white all retired in their turn): every mask and
+     plate grounds on this token, so the page stays coherent wherever
+     the ground goes. */
+  --paper: #9E1712;
   /* The CHROME's charcoal — the header, footer and their courier
      bands keep the old dark ground around the gold middle. */
-  --chrome: #121417;
+  --chrome: #9E1712; /* the chrome is the blue too now — one ground from masthead to colophon */
   --surface: #040507;
   --surface-2: #0A0B10;
   --white: #FFFFFF;
@@ -3059,8 +3107,20 @@ a.likes:hover::after,
      left edge on the hero's 48 ink line, the contra's right edge on
      the hero cover's own right line (48 + 24 more than the card
      reach on each side). */
-  margin-left: 48px;
-  margin-right: 228px;
+  /* 24, not 48: the free flank keeps the same 48 of red the sidebar
+     flank keeps (the wrap's own 24 pays the rest of it), so the
+     matter sits on one measure of air whichever side the column is
+     standing.
+     AND THE SIDEBAR FLANK GIVES BACK 51. The reserved strip was sized
+     for a CHARCOAL PANEL, whose visible edge was its box; now that the
+     column carries the page's own red, the only thing the reader sees
+     over there is the TYPE, which is 126.5 of glyph centred in a 228
+     box — so 51 of the strip was slack, and the gap read 99 against
+     the page's 48. Handed to the matter, every margin on the page
+     comes out at 48: content to the page edge, content to the mark's
+     ink, and the mark's ink to the edge beyond it. */
+  margin-left: 24px;
+  margin-right: 177px;
   /* NO card padding: the base card's 80 head/foot zones put the
      covers 80 under the row's box top — the 48 seat under the hero
      must land on the IMAGES, not on an invisible edge. */
@@ -3073,7 +3133,7 @@ a.likes:hover::after,
    rule = 35.93 of box gap, and the courier's ink sits 12.07 into the
    box. (Movements used to run one row each, so row-to-row spacing
    had never come up.) */
-.card.card--latest.card--stacked{ margin-top: 34.93px; }
+.card.card--latest.card--stacked{ margin-top: 46.93px; }
 .latest-cell{ min-width: 0; position: relative; }
 /* The postscript: cover PORTRAIT at the left, the meta/title/dek
    column beside it — 48 between them, like the hero's ground and
@@ -3303,7 +3363,7 @@ a.likes:hover::after,
 .mega-cover-head .latest-rule::before{ content: none; }
 /* THE AUTHOR'S ARRIVAL: on the open plate the sliding author lands
    on this row's line — the kicker and date stand down for it. */
-.latest-courier--cover :is(.cover-kicker, .cover-author){
+.latest-courier--cover :is(.cover-kicker, .cover-date){
   transition: opacity .3s ease;
 }
 /* The POSTSCRIPT cells' pairs stand down the same way: the sliding
@@ -3357,11 +3417,11 @@ a.likes:hover::after,
 }
 /* The cover pair links like every courier line — white ink, Klein on
    the pointer. */
-.latest-courier--cover :is(.cover-kicker, .cover-author) a{
+.latest-courier--cover :is(.cover-kicker, .cover-date) a{
   color: var(--white); text-decoration: none; transition: color .15s ease;
 }
-.latest-courier--cover :is(.cover-kicker, .cover-author) a:hover,
-.latest-courier--cover :is(.cover-kicker, .cover-author) a:focus-visible{ color: var(--klein); }
+.latest-courier--cover :is(.cover-kicker, .cover-date) a:hover,
+.latest-courier--cover :is(.cover-kicker, .cover-date) a:focus-visible{ color: var(--klein); }
 /* The hero poster's own voice, at row scale. */
 .latest-title{
   margin: 0;
@@ -3547,8 +3607,8 @@ a.likes:hover::after,
 }
 .reprint-name{
   display: block;
-  font-family: var(--title-face);
-  font-weight: 700;
+  font-family: var(--name-face);
+  font-weight: 400;
   font-style: normal;
   text-transform: uppercase;
   white-space: nowrap;
@@ -3556,12 +3616,14 @@ a.likes:hover::after,
   font-size: var(--masthead-size);
   color: var(--white);
   text-align: center;
-  transform: translateX(var(--masthead-ink-shift));
+  transform: translateX(var(--reprint-ink-shift));
   /* Cap ink 48 under the CHARCOAL'S TOP EDGE — the reprint's 48 head
      pad plus the rule already carry the air, so the margin climbs
-     the whole box-to-cap offset (Placard's 0.217) and the rule's 1
+     the whole box-to-cap offset (Trajan's 0.0495 — the face sets on a
+     deep negative half-leading at line-height 1, so its box opens
+     almost on the cap line where Placard's opened well above it) and the rule's 1
      back out. */
-  margin-top: calc(-1px - 0.217 * var(--masthead-size));
+  margin-top: calc(-1px - 0.0495 * var(--masthead-size));
   /* A LIVE LINK HOME now: pointer restored (the section stays inert)
      but only from the CAP INK down — the box's empty head zone
      climbs over the foot band, and an unclipped hit area stole the
@@ -3570,7 +3632,7 @@ a.likes:hover::after,
      getting their crowns shaved), still far below the band. Klein
      on the pointer, like every link. */
   pointer-events: auto;
-  clip-path: inset(calc(0.2 * var(--masthead-size)) 0 0 0);
+  clip-path: inset(calc(0.0335 * var(--masthead-size)) 0 0 0);
   text-decoration: none;
   transition: color .15s ease;
 }
@@ -3597,10 +3659,13 @@ a.likes:hover::after,
    browsers with no scroll timeline; where there is one, the ride
    below does the same job continuously and this never engages. */
 @supports not (animation-timeline: scroll(root block)){
-  body.rail-released .site-nav--top .topbar-rail{
+  body.rail-released .site-nav--top .topbar-rail:not(.topbar-rail--page){
     position: absolute;
     top: var(--rail-release-top);
-    left: auto; right: 24px;
+    /* 0, with the panel: the released seat has to land on the same
+       flank the sticky one holds, or the column jumps 24 at the
+       handoff. */
+    left: auto; right: 0;
     margin: 0;
   }
   body.rail-released::before{
@@ -3619,7 +3684,7 @@ a.likes:hover::after,
    it 1:1. The rail stays sticky underneath: it holds at its 48 until
    the release and the transform carries it off from there. */
 @supports (animation-timeline: scroll(root block)){
-  .site-nav--top .topbar-rail,
+  .site-nav--top .topbar-rail:not(.topbar-rail--page),
   body::before{
     animation: rail-ride linear both;
     animation-timeline: scroll(root block);
@@ -4270,6 +4335,18 @@ a.likes:hover::after,
    No JS → no .imgfade → nothing is ever hidden. */
 img.card-image,
 .arch-ledger-card-image img{ background: var(--surface); }
+/* AND THE TILE GOES WHEN THE PICTURE ARRIVES. The covers' boxes are
+   fitter-measured and land on fractional pixels vertically — the
+   hero's foot sits at .37 of a pixel — so the picture's raster stops
+   a sub-pixel short of its own border on the TOP and BOTTOM edges
+   while the sides land square. That seam was printing the placeholder
+   tile: a near-black hairline against a charcoal border, which read
+   as a doubled rule under every cover. Transparent once the pixels
+   are in, the seam is the page's own ground and the border is a
+   border again. (Before the picture arrives the tile still stands —
+   that is the whole of its job.) */
+img.card-image.is-loaded,
+.arch-ledger-card-image img.is-loaded{ background: transparent; }
 .imgfade img.card-image,
 .imgfade .arch-ledger-card-image img{ opacity: 0; transition: opacity .45s ease; }
 /* .card-image also carries the hover-dim filter transition (see
@@ -4357,7 +4434,7 @@ img.card-image,
    to the footer's border-top, matching the homepage — and the last row's
    gutter dividers extend down through it to meet that line, the way the
    first row's extend up through the top inset to the top of the page. */
-.page-rows{ padding-top: 48px; padding-bottom: 0; }
+.page-rows{ padding-top: 47px; padding-bottom: 0; } /* 47 + the wordmark's 1px foot line = the 48 every card keeps */
 
 /* ---------- ESSAY TICKER ---------- */
 /* The essays page's three tapes (renderEssayTicker in build.js):
@@ -5643,27 +5720,27 @@ main, footer{ margin-left: 0; }
   position: relative;
   z-index: 28;
 }
-/* The name across one line — Placard, sized to span the measure
-   (tuned by rendered pixels below). */
+/* The name across one line — TRAJAN with the titles now, sized to
+   span the measure (the token above carries the sizing). */
 .site-nav--top .topbar-name{
   display: block;
-  font-family: var(--title-face);
-  font-weight: 700;
+  font-family: var(--name-face);
+  font-weight: 400;
   font-style: normal;
   text-transform: uppercase;
   white-space: nowrap;
   line-height: 1;
   /* Sized to SPAN the measure: the name is 811.4 wide at 140px, and
      the measure is 100vw less the 96 of gutters — 140/811.4 of that. */
-  font-size: var(--masthead-size);
+  font-size: var(--masthead-size-top);
   color: var(--white);
   transition: color .15s ease;
   text-align: center;
-  transform: translateX(var(--masthead-ink-shift));
-  /* CAP INK at 48 from the page top: the nav's 24 pad + Placard's cap
-     offset (0.217 of the size at lh 1) climbed back, less the 24
+  transform: translateX(var(--masthead-ink-shift-top));
+  /* CAP INK at 48 from the page top: the nav's 24 pad + Trajan's cap
+     offset (0.0495 of the size at lh 1) climbed back, less the 24
      still wanted. */
-  margin-top: calc(24px - 0.217 * var(--masthead-size));
+  margin-top: calc(24px - 0.0495 * var(--masthead-size-top));
 }
 /* The masthead is a LIVE LINK home — Klein on the pointer, like every
    link on the site (the name's own explicit white blocks the anchor's
@@ -5673,7 +5750,7 @@ main, footer{ margin-left: 0; }
 }
 /* THE HEAD RULE: a divider under the masthead, EDGE TO EDGE — the
    full bleed, no gutters. The name's box runs below its BASELINE
-   ink by 0.10088 of the size (half-leading + the descender gap,
+   ink by 0.1655 of the size (half-leading + the descender gap,
    caps' 2px overshoot included) — the margin gives that back so the
    line sits 48 under the ink at every width, on the wordmark's own
    vw slope. z 32: above the right column's fixed ground (retired on
@@ -5697,7 +5774,23 @@ main, footer{ margin-left: 0; }
      box and the rule's own 1px. (The header's remaining 27.41 flow
      strut is climbed by the BAND's own margin below — a deeper
      margin here is swallowed by the chrome's margin collapse.) */
-  margin: calc(-1px - 0.10088 * var(--masthead-size)) 0 0;
+  /* Placard's lh-1 box runs 0.11 of the size below the baseline
+     (descent 0.21 less the 0.1 negative half-leading) — the Trajan
+     0.1665 is retired with the face. */
+  margin: calc(-1px - 0.11 * var(--masthead-size-top)) 0 0;
+}
+/* AND ON THE HOMEPAGE IT CLIMBS NOTHING. The note above says this
+   margin is "swallowed by the chrome's margin collapse" — the thing
+   doing the swallowing was the RAIL, which sat in flow between the
+   wordmark and this rule with a -603 bottom margin that ate it whole.
+   The homepage's rail rides a document track now (see renderNav), so
+   there is nothing left in flow to swallow it and the margin came
+   good: the rule, the dek band and every seat below them climbed
+   16.88 onto the masthead's own ink, printing the tagline through the
+   bottom of the name. It is stated as zero where the rail has left,
+   which is the seat the page always actually rendered. */
+body:has(.card--mega) .head-rule{
+  margin-top: 0;
 }
 /* THE DEK BAND: a 48 KLEIN ribbon between the dark header and the
    middle's ground (gold tried and retired; the Garamond topics
@@ -5737,6 +5830,14 @@ main, footer{ margin-left: 0; }
   text-transform: uppercase;
 }
 .dek-band :is(a, span){ position: relative; top: -0.54px; }
+/* THE MASTHEAD'S OWN LINE SPEAKS IN THE DEK'S VOICE — Garamond
+   italic at the deks' 20, real case, no courier tracking. The
+   banner lines and the colophon keep the courier dress; this is the
+   one band under the site's name. (alignBands and the opening's ink
+   measure are face-blind — they read the rendered glyphs.) */
+/* (The bands' voice is set in one place at the file's end — see
+   THE CHROME'S THREE BANDS. It has to sit after .dek-band--foot,
+   which states its own courier at the same weight.) */
 /* TRUE CENTRE for the date: the flanks take equal shares of the
    band, so the middle item seats on the exact centre line whatever
    the two flank lines' lengths. Head band only — the foot's five
@@ -5766,7 +5867,7 @@ main, footer{ margin-left: 0; }
      negative margin climbs the name's below-ink box, so the band's
      top is the footer title's own ink line; the band's 48 is the
      page's closing air. */
-  margin-top: calc(0px - 0.10088 * var(--masthead-size));
+  margin-top: calc(0px - 0.1665 * var(--masthead-size));
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
@@ -5795,7 +5896,11 @@ main, footer{ margin-left: 0; }
    no room from the flow (the hero's seat doesn't move), sticks
    compositor-locked — STIFF — and, contained by the body, holds to
    the page's end. */
-.site-nav--top .topbar-rail{
+/* THE HEADER'S OWN RAIL — the one on pages that have no first
+   movement to track. The homepage's now rides a .rail-track like every
+   other sidebar (see renderNav), so every bespoke seat below is scoped
+   away from it. */
+.site-nav--top .topbar-rail:not(.topbar-rail--page){
   position: sticky;
   /* Held with a 48 at the box's own top edge, the left rail's seat —
      the pair rides centred inside, so the cap-ink line is no longer
@@ -5834,8 +5939,8 @@ main, footer{ margin-left: 0; }
      the top, a scroll-driven drift onto this line — is retired: it
      read as off-centre at the page head, which is where the rail is
      most looked at, and the drift was the misalignment travelling.) */
-  margin: calc(89.93px - 0.10088 * var(--masthead-size)) 24px
-          calc(0.10088 * var(--masthead-size) - 89.93px - var(--rail-h)) auto;
+  margin: calc(89.93px - 0.11 * var(--masthead-size-top)) 24px
+          calc(0.11 * var(--masthead-size-top) - 89.93px - var(--rail-h)) auto;
   /* THE BOX TAKES THE VIEWPORT LESS A 48 AT EACH END — the left
      rail's own measure — and CENTRES the pair inside it, so the
      wordmark and its items ride on the screen's middle while the
@@ -5936,7 +6041,7 @@ main, footer{ margin-left: 0; }
    rail's Young American rule again, one line across the page. The
    rule rides the wordmark's vw slope in flow, so the seat holds at
    every width. */
-.card.card--mega{ margin-top: -61.88px; margin-left: 24px; margin-right: 204px;
+.card.card--mega{ margin-top: -80px; margin-left: 0; margin-right: 153px;
   /* The latest row opens exactly 48 under the hero's foot — the
      card's own 80 below-cell zone, the divider step and the wrap
      chain all paid back by this margin (tuned live: 48 target on a
@@ -6080,6 +6185,14 @@ body::before{
   position: static;
   text-align: center;
   z-index: 50;
+  /* PLACARD, three letters to the line. A condensed poster face
+     whose caps all set on ONE advance: three of them measure 126.5
+     of ink at 106.28px, which is what fits the 132 column between
+     the strip's two 48s and stacks the chunks as a solid block.
+     (It wore Trajan for a spell, at 50.65px — the widest chunk in a
+     proportional face sets the size for every mark — and came back:
+     the ragged stack was the face, not a fault, but the block is
+     what the sidebar wants.) */
   font-family: var(--title-face);
   font-weight: 700;
   font-style: normal;
@@ -6200,20 +6313,28 @@ body::before{
    right — the negative margin eating the wrap's wider right pad.
    Same 1300.4 measure as the lead, so every internal third holds. */
 .card.card--mega.card--m2{
-  margin-left: 228px;
-  margin-right: 0;
+  /* Mirrored: the sidebar flank is the LEFT one, and gives back the
+     same 51 (see .card--latest). */
+  margin-left: 177px;
+  /* Mirrored, the free flank is the right one — and it reaches PAST
+     the wrap's 48 pad to leave the same 48 of red the other side
+     keeps. */
+  margin-right: -24px;
 }
 /* -61.88, the LEAD HERO'S OWN: the first card under the band keeps
    the seat the lead keeps under the head band — its courier CAP INK
    48 below the charcoal's foot. */
+/* (Both seats below are retired with the hoisted head: every hero's
+   picture stands on its half now, so the 48 is the same sum
+   everywhere — see EVERY CARD 48 FROM ITS NEIGHBOURS at the end.) */
 .card.card--mega.card--mega-rev{
-  margin-top: -61.88px;
+  margin-top: -80px;
 }
 /* The FIRST MOVEMENT'S mirrored hero follows a latest ROW, not a
    band — the band tuck above pulled it to 12.9 of ink where the
    essays' heroes breathe 35 between each other. 22.1 handed back. */
 .card.card--mega.card--mega-rev:not(.card--m2){
-  margin-top: -39.78px;
+  margin-top: -80px;
 }
 
 /* ---------- THE SECOND LATEST ROW (mirrored) ----------
@@ -6268,15 +6389,15 @@ body::before{
   /* The row IN FLOW at the wrapper's top: -30.2 seats its foot ON
      the rule line (0..1) level with the hero's own rows; bottom 0
      runs the wrapper to the cover's foot, the sticky's push-off. */
-  inset: -30.2px 24px 0 calc(100% / 3 + 24px);
+  inset: 0 24px 0 calc(100% / 3 + 24px);
   display: block;
   pointer-events: none;
   z-index: 6;
 }
 .card--mega-rev .duo-half--mega .mega-cover-head{
-  inset: -30.2px calc(100% / 3 + 24px) 0 24px;
+  inset: 0 calc(100% / 3 + 24px) 0 24px;
 }
-.mega-cover-head :is(.cover-kicker, .cover-author, .cover-under){ pointer-events: auto; }
+.mega-cover-head :is(.cover-kicker, .cover-date, .cover-under){ pointer-events: auto; }
 /* (The hover z-drop is RETIRED. The un-held head used to stand down
    below the panel so that an AUTHOR ARRIVING in the title column's
    row could print through the head's opaque ground. Nothing arrives
@@ -6308,14 +6429,17 @@ main:has(.card--mega){
      charcoal, where a seam cannot show. Unmeasured, every stop sits
      at 100% and the page is gold from end to end, exactly as it was
      before the movements took their colours. */
-  /* ONE BLOOD RED GROUND for every movement now — the four-colour
-     experiment stands down, but the stops and the per-movement
-     tokens keep their machinery so the sections can trade colours
-     again by editing four lines. */
-  --g1: #8A0F0A;
-  --g2: #8A0F0A;
-  --g3: #8A0F0A;
-  --g4: #8A0F0A;
+  /* ONE CHARCOAL GROUND for every movement — the same charcoal the
+     chrome wears, so the page is a single ground from the masthead
+     to the colophon and the bands are boundaries of type, not of
+     colour. (The tan, the blood red, the gold and the four-colour
+     experiment all stand down; the stops and the per-movement tokens
+     keep their machinery, so the sections can trade colours again by
+     editing four lines.) */
+  --g1: #9E1712;
+  --g2: #9E1712;
+  --g3: #9E1712;
+  --g4: #9E1712;
   --s1: 100%;
   --s2: 100%;
   --s3: 100%;
@@ -6324,15 +6448,11 @@ main:has(.card--mega){
     var(--g2) var(--s1) var(--s2),
     var(--g3) var(--s2) var(--s3),
     var(--g4) var(--s3) 100%);
-  /* THE LIGHT MIDDLE'S INK IS CHARCOAL: the token remap flips every
-     var(--white) — couriers, titles, deks, plates, rules — to the
-     chrome's dark, in one move; the reprint, colophon band and
-     subscribe band scope it back below (they are chrome, white on
-     charcoal). The muted and faint greys go with it: BODY TEXT is
-     charcoal too. */
-  --white: #121417;
-  --muted: #121417;
-  --faint: #121417;
+  /* AND THE INK IS WHITE AGAIN, everywhere. The light middle remapped
+     --white to the chrome's dark so a tan page could be read; on
+     charcoal that remap is the one thing that could hide the type, so
+     it is gone and the tokens stand as :root sets them — white, and
+     the two greys under it. */
   /* flow-root: the hero's negative head margin must not collapse
      OUT and drag the ground's box up over the head rule. */
   display: flow-root;
@@ -6344,17 +6464,17 @@ main:has(.card--mega){
    masks in its own colour instead of printing the first movement's
    gold over a green one. (The gradient above is only what the reader
    sees between the blocks; this is what the blocks paint with.) */
-.m--latest{ --paper: #8A0F0A; }
-.m--essays{ --paper: #8A0F0A; }
-.m--postscript{ --paper: #8A0F0A; }
-.m--contra{ --paper: #8A0F0A; }
+.m--latest{ --paper: #9E1712; }
+.m--essays{ --paper: #9E1712; }
+.m--postscript{ --paper: #9E1712; }
+.m--contra{ --paper: #9E1712; }
 main:has(.card--mega) :is(.reprint, .dek-band--foot, .page-banner){ --white: #FFFFFF; --muted: #938F86; --faint: #5A574F; }
 main:has(.card--mega) .reprint{ background: var(--chrome); }
 /* The page around the light middle is CHROME. */
 body:has(.card--mega){ background: var(--chrome); }
-/* The rail lives OUTSIDE main but rides the light middle — its ink
-   follows the middle's charcoal. */
-body:has(.card--mega) .site-nav--top .topbar-rail{ --white: #121417; }
+/* (The rail lives OUTSIDE main and used to follow the light middle's
+   charcoal ink. The middle is charcoal itself now: the rail keeps the
+   page's white with everything else.) */
 body:has(.card--mega).rail-fixed::after{ content: none; }
 body:has(.card--mega)::before{ content: none; }
 
@@ -6393,8 +6513,8 @@ body:has(.card--mega)::before{ content: none; }
 }
 .banner-name{
   display: block;
-  font-family: var(--title-face);
-  font-weight: 700;
+  font-family: var(--name-face);
+  font-weight: 400;
   font-style: normal;
   text-transform: uppercase;
   white-space: nowrap;
@@ -6403,9 +6523,11 @@ body:has(.card--mega)::before{ content: none; }
   color: var(--white);
   text-align: center;
   /* Cap ink 48 under the charcoal's top edge: the margin climbs the
-     box-to-cap offset (Placard's 0.217) back out of the head pad.
+     box-to-cap offset (Trajan's 0.0495 — the face sets on a
+     deep negative half-leading at line-height 1, so its box opens
+     almost on the cap line where Placard's opened well above it) back out of the head pad.
      No rule box between here and the pad, so no -1. */
-  margin-top: calc(0px - 0.217 * var(--masthead-size));
+  margin-top: calc(0px - 0.0495 * var(--masthead-size));
   /* ABOVE the bands in paint: they are positioned (the aligner's
      seat), so their charcoal grounds were printing over the round
      caps' overshoot — the S's crown ends exactly ON the head band's
@@ -6416,7 +6538,7 @@ body:has(.card--mega)::before{ content: none; }
   /* And the reprint's clip: the box's empty head zone climbed over
      the head band's line taking its hits — clipped to 0.017 of the
      size above the cap line, room for the crowns' overshoot. */
-  clip-path: inset(calc(0.2 * var(--masthead-size)) 0 0 0);
+  clip-path: inset(calc(0.0335 * var(--masthead-size)) 0 0 0);
   text-decoration: none;
   transition: color .15s ease;
 }
@@ -6425,10 +6547,10 @@ body:has(.card--mega)::before{ content: none; }
 /* A BARE BANNER (STORE): no courier line, so nothing below the word
    carries the closing air — the charcoal takes it as padding
    instead, measured to the same 48 under the baseline ink (the box
-   already runs 0.10088 of the size past that ink, so the pad pays
+   already runs 0.1655 of the size past that ink, so the pad pays
    only the difference). */
 .page-banner--bare{
-  padding-bottom: calc(48px - 0.10088 * var(--masthead-size));
+  padding-bottom: calc(48px - 0.1665 * var(--masthead-size));
 }
 /* ONE LINE UNDER THE WORD, CENTRED ON THE PAGE: the band hugs the
    name's baseline ink from below (the negative margin climbs the
@@ -6438,7 +6560,7 @@ body:has(.card--mega)::before{ content: none; }
    on any letter above it. The margin also overrides the generic
    band's -27.41 header strut, which this stack doesn't carry. */
 .dek-band--banner{
-  margin-top: calc(0px - 0.10088 * var(--masthead-size));
+  margin-top: calc(0px - 0.1665 * var(--masthead-size));
   justify-content: center;
 }
 /* No-JS fallback seat: one line, reading left inside the band's own
@@ -6495,10 +6617,11 @@ body:has(.card--mega)::before{ content: none; }
      rail holds, the pair sits on the screen's own middle. */
   justify-content: center;
   /* The mark's CAP INK holds 48 off the viewport top, the seat every
-     held head on the page keeps — the box opens 17.75 above its own
-     cap (line-height 0.9 pulls the half-leading up out of Placard's
-     0.217 box-to-cap step), so the box line is that much higher.
-     16.2 measured off the rendered face, not derived. */
+     held head on the page keeps. With Placard the box opened 16.2
+     above its own cap and this seat carried that slack; TRAJAN sets
+     on so deep a negative half-leading that at line-height 0.9 its
+     box opens within half a pixel OF the cap line — so the box seat
+     and the ink seat are now the same 48. Measured, not derived. */
   top: 48px;
   width: 100%;
   /* The viewport's measure OR the track's, whichever is smaller: a
@@ -6531,8 +6654,8 @@ body:has(.card--mega)::before{ content: none; }
    instead ran the row 24 wide, which took the air off the sidebar and
    made every cell 8 wider than the same cover in the rows above. */
 .card.card--contra-trio{
-  margin-left: 252px;
-  margin-right: 24px;
+  margin-left: 201px;
+  margin-right: 0;
 }
 /* A COURIER LINE HOLDS TO ONE LINE. The meta rows carry two items
    with a gap between; in the narrow columns a pair row gives them,
@@ -6606,8 +6729,8 @@ body:has(.card--mega)::before{ content: none; }
   /* The base row sits 24 inside its hero on both flanks; mirrored,
      that reads the rail's widened edge plus the 24, and flush on the
      wrap's right content edge. */
-  margin-left: 252px;
-  margin-right: 0;
+  margin-left: 201px;
+  margin-right: -24px;
 }
 
 /* ---------- THE HOVER META ----------
@@ -6656,18 +6779,18 @@ body:has(.card--mega)::before{ content: none; }
 .hover-meta .under-share .copylink-label{ margin-left: 0; }
 .card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .hover-meta,
 
-.latest-courier--cover .cover-author a{
+.latest-courier--cover .cover-date a{
   color: var(--white); text-decoration: none; transition: color .15s ease;
 }
-.latest-courier--cover .cover-author a:is(:hover, :focus-visible){ color: var(--klein); }
+.latest-courier--cover .cover-date a:is(:hover, :focus-visible){ color: var(--klein); }
 
 /* ---------- THE ONE COURIER FORMAT ----------
    Essays, postscripts and reviews all read the same four corners of
    the same two lines, whichever side the picture stands on: KICKER
-   top-left and AUTHOR top-right above the rule; DATE under the
-   kicker and the SECTION under the author below it. No mirroring —
+   top-left and SECTION top-right above the rule; AUTHOR under the
+   kicker and the DATE under the section below it. No mirroring —
    a mirrored row turns its columns over, not its billing. */
-.latest-courier--cover .cover-author{
+.latest-courier--cover .cover-date{
   text-align: right;
   min-width: 0;
   overflow: hidden;
@@ -6697,16 +6820,30 @@ body:has(.card--mega)::before{ content: none; }
   left: 24px;
   right: calc(100% / 3 + 24px);
 }
-/* ITS OWN FOOT RULE. The cells draw theirs with a .latest-rule--foot
-   in flow; the hero's row is absolute over an absolute picture, so it
-   draws the line itself, on the picture's bottom edge (-1: the line
-   IS that edge, the way the head rule is the top one). */
-.duo-half--mega > .cover-under::before{
+/* ITS OWN FOOT RULE — RETIRED. The cells draw theirs with a
+   .latest-rule--foot in flow; the hero's row is absolute over an
+   absolute picture, so it drew the line itself, on the picture's
+   bottom edge (-1: the line IS that edge, the way the head rule is
+   the top one). That was true while the picture had no edge of its
+   own. It has a 1px border on all four sides now, and this line sat
+   directly under the bottom one — two charcoal pixels where every
+   other side had one, which is the doubled bar under the seven mega
+   covers. The border is the edge; the line is struck out. */
+.duo-half--mega > .cover-under::before{ content: none; }
+/* THE RULE BETWEEN THE TWO COURIER LINES. The head pair and the
+   billing pair stand together between the title and the dek now
+   (fitMatterInk seats them, the foot row directly under the head
+   with 1px between), and this is that 1px: a white line across the
+   billing's own measure — the words' — on the billing's top edge. The
+   contra's billing keeps no line: its pairs still stand on the
+   picture's two edges. */
+.duo-half--mega > .cover-under::before,
+.latest-cell--ps .cover-under::before{
   content: '';
   position: absolute;
   left: 0; right: 0; top: -1px;
   height: 1px;
-  background: var(--white);
+  background: #FFFFFF;
 }
 /* AND ON HOVER IT RIDES TO THE HEAD RULE, exactly as the review's
    does: the picture gives way to the open plate, its foot edge stops
@@ -6874,12 +7011,12 @@ body:has(.card--mega)::before{ content: none; }
 .card.card--mega .duo-half--mega .duo-panel .card-preview-block,
 .latest-courier--cover,
 .cover-under,
-.latest-courier--cover :is(.cover-kicker, .cover-author),
+.latest-courier--cover :is(.cover-kicker, .cover-date),
 .latest-plate,
 .latest-cell--contra-rev .latest-cover-col--square::before,
 .latest-cell--contra-rev .latest-cover-col--square::after,
 .hover-meta,
-:is(.duo-half--mega, .latest-cell--ps) .cover-cat,
+:is(.duo-half--mega, .latest-cell--ps) .cover-author,
 .latest-rule--foot,
 .card--mega .duo-half--mega .duo-card-image::before,
 .card .duo-half--mega .duo-card-image::after,
@@ -7039,11 +7176,11 @@ body:has(.card--mega)::before{ content: none; }
    rules, the billing — and inside the head row only the two ink spans
    do. Every mask stays exactly where it was drawn. */
 .latest-cell--ps .latest-cover-col > :not(.latest-courier--cover),
-.latest-cell--ps .latest-courier--cover > :is(.cover-kicker, .cover-author){
+.latest-cell--ps .latest-courier--cover > :is(.cover-kicker, .cover-date){
   transition: transform .4s ease;
 }
 .latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-cover-col > :not(.latest-courier--cover),
-.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-courier--cover > :is(.cover-kicker, .cover-author){
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-courier--cover > :is(.cover-kicker, .cover-date){
   transform: translateX(var(--slide, 0px));
 }
 .latest-cell--ps .latest-cover-col{
@@ -7080,11 +7217,11 @@ body:has(.card--mega)::before{ content: none; }
    head row only the ink. Its row reaches 380 past the card on the way
    over otherwise — off the page's own margin and onto the rail. */
 .card .duo-half--mega :is(.duo-card-image, .cover-under, .mega-cover-head .latest-rule),
-.card .duo-half--mega .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-author){
+.card .duo-half--mega .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-date){
   transition: transform .4s ease;
 }
 .card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) :is(.duo-card-image, .cover-under, .mega-cover-head .latest-rule),
-.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-author){
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-date){
   transform: translateX(var(--slide, 0px));
 }
 /* THE UNIT OUTRANKS THE PANEL. It is about to stand over the title and
@@ -7097,7 +7234,14 @@ body:has(.card--mega)::before{ content: none; }
    (The postscript needs none of this: its matter carries no z at all,
    and the cover's own 5 has always beaten it.) */
 .card .duo-half--mega .duo-card-image{ z-index: 8; }
-.card .duo-half--mega .mega-cover-head{ z-index: 9; }
+/* THE HEAD UNDER THE PICTURE, NOT OVER IT. It held 9 to the picture's
+   8 so its labels could print over the title column's opaque ground
+   (the panel's 5) — and they still do at 7. What 9 also did, once the
+   labels moved onto the picture's own lines, was print them OVER the
+   artwork as it slid across the words on the open card: the reader
+   saw the kicker standing on the picture. At 7 the picture arrives
+   over them, exactly as it arrives over the title and the dek. */
+.card .duo-half--mega .mega-cover-head{ z-index: 7; }
 .duo-half--mega > .cover-under{ z-index: 8; }
 
 /* THE BODY STANDS IN THE PICTURE'S SEAT — under the picture, painted at
@@ -7296,6 +7440,23 @@ body:has(.card--mega)::before{ content: none; }
   background: var(--chrome);
   z-index: -1;
 }
+/* AND THE FOOT'S OWN GROUND, DOWNWARD. The opening blocks carry
+   their air as MARGIN — a group's closing space belongs below the
+   last of its siblings, where padding cannot reach — and a margin
+   paints nothing, so the reverse footer opened a full viewport of
+   charcoal above the colophon and left the air below it showing the
+   page's tan. The engine publishes that air as --tail-air every
+   frame it seats the block; this prints it. No z-index: the pseudo
+   rides in the positioned layer, above the middle's ground, and
+   nothing follows it on the page to paint over. */
+.dek-band--foot::after{
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 100%;
+  height: var(--tail-air, 0px);
+  background: var(--chrome);
+}
 
 
 /* THE CURTAIN OUTRANKS THE PICTURE — at 5, not 6. The panel holds the
@@ -7334,38 +7495,45 @@ body:has(.card--mega)::before{ content: none; }
    (they read as one line, not two) and inside the curtain's clip, so
    an open picture's frame is revealed with the picture rather than
    ahead of it. */
+/* WHITE, stated outright rather than taken from --white: the ink
+   token is remapped to charcoal across the light middle (it is what
+   the type reads now), and the line around a picture is not type. */
+/* ONE WHITE RULE AROUND EVERY PICTURE, back where it was. (It came
+   off for a turn; the head and foot rules below stay retired either
+   way — the border is the only line a cover carries, which is what
+   keeps it a single rule rather than two on the same edge.) */
 .latest-cover,
 .card .duo-half--mega .duo-card-image{
-  border: 1px solid var(--white);
+  border: 1px solid #FFFFFF;
 }
-/* EXCEPT THE TOP EDGE, WHERE THE HEAD RULE ALREADY DRAWS IT. Every
-   cover that opens under its own courier has that rule seated exactly
-   on its top line — measured at a gap of 0 — so a border there is the
-   same line drawn twice, printing 2px where the page keeps 1. The
-   rule stays (it is the sticky one that holds and masks on scroll)
-   and the border stands down on that side alone.
-   The TURNED-OVER review is the exception's exception: its picture
-   closes the card with no rule above it, so it keeps all four. */
-/* THE REVIEW IS THE EXCEPTION NOW: it draws no rules at all, so its
-   picture keeps its border on all four sides — those two edges ARE the
-   lines the rules used to draw, and being part of the box they travel
-   and shrink with it to the pixel. */
-.latest-cell--ps .latest-cover,
-.card .duo-half--mega .duo-card-image{
-  border-top: 0;
+/* THE PICTURE'S OWN EDGES ARE ITS BORDER NOW, and nothing else's.
+   These two rules draw the top and the foot line of a cover, and with
+   the border restored on all four sides they were drawing them a
+   SECOND time — in the charcoal the ink token now carries, seated 1px
+   outside the white line the box already keeps. That is the black
+   hairline over the pictures. The border is the line; the rules stand
+   down. (Measured before they were: every rule still painting on this
+   page — 7 on the heroes' tops, 8 on the postscripts' tops, 8 on
+   their feet — spans its own picture exactly, edge to edge, so there
+   was nothing else left for any of them to draw. The rules keep their
+   boxes: the head row's seat is measured against them.) */
+.mega-cover-head > .latest-rule,
+.latest-cover-col--portrait > .latest-rule{
+  background: transparent;
 }
-/* AND THE REVIEW'S FOOT, for the same reason: a contra draws a rule on
-   its picture's bottom edge to carry the date and section beneath it,
-   seated there at a gap of 0 — so that side is spoken for too. (The
-   turned-over review draws no foot rule at all, its picture closing
-   the card, so it keeps that edge.) */
-/* Every picture that carries a billing line under it is spoken for on
-   that side now — the reviews, the postscripts, and the heroes, whose
-   row draws the line itself. */
-.latest-cell--ps .latest-cover,
-.card .duo-half--mega .duo-card-image{
-  border-bottom: 0;
-}
+
+/* ALL FOUR SIDES, ON EVERY PICTURE. The top and bottom used to stand
+   down on the postscripts and the heroes because a rule was seated on
+   each of those edges at a gap of 0, and a border there would have
+   printed the same line twice. Those rules draw nothing at rest any
+   more — they were emptied when the head stopped holding — so the two
+   edges were simply going unlined, and every one of those pictures
+   carried a frame open at the top and the foot. Measured before this
+   was restored: nothing else paints on either edge.
+   It costs the layout nothing. The page is border-box throughout, so
+   the line is drawn INSIDE each picture's own measured box — the row
+   caps, the slide's seats and the courier spans all stand exactly
+   where they were, and only the artwork's crop gives up the pixel. */
 
 
 /* The hero's billing takes the PANEL'S OWN LEVEL so it can print over
@@ -7390,12 +7558,14 @@ body:has(.card--mega)::before{ content: none; }
    in one place rather than scattered through the rules each element
    already carries:
 
-   THE PAGE READS IN WHITE and TITLES IN CHARCOAL. The writing is
-   white — the Garamond deks, previews and plates, the Courier head
-   rows and billings and corner words, and the site's own names on
-   the chrome. The TITLES are charcoal, both display voices of them:
-   the Garamond posters and the Placard marks down the sidebar, cut
-   into the ground rather than laid on it.
+   THE DISPLAY IS CHARCOAL, THE READING IS WHITE. What is cut into the
+   blood red is the big type and the furniture: the Garamond titles,
+   the Placard marks down the sidebar and the sidebar's own lists.
+   What runs white is everything meant to be READ at text size — the
+   deks, the previews, the body plates — and every Courier meta line
+   with them, on the cards and the chrome bands alike. The site's own
+   names stay white on the chrome they stand on, and the blue is kept
+   back for the pointer.
 
    And in LITERAL white: --white is the ink TOKEN, and the light
    middle remaps it to charcoal (see the movements' grounds above),
@@ -7409,51 +7579,100 @@ body:has(.card--mega)::before{ content: none; }
    before the ground went red: every one of these lights to blue
    under the hand and rests in white. */
 
-/* THE GARAMOND — the deks under the titles, the heroes' previews and
-   the cells' body plates (and the italic and the links inside them,
-   which inherit). The high-specificity restatements are the seats
-   the panel scope already holds them in; stated at the same weight
-   here so this block settles the question in one place. */
+/* THE WHOLE GARAMOND IS CUT INTO THE GROUND — titles, deks, previews,
+   body plates, and the sidebar's own lists, every one of them in the
+   page's charcoal. Measured before it was set: EVERY Garamond line on
+   this page stands on the blood red (the chrome carries no Garamond
+   at all), so there is nowhere for a dark ink to disappear against a
+   dark ground. The Placard marks down the sidebar go with them — the
+   same voice at display scale.
+   The site's NAMES are the exception and keep their white: the
+   masthead, the mid-page banners and the footer's reprint all stand
+   ON the charcoal chrome, where charcoal type would be charcoal on
+   charcoal. The high-specificity restatements below are the seats the
+   panel scope already holds these in; stated at the same weight here
+   so this block settles the question in one place. */
+/* THE TITLES ARE GARAMOND, AS WRITTEN. They wore Trajan in caps for
+   a spell (the face is still in the kit and the gate still loads it,
+   for the masthead's banners); the poster face is back, and the case
+   is the author's own. The fitters are face-blind — they measure the
+   rendered text with canvas metrics and answer for text-transform —
+   so the narrower setting simply re-fits. Stated at the hero panel's
+   own weight too, so the heroes wear the face with the cells. */
+.card-title,
+.latest-title,
+.card .duo-half--mega .duo-panel .card-title{
+  font-family: var(--excerpt);
+  text-transform: none;
+  color: var(--white);
+}
+/* The marks are titles, so they are white with the titles. */
+.rail-mark{ color: var(--white); }
+/* AND THE WRITING IS WHITE WITH THEM. It read charcoal for as long as
+   the middle was light; on the page's own charcoal the whole of it —
+   titles, deks, plates, previews — is one white ink again. */
 .latest-dek,
 .card-dek,
 .latest-plate-p,
-.card-preview{ color: #FFFFFF; }
-
-/* THE TITLES ARE CUT INTO THE GROUND. Both display voices — the
-   Garamond posters and the Placard marks down the sidebar — take the
-   page's own charcoal, so they read as something stamped INTO the
-   blood red rather than laid on top of it, while the writing around
-   them stays white. The site's NAMES are the exception and keep their
-   white: the masthead, the mid-page banners and the footer's reprint
-   all stand on the charcoal chrome, where charcoal type would be
-   charcoal on charcoal. */
-.card-title,
-.latest-title,
-.rail-mark{ color: var(--chrome); }
+.card-preview{ color: var(--white); }
 .card--duo .duo-panel .card-dek,
 .card--feature .duo-panel .card-dek,
 .card .duo-half .duo-panel .panel-col--left .card-dek,
 .card--feature .card-preview,
 .card--duo .card-preview,
-.card .duo-half .duo-panel .card-preview{ color: #FFFFFF; }
+.card .duo-half .duo-panel .card-preview{ color: var(--white); }
 .duo-panel .card-title a{ color: inherit; }
+/* THE TITLES TRADE FOR WHITE. They rest charcoal, so the pointer takes
+   them to the page's other ink — the biggest change either colour can
+   make on this ground, and no third colour enters. */
 .latest-title a:hover,
 .latest-title a:focus-visible,
 .duo-panel .card-title a:hover,
 .duo-panel .card-title a:focus-visible{ color: var(--klein); }
 
-/* THE COURIER — every meta line the page sets in Courier: the cells'
-   head rows and billings, the heroes' ground rows, the section word
-   that closes the picture's fourth corner. */
+/* THE COURIER SPEAKS IN WHITE, wherever it runs. Inside the cards —
+   the cells' head rows and billings, the heroes' ground rows, the
+   section word that closes the picture's fourth corner — and on the
+   chrome's own bands too: the masthead's line under the name, the
+   colophon under the reprint. One colour for the whole meta voice, on
+   both grounds, so the Courier reads as a single register of the page
+   rather than two.
+   The dek-bands are where all the chrome's Courier lives (measured:
+   every Courier line on the page is either inside a card or inside a
+   .dek-band), so naming them names the rest.
+   The blue was tried here and taken back: Klein and the blood red
+   sit at the same luminance (1.09:1 measured), so the meta lines
+   disappeared into the ground at 11px. White holds them at 9.8. */
 .latest-courier,
 .cover-under,
 .cover-cat,
+.cover-author,
 .card .duo-half .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under){
-  color: #FFFFFF;
+  color: var(--white);
 }
 .latest-courier a,
 .cover-under a,
-.latest-courier--cover :is(.cover-kicker, .cover-author) a{ color: #FFFFFF; }
+.latest-courier--cover :is(.cover-kicker, .cover-date) a{ color: var(--white); }
+/* The CHROME's own courier keeps its white: the dek-bands — the
+   masthead's line, the banners', the colophon — all stand on the
+   charcoal, where the dark ink would simply go out. */
+.dek-band{ color: #FFFFFF; }
+.dek-band a,
+.dek-band:not(.dek-band--foot) a{ color: #FFFFFF; }
+/* AND THE COURIER TRADES THE OTHER WAY: it rests white, so the
+   pointer takes it to charcoal — the same two inks, swapped, which is
+   the whole hover vocabulary of the page now.
+   ON THE CARDS ONLY. The chrome's own bands are white on charcoal
+   already, where a charcoal hover would simply be the word going out;
+   those dim to --muted instead, the palette's own grey, so the trade
+   stays inside the colours the page already holds. */
+.latest-courier a:is(:hover, :focus-visible),
+.cover-under a:is(:hover, :focus-visible),
+.latest-courier--cover :is(.cover-kicker, .cover-date) a:is(:hover, :focus-visible){
+  color: var(--klein);
+}
+.dek-band a:is(:hover, :focus-visible),
+.dek-band:not(.dek-band--foot) a:is(:hover, :focus-visible){ color: var(--muted); }
 
 /* AND THE SIDEBAR'S OWN LISTS, Garamond like the rest: the rail's
    links (Archive, About, the section roll) and the two that are set
@@ -7464,9 +7683,87 @@ body:has(.card--mega)::before{ content: none; }
 .nav-social a,
 .nav-links-dead{ color: #FFFFFF; }
 
+/* ---------- THE SIDEBAR IS A PANEL ----------
+   It used to be type standing on the blood red; it is a charcoal
+   column now, and everything in it — the Placard mark and the lists
+   under it — turns white to sit on that ground. Klein is the pointer
+   here: on charcoal the blue reads, which is exactly where the page
+   could not use it before.
+   AND IT MOVES 24 FURTHER OUT, to the page's own edge, so the gap
+   between the panel and the matter doubles from 24 to the page's 48.
+   The RAIL moves, not the content: every content edge on this page is
+   a measured constant (the hero's height is derived from its card's
+   width), so narrowing the matter to open the gap would have pulled
+   that whole chain with it. The panel bleeds off the edge instead,
+   which is what a filled column wants to do anyway — and it does it
+   on both flanks, since the sidebar reprints left for the movements
+   that open the measure that way.
+
+   AND THE COLUMN IS THE PAPER'S OWN RED NOW, not the chrome's
+   charcoal: the sidebar stands in the middle, on the movement's own
+   ground, so it takes that ground rather than importing the header's.
+   The ground is still stated rather than left transparent — the rail
+   holds at z 50 over matter that scrolls beneath it, and a column
+   that column has to be opaque to mask what passes under. */
+.topbar-rail{
+  /* TRANSPARENT NOW. The panel ground earned its keep when it was
+     charcoal — an edge the reader could see. On the paper it paints
+     paper over paper, and the only visible thing the opaque box did
+     was CLIP: the reserved strip still overlaps the matter by 3px
+     (measured, both flanks, 39 elements), and the box was shaving
+     that off every cover and courier that reached it. The type needs
+     no ground of its own — it stands 48 clear of the content's edge. */
+  background: transparent;
+}
+/* (THE RAIL'S VEIL IS RETIRED. It was written when the rail still hung
+   sticky in the header, where it held at the top of the viewport from
+   the first frame and printed its mark across the opening masthead —
+   so it was faded out for the length of the fold. It rides a document
+   TRACK now, and that track opens exactly where the red does: at the
+   masthead panel's foot, a whole viewport down. There is nothing to
+   hide it from any more, and the fade only ever dimmed it. It scrolls
+   in with its own movement, in full white, the way every other
+   sidebar on the page arrives.) */
+/* AND THE CHARCOAL RUNS BETWEEN THE BANNERS. The rail itself is a
+   sticky window one viewport tall — it RIDES — so its own ground could
+   never meet the bands above and below it: the column would float in
+   the red with a gap at each end that changed as you scrolled. The
+   ground belongs to the TRACK instead, which is the document box the
+   movement opens and closes in (seated between its own two banners by
+   rail-fix.js), so the column is continuous from one chrome block to
+   the next and the type rides inside it. (It carries the movement's
+   own paper now — see .topbar-rail above. The joints the tracks close
+   on their banners still matter: the ground either side of a seam has
+   to meet, whatever colour it is.) */
+.rail-track{
+  background: transparent;
+}
+/* (The first movement's charcoal column was a pseudo on main while its
+   rail lived in the header with no box of its own. It has a track like
+   the others now, and the track carries the ground — so the pseudo,
+   and the --main-top it was seated from, are both retired.) */
+.topbar-rail :is(.nav-links a, .nav-links-dead, .nav-social a){
+  color: var(--white);
+}
+/* (The mark is out of that list: it reads as a title now, in white
+   Trajan, and this scope would otherwise outrank the title seat.) */
+.topbar-rail .rail-mark{ color: var(--white); }
+/* (The MARK is out of this list too: it hovers with the titles now —
+   white to charcoal — and this scope outranked that trade.) */
+.topbar-rail :is(.nav-links a, .nav-social a):is(:hover, :focus-visible){
+  color: var(--klein);
+}
+/* The top rail rides the right flank: its own 24 from the page edge
+   comes off, and the 24 it gives up is the 24 the gap gains. */
+.site-nav--top .topbar-rail{
+  margin-right: 0;
+}
+.rail-track--left{ left: 0; }
+.rail-track--right{ right: 0; }
+
 /* THE SITE'S OWN NAMES, in white on the charcoal chrome they stand on.
-   (The sidebar's marks are Placard too, but they stand on the blood
-   red and are charcoal with the titles — see above.) */
+   (The sidebar's marks are Placard, but they stand on their own
+   charcoal panel now — see above.) */
 .banner-name,
 .reprint-name,
 .site-nav--top .topbar-name{ color: #FFFFFF; }
@@ -7477,3 +7774,1471 @@ body:has(.card--mega)::before{ content: none; }
 .reprint-name:hover,
 .reprint-name:focus-visible,
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: var(--klein); }
+
+/* ---------- THE CHROME'S THREE BANDS ----------
+   The masthead line, the line under SUBSCRIBE and the footer's
+   colophon all spoke in courier — the meta voice the cards use for
+   kickers and bylines. They are DEKS, though: they say what the
+   magazine is, what a subscription buys and who publishes it, in
+   sentences. So all three take the dek's dress — Garamond italic at
+   the deks' own 20, real case, courier's tracking off. (Stated here,
+   at the end, because .dek-band--foot sets its own courier at the
+   same specificity earlier in the file.) */
+.dek-band--masthead,
+.dek-band--banner,
+.dek-band--foot{
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* ---------- THE FOIL HEADER ----------
+   The whole header is the metal now: the wordmark's block carries
+   the holographic foil EDGE TO EDGE — bright chrome under vertical
+   diffraction columns poured from the nearest cover with colour
+   (src/foil-pour.js) — and the name prints BLACK across it, all
+   three words in OPS Placard. The .tn-new span still stands in the
+   markup (alignBands reads the name's glyphs through it) but styles
+   nothing of its own any more. The URI below is the baked no-JS
+   pour. */
+.site-nav--top .topbar-wordmark{
+  /* THE SHEEN rides the top layer: a specular streak whose seat is
+     --foil-sheen, a background-position src/foil-pour.js slides with
+     the pointer — foil trades its highlight as the eye moves. The
+     script also swaps the streak's image for a displacement-bent
+     wavy band (--foil-sheen-img); the straight gradient here is the
+     no-JS fallback, static at centre. */
+  background:
+    var(--foil-sheen-img,
+      linear-gradient(100deg, rgba(255,255,255,0) 34%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.14) 52%, rgba(255,255,255,0) 64%))
+    var(--foil-sheen, 50%) top / 240% 100vh no-repeat,
+    var(--foil-uri, var(--foil-fallback))
+    top center / 100% 100vh no-repeat,
+    #b3b0ab;
+  /* 100vh-SIZED, TOP-ANCHORED — not 100% of the box: the chrome-open
+     fold drains the wordmark's padding and a box-relative size would
+     rescale the whole texture in the lock's swap frame (the snap).
+     Pinned to the viewport's height, the fold merely CROPS the
+     texture from below — the name rises over a stationary foil. */
+  /* The sheen's lean eases over rather than snapping when the
+     nearest cover changes on scroll. */
+  transition: background-position .6s ease;
+}
+/* The name: PLACARD (back from the Trajan try-on), black on the
+   metal, all three words. Placard's cap ink sits 0.2169 of the size
+   under the lh-1 box top — the cap-at-48 margin rides that number.
+   Hover keeps the site's Klein (the trade above this block still
+   wins on the pointer). */
+.site-nav--top .topbar-name{
+  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #0B0B0B;
+  margin-top: calc(24px - 0.2169 * var(--masthead-size-top));
+}
+/* (NEW stood in a synthetic oblique for a while — Placard ships one
+   upright cut — with a small left nudge to re-centre the sheared
+   word. Taken back: the three words stand upright together, and the
+   span styles nothing again.) */
+/* THE GARAMOND LINE SITS ON THE PAGE'S OWN GROUND, flush under the
+   foil's edge: it carries --paper explicitly rather than sitting
+   transparent, so it holds whatever the middle wears. That ground is
+   CHARCOAL again, so the line is white on it — it was near-black
+   while the middle was tan, which on this ground would be a line of
+   type going out. Its upward charcoal pseudo (the old masthead
+   ground) stays retired with the chrome it painted. */
+.dek-band--masthead{
+  background: var(--paper);
+  color: #FFFFFF;
+  margin-top: 0;
+}
+.dek-band--masthead::before{ display: none; }
+.dek-band.dek-band--masthead a{ color: #FFFFFF; }
+.dek-band.dek-band--masthead a:hover,
+.dek-band.dek-band--masthead a:focus-visible{ color: var(--klein); }
+/* The condensed NEW pulled the date's and tagline's glyph anchors
+   (the N and the C — see alignBands) closer together; below ~1120
+   the 20px lines outgrow the gap and print over each other, so the
+   band's type steps down a size while the anchors close in. */
+@media (max-width: 1120px){
+  .dek-band--masthead{ font-size: 15px; }
+}
+
+/* ---------- THE COVERS' FOUR CORNERS ----------
+   Kicker and author over the picture, date and section under it: back
+   in COURIER, all caps, at the meta size the rest of the page's
+   machine voice keeps. (The reading face at the body's 16 was tried
+   here and taken back with the tan it was chosen for. With it goes
+   the flex-shrink hold it needed — courier's pair come in under the
+   cell's measure on their own, as they always did.) */
+
+/* (THE HOVER TRADE ON THE TAN is retired with the tan. White-to-
+   charcoal was the only pair of inks a light page could swap; on
+   charcoal the same trade would put the word out. Klein is the
+   pointer's colour again — it reads on this ground, which is where
+   it stood before the middle went light — and the chrome's own bands
+   keep their dim to --muted.) */
+
+/* ---------- THE FOUR CORNERS PRINT ON THE PICTURE ----------
+   They stood outside it — a line of type above the cover and another
+   below — and they stand INSIDE it now, 24 in from its four edges,
+   the page's own step. Two things follow, and both are the point of
+   moving them:
+
+   THEY MUST OUTRANK THE ARTWORK to be seen at all. The hero's picture
+   holds 8 inside its head's 9 and the postscript's cover holds 5, and
+   the rows were seated under both — which was right while they printed
+   on the ground beside the picture and is exactly wrong now. */
+/* THE HERO'S AND THE POSTSCRIPT'S GO UNDER THEIR OWN ARTWORK. They
+   print over the words at rest — above the panel's opaque column, so
+   they are read — and BELOW the picture, so that when the open card
+   slides it across they are covered by it, exactly as the title and
+   the dek are. (The hero's picture holds 8 inside its head's 9; the
+   postscript's cover holds 5, and its head row's old 6 was put there
+   to print over that cover, which is the one thing it must not do
+   now.) The contra keeps a rank above: its column IS its picture, so
+   there is no arriving artwork to be covered by — only its own, which
+   it would otherwise be printed under at rest. */
+.latest-cell--ps .latest-cover-col .latest-courier--cover{
+  z-index: 4;
+}
+.latest-cell--contra .latest-courier--cover,
+.latest-cell--contra > .cover-under{
+  z-index: 10;
+}
+/* AND THEY DO NOT TRAVEL WITH IT. On the open card the artwork's own
+   slide used to carry them (the ink spans and the billing each held
+   the same translate), which is what made them the picture's
+   furniture rather than the card's. They hold their seats now, and on
+   hover they do exactly what the title and the dek do: nothing.
+   STATED AT THE OPEN RULES' OWN WEIGHT — the first cut of this said
+   `transform: none` on the bare elements and lost to the open-state
+   selectors, which carry the card, the open class and the head; the
+   couriers went on sliding under it. Same selectors, later in the
+   file, so the trade is decided here. */
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-date),
+/* The hero's billing is a child of the HALF, not of the head — and
+   the rule that slides it names it inside an :is() whose heaviest
+   member is a two-class path, so the whole selector weighs one class
+   more than ".cover-under" alone can. The same :is() shape here, so
+   the two weigh the same and the later one — this one — decides.
+   (The second path in it matches nothing; it is there for its weight,
+   and this note is here so nobody "tidies" it away.) */
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) :is(.cover-under, .mega-cover-head .cover-under),
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-courier--cover > :is(.cover-kicker, .cover-date),
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-cover-col > .cover-under{
+  transform: none;
+}
+
+/* ---------- THE PICTURES TAKE THEIR LINES BACK ----------
+   Every cover was SHORTENED to leave a line for the courier: 31.2 off
+   the postscript's head and another off its foot, 31.2 off the hero's
+   foot for the billing. The couriers print INSIDE the picture now, so
+   those reservations are empty air — the artwork was standing a whole
+   line short at the top with nothing in the gap. Each cover spans its
+   own column again, and the four labels ride on it. */
+.latest-cell--ps .latest-cover--portrait{
+  height: 100%;
+  margin-top: -31.2px;
+}
+/* The hero's TOP as well as its foot: its head row stood 30.2 above
+   the half on its own box, with the rule's 1px under it and the
+   picture opening under the rule. The label prints on the picture
+   now, so the picture climbs to the row's own line — the whole
+   column, head to foot, is artwork. Stated as the WHOLE inset, for
+   both hands, rather than as two longhands over the earlier
+   shorthands: one declaration, nothing left to a cascade order. */
+.card .duo-half--mega .duo-card-image{
+  /* ON THE HALF'S OWN TOP now (was -29.2: the picture climbed to the
+     hoisted head row's line). The courier stands INSIDE the picture's
+     two lines, so there is nothing above the half to climb to — and
+     at 0 the hero's picture stands the same 480 as every other card. */
+  inset: 0 24px 0 calc(100% / 3 + 24px);
+  /* The two edges that changed, restated as longhands under the
+     shorthand — the same values, so a browser that resolved the
+     shorthand against an older longhand (the first hero read a foot
+     of 0 with a top of 1 on one machine, which no single shorthand
+     can produce) has both stated twice, in both forms. */
+  top: 0;
+  bottom: 0;
+}
+.card--mega-rev .duo-half--mega .duo-card-image{
+  inset: 0 calc(100% / 3 + 24px) 0 24px;
+  top: 0;
+  bottom: 0;
+}
+
+/* ---------- THE DEKS STAND DOWN (for now) ----------
+   The Garamond strips under the header, SUBSCRIBE and the reprint
+   are OFF — collapsed to zero height rather than display:none, so
+   every machine that measures them (chrome-open's group tails,
+   rail-fix's track anchors, alignBands' glyph seats) still finds a
+   box where it expects one. Restore by deleting this block. */
+.dek-band--masthead,
+.dek-band--banner,
+.dek-band--foot{
+  height: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* ---------- THE FOIL BANNERS (restored) ----------
+   SUBSCRIBE / EVENTS / STORE wear the header's dress again: the
+   oil-slick foil for a ground — 100vh-sized and top-anchored so each
+   block's chrome-open fold CROPS the texture instead of rescaling it
+   (the header's no-snap rule) — and the word in black Placard on the
+   metal, on the header's own size token. The reprint keeps the seat
+   it was last hand-set to. */
+.page-banner{
+  background:
+    var(--foil-sheen-img,
+      linear-gradient(100deg, rgba(255,255,255,0) 34%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.14) 52%, rgba(255,255,255,0) 64%))
+    var(--foil-sheen, 50%) top / 240% 100vh no-repeat,
+    var(--foil-uri, var(--foil-fallback)) top center / 100% 100vh no-repeat,
+    #b3b0ab;
+}
+.banner-name{
+  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #0B0B0B;
+  font-size: var(--masthead-size-top);
+  /* Placard's seats: cap climb 0.2169 of the size, the empty head
+     zone clipped just shy of the cap line. */
+  margin-top: calc(0px - 0.2169 * var(--masthead-size-top));
+  clip-path: inset(calc(0.2 * var(--masthead-size-top)) 0 0 0);
+}
+
+/* ---------- THE FOIL FOOTER (rejoined) ----------
+   The reprint wears the banners' dress after all: the foil ground
+   (100vh, top-anchored — the reverse opening crops it like every
+   other fold) and THE NEW CRITIC in black Placard on the header's
+   token, spanning the measure as the header does, oblique NEW and
+   all. */
+.reprint,
+main:has(.card--mega) .reprint{
+  background:
+    var(--foil-sheen-img,
+      linear-gradient(100deg, rgba(255,255,255,0) 34%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.14) 52%, rgba(255,255,255,0) 64%))
+    var(--foil-sheen, 50%) top / 240% 100vh no-repeat,
+    var(--foil-uri, var(--foil-fallback)) top center / 100% 100vh no-repeat,
+    #b3b0ab;
+}
+.reprint-name{
+  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #0B0B0B;
+  font-size: var(--masthead-size-top);
+  transform: translateX(var(--masthead-ink-shift-top));
+  /* Placard's seats: cap climb 0.2169 of the size, the head zone
+     clipped just shy of the cap line. */
+  margin-top: calc(-1px - 0.2169 * var(--masthead-size-top));
+  clip-path: inset(calc(0.2 * var(--masthead-size-top)) 0 0 0);
+}
+
+/* ---------- THE FOIL'S TWO MARGINS MATCH AT REST ----------
+   Settled, every foil block held 48 of metal above the cap ink but
+   only the name box's own below-baseline overhang (0.11 of the size)
+   beneath it — top-heavy. The closing pad makes the bottom's air the
+   same 48, measured ink to edge like the top: 48 less the 0.11 the
+   box already carries. (chrome-open reads padding-bottom from
+   computed style, so the folds absorb this seat on their own.) */
+.site-nav--top .topbar-wordmark,
+.page-banner,
+.reprint{
+  padding-bottom: calc(48px - 0.11 * var(--masthead-size-top));
+}
+
+
+/* ---------- THE COURIER'S GROUND STANDS DOWN ----------
+   Every cover's head row still carried the paper ground the held head
+   once masked with (see THE HEAD NO LONGER HOLDS). On the hero the
+   row spans the whole half — its INK is padded onto the words'
+   measure, its box is not — and on the open card the picture slides
+   off that box and the ground shows: two charcoal lines struck
+   through the body text, exactly where the courier rows stand. The
+   rows carry no ground now; nothing scrolls under them any more. */
+.latest-courier.latest-courier--cover{ background: transparent; }
+
+/* ---------- THE REVIEW'S COURIER STANDS BETWEEN ITS WORDS ----------
+   The review's two courier lines stood on its picture's two edges.
+   They read like the essay's and the postscript's now: title, 48,
+   the head pair, a rule, the billing pair, 48, dek — inside the
+   matter (build.js), in flow, the 48s paid as margins by
+   fitMatterInk. The picture stands alone at the head of the cell —
+   its top on the neighbouring postscript's — and it is the whole of
+   the unit that travels on the open card, so the slide's margins
+   move off the rows and onto its column. Under the column's 5: on
+   the open card the picture arrives over the courier exactly as it
+   arrives over the title and the dek. */
+.latest-cell--contra .latest-courier--cover,
+.latest-cell--contra .cover-under{ z-index: 4; }
+.latest-cell--contra .cover-under{ margin-top: 1px; }
+.latest-cell--contra .cover-under::before{
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 1px;
+  background: #FFFFFF;
+}
+/* The matter's title splits the column's slack on two auto margins;
+   here the slack must not open between the title and its courier. */
+.latest-cell--contra .latest-matter .latest-title{ margin-bottom: 0; }
+.latest-cell--contra > .latest-cover-col--square{
+  transition: height .4s ease, margin-top .4s ease, margin-bottom .4s ease;
+}
+.latest-cell--contra:is(.is-open, :has(.latest-cover:focus-visible)) > .latest-cover-col--square{
+  margin-top: var(--slide, 0px);
+  margin-bottom: calc(var(--sq-rest, 0px) - var(--sq-open, var(--sq-rest, 0px)) - var(--slide, 0px));
+}
+
+/* ---------- THE COURIER ON THE PICTURE'S TWO LINES ----------
+   The essay's and the postscript's courier stands on two rules again,
+   level with the picture's top and bottom edges and continued across
+   the words' column: the head pair hangs under the top one, inside
+   the picture's height; the billing hangs under the bottom one, just
+   below the picture's foot; and the title and the dek sit centred in
+   the room between, 48 apart (fitMatterInk seats all of it). The top
+   rule is the head row's own first pixel, drawn across the ink's
+   measure — the pads that seat the pair on the words seat the line
+   with it. The bottom rule is the billing's ::before above (THE RULE
+   BETWEEN THE TWO COURIER LINES), which now reads as the picture's
+   bottom line carried across the words. */
+.duo-half--mega .mega-cover-head .latest-courier--cover::before,
+.latest-cell--ps .latest-cover-col .latest-courier--cover::before{
+  content: '';
+  position: absolute;
+  left: var(--ink-l, 0px);
+  right: var(--ink-r, 0px);
+  top: 0;
+  height: 1px;
+  background: #FFFFFF;
+}
+
+/* ---------- THE BILLING HANGS UP ----------
+   The bottom pair stands ABOVE its rule now: the rule is the row's
+   last pixel, on the frame's bottom line — the picture's foot on the
+   essay and the postscript, the words' block's foot on the review —
+   and the author and the date read just over it, inside the frame.
+   (fitMatterInk seats the row's bottom on that line.) */
+.duo-half--mega > .cover-under::before,
+.latest-cell--ps .cover-under::before,
+.latest-cell--contra .cover-under::before{
+  top: auto;
+  bottom: 0;
+}
+
+/* ---------- THE REVIEW'S COLUMN WEARS THE SAME TWO RULES ----------
+   Its words' block — 48 under the picture, running to the cell's
+   foot — carries the head pair under a rule on its top edge and the
+   billing hanging up from a rule on its bottom edge, the title and
+   the dek centred between (fitMatterInk, the matter as the frame).
+   The rows are absolute on the matter's two edges; the matter pays
+   for them in padding, plus the 48 each pair keeps from the words,
+   so the row cap (fitRowHeights) sees the block's true height and
+   takes what it needs off the picture. The 48 under the dek that
+   closed the plain review's cell is the bottom rule's now. */
+.latest-cell--contra .latest-matter{
+  padding-top: calc(var(--courier-size) * 1.4 + 12px + 1px + 48px);
+  padding-bottom: calc(var(--courier-size) * 1.4 + 12px + 1px + 48px);
+}
+.latest-cell--contra .latest-matter > .latest-courier--cover{
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  margin: 0;
+}
+.latest-cell--contra .latest-matter > .cover-under{
+  position: absolute;
+  inset: auto 0 0 0;
+  margin: 0;
+}
+.latest-cell--contra .latest-matter > .latest-courier--cover::before{
+  content: '';
+  position: absolute;
+  left: var(--ink-l, 0px);
+  right: var(--ink-r, 0px);
+  top: 0;
+  height: 1px;
+  background: #FFFFFF;
+}
+.latest-cell--contra:not(.latest-cell--contra-rev) .latest-col{ padding-bottom: 0; }
+/* Turned over, the words lead: their block's top rule sits on the
+   cell's own top line, where the plain review's picture starts. */
+.latest-cell--contra-rev .latest-matter{ margin-top: 0; }
+
+/* ---------- EVERY CARD 48 FROM ITS NEIGHBOURS ----------
+   Cards sit in wraps with a 1px divider (24 under it) between them,
+   and a hero carries 80 of pad above and below its half with -57
+   under it — so a hero's half opens 128 + its top margin under
+   whatever precedes it (a hero, a banner, the page's own 48), and
+   105 + it under a latest row (which carries no margin of its own).
+   -80 and -57 respectively land both on 48. A banner's 47 top was
+   tuned to follow a ROW; after a hero's 23 it read 71, so there it
+   is 24 — the divider's own, collapsing to itself. */
+.wrap:has(> .card--latest) + .row-divider + .wrap > .card.card--mega{ margin-top: -57px; }
+.wrap:has(> .card--mega) + .row-divider + .wrap > .page-banner{ margin-top: 24px; }
+
+/* ---------- THE COVERS' BORDER STANDS DOWN ----------
+   The 1px white line around every picture is off; the artwork's own
+   edge is the edge, and the courier rules beside it draw the lines. */
+.latest-cover,
+.card .duo-half--mega .duo-card-image{ border: 0; }
+
+
+/* ---------- THE COURIER'S RULES STAND DOWN ----------
+   Neither line is drawn any more: the head pair sits with its cap on
+   the picture's top edge and the billing with its baseline on the
+   bottom one (fitMatterInk), and the picture's own edges are the
+   lines. */
+.duo-half--mega > .cover-under::before,
+.latest-cell--ps .cover-under::before,
+.latest-cell--contra .cover-under::before,
+.duo-half--mega .mega-cover-head .latest-courier--cover::before,
+.latest-cell--ps .latest-cover-col .latest-courier--cover::before,
+.latest-cell--contra .latest-matter > .latest-courier--cover::before{ content: none; }
+
+/* ---------- TAN MIDDLE, CHARCOAL CHROME ----------
+   The page's ground is tan again and every card ink on it is the
+   chrome's charcoal: one token remap (--white, and the two greys under
+   it) flips the titles, deks, couriers, plates and rules together. The
+   chrome — masthead, banners, reprint, foot band — stays charcoal with
+   white type, scoped back below. */
+main:has(.card--mega){
+  --white: #121417;
+  --muted: #121417;
+  --faint: #121417;
+}
+body:has(.card--mega){ background: var(--chrome); }
+body:has(.card--mega) .site-nav--top .topbar-rail{ --white: #121417; }
+body:has(.card--mega) .courier-clone{ --white: #121417; }
+main:has(.card--mega) :is(.reprint, .dek-band--foot, .page-banner){ --white: #FFFFFF; --muted: #938F86; --faint: #5A574F; }
+/* The Garamond line under the masthead sits on the tan: charcoal ink. */
+.dek-band--masthead,
+.dek-band.dek-band--masthead a{ color: #121417; }
+/* The bands trade the foil for the chrome's own charcoal; their names
+   print white on it. */
+.site-nav--top .topbar-wordmark,
+.page-banner,
+.reprint,
+main:has(.card--mega) .reprint{ background: var(--chrome); }
+.site-nav--top .topbar-name,
+.banner-name,
+.reprint-name{ color: #FFFFFF; }
+
+/* ---------- TRAJAN CAPS FOR THE TITLES AND THE DEKS ---------- */
+.card-title,
+.latest-title,
+.card .duo-half--mega .duo-panel .card-title{
+  font-family: var(--name-face);
+  text-transform: uppercase;
+}
+.latest-dek,
+.card-dek,
+.card .duo-half .duo-panel :is(.panel-col--left, .card-preview-block) .card-dek{
+  font-family: var(--name-face);
+  font-style: normal;
+  text-transform: uppercase;
+}
+/* Trajan ships no italic; a slanted fake of it is worse than none. */
+.latest-dek em,
+.card-dek em{ font-style: normal; }
+
+/* ---------- THE WORDMARK FILLS TO THE TOP AND THE EDGES ----------
+   Album-cover fashion: the name's cap ink sits ON the page's top
+   edge, its size runs the ink a shade past both side edges (the
+   first and last letters crop there), and the block's own box crops
+   what overhangs. No fold at rest any more (chrome-open): the name
+   stands at the top of the page as the reader arrives. */
+.site-nav--top .topbar-wordmark{
+  padding: 0;
+  overflow: hidden;
+}
+.site-nav--top .topbar-name{
+  margin-top: calc(0px - 0.2169 * var(--masthead-size-top));
+}
+
+
+/* ---------- THE BODY TEXT IN TRAJAN, THE TITLES IN WHITE ---------- */
+.latest-plate-p,
+.card-preview,
+.card--feature .card-preview,
+.card--duo .card-preview,
+.card .duo-half .duo-panel .card-preview{ font-family: var(--name-face); }
+.card-title,
+.latest-title,
+.card .duo-half--mega .duo-panel .card-title{ color: #FFFFFF; }
+
+/* ---------- THE WORDMARK'S INK ON BOTH EDGES ----------
+   The size and the shift are measured now (fitMastheadFill), so the
+   token is only the first guess; the sheet's own shift stands down so
+   the fitter's inline transform is the only one. */
+.site-nav--top .topbar-name{ transform: none; }
+
+/* ---------- THE DEKS: ITALIC, SENTENCE CASE ----------
+   Trajan has no italic, so the deks keep the Garamond italic they
+   wore before, as written; emphasis inside them stands upright. */
+.latest-dek,
+.card-dek,
+.card .duo-half .duo-panel :is(.panel-col--left, .card-preview-block) .card-dek{
+  font-family: var(--excerpt);
+  font-style: italic;
+  text-transform: none;
+}
+.latest-dek em,
+.card-dek em{ font-style: normal; }
+
+/* ---------- NO BLUE ON THE POINTER ----------
+   Every hover on the site reads var(--klein); the token is retargeted
+   by ground instead of by rule. On the tan middle charcoal text turns
+   white and the white titles turn charcoal — the page's own two inks
+   traded, no third colour. On the charcoal chrome white text turns
+   tan. The rail (outside main, on the tan) trades charcoal for white
+   like the cards; the masthead trades white for tan like the bands. */
+main:has(.card--mega){ --klein: #FFFFFF; }
+main:has(.card--mega) :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #121417; }
+main:has(.card--mega) :is(.reprint, .page-banner, .dek-band--foot){ --klein: var(--paper); }
+body:has(.card--mega) .site-nav--top .topbar-rail{ --klein: #FFFFFF; }
+.site-nav--top .topbar-wordmark{ --klein: var(--paper); }
+
+/* ---------- THE BODY TEXT BACK IN GARAMOND ----------
+   (Trajan has no lowercase — the running text set as small caps.) */
+.latest-plate-p,
+.card-preview,
+.card--feature .card-preview,
+.card--duo .card-preview,
+.card .duo-half .duo-panel .card-preview{ font-family: var(--excerpt); }
+
+
+/* ---------- KICKER AND SECTION IN WHITE ----------
+   The date crossed to the head row's right and the section down to the
+   billing's. The two naming corners — kicker top-left, section
+   bottom-right — print white on the tan, and trade for charcoal on the
+   pointer; the author and the date keep the page's ink and trade the
+   other way. */
+main:has(.card--mega) :is(.cover-kicker, .cover-cat),
+main:has(.card--mega) :is(.cover-kicker, .cover-cat) a{ color: #FFFFFF; --klein: #121417; }
+
+/* ---------- THE SIDEBAR'S TITLES IN WHITE ----------
+   The marks print white on the tan like the titles, and trade for
+   charcoal on the pointer like them. */
+body:has(.card--mega) .site-nav--top .topbar-rail .rail-mark{ color: #FFFFFF; --klein: #121417; }
+
+/* ---------- ALL THE COURIER IN WHITE ----------
+   Every courier line on the cards — both pairs on every cover, the
+   heroes' ground rows — prints white on the tan and trades for
+   charcoal on the pointer. */
+main:has(.card--mega) :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under),
+main:has(.card--mega) :is(.latest-courier, .cover-under) :is(span, a),
+main:has(.card--mega) :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a{ color: #FFFFFF; --klein: #121417; }
+
+/* ---------- EVERY SIDEBAR MARK IN WHITE ----------
+   The movement rails (ESSAYS, POSTSCRIPT, CONTRA) carry marks of
+   their own outside the header's rail; all of them print white and
+   trade for charcoal on the pointer. */
+.rail-mark,
+.rail-track .rail-mark{ color: #FFFFFF; --klein: #121417; }
+
+
+/* ---------- THE MIDDLE IN MEDITERRANEAN BLUE ----------
+   The ground token is #9E1712 now (every --paper and --g token above
+   reads it); the chrome stays charcoal, the inks as they were. */
+
+/* ---------- ALL THE TYPE IN WHITE ----------
+   Every ink on the blue is white — titles, deks, body, courier, the
+   rail, the bands' lines — and every hover trades it for charcoal. */
+main:has(.card--mega){ --white: #FFFFFF; --muted: #FFFFFF; --faint: #FFFFFF; --body-text: #FFFFFF; --klein: #121417; }
+main:has(.card--mega) :is(.reprint, .page-banner, .dek-band--foot){ --klein: #121417; }
+main:has(.card--mega) :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #121417; }
+body:has(.card--mega) .site-nav--top .topbar-rail{ --white: #FFFFFF; --klein: #121417; }
+body:has(.card--mega) .courier-clone{ --white: #FFFFFF; }
+.dek-band--masthead,
+.dek-band.dek-band--masthead a{ color: #FFFFFF; }
+.site-nav--top .topbar-wordmark{ --klein: #121417; }
+
+
+/* ---------- THE SECTION BANDS, IN PLACE OF THE SIDEBAR ----------
+   Each movement is a container (.movement) opening on a charcoal band:
+   the section's name in Trajan on the left edge, its list in the dek's
+   voice on the right, comma-separated. Sticky at the viewport's top
+   inside its movement, so it holds while the rows pass under it and is
+   pushed off by the movement's end — the banner that opens the next
+   movement, whose band then takes over. The first stands directly
+   under the wordmark; the others 48 under their banner. 48 to the
+   first row below each. */
+.movement{ position: relative; }
+.section-band{
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 48px;
+  margin: 0 0 48px;
+  padding: 24px 48px;
+  background: #121417;
+  color: #FFFFFF;
+  --klein: var(--paper);
+}
+.section-band .band-mark{
+  font-family: var(--name-face);
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 32px;
+  line-height: 1;
+  white-space: nowrap;
+  color: #FFFFFF;
+  text-decoration: none;
+  transition: color .15s ease;
+}
+.section-band .band-deks{
+  margin: 0;
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1;
+  text-align: right;
+  color: #FFFFFF;
+}
+.section-band .band-deks a{ color: #FFFFFF; text-decoration: none; transition: color .15s ease; }
+.section-band .band-deks .nav-links-dead{ color: #FFFFFF; }
+.section-band :is(.band-mark, .band-deks a):is(:hover, :focus-visible){ color: var(--klein); }
+/* The first band sits flush under the wordmark: the page's top inset
+   and the 1px spacer under the masthead both stand down. */
+.page-rows{ padding-top: 0; }
+.head-rule{ height: 0; margin: 0; }
+/* A banner after a movement that closes on a hero opens the same 48
+   (see EVERY CARD 48 FROM ITS NEIGHBOURS): the hero's 23 under its
+   half, the divider, and 24 — the movement container now stands
+   between, so the rule reads through it. */
+.movement:has(> .wrap:nth-last-child(2) > .card--mega) + .wrap > .page-banner{ margin-top: 24px; }
+
+/* ---------- THE ROWS TAKE THE SIDEBAR'S COLUMN ----------
+   With no rail to clear, every row and hero runs the page's full
+   measure: 48 from the left edge (the wrap's 24 and the row's own 24)
+   to 48 from the right (the wrap's pad). The heroes' boxes reach 24
+   past both, their columns' own 24 insets landing the artwork and the
+   words on the same two lines the rows keep. */
+.card.card--latest,
+.card.card--latest.card--m2,
+.card.card--contra-trio{ margin-left: 24px; margin-right: 0; }
+.card.card--mega,
+.card.card--mega.card--m2{ margin-left: 0; margin-right: -24px; }
+
+/* ---------- THE COURIER PAIRS READ AS ONE LINE ----------
+   The right-hand corner steps in beside the left one, a bar between:
+   KICKER | DATE over the words, AUTHOR | SECTION under them, both
+   flush on the words' left edge. */
+.latest-courier--cover,
+.cover-under{ justify-content: flex-start; gap: 0; }
+.latest-courier--cover .cover-date,
+.cover-under .cover-cat{ text-align: left; flex: 0 1 auto; }
+.latest-courier--cover .cover-date:not(:empty)::before,
+.cover-under .cover-cat:not(:empty)::before{ content: '\00B7'; padding: 0 12px; }
+
+/* ---------- THE PAGE SCROLLS OVER THE WORDMARK ----------
+   At rest the wordmark stands alone at the top, the first band and
+   the rows under it. It is FIXED there, behind the page: as the
+   reader scrolls, the band rides up and pins at the viewport's top
+   OVER the wordmark, and main's own ground — opaque, a level above —
+   covers the rest of it as the rows pass. The rows' top inset holds
+   the wordmark's measured height open (--masthead-h, fitMastheadFill),
+   so nothing moves at rest. */
+.site-nav--top .topbar-wordmark{
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 0;
+}
+main{ position: relative; z-index: 1; }
+/* The spacer stands OUTSIDE main — main's ground is opaque and a level
+   above the wordmark, so an inset inside it covered the name at rest.
+   The head rule, in flow between the header and main, holds the
+   height instead; the ground it shows through is the page's own. */
+.page-rows{ padding-top: 0; }
+.head-rule{ height: var(--masthead-h, 171px); background: transparent; }
+
+/* The bands' type centres on the band's middle — boxes by the flex
+   centre, ink by fitBands. */
+.section-band{ align-items: center; height: 80px; padding-top: 0; padding-bottom: 0; }
+
+/* ---------- THE FIRST SCREEN IS THE NAME ALONE ----------
+   The spacer under the wordmark runs a whole viewport: on opening, the
+   reader sees THE NEW CRITIC at the top and the page's ground below
+   it, nothing else. The first band waits just under the fold and rides
+   up over the name with the rows behind it. */
+.head-rule{ height: 100vh; }
+
+
+/* ---------- THE OLD MASKS STAND DOWN ----------
+   body::after was the pinned rail's paper mask — a fixed 67px band
+   at the viewport's top, revealed by a scroll timeline once the rail
+   held — and body::before the rail's opaque right-hand column. The
+   rail is gone; the mask went on painting the page's ground over the
+   section band pinned exactly where it stood (the sliver under a
+   blue strip on a fast scroll), and the column swallowed clicks on
+   the right 252px. Both off. */
+body:has(.card--mega)::before,
+body:has(.card--mega)::after{ content: none; animation: none; }
+
+/* ---------- THE OPENING IS CHARCOAL ----------
+   The wordmark and the first viewport under it stand on charcoal, and
+   the masthead line reads under the name: The Young American Magazine
+   on the left, the date in the middle, By, For, and About Generation Z
+   on the right — Garamond italic, white, on the page's 48s. Both the
+   name and the line are FIXED, so the page scrolls over them; the
+   spacer under them (the head rule, a viewport tall) carries the
+   charcoal until the blue arrives. */
+.site-nav--top .topbar-wordmark{ background: #121417; }
+.head-rule{ background: #121417; }
+.dek-band--masthead{
+  position: fixed;
+  top: var(--masthead-h, 171px);
+  left: 0; right: 0;
+  z-index: 0;
+  height: 48px;
+  overflow: visible;
+  margin: 0;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  background: #121417;
+  color: #FFFFFF;
+}
+.dek-band--masthead :is(a, span){ position: relative; left: auto; right: auto; color: #FFFFFF; }
+.dek-band--masthead a:is(:hover, :focus-visible){ color: var(--paper); }
+
+/* The spacer paints in the flow, under the fixed name and line (it
+   carried the old head rule's 32, which stood over both). */
+.head-rule{ position: static; z-index: auto; }
+
+/* ---------- THE MASTHEAD HOLDS STILL ----------
+   No hover on the name; the three lines under it stand centred as a
+   group, 48 between them. */
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
+.site-nav--top .topbar-name{ transition: none; }
+.dek-band--masthead{ justify-content: center; gap: 48px; }
+.dek-band--masthead a:is(:hover, :focus-visible){ color: #FFFFFF; }
+/* The items keep their own widths — the band's base rule spread them
+   into thirds — so the three read as one centred group, 48 apart. */
+.dek-band--masthead :is(a, span){ flex: 0 0 auto; width: auto; min-width: 0; text-align: center; }
+.dek-band.dek-band--masthead > :first-child,
+.dek-band.dek-band--masthead > :last-child{ flex: 0 0 auto; text-align: center; }
+
+/* Under the masthead line the opening is the page's own blue, down to
+   where the first band arrives; only the name and its line are
+   charcoal. */
+.head-rule{ background: var(--paper); }
+
+/* ---------- THE WORDMARK IN TRAJAN ----------
+   The name sets in Trajan with the titles; every seat around it is
+   measured off the rendered face (fitMastheadFill), so the fill, the
+   48s and the line under it re-derive themselves. */
+.site-nav--top .topbar-name{
+  font-family: var(--name-face);
+  font-weight: 400;
+}
+
+/* ---------- THE WORDMARK AND THE BANDS' MARKS BACK IN PLACARD ---------- */
+.site-nav--top .topbar-name,
+.section-band .band-mark{
+  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+.section-band .band-mark{ font-size: 36px; }
+
+/* ---------- THE ARTICLE TITLES IN PLACARD ---------- */
+.card-title,
+.latest-title,
+.card .duo-half--mega .duo-panel .card-title{
+  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+
+/* ---------- EVERY SECTION ITS OWN COLOUR ----------
+   The four movements' grounds: the latest keeps the blue; the essays
+   go green, the postscripts oxblood, the reviews plum. Each banner
+   wears the colour of the movement it opens (its wrap carries that
+   movement's token), and main's gradient changes colour on the
+   banner's own top edge (fitGroundStops seats the stops). */
+/* ONE GROUND AGAIN: every movement wears the blue. (The four tokens
+   stand, so the sections can take their own colours back by editing
+   this one line.) */
+:root{ --c-latest: #9E1712; --c-essays: #9E1712; --c-postscript: #9E1712; --c-contra: #9E1712; }
+main:has(.card--mega){ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-postscript); --g4: var(--c-contra); }
+.m--latest{ --paper: var(--c-latest); }
+.m--essays{ --paper: var(--c-essays); }
+.m--postscript{ --paper: var(--c-postscript); }
+.m--contra{ --paper: var(--c-contra); }
+.page-banner{ background: var(--paper); }
+
+/* The opening under the masthead line is WHITE now, down to the fold. */
+.head-rule{ background: #FFFFFF; }
+
+/* ---------- THE MASTHEAD INVERTS ----------
+   The name and its line stand in charcoal ON WHITE; the spacer under
+   them carries the charcoal down to the fold. */
+.site-nav--top .topbar-wordmark,
+.dek-band--masthead{ background: #FFFFFF; }
+.site-nav--top .topbar-name,
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name,
+.dek-band--masthead,
+.dek-band.dek-band--masthead a,
+.dek-band--masthead :is(a, span),
+.dek-band--masthead a:is(:hover, :focus-visible){ color: #121417; }
+.head-rule{ background: #121417; }
+/* The line sits in the charcoal under the white block: dark ground,
+   white type. */
+.dek-band--masthead{ background: #121417; }
+.dek-band--masthead,
+.dek-band.dek-band--masthead a,
+.dek-band--masthead :is(a, span),
+.dek-band--masthead a:is(:hover, :focus-visible){ color: #FFFFFF; }
+
+/* The date in the masthead line speaks courier — the meta voice — while
+   the two taglines beside it keep their Garamond italic. */
+.dek-band--masthead > :nth-child(2){
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-size: var(--courier-size);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+
+/* ---------- THE BAND CARRIES THE MASTHEAD LINE ----------
+   Its middle group holds the magazine line and the date, centred
+   between the mark and the list; the fixed line under the wordmark is
+   seated on that same box (fitMastheadFill), so the band picks the two
+   lines up as it rides past. */
+.section-band{ justify-content: space-between; }
+.section-band .band-mid{
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 48px;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1;
+  color: #FFFFFF;
+}
+.section-band .band-mid a{ color: #FFFFFF; text-decoration: none; transition: color .15s ease; }
+.section-band .band-mid a:is(:hover, :focus-visible){ color: var(--klein); }
+/* The date speaks courier in both places. */
+.section-band .band-mid > :nth-child(2){
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-size: var(--courier-size);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+/* The fixed line takes the band's own middle box — the fitter seats the
+   pads; its items simply centre inside them, as they do in the band. */
+.dek-band--masthead{ justify-content: center; }
+/* The band's copy of the masthead line waits until the band lands on
+   the fixed strip (fitPickup) — the boxes coincide there, so the
+   handover is invisible. */
+.section-band .band-mid{ visibility: hidden; }
+body.masthead-picked .section-band .band-mid{ visibility: visible; }
+
+
+/* ---------- THE MASTHEAD LINE BELONGS TO THE BAND ----------
+   Both its parts speak courier, and the wordmark stands alone above.
+   Nothing waits on a pickup any more. */
+.section-band .band-mid{ visibility: visible; }
+.section-band .band-mid,
+.section-band .band-mid a{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-size: var(--courier-size);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* The wordmark stands on the page's own blue, charcoal type; the
+   spacer under it keeps the charcoal down to the fold. */
+.site-nav--top .topbar-wordmark{ background: var(--c-latest); }
+/* The first screen closes ON the band: the spacer is a viewport less
+   the band's own height, so THE LATEST stands on the fold's bottom
+   edge at rest and rides up from there. */
+.head-rule{ height: calc(100vh - var(--band-h, 80px)); }
+/* A dot between the magazine line and the date — the covers' own
+   separator, on the covers' own 12 either side. */
+.section-band .band-mid{ gap: 0; }
+.section-band .band-mid > :nth-child(2)::before{ content: '\00B7'; padding: 0 12px; }
+
+
+/* ---------- THE CARDS STAND A FIFTH TALLER ----------
+   The hero's height is the page's own unit — the row cap gives every
+   row the hero's height and the portrait covers take it outright — so
+   the one calc raises every card on the page. (46.6667vw - 191.55px)
+   times 1.2. */
+.card .duo-half--mega{ height: calc(56vw - 229.86px); }
+
+/* ---------- THE TOP LINE AND THE TITLE IN BLACK ----------
+   The head pair on every cover — kicker, dot and date — and the title
+   under it print charcoal on the blue; the billing keeps its white. */
+main:has(.card--mega) .latest-courier--cover,
+main:has(.card--mega) .latest-courier--cover :is(span, a),
+main:has(.card--mega) :is(.card-title, .latest-title),
+main:has(.card--mega) :is(.card-title, .latest-title) a{ color: #121417; --klein: #FFFFFF; }
+
+
+/* ---------- THE COURIER IN TWO CHIPS ON THE PICTURE ----------
+   Both rows leave the words' column: the head pair becomes a charcoal
+   chip set 24 into the artwork's top-left corner, the billing another
+   set 24 into its bottom-right (fitCoverChips seats both against
+   whatever box they are absolute inside). White type on charcoal, the
+   chip only as wide as its own words. */
+.latest-courier--cover,
+.cover-under{
+  position: absolute;
+  width: max-content;
+  max-width: none;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 0;
+  background: #121417;
+  z-index: 9;
+}
+main:has(.card--mega) :is(.latest-courier--cover, .cover-under),
+main:has(.card--mega) :is(.latest-courier--cover, .cover-under) :is(span, a){
+  color: #FFFFFF;
+  --klein: var(--paper);
+}
+/* The chips ride WITH the artwork when the card opens — they are the
+   picture's furniture now, not the column's. */
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) :is(.cover-under, .mega-cover-head .cover-under),
+.card--mega .duo-half--mega:is(.is-open, :has(.card-image-link:focus-visible)) .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-date),
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-courier--cover > :is(.cover-kicker, .cover-date),
+.latest-cell--ps:is(.is-open, :has(.latest-cover:focus-visible)) .latest-cover-col > .cover-under{
+  transform: translateX(var(--slide, 0px));
+}
+.card .duo-half--mega .mega-cover-head{ inset: 0; pointer-events: none; }
+.latest-cell--ps .latest-courier--cover,
+.latest-cell--contra .latest-courier--cover,
+.latest-cell--contra .cover-under{ z-index: 9; }
+/* The review's two rows were left RELATIVE by their old in-flow seats
+   (they stood in the words' column, then in the matter); as chips they
+   are absolute like every other cover's, stated here at the weight
+   those rules carry. */
+.latest-cell--contra .latest-cover-col .latest-courier--cover,
+.latest-cell--contra .latest-cover-col .cover-under{
+  position: absolute;
+  inset: auto;
+  margin: 0;
+}
+
+
+/* ---------- THE COURIER RETURNS AS ONE LINE, UNDER THE DEK ----------
+   The two chips set into the artwork are struck, and with them every
+   rule that ran along the picture's edges: the cover rests bare on
+   every cell, essay, postscript and review alike. What the chips
+   carried reads once instead, on a single row in the words' own
+   column — KICKER · AUTHOR · DATE — standing 24 under the dek, seated
+   with the title and the dek as one block by fitMatterInk. Charcoal,
+   white — the title under which it stands keeps the charcoal, so the
+   two lines read as different ranks; the dot is the page's own
+   separator, 12 each side, the spacing every other courier keeps. */
+.cover-meta{
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: auto;
+  max-width: none;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-size: var(--courier-size);
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  /* NO Z-INDEX. The chip's 6 put it on the picture; this line stands
+     with the title and the dek, and goes under the picture with them
+     when an open card slides its artwork over the words. */
+}
+.cover-meta > span{ display: inline-block; white-space: nowrap; }
+.cover-sep{ padding: 0 12px; }
+/* WHITE, against the charcoal of the title it closes: the line reads
+   as the page's own meta ink rather than as a second title. */
+main:has(.card--mega) .cover-meta,
+main:has(.card--mega) .cover-meta :is(span, a),
+main:has(.card--mega) .cover-meta a{
+  color: #FFFFFF;
+  --klein: #121417;
+}
+.cover-meta a{ text-decoration: none; transition: color .15s ease; }
+.cover-meta a:is(:hover, :focus-visible){ color: var(--klein); }
+
+
+/* ---------- THE TITLE COLUMN READS CENTRED ----------
+   Every line in the words' column — title, dek and the courier that
+   closes it — sets to a centre axis rather than a left edge: the hero's
+   left column, the postscript's and the review's matter. The courier is
+   a flex row, so it centres on its own main axis; everything else takes
+   text-align. (The fitters are unaffected: every seat they write is
+   VERTICAL, read off ink spans that do not care where the line begins.) */
+.card .duo-half--mega .duo-panel .panel-col--left,
+.card .duo-half--mega .duo-panel .panel-col--left :is(.card-title, .card-dek, .card-kicker, .card-credit, .cover-meta),
+.latest-cell--ps :is(.latest-matter, .latest-title, .latest-dek, .cover-meta),
+.latest-cell--contra :is(.latest-matter, .latest-title, .latest-dek, .cover-meta){
+  text-align: center;
+}
+.cover-meta{ justify-content: center; text-align: center; }
+
+/* ---------- 48 AROUND EVERY POST, AND EVERY EDGE ON THE ROW'S ----------
+   The review's matter paid 79.2 above and below its words — the head
+   pair's row and the billing's, kept as padding after both rows went
+   — so a plain review's courier stopped 79.2 short of the row's foot
+   and its title stood 127 under the artwork; and the postscript's
+   picture beside it climbed 31.2 above the row, on a -31.2 that had
+   climbed it back onto a head row that no longer exists. Every edge
+   is the page's own now: the picture fills its column, head to foot,
+   like the hero's; 48 between the review's picture and its words,
+   ink to ink (fitContraEdges trims the title's half-leading off this
+   padding and hangs the courier's descender past the column); and the
+   words close on the row's foot — open on its head, turned over —
+   where the postscript's picture and the hero's stand. */
+.latest-cell--ps .latest-cover--portrait{ margin-top: 0; }
+.latest-cell--ps .latest-col{ padding-bottom: 0; }
+.latest-cell--contra .latest-col{ margin-top: 0; }
+.latest-cell--contra .latest-matter{ margin-top: 0; padding-top: 48px; padding-bottom: 0; }
+.latest-cell--contra-rev .latest-matter{ padding-top: 0; padding-bottom: 48px; }
+.latest-cell--contra-rev > .latest-col{ margin-bottom: 0; }
+
+/* ---------- THE REVIEW, REWRITTEN ----------
+   Everything a review used to do on hover — the unit travelling in
+   the flow, the square halving as it went, the billing's margin
+   closing the sum, the band the slide cleared — is retired by this
+   block; nothing above it about a review's open state is read any
+   more. The rule is now this simple:
+
+   AT REST the picture stands on the head and the words on the foot
+   (turned over, the other way round), 48 between them ink to ink.
+   The words are the cell's flow; the picture is ABSOLUTE, seated by
+   a top and a height (--pic-top / --pic-h, fitContra), and takes
+   whatever the words leave it.
+
+   OPEN, the body text stands at the HEAD of the card in a plate as
+   tall as its own preview — 48 over the first line, 48 under the
+   last — and the picture takes everything under it down to the foot:
+   it rises over a short preview and gives way to a long one, never
+   below a third of the card (--plate-h / --pic-top-open /
+   --pic-h-open). Plate and picture tile the whole cell, so the words
+   are covered whichever way the card is turned, and the same two
+   properties carry the move on one .4s ease: nothing in the flow
+   changes and the row never moves. The plate simply appears — the
+   instant trade this page keeps everywhere else — and the picture
+   uncovers it as it goes. */
+.latest-cell--contra{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* The hero's own height (see .card .duo-half--mega), so the cell
+     stands its full measure before the fitter has run — with the
+     picture out of the flow, the words alone would not hold it up. */
+  min-height: calc(56vw - 229.86px);
+}
+.latest-cell--contra > .latest-cover-col--square{
+  position: absolute;
+  left: 0; right: 0;
+  top: var(--pic-top, 0px);
+  bottom: auto;
+  height: var(--pic-h, auto);
+  width: auto;
+  margin: 0;
+  aspect-ratio: auto;
+  order: 0;
+  z-index: 5;
+  transition: top .4s ease, height .4s ease;
+}
+.latest-cell--contra .latest-cover--square{
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  aspect-ratio: auto;
+}
+.latest-cell--contra:is(.is-open, :has(.latest-cover:focus-visible)) > .latest-cover-col--square{
+  top: var(--pic-top-open, var(--pic-top, 0px));
+  height: var(--pic-h-open, var(--pic-h, auto));
+  margin: 0;
+}
+/* The words: the flow, filling the cell; the title's auto margin
+   puts them on the foot, and the column's margin (fitContra) hangs
+   the box's air past the row's line so the INK sits on it. */
+.latest-cell--contra > .latest-col{
+  flex: 1 1 auto;
+  order: 1;
+  margin: 0;
+  padding: 0;
+}
+.latest-cell--contra .latest-matter{ margin: 0; padding: 0; }
+.latest-cell--contra .latest-matter .latest-title{ margin-top: auto; margin-bottom: 0; }
+.latest-cell--contra-rev .latest-matter .latest-title{ margin-top: 0; }
+/* The plate: on the head, its height the preview's own, hidden until
+   the card opens (turned over, the words stand where it hangs). */
+.latest-cell--contra > .latest-plate{
+  position: absolute;
+  /* On the head upright; on the foot turned over (fitContra). */
+  top: var(--plate-top, 0px); left: 0; right: 0;
+  bottom: auto;
+  width: auto;
+  height: var(--plate-h, auto);
+  margin: 0;
+  padding: 43.67px 0 48px;
+  z-index: 1;
+  background: var(--paper);
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  transition: none;
+}
+.latest-cell--contra:is(.is-open, :has(.latest-cover:focus-visible)) > .latest-plate{
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ---------- THE BANNERS AND THE REPRINT ARE THE HEADER ----------
+   SUBSCRIBE, EVENTS, STORE and the closing THE NEW CRITIC are the
+   masthead said again: the same blue band, the one word in charcoal
+   Placard with its ink on the page's measure (fillNameBand rescales
+   the size so the ink runs from 48 to 48 and seats the caps 48 under
+   the band's top; the band closes 48 under the feet). The tracked-
+   to-width white word, the foil, the viewport-tall folds and the
+   climbing negative margins are all retired here; the fitter writes
+   every seat inline, so the sheet states only the resting dress. */
+.page-banner,
+.reprint,
+main:has(.card--mega) :is(.page-banner, .reprint){
+  background: var(--c-latest);
+  padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+.page-banner--bare{ padding-bottom: 0; }
+.reprint{ margin-top: 48px; }
+/* The rule's box stays for the rail's release anchor; it takes no
+   height, so the band's 48 opens on its own top edge. */
+.reprint-rule{ height: 0; margin: 0; }
+.banner-name,
+.reprint-name,
+main:has(.card--mega) :is(.banner-name, .reprint-name){
+  display: block;
+  position: relative;
+  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+  /* The token is the first guess only; the fitter rescales it. */
+  font-size: var(--masthead-size-top);
+  letter-spacing: normal;
+  text-align: center;
+  transform: none;
+  margin: 0;
+  padding: 0;
+  clip-path: none;
+  color: #121417;
+  --klein: #121417;
+  text-decoration: none;
+  transition: none;
+}
+.banner-name:is(:hover, :focus-visible),
+.reprint-name:is(:hover, :focus-visible){ color: #121417; }
+/* The banners' dek strips are stood down already (zero height); they
+   take no part in the band's measure. */
+.dek-band--banner{ display: none; }
+
+/* ---------- EVERY SECTION CLOSES ON AN EMPTY BAND ----------
+   The section band's charcoal, 80 tall and full bleed, standing
+   empty at the foot of each movement (build.js, closeMovement) — the
+   head band's mirror, in the flow (never sticky). 48 under the last
+   row: the divider's 24 collapses into the 47 and the rule's own 1
+   makes 48, the banner's arithmetic. After a hero the card's box
+   already carries 23 of the air, so 24. The banner that follows sits
+   flush under it (see THE BANNER SITS FLUSH UNDER THE EMPTY BAND);
+   the reprint keeps its own 48. */
+.section-foot{
+  height: 80px;
+  margin: 47px 0 0;
+  padding: 0;
+  background: #121417;
+}
+.movement-body:has(> .wrap:nth-last-child(3) > .card--mega) > .section-foot{ margin-top: 24px; }
+/* The page's last row carries no divider (build.js), so its foot
+   band pays the whole 48 itself. */
+.wrap + .section-foot{ margin-top: 48px; }
+
+/* ---------- THE HANGING BAND RELEASES ON THE EMPTY ONE ----------
+   A sticky box is held inside its container by its MARGIN box, so
+   the band's own 48 under it had it pushed off 48 before its bottom
+   reached the movement's end — riding up with the foot band still 48
+   short of covering it. The band carries no margin now; the first
+   row under it keeps the 48 as the wrap's own pad, and the band holds
+   until it sits exactly on the empty band, then rides up with it. */
+.section-band{ margin-bottom: 0; }
+.section-band + .wrap{ padding-top: 48px; }
+
+/* ---------- THE BANNERS OPEN LIKE THE HEADER ----------
+   Under each banner stands the header's own spacer (build.js,
+   renderBanner): the same charcoal, the same height — a viewport
+   less the band — flush under the word's band and flush over the
+   next section's band, so every movement opens exactly as the page
+   does: name, field, band at the fold's foot, 48, the first row.
+   The divider that used to carry the banner's 48 to the band stands
+   down; the field is the join. */
+.page-banner{ margin-bottom: 0; }
+.banner-spacer{
+  /* THE HEADER'S FIELD, LESS THE BAND'S OWN HEIGHT. The masthead is
+     FIXED behind the page and paints over the first 258.6 of its
+     spacer, so head-rule alone runs a viewport less the band. A
+     banner stands in the flow ABOVE its spacer; for the next
+     section's band to arrive at the fold's foot the moment the blue
+     reaches the top of the screen, the two together must run the
+     same viewport less the band — so the spacer gives the banner's
+     height back (--masthead-h: every name band stands the masthead's
+     own height, capped to it). */
+  height: calc(100vh - var(--band-h, 80px) - var(--masthead-h, 0px));
+  background: #121417;
+  margin: 0
+    calc(-48px - max(0px, (100vw - var(--max)) / 2))
+    0
+    calc(-24px - max(0px, (100vw - var(--max)) / 2));
+}
+.wrap:has(> .page-banner) + .row-divider{ display: none; }
+
+/* ---------- THE BANNERS PLAY THE HEADER'S OPENING ----------
+   The masthead is pinned at the top while THE LATEST's band and the
+   page ride up over it. Each banner does the same: it stands FIRST
+   in its movement (build.js) and STICKS to the viewport's top — its
+   sticky box is the whole movement, so it holds for as long as the
+   section runs — while the charcoal field, in the flow beneath it,
+   scrolls away, the section band (60) slides over the word and pins,
+   and the rows, raised a level, cover it as they pass. The field
+   paints UNDER the stuck word like the header's own spacer, so the
+   word stays whole until the band arrives. Direct children of the
+   movement, which is already full bleed, so the wrap's negative side
+   margins stand down. */
+.movement > .page-banner{
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+.movement > .banner-spacer{
+  margin-left: 0;
+  margin-right: 0;
+}
+.movement > .wrap{
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- THE BANNER SITS FLUSH UNDER THE EMPTY BAND ----------
+   The word band opens on its field with no air; it closes a section
+   the same way — the empty band's charcoal meets the banner's blue
+   with nothing between, so the blue is the band alone: 48 over the
+   caps, 48 under the feet, charcoal above and below. (The last empty
+   band still keeps its 48 to the reprint, which carries that margin
+   itself.) */
+.movement > .page-banner{ margin-top: 0; }
+
+/* ---------- THE MOVEMENT'S BODY IS OPAQUE OVER THE BANNER ----------
+   The rows alone, raised a level, left the page's gutters open — the
+   dividers and their margins stand between the wraps — and the word
+   pinned beneath showed through every strip between two cards. The
+   whole body of a movement (build.js: every row, divider and the
+   closing empty band) is one box now, on the page's own ground and a
+   level above the banner, so the word is covered whole from the
+   band's arrival to the section's end — main's own opaque ground
+   over the fixed wordmark, said again per movement. */
+.movement-body{
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+}
+/* The first row's 48 under the band, restated for the body: the band
+   is followed by the body now, and the wrap stands first inside it. */
+.movement-body > .wrap:first-child{ padding-top: 48px; }
+
+/* ---------- THE TITLE AND COURIER HOVERS OUTRANK THEIR COLOUR ----------
+   The charcoal on the latest cards' titles and the white on every
+   courier are stated at main:has(.card--mega) weight, which beats the
+   plain a:hover rules that trade them to --klein — so on the
+   postscript and review cards nothing happened under the pointer
+   (the hero's title hover carries .duo-panel and won). Restated at
+   the same weight, with the pointer: the title trades to its klein
+   (white), the courier to its own (charcoal). */
+main:has(.card--mega) :is(.card-title, .latest-title) a:is(:hover, :focus-visible){ color: var(--klein); }
+main:has(.card--mega) .cover-meta a:is(:hover, :focus-visible){ color: var(--klein); }
+
+/* ---------- THE BANNER OVERTAKES THE BAND BEFORE IT SETS ----------
+   A section's band held until its empty foot band met it, then the
+   two rode up together and the next banner arrived in their wake —
+   pushed, not passing. Now the band stays pinned and the blue rides
+   OVER it: each movement is its own stacking level (a later one
+   paints over an earlier one, in order), and a movement followed by
+   another runs one band's height past its foot, the next pulled up
+   by the same, so the band's sticky reach lasts until the banner's
+   top touches the screen's top — the blue climbs the pinned charcoal,
+   covers it, and only then sets in its place. The layout is unmoved:
+   the run-on is empty, and the next movement stands exactly where
+   it stood. The last movement, with the reprint after it, keeps its
+   old end. */
+.movement{ z-index: 0; }
+.movement:has(+ .movement)::after{
+  content: '';
+  display: block;
+  height: var(--band-h, 80px);
+}
+.movement + .movement{ margin-top: calc(-1 * var(--band-h, 80px)); }
+
+/* ---------- THE PAGE LIFTS OFF THE REPRINT ----------
+   The footer is the header in reverse. The header: the name's band
+   at the top, fixed behind the page; the charcoal field under it, a
+   viewport less the band; the section band on the fold's foot. The
+   footer: the last section's empty band at the top of the last
+   screen; the same charcoal field (build.js, .foot-field — a
+   viewport less the band and the name, the banner spacer's own
+   measure) flush under it; the name's band at the very bottom. And
+   the name is REVEALED the way the wordmark is covered: the reprint
+   sticks to the viewport's bottom a level UNDER the page (negative
+   in main's own stack, so every movement and the field paint over
+   it), and the field and the rows lift away from it as the page
+   ends — its own box in the flow is the window they leave open. The
+   band is flush on the field and the field flush on the name, as
+   the head is. */
+.foot-field{
+  height: calc(100vh - var(--band-h, 80px) - var(--masthead-h, 0px));
+  background: #121417;
+}
+.reprint,
+main:has(.card--mega) .reprint{
+  position: sticky;
+  bottom: 0;
+  z-index: -1;
+  margin-top: 0;
+}
+
+/* ---------- THE COLOPHON IN THE LAST BAND ----------
+   The last section's empty foot band carries the colophon (build.js,
+   renderColophonBand): it is a section band in every dress — the
+   mark's face on the left, the middle's courier, the list's italic
+   on the right, the fitter centring each on its ink — standing in
+   the flow, never sticky. For it to be SEEN, the last section's
+   hanging band must let it through: everywhere else the hanging
+   band rides up on its empty foot, covering it exactly; here the
+   band's reach is shortened by a band's height (its sticky box is
+   its margin box, so the margin ends its hold a band early) and the
+   body is lifted by the same, so nothing moves in the layout and the
+   colophon pushes CONTRA off as it arrives — the last band on the
+   page, the reverse of the first. */
+.section-band--colophon{
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0 48px;
+}
+.section-band--colophon .band-mid{ visibility: visible; }
+.section-band--colophon .band-mid > span{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-size: var(--courier-size);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+.section-band--colophon .band-mark,
+.section-band--colophon .band-mark:hover{ color: #FFFFFF; cursor: default; }
+/* (The colophon stands in a movement of its own now, under the
+   ARCHIVE ABOUT banner — see THE PAGE CLOSES ON A BANNER — so no
+   hanging band has to be held back from it.) */
+/* The band's foot lands on a fractional pixel (the rows' heights add
+   up to one), and Chrome snaps its charcoal and the field's to
+   different pixels — a hairline of the body's blue between two
+   charcoals. One pixel of the band's own colour painted under it
+   closes the seam without touching the layout. */
+.section-band--colophon{ box-shadow: 0 1px 0 0 #121417; }
+
+/* ---------- THE PAGE CLOSES ON A BANNER ----------
+   ARCHIVE ABOUT is the last banner (build.js): it opens the final
+   movement exactly as SUBSCRIBE, EVENTS and STORE open theirs — the
+   word band sticks at the top, the charcoal field scrolls up under
+   it, and the movement's band arrives at the fold's foot and rides
+   up over the word. Here the band is the colophon, raised a level
+   like every movement's body so it covers the word, and the movement
+   has no rows: the foot field and the name follow it, so the page's
+   last screens read banner, field, colophon, then field, name — the
+   header twice, the second time in reverse. The two words are two
+   links inside the one name box, coloured as the word is, no hover. */
+.banner-name--pair a,
+.banner-name--pair a:is(:hover, :focus-visible){
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- THE COLOPHON RIDES STRAIGHT UP OVER THE WORD ----------
+   No field between ARCHIVE ABOUT and the colophon: the band stands
+   flush under the word, and the word's sticky box — the movement —
+   now runs through the colophon AND the foot field (build.js), so
+   the word holds at the top while the colophon climbs it and the
+   field, raised the same level, follows and keeps it covered to the
+   page's end, where the colophon stands at the top, the field under
+   it, the name at the foot. */
+.m--colophon > .foot-field{
+  position: relative;
+  z-index: 1;
+}
+
+/* (The foil was tried again on the banners and the two name bands
+   here and taken back: every band stands on the page's own ground —
+   the red — see below.) */
+
+/* ---------- THE GROUND IS BLOOD RED AGAIN ----------
+   Every ground token above (--paper, --chrome, the four movement
+   colours and the gradient stops) reads #9E1712 — the blood red the
+   page wore before the blue (#8A0F0A), a shade lighter; the inks
+   stay white, the hovers charcoal, the bands on the same ground. */
+
+/* ---------- THE BANNER WORDS HOVER WHITE ----------
+   SUBSCRIBE, EVENTS, STORE, and each of ARCHIVE and ABOUT on its own,
+   trade charcoal for white under the pointer, on the bands' own
+   fade. The pair's box itself stays charcoal so only the word under
+   the pointer lights. */
+.banner-name,
+.banner-name--pair a{ transition: color .15s ease; }
+.banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
+.banner-name--pair:is(:hover, :focus-visible){ color: #121417; }
+.banner-name--pair a:is(:hover, :focus-visible){ color: #FFFFFF; }
+/* The word's charcoal is stated at main:has(.card--mega) weight, so
+   the hover is said again at that weight to win it. */
+main:has(.card--mega) .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
+main:has(.card--mega) .banner-name--pair:is(:hover, :focus-visible){ color: #121417; }
+main:has(.card--mega) .banner-name--pair a:is(:hover, :focus-visible){ color: #FFFFFF; }

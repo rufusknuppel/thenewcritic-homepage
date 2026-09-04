@@ -1117,11 +1117,28 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
-    <span class="topbar-name">The New Critic</span>
+    <span class="topbar-name">The <span class="tn-new">New</span> Critic</span>
   </a>
-  <div class="topbar-rail">
-    ${railInner(links, currentKey === 'home' ? { mark: 'The Latest', markHref: './' } : {})}
-  </div>
+  ${currentKey === 'home'
+    // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
+    // one sidebar with no document box of its own — sticky straight
+    // into the header, seated by a vw-sloped margin and carried off
+    // the page by a scroll-timeline ride, where every other movement
+    // simply holds inside a track that opens on one banner and closes
+    // on the next. Given the same box it needs none of that: the hold
+    // and the release are the browser's, the charcoal is the track's,
+    // and all four sidebars are now one mechanism.
+    // THE SIDEBAR IS RETIRED on the front page: each movement opens on
+    // a SECTION BAND instead (renderSectionBand), pinned to the top of
+    // the viewport while its movement scrolls and pushed off by the
+    // banner that opens the next.
+    ? ''
+
+    // Every other page keeps the header rail it always had: they have
+    // no subscribe band to close a first movement against.
+    : `<div class="topbar-rail">
+    ${railInner(links, {})}
+  </div>`}
 </nav>`;
 }
 
@@ -1132,6 +1149,59 @@ function renderNav(currentKey = 'home') {
 // release are the browser's own. Movement one's rail is the header's;
 // these are its reprints, reading the section's name over the
 // categories.
+// THE SECTION BANDS: the sidebar turned horizontal — a charcoal band
+// at the head of each movement, the section's name in Trajan pinned
+// to the left edge and its list, comma-separated in the dek's voice,
+// pinned to the right. Sticky inside its movement (see the assembly
+// in renderHomepage): it rides to the viewport's top, holds there
+// while the movement scrolls under it, and is pushed off by the
+// banner that opens the next, whose own band then takes the seat.
+const SECTION_BANDS = {
+  latest: { word: 'The Latest', href: './' },
+  essays: { word: 'Essays', href: 'essays.html' },
+  postscript: { word: 'Postscript', href: 'postscript.html' },
+  contra: { word: 'Contra', href: 'contra.html' },
+};
+function bandDeks(m) {
+  if (m === 'latest') {
+    const by = (key) => SITE_LINKS.find((l) => l.key === key);
+    const a = (l) => l ? `<a href="${escapeHtml(l.href)}"${l.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a>` : '';
+    return [a(by('archive')), a(by('about')), '<span class="nav-links-dead">Store</span>', '<span class="nav-links-dead">Events</span>',
+      `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`].filter(Boolean).join(', ');
+  }
+  const list = m === 'contra' ? CONTRA_CATEGORIES : RAIL_CATEGORIES;
+  return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(', ');
+}
+// THE MASTHEAD LINE RIDES IN THE BAND'S MIDDLE — the magazine line and
+// the date, centred between the mark and the list. The fixed line under
+// the wordmark is seated on this same box (fitMastheadPickup), so as the
+// band rises it takes the two lines up with it: the band simply arrives
+// where they already stand.
+function mastheadLine() {
+  return `<a href="./">The Young American Magazine</a>
+      <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>`;
+}
+function renderSectionBand(m) {
+  const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
+  return `<nav class="section-band" aria-label="${escapeHtml(b.word)}">
+    <a class="band-mark" href="${escapeHtml(b.href)}">${escapeHtml(b.word)}</a>
+    <p class="band-mid">${mastheadLine()}</p>
+    <p class="band-deks">${bandDeks(m)}</p>
+  </nav>`;
+}
+// THE COLOPHON BAND: the last section's empty foot band, with the
+// colophon in it — the section band's own three slots said in the
+// footer's voice: the founding date on the mark's seat, the copyright
+// line in the middle's courier, the three links in the list's italic.
+// It closes the page the way the header's band opens it (the reverse
+// header — see THE PAGE LIFTS OFF THE REPRINT in style.css).
+function renderColophonBand() {
+  return `<nav class="section-band section-band--colophon" aria-label="Colophon">
+    <span class="band-mark">Est. May 2025</span>
+    <p class="band-mid"><span>&copy; ${new Date().getFullYear()} The New Critic</span></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+  </nav>`;
+}
 function renderPageRail({ side, word, href, after, before, categories }) {
   // THREES, like the masthead's own THE/NEW/CRI/TIC — whatever is
   // left over stands alone on the last line (POS/TSC/RIP/T), centred
@@ -1153,16 +1223,28 @@ function renderPageRail({ side, word, href, after, before, categories }) {
 // measure (fitSubscribeName in duo-panel-fit.js sets the letter-
 // spacing), and one courier line centred under it. SUBSCRIBE closes
 // the first movement; EVENTS closes the essays.
-function renderBanner({ word, href, line, modifier }) {
+function renderBanner({ word, href, words, line, modifier, spacer = true }) {
   // A banner may carry no courier line at all — STORE is the word by
   // itself, so the charcoal closes on its baseline ink instead of on
   // a band's 48 box (see .page-banner--bare).
+  // A banner may also carry TWO WORDS on the one line (ARCHIVE ABOUT
+  // closes the page): each its own link inside the one name box, so
+  // the fitter sizes and tracks the pair to the measure as one word.
+  const link = (w, h) => `<a href="${escapeHtml(h)}"${h.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(w)}</a>`;
+  const name = words
+    ? `<span class="banner-name banner-name--pair">${words.map((w) => link(w.word, w.href)).join(' ')}</span>`
+    : `<a class="banner-name" href="${escapeHtml(href)}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(word)}</a>`;
   return `<section class="page-banner ${modifier}${line ? '' : ' page-banner--bare'}">
-        <a class="banner-name" href="${escapeHtml(href)}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(word)}</a>
+        ${name}
         ${line ? `<div class="dek-band dek-band--banner">
           <span>${escapeHtml(line)}</span>
         </div>` : ''}
-      </section>`;
+      </section>${spacer ? `
+      <!-- THE HEADER'S SPACER, said again: the same charcoal field the
+           masthead opens on, a viewport less the band, so the next
+           section's band arrives at the fold's foot exactly as THE
+           LATEST does under the name. -->
+      <div class="banner-spacer" aria-hidden="true"></div>` : ''}`;
 }
 
 // THE HOVER META: share and likes on their own line directly under
@@ -1182,18 +1264,31 @@ function hoverMetaHtml(post) {
 // and its DATE closing the right — the courier meta idiom, on the
 // picture's own top line. (It carried the likes count and a Share
 // button before; both are retired from the covers.)
-function coverHeadPair(post, { authorPrefix = '' } = {}) {
+// THE FOUR CORNERS: kicker top-left and DATE top-right on the head
+// row; AUTHOR bottom-left and SECTION bottom-right on the billing
+// under it. The kicker and the section — the two that name what the
+// piece is — print white; the author and the date, the facts, in the
+// page's ink.
+function coverHeadPair(post) {
   const kicker = post.kicker
     ? `<a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>`
     : '';
+  const dateText = metaDateText(post);
+  const date = dateText
+    ? `<a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText)}</a>`
+    : '';
+  return `<span class="cover-kicker">${kicker}</span><span class="cover-date">${date}</span>`;
+}
+function coverAuthorHtml(post, authorPrefix = '') {
   // The postscript names its SUBJECT ("w/ Jasmine Sun") where the
   // essay and the review name their writer — psName when the dek
   // carried one, the byline otherwise.
-  const authorName = post.psName ? post.psName.toUpperCase() : authorDisplay(post, true);
-  const author = bylineName(post) || post.psName
+  // SENTENCE CASE, like everything else at the covers' corners: the
+  // caps were the courier idiom and the courier is gone from here.
+  const authorName = post.psName ? post.psName : authorDisplay(post, false);
+  return bylineName(post) || post.psName
     ? `<a href="${escapeHtml(archiveHref(post, 'author'))}">${escapeHtml(`${authorPrefix}${authorName}`)}</a>`
     : '';
-  return `<span class="cover-kicker">${kicker}</span><span class="cover-author">${author}</span>`;
 }
 
 // THE UNDER ROW: the second half of the one courier format every
@@ -1202,12 +1297,36 @@ function coverHeadPair(post, { authorPrefix = '' } = {}) {
 // Absolute on the essays and postscripts (see .cover-under in
 // style.css): the picture's top edge is the rule's, and nothing may
 // push it down. The contras print theirs in flow, under the cover.
-function coverUnderPair(post, cat) {
+function coverUnderPair(post, { authorPrefix = '', cat = '' } = {}) {
+  return `<p class="cover-under"><span class="cover-author">${coverAuthorHtml(post, authorPrefix)}</span><span class="cover-cat">${cat}</span></p>`;
+}
+
+// THE COURIER IS ONE LINE AGAIN, AND IT HAS LEFT THE PICTURE. No chips
+// in the artwork's corners, no rules on its edges: AUTHOR · DATE ·
+// KICKER — the byline leads, the kicker closes — a single row in the words' own column, standing 24 under the
+// dek (fitMatterInk seats it with the title and the dek as one block).
+// The section name goes with the chips — the band overhead already
+// says which movement the reader is in, and the line reads shorter
+// for losing it.
+function coverMetaLine(post, { authorPrefix = '' } = {}) {
+  const kicker = post.kicker
+    ? `<span class="cover-kicker"><a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></span>`
+    : '';
+  const authorInner = coverAuthorHtml(post, authorPrefix);
+  const author = authorInner ? `<span class="cover-author">${authorInner}</span>` : '';
   const dateText = metaDateText(post);
   const date = dateText
-    ? `<a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText.toUpperCase())}</a>`
+    ? `<span class="cover-date"><a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText)}</a></span>`
     : '';
-  return `<p class="cover-under"><span class="cover-date">${date}</span><span class="cover-cat">${cat}</span></p>`;
+  const parts = [author, date, kicker].filter(Boolean);
+  // THE DOT TRAVELS WITH WHAT FOLLOWS IT. Each part after the first
+  // carries its own separator INSIDE its nowrap span, so when the line
+  // breaks the dot opens the second line rather than dangling at the
+  // end of the first.
+  const joined = parts.map((part, i) => i
+    ? part.replace(/^<span class="([^"]+)">/, '<span class="$1"><span class="cover-sep" aria-hidden="true">\u00B7</span>')
+    : part);
+  return parts.length ? `<p class="cover-meta">${joined.join('')}</p>` : '';
 }
 
 // The CONTRA shelf's own five, in its fixed order — the contra page
@@ -1594,8 +1713,6 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // title facing from a centred column on the left (the CSS pins the
   // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
-        ${isMega ? `<span class="mega-cover-head"><p class="latest-courier latest-courier--cover">${coverHeadPair(post)}</p>
-        <div class="latest-rule"></div></span>` : ''}
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
@@ -1608,6 +1725,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
               ${titleHtml}
               ${isMega ? '' : creditHtml}
               ${splitCredit ? dekHtml : ''}
+              ${isMega ? coverMetaLine(post) : ''}
               ${splitCredit && !isMega ? footHtml : ''}
             </div>
             <div class="panel-col-divider" role="separator"></div>
@@ -1618,21 +1736,9 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             </div>
           </div>
         </div>
-        <!-- THE BILLING CLOSES THE PICTURE'S FOOT — the contra's
-             arrangement, on the hero's scale: kicker and author over the
-             cover's top corners, date and section under its bottom two,
-             on a foot rule of the row's own drawing (.cover-under::before
-             in style.css). It rides up onto the head rule when the plate
-             opens, the way the review's does.
-             AND IT SITS AFTER THE PANEL. It used to follow the
-             head, which was fine while the panel rode at 3 and the row
-             at 4 printed over it — but the panel took 5 so the curtain
-             could cover the artwork, and its left column carries an
-             opaque ground: the hero's date went under it. As the later
-             sibling at the panel's own 5 it prints again, and being
-             under the courier's 6 it still passes beneath the held
-             head on scroll rather than over it. -->
-        ${isMega ? coverUnderPair(post, `<a href="essays.html">${escapeHtml(megaLabel || 'Essays')}</a>`) : ''}
+        <!-- THE BILLING CHIP IS STRUCK. Kicker, author and date read on
+             one courier line in the words' column now, under the dek;
+             the picture rests bare, with nothing set into it. -->
       </div>`;
 }
 
@@ -1828,9 +1934,14 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
       ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}</span></a>`
       : '';
   };
-  const matter = (post, dekHtml) => `<div class="latest-matter">
+  // `between` stands between the title and the dek — the review's two
+  // courier lines (see THE REVIEW'S COURIER STANDS BETWEEN ITS WORDS
+  // in style.css).
+  const matter = (post, dekHtml, { before = '', after = '' } = {}) => `<div class="latest-matter">
+            ${before}
             <h3 class="latest-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             ${dekHtml}
+            ${after}
           </div>`;
   // THE COVER HEAD: every cover carries the meta idiom on its own top
   // edge — likes at the left, Share at the right, over a rule ON the
@@ -1849,30 +1960,30 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   const coverHead = (post, { rule = true, ...opts } = {}) => `<p class="latest-courier latest-courier--cover">${coverHeadPair(post, opts)}</p>${rule ? `
         <div class="latest-rule"></div>` : ''}`;
   const ps = psPost ? `<div class="latest-cell latest-cell--ps">
+        <!-- THE PICTURE RESTS BARE. Nothing is set into it and nothing
+             hangs off its edges: the courier reads once, on one line
+             under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          ${coverHead(psPost, { authorPrefix: 'w/ ' })}
           <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}</a>
-          <!-- THE FOOT RULE, the contra's own: the postscript's billing
-               reads UNDER the picture now, on the picture's bottom edge,
-               so the courier stands on all four of the cover's corners —
-               kicker and subject above, date and section below. -->
-          <div class="latest-rule latest-rule--foot"></div>
-          ${coverUnderPair(psPost, '<a href="postscript.html">Postscript</a>')}
         </div>
         <div class="latest-col">
-          ${courierHead()}
-          ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '')}
+          ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '', { after: coverMetaLine(psPost, { authorPrefix: 'w/ ' }) })}
         </div>
         ${plate(psPost)}
       </div>` : '';
+  // THE REVIEW'S COURIER READS LIKE THE ESSAY'S: the head pair under
+  // a rule at the top of the words' block, the billing hanging up
+  // from a rule at its foot, the title and the dek centred between
+  // (fitMatterInk seats them; the rows are absolute in the matter —
+  // see THE REVIEW'S COURIER STANDS BETWEEN ITS WORDS in style.css).
+  // The picture stands alone at the head of the cell, its top on the
+  // postscript's.
   const contra = contraPost ? `<div class="latest-cell latest-cell--contra">
-        ${coverHead(contraPost, { rule: false })}
         <div class="latest-cover-col latest-cover-col--square">
           <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}</a>
         </div>
-        ${coverUnderPair(contraPost, '<a href="contra.html">Contra</a>')}
         <div class="latest-col">
-          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '')}
+          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '', { after: coverMetaLine(contraPost) })}
         </div>
         ${plate(contraPost)}
       </div>` : '';
@@ -2014,11 +2125,11 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the section reads the most recent six IN SEQUENCE, top to bottom —
   // contras[0] leads the first movement's row and is not repeated.
   // contras[0] and [1] lead the first movement's rows and are not
-  // repeated; the section runs [2] onward, three to a row, for as
-  // many as the feed holds (a short last row prints what exists).
+  // repeated; the section runs [2] onward, three to a row — TWO rows,
+  // six reviews. (A third ran to [11] and is retired: the movement
+  // closes on the second row now.)
   blocks.push(renderContraTrio(contras.slice(2, 5)));
   blocks.push(renderContraTrio(contras.slice(5, 8), { stacked: true }));
-  blocks.push(renderContraTrio(contras.slice(8, 11), { stacked: true }));
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
   // it heralds, so the ground changes on its own top edge, under the
@@ -2030,16 +2141,70 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // off the banners themselves by rail-fix.js.
   const MOVEMENTS = ['latest', 'essays', 'postscript', 'contra'];
   let movement = 0;
-  const duoHtml = blocks
-    .map((block, i) => {
-      if (/class="page-banner/.test(block)) movement += 1;
+  // EACH MOVEMENT IS A CONTAINER, opening on its SECTION BAND: the
+  // band is sticky inside it, so it pins to the viewport's top while
+  // the movement's rows scroll under it and is pushed off by the
+  // container's own end — which is where the next banner arrives. The
+  // banners stand OUTSIDE the containers (each closes one movement
+  // and opens the next).
+  let duoHtml = '';
+  let open = false;
+  // THE MOVEMENT'S BODY — every row, divider and the closing empty
+  // band — stands in ONE opaque box over the stuck banner (see THE
+  // BANNERS PLAY THE HEADER'S OPENING in style.css): the page's own
+  // gutters are transparent, and a banner pinned beneath them showed
+  // through every strip between two cards.
+  const openMovement = (m) => { duoHtml += `\n  <div class="movement m--${m}">\n  ${renderSectionBand(m)}\n  <div class="movement-body">`; open = true; };
+  // EVERY MOVEMENT CLOSES ON AN EMPTY BAND — the section band's own
+  // charcoal block, 80 tall, full bleed, with nothing in it: 48 under
+  // the movement's last row, flush over the banner (or 48 over the
+  // reprint) that follows. The head band opens the section; this one
+  // closes it.
+  const closeMovement = () => { if (open) { duoHtml += '\n  <div class="section-foot" aria-hidden="true"></div>\n  </div>\n  </div>'; open = false; } };
+  blocks.forEach((block, i) => {
+    const isBanner = /class="page-banner/.test(block);
+    const last = i === blocks.length - 1;
+    // A BANNER OPENS THE NEXT MOVEMENT, INSIDE IT — the first thing in
+    // the container, ahead of the section band — so it can play the
+    // header's own opening: the word band STICKS to the viewport's
+    // top and holds for the whole movement (its sticky box is the
+    // movement), the charcoal field scrolls up beneath it, and the
+    // band and the rows ride up OVER it, exactly as the section band
+    // and the page ride over the fixed wordmark. No wrap around it:
+    // its sticky box has to be the movement, not a wrap of its own.
+    if (isBanner) {
+      closeMovement();
+      movement += 1;
       const m = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
-      return `
+      duoHtml += `\n  <div class="movement m--${m}">\n  ${block}\n  ${renderSectionBand(m)}\n  <div class="movement-body">`;
+      open = true;
+      return;
+    }
+    const m = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
+    if (!open) openMovement(m);
+    duoHtml += `
   <div class="wrap m--${m}">
     ${block}
-  </div>${i < blocks.length - 1 ? `\n  <div class="row-divider m--${m}"></div>` : ''}`;
-    })
-    .join('\n');
+  </div>${last ? '' : `\n  <div class="row-divider m--${m}"></div>`}`;
+  });
+  closeMovement();
+  // THE LAST MOVEMENT IS THE PAGE'S CLOSE: it opens on a banner —
+  // ARCHIVE ABOUT, two links on the one line — and its band is the
+  // COLOPHON (in place of a section band; never sticky), standing
+  // FLUSH UNDER the word with no field between. The word sticks at
+  // the top like every banner, and the colophon rides straight up
+  // over it, the foot field behind it (inside the movement, raised a
+  // level, so it keeps the word covered as it goes) — the header's
+  // own opening, then the header in reverse: colophon, field, name.
+  duoHtml += `
+  <div class="movement m--colophon">
+  ${renderBanner({ words: [{ word: 'Archive', href: 'archive.html' }, { word: 'About', href: 'about.html' }], modifier: 'archive-band', spacer: false })}
+  ${renderColophonBand()}
+  <!-- THE FOOT FIELD: the head rule's mirror — the charcoal between
+       the colophon and the name, a viewport less the band and the
+       name, so the page closes as it opens, in reverse. -->
+  <div class="foot-field" aria-hidden="true"></div>
+  </div>`;
 
   return `<!doctype html>
 <html lang="en">
@@ -2057,8 +2222,10 @@ ${ogTags({
   })}
 <link rel="icon" href="favicon.png">
 ${leadPreload}
+<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
+${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
 <body>
@@ -2075,11 +2242,10 @@ ${renderHeader()}
 <!-- THE DEK BAND: a 48 white ribbon between the header and the
      middle — the section topics in the dek's own voice, evenly
      spread across the full measure. -->
-<nav class="dek-band dek-band--masthead" aria-label="Masthead line">
-  <a href="./">The Young American Magazine</a>
-  <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
-  <span>By, For, and About Generation Z</span>
-</nav>
+<!-- (The masthead line is carried by the SECTION BAND now — the
+     wordmark stands alone above it. The box stays, empty, because the
+     fitters and the chrome's fold machinery still measure it.) -->
+<nav class="dek-band dek-band--masthead" aria-label="Masthead line"></nav>
 
 <main id="main">
 
@@ -2091,44 +2257,72 @@ ${duoHtml}
        ESSAYS takes the LEFT from there to EVENTS, and POSTSCRIPT the
        RIGHT from EVENTS to the reprint. Each rides, pins at the 48
        line and is pushed off by its track's end. -->
-  ${renderPageRail({ side: 'left', word: 'Essays', href: 'essays.html', after: '.subscribe-band', before: '.events-band' })}
-  ${renderPageRail({ side: 'right', word: 'Postscript', href: 'postscript.html', after: '.events-band', before: '.store-band' })}
-  ${renderPageRail({ side: 'left', word: 'Contra', href: 'contra.html', after: '.store-band', before: '.reprint-rule', categories: CONTRA_CATEGORIES })}
+  <!-- (The movements' rails are retired: each movement carries its
+       section band at its head instead — see renderSectionBand.) -->
 
   <!-- THE REPRINT: the masthead again at full width, closing the
-       front page — a rule 48 under the last row, the name beneath
-       it. As it scrolls up it RELEASES the rail (src/rail-fix.js
-       pushes the sticky away, footer-fashion) and the foot mark
-       stands down. -->
+       front page — the wordmark's mirror: STUCK to the viewport's
+       bottom under the page (style.css, THE PAGE LIFTS OFF THE
+       REPRINT), so the field and the rows lift away and reveal it. -->
   <section class="reprint">
     <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="./" aria-label="The New Critic — home">The New Critic</a>
+    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
   </section>
 
-  <!-- THE FOOT BAND: the colophon in courier, UNDER the reprint's
-       name now — the head band's mirror, hugging the footer title's
-       ink from below and closing the page. -->
-  <nav class="dek-band dek-band--foot" aria-label="Colophon">
-    <span>Est. May 2025</span>
-    <a href="https://www.thenewcritic.com" rel="noopener">Substack</a>
-    <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>
-    <a href="mailto:editors@thenewcritic.com">Email</a>
-    <span>&copy; ${new Date().getFullYear()} The New Critic</span>
-  </nav>
+  <!-- (The colophon stands in the last section's foot band now —
+       renderColophonBand.) -->
 
 </main>
 
 ${renderFooter()}
 
 ${renderCaterpillarScript()}
+${renderFoilPourScript()}
 ${renderDuoPanelFitScript()}
 ${renderCardOpenScript()}
+${renderChromeOpenScript()}
 ${renderCoverColorScript()}
 ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 ${renderRailFixScript()}
 </body>
 </html>`;
+}
+
+// THE FONT GATE. The page's seats are measured off rendered type, and
+// the type arrives late: first paint set the fallbacks, the fitters
+// measured THOSE, and when Placard and the Typekit garamond landed the
+// fonts.ready refit visibly re-seated every courier line — the
+// load-time shuffle. Two moves kill it. The faces are LOADED here, by
+// name, from the head — fonts otherwise fetch lazily on first use, so
+// by end of body they were still in flight — which puts them in place
+// before the parser-blocking fitters measure. And until they land the
+// body holds at opacity 0 (opacity, not visibility: layout and every
+// fitter guard behave identically, the frame is simply not shown), so
+// whatever motion remains happens off stage. The race caps the hold at
+// 800ms — a slow or dead font host degrades to the old behaviour, a
+// fallback paint and one refit, rather than a blank page.
+function renderFontGateScript() {
+  return `<style>html.fonts-loading body{opacity:0}</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  root.classList.add('fonts-loading');
+  var done = function () { root.classList.remove('fonts-loading'); };
+  var f = document.fonts;
+  if (!f || !f.load) { done(); return; }
+  Promise.race([
+    Promise.all([
+      f.load('700 100px "OPS Placard"'),
+      f.load('400 100px garamond-premier-pro'),
+      f.load('italic 400 100px garamond-premier-pro'),
+      f.load('400 100px trajan-pro-3'),
+      f.load('700 100px trajan-pro-3')
+    ]),
+    new Promise(function (r) { setTimeout(r, 800); })
+  ]).then(done, done);
+})();
+</script>`;
 }
 
 // The held head — the mini-rail and the hero's courier line hold at 48
@@ -2145,6 +2339,16 @@ ${js}
 // having no memory of how it began.
 function renderCardOpenScript() {
   const js = fs.readFileSync(path.join(__dirname, 'src/card-open.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
+// THE OPENING: every chrome block stands a viewport tall when the site
+// opens and folds to its settled height on the first scroll, one-way
+// (src/chrome-open.js).
+function renderChromeOpenScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/chrome-open.js'), 'utf8');
   return `<script>
 ${js}
 </script>`;
@@ -2211,6 +2415,17 @@ ${js}
 </script>`;
 }
 
+// THE POUR: reseeds the masthead's foil plate per visit (src/
+// foil-pour.js sets --foil-uri; the stylesheet's baked crumple is the
+// no-JS fallback). Ships with every page that carries the masthead —
+// all of them.
+function renderFoilPourScript() {
+  const js = fs.readFileSync(path.join(__dirname, 'src/foil-pour.js'), 'utf8');
+  return `<script>
+${js}
+</script>`;
+}
+
 // Head-inlined, unlike the body scripts above: it must arm the .imgfade
 // gate and its capture-phase load listener before the first <img> is
 // parsed, or early covers could paint-then-hide (a flash) or load before
@@ -2249,8 +2464,10 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
+<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
+${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
@@ -2265,7 +2482,8 @@ ${bodyHtml}
 
 ${renderFooter()}
 
-${renderCaterpillarScript()}${extraScripts ? `\n${extraScripts}` : ''}
+${renderCaterpillarScript()}
+${renderFoilPourScript()}${extraScripts ? `\n${extraScripts}` : ''}
 </body>
 </html>`;
 }
