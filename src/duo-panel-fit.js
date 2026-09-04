@@ -4232,6 +4232,60 @@
   // when the chips were in the corners; where they stand UNDER it (the
   // review's column) there is no span to centre in and the two 24s are
   // simply paid as margins.
+  // THE TOP COURIER OVERFLOWS THE COLUMN'S OWN MARGINS. AUTHOR · DATE
+  // is meant to be ONE line, and in the narrow columns — the postscript
+  // halves at 210 — a long name and its date outrun the words' measure
+  // and the dot ends up leading the second line like a bullet. So the
+  // line is let out into the column's side padding: it is centred ink,
+  // so a short line does not move a hair, and a long one keeps its dot.
+  // The padding is READ off whichever ancestor states it (the mega's
+  // own left column, the latest card's .latest-col) rather than named
+  // here, so the sheet stays the one place the 48 is written.
+  // AND IF IT STILL WILL NOT FIT, THE DOT GOES: the line breaks, the
+  // second piece takes its own line, and the separator — which now
+  // separates nothing — is struck. The same holds for the plate's
+  // READ ON · [CLOSE PREVIEW].
+  function fitCourierDots() {
+    var lines = [].slice.call(document.querySelectorAll('.cover-meta--author'));
+    // read every column's padding first, write every margin after:
+    // one layout for the lot rather than one per card.
+    var pads = lines.map(function (line) {
+      if (getComputedStyle(line).textAlign !== 'center') return 0;
+      var host = line.parentElement, guard = 4;
+      while (host && guard-- > 0) {
+        var cs = getComputedStyle(host);
+        var l = parseFloat(cs.paddingLeft) || 0, r = parseFloat(cs.paddingRight) || 0;
+        if (l || r) return Math.min(l, r);
+        if (host.classList.contains('latest-cell') || host.classList.contains('duo-half--mega')) break;
+        host = host.parentElement;
+      }
+      return 0;
+    });
+    lines.forEach(function (line, i) {
+      line.style.marginLeft = pads[i] ? (-pads[i]).toFixed(2) + 'px' : '';
+      line.style.marginRight = pads[i] ? (-pads[i]).toFixed(2) + 'px' : '';
+    });
+    // The dot rides INSIDE the piece it leads on the meta line (so a
+    // break carries it along) and stands loose on the plate's line —
+    // either way the test is the same: do the two pieces share a top?
+    var units = [];
+    [].forEach.call(document.querySelectorAll('.cover-sep'), function (sep) {
+      var host = sep.parentElement;
+      if (!host) return;
+      var loose = host.classList.contains('cover-meta') || host.classList.contains('plate-more');
+      var line = loose ? host : host.parentElement;
+      var prev = loose ? sep.previousElementSibling : host.previousElementSibling;
+      var post = loose ? sep.nextElementSibling : host;
+      if (!line || !prev || !post) return;
+      line.classList.remove('is-split');
+      units.push({ line: line, prev: prev, post: post });
+    });
+    units.forEach(function (u) {
+      var a = u.prev.getBoundingClientRect(), b = u.post.getBoundingClientRect();
+      if (!a.height || !b.height) return;
+      if (Math.abs(a.top - b.top) > 1.5) u.line.classList.add('is-split');
+    });
+  }
   function fitMatterInk(which) {
     var jobs = [];
     if (which !== 'flow') [].forEach.call(document.querySelectorAll('.latest-cell--ps'), function (cell) {
@@ -4540,12 +4594,14 @@
     step('fitSlideSlots', fitSlideSlots);
     step('panels', function () { [].forEach.call(document.querySelectorAll('.duo-panel'), fit); });
     step('fitLatestTitle', fitLatestTitle);
+    step('fitCourierDots', fitCourierDots);
     step('fitMatterInk', function () { fitMatterInk('seat'); });
     // The slots are re-seated after the titles are cut: a review's band
     // is the slack its square leaves, and the square is sized by the row
     // cap, which the cut can still move.
     step('fitSlideSlots#2', fitSlideSlots);
     step('cutPlates#2', cutPlates);
+    step('fitCourierDots#2', fitCourierDots);
     step('centreBodyText', centreBodyText);
     step('fitTitleHalo', fitTitleHalo);
     // Every fit pass can move document seats (fonts, images, fitted

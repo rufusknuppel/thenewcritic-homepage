@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtnjcr0e">
+<link rel="stylesheet" href="style.css?v=mtnkk670">
 <style>html.fonts-loading body{opacity:0}</style>
 <script>
 (function () {
@@ -3398,6 +3398,42 @@
     var bot = rectsL[rectsL.length - 1].bottom - oL.ride;
     return { top: top, bot: bot, ink: bot - top, h: box.height, capOff: top - box.top };
   }
+  function fitCourierDots() {
+    var lines = [].slice.call(document.querySelectorAll('.cover-meta--author'));
+    var pads = lines.map(function (line) {
+      if (getComputedStyle(line).textAlign !== 'center') return 0;
+      var host = line.parentElement, guard = 4;
+      while (host && guard-- > 0) {
+        var cs = getComputedStyle(host);
+        var l = parseFloat(cs.paddingLeft) || 0, r = parseFloat(cs.paddingRight) || 0;
+        if (l || r) return Math.min(l, r);
+        if (host.classList.contains('latest-cell') || host.classList.contains('duo-half--mega')) break;
+        host = host.parentElement;
+      }
+      return 0;
+    });
+    lines.forEach(function (line, i) {
+      line.style.marginLeft = pads[i] ? (-pads[i]).toFixed(2) + 'px' : '';
+      line.style.marginRight = pads[i] ? (-pads[i]).toFixed(2) + 'px' : '';
+    });
+    var units = [];
+    [].forEach.call(document.querySelectorAll('.cover-sep'), function (sep) {
+      var host = sep.parentElement;
+      if (!host) return;
+      var loose = host.classList.contains('cover-meta') || host.classList.contains('plate-more');
+      var line = loose ? host : host.parentElement;
+      var prev = loose ? sep.previousElementSibling : host.previousElementSibling;
+      var post = loose ? sep.nextElementSibling : host;
+      if (!line || !prev || !post) return;
+      line.classList.remove('is-split');
+      units.push({ line: line, prev: prev, post: post });
+    });
+    units.forEach(function (u) {
+      var a = u.prev.getBoundingClientRect(), b = u.post.getBoundingClientRect();
+      if (!a.height || !b.height) return;
+      if (Math.abs(a.top - b.top) > 1.5) u.line.classList.add('is-split');
+    });
+  }
   function fitMatterInk(which) {
     var jobs = [];
     if (which !== 'flow') [].forEach.call(document.querySelectorAll('.latest-cell--ps'), function (cell) {
@@ -3601,9 +3637,11 @@
     step('fitSlideSlots', fitSlideSlots);
     step('panels', function () { [].forEach.call(document.querySelectorAll('.duo-panel'), fit); });
     step('fitLatestTitle', fitLatestTitle);
+    step('fitCourierDots', fitCourierDots);
     step('fitMatterInk', function () { fitMatterInk('seat'); });
     step('fitSlideSlots#2', fitSlideSlots);
     step('cutPlates#2', cutPlates);
+    step('fitCourierDots#2', fitCourierDots);
     step('centreBodyText', centreBodyText);
     step('fitTitleHalo', fitTitleHalo);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
