@@ -8,9 +8,14 @@
   // answers. :has() cannot say that, since it has no memory of how a
   // state began, so the state is carried as a class.
   //
-  // The keyboard path stays in the stylesheet, where it always was: each
-  // open rule reads :is(.is-open, :has(<the cover's link>:focus-visible)),
-  // so tabbing to a cover opens its card without any of this.
+  // The keyboard path is in here too now. It used to be the stylesheet's
+  // — every open rule read :is(.is-open, :has(<the cover's link>
+  // :focus-visible)) — but a :has() anchored on the card is re-checked
+  // on every mutation inside it, and the fitter's plate cuts are
+  // hundreds of those a pass; it was the page's single largest cost.
+  // So a visibly-focused cover link sets the same class and clears it
+  // on the way out, exactly as the selector did, and the stylesheet
+  // reads the class alone (see THE STATIC :has() ANCHORS ARE STRUCK).
   //
   // NOTHING STANDS ON THE PICTURE ANY MORE. The corner control — the
   // charcoal triangle and the X that took its place — is struck. The
@@ -38,6 +43,26 @@
     var hit = function (e, sel) {
       return e.target && e.target.closest ? e.target.closest(sel) : null;
     };
+    // A COVER LINK UNDER VISIBLE FOCUS OPENS THE CARD, and shuts it on
+    // the way out — the selector's own behaviour, carried as the class.
+    // Only what focus opened does focus shut: a card opened by the
+    // control stays open when the reader tabs through its cover.
+    var COVER = '.latest-cover a, .duo-card-image a, .card-image-link, .latest-cover';
+    card.addEventListener('focusin', function (e) {
+      var t = e.target;
+      if (!t || !t.closest || !t.closest(COVER)) return;
+      var vis = false; try { vis = t.matches(':focus-visible'); } catch (err) {}
+      if (!vis || card.classList.contains('is-open')) return;
+      card.classList.add('is-open');
+      card.__openByFocus = true;
+    });
+    card.addEventListener('focusout', function (e) {
+      var t = e.target;
+      if (!card.__openByFocus || !t || !t.closest || !t.closest(COVER)) return;
+      card.__openByFocus = false;
+      card.classList.remove('is-open');
+      try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
+    });
     card.addEventListener('click', function (e) {
       if (hit(e, '.peek-open')) {
         e.preventDefault(); e.stopPropagation();

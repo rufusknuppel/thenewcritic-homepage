@@ -1208,8 +1208,12 @@ function renderSectionBand(m) {
     contra: 'New Critics Take On Significant Gen Z Works',
   };
   const line = BAND_LINES[m] || '';
+  // THE NAME ON EVERY BAND'S LEFT, not the section's: the band is the
+  // magazine speaking, and its own line in the middle already says
+  // which section this is. (The section's word still stands on the
+  // banner above it, at poster size.)
   return `<nav class="section-band" aria-label="${escapeHtml(b.word)}">
-    <p class="band-deks band-dek"><a href="${escapeHtml(b.href)}">${escapeHtml(b.word)}</a></p>
+    <p class="band-deks band-dek"><a href="./">The Young American Magazine</a></p>
     <p class="band-mid"><span>${escapeHtml(line)}</span></p>
     <p class="band-deks">${bandDeks(m)}</p>
   </nav>`;
@@ -2249,12 +2253,16 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // own scheme (style.css, THE CLOSING STACK'S SCHEMES). Every one
   // sticks at the top as it arrives and the next slides up over it,
   // a deck; the colophon then rides up over the last.
+  // TWO SCHEMES, ALTERNATING: white on charcoal, charcoal on white,
+  // and the word alone turns pink under the pointer (style.css). The
+  // pink grounds are struck — five schemes over five banners read as
+  // five different ideas rather than one deck.
   const STACK = [
     { word: 'Archive', href: 'archive.html', scheme: 'wb' },
     { word: 'About', href: 'about.html', scheme: 'bw' },
-    { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'pb' },
-    { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'bp' },
-    { word: 'Subscribe', href: `${SITE_URL}/subscribe`, scheme: 'pw' },
+    { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'wb' },
+    { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'bw' },
+    { word: 'Subscribe', href: `${SITE_URL}/subscribe`, scheme: 'wb' },
   ];
   duoHtml += `
   <div class="movement m--colophon">
@@ -2283,6 +2291,8 @@ ${ogTags({
 <link rel="icon" href="favicon.png">
 ${leadPreload}
 <link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
@@ -2388,7 +2398,7 @@ function renderFontGateScript() {
 // The held head — the mini-rail and the hero's courier line hold at 48
 // on scroll while the hero slides under the divider (src/rail-fix.js).
 function renderRailFixScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/rail-fix.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/rail-fix.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2398,7 +2408,7 @@ ${js}
 // the card entirely (src/card-open.js) — a state :has() cannot express,
 // having no memory of how it began.
 function renderCardOpenScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/card-open.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/card-open.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2408,7 +2418,7 @@ ${js}
 // opens and folds to its settled height on the first scroll, one-way
 // (src/chrome-open.js).
 function renderChromeOpenScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/chrome-open.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/chrome-open.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2419,7 +2429,7 @@ ${js}
 // shell pages (about, give, archive) have none, so this stays out of
 // renderPageShell's fixed script set.
 function renderDuoPanelFitScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2432,7 +2442,7 @@ function renderCoverColorScript() {
   // dark paper now; src/cover-color.js stays for a revival.
   return '';
 
-  const js = fs.readFileSync(path.join(__dirname, 'src/cover-color.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/cover-color.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2447,14 +2457,14 @@ ${js}
 // postscript/contra list pages) — it serves their corner copy-link
 // buttons, so it rides alongside renderDuoPanelFitScript.
 function renderCopyLinkScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/copy-link.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/copy-link.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
 }
 
 function renderLineDrawScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/line-draw.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/line-draw.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2462,14 +2472,14 @@ ${js}
 
 // The about page's section toggle — see renderAboutPage / src/about-panel.js.
 function renderAboutPanelScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/about-panel.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/about-panel.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
 }
 
 function renderCaterpillarScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/caterpillar.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/caterpillar.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2480,7 +2490,7 @@ ${js}
 // no-JS fallback). Ships with every page that carries the masthead —
 // all of them.
 function renderFoilPourScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/foil-pour.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/foil-pour.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2491,7 +2501,7 @@ ${js}
 // parsed, or early covers could paint-then-hide (a flash) or load before
 // anyone's listening (stuck invisible). See src/img-fade.js.
 function renderImgFadeScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/img-fade.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/img-fade.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2513,6 +2523,37 @@ function ogTags({ title, description, pagePath, image }) {
   ].filter(Boolean).join('\n');
 }
 
+// ---------- WHAT THE PAGE SHIPS IS SLIMMER THAN WHAT IS WRITTEN ----------
+// The stylesheet is two-thirds commentary by weight and the fitter is
+// nearly half; the reader downloads none of it. Comments come out at
+// build time — /* */ blocks from the CSS (it has no other kind, and no
+// string on it holds one), and whole-line // comments from the scripts
+// (none of them carries a template literal, so no line inside a string
+// can begin that way) — and the blank lines they leave go with them.
+// The sources stay as they are.
+function slimCss(css) {
+  return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*\n+/g, '\n');
+}
+function slimJs(js) {
+  return js.replace(/^[ \t]*\/\/[^\n]*\n/gm, '').replace(/\n\s*\n+/g, '\n');
+}
+// THE PAGE KNOWS WHETHER IT HAS HERO CARDS. body:has(.card--mega) and
+// main:has(.card--mega) were static questions asked of a live selector —
+// and a :has() on the whole page is re-checked on every mutation under
+// it, which the fitter makes by the hundred. The answer is printed as a
+// class on both (style.css reads body.has-mega / main.has-mega, at the
+// same weight). The test is a class TOKEN in a class attribute, not the
+// bare word: the inlined fitter names .card--mega in its own text on
+// every page, and card--mega-rev is not card--mega.
+function markMega(html) {
+  if (!/class="(?:[^"]*\s)?card--mega(?:\s[^"]*)?"/.test(html)) return html;
+  return html
+    .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
+      ? m.replace('class="', 'class="has-mega ')
+      : `<body${attrs || ''} class="has-mega">`)
+    .replace('<main id="main">', '<main id="main" class="has-mega">');
+}
+
 function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage }) {
   return `<!doctype html>
 <html lang="en">
@@ -2525,6 +2566,8 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
 <link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
@@ -2836,21 +2879,21 @@ ${headHtml}${rows
 }
 
 function renderContraFilterScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/contra-filter.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/contra-filter.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
 }
 
 function renderEssayTickerScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/essay-ticker.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/essay-ticker.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
 }
 
 function renderPostscriptIndexScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/postscript-index.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/postscript-index.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -3249,7 +3292,7 @@ function renderLedgerRow(post) {
 }
 
 function renderLedgerScript() {
-  const js = fs.readFileSync(path.join(__dirname, 'src/ledger.js'), 'utf8');
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/ledger.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -3817,10 +3860,10 @@ async function main() {
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
   for (const [filename, content] of Object.entries(pages)) {
-    fs.writeFileSync(path.join(OUT_DIR, filename), content, 'utf8');
+    fs.writeFileSync(path.join(OUT_DIR, filename), markMega(content), 'utf8');
     console.log(`Wrote ${path.join(OUT_DIR, filename)}`);
   }
-  fs.copyFileSync(path.join(__dirname, 'style.css'), path.join(OUT_DIR, 'style.css'));
+  fs.writeFileSync(path.join(OUT_DIR, 'style.css'), slimCss(fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8')), 'utf8');
   // The site runs on system faces now, so there may be no fonts/ to copy.
   // Guarded because this loop sits BEFORE the asset copies below — an
   // unguarded ENOENT here aborted main() after the pages were written,
@@ -3835,12 +3878,12 @@ async function main() {
   // The nav wordmark: the hand-drawn framed bird (white ink on
   // transparency, extracted from "Bird logo.png" in the repo root — see
   // assets/bird-mark.png).
-  fs.copyFileSync(path.join(__dirname, 'assets/bird-mark.png'), path.join(OUT_DIR, 'bird-mark.png'));
+  // (bird-mark.png and bird-logo.png are no longer copied: nothing on any page references them.)
   // The bird that closes the sidebar (see renderNav / .nav-bird). Kept in
   // assets/ under a clean name rather than read from the root "Bird
   // logo.png" it was drawn as — the build shouldn't depend on a filename
   // with a space in it, and the root copy is deliberately untracked.
-  fs.copyFileSync(path.join(__dirname, 'assets/bird-logo.png'), path.join(OUT_DIR, 'bird-logo.png'));
+
   fs.writeFileSync(path.join(OUT_DIR, 'favicon.png'), Buffer.from(FAVICON_B64, 'base64'));
 }
 

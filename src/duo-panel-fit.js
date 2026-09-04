@@ -925,7 +925,8 @@
       // competition finds). (The MEGA's one-scale ceiling lives in
       // the painted-ink rescale below — a cap here is washed out by
       // that pass's own fill.)
-      maxSize: poster && !wideTitle ? 84 : 0,
+      // CAPPED AT THE HOUSE 84 on the hero too (it ran to 140 uncapped).
+      maxSize: poster ? 84 : 0,
       lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
     });
     // The CAP INK lands on the ground's 24 line, not the line box: the
@@ -984,6 +985,9 @@
         // Man's two lines) can't print bigger than the three-line
         // posters around it.
         if (isFinite(maxH) && maxH > 0) inkS = Math.min(inkS, maxH / 3.3);
+        // AND NEVER PAST THE HOUSE 84: this fill to the column's ink
+        // width ran the poster to 140.
+        inkS = Math.min(inkS, 84);
         [].forEach.call(inkLns, function(ln){ ln.style.fontSize = inkS.toFixed(2) + 'px'; });
         // AND THE RENDERED INK IS BROUGHT INSIDE THE MARGIN. The fill
         // above sizes from CANVAS metrics, which are an estimate of
@@ -2693,10 +2697,11 @@
       // clamped to whatever fits above that line. (Reviews keep the
       // dek floor: their box is far taller than their text and the
       // rule sits on the picture, not under the words.)
-      if (psCell && psCell.classList.contains('latest-cell--ps')) {
-        pl.style.paddingBottom = '48px';
-        psCell = null;
-      }
+      // (The postscript's 48-above-the-rule pad and the review's dek-ink
+      // floor are retired: every plate's paddings are the courier's
+      // pins now — kicker cap 24 under the plate's top, READ ON's
+      // baseline 24 above its foot — stated in style.css.)
+      psCell = null;
       // NOT the turned-over review: its plate is the card's own foot
       // and its dek stands ABOVE it, so the dek-ink floor would land
       // deep inside the box — a 215px padding with no room left to
@@ -3098,11 +3103,12 @@
     // header's height, centred, rather than the measure's width.
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
+    var BANNER_AIR = 72;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
-      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap });
+      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: BANNER_AIR });
     });
     [].forEach.call(document.querySelectorAll('.reprint'), function (band) {
-      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap });
+      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR });
     });
   }
   // THE WORDMARK'S INK TOUCHES BOTH EDGES OF THE SITE. Measured, not
@@ -3125,6 +3131,12 @@
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
+    // THE AIR OVER AND UNDER THE INK. The masthead keeps the 48 it was
+    // built on; the page's banners keep the page's own 72 (passed in),
+    // measured to the PAINTED pixels of the word — the scan below — not
+    // to the font's boxes, which on a display face hang well past what
+    // prints.
+    var AIR = (opts && opts.air) || 48;
     name.style.fontSize = '';
     name.style.transform = 'none';
     name.style.marginTop = '';
@@ -3208,7 +3220,7 @@
     // flat-topped cap under the block's crop read as nothing at all.
     // 48 OF AIR ABOVE THE CAPS now, the page's own unit (they stood on
     // the edge, cropped, for a while).
-    name.style.marginTop = (mt + (wb.top + 48 - capTop)).toFixed(2) + 'px';
+    name.style.marginTop = (mt + (wb.top + AIR - capTop)).toFixed(2) + 'px';
     // AND THE FOOT THE SAME WAY: the band ends where the ink does. The
     // scan's last inked row gives the ink's foot against the baseline
     // (Placard's caps sit flat on it); the block is cut to end 4 above
@@ -3226,14 +3238,18 @@
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
     // THE BAND CLOSES 48 UNDER THE FEET, as it opens 48 over the caps.
-    wm.style.height = Math.max(0, inkBottom - wb.top + 48).toFixed(2) + 'px';
+    wm.style.height = Math.max(0, inkBottom - wb.top + AIR).toFixed(2) + 'px';
     return { wb: wb, inkBottom: inkBottom };
   }
   function fitMastheadFill() {
     var name = document.querySelector('.site-nav--top .topbar-name');
     if (!name) return;
     var wm = name.closest('.topbar-wordmark') || name.parentElement;
-    var f = fillNameBand(name, wm);
+    // THE HEADER'S WORDMARK KEEPS THE PAGE'S 72 like every other banner
+    // (the foot's reprint already does) — over the ink and under it,
+    // and the masthead line slots into that same 72 under the feet.
+    var AIR = 72;
+    var f = fillNameBand(name, wm, { air: AIR });
     if (!f) return;
     var wb = f.wb, inkBottom = f.inkBottom;
     // The block ends ON the ink's foot, one pixel of allowance under
@@ -3247,7 +3263,7 @@
     // caps; the line stands in the charcoal below it, centred in its
     // own 48.
     var band = document.querySelector('.dek-band--masthead');
-    var wmH = Math.max(0, inkBottom - wb.top + 48);
+    var wmH = Math.max(0, inkBottom - wb.top + AIR);
     if (band) {
       // THE STRIP IS THE BAND'S OWN, ahead of time: the same height and
       // the same middle box, so when the section band rides up over it
@@ -3256,11 +3272,11 @@
       // THE STRIP IS EMPTY NOW — the band carries the masthead line —
       // so it takes no height at all and the charcoal simply runs on.
       var sect = document.querySelector('.section-band');
-      var bandH = band.children.length ? (sect ? sect.getBoundingClientRect().height : 48) : 0;
-      band.style.top = (inkBottom - wb.top + 48).toFixed(2) + 'px';
+      var bandH = band.children.length ? (sect ? sect.getBoundingClientRect().height : 72) : 0;
+      band.style.top = (inkBottom - wb.top + AIR).toFixed(2) + 'px';
       band.style.height = bandH.toFixed(2) + 'px';
       band.style.alignItems = 'center';
-      var bmid = inkBottom + 48 + bandH / 2;
+      var bmid = inkBottom + AIR + bandH / 2;
       // ACROSS: the band's middle group's own box.
       var mid = sect && sect.querySelector('.band-mid');
       if (mid) {
@@ -3479,6 +3495,11 @@
       if (!col || !pic || !title) return;
       var rev = cell.classList.contains('latest-cell--contra-rev');
       ['--slide', '--sq-rest', '--sq-open'].forEach(function (v) { cell.style.removeProperty(v); });
+      // From the sheet's own sizes every run: this runs twice a pass,
+      // and a shrink left standing would compound (a dek went 20 -> 16
+      // -> 12.8 -> 10 that way).
+      title.style.fontSize = '';
+      if (dek) dek.style.fontSize = '';
       var shown = function (el) { return el && getComputedStyle(el).display !== 'none'; };
       // The words' HEAD and FOOT are whichever of the author, the title,
       // the dek and the date stand highest and lowest, read off their
@@ -3499,12 +3520,63 @@
       else col.style.marginBottom = (-rideOut).toFixed(2) + 'px';
       var cb = cell.getBoundingClientRect();
       if (!cb.height) return;
-      // THE PICTURE AT REST: the row's edge on one side, 48 off the
-      // words' ink on the other.
-      var capTop = baselineOf(head, true) - capAscent(head);
-      var baseBot = baselineOf(last, false);
-      var picTop = rev ? (baseBot + CONTRA_PIC_GAP - cb.top) : 0;
-      var picH = rev ? (cb.height - picTop) : (capTop - CONTRA_PIC_GAP - cb.top);
+      // THE PICTURE IS SQUARE AT REST — as wide as the card, as tall as
+      // it is wide — at the card's head (or its foot, turned over). The
+      // words take whatever the square leaves; they used to size the
+      // picture, which squared it only by luck of the title's length.
+      var side = cb.width;
+      var picTop = rev ? (cb.height - side) : 0;
+      var picH = side;
+      // THE BLOCK'S OWN EDGES ARE THE COURIER'S FRAME: the stack is
+      // anchored on the card's edge by its margins above (24 by ink),
+      // so what it must fill is the remainder less the two 24s. A
+      // title too tall for it shrinks until it fits; whatever room is
+      // left is dealt into the stack's two inner gaps, half each, so
+      // the far courier lands 24 off the picture and the title and
+      // dek centre between the two lines.
+      var wordsRoom = cb.height - side - 48;
+      var stackInk = function () {
+        return baselineOf(last, false) - (baselineOf(head, true) - capAscent(head));
+      };
+      // In order: the title down to 24 (never smaller), then the dek
+      // down to four-fifths of itself, and what still will not fit the
+      // square gives up — a review's words are never crushed to make
+      // its picture square.
+      var CONTRA_TITLE_FLOOR = 24, CONTRA_DEK_FLOOR = 0.8;
+      var shrink = function (el, floorPx) {
+        var sz = parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0;
+        if (!sz) return false;
+        var over = stackInk() - wordsRoom;
+        var eh = el.getBoundingClientRect().height;
+        if (!eh || over <= 0.25) return false;
+        var next = Math.max(floorPx, sz * Math.max(0.6, (eh - over) / eh));
+        if (next >= sz - 0.05) return false;
+        el.style.fontSize = next.toFixed(2) + 'px';
+        return true;
+      };
+      var guard = 12;
+      while (stackInk() > wordsRoom + 0.25 && guard-- > 0 && shrink(title, CONTRA_TITLE_FLOOR)) {}
+      if (dek && shown(dek)) {
+        var dek0 = parseFloat(getComputedStyle(dek).fontSize) || 0;
+        guard = 8;
+        while (stackInk() > wordsRoom + 0.25 && guard-- > 0 && shrink(dek, dek0 * CONTRA_DEK_FLOOR)) {}
+      }
+      var ink = stackInk();
+      var yielded = Math.max(0, ink - wordsRoom);
+      if (yielded > 0) {
+        picH = side - yielded;
+        if (rev) picTop = cb.height - picH;
+        wordsRoom += yielded;
+      }
+      var slack = wordsRoom - ink;
+      if (slack > 0.5) {
+        var author = cell.querySelector('.cover-meta--author');
+        var inner = [author && shown(author) ? author : null, dek && shown(dek) ? dek : title].filter(Boolean);
+        inner.forEach(function (el) {
+          var mb = parseFloat(el.style.marginBottom) || parseFloat(getComputedStyle(el).marginBottom) || 0;
+          el.style.marginBottom = (mb + slack / inner.length).toFixed(2) + 'px';
+        });
+      }
       cell.style.setProperty('--pic-top', Math.max(0, picTop).toFixed(2) + 'px');
       cell.style.setProperty('--pic-h', Math.max(0, picH).toFixed(2) + 'px');
       // OPEN: the plate as tall as its whole preview, clamped to leave
@@ -3908,8 +3980,12 @@
       // column's content moves 24 toward the cover while the title is
       // under the pointer (style.css) and stands 24 from every edge.
       var dx = 0, dy = 0;
-      if (p.right <= t.left + 1) dx = -24;
-      else if (p.left >= t.right - 1) dx = 24;
+      // (Not the postscript: its picture and column share the card in
+      // halves with no gap between them now, so the column is the block
+      // and steps nowhere — its 48s are its own padding.)
+      var isPs = host.classList.contains('latest-cell--ps');
+      if (p.right <= t.left + 1) dx = isPs ? 0 : -24;
+      else if (p.left >= t.right - 1) dx = isPs ? 0 : 24;
       else if (p.bottom <= t.top + 1) dy = -24;
       else if (p.top >= t.bottom - 1) dy = 24;
       host.style.setProperty('--hl-dx', dx + 'px');
@@ -3967,65 +4043,33 @@
     });
   }
 
+  // THE PLATE'S TEXT IS PINNED, NOT CENTRED. The kicker's cap sits 24
+  // under the plate's top and READ ON's baseline 24 above its foot
+  // (both are the plate's paddings, style.css); the cut fills the
+  // rows between, and whatever sub-row the cut could not fill is dealt
+  // to the air OVER READ ON — the closing line stands off the body by
+  // that much more — so the foot pin holds to the pixel. (This used to
+  // centre the text block in the box, which floated both lines.)
   function centreBodyText() {
-    function centre(box, textEl, padTop, padBottom) {
-      if (!box || !textEl) return;
-      // The stack's head — the title line where one prints — carries
-      // the shift; the title is ink like the rows.
-      var head = box.querySelector('.plate-title') || textEl;
-      textEl.style.marginTop = '';
-      head.style.marginTop = '';
-      var bb = box.getBoundingClientRect();
-      if (!bb.height) return;
-      var lines = [].filter.call(
-        box.querySelectorAll('.plate-title, .latest-plate-p, .card-preview, .plate-more'),
-        function (p) { return p.style.display !== 'none' && p.getClientRects().length; });
-      if (!lines.length) return;
-      var last = -Infinity, first = Infinity;
-      lines.forEach(function (p) {
-        var rg = document.createRange();
-        rg.selectNodeContents(p);
-        [].forEach.call(rg.getClientRects(), function (r) {
-          if (!r.height) return;
-          if (r.bottom > last) last = r.bottom;
-          if (r.top < first) first = r.top;
-        });
+    [].forEach.call(document.querySelectorAll(
+      '.latest-cell--ps .latest-plate, .latest-cell--contra .latest-plate, .duo-half--mega .card-preview-block'),
+      function (box) {
+        var head = box.querySelector('.plate-title');
+        var more = box.querySelector('.plate-more');
+        if (head) head.style.marginTop = '';
+        if (!more) return;
+        more.style.marginTop = '';
+        var bb = box.getBoundingClientRect();
+        if (!bb.height) return;
+        var padB = parseFloat(getComputedStyle(box).paddingBottom) || 0;
+        var floor = bb.bottom - padB;
+        var mr = more.getBoundingClientRect();
+        var rem = floor - mr.bottom;
+        if (rem > 0.5) {
+          var mt = parseFloat(getComputedStyle(more).marginTop) || 0;
+          more.style.marginTop = (mt + rem).toFixed(2) + 'px';
+        }
       });
-      if (last === -Infinity || first === Infinity) return;
-      // CENTRED IN THE BOX, the way the hover pictures are centred in
-      // their columns: equal air from the plate's top edge to the
-      // body's first line and from its last line to the plate's foot.
-      // Splitting the leftover only balanced the two PADDINGS, which
-      // differ by the head's cap offset (43.67 against 48) and so left
-      // the ends 5 apart. This measures the ink block itself and puts
-      // it on the box's own middle.
-      var textH = last - first;
-      var want = (bb.height - textH) / 2;          // the air each end should carry
-      var shift = want - (first - bb.top);         // where it sits now
-      if (Math.abs(shift) > 0.5) {
-        head.style.marginTop = ((parseFloat(head.style.marginTop) || 0) + shift).toFixed(2) + 'px';
-      }
-    }
-    // THE REVIEWS' BAND OPENS AT ITS PAD, not on its middle: 48 of air
-    // over the first line is asked of it outright (see .latest-plate in
-    // style.css), and centring would spend that pad on both ends
-    // instead. All it needs is the leading pass's own seat cleared —
-    // that pass measures to a floor the band no longer has and left one
-    // plate 3.18 ABOVE its box, where the box clips and the first line
-    // lost its ascenders.
-    [].forEach.call(document.querySelectorAll('.latest-cell--contra .plate-curtain > .latest-plate-p:first-child'), function (p) {
-      p.style.marginTop = '0px';
-    });
-    [].forEach.call(document.querySelectorAll('.latest-cell--ps .latest-plate'), function (pl) {
-      var cs = getComputedStyle(pl);
-      centre(pl, pl.querySelector('.plate-curtain > .latest-plate-p'),
-             parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0);
-    });
-    [].forEach.call(document.querySelectorAll('.duo-half--mega .card-preview-block'), function (bl) {
-      var cs = getComputedStyle(bl);
-      centre(bl, bl.querySelector('.card-preview-cols'),
-             parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0);
-    });
   }
 
   // ---------- THE PICTURE'S REACH, AND THE SEAT IT CLEARS ----------
@@ -4245,21 +4289,48 @@
         }
       }
       if (!t) return;
-      var outer = Math.max(0, (span - total) / 2);
-      var cap = pb.top + outer;
+      // THE COURIER PINS 24 INSIDE THE PICTURE'S HEIGHT — the author's
+      // cap ink 24 under the card's top, OPEN PREVIEW's baseline 24
+      // above its foot — and the title and dek centre in the band the
+      // two leave between them (each 24 clear of its courier). The
+      // stack used to centre as a whole, which put the courier anywhere
+      // from 17 to 176 off the edge depending on the title's length.
       // ADDED TO THE SEAT ALREADY HELD, not written over it: the ink is
-      // read where it prints, offset included, so the correction is the
-      // difference — a seat written fresh would drop the offset it was
-      // measured through. (The review's title did exactly that for a
-      // pass while it was missing from resetMatterInk's list: 1.2px
-      // short of its seat, every refit.)
-      // THE COURIER LEADS: author and date over the title, 24 to its
-      // cap; the dek 24 under the title.
+      // read where it prints, offset included, so each correction is a
+      // difference.
+      var PIN = 24;
+      var bandTop = pb.top + PIN, bandBot = pb.bottom - PIN;
       if (m) {
         j.meta.style.position = 'relative';
-        j.meta.style.top = ((parseFloat(j.meta.style.top) || 0) + (cap - m.top)).toFixed(2) + 'px';
-        cap += m.ink + TITLE_DEK_GAP;
+        j.meta.style.top = ((parseFloat(j.meta.style.top) || 0) + (bandTop - m.top)).toFixed(2) + 'px';
+        bandTop += m.ink + TITLE_DEK_GAP;
       }
+      if (dt) bandBot -= dt.ink + TITLE_DEK_GAP;
+      // The middle — title and dek — shrunk to the band if it overruns.
+      var mid = function () {
+        t = inkSpan(j.title);
+        d = (j.dek && getComputedStyle(j.dek).display !== 'none') ? inkSpan(j.dek) : null;
+        return t ? t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) : null;
+      };
+      var room = bandBot - bandTop;
+      var midH = mid();
+      if (midH === null) return;
+      if (midH > room) {
+        var lns2 = j.title.querySelectorAll('.title-line');
+        var targets2 = lns2.length ? [].slice.call(lns2) : [j.title];
+        var guard2 = 12;
+        while (midH > room + 0.25 && guard2-- > 0 && t && t.ink > 0) {
+          var ratio2 = Math.max(0.6, (t.ink - (midH - room)) / t.ink);
+          targets2.forEach(function (el) {
+            var sz = parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0;
+            if (sz) el.style.fontSize = (sz * ratio2).toFixed(2) + 'px';
+          });
+          midH = mid();
+          if (midH === null) return;
+        }
+      }
+      if (!t) return;
+      var cap = bandTop + Math.max(0, (room - midH) / 2);
       j.title.style.position = 'relative';
       j.title.style.top = ((parseFloat(j.title.style.top) || 0) + (cap - t.top)).toFixed(2) + 'px';
       cap += t.ink;
@@ -4267,12 +4338,18 @@
         cap += TITLE_DEK_GAP;
         j.dek.style.position = 'relative';
         j.dek.style.top = ((parseFloat(j.dek.style.top) || 0) + (cap - d.top)).toFixed(2) + 'px';
-        cap += d.ink;
       }
+      // OPEN PREVIEW last, off a FRESH read: it stands in flow under the
+      // title, so the title's shrink above moved it, and an ink span
+      // carries no bottom of its own (top + ink).
+      // Pinned by its BASELINE (the brackets hang 1.7 under it), the
+      // same line the plate's READ ON is pinned by.
       if (dt) {
-        cap += TITLE_DEK_GAP;
-        j.date.style.position = 'relative';
-        j.date.style.top = ((parseFloat(j.date.style.top) || 0) + (cap - dt.top)).toFixed(2) + 'px';
+        var base = baselineOf(j.date, false);
+        if (isFinite(base)) {
+          j.date.style.position = 'relative';
+          j.date.style.top = ((parseFloat(j.date.style.top) || 0) + ((pb.bottom - PIN) - base)).toFixed(2) + 'px';
+        }
       }
     });
   }
@@ -4357,10 +4434,16 @@
   // Named on the window so a step that threw can be read from outside
   // without ?diag (which needs a hero's own rows to render at all).
   try { window.fitErrors = fitErrors; } catch (e) {}
+  // Each step's cost is kept beside its errors (window.fitTimes), so
+  // a slow pass can be read from outside without a profiler.
+  var fitTimes = [];
+  try { window.fitTimes = fitTimes; } catch (e) {}
   function step(name, fn) {
+    var t0 = performance.now();
     try { fn(); } catch (e) {
       fitErrors.push(name + ': ' + (e && e.message ? e.message : e));
     }
+    fitTimes.push([name, Math.round(performance.now() - t0)]);
   }
   // EVERY MEASURE IS TAKEN WITH THE PAGE AT REST. A card that stands
   // OPEN when a pass runs — the faces landing late, a resize, a
@@ -4403,6 +4486,7 @@
   }
   function fitAll() {
     fitErrors.length = 0;
+    fitTimes.length = 0;
     atRest(function () {
     // NOTHING ANIMATES WHILE THE FIT MEASURES. The review's picture
     // column carries a .4s height transition for the open card, and
