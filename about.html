@@ -14,8 +14,10 @@
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.png">
 <link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtnda2hb">
+<link rel="stylesheet" href="style.css?v=mtnjcr0e">
 <style>html.fonts-loading body{opacity:0}</style>
 <script>
 (function () {
@@ -37,15 +39,6 @@
 })();
 </script>
 <script>
-// Cover-image arrival: each cover fades in once its pixels are decoded
-// instead of popping into place mid-scroll. Inlined into <head>, so it
-// runs before any <img> exists — the load listener rides the capture
-// phase ('load' doesn't bubble, but it does capture), which is the only
-// way a single listener attached this early can catch every image,
-// cached ones included. It must sit on document, not window: a
-// subresource load's propagation path ends at document. The .imgfade
-// class on <html> gates the opacity:0 in style.css: no JS, no hiding,
-// covers render as before.
 (function () {
   document.documentElement.classList.add('imgfade');
   function arrived(e) {
@@ -53,12 +46,7 @@
     if (t && t.tagName === 'IMG') t.classList.add('is-loaded');
   }
   document.addEventListener('load', arrived, true);
-  // A broken image should settle on the placeholder tile, not hold the
-  // box invisible forever.
   document.addEventListener('error', arrived, true);
-  // Sweep for anything already complete — pages restored from the
-  // back/forward cache re-fire no load events (pageshow fires on every
-  // navigation, so this also backstops ordinary loads).
   addEventListener('pageshow', function () {
     for (var i = 0; i < document.images.length; i++) {
       if (document.images[i].complete) document.images[i].classList.add('is-loaded');
@@ -189,7 +177,6 @@
 <script>
 (function(){
   var PAD = 6; // canvas overbleed — glow is centered on the border line
-
   function buildPath(pts) {
     var segs = [], total = 0;
     for (var i = 0; i < pts.length - 1; i++) {
@@ -212,21 +199,14 @@
     fn.total = total;
     return fn;
   }
-
-  // Smooth wire glow: line strokes + shadowBlur, no discrete circles
-  // tail is a fraction of path length (capped to ~51px so large elements match nav bar size)
   function drawDroplet(ctx, pathFn, t, cw, ch, opacity, tail) {
     ctx.clearRect(0,0,cw,ch);
     if (opacity < 0.01) return;
     var N = 60;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-
-    // Pre-sample points
     var pts = [];
     for (var i = 0; i <= N; i++) pts.push(pathFn(t - (1-i/N)*tail));
-
-    // Outer glow halo (shadow pass)
     ctx.save();
     ctx.shadowColor = 'rgba(247,246,241,1)';
     ctx.shadowBlur = 5;
@@ -241,8 +221,6 @@
       ctx.stroke();
     }
     ctx.restore();
-
-    // Crisp inner core
     for (var i = 1; i <= N; i++) {
       var frac = i/N, a = frac*frac*opacity*0.88;
       if (a < 0.003) continue;
@@ -254,7 +232,6 @@
       ctx.stroke();
     }
   }
-
   function attach(el, makePathFn, speed, zIndex, maxTailPx) {
     var canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;top:-'+PAD+'px;left:-'+PAD+'px;pointer-events:none;z-index:'+(zIndex||4)+';';
@@ -262,10 +239,8 @@
     var ctx = canvas.getContext('2d');
     var t=0, raf=null, on=false, opacity=0, pathFn=null, cw=0, ch=0, last=null;
     var sizeChanged = true;
-
     var ro = new ResizeObserver(function() { sizeChanged = true; });
     ro.observe(el);
-
     function rebuild() {
       if (!sizeChanged) return;
       var w=el.offsetWidth, h=el.offsetHeight;
@@ -276,13 +251,11 @@
       canvas.width  = (pathFn && pathFn.canvasW) || w+2*PAD;
       canvas.height = (pathFn && pathFn.canvasH) || h+2*PAD;
     }
-
     function frame(now) {
       if (!last) last=now;
       var dt=Math.min(now-last,100); last=now;
       on ? (opacity=Math.min(1,opacity+0.004*dt)) : (opacity=Math.max(0,opacity-0.003*dt));
       rebuild();
-      // Maintain constant pixel speed regardless of path length
       var spd = (pathFn && pathFn.total) ? PIX_PER_MS / pathFn.total : speed;
       t=(t+spd*dt)%1;
       if (pathFn) {
@@ -293,17 +266,11 @@
       if (on||opacity>0.01) raf=requestAnimationFrame(frame);
       else { raf=null; ctx.clearRect(0,0,canvas.width,canvas.height); }
     }
-
     return {
-      // cw=0;ch=0 forces rebuild on next frame so the path picks up fresh BCR positions
       start: function(){ sizeChanged=true; on=true;  if(!raf){last=null; raf=requestAnimationFrame(frame);} },
       stop:  function(){ on=false; if(!raf&&opacity>0.01){last=null; raf=requestAnimationFrame(frame);} }
     };
   }
-
-  // Defers the canvas/ResizeObserver setup in attach() until the element is
-  // actually hovered, instead of paying that cost upfront for every card on
-  // the page (archive.html alone has 80+ of these, nearly all off-screen).
   function lazyAttach(el, makePathFn, speed, zIndex, maxTailPx) {
     var inst = null;
     function ensure() {
@@ -315,25 +282,14 @@
       stop: function(){ if (inst) inst.stop(); }
     };
   }
-
-  // Button: 1px CSS border. Canvas positioned from padding edge (1px inside border outer edge).
-  // Traces border center (0.5px inside outer edge on each side).
   function btnPathFn(el, w, h) {
     var rect = el.getBoundingClientRect();
     var p=PAD-0.5, q=rect.width+PAD-1.5, r=rect.height+PAD-1.5;
     return buildPath([[p,p],[q,p],[q,r],[p,r],[p,p]]);
   }
-
   var SPD = 1/4640; // nav bar reference: ~61 px/s on its ~282px perimeter
   var PIX_PER_MS = SPD * 282; // constant pixel speed shared by all elements
-
-  // Every .btn link on the page (the nav's Subscribe) gets the crawl.
-  // (The old .hero-latest-btn pills and the hover popup's Read on are
-  // gone from the site.)
   document.querySelectorAll('a.btn').forEach(function(btn) {
-    // Corner-pinned buttons (.duo-essays-btn/.duo-readon-btn) are already
-    // position:absolute — inline 'relative' would yank them out of their
-    // corners, and absolute anchors the canvas just as well.
     if (getComputedStyle(btn).position === 'static') btn.style.position = 'relative';
     btn.style.overflow = 'visible';
     var a = lazyAttach(btn, btnPathFn, SPD);
@@ -342,8 +298,6 @@
       clearTimeout(leaveTimer);
       a.start();
     });
-    // Debounce real mouseleaves briefly so a stray leave/enter pair (e.g.
-    // from a layout shift) doesn't stall the glow with no way to restart it.
     btn.addEventListener('mouseleave', function(){
       clearTimeout(leaveTimer);
       leaveTimer = setTimeout(function(){
@@ -351,20 +305,9 @@
       }, 220);
     });
   });
-
 })();
 </script>
 <script>
-// THE POUR. The masthead's foil (see THE FOIL HEADER in style.css)
-// ships with one fixed pour baked into the stylesheet — the no-JS
-// fallback. This rebuilds it per visit: holographic silver whose
-// colour passages alternate with bare metal, always in OIL-SPILL
-// colours — violet, blue, teal, green, amber, magenta — never
-// sampled from the page. Seeds, rake, rhythm and wave are drawn
-// fresh so no two loads stream the same way. The stylesheet reads
-// the plate off --foil-uri and the sheen's wavy band off
-// --foil-sheen-img; the sheen's seat stays put (the mouse and the
-// page both have no say).
 (function () {
   var rnd = function (lo, hi) { return lo + Math.random() * (hi - lo); };
   var enc = function (svg) {
@@ -372,52 +315,26 @@
       .replace(/#/g, '%23').replace(/</g, '%3C').replace(/>/g, '%3E')
       .replace(/%(?![0-9A-F]{2})/gi, '%25') + '")';
   };
-  // One crumple per visit: drawn once, reused by every pour.
   var seed1 = Math.floor(rnd(1, 1000));
   var seed2 = Math.floor(rnd(1, 1000));
-  // The light stays high and from the upper left — foil under a lamp,
-  // not a disco — but wanders enough to move the sheen.
   var az1 = Math.round(rnd(205, 255));
   var az2 = az1 + Math.round(rnd(5, 15));
   var el1 = Math.round(rnd(52, 66));
   var el2 = Math.round(rnd(50, 62));
-  // The weave runs DIAGONAL: the tint axis rakes hard across the
-  // plate (~27-42 degrees on screen), leaning either way by the
-  // toss of the pour.
   var rake = rnd(1.8, 3.2);
   var lean = Math.random() < 0.5;
   var ty1 = (lean ? rake : 0).toFixed(3);
   var ty2 = (lean ? 0 : rake).toFixed(3);
   var gy2 = rnd(0.03, 0.12).toFixed(3);
-  // A raked axis runs mostly OFF the rect — only a slice of its 0..1
-  // offsets ever crosses the visible plate; the weave is laid inside
-  // that slice, projected here once.
   var q = 1 + rake * rake;
   var VIS = lean ? { lo: (rake * rake - rake) / q, hi: 1 }
                  : { lo: 0, hi: (1 + rake) / q };
-
-  // THE OIL: the slick's own colours — violet, blue, teal, green,
-  // amber, magenta — [hex, opacity] per stripe. Fixed: the plate
-  // does not sample the page.
   var OIL_TINTS = [
     ['#8a5fd6', .7], ['#3a7bd5', .7], ['#3fc3c9', .6],
     ['#66b56a', .6], ['#e0b13e', .7], ['#c25a8a', .65]
   ];
-
-  // THE WEAVE: no lone event any more — the WHOLE plate streams
-  // with colour. The palette repeats in dense diagonal stripes
-  // across the visible slice of the raked axis, each stripe
-  // breathing between full ink and a thinner pass so the metal
-  // glints through unevenly; the displacement below waves the lot.
-  // Stripe count is drawn once per visit.
   var CYCLES = Math.round(rnd(26, 38));
-
   function pour(tints) {
-    // ALTERNATION: each cycle is a colour PASSAGE and then bare
-    // METAL — the hues fade in, cross, and fade back to silver
-    // before the next passage begins. The silver share breathes
-    // from cycle to cycle (golden-angle again) so the rhythm never
-    // reads as a ruled repeat.
     var n = tints.length;
     var span = VIS.hi - VIS.lo;
     var stops = '';
@@ -438,20 +355,11 @@
     }
     var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='300' viewBox='0 0 1400 300' preserveAspectRatio='none'>" +
       "<defs>" +
-      // Bright chrome, banded vertically like the reference: near-
-      // white bars over mid-silver, the colour columns riding on top.
       "<linearGradient id='g' x1='0' y1='0' x2='1' y2='" + gy2 + "'><stop offset='0' stop-color='#9a9792'/><stop offset='.16' stop-color='#eae7e1'/><stop offset='.34' stop-color='#aeaaa4'/><stop offset='.52' stop-color='#f6f4ee'/><stop offset='.7' stop-color='#a3a09a'/><stop offset='.86' stop-color='#e0dcd6'/><stop offset='1' stop-color='#94918c'/></linearGradient>" +
       "<linearGradient id='t' x1='0' y1='" + ty1 + "' x2='1' y2='" + ty2 + "'>" + stops + "</linearGradient>" +
-      // VERTICAL striations — variation runs across, the grain runs
-      // down — brushed holo stock, not crumpled kitchen foil.
       "<filter id='f1' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feDiffuseLighting lighting-color='#ffffff' surfaceScale='1.6' diffuseConstant='1.3'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feDiffuseLighting></filter>" +
       "<filter id='f2' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.002' numOctaves='2' seed='" + seed2 + "'/><feDiffuseLighting lighting-color='#ffffff' surfaceScale='1.5' diffuseConstant='1.25'><feDistantLight azimuth='" + az2 + "' elevation='" + el2 + "'/></feDiffuseLighting></filter>" +
-      // THE MIRROR PASS: specular glints down the same striations —
-      // the hard vertical highlights that make it read as chrome.
       "<filter id='sp' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feSpecularLighting lighting-color='#ffffff' surfaceScale='2' specularConstant='.9' specularExponent='18'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feSpecularLighting></filter>" +
-      // THE SINE: the colour events undulate — a one-octave low-frequency
-      // displacement bends each band into a slow wave, the reference
-      // foil's wavering reflection rather than a ruled stripe.
       "<filter id='wv' x='-10%' y='-10%' width='120%' height='120%'><feTurbulence type='turbulence' baseFrequency='0.0022 0.009' numOctaves='1' seed='" + seed2 + "'/><feDisplacementMap in='SourceGraphic' scale='70' xChannelSelector='R' yChannelSelector='G'/></filter>" +
       "</defs>" +
       "<rect width='1400' height='300' fill='url(#g)'/>" +
@@ -463,14 +371,7 @@
       "</svg>";
     document.documentElement.style.setProperty('--foil-uri', enc(svg));
   }
-
   pour(OIL_TINTS);
-
-  // THE WAVE: the travelling highlight is its own image — a white
-  // band bent by a displacement map drawn on the crumple's own seed,
-  // so the light that walks the plate undulates with the folds
-  // instead of sweeping through as a straight bar. The stylesheet's
-  // straight gradient stays as the no-JS fallback.
   document.documentElement.style.setProperty('--foil-sheen-img', enc(
     "<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='300' viewBox='0 0 1400 300' preserveAspectRatio='none'>" +
     "<defs>" +
@@ -488,32 +389,15 @@
     "</defs>" +
     "<rect width='1400' height='300' fill='url(#s)' filter='url(#w)'/>" +
     "</svg>"));
-
 })();
 
 </script>
 <script>
-// Page-ruling line draw (see .line-draw in style.css): the page's gray
-// rules — the full-bleed row dividers and the vertical dividers between
-// cells — draw themselves in as they enter the viewport, the archive
-// ledger's ruling brought to the homepage and the essays/postscript/
-// contra pages (horizontals sweep left-to-right, verticals drop
-// downward). The one on-load animation these pages carry. Conventions:
-// classes land pre-paint (parser-blocking at the end of body) so no-JS
-// keeps static lines, reduced-motion loads never enter the effect, a
-// poller drives reveals (timers run even in suspended/hidden rendering
-// pipelines where IntersectionObserver and scroll events go quiet, so
-// the draw can never wedge into a blank page) with a batch stagger via
-// --line-delay sorted by position so the ruling always reads downward,
-// and it retires itself when every line has drawn.
 (function(){
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
   var lines = [].slice.call(
     document.querySelectorAll(
-      // Not the about panels' quote rules: those sit inside [hidden]
-      // sections — a hidden rule would take .line-draw at 0×0, never
-      // enter the viewport, and open later stuck at scaleX(0).
       '.row-divider, .duo-half-divider, .duo-divider--h'
     )
   );
@@ -530,12 +414,6 @@
       return;
     }
     var hits = pendingLines.filter(function(l){
-      // getBoundingClientRect follows the pending scale transform — a
-      // scaleY(0) vertical divider collapses to a point at its own top
-      // edge, and the first divider on a section page tops out at exactly
-      // y:0 (its negative margin runs it to the page edge), where a
-      // transformed bottom of 0 would never pass. offsetHeight is layout
-      // height, transform-free.
       var r = l.getBoundingClientRect();
       return r.top + l.offsetHeight > 0 && r.top < window.innerHeight;
     });
@@ -549,28 +427,11 @@
     });
   }
   lineTimer = setInterval(drawLines, 400);
-  // The first pass waits for the UNDRAWN state to paint: this script runs
-  // pre-paint (parser-blocking at the end of body), so tagging .line-draw
-  // and flipping .in-view in the same tick would compute both classes in
-  // one style pass — no transition, and the load-time lines snap in fully
-  // drawn instead of sweeping. Two rAFs land the flip after the first
-  // painted frame; the poller above is the backstop where rAF is throttled
-  // (hidden tabs — whose visibilitychange replay below also covers them).
   requestAnimationFrame(function(){ requestAnimationFrame(drawLines); });
-
-  // Return visits redraw the ruling (same rules as the archive ledger):
-  // replay on a back/forward restore — the restored DOM arrives with the
-  // lines long drawn — and defer any pass that would play in a hidden
-  // tab until the reader can actually see it. The rest state carries no
-  // transition, so stripping in-view snaps lines back to undrawn
-  // instantly, ready to sweep in again; onVisible dedupes itself.
   function replayLines() {
     lines.forEach(function(l){ l.classList.remove('in-view'); });
     pendingLines = lines.slice();
     if (lineTimer == null) lineTimer = setInterval(drawLines, 400);
-    // Same deferral as the initial pass: the stripped (undrawn) state must
-    // paint before in-view returns, or the remove/re-add collapses into
-    // one style pass and the replay never animates.
     requestAnimationFrame(function(){ requestAnimationFrame(drawLines); });
   }
   function onVisible() {
@@ -592,22 +453,6 @@
 })();
 
 </script><script>
-// ---------- ABOUT SECTIONS ----------
-// The about page's head lists its sections down one centred column (see
-// .about-head in style.css): each name opens its section's text below
-// the head's full-bleed divider. ONE section at a time; clicking the
-// open section's name closes it and the page rests on the head alone.
-// The About panel ships open in the markup (and its button .is-active),
-// so a no-JS reader still gets the page's one indispensable paragraph —
-// this script only reads that state back rather than restating it.
-//
-// The open section is written to the URL as a hash (about.html#give), so
-// a reload holds its place and the link is shareable. replaceState
-// rather than assigning location.hash: assigning would stack a history
-// entry per click and turn the back button into a section-by-section
-// rewind of everything the reader browsed through. hashchange is still
-// listened for — a pasted link, or a browser walking back to a different
-// page state, must land on the named section.
 (function () {
   var head = document.querySelector('.about-head');
   if (!head) return;
@@ -619,7 +464,6 @@
   panels.forEach(function (p) {
     if (!p.hidden) active = p.getAttribute('data-key');
   });
-
   function apply() {
     btns.forEach(function (b) {
       var on = b.getAttribute('data-key') === active;
@@ -630,9 +474,6 @@
       p.hidden = p.getAttribute('data-key') !== active;
     });
   }
-  // The hash carries the open section, and nothing when the page rests
-  // closed — pathname + search kept so the URL is only ever rewritten
-  // from its fragment down.
   function writeHash() {
     if (!window.history || !window.history.replaceState) return;
     var url = location.pathname + location.search + (active ? '#' + active : '');
@@ -645,7 +486,6 @@
     apply();
     return true;
   }
-
   btns.forEach(function (b) {
     b.addEventListener('click', function () {
       var k = b.getAttribute('data-key');
@@ -654,9 +494,6 @@
       writeHash();
     });
   });
-  // On arrival: an addressed section wins over the markup's default;
-  // without one, the default is stamped into the URL so a reload from
-  // here holds the same page.
   if (!readHash()) writeHash();
   window.addEventListener('hashchange', readHash);
 })();
