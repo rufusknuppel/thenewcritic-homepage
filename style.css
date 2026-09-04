@@ -3872,9 +3872,9 @@ main.has-mega{
   --muted: #000000;
   --faint: #000000;
   --body-text: #000000;
-  --klein: #9E1712;
+  --klein: #EFC14E;
 }
-main.has-mega :is(.card-title, .latest-title) a{ --klein: #9E1712; }
+main.has-mega :is(.card-title, .latest-title) a{ --klein: #EFC14E; }
 main.has-mega :is(.cover-kicker, .cover-cat) a,
 main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a,
 main.has-mega :is(.latest-courier--cover, .cover-under),
@@ -3883,22 +3883,22 @@ main.has-mega .cover-meta,
 main.has-mega .cover-meta :is(span, a),
 main.has-mega .cover-meta a{
   color: #000000;
-  --klein: #9E1712;
+  --klein: #EFC14E;
 }
 .plate-title{ color: #000000; }
 .section-band,
-.section-band--colophon{ --klein: #9E1712; }
+.section-band--colophon{ --klein: #EFC14E; }
 .section-band--colophon .band-mark:hover{ color: #FFFFFF; }
 .banner-name:is(:hover, :focus-visible),
 .banner-name--pair a:is(:hover, :focus-visible),
 main.has-mega .banner-name:is(:hover, :focus-visible),
-main.has-mega .banner-name--pair a:is(:hover, :focus-visible){ color: #9E1712; }
+main.has-mega .banner-name--pair a:is(:hover, :focus-visible){ color: #EFC14E; }
 .site-nav--top .topbar-name{ transition: color .15s ease; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #9E1712; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #EFC14E; }
 .reprint-name,
 main.has-mega .reprint-name{ transition: color .15s ease; }
 .reprint-name:is(:hover, :focus-visible),
-main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #9E1712; }
+main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #EFC14E; }
 .section-band .band-mid > :only-child{
   font-family: var(--byline-face);
   font-style: normal;
@@ -3917,11 +3917,11 @@ main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #9E1712; }
 }
 .section-band .band-dek{ text-align: left; flex: 0 1 auto; }
 .site-nav--top .topbar-wordmark{ transition: background-color .15s ease; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #9E1712; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #EFC14E; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
 .reprint,
 main.has-mega .reprint{
-  background: #9E1712;
+  background: #EFC14E;
   transition: background-color .15s ease;
 }
 .reprint-name,
@@ -3947,7 +3947,7 @@ main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #000000; 
 .duo-half--mega .panel-col--left{
   transform: translate(var(--hl-dx, 0px), var(--hl-dy, 0px));
 }
-:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #9E1712; }
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #EFC14E; }
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col,
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
 main.has-mega .duo-half--mega .panel-col--left,
@@ -3981,28 +3981,28 @@ main.has-mega .card .duo-half--mega .duo-panel .panel-col--left{ padding-left: 4
 .movement-body:has(> .wrap:last-child){ padding-bottom: 48px; }
 main.has-mega :is(.stack-band--wb, .stack-band--pb){ background: #121417; }
 main.has-mega :is(.stack-band--bw, .stack-band--pw){ background: #F8F8FF; }
-main.has-mega :is(.stack-band--bp, .stack-band--wp){ background: #9E1712; }
+main.has-mega :is(.stack-band--bp, .stack-band--wp){ background: #EFC14E; }
 main.has-mega .stack-band .banner-name{ color: inherit; }
 main.has-mega .stack-band--wb .banner-name,
 main.has-mega .stack-band--wp .banner-name{ color: #FFFFFF; }
 main.has-mega .stack-band--bw .banner-name,
 main.has-mega .stack-band--bp .banner-name{ color: #121417; }
 main.has-mega .stack-band--pb .banner-name,
-main.has-mega .stack-band--pw .banner-name{ color: #9E1712; }
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #9E1712; }
+main.has-mega .stack-band--pw .banner-name{ color: #EFC14E; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #EFC14E; }
 main.has-mega :is(.stack-band--pb, .stack-band--bp) .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
 main.has-mega :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:hover, :focus-visible){ color: #121417; }
 .site-nav--top .topbar-wordmark{ background: #121417; }
 .site-nav--top .topbar-name,
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #9E1712; }
-.head-rule{ background: #9E1712; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #EFC14E; }
+.head-rule{ background: #EFC14E; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ background: #121417; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name,
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ transition: background-color .15s ease; }
-main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #9E1712; }
-.banner-spacer{ background: #9E1712; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #EFC14E; }
+.banner-spacer{ background: #EFC14E; }
 .reprint,
 main.has-mega .reprint{ background: #121417; }
 .reprint-name,
@@ -4010,28 +4010,28 @@ main.has-mega .reprint-name,
 .reprint:is(:hover, :focus-within) .reprint-name,
 main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #FFFFFF; }
 .reprint:is(:hover, :focus-within),
-main.has-mega .reprint:is(:hover, :focus-within){ background: #9E1712; }
-.foot-field{ background: #9E1712; }
+main.has-mega .reprint:is(:hover, :focus-within){ background: #EFC14E; }
+.foot-field{ background: #EFC14E; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #121417; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #9E1712; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #EFC14E; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #121417; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
-main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #9E1712; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #EFC14E; }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: #121417; }
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #9E1712; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #EFC14E; }
 html{ background: #121417; }
 .head-rule,
 .banner-spacer,
 .foot-field{ transition: background-color .15s ease; }
-.site-nav--top .topbar-name{ color: #9E1712; }
+.site-nav--top .topbar-name{ color: #EFC14E; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
-main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #9E1712; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #EFC14E; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
 main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #FFFFFF; }
 .reprint-name,
-main.has-mega .reprint-name{ color: #9E1712; }
+main.has-mega .reprint-name{ color: #EFC14E; }
 .reprint:is(:hover, :focus-within) .reprint-name,
 main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #FFFFFF; }
 .head-rule,
@@ -4042,17 +4042,17 @@ main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #FFFFFF; 
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ box-shadow: 0 1px 0 0 #121417; }
 .section-band .band-dek,
 .section-band .band-dek :is(a, span),
-.section-band--colophon .band-dek span{ color: #9E1712; }
+.section-band--colophon .band-dek span{ color: #EFC14E; }
 .section-band .band-dek a:is(:hover, :focus-visible){ color: #FFFFFF; }
 .head-rule,
 .banner-spacer,
 .foot-field{ box-shadow: 0 1px 0 0 #121417; }
 .site-nav--top .topbar-name{ color: #FFFFFF; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #9E1712; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #EFC14E; }
 .reprint-name,
 main.has-mega .reprint-name{ color: #FFFFFF; }
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #9E1712; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #EFC14E; }
 body{ background: #121417; }
 main{ background: var(--paper); }
 .reprint,
@@ -4092,9 +4092,9 @@ main.has-mega :is(.card-title, .latest-title) :is(a, .title-line, span){
   transition: color .15s ease;
 }
 main.has-mega .plate-more{ color: #000000; }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #9E1712; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #EFC14E; }
 .plate-more,
-main.has-mega .plate-more{ color: #9E1712; }
+main.has-mega .plate-more{ color: #EFC14E; }
 main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #000000; }
 .latest-matter > .cover-meta:first-child,
 .duo-half--mega .panel-col--left > .cover-meta{ margin-bottom: 16px; }
@@ -4118,7 +4118,7 @@ main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #000000; }
   padding: 0;
   margin: 0;
   cursor: pointer;
-  color: #9E1712;
+  color: #EFC14E;
   transition: color .15s ease;
 }
 .card-peek-open{
@@ -4157,12 +4157,12 @@ main.has-mega .plate-more{
   margin: 19.2px auto 0;
   padding: 7.5px 20px 4.5px;
   background: #121417;
-  color: #9E1712;
+  color: #EFC14E;
 }
 main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #FFFFFF; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FFFFFF; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
-main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #9E1712; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #EFC14E; }
 .card-peek > .card-peek-open{
   background: #121417;
   padding: 6.85px 20px 5.15px;
@@ -4178,13 +4178,13 @@ main.has-mega .plate-more{
   margin: 19.2px 0 0;
   padding: 0;
   background: none;
-  color: #9E1712;
+  color: #EFC14E;
 }
 main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #000000; }
 .card-peek-open,
 .card-peek > .card-peek-open{ color: #FFFFFF; }
 .card-peek-open:is(:hover, :focus-visible),
-.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #9E1712; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #EFC14E; }
 .card-peek > .card-peek-open{
   width: var(--dog, 112px);
   height: var(--dog, 112px);
@@ -4207,14 +4207,14 @@ main.has-mega .duo-half--mega.is-lit .panel-col--left :is(p.cover-meta--author, 
 }
 .plate-more,
 main.has-mega .plate-more{ color: #000000; }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #9E1712; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #EFC14E; }
 .card-peek > .card-peek-close{ color: #000000; }
-.card-peek > .card-peek-close:is(:hover, :focus-visible){ color: #9E1712; }
+.card-peek > .card-peek-close:is(:hover, :focus-visible){ color: #EFC14E; }
 .card-peek > .card-peek-close{ width: 16.8px; height: 16.8px; }
 .card-peek > .card-peek-close::before,
 .card-peek > .card-peek-close::after{ width: 19.6px; height: 1.4px; }
 .card-peek > .card-peek-open{ background: var(--paper, #F8F8FF); color: #000000; }
-.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #9E1712; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #EFC14E; }
 .fit-still, .fit-still *{ transition: none !important; animation: none !important; }
 .plate-title,
 .plate-more,
@@ -4253,7 +4253,7 @@ main.has-mega .plate-more{
 }
 .peek-left .card-peek-open,
 .peek-right .card-peek-open{ margin: 0; }
-.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #9E1712; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #EFC14E; }
 .card .duo-half--mega .duo-panel .panel-col--left{
   flex: 0 0 calc((100% - 96px) / 3 + 72px);
 }
@@ -4288,7 +4288,7 @@ main.has-mega .plate-more{
 }
 .plate-close{ cursor: pointer; }
 main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){
-  color: #9E1712;
+  color: #EFC14E;
 }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #121417; }
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(.latest-title, .latest-title a, .latest-title a *),
@@ -4307,7 +4307,7 @@ main.has-mega .duo-half--mega .panel-col--left :is(
   .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
   .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
   .peek-open:is(:hover, :focus-visible)){
-  color: #9E1712;
+  color: #EFC14E;
 }
 main.has-mega .cover-meta--author .cover-sep{ color: #FFFFFF; }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-open.is-open:not(a) > .title-halo{
@@ -4343,4 +4343,23 @@ main.has-mega .cover-meta--author .cover-sep{ color: #FFFFFF; }
 .head-rule{ height: calc(100vh - var(--band-h, 72px)); }
 .movement:has(+ .movement)::after{ height: var(--band-h, 72px); }
 .movement + .movement{ margin-top: calc(-1 * var(--band-h, 72px)); }
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #9E1712; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #EFC14E; }
+.cover-meta.is-split .cover-sep,
+.plate-more.is-split .cover-sep{ display: none; }
+.cover-meta.is-split .cover-date{ display: block; }
+.plate-more.is-split .plate-close{ display: block; }
+main.has-mega .stack-band--bw,
+main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: #EFC14E; }
+main.has-mega .stack-band--bw .banner-name{ color: #121417; }
+main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
+main.has-mega,
+main.has-mega .movement-body,
+main.has-mega .card-preview-block,
+main.has-mega .plate-curtain,
+main.has-mega .latest-plate,
+main.has-mega .card-meta.ground-credit,
+body.has-mega .site-header{ background: #EFC14E; }
+main.has-mega .card .duo-half--wide .duo-panel .card-preview-block,
+main.has-mega .card.card--mega .duo-half--mega .duo-panel .card-preview-block,
+main.has-mega .card .duo-half--mega .duo-panel .panel-col--right .ground-credit{ background: #EFC14E; }
+main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){ color: #FFFFFF; }
