@@ -130,15 +130,15 @@
   /* The ground: a flat near-black gray, a shade darker and more
      neutral than the blue-slate it briefly ran — no texture (the cloth
      tiles are retired, see --cloth below). Type prints in cream. */
-  /* THE TAN GROUND (the blood red #9E1712, the vermilion #E23D1F,
+  /* THE TAN GROUND (the blood red #F8F8FF, the vermilion #E23D1F,
      the gold #FBBF00, the deeper #ADD8E6, the pale blue #EFF3FC,
      charcoal and white all retired in their turn): every mask and
      plate grounds on this token, so the page stays coherent wherever
      the ground goes. */
-  --paper: #9E1712;
+  --paper: #F8F8FF;
   /* The CHROME's charcoal — the header, footer and their courier
      bands keep the old dark ground around the gold middle. */
-  --chrome: #9E1712; /* the chrome is the blue too now — one ground from masthead to colophon */
+  --chrome: #F8F8FF; /* the chrome is the blue too now — one ground from masthead to colophon */
   --surface: #040507;
   --surface-2: #0A0B10;
   --white: #FFFFFF;
@@ -6436,10 +6436,10 @@ main:has(.card--mega){
      experiment all stand down; the stops and the per-movement tokens
      keep their machinery, so the sections can trade colours again by
      editing four lines.) */
-  --g1: #9E1712;
-  --g2: #9E1712;
-  --g3: #9E1712;
-  --g4: #9E1712;
+  --g1: #F8F8FF;
+  --g2: #F8F8FF;
+  --g3: #F8F8FF;
+  --g4: #F8F8FF;
   --s1: 100%;
   --s2: 100%;
   --s3: 100%;
@@ -6464,10 +6464,10 @@ main:has(.card--mega){
    masks in its own colour instead of printing the first movement's
    gold over a green one. (The gradient above is only what the reader
    sees between the blocks; this is what the blocks paint with.) */
-.m--latest{ --paper: #9E1712; }
-.m--essays{ --paper: #9E1712; }
-.m--postscript{ --paper: #9E1712; }
-.m--contra{ --paper: #9E1712; }
+.m--latest{ --paper: #F8F8FF; }
+.m--essays{ --paper: #F8F8FF; }
+.m--postscript{ --paper: #F8F8FF; }
+.m--contra{ --paper: #F8F8FF; }
 main:has(.card--mega) :is(.reprint, .dek-band--foot, .page-banner){ --white: #FFFFFF; --muted: #938F86; --faint: #5A574F; }
 main:has(.card--mega) .reprint{ background: var(--chrome); }
 /* The page around the light middle is CHROME. */
@@ -8342,7 +8342,7 @@ main:has(.card--mega) :is(.latest-courier, .cover-under, .ground-kicker, .ground
 
 
 /* ---------- THE MIDDLE IN MEDITERRANEAN BLUE ----------
-   The ground token is #9E1712 now (every --paper and --g token above
+   The ground token is #F8F8FF now (every --paper and --g token above
    reads it); the chrome stays charcoal, the inks as they were. */
 
 /* ---------- ALL THE TYPE IN WHITE ----------
@@ -8570,7 +8570,7 @@ body:has(.card--mega)::after{ content: none; animation: none; }
 /* ONE GROUND AGAIN: every movement wears the blue. (The four tokens
    stand, so the sections can take their own colours back by editing
    this one line.) */
-:root{ --c-latest: #9E1712; --c-essays: #9E1712; --c-postscript: #9E1712; --c-contra: #9E1712; }
+:root{ --c-latest: #F8F8FF; --c-essays: #F8F8FF; --c-postscript: #F8F8FF; --c-contra: #F8F8FF; }
 main:has(.card--mega){ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-postscript); --g4: var(--c-contra); }
 .m--latest{ --paper: var(--c-latest); }
 .m--essays{ --paper: var(--c-essays); }
@@ -9175,8 +9175,7 @@ main:has(.card--mega) .reprint{
   text-transform: uppercase;
   color: #FFFFFF;
 }
-.section-band--colophon .band-mark,
-.section-band--colophon .band-mark:hover{ color: #FFFFFF; cursor: default; }
+.section-band--colophon .band-dek span{ color: #FFFFFF; }
 /* (The colophon stands in a movement of its own now, under the
    ARCHIVE ABOUT banner — see THE PAGE CLOSES ON A BANNER — so no
    hanging band has to be held back from it.) */
@@ -9223,7 +9222,7 @@ main:has(.card--mega) .reprint{
 
 /* ---------- THE GROUND IS BLOOD RED AGAIN ----------
    Every ground token above (--paper, --chrome, the four movement
-   colours and the gradient stops) reads #9E1712 — the blood red the
+   colours and the gradient stops) reads #F8F8FF — the blood red the
    page wore before the blue (#8A0F0A), a shade lighter; the inks
    stay white, the hovers charcoal, the bands on the same ground. */
 
@@ -9242,3 +9241,896 @@ main:has(.card--mega) .reprint{
 main:has(.card--mega) .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
 main:has(.card--mega) .banner-name--pair:is(:hover, :focus-visible){ color: #121417; }
 main:has(.card--mega) .banner-name--pair a:is(:hover, :focus-visible){ color: #FFFFFF; }
+
+/* ---------- THE PLATE OPENS ON ITS TITLE ----------
+   Every body preview — the hero's plate and the latest cells' — opens
+   on the post's own title, in the dek's voice: Garamond italic,
+   centred on the plate's measure, white on the ground, one body slot
+   of air under it before the first paragraph (build.js, plate-title;
+   the fitter spends its box before it counts rows — titleBlockOf). */
+.plate-title{
+  display: block;
+  margin: 0 0 19.2px;
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--white);
+}
+.plate-title em{ font-style: normal; }
+
+/* ---------- GHOST WHITE, BLACK INK, HOT PINK ON THE POINTER ----------
+   The ground is ghost white (#F8F8FF — every ground token above reads
+   it). Every ink that was white on the red is BLACK now: the body,
+   the deks, the couriers, the plate titles, the kickers. The titles
+   keep their charcoal. And the pointer's trade is HOT PINK
+   (#FF69B4) — on every ink on the ground, on the
+   bands' white, on the banner words, and on the two names at the
+   head and the foot. */
+main:has(.card--mega){
+  --white: #000000;
+  --muted: #000000;
+  --faint: #000000;
+  --body-text: #000000;
+  --klein: #FF69B4;
+}
+main:has(.card--mega) :is(.card-title, .latest-title) a{ --klein: #FF69B4; }
+main:has(.card--mega) :is(.cover-kicker, .cover-cat) a,
+main:has(.card--mega) :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a,
+main:has(.card--mega) :is(.latest-courier--cover, .cover-under),
+main:has(.card--mega) :is(.latest-courier--cover, .cover-under) :is(span, a),
+main:has(.card--mega) .cover-meta,
+main:has(.card--mega) .cover-meta :is(span, a),
+main:has(.card--mega) .cover-meta a{
+  color: #000000;
+  --klein: #FF69B4;
+}
+.plate-title{ color: #000000; }
+/* The bands' hovers, on their charcoal. */
+.section-band,
+.section-band--colophon{ --klein: #FF69B4; }
+.section-band--colophon .band-mark:hover{ color: #FFFFFF; }
+/* The banner words. */
+.banner-name:is(:hover, :focus-visible),
+.banner-name--pair a:is(:hover, :focus-visible),
+main:has(.card--mega) .banner-name:is(:hover, :focus-visible),
+main:has(.card--mega) .banner-name--pair a:is(:hover, :focus-visible){ color: #FF69B4; }
+/* The head and the foot: the two names trade the same way. */
+.site-nav--top .topbar-name{ transition: color .15s ease; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FF69B4; }
+.reprint-name,
+main:has(.card--mega) .reprint-name{ transition: color .15s ease; }
+.reprint-name:is(:hover, :focus-visible),
+main:has(.card--mega) .reprint-name:is(:hover, :focus-visible){ color: #FF69B4; }
+
+/* ---------- THE FIRST BAND CARRIES THE MAGAZINE'S NAME ----------
+   THE LATEST stands down: the magazine's name takes the mark's seat
+   (build.js, renderSectionBand), and the date stands alone in the
+   middle — in the courier, as it always was, with no dot before it. */
+.section-band .band-mid > :only-child{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-size: var(--courier-size);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.section-band .band-mid > :only-child::before{ content: none; }
+
+/* ---------- THE SECTION'S NAME IN THE MIDDLE COURIER ----------
+   ESSAYS, POSTSCRIPT and CONTRA stand in their bands' middle, in the
+   courier (the only-child rule above), between the magazine's name
+   and the list; the banners over them all read THE NEW CRITIC. Their
+   middles never wait on the masthead's pickup — that handover is the
+   first band's alone. */
+.movement:not(.m--latest) .section-band .band-mid{ visibility: visible; }
+/* The section's name and its line, both in the courier, the dot
+   between them (the middle's own second-child rule): ESSAYS · THE
+   GREATEST WRITING BY, FOR, AND ABOUT GEN Z, and so on. */
+.movement:not(.m--latest) .section-band .band-mid > *{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-size: var(--courier-size);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* ---------- EVERY BAND: NAME LEFT, LINE MIDDLE, LIST RIGHT ----------
+   No Placard in any band. The name on the left stands in the dek's
+   italic (a .band-deks in every other way, so the fitter centres it
+   on its ink like the list): THE YOUNG AMERICAN MAGAZINE on the
+   first, then Essays, Postscript, Contra. The middle courier carries
+   the date on the first and each section's own line below; the list
+   stands on the right. */
+.section-band .band-dek{ text-align: left; flex: 0 1 auto; }
+
+/* ---------- THE TWO NAMES TRADE THEIR GROUNDS ----------
+   The masthead: ghost white with the charcoal name at rest; under
+   the pointer the whole band goes hot pink and the name white. The
+   closing name is that hover at rest — pink band, white name — and
+   under the pointer it trades the other way: white band, black name. */
+.site-nav--top .topbar-wordmark{ transition: background-color .15s ease; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #FF69B4; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
+.reprint,
+main:has(.card--mega) .reprint{
+  background: #FF69B4;
+  transition: background-color .15s ease;
+}
+.reprint-name,
+main:has(.card--mega) .reprint-name{ color: #FFFFFF; }
+.reprint:is(:hover, :focus-within),
+main:has(.card--mega) .reprint:is(:hover, :focus-within){ background: #FFFFFF; }
+.reprint:is(:hover, :focus-within) .reprint-name,
+main:has(.card--mega) .reprint:is(:hover, :focus-within) .reprint-name{ color: #000000; }
+
+/* ---------- THE TITLE COLUMN STANDS ON A BLACK BLOCK ----------
+   Every title column stands white on a charcoal block: the block on
+   the title column's own margins, run out to the cover's edge (across
+   the gap between the words and the picture) and the card's full
+   height — or, where the picture stands above or below the words,
+   from the picture's edge to the card's. The block's seat is measured
+   by the fitter (fitTitleHalo), which also puts the block itself in
+   the card (span.title-halo — a real element, so the pointer can find
+   it in the gap beside the words), and it is drawn UNDER the words
+   and over the card's box (see the z note below). The column's content steps
+   24 toward the cover (the fitter writes the step and clears it
+   before it measures) so the words stand 24 from every edge.
+   THE POINTER: anywhere on the block — the words or the air — turns
+   it hot pink and the title black; the other inks stay white. */
+.latest-cell--ps > .title-halo,
+.latest-cell--contra > .title-halo,
+.duo-half--mega > .title-halo{
+  display: block;
+  position: absolute;
+  left: var(--hl-l, 0px);
+  top: var(--hl-t, 0px);
+  width: var(--hl-w, 0px);
+  height: var(--hl-h, 0px);
+  background: #121417;
+  /* Level 0, first in the card: under the words column (a transform
+     puts it on the same level, later in the flow) and the plate and
+     cover above, but OVER the card's own box, so the pointer finds it
+     in the gap. */
+  z-index: 0;
+  transition: background-color .15s ease;
+}
+.latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col,
+.duo-half--mega .panel-col--left{
+  transform: translate(var(--hl-dx, 0px), var(--hl-dy, 0px));
+}
+/* (.is-lit is set by card-open.js on the pointer entering the words
+   column or the block — a class, not :has(:hover), which made every
+   pointer move a document-wide style pass.) */
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #FF69B4; }
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col,
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
+main:has(.card--mega) .duo-half--mega .panel-col--left,
+main:has(.card--mega) .duo-half--mega .panel-col--left :is(*, .card-title a:is(:hover, :focus-visible)){
+  color: #FFFFFF;
+}
+/* THE HOVERED BLOCK'S STATE: pink, the title black, every other ink
+   white — whatever the pointer is on within it. No ink changes under
+   the pointer on its own. */
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(.latest-title, .latest-title a, .latest-title a *),
+main:has(.card--mega) .duo-half--mega.is-lit .panel-col--left :is(.card-title, .card-title a, .card-title a *){
+  color: #000000;
+}
+/* The hero's words column carries the page's ground of its own (24
+   wider than the title's margins each side); it stands down so the
+   block shows through on the title's own margins. */
+main:has(.card--mega) .card .duo-half--mega .duo-panel .panel-col--left{ background: transparent; }
+
+/* ---------- THE REVIEWS' LINES BALANCE ----------
+   A review's title and dek wrap at a fixed size in a narrow column,
+   and a greedy wrap left "YOU SEEM PRETTY TAME FOR A GIRL / IN
+   REVOLT". Balanced, the lines share the words. (The postscripts'
+   titles are set by the fitter, stretchFill, and keep its lines.) */
+.latest-cell--contra .latest-title,
+.latest-cell .latest-dek{ text-wrap: balance; }
+
+/* ---------- THE OPEN CARD HIDES ITS BLOCK ----------
+   When the cover opens a card the picture slides onto the words' box
+   — but the block runs 48 past that box on the cover's side and the
+   words stand 24 into that run, so a strip of block and the first
+   letters of the title showed beside the picture. Open, the block
+   and the column fade out together; the picture is the whole of the
+   card then. */
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega) > .title-halo,
+.latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col,
+.duo-half--mega .panel-col--left{ transition: background-color .15s ease, opacity .15s ease; }
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega):is(.is-open, :has(.latest-cover a:focus-visible, .duo-card-image a:focus-visible)) > .title-halo,
+:is(.latest-cell--ps, .latest-cell--contra):is(.is-open, :has(.latest-cover a:focus-visible)) .latest-col,
+.duo-half--mega:is(.is-open, :has(.duo-card-image a:focus-visible)) .panel-col--left{ opacity: 0; }
+
+/* ---------- 48 OF AIR EACH SIDE INSIDE THE BLOCK ----------
+   The words' measure narrows so that, with the 24 step toward the
+   cover, the block carries 48 on both sides: the postscript column
+   pads 24 each side (its block runs 48 past it on the cover's side),
+   the review column 48 (its block is the column's own width), and
+   the hero's words column 48 in place of its 24 (its block starts on
+   the title's old margin). The fitters read the narrower measures
+   and refit the titles inside them. */
+.latest-cell--ps .latest-col{ padding-left: 24px; padding-right: 24px; }
+.latest-cell--contra .latest-col{ padding-left: 48px; padding-right: 48px; }
+main:has(.card--mega) .card .duo-half--mega .duo-panel .panel-col--left{ padding-left: 48px; padding-right: 48px; }
+
+/* ---------- THE FOOT BAND OVERTAKES THE HEAD BAND ----------
+   The empty charcoal band that closes a section used to be met by
+   the pinned head band — the head held until the two coincided and
+   rode up over it. Now the foot band arrives OVER the head: it stands
+   outside the movement's body (build.js, closeMovement), raised above
+   the head band's own level, so as it climbs it covers the section's
+   name from the foot up and the two ride off together with the empty
+   band on top — and the banner then overtakes both. Its 48 from the
+   last row moves with it: the body's last row pays it now. */
+.movement > .section-foot{
+  position: relative;
+  z-index: 61;
+  margin: 0;
+}
+/* The 48 between the last row's rule and the foot band is the BODY'S
+   ground now, not a margin: outside the body the gap was open, and
+   the closing name, stuck under the page, showed through it. The
+   divider's own 24 stays inside the body and the pad pays the other
+   23; the rule's line makes the 48. After a hero, the 24 alone. */
+.movement-body{ padding-bottom: 23px; }
+/* After a hero the rule's 24 is the whole of the air: the body pays
+   it as its pad (so its ground reaches the band) and the divider's
+   own margin stands down, which keeps the band where it stood. */
+.movement-body:has(> .wrap:nth-last-child(2) > .card--mega){ padding-bottom: 24px; }
+.movement-body:has(> .wrap:nth-last-child(2) > .card--mega) > .row-divider:last-child{ margin-bottom: 0; }
+/* The page's last row carries no divider (build.js), so its body
+   pays the whole 48 itself. */
+.movement-body:has(> .wrap:last-child){ padding-bottom: 48px; }
+
+/* ---------- THE CLOSING STACK'S SCHEMES ----------
+   Five banners close the page (build.js, STACK), one under another,
+   each on its own pairing of the page's three inks — the ground's
+   ghost white, the bands' black, the pointer's pink: white on black,
+   black on white, pink on black, black on pink, pink on white. Under
+   the pointer each word trades to the third ink. Every one sticks at
+   the top like any banner, so each arrival covers the last. */
+/* (The grounds are stated at the banner rule's own weight, which
+   paints every banner the page's ground.) */
+main:has(.card--mega) :is(.stack-band--wb, .stack-band--pb){ background: #121417; }
+main:has(.card--mega) :is(.stack-band--bw, .stack-band--pw){ background: #F8F8FF; }
+main:has(.card--mega) :is(.stack-band--bp, .stack-band--wp){ background: #FF69B4; }
+main:has(.card--mega) .stack-band .banner-name{ color: inherit; }
+main:has(.card--mega) .stack-band--wb .banner-name,
+main:has(.card--mega) .stack-band--wp .banner-name{ color: #FFFFFF; }
+main:has(.card--mega) .stack-band--bw .banner-name,
+main:has(.card--mega) .stack-band--bp .banner-name{ color: #121417; }
+main:has(.card--mega) .stack-band--pb .banner-name,
+main:has(.card--mega) .stack-band--pw .banner-name{ color: #FF69B4; }
+main:has(.card--mega) :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #FF69B4; }
+main:has(.card--mega) :is(.stack-band--pb, .stack-band--bp) .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
+main:has(.card--mega) :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:hover, :focus-visible){ color: #121417; }
+
+/* ---------- THE HEAD: WHITE ON BLACK, THE FIELD PINK ----------
+   The wordmark stands white on the bands' black; the field under it,
+   down to the fold, is hot pink. Under the pointer the band trades
+   its black for the pink, the name staying white. */
+.site-nav--top .topbar-wordmark{ background: #121417; }
+.site-nav--top .topbar-name,
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #FF69B4; }
+.head-rule{ background: #FF69B4; }
+
+/* ---------- THE HEAD'S SCHEME, EVERYWHERE THE HEAD IS SAID AGAIN ----------
+   ESSAYS, POSTSCRIPT and CONTRA, and the closing THE NEW CRITIC, take
+   the masthead's dress: the word white on the bands' black, the
+   field beside it hot pink, and under the pointer the band trades
+   its black for the pink with the word staying white. (The closing
+   stack keeps its own five schemes.) */
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band){ background: #121417; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name,
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible){ color: #FFFFFF; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band){ transition: background-color .15s ease; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #FF69B4; }
+.banner-spacer{ background: #FF69B4; }
+.reprint,
+main:has(.card--mega) .reprint{ background: #121417; }
+.reprint-name,
+main:has(.card--mega) .reprint-name,
+.reprint:is(:hover, :focus-within) .reprint-name,
+main:has(.card--mega) .reprint:is(:hover, :focus-within) .reprint-name{ color: #FFFFFF; }
+.reprint:is(:hover, :focus-within),
+main:has(.card--mega) .reprint:is(:hover, :focus-within){ background: #FF69B4; }
+.foot-field{ background: #FF69B4; }
+
+/* ---------- THE NAMES HOLD THEIR GROUND; THE WORD GOES PINK ----------
+   The wordmark, ESSAYS, POSTSCRIPT, CONTRA and the closing name keep
+   their black under the pointer; only the word trades to pink. */
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #121417; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FF69B4; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #121417; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #FF69B4; }
+.reprint:is(:hover, :focus-within),
+main:has(.card--mega) .reprint:is(:hover, :focus-within){ background: #121417; }
+.reprint:is(:hover, :focus-within) .reprint-name,
+main:has(.card--mega) .reprint:is(:hover, :focus-within) .reprint-name{ color: #FF69B4; }
+
+/* ---------- THE EMPTY BANDS ARE RETIRED ----------
+   No empty charcoal band closes a section any more (build.js,
+   closeMovement): the body ends 48 under its last rule and the next
+   banner follows, overtaking the pinned head band as before. */
+
+/* ---------- THE CANVAS BEHIND THE PAGE IS BLACK ----------
+   The body's ground propagated to the canvas, so the fraction of a
+   pixel the page's height falls short of the viewport at the very
+   end showed as a ghost-white hairline under the closing name. The
+   canvas is the bands' black instead — the page opens and closes on
+   black, so the overscroll matches at both ends. */
+html{ background: #121417; }
+
+/* ---------- THE FIELD TRADES WITH THE WORD ----------
+   While a name is under the pointer and its word has gone pink, the
+   pink field beside it goes charcoal — the head's, each section
+   banner's, and the closing name's. */
+.head-rule,
+.banner-spacer,
+.foot-field{ transition: background-color .15s ease; }
+/* (The fields' hover trade is moot now that they are charcoal at
+   rest, and its :has(:hover) form is retired for the cost.) */
+
+/* ---------- PINK WORDS ON BLACK, CHARCOAL FIELDS ----------
+   The wordmark, ESSAYS, POSTSCRIPT, CONTRA and the closing name print
+   PINK on their black at rest; under the pointer the word trades to
+   white. The fields beside them are charcoal at rest (so the hover
+   trade above has nothing left to do). And a name band's foot lands
+   on a fractional pixel where it meets its field — the body's ghost
+   white showed as a hairline under ESSAYS — so each band paints one
+   pixel of its own black under itself. */
+.site-nav--top .topbar-name{ color: #FF69B4; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FF69B4; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #FFFFFF; }
+.reprint-name,
+main:has(.card--mega) .reprint-name{ color: #FF69B4; }
+.reprint:is(:hover, :focus-within) .reprint-name,
+main:has(.card--mega) .reprint:is(:hover, :focus-within) .reprint-name{ color: #FFFFFF; }
+.head-rule,
+.banner-spacer,
+.foot-field{ background: #121417; }
+.site-nav--top .topbar-wordmark,
+.page-banner,
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band){ box-shadow: 0 1px 0 0 #121417; }
+/* And the bands' left deks — the magazine's name, Essays, Postscript,
+   Contra, the founding date — print pink; a linked one trades to
+   white under the pointer. */
+.section-band .band-dek,
+.section-band .band-dek :is(a, span),
+.section-band--colophon .band-dek span{ color: #FF69B4; }
+.section-band .band-dek a:is(:hover, :focus-visible){ color: #FFFFFF; }
+/* The fields' feet land on fractional pixels too (the foot field on
+   the closing name, the head rule and the banner fields on their
+   bands): one pixel of their own charcoal under each closes the seam. */
+.head-rule,
+.banner-spacer,
+.foot-field{ box-shadow: 0 1px 0 0 #121417; }
+
+/* ---------- THE TWO NAMES BACK TO WHITE ----------
+   The wordmark and the closing THE NEW CRITIC print white on their
+   black again, and trade to pink under the pointer; the section
+   banners keep their pink words. */
+.site-nav--top .topbar-name{ color: #FFFFFF; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FF69B4; }
+.reprint-name,
+main:has(.card--mega) .reprint-name{ color: #FFFFFF; }
+.reprint:is(:hover, :focus-within) .reprint-name,
+main:has(.card--mega) .reprint:is(:hover, :focus-within) .reprint-name{ color: #FF69B4; }
+
+/* ---------- THE GROUND OUTSIDE MAIN IS BLACK ----------
+   The body carried the page's ghost white to its last fractional
+   pixel, and where the page's height fell short of a whole pixel at
+   the foot a hairline of it showed under the closing name. The body
+   is the bands' black now and MAIN carries the ghost white (its
+   ground paints under its own negative-z child, the closing name, so
+   the reveal is unchanged); everything outside main — the head, the
+   fields, the canvas — is black already. */
+body{ background: #121417; }
+main{ background: var(--paper); }
+.reprint,
+main:has(.card--mega) .reprint{ box-shadow: 0 1px 0 0 #121417; }
+/* (Restated at the page's own :has weight, which set these before.) */
+body:has(.card--mega){ background: #121417; }
+main:has(.card--mega){ background: var(--paper); }
+
+/* ---------- THE CLOSING NAME SCROLLS IN ----------
+   No reveal: the name stands in the flow under the foot field and
+   scrolls into view with it. */
+.reprint,
+main:has(.card--mega) .reprint{ position: relative; bottom: auto; z-index: auto; }
+
+/* ---------- THE TITLES IN GARAMOND, AS WRITTEN ----------
+   Every card title — the heroes', the postscripts', the reviews' —
+   sets in the dek's Garamond, upright, in its own case: no Placard,
+   no capitals, no tracking. The fitters measure the face they find,
+   so the sizes and seats follow. */
+main:has(.card--mega) :is(.card-title, .latest-title),
+main:has(.card--mega) :is(.card-title, .latest-title) :is(a, .title-line, span){
+  font-family: var(--excerpt);
+  font-weight: 400;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* ---------- THE MARGINS AROUND THE BLOCKS GROW BY HALF ----------
+   The page's step around its content blocks was 48; it is 72 now.
+   The sides: the wrap's padding grows 24 each side, so every card
+   stands 72 from the viewport's edges, and the bands and the names'
+   ink (fillNameBand, SIDE) move with it to stay on the cards' line.
+   Between cards in a row: 72. Between rows: every row gap passes
+   through the row divider, whichever offsets the rows around it
+   carry, so 12 above the divider and 12 more below it lift every
+   gap by 24 without disturbing the seats. The band's 48 to the first
+   row and the last row's 48 to the banner grow to 72 the same way.
+   The gaps INSIDE a card — the words to the picture — keep their 48. */
+.wrap{ padding-left: 48px; padding-right: 72px; }
+.card.card--latest{ gap: 72px; }
+.row-divider{ margin-top: 12px; margin-bottom: 36px; }
+.section-band + .wrap,
+.movement-body > .wrap:first-child{ padding-top: 72px; }
+.movement-body:has(> .wrap:nth-last-child(2) > .card--mega){ padding-bottom: 36px; }
+.movement-body:has(> .wrap:last-child){ padding-bottom: 72px; }
+.section-band,
+.section-band--colophon{ padding-left: 72px; padding-right: 72px; }
+
+/* ---------- THE PLATE OPENS ON ITS KICKER AND CLOSES ON READ MORE ----------
+   The line over the preview is the post's kicker now (build.js), in
+   the dek's voice as before; and under the last paragraph a second
+   line in the same voice, READ MORE, one body slot below, linking to
+   the post (on the postscript and review plates the whole plate is
+   the link already). */
+.plate-more{
+  display: block;
+  margin: 19.2px 0 0;
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.2;
+  text-align: center;
+  color: #000000;
+  text-decoration: none;
+  transition: color .15s ease;
+}
+main:has(.card--mega) .plate-more{ color: #000000; }
+main:has(.card--mega) a.plate-more:is(:hover, :focus-visible){ color: #FF69B4; }
+
+/* ---------- READ MORE IN PINK; THE COURIER OVER THE TITLE ----------
+   READ MORE prints pink and trades to black under the pointer. The
+   courier — author and date — stands over the title on every card
+   (build.js), 16 above its cap; the fitters read whichever of the
+   three lines stands highest and lowest for the words' edges. */
+.plate-more,
+main:has(.card--mega) .plate-more{ color: #FF69B4; }
+main:has(.card--mega) a.plate-more:is(:hover, :focus-visible){ color: #000000; }
+.latest-matter > .cover-meta:first-child,
+.duo-half--mega .panel-col--left > .cover-meta{ margin-bottom: 16px; }
+/* The review's words stack at the foot of its matter (the auto
+   margin that pushed the title down pushes the courier now, which
+   stands first), and the courier's 16 stands down: the fitters pay
+   the 24s between the three lines. */
+.latest-cell--contra:not(.latest-cell--contra-rev) .latest-matter > .cover-meta:first-child{ margin-top: auto; }
+.latest-cell--contra:not(.latest-cell--contra-rev) .latest-matter > .cover-meta:first-child + .latest-title{ margin-top: 0; }
+.latest-matter > .cover-meta:first-child,
+.duo-half--mega .panel-col--left > .cover-meta{ margin-bottom: 0; }
+.latest-cell--contra .latest-matter > .cover-meta:first-child{ margin-bottom: 0; }
+
+/* ---------- THE DATE UNDER THE DEK ----------
+   The courier splits: the author over the title, the date under the
+   dek, each its own line in the courier's voice (build.js,
+   coverMetaLine's `only`). The heroes' and postscripts' stacks are
+   seated by the matter fitter, 24 between each pair of inks; the
+   review's date takes 16 under its dek in the flow. */
+.latest-cell--contra .latest-matter > .cover-meta--date{ margin-top: 0; }
+
+/* ---------- PREVIEW AND ITS X; READ MORE ON BLACK; WHITE BANNER WORDS ----------
+   The cover opens nothing on the pointer now. A PREVIEW control
+   stands on the cover's top-right corner (card-open.js puts it in
+   the card; fitTitleHalo seats it on the cover's rest box), in the
+   dek's pink Garamond italic; it opens the card. Open, the word gives
+   way to an X a line below it — two strokes at right angles, pink,
+   black under the pointer — which closes it. READ MORE stands on a
+   black tab. And ESSAYS, POSTSCRIPT and CONTRA print white at rest,
+   pink under the pointer. */
+.card-peek{
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+.card-peek > button{
+  pointer-events: auto;
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #FF69B4;
+  transition: color .15s ease;
+}
+.card-peek-open{
+  position: absolute;
+  top: var(--peek-t, 24px);
+  font-family: var(--excerpt);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.2;
+}
+.card-peek-open:is(:hover, :focus-visible){ color: #FFFFFF; }
+/* THE X STANDS IN THE CARD'S OWN CORNER on the Preview's side, ON the
+   card's edges, not inset (the hero's card box hangs 24 past its
+   visible edge, so its offset is that 24 — the fitter writes --x-x). */
+.card-peek-close{
+  position: absolute;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  display: none;
+}
+.card-peek-close::before,
+.card-peek-close::after{
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 28px; height: 2px;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.card-peek-close::after{ transform: translate(-50%, -50%) rotate(-45deg); }
+.card-peek-close:is(:hover, :focus-visible){ color: #000000; }
+/* Open: the word stands down, the X takes its place one line below
+   (the word's own row stays empty, so the X sits where "below the
+   button" is). */
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-open .card-peek-open{ visibility: hidden; }
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-open .card-peek-close{ display: block; }
+/* READ MORE on its black tab. */
+.plate-more,
+main:has(.card--mega) .plate-more{
+  display: table;
+  margin: 19.2px auto 0;
+  /* CENTRED BY INK, not by the line box: Garamond's box hangs 8 below
+     the baseline against the 4.6 it carries over the caps, so the
+     pads trade 1.5 — the R's ascender and the baseline stand the
+     same air from the tab's edges. */
+  padding: 7.5px 20px 4.5px;
+  background: #121417;
+  color: #FF69B4;
+}
+main:has(.card--mega) a.plate-more:is(:hover, :focus-visible){ color: #FFFFFF; }
+/* The section banners' words: white at rest, pink under the pointer. */
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FFFFFF; }
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
+main:has(.card--mega) :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #FF69B4; }
+
+/* ---------- PREVIEW ON ITS BLACK TAB, ON THE COVER'S FAR CORNER ----------
+   The control stands on whichever top corner of the cover is
+   furthest from the words: top-left where the words stand to the
+   right of the picture, top-right where they stand to the left (or
+   above/below). The fitter writes the side (peek-left / peek-right)
+   and the offset. The word sits on a black tab like READ MORE. */
+.card-peek > .card-peek-open{
+  background: #121417;
+  /* Centred by ink like READ ON… (this word's own ink asks 0.65 more). */
+  padding: 6.85px 20px 5.15px;
+}
+.peek-left .card-peek-open{ right: auto; left: var(--peek-x, 24px); }
+.peek-right .card-peek-open{ left: auto; right: var(--peek-x, 24px); }
+.peek-left .card-peek-close{ right: auto; left: var(--x-x, 0px); }
+.peek-right .card-peek-close{ left: auto; right: var(--x-x, 0px); }
+/* The turned-over review's X: the card's bottom-right corner. */
+.x-bottom-right .card-peek-close{ top: auto; bottom: 0; left: auto; right: var(--x-x, 0px); }
+
+/* ---------- READ ON… OFF ITS TAB; PREVIEW'S WORD IN WHITE ----------
+   READ ON… loses the black tab and prints as a plain centred line in
+   the dek's voice, pink on the plate's own ground, trading to black
+   under the pointer. PREVIEW keeps its tab — it stands on the
+   picture and needs the ground to be read at all — but its word
+   prints white now and trades to pink. */
+.plate-more,
+main:has(.card--mega) .plate-more{
+  display: block;
+  margin: 19.2px 0 0;
+  padding: 0;
+  background: none;
+  color: #FF69B4;
+}
+main:has(.card--mega) a.plate-more:is(:hover, :focus-visible){ color: #000000; }
+.card-peek-open,
+.card-peek > .card-peek-open{ color: #FFFFFF; }
+.card-peek-open:is(:hover, :focus-visible),
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #FF69B4; }
+
+/* ---------- PREVIEW ON A CHARCOAL TRIANGLE, ON THE COVER'S CORNER ----------
+   The control is a right triangle standing on the picture's own
+   corner — its two legs ON the cover's edges, its long side cut
+   across — with the word set along that long side, centred on the
+   triangle's centroid. The fitter cuts the leg to the word's ink and
+   writes the seat (dogEar in duo-panel-fit.js); the clip carries the
+   pointer too, so only the charcoal answers it. */
+.card-peek > .card-peek-open{
+  width: var(--dog, 112px);
+  height: var(--dog, 112px);
+  padding: 0;
+  background: #121417;
+  overflow: hidden;
+}
+.peek-right .card-peek-open{ clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.peek-left .card-peek-open{ clip-path: polygon(0 0, 100% 0, 0 100%); }
+.card-peek-word{
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  transform-origin: 50% 50%;
+}
+/* The block's pink state takes the courier over the title with it:
+   the author's line prints black beside the title. */
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(p.cover-meta--author, p.cover-meta--author *),
+main:has(.card--mega) .duo-half--mega.is-lit .panel-col--left :is(p.cover-meta--author, p.cover-meta--author *){
+  color: #000000;
+}
+
+/* ---------- READ ON… AND THE X IN BLACK ----------
+   Both print black at rest and trade to pink under the pointer. */
+.plate-more,
+main:has(.card--mega) .plate-more{ color: #000000; }
+main:has(.card--mega) a.plate-more:is(:hover, :focus-visible){ color: #FF69B4; }
+.card-peek > .card-peek-close{ color: #000000; }
+.card-peek > .card-peek-close:is(:hover, :focus-visible){ color: #FF69B4; }
+
+/* ---------- THE X, 30% SMALLER ----------
+   The whole mark scaled to 0.7: the box 24 -> 16.8, the strokes
+   28 -> 19.6 long and 2 -> 1.4 thick, so it keeps its proportions
+   and stays flush in the card's corner. */
+.card-peek > .card-peek-close{ width: 16.8px; height: 16.8px; }
+.card-peek > .card-peek-close::before,
+.card-peek > .card-peek-close::after{ width: 19.6px; height: 1.4px; }
+
+/* ---------- THE PREVIEW TRIANGLE ON THE PAGE'S OWN WHITE ----------
+   The triangle is cut out of the page's ground, not laid on it in
+   charcoal: ghost white, with the word black on it and pink under
+   the pointer, like READ ON… and the X. */
+.card-peek > .card-peek-open{ background: var(--paper, #F8F8FF); color: #000000; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #FF69B4; }
+/* A card held still for a fit pass (fitAll shuts the open ones to
+   measure the page at rest): nothing in it moves. */
+.fit-still, .fit-still *{ transition: none !important; animation: none !important; }
+
+/* ---------- THE PLATE'S TWO LINES IN COURIER ----------
+   The kicker over the preview and READ ON… under it leave the dek's
+   italic Garamond for the page's courier — the byline face, 13 caps
+   on Antenne's -0.02em — so the plate opens and closes in the same
+   voice as every credit line on the page. */
+.plate-title,
+.plate-more,
+main:has(.card--mega) .plate-more{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--courier-size);
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+/* THE TRIANGLE OVERSHOOTS ITS TWO LEGS BY 1: the picture's edges land
+   on fractions of a pixel, and the clip left a hairline of the
+   artwork showing between the ground and the edge it stands on. The
+   overshoot spills onto the page's own ground, which is the same
+   white, so nothing shows for it. */
+.card-peek > .card-peek-open{
+  width: calc(var(--dog, 112px) + 1px);
+  height: calc(var(--dog, 112px) + 1px);
+  margin-top: -1px;
+}
+.peek-left .card-peek-open{ margin-left: -1px; }
+.peek-right .card-peek-open{ margin-right: -1px; }
+
+/* ---------- PREVIEW IN COURIER ----------
+   The word on the triangle joins the plate's two lines in the byline
+   face — 13 caps on -0.02em. The fitter cuts the triangle to whatever
+   ink that makes (dogEar reads the case and the tracking). */
+.card-peek-open,
+.card-peek > .card-peek-open{
+  font-family: var(--byline-face);
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--courier-size);
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* ---------- THE TRIANGLE BACK TO CHARCOAL, THE WORD WHITE ----------
+   The page's own white put the artwork's edge against the ground and
+   any fraction of a pixel between them read as a hairline; charcoal
+   covers it, and the courier prints white on it, pink under the
+   pointer. The overshoot goes with the white — the triangle stands on
+   the picture's edges exactly. */
+.card-peek > .card-peek-open{
+  width: var(--dog, 112px);
+  height: var(--dog, 112px);
+  margin: 0;
+  background: #121417;
+  color: #FFFFFF;
+}
+.peek-left .card-peek-open,
+.peek-right .card-peek-open{ margin: 0; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #FF69B4; }
+
+/* ---------- THE HERO'S COLUMN ON THE ROW'S OWN MEASURE ----------
+   The essay hero split its 1296 as 448 of words and 848 of picture,
+   which lined up with nothing: the rows under it run three equal
+   columns and a gutter — postscript picture, postscript matter,
+   contra picture — and the hero's edge fell 24 short of the line
+   between them. The column takes the CONTRA CELL'S width plus the
+   gutter beside it (400 + 72), so its inner edge lands exactly on
+   the postscript card's outer line and the hero's picture spans that
+   card's own 824. 448 -> 472. */
+.card .duo-half--mega .duo-panel .panel-col--left{
+  flex: 0 0 calc((100% - 96px) / 3 + 72px);
+}
+/* AND THE CUT LINE MOVES WITH IT. Everything on the hero that stands
+   on the old edge — the picture, the head rule that runs across to
+   it, the courier rows' right measure, the picture's own head and
+   under rows — is stated against the panel's thirds (100%/3 + 24),
+   so each one takes the same 24 the column took. The picture spans
+   the postscript card's 824; nothing else about the hero moves. */
+.card .duo-half--mega .duo-card-image{ inset: 0 24px 0 calc(100% / 3 + 48px); }
+.card--mega-rev .duo-half--mega .duo-card-image{ inset: 0 calc(100% / 3 + 48px) 0 24px; }
+.card .duo-half--mega .mega-cover-head{ inset: 0 24px 0 calc(100% / 3 + 48px); }
+.card--mega-rev .duo-half--mega .mega-cover-head{ inset: 0 calc(100% / 3 + 48px) 0 24px; }
+.duo-half--mega > .cover-under{ left: calc(100% / 3 + 48px); right: 24px; }
+.card--mega-rev .duo-half--mega > .cover-under{ left: 24px; right: calc(100% / 3 + 48px); }
+.card .duo-half--mega .duo-panel::before{ left: 24px; right: calc(200% / 3 - 48px); }
+.card--mega-rev .duo-half--mega .duo-panel::before{ left: calc(200% / 3 - 48px); right: 24px; }
+.card .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under){ right: calc(200% / 3 - 24px); }
+.card--mega-rev .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under){ right: auto; left: calc(200% / 3 - 24px); }
+
+/* ---------- THE CONTROL COMES OFF THE PICTURE AND INTO THE WORDS ----------
+   The triangle on the cover's corner and the X that took its place are
+   struck (their rules above are dead — nothing carries .card-peek any
+   more). The date has gone up to stand beside the author on the one
+   courier line over the title, and the line it left — the last line of
+   every card's matter — carries OPEN PREVIEW, underlined, in the same
+   courier voice at the same seat. The plate closes on READ ON · CLOSE
+   PREVIEW. */
+.peek-open{
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+  /* No rule under it: the word stands in its own brackets (build.js),
+     which is the page's quietest way of saying a thing is a control. */
+  text-decoration: none;
+}
+/* READ ON and CLOSE PREVIEW share the plate's closing line, the dot
+   between them the same 12 either side as the courier's own. */
+.plate-read,
+.plate-close{
+  color: inherit;
+  text-decoration: none;
+  transition: color .15s ease;
+}
+.plate-close{ cursor: pointer; }
+main:has(.card--mega) .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){
+  color: #FF69B4;
+}
+
+/* ---------- THE BLOCK STOPS TRADING; THE WORDS TRADE INSTEAD ----------
+   The pink ground under a card's words is off: the block holds its
+   charcoal whatever the pointer is doing, and every ink in it stays
+   white. What answers the pointer now is the WORD it is actually on —
+   the title, the author, the date, [OPEN PREVIEW] at the foot of the
+   words, and READ ON · [CLOSE PREVIEW] at the foot of the plate: each
+   one alone turns pink. (.is-lit is still set by card-open.js; it
+   simply carries nothing any more.) */
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #121417; }
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(.latest-title, .latest-title a, .latest-title a *),
+main:has(.card--mega) .duo-half--mega.is-lit .panel-col--left :is(.card-title, .card-title a, .card-title a *),
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(p.cover-meta--author, p.cover-meta--author *),
+main:has(.card--mega) .duo-half--mega.is-lit .panel-col--left :is(p.cover-meta--author, p.cover-meta--author *){
+  color: #FFFFFF;
+}
+/* The words' own trade. The dot between author and date holds its
+   white either way — it belongs to neither. */
+/* Every line of it carries the DESCENDANTS too (.. :hover *): the
+   blanket white in this column is stated on * itself, so it paints the
+   title's own inner spans directly — colouring their parent alone
+   leaves the words white. */
+main:has(.card--mega) .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(
+  .latest-title:hover, .latest-title:hover *, .latest-title a:is(:hover, :focus-visible),
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date:hover, .cover-date:hover *, .cover-date a:is(:hover, :focus-visible),
+  .peek-open:is(:hover, :focus-visible)),
+main:has(.card--mega) .duo-half--mega .panel-col--left :is(
+  .card-title:hover, .card-title:hover *, .card-title a:is(:hover, :focus-visible),
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date:hover, .cover-date:hover *, .cover-date a:is(:hover, :focus-visible),
+  .peek-open:is(:hover, :focus-visible)){
+  color: #FF69B4;
+}
+main:has(.card--mega) .cover-meta--author .cover-sep{ color: #FFFFFF; }
+
+/* ---------- THE BLOCK STANDS WHILE THE PICTURE CROSSES IT ----------
+   Opening a card used to take the charcoal block out with the words —
+   opacity 0 on the block and the column together — so the ground went
+   white a beat before the picture arrived over it and the card seemed
+   to blink. The WORDS still stand down; the BLOCK holds, and the
+   picture travels across it. */
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega):is(.is-open, :has(.latest-cover a:focus-visible, .duo-card-image a:focus-visible)) > .title-halo{
+  opacity: 1;
+}
+
+/* ---------- THE WORDS ARE COVERED, NOT TAKEN AWAY ----------
+   The column used to fade to nothing as the card opened, so the words
+   vanished a beat before the artwork reached them. They stand where
+   they are now and the picture comes over them (the cover column
+   outranks the text column at 7 — see THE POSTSCRIPT'S TRAVEL). And
+   the block is clipped to what the picture actually covers, so no
+   strip of charcoal is left standing beside it (--hl-cut, written by
+   fitTitleHalo). */
+:is(.latest-cell--ps, .latest-cell--contra):is(.is-open, :has(.latest-cover a:focus-visible)) .latest-col,
+.duo-half--mega:is(.is-open, :has(.duo-card-image a:focus-visible)) .panel-col--left{ opacity: 1; }
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega):is(.is-open, :has(.latest-cover a:focus-visible, .duo-card-image a:focus-visible)) > .title-halo{
+  clip-path: inset(var(--hl-cut, 0px));
+}
+
+/* ---------- ONE MEASURE BETWEEN CONTENT, ACROSS AND DOWN ----------
+   The row's own top edge IS its artwork's top (the courier stands
+   inside the picture's two lines now), so the space between one row's
+   pictures and the next's is plain white — and it was reading 60
+   against the 72 every column gap on the page keeps. The whole gap is
+   stated on the divider, centred: 36 above the rule, 35 under it, and
+   the stacked row's own top margin stands down so nothing collapses
+   into it. */
+.card.card--latest.card--stacked{ margin-top: 0; }
+.row-divider{ margin-top: 36px; margin-bottom: 35px; }
+/* And the same 72 closes a movement. The rule that used to stand
+   between the last row and the next section band is struck — the band
+   is the division there, and a hairline on its own doorstep read as a
+   stray — so every movement ends on one measure of white, whatever
+   its last card is. */
+.movement-body > .row-divider:last-child{ display: none; }
+.movement-body,
+.movement-body:has(> .wrap:nth-last-child(2) > .card--mega),
+.movement-body:has(> .wrap:last-child){ padding-bottom: 72px; }
+/* THE HERO'S BOX HANGS PAST ITS ARTWORK. A movement that ends on one
+   closes its box 80 under the lowest thing it paints and then pulls
+   the page up 57 (the mega's own margins) — 23 of overhang the white
+   below it does not have to pay again. Its close is stated 23 short so
+   the SEEN gap is the same 72 as everywhere else. */
+.movement-body:has(> .wrap:nth-last-child(2) > .card--mega){ padding-bottom: 49px; }
+/* AND THE SAME 23 IS OWED WHEREVER A HERO IS FOLLOWED BY ANOTHER CARD.
+   The hero's box closes 80 under the lowest thing it paints and pulls
+   the page up 57 after it, so the white under its artwork read 95
+   against every other 72. The rule between them takes the difference
+   out of its own head: it stands 36 under the artwork like every
+   other, and the gap comes out at 72. */
+.wrap:has(> .card--mega) + .row-divider{ margin-top: 13px; }
+/* And the mirror of it: a hero standing UNDER a row opens its box 23
+   above the first thing it paints, so the rule before it gives the
+   same 23 back out of its foot. The rule keeps its 36 of air to the
+   artwork on both sides, whichever card is which. */
+.row-divider:has(+ .wrap > .card--mega){ margin-bottom: 12px; }
+/* BETWEEN TWO HEROES THE DEBT IS PAID ONCE. Their -57s are adjacent
+   margins and collapse into one, so the pair overhangs 23 in total,
+   not 23 each way: the rule takes it out of its head only and keeps
+   its foot whole. */
+.wrap:has(> .card--mega) + .row-divider:has(+ .wrap > .card--mega){ margin-bottom: 35px; }
