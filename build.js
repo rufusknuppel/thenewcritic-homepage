@@ -1177,28 +1177,54 @@ function bandDeks(m) {
 // the wordmark is seated on this same box (fitMastheadPickup), so as the
 // band rises it takes the two lines up with it: the band simply arrives
 // where they already stand.
+function bandDate() {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
 function mastheadLine() {
   return `<a href="./">The Young American Magazine</a>
-      <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>`;
+      <span>${bandDate()}</span>`;
 }
 function renderSectionBand(m) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
+  // THE FIRST BAND IS THE MASTHEAD LINE: the magazine's name stands on
+  // the mark's seat in place of THE LATEST, the date alone in the
+  // middle (no dot — the dot belongs between two things), the links
+  // on the right as before. The other bands keep their section's
+  // name and the full line.
+  // EVERY BAND READS THE SAME WAY, no Placard: a name on the left in
+  // the dek's italic, a line in the middle courier, a list on the
+  // right. The first: the magazine's name, the date, the site's links.
+  // The others: the section's name, its own line, its list.
+  if (m === 'latest') {
+    return `<nav class="section-band" aria-label="The Young American Magazine">
+    <p class="band-deks band-dek"><a href="./">The Young American Magazine</a></p>
+    <p class="band-mid"><span>${bandDate()}</span></p>
+    <p class="band-deks">${bandDeks(m)}</p>
+  </nav>`;
+  }
+  const BAND_LINES = {
+    essays: 'The Greatest Writing By, For, and About Generation Z',
+    postscript: 'TNC Editors Interview Extraordinary Gen Zers',
+    contra: 'New Critics Take On Significant Gen Z Works',
+  };
+  const line = BAND_LINES[m] || '';
   return `<nav class="section-band" aria-label="${escapeHtml(b.word)}">
-    <a class="band-mark" href="${escapeHtml(b.href)}">${escapeHtml(b.word)}</a>
-    <p class="band-mid">${mastheadLine()}</p>
+    <p class="band-deks band-dek"><a href="${escapeHtml(b.href)}">${escapeHtml(b.word)}</a></p>
+    <p class="band-mid"><span>${escapeHtml(line)}</span></p>
     <p class="band-deks">${bandDeks(m)}</p>
   </nav>`;
 }
 // THE COLOPHON BAND: the last section's empty foot band, with the
 // colophon in it — the section band's own three slots said in the
-// footer's voice: the founding date on the mark's seat, the copyright
-// line in the middle's courier, the three links in the list's italic.
+// footer's voice: the founding date on the left in the dek's italic,
+// the copyright line in the middle's courier, the three links in the
+// list's italic.
 // It closes the page the way the header's band opens it (the reverse
 // header — see THE PAGE LIFTS OFF THE REPRINT in style.css).
 function renderColophonBand() {
   return `<nav class="section-band section-band--colophon" aria-label="Colophon">
-    <span class="band-mark">Est. May 2025</span>
-    <p class="band-mid"><span>&copy; ${new Date().getFullYear()} The New Critic</span></p>
+    <p class="band-deks band-dek"><span>Est. May 2025</span></p>
+    <p class="band-mid"><span>Copyright The New Critic Inc.</span></p>
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>`;
 }
@@ -1308,7 +1334,20 @@ function coverUnderPair(post, { authorPrefix = '', cat = '' } = {}) {
 // The section name goes with the chips — the band overhead already
 // says which movement the reader is in, and the line reads shorter
 // for losing it.
-function coverMetaLine(post, { authorPrefix = '' } = {}) {
+// `only`: 'author' or 'date' renders that half alone (the author over
+// the title, the date under the dek — two lines, each its own
+// .cover-meta, the second marked .cover-meta--date).
+// THE OPEN CONTROL TAKES THE DATE'S SEAT. The date has gone up to
+// stand beside the author on the courier line over the title (one
+// line, AUTHOR · DATE), and the line under the dek — the last line of
+// every card's words — carries the control that opens the preview,
+// underlined, in the same courier voice as the line it replaced. The
+// fitters seat it exactly as they seated the date (.cover-meta--peek).
+function peekLine() {
+  return '<p class="cover-meta cover-meta--peek">' +
+    '<button type="button" class="peek-open">[Open Preview]</button></p>';
+}
+function coverMetaLine(post, { authorPrefix = '', only = '', cls = '' } = {}) {
   const kicker = post.kicker
     ? `<span class="cover-kicker"><a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></span>`
     : '';
@@ -1318,7 +1357,8 @@ function coverMetaLine(post, { authorPrefix = '' } = {}) {
   const date = dateText
     ? `<span class="cover-date"><a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText)}</a></span>`
     : '';
-  const parts = [author, date, kicker].filter(Boolean);
+  // The kicker is retired from the line: AUTHOR · DATE alone.
+  const parts = (only === 'author' ? [author] : only === 'date' ? [date] : [author, date]).filter(Boolean);
   // THE DOT TRAVELS WITH WHAT FOLLOWS IT. Each part after the first
   // carries its own separator INSIDE its nowrap span, so when the line
   // breaks the dot opens the second line rather than dangling at the
@@ -1326,7 +1366,8 @@ function coverMetaLine(post, { authorPrefix = '' } = {}) {
   const joined = parts.map((part, i) => i
     ? part.replace(/^<span class="([^"]+)">/, '<span class="$1"><span class="cover-sep" aria-hidden="true">\u00B7</span>')
     : part);
-  return parts.length ? `<p class="cover-meta">${joined.join('')}</p>` : '';
+  const tag = cls || only;
+  return parts.length ? `<p class="cover-meta${tag ? ` cover-meta--${tag}` : ''}">${joined.join('')}</p>` : '';
 }
 
 // The CONTRA shelf's own five, in its fixed order — the contra page
@@ -1498,9 +1539,9 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? post.previewParagraphs
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
-    ? `<div class="card-preview-block"><div class="plate-curtain"><div class="card-preview-cols">${previewParas
+    ? `<div class="card-preview-block"><div class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}<div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
-        .join('')}</div></div></div>`
+        .join('')}</div><p class="plate-more"><a class="plate-read" href="${escapeHtml(post.link)}" rel="noopener">Read On</a><span class="cover-sep" aria-hidden="true">\u00B7</span><span class="plate-close" role="button" tabindex="0">[Close Preview]</span></p></div></div>`
     : '';
   // The byline as the panel's HEADER strip: a sibling ABOVE
   // .duo-panel-top rather than a member of its left column, so it runs
@@ -1722,10 +1763,11 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             <div class="panel-col panel-col--left">
               ${kickerHtml}
               ${underKickerHtml}
+              ${isMega ? coverMetaLine(post, { cls: 'author' }) : ''}
               ${titleHtml}
               ${isMega ? '' : creditHtml}
               ${splitCredit ? dekHtml : ''}
-              ${isMega ? coverMetaLine(post) : ''}
+              ${isMega ? peekLine() : ''}
               ${splitCredit && !isMega ? footHtml : ''}
             </div>
             <div class="panel-col-divider" role="separator"></div>
@@ -1926,17 +1968,23 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
     const paras = post.previewParagraphs && post.previewParagraphs.length
       ? post.previewParagraphs
       : (post.preview ? [post.preview] : []);
+    // THE KICKER OPENS THE PLATE and READ MORE closes it, both in the
+    // dek's voice, centred (see .plate-title / .plate-more in
+    // style.css; the fitter's cuts and seats account for both —
+    // titleBlockOf / moreBlockOf in duo-panel-fit.js).
     // The CURTAIN wrapper carries the ground, the padding and the
     // clip (see THE CURTAIN in style.css); the plate itself stays an
     // unclipped hit box, so the hover that holds on it never loses
     // the pointer mid-draw.
     return paras.length
-      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}</span></a>`
+      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}<span class="plate-more"><span class="plate-read">Read On</span><span class="cover-sep" aria-hidden="true">\u00B7</span><span class="plate-close" role="button" tabindex="0">[Close Preview]</span></span></span></a>`
       : '';
   };
   // `between` stands between the title and the dek — the review's two
   // courier lines (see THE REVIEW'S COURIER STANDS BETWEEN ITS WORDS
   // in style.css).
+  // THE COURIER STANDS OVER THE TITLE (the `before` slot): author and
+  // date, then the title, then the dek.
   const matter = (post, dekHtml, { before = '', after = '' } = {}) => `<div class="latest-matter">
             ${before}
             <h3 class="latest-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
@@ -1967,7 +2015,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
           <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}</a>
         </div>
         <div class="latest-col">
-          ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '', { after: coverMetaLine(psPost, { authorPrefix: 'w/ ' }) })}
+          ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '', { before: coverMetaLine(psPost, { authorPrefix: 'w/ ', cls: 'author' }), after: peekLine() })}
         </div>
         ${plate(psPost)}
       </div>` : '';
@@ -1983,7 +2031,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
           <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}</a>
         </div>
         <div class="latest-col">
-          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '', { after: coverMetaLine(contraPost) })}
+          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '', { before: coverMetaLine(contraPost, { cls: 'author' }), after: peekLine() })}
         </div>
         ${plate(contraPost)}
       </div>` : '';
@@ -2085,12 +2133,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // duo-panel-fit.js). The statement reads as ONE LINE UNDER the
   // word, centred on the page. It CLOSES the first movement:
   // everything below it is the second.
-  blocks.push(renderBanner({
-    word: 'Subscribe',
-    href: `${SITE_URL}/subscribe`,
-    modifier: 'subscribe-band',
-    line: 'New Critic paid subscribers get access to Postscript, our interview series, Contra, our criticism section, and exclusive New Critic parties for only $30 a year',
-  }));
+  // THE SECTION BANNERS NAME THE SECTIONS THEY OPEN — ESSAYS, POSTSCRIPT,
+  // CONTRA. (The modifiers keep their old names: the fitter's ground
+  // stops and rail-fix read them.)
+  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band' }));
   // THE SECOND MOVEMENT, under the band: the next essay as a
   // MIRRORED hero (cover left, ground right, labelled Essay), then
   // the next contra/postscript pair mirrored the same way.
@@ -2104,7 +2150,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   blocks.push(renderMegaHero(essays[5], { label: 'Essays', m2: true }));
   blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true }));
   // EVENTS closes the essays — the word alone, like STORE.
-  blocks.push(renderBanner({ word: 'Events', href: `${SITE_URL}/subscribe`, modifier: 'events-band' }));
+  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band' }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
   // build, then the pair MIRRORED, then the base again. All three
   // keep the base SEAT (the strip is back on the right down here), so
@@ -2117,7 +2163,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // And a third pair back in the base build — covers on the left.
   blocks.push(renderPostscriptPair(postscripts[6], postscripts[7], { stacked: true }));
   // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Store', href: `${SITE_URL}/subscribe`, modifier: 'store-band' }));
+  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band' }));
   // THE CONTRA MOVEMENT: the section's own row formation, three
   // squares across, twice — reading from the reviews the rows above
   // haven't already spent.
@@ -2160,7 +2206,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the movement's last row, flush over the banner (or 48 over the
   // reprint) that follows. The head band opens the section; this one
   // closes it.
-  const closeMovement = () => { if (open) { duoHtml += '\n  <div class="section-foot" aria-hidden="true"></div>\n  </div>\n  </div>'; open = false; } };
+  // (The empty foot bands are retired: a movement closes on its body,
+  // and the next banner overtakes the head band directly.)
+  const closeMovement = () => { if (open) { duoHtml += '\n  </div>\n  </div>'; open = false; } };
   blocks.forEach((block, i) => {
     const isBanner = /class="page-banner/.test(block);
     const last = i === blocks.length - 1;
@@ -2196,9 +2244,21 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // over it, the foot field behind it (inside the movement, raised a
   // level, so it keeps the word covered as it goes) — the header's
   // own opening, then the header in reverse: colophon, field, name.
+  // THE CLOSING STACK: five banners, one under another with no field
+  // between — ARCHIVE, ABOUT, STORE, EVENTS, SUBSCRIBE — each on its
+  // own scheme (style.css, THE CLOSING STACK'S SCHEMES). Every one
+  // sticks at the top as it arrives and the next slides up over it,
+  // a deck; the colophon then rides up over the last.
+  const STACK = [
+    { word: 'Archive', href: 'archive.html', scheme: 'wb' },
+    { word: 'About', href: 'about.html', scheme: 'bw' },
+    { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'pb' },
+    { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'bp' },
+    { word: 'Subscribe', href: `${SITE_URL}/subscribe`, scheme: 'pw' },
+  ];
   duoHtml += `
   <div class="movement m--colophon">
-  ${renderBanner({ words: [{ word: 'Archive', href: 'archive.html' }, { word: 'About', href: 'about.html' }], modifier: 'archive-band', spacer: false })}
+  ${STACK.map((b) => renderBanner({ word: b.word, href: b.href, modifier: `stack-band stack-band--${b.scheme}`, spacer: false })).join('\n  ')}
   ${renderColophonBand()}
   <!-- THE FOOT FIELD: the head rule's mirror — the charcoal between
        the colophon and the name, a viewport less the band and the

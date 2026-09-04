@@ -59,6 +59,29 @@
   // gap keeps costing exactly one slot and the whole block scales as one
   // grid. Wraps don't move — line-height is vertical only. Inline styles
   // are cleared by resetClamp on the next fit.
+  // THE PLATE'S TITLE LINE (build.js, .plate-title): the post's title
+  // in the dek's voice, standing over the first paragraph inside every
+  // plate and hero preview block. It is not a body row, so every pass
+  // that budgets rows or seats a floor takes its box — height and the
+  // gap under it — off the top first.
+  function titleBlockOf(scope) {
+    var t = scope && scope.querySelector && scope.querySelector('.plate-title');
+    if (!t || getComputedStyle(t).display === 'none') return 0;
+    var cs = getComputedStyle(t);
+    return t.getBoundingClientRect().height
+      + (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0);
+  }
+
+  // THE PLATE'S CLOSING LINE (build.js, .plate-more — READ ON…): the
+  // same box, taken off the bottom before the rows are counted.
+  function moreBlockOf(scope) {
+    var t = scope && scope.querySelector && scope.querySelector('.plate-more');
+    if (!t || getComputedStyle(t).display === 'none') return 0;
+    var cs = getComputedStyle(t);
+    return t.getBoundingClientRect().height
+      + (parseFloat(cs.marginTop) || 0) + (parseFloat(cs.marginBottom) || 0);
+  }
+
   function setSlot(block, unit) {
     [].forEach.call(block.querySelectorAll('.card-preview'), function(p, i){
       p.style.lineHeight = unit + 'px';
@@ -1806,7 +1829,7 @@
           var firstP = el.querySelector('.card-preview');
           var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
           var budget = Math.min(
-            bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el),
+            bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el) - titleBlockOf(el) - moreBlockOf(el),
             bandCap);
           // THE MEGA PLATE'S BODY CLOSES 48 ABOVE ITS BOTTOM RULE.
           // The budget used to run to the hero DEK'S BASELINE, which
@@ -1820,7 +1843,7 @@
             var mgFoot = el.getBoundingClientRect().bottom;
             var mgHead = el.getBoundingClientRect().top
               + (parseFloat(getComputedStyle(el).paddingTop) || 0);
-            var inkBudget = mgFoot - 48 - mgHead;
+            var inkBudget = mgFoot - 48 - mgHead - titleBlockOf(el) - moreBlockOf(el);
             if (inkBudget > 0) budget = inkBudget;
           }
           var maxLines = Math.floor(budget / plh);
@@ -1966,7 +1989,7 @@
                 // — the dek-ink floor ran the columns to within 32 of
                 // it on one hero and 70 on the next, which is no
                 // measure at all. The page's step, stated.
-                var mgInkAvail = el.clientHeight - (parseFloat(mgCs.paddingTop) || 0) - 48;
+                var mgInkAvail = el.clientHeight - (parseFloat(mgCs.paddingTop) || 0) - 48 - titleBlockOf(el) - moreBlockOf(el);
                 if (mgInkAvail > 0) mgAvail = mgInkAvail;
                 // Persist the deeper floor into the block's own pad:
                 // the row CUT earlier in fit() reads it, so the next
@@ -2045,8 +2068,10 @@
         var scFirstP = el.querySelector('.card-preview');
         var scLh = parseFloat(getComputedStyle(scFirstP || el).lineHeight) || 21;
         var scWide = !!panel.closest('.duo-half--wide');
+        // The title line (titleBlockOf) is spent before the slots are
+        // counted, in both branches.
         var scAvail = Math.min(
-          bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el),
+          bandTop - (bandFlush ? 0 : GAP) - dekBelowReserve - el.getBoundingClientRect().top - blockVPad(el) - titleBlockOf(el) - moreBlockOf(el),
           bandCap);
         var scSlots = Math.floor(scAvail / scLh);
         if (scSlots < 1) {
@@ -2349,6 +2374,14 @@
         : (kickRow && getComputedStyle(kickRow).display !== 'none')
         ? kickRow.getBoundingClientRect().bottom
         : panel.getBoundingClientRect().top;
+      // THE COURIER OVER THE TITLE (the mega's author and date stand
+      // first in the column now): the title's air opens under its
+      // BASELINE, as it would under a kicker row.
+      var metaOver = topBox.querySelector('.panel-col--left .cover-meta');
+      if (metaOver && getComputedStyle(metaOver).display !== 'none'
+          && (metaOver.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+        K = baselineOf(metaOver, false);
+      }
       // Without a foot row (the mega sheds likes/Share) the ground's
       // own foot edge bounds the airs instead — its CONTENT edge, not
       // its border box. The hero's column pays a padding at the foot so
@@ -2626,6 +2659,14 @@
       }
     }
     });
+    cutPlates();
+  }
+
+  // THE PLATE CUT, its own pass: fitLatestTitle runs it, and it runs
+  // AGAIN after the second slide-slot pass — fitContra restores every
+  // review plate's full text to measure its natural height, and a
+  // plate the cap trims must be cut again on the height it was given.
+  function cutPlates() {
     // The plates cut on a CLEAN LINE and END ON AN ELLIPSIS, hero-
     // fashion: whatever sub-row remainder the cover's height leaves
     // under the last full row folds into the bottom padding (so the
@@ -2691,7 +2732,9 @@
       var padB = parseFloat(pcs.paddingBottom) || 0;
       var p0 = pl.querySelector('.latest-plate-p');
       var plh = p0 ? (parseFloat(getComputedStyle(p0).lineHeight) || 19.2) : 19.2;
-      var avail = pl.clientHeight - padT - padB;
+      // The title line is spent before the rows are counted.
+      var tB = titleBlockOf(pl);
+      var avail = pl.clientHeight - padT - padB - tB - moreBlockOf(pl);
       if (avail <= plh) return;
       // FEATHERED to the floor, hero logic: the sub-row remainder
       // stretches into the leading (capped at the general slot
@@ -2715,22 +2758,25 @@
       // clipping under the cover's overflow — measure the true
       // line-box-to-ink offset at the rendered unit and climb
       // exactly that instead.
-      if (p0 && !padT) {
-        var fcs = getComputedStyle(p0);
+      // (The line seated on the edge is whatever stands first — the
+      // title where one prints, the first paragraph otherwise.)
+      var first0 = pl.querySelector('.plate-title') || p0;
+      if (first0 && !padT) {
+        var fcs = getComputedStyle(first0);
         var fctx = document.createElement('canvas').getContext('2d');
         fctx.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
-        var fm = fctx.measureText((p0.textContent || 'Mx').slice(0, 24));
+        var fm = fctx.measureText((first0.textContent || 'Mx').slice(0, 24));
         var fhalf = (unit - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2;
-        p0.style.marginTop = (-(fhalf + fm.fontBoundingBoxAscent - fm.actualBoundingBoxAscent)).toFixed(2) + 'px';
+        first0.style.marginTop = (-(fhalf + fm.fontBoundingBoxAscent - fm.actualBoundingBoxAscent)).toFixed(2) + 'px';
         // Measure the RENDERED seat and hand back any remaining
         // overshoot (fractional layout can still shave a hair).
-        var inkTop = p0.getBoundingClientRect().top + fhalf + fm.fontBoundingBoxAscent - fm.actualBoundingBoxAscent;
+        var inkTop = first0.getBoundingClientRect().top + fhalf + fm.fontBoundingBoxAscent - fm.actualBoundingBoxAscent;
         var over = pl.getBoundingClientRect().top - inkTop;
         if (over > 0) {
-          p0.style.marginTop = (parseFloat(p0.style.marginTop) + over).toFixed(2) + 'px';
+          first0.style.marginTop = (parseFloat(first0.style.marginTop) + over).toFixed(2) + 'px';
         }
       }
-      var floorLine = pl.getBoundingClientRect().top + padT + rows * unit + 2;
+      var floorLine = pl.getBoundingClientRect().top + padT + tB + rows * unit + 2;
       var cutDone = false;
       [].forEach.call(pl.querySelectorAll('.latest-plate-p'), function(p){
         if (cutDone) { p.style.display = 'none'; return; }
@@ -3084,10 +3130,10 @@
     name.style.marginTop = '';
     name.style.letterSpacing = '';
     wm.style.height = '';
-    // THE INK KEEPS THE PAGE'S OWN 48 at each side — the measure every
-    // row and every band on the page opens and closes on — rather than
-    // bleeding off the edges.
-    var SIDE = 48;
+    // THE INK KEEPS THE PAGE'S OWN 72 at each side — the measure every
+    // row and every band on the page opens and closes on (48, grown by
+    // half) — rather than bleeding off the edges.
+    var SIDE = 72;
     var vw = document.documentElement.clientWidth - SIDE * 2;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
     if (!s0 || !vw) return;
@@ -3428,19 +3474,25 @@
       var title = cell.querySelector('.latest-title');
       var dek = cell.querySelector('.latest-dek');
       var meta = cell.querySelector('.cover-meta');
+      var date = cell.querySelector('.cover-meta--peek');
       var plate = cell.querySelector('.latest-plate');
       if (!col || !pic || !title) return;
       var rev = cell.classList.contains('latest-cell--contra-rev');
       ['--slide', '--sq-rest', '--sq-open'].forEach(function (v) { cell.style.removeProperty(v); });
       var shown = function (el) { return el && getComputedStyle(el).display !== 'none'; };
-      var last = shown(meta) ? meta : shown(dek) ? dek : title;
+      // The words' HEAD and FOOT are whichever of the author, the title,
+      // the dek and the date stand highest and lowest, read off their
+      // boxes.
+      var stack = [meta, title, dek, date].filter(shown);
+      var head = stack.reduce(function (a, b) { return b.getBoundingClientRect().top < a.getBoundingClientRect().top ? b : a; });
+      var last = stack.reduce(function (a, b) { return b.getBoundingClientRect().bottom > a.getBoundingClientRect().bottom ? b : a; });
       // THE WORDS' OUTER EDGE ON THE ROW'S LINE — baseline on the
       // foot, or cap on the head turned over: the column's margin
       // hangs the box's own air past the cell by exactly what the box
       // carries outside the ink.
       col.style.marginTop = '';
       col.style.marginBottom = '';
-      var capIn = (baselineOf(title, true) - capAscent(title)) - title.getBoundingClientRect().top;
+      var capIn = (baselineOf(head, true) - capAscent(head)) - head.getBoundingClientRect().top;
       var rideOut = last.getBoundingClientRect().bottom - baselineOf(last, false);
       if (!isFinite(capIn) || !isFinite(rideOut)) return;
       if (rev) col.style.marginTop = (-capIn).toFixed(2) + 'px';
@@ -3449,7 +3501,7 @@
       if (!cb.height) return;
       // THE PICTURE AT REST: the row's edge on one side, 48 off the
       // words' ink on the other.
-      var capTop = baselineOf(title, true) - capAscent(title);
+      var capTop = baselineOf(head, true) - capAscent(head);
       var baseBot = baselineOf(last, false);
       var picTop = rev ? (baseBot + CONTRA_PIC_GAP - cb.top) : 0;
       var picH = rev ? (cb.height - picTop) : (capTop - CONTRA_PIC_GAP - cb.top);
@@ -3468,7 +3520,8 @@
       var ps = plate.querySelectorAll('.latest-plate-p');
       var lastP = ps.length ? ps[ps.length - 1] : null;
       var pb = plate.getBoundingClientRect();
-      var natural = lastP ? (lastP.getBoundingClientRect().bottom - pb.top + padB) : pb.height;
+      var lastEl = plate.querySelector('.plate-more') || lastP;
+      var natural = lastEl ? (lastEl.getBoundingClientRect().bottom - pb.top + padB) : pb.height;
       var plateH = Math.max(0, Math.min(natural, cb.height * (1 - OPEN_PIC_MIN_SHARE)));
       cell.style.setProperty('--plate-h', plateH.toFixed(2) + 'px');
       cell.style.setProperty('--pic-h-open', (cb.height - plateH).toFixed(2) + 'px');
@@ -3491,8 +3544,28 @@
     [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
       var title = cell.querySelector('.latest-title');
       var dek = cell.querySelector('.latest-dek');
-      var meta = cell.querySelector('.cover-meta');
+      // The courier is TWO lines now: the author over the title, the
+      // date under the dek (build.js). The date closes the column.
+      var meta = cell.querySelector('.cover-meta--peek');
+      var author = cell.querySelector('.cover-meta--author');
       if (!title) return;
+      // THE AUTHOR OPENS THE COLUMN, 24 over the title's cap — read
+      // off the rendered ink like the pairs below and paid out of the
+      // author's own bottom margin.
+      if (author && getComputedStyle(author).display !== 'none') {
+        author.style.marginBottom = '';
+        var rgA = document.createRange(); rgA.selectNodeContents(author);
+        var la = [].filter.call(rgA.getClientRects(), function (r) { return r.height; });
+        var rgT0 = document.createRange(); rgT0.selectNodeContents(title);
+        var lt0 = [].filter.call(rgT0.getClientRects(), function (r) { return r.height; });
+        if (la.length && lt0.length) {
+          var authorBase = la[la.length - 1].bottom - inkOffsets(author).ride;
+          var titleCap = lt0[0].top + inkOffsets(title).cap;
+          var mbA = parseFloat(getComputedStyle(author).marginBottom) || 0;
+          author.style.marginBottom =
+            Math.max(0, mbA + (CONTRA_MATTER_GAP - (titleCap - authorBase))).toFixed(2) + 'px';
+        }
+      }
       if (!dek || getComputedStyle(dek).display === 'none') {
         title.style.marginBottom = '';
         return;
@@ -3792,14 +3865,120 @@
   // Applied as a margin on the text's own container, never as padding,
   // because the padding is what the cut measures against — moving it
   // would change the row count on the next pass and oscillate.
+  // THE TITLE'S HALO: the block that goes hot pink when a title is
+  // under the pointer (style.css, THE TITLE HOVERS ON A PINK BLOCK) —
+  // the title column's own margins for its sides, run out to the
+  // cover's edge on whichever side the cover stands, and the card's
+  // full height (or the cover's edge, where the cover stands above or
+  // below the words). Measured here and written as insets on the card
+  // for the stylesheet's pseudo-element to draw.
+  // (THE PREVIEW CONTROL'S TRIANGLE IS STRUCK — with the X that took
+  // its corner. Nothing stands on the picture now: OPEN PREVIEW holds
+  // the last line of the words, CLOSE PREVIEW the plate's foot beside
+  // READ ON, both printed by the builder and seated by the same passes
+  // that seat every other line.)
+  function fitTitleHalo() {
+    function seat(host, title, cover, words) {
+      ['--hl-l', '--hl-t', '--hl-w', '--hl-h', '--hl-dx', '--hl-dy'].forEach(function (v) { host.style.removeProperty(v); });
+      // The block is a real element (not a pseudo), so the pointer can
+      // find it in the gap beside the words; made once, seated by the
+      // vars below.
+      if (!host.querySelector(':scope > .title-halo')) {
+        var halo = document.createElement('span');
+        halo.className = 'title-halo';
+        halo.setAttribute('aria-hidden', 'true');
+        host.insertBefore(halo, host.firstChild);
+      }
+      if (!title || !cover) return;
+      var h = host.getBoundingClientRect(), t = title.getBoundingClientRect(), p = cover.getBoundingClientRect();
+      if (!h.width || !t.width || !p.width) return;
+      // The block's sides are the CARD'S — the hero's card box hangs
+      // 24 past the page's margin each side, so it is read inset 24 —
+      // not the title's, whose measure is padded inside the block.
+      var inset = host.classList.contains('duo-half--mega') ? 24 : 0;
+      var l = h.left + inset, r = h.right - inset, top = h.top, bot = h.bottom;
+      if (p.right <= t.left + 1) l = p.right;            // the cover on the left
+      else if (p.left >= t.right - 1) r = p.left;        // on the right
+      else if (p.bottom <= t.top + 1) top = p.bottom;    // above the words
+      else if (p.top >= t.bottom - 1) bot = p.top;       // below them
+      l = Math.max(l, h.left); r = Math.min(r, h.right);
+      if (r <= l || bot <= top) return;
+      // THE WORDS STEP 24 INTO THE BLOCK: the block runs a 48 gap past
+      // the column on the cover's side and none on the others, so the
+      // column's content moves 24 toward the cover while the title is
+      // under the pointer (style.css) and stands 24 from every edge.
+      var dx = 0, dy = 0;
+      if (p.right <= t.left + 1) dx = -24;
+      else if (p.left >= t.right - 1) dx = 24;
+      else if (p.bottom <= t.top + 1) dy = -24;
+      else if (p.top >= t.bottom - 1) dy = 24;
+      host.style.setProperty('--hl-dx', dx + 'px');
+      host.style.setProperty('--hl-dy', dy + 'px');
+      // THE BLOCK IS CLIPPED TO WHAT ITS PICTURE COMES TO COVER. Open,
+      // every card sends its artwork across the block — but not one of
+      // them covers it whole: the postscript's block is the GAP PLUS
+      // the column while its picture is only the column's width, and
+      // the turned-over review's picture stops 42 short of its block's
+      // foot. What was left over stood as a strip of bare charcoal
+      // beside the artwork. The block gives that strip up (the air it
+      // becomes is the same air the open card keeps between artwork
+      // and words everywhere else), and the four insets are read off
+      // the landing box measured below — not predicted from the
+      // travel, which is a transform on one card and a pair of margins
+      // on another.
+      var land = host.__land;
+      if (land && land.width) {
+        host.style.setProperty('--hl-cut',
+          Math.max(0, land.top - top).toFixed(2) + 'px ' +
+          Math.max(0, r - land.right).toFixed(2) + 'px ' +
+          Math.max(0, bot - land.bottom).toFixed(2) + 'px ' +
+          Math.max(0, land.left - l).toFixed(2) + 'px');
+      }
+      host.style.setProperty('--hl-l', (l - h.left).toFixed(2) + 'px');
+      host.style.setProperty('--hl-t', (top - h.top).toFixed(2) + 'px');
+      host.style.setProperty('--hl-w', (r - l).toFixed(2) + 'px');
+      host.style.setProperty('--hl-h', (bot - top).toFixed(2) + 'px');
+    }
+    // WHERE EVERY PICTURE LANDS, MEASURED. The cards are opened all at
+    // once behind a .fit-still — no transition runs, and nothing is
+    // painted between the two layouts, so the reader sees none of it —
+    // their pictures' boxes are read, and they are shut again. Opening
+    // a card changes no card's height, so the page does not move under
+    // the reading.
+    var all = [].slice.call(document.querySelectorAll(
+      '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
+    var wasOpen = all.map(function (el) { return el.classList.contains('is-open'); });
+    all.forEach(function (el) { el.classList.add('fit-still'); el.classList.add('is-open'); });
+    all.forEach(function (el) {
+      var pic = el.querySelector('.latest-cover, .duo-card-image');
+      el.__land = pic ? pic.getBoundingClientRect() : null;
+    });
+    all.forEach(function (el, i) { if (!wasOpen[i]) el.classList.remove('is-open'); });
+    void document.body.offsetHeight;
+    all.forEach(function (el) { el.classList.remove('fit-still'); });
+
+    [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra'), function (cell) {
+      seat(cell, cell.querySelector('.latest-title'), cell.querySelector('.latest-cover-col'),
+           [cell.querySelector('.latest-title'), cell.querySelector('.latest-dek'), cell.querySelector('.cover-meta')]);
+    });
+    [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (half) {
+      seat(half, half.querySelector('.card-title'), half.querySelector('.duo-card-image'),
+           [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
+    });
+  }
+
   function centreBodyText() {
     function centre(box, textEl, padTop, padBottom) {
       if (!box || !textEl) return;
+      // The stack's head — the title line where one prints — carries
+      // the shift; the title is ink like the rows.
+      var head = box.querySelector('.plate-title') || textEl;
       textEl.style.marginTop = '';
+      head.style.marginTop = '';
       var bb = box.getBoundingClientRect();
       if (!bb.height) return;
       var lines = [].filter.call(
-        box.querySelectorAll('.latest-plate-p, .card-preview'),
+        box.querySelectorAll('.plate-title, .latest-plate-p, .card-preview, .plate-more'),
         function (p) { return p.style.display !== 'none' && p.getClientRects().length; });
       if (!lines.length) return;
       var last = -Infinity, first = Infinity;
@@ -3824,7 +4003,7 @@
       var want = (bb.height - textH) / 2;          // the air each end should carry
       var shift = want - (first - bb.top);         // where it sits now
       if (Math.abs(shift) > 0.5) {
-        textEl.style.marginTop = ((parseFloat(textEl.style.marginTop) || 0) + shift).toFixed(2) + 'px';
+        head.style.marginTop = ((parseFloat(head.style.marginTop) || 0) + shift).toFixed(2) + 'px';
       }
     }
     // THE REVIEWS' BAND OPENS AT ITS PAD, not on its middle: 48 of air
@@ -3879,9 +4058,12 @@
     if (m3) return parseFloat(m3[1].split(',')[axis === 'y' ? 13 : 12]) || 0;
     return 0;
   }
-  // The gutter the open card keeps between the artwork and the words —
-  // the page's own 48, the step every column gap on it is stated in.
-  var SLIDE_GUTTER = 48;
+  // The gutter the open card keeps between the artwork and the words.
+  // It was the page's old 48; the margins between content went up by
+  // half (the row's own gap is 72 now — .card--latest), so the open
+  // postscript's and essay's body column keeps that same 72 to the
+  // picture it has just come out from under.
+  var SLIDE_GUTTER = 72;
   function fitSlideSlots() {
     function seat(host, mover, pic, contentL, contentR, plate) {
       if (!mover || !pic || !plate) return;
@@ -4010,12 +4192,14 @@
     var jobs = [];
     if (which !== 'flow') [].forEach.call(document.querySelectorAll('.latest-cell--ps'), function (cell) {
       jobs.push({ meta: cell.querySelector('.cover-meta'),
+                  date: cell.querySelector('.cover-meta--peek'),
                   pic: cell.querySelector('.latest-cover'),
                   title: cell.querySelector('.latest-title'),
                   dek: cell.querySelector('.latest-dek') });
     });
     if (which !== 'flow') [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (half) {
-      jobs.push({ meta: half.querySelector('.cover-meta'),
+      jobs.push({ meta: half.querySelector('.panel-col--left .cover-meta'),
+                  date: half.querySelector('.panel-col--left .cover-meta--peek'),
                   pic: half.querySelector('.duo-card-image'),
                   title: half.querySelector('.card-title'),
                   dek: half.querySelector('.panel-col--left .card-dek') });
@@ -4028,14 +4212,15 @@
       if (!pb.height) return;
       var t = inkSpan(j.title);
       if (!t) return;
-      var d = null, m = null;
-      // The whole block, ink to ink: title, 24, dek, 24, courier.
+      var d = null, m = null, dt = null;
+      // The whole block, ink to ink: author, 24, title, 24, dek, 24, date.
       var block = function () {
         t = inkSpan(j.title);
         d = (j.dek && getComputedStyle(j.dek).display !== 'none') ? inkSpan(j.dek) : null;
-        m = (j.meta && getComputedStyle(j.meta).display !== 'none') ? inkSpan(j.meta) : null;
+        m = (j.meta && j.meta !== j.date && getComputedStyle(j.meta).display !== 'none') ? inkSpan(j.meta) : null;
+        dt = (j.date && getComputedStyle(j.date).display !== 'none') ? inkSpan(j.date) : null;
         if (!t) return null;
-        return t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) + (m ? TITLE_DEK_GAP + m.ink : 0);
+        return t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) + (m ? TITLE_DEK_GAP + m.ink : 0) + (dt ? TITLE_DEK_GAP + dt.ink : 0);
       };
       var span = pb.height;
       var total = block();
@@ -4068,6 +4253,13 @@
       // measured through. (The review's title did exactly that for a
       // pass while it was missing from resetMatterInk's list: 1.2px
       // short of its seat, every refit.)
+      // THE COURIER LEADS: author and date over the title, 24 to its
+      // cap; the dek 24 under the title.
+      if (m) {
+        j.meta.style.position = 'relative';
+        j.meta.style.top = ((parseFloat(j.meta.style.top) || 0) + (cap - m.top)).toFixed(2) + 'px';
+        cap += m.ink + TITLE_DEK_GAP;
+      }
       j.title.style.position = 'relative';
       j.title.style.top = ((parseFloat(j.title.style.top) || 0) + (cap - t.top)).toFixed(2) + 'px';
       cap += t.ink;
@@ -4077,10 +4269,10 @@
         j.dek.style.top = ((parseFloat(j.dek.style.top) || 0) + (cap - d.top)).toFixed(2) + 'px';
         cap += d.ink;
       }
-      if (m) {
+      if (dt) {
         cap += TITLE_DEK_GAP;
-        j.meta.style.position = 'relative';
-        j.meta.style.top = ((parseFloat(j.meta.style.top) || 0) + (cap - m.top)).toFixed(2) + 'px';
+        j.date.style.position = 'relative';
+        j.date.style.top = ((parseFloat(j.date.style.top) || 0) + (cap - dt.top)).toFixed(2) + 'px';
       }
     });
   }
@@ -4162,13 +4354,56 @@
   // step is guarded; what fails is recorded (fitErrors, printed by the
   // ?diag readout) and the pass goes on.
   var fitErrors = [];
+  // Named on the window so a step that threw can be read from outside
+  // without ?diag (which needs a hero's own rows to render at all).
+  try { window.fitErrors = fitErrors; } catch (e) {}
   function step(name, fn) {
     try { fn(); } catch (e) {
       fitErrors.push(name + ': ' + (e && e.message ? e.message : e));
     }
   }
+  // EVERY MEASURE IS TAKEN WITH THE PAGE AT REST. A card that stands
+  // OPEN when a pass runs — the faces landing late, a resize, a
+  // back/forward restore, a Preview clicked before load — has its
+  // picture where its words were and its words where the picture was,
+  // and every seat read off those travelled boxes (the preview
+  // control's corner above all) came out mid-picture and STAYED there
+  // after the card shut. So the open cards are shut for the pass and
+  // handed back at the end of it, with every transition inside them
+  // stood down (.fit-still) so the page never sees the shut or the
+  // re-open.
+  function atRest(fn) {
+    var cards = [].slice.call(document.querySelectorAll(
+      '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
+    var opened = cards.filter(function (el) { return el.classList.contains('is-open'); });
+    // Nothing in a card moves for the length of the pass, and the open
+    // ones are shut for it.
+    cards.forEach(function (el) { el.classList.add('fit-still'); });
+    opened.forEach(function (el) { el.classList.remove('is-open'); });
+    // AND EVERY TRAVEL ALREADY IN FLIGHT IS CANCELLED — the shut card's
+    // picture on its way home as much as the open one's on its way
+    // out. Standing the transitions down stops new ones starting, but
+    // one already running keeps handing back its travelled value for
+    // as long as it lives, and a tab whose clock is throttled (the
+    // reader is in another window) never lets it die: that is a
+    // picture measured mid-flight, and a seat written off it stands
+    // wrong for good. Cancelled, every box falls back at once to the
+    // rest the stylesheet states.
+    cards.forEach(function (el) {
+      if (!el.getAnimations) return;
+      try { el.getAnimations({ subtree: true }).forEach(function (a) { a.cancel(); }); } catch (e) {}
+    });
+    try {
+      fn();
+    } finally {
+      opened.forEach(function (el) { el.classList.add('is-open'); });
+      void document.body.offsetHeight;
+      cards.forEach(function (el) { el.classList.remove('fit-still'); });
+    }
+  }
   function fitAll() {
     fitErrors.length = 0;
+    atRest(function () {
     // NOTHING ANIMATES WHILE THE FIT MEASURES. The review's picture
     // column carries a .4s height transition for the open card, and
     // the row cap (fitRowHeights) sets --sq-rest on it every pass — so
@@ -4184,8 +4419,18 @@
     } finally {
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
     }
+    });
   }
   function fitAllSteps() {
+    // The columns' 24 step into their blocks (fitTitleHalo) is a
+    // transform the rest of the pass must not measure: cleared first,
+    // written last, so every seat is taken off the untransformed box
+    // and the step never compounds from pass to pass.
+    step('clearTitleStep', function () {
+      [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra, .duo-half--mega'), function (h) {
+        h.style.removeProperty('--hl-dx'); h.style.removeProperty('--hl-dy');
+      });
+    });
     step('resetMatterInk', resetMatterInk);
     step('inkCenterBands', inkCenterBands);
     step('alignBands', alignBands);
@@ -4216,7 +4461,9 @@
     // is the slack its square leaves, and the square is sized by the row
     // cap, which the cut can still move.
     step('fitSlideSlots#2', fitSlideSlots);
+    step('cutPlates#2', cutPlates);
     step('centreBodyText', centreBodyText);
+    step('fitTitleHalo', fitTitleHalo);
     // Every fit pass can move document seats (fonts, images, fitted
     // titles) — announce it so rail-fix re-measures its anchors and
     // rebuilds the held clones on the FINAL geometry, not the first
@@ -4241,6 +4488,14 @@
   // every seat read off canvas metrics was then read off the fallback.
   if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', function () { fitAll(); });
   window.addEventListener('load', fitAll);
+  // A CARD SHUTTING RE-SEATS ITS OWN CONTROL (card-open.js fires it).
+  // Any seat left stale by a layout that moved after the last pass — a
+  // picture landing late, a row turning over — is corrected the moment
+  // the reader shuts the card, which is the one point where the page
+  // is certainly back at rest. The wait is the card's own .4s travel.
+  window.addEventListener('newcritic:closed', function () {
+    setTimeout(function () { atRest(function () { step('fitTitleHalo#close', fitTitleHalo); }); }, 450);
+  });
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
