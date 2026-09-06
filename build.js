@@ -1184,51 +1184,61 @@ function mastheadLine() {
   return `<a href="./">The Young American Magazine</a>
       <span>${bandDate()}</span>`;
 }
+// EVERY BAND READS IN THREE SLOTS, and the same three everywhere:
+//   LEFT    the magazine's name in Garamond (EST. MAY 2025 on the
+//           colophon's band, the one line the footer owns).
+//   MIDDLE  one courier line — the date on the masthead's band, the
+//           section's own line on the sections', the copyright on the
+//           colophon's — centred BETWEEN THE TWO INKS (seatBandMid in
+//           duo-panel-fit.js: the Garamond on the left and the list on
+//           the right seldom measure alike, so the band's own centre
+//           is not the centre of the space between them).
+//   RIGHT   a Garamond list — the site's links on the masthead's band,
+//           ALL <what the section holds> on the sections', the socials
+//           on the colophon's.
+// (The bird that stood in the middle of every band is struck: the
+// middle prints a word now.)
+function bandName(html) {
+  return `<p class="band-deks band-name">${html}</p>`;
+}
+const TYAM_LINK = '<a href="./">The Young American Magazine</a>';
+// The section's own line, in the courier at the right.
+const BAND_LINES = {
+  essays: 'The Greatest Writing on Gen Z',
+  postscript: 'TNC Editors Interview Extraordinary Gen Zers',
+  contra: 'New Critics Take On Significant Gen Z Works',
+};
+// ALL … at the right, in the list's italic, to the section's page.
+// (SEE is struck: the line is a destination, not an instruction.)
+const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'All Criticism' };
 function renderSectionBand(m) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
-  // THE FIRST BAND IS THE MASTHEAD LINE: the magazine's name stands on
-  // the mark's seat in place of THE LATEST, the date alone in the
-  // middle (no dot — the dot belongs between two things), the links
-  // on the right as before. The other bands keep their section's
-  // name and the full line.
-  // EVERY BAND READS THE SAME WAY, no Placard: a name on the left in
-  // the dek's italic, a line in the middle courier, a list on the
-  // right. The first: the magazine's name, the date, the site's links.
-  // The others: the section's name, its own line, its list.
   if (m === 'latest') {
-    return `<nav class="section-band" aria-label="The Young American Magazine">
-    <p class="band-deks band-dek"><a href="./">The Young American Magazine</a></p>
-    <p class="band-mid"><span>${bandDate()}</span></p>
+    // The masthead's band: the site's links, the magazine's name, the
+    // date. The name no longer rides in the courier beside the date —
+    // it has the middle to itself.
+    return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
+    ${bandName(TYAM_LINK)}
+    <p class="band-deks band-dek"><span class="band-date">${bandDate()}</span></p>
     <p class="band-deks">${bandDeks(m)}</p>
   </nav>`;
   }
-  const BAND_LINES = {
-    essays: 'The Greatest Writing By, For, and About Generation Z',
-    postscript: 'TNC Editors Interview Extraordinary Gen Zers',
-    contra: 'New Critics Take On Significant Gen Z Works',
-  };
   const line = BAND_LINES[m] || '';
-  // THE NAME ON EVERY BAND'S LEFT, not the section's: the band is the
-  // magazine speaking, and its own line in the middle already says
-  // which section this is. (The section's word still stands on the
-  // banner above it, at poster size.)
-  return `<nav class="section-band" aria-label="${escapeHtml(b.word)}">
-    <p class="band-deks band-dek"><a href="./">The Young American Magazine</a></p>
-    <p class="band-mid"><span>${escapeHtml(line)}</span></p>
-    <p class="band-deks">${bandDeks(m)}</p>
+  return `<nav class="section-band section-band--${escapeHtml(String(b.word).toLowerCase().replace(/[^a-z0-9]+/g, '-'))} section-band--three" aria-label="${escapeHtml(b.word)}">
+    ${bandName(TYAM_LINK)}
+    <p class="band-deks band-dek"><a href="${escapeHtml(b.href)}">${escapeHtml(line)}</a></p>
+    <p class="band-deks"><a href="${escapeHtml(b.href)}">${escapeHtml(SEE_ALL[m] || `All ${b.word}`)}</a></p>
   </nav>`;
 }
-// THE COLOPHON BAND: the last section's empty foot band, with the
-// colophon in it — the section band's own three slots said in the
-// footer's voice: the founding date on the left in the dek's italic,
-// the copyright line in the middle's courier, the three links in the
-// list's italic.
-// It closes the page the way the header's band opens it (the reverse
-// header — see THE PAGE LIFTS OFF THE REPRINT in style.css).
+// THE COLOPHON BAND closes the page the way the header's band opens
+// it — the same three slots in the footer's voice: the founding date
+// in the list's italic at the left, where the magazine's name stands
+// above; the copyright line in the courier between; the socials in
+// that same italic at the right.
 function renderColophonBand() {
-  return `<nav class="section-band section-band--colophon" aria-label="Colophon">
-    <p class="band-deks band-dek"><span>Est. May 2025</span></p>
-    <p class="band-mid"><span>Copyright The New Critic Inc.</span></p>
+  return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
+    ${bandName('<span>Est. May 2025</span>')}
+    <p class="band-deks band-dek"><span>Copyright The New Critic Inc.</span></p>
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>`;
 }
@@ -1264,17 +1274,17 @@ function renderBanner({ word, href, words, line, modifier, spacer = true }) {
   const name = words
     ? `<span class="banner-name banner-name--pair">${words.map((w) => link(w.word, w.href)).join(' ')}</span>`
     : `<a class="banner-name" href="${escapeHtml(href)}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(word)}</a>`;
+  // AN EMPTY WHITE BANNER STANDS ABOVE THE SECTION'S WORD — the same
+  // box as the word's own banner, with nothing on it (the fitter
+  // matches its height to the banner it opens for, fitBlankBanners) —
+  // and the viewport-tall spacer that used to stand BELOW the word is
+  // gone.
   return `<section class="page-banner ${modifier}${line ? '' : ' page-banner--bare'}">
         ${name}
         ${line ? `<div class="dek-band dek-band--banner">
           <span>${escapeHtml(line)}</span>
         </div>` : ''}
-      </section>${spacer ? `
-      <!-- THE HEADER'S SPACER, said again: the same charcoal field the
-           masthead opens on, a viewport less the band, so the next
-           section's band arrives at the fold's foot exactly as THE
-           LATEST does under the name. -->
-      <div class="banner-spacer" aria-hidden="true"></div>` : ''}`;
+      </section>`;
 }
 
 // THE HOVER META: share and likes on their own line directly under
@@ -1349,7 +1359,7 @@ function coverUnderPair(post, { authorPrefix = '', cat = '' } = {}) {
 // fitters seat it exactly as they seated the date (.cover-meta--peek).
 function peekLine() {
   return '<p class="cover-meta cover-meta--peek">' +
-    '<button type="button" class="peek-open">[Open Preview]</button></p>';
+    '<button type="button" class="peek-open">Read Preview</button></p>';
 }
 function coverMetaLine(post, { authorPrefix = '', only = '', cls = '' } = {}) {
   const kicker = post.kicker
@@ -1545,7 +1555,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   const previewHtml = previewParas.length
     ? `<div class="card-preview-block"><div class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}<div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
-        .join('')}</div><p class="plate-more"><a class="plate-read" href="${escapeHtml(post.link)}" rel="noopener">Read On</a><span class="cover-sep" aria-hidden="true">\u00B7</span><span class="plate-close" role="button" tabindex="0">[Close Preview]</span></p></div></div>`
+        .join('')}</div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>`
     : '';
   // The byline as the panel's HEADER strip: a sibling ABOVE
   // .duo-panel-top rather than a member of its left column, so it runs
@@ -1938,7 +1948,10 @@ function renderPostscriptPair(a, b, { stacked = false, rev = false } = {}) {
 // page's own formation in the homepage's dress.
 function renderContraTrio(posts, { stacked = false } = {}) {
   const cells = posts.filter(Boolean)
-    .map((p, i) => renderContraCell(p, { rev: i === 1 }))
+    // The middle review used to turn over (words first, picture at the
+    // foot); every review stands the same way up now — picture at the
+    // head, as the row's other cells do.
+    .map((p) => renderContraCell(p, { rev: false }))
     .join('\n        ');
   if (!cells) return '';
   return `<section class="card card--latest card--contra-trio${stacked ? ' card--stacked' : ''}">
@@ -1981,7 +1994,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
     // unclipped hit box, so the hover that holds on it never loses
     // the pointer mid-draw.
     return paras.length
-      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}<span class="plate-more"><span class="plate-read">Read On</span><span class="cover-sep" aria-hidden="true">\u00B7</span><span class="plate-close" role="button" tabindex="0">[Close Preview]</span></span></span></a>`
+      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}<span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>`
       : '';
   };
   // `between` stands between the title and the dek — the review's two
@@ -2163,7 +2176,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // alone, each row's two columns splitting the whole measure.
   blocks.push(renderPostscriptPair(postscripts[2], postscripts[3]));
   // The middle pair reads REVERSED — cover right, text left.
-  blocks.push(renderPostscriptPair(postscripts[4], postscripts[5], { stacked: true, rev: true }));
+  // The middle pair used to mirror (picture on the other side); every
+  // pair reads the same way now.
+  blocks.push(renderPostscriptPair(postscripts[4], postscripts[5], { stacked: true }));
   // And a third pair back in the base build — covers on the left.
   blocks.push(renderPostscriptPair(postscripts[6], postscripts[7], { stacked: true }));
   // STORE closes the postscripts — the word alone, no courier line.
@@ -2228,7 +2243,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       closeMovement();
       movement += 1;
       const m = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
-      duoHtml += `\n  <div class="movement m--${m}">\n  ${block}\n  ${renderSectionBand(m)}\n  <div class="movement-body">`;
+      // THE WORD OPENS THE SECTION, THE BAND UNDER IT: the poster word
+      // first, then the courier band (the magazine's name, the
+      // section's line, its subjects), then the body.
+      // A SPACER UNDER THE WORD, before the band: a screen of the
+      // word's own ground (fitWordSpacers sizes it to the viewport less
+      // the word and the band), so the section's band arrives at the
+      // fold's foot as the word pins.
+      duoHtml += `\n  <div class="movement m--${m}">\n  ${block}\n  <div class="word-spacer" aria-hidden="true"></div>\n  ${renderSectionBand(m)}\n  <div class="movement-body">`;
       open = true;
       return;
     }
@@ -2308,6 +2330,7 @@ ${renderHeader()}
      from the name's ink to the line, 48 from the line to the hero
      courier's cap ink (the hero's own margin pays that side). -->
 <div class="head-rule" aria-hidden="true"></div>
+
 
 <!-- THE DEK BAND: a 48 white ribbon between the header and the
      middle — the section topics in the dek's own voice, evenly
@@ -2547,7 +2570,13 @@ function slimJs(js) {
 // every page, and card--mega-rev is not card--mega.
 function markMega(html) {
   if (!/class="(?:[^"]*\s)?card--mega(?:\s[^"]*)?"/.test(html)) return html;
+  // The ROOT carries the mark too: the canvas behind the page — what
+  // shows when the reader pulls past the foot — is painted from the
+  // root's own background (style.css, html.has-mega).
   return html
+    .replace(/<html(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
+      ? m.replace('class="', 'class="has-mega ')
+      : `<html${attrs || ''} class="has-mega">`)
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
@@ -3885,6 +3914,9 @@ async function main() {
   // with a space in it, and the root copy is deliberately untracked.
 
   fs.writeFileSync(path.join(OUT_DIR, 'favicon.png'), Buffer.from(FAVICON_B64, 'base64'));
+  // The bird (assets/bird.png, 640 square, white on black — read as a
+  // luminance mask by style.css: the mark at the centre of every two-slot band).
+  fs.copyFileSync(path.join(__dirname, 'assets/bird.png'), path.join(OUT_DIR, 'bird.png'));
 }
 
 if (require.main === module) {

@@ -21,9 +21,12 @@
   // charcoal triangle and the X that took its place — is struck. The
   // page asks for the preview IN THE WORDS: OPEN PREVIEW stands on the
   // last line of every card's matter, where the date used to (build.js,
-  // peekLine), and CLOSE PREVIEW closes the plate beside READ ON. Both
-  // are printed by the builder, so they hold their seats from the first
-  // paint and the fitters measure them like any other line.
+  // peekLine), and CLOSE PREVIEW stands alone at the foot of the plate
+  // (READ ON and the dot beside it are struck — the plate itself is the
+  // post's link on the cards that carry one, and the closing line says
+  // one thing now). Both are printed by the builder, so they hold their
+  // seats from the first paint and the fitters measure them like any
+  // other line.
   var cards = document.querySelectorAll(
     '.latest-cell--ps, .latest-cell--contra, .duo-half--mega');
   [].forEach.call(cards, function (card) {
@@ -31,6 +34,12 @@
     // the picture, the words, the block, the air between — a class
     // (style.css, .is-lit), because :has(:hover) for the same thing
     // cost a document-wide style pass per move.
+    // EVERY OPEN AND CLOSE IS TIMED. The fitter reads the stamp
+    // (whenStill, duo-panel-fit.js) so no pass lands on a card whose
+    // picture is still travelling — a pass mid-travel cancels the
+    // transition and re-seats the card open, and the slide becomes a
+    // pop. A plain number on window: the two scripts share nothing else.
+    var travel = function () { try { window.__ncTravel = performance.now(); } catch (err) {} };
     card.addEventListener('mouseenter', function () { card.classList.add('is-lit'); });
     card.addEventListener('mouseleave', function () { card.classList.remove('is-lit'); });
 
@@ -53,20 +62,20 @@
       if (!t || !t.closest || !t.closest(COVER)) return;
       var vis = false; try { vis = t.matches(':focus-visible'); } catch (err) {}
       if (!vis || card.classList.contains('is-open')) return;
-      card.classList.add('is-open');
+      card.classList.add('is-open'); travel();
       card.__openByFocus = true;
     });
     card.addEventListener('focusout', function (e) {
       var t = e.target;
       if (!card.__openByFocus || !t || !t.closest || !t.closest(COVER)) return;
       card.__openByFocus = false;
-      card.classList.remove('is-open');
+      card.classList.remove('is-open'); travel();
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
     card.addEventListener('click', function (e) {
       if (hit(e, '.peek-open')) {
         e.preventDefault(); e.stopPropagation();
-        card.classList.add('is-open');
+        card.classList.add('is-open'); travel();
         return;
       }
       // CLOSE PREVIEW stands INSIDE the plate, and on the postscript and
@@ -77,7 +86,7 @@
       // markup.
       if (hit(e, '.plate-close')) {
         e.preventDefault(); e.stopPropagation();
-        card.classList.remove('is-open');
+        card.classList.remove('is-open'); travel();
         // The fitter re-seats the card once it has travelled back
         // (duo-panel-fit.js) — a shut card is the page at rest.
         try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
@@ -89,7 +98,7 @@
       var shut = hit(e, '.plate-close');
       if (!shut) return;
       e.preventDefault(); e.stopPropagation();
-      card.classList.remove('is-open');
+      card.classList.remove('is-open'); travel();
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
   });
