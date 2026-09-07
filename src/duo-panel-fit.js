@@ -3076,6 +3076,42 @@
       if (!r.height) return;
       b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
       b.classList.toggle('is-at-bottom', Math.abs(r.bottom - vh) <= 0.5);
+      // THE BAND'S TOP RULE IS THE WORDMARK'S SEAM, TAKEN OVER. A band
+      // rising through the blue shows no top rule (a white line between
+      // blue and blue); once it has risen onto the wordmark's charcoal
+      // strip its top edge IS the seam the strip's own rule drew, and
+      // the band draws it from there up to the pin. Read off what is
+      // painted one pixel above the band's edge.
+      var overWm = false;
+      if (r.top > 1.5 && r.top < vh) {
+        var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
+        // The section banners (ESSAYS, POSTSCRIPT, CONTRA) are charcoal
+        // strips ruled the same way, and the band takes their seam over
+        // exactly as it takes the wordmark's.
+        overWm = !!(above && above.closest && above.closest(
+          '.topbar-wordmark, .movement > .page-banner:is(.subscribe-band, .events-band, .store-band)'));
+      }
+      b.classList.toggle('is-under-wordmark', overWm);
+    });
+    // NO RULE IS PINNED TO THE TOP OF THE SITE. The OPS banners
+    // (SUBSCRIBE, EVENTS, STORE, the closing stack) are sticky too
+    // and carry a 1px rule along their top edge; pinned on the
+    // viewport's edge that rule would stand on the screen's own
+    // line, so the banner drops it there, as the bands do.
+    [].forEach.call(document.querySelectorAll('.movement > .page-banner'), function (b) {
+      var r = b.getBoundingClientRect();
+      if (!r.height) return;
+      b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      // THE BANNER'S TOP RULE IS THE BAND'S FOOT RULE, CARRIED UP. A
+      // banner rising over the pinned band covers it from the foot up;
+      // the band's foot rule goes under first, so the banner's own top
+      // edge draws the seam from there to the pin, where it goes.
+      var overBand = false;
+      if (r.top > 1.5 && r.top < vh) {
+        var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
+        overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band'));
+      }
+      b.classList.toggle('is-under-band', overBand);
     });
   }
   function fitGroundStops() {
@@ -3499,7 +3535,14 @@
   // Where a cell has no room to give, the pair simply grows by the
   // difference and the row cap takes it off the picture. That is what
   // the cap is for, and it is why this runs BEFORE fitRowHeights.
-  var CONTRA_MATTER_GAP = 24;
+  // THE COURIER STANDS 36 OFF THE GARAMOND on the review's column —
+  // author baseline to title cap, dek baseline to date cap — as it
+  // stands off the body in every preview (PLATE_INNER_GAP).
+  var CONTRA_MATTER_GAP = 36;
+  // THE TITLE HOLDS ITS DEK CLOSER: the seam between the two is three
+  // quarters of the courier's 24 — the author over the title and the
+  // date under the dek keep the full measure.
+  var CONTRA_TITLE_DEK_GAP = 18;
   // AND THE BLOCK'S TWO OUTER EDGES ARE INK TOO. The stylesheet states
   // 48 between the picture and the words and 0 between the words and
   // the row's edge; both are box measures, and the boxes carry air —
@@ -3570,6 +3613,7 @@
       // The dek's whole text back before it is measured: a pass may
       // have cut it (see THE DEK IS CUT BEFORE IT IS SHRUNK below).
       if (dek && dek.__fullHTML) dek.innerHTML = dek.__fullHTML;
+      if (title.__fullHTML) title.innerHTML = title.__fullHTML;
       var shown = function (el) { return el && getComputedStyle(el).display !== 'none'; };
       // The words' HEAD and FOOT are whichever of the author, the title,
       // the dek and the date stand highest and lowest, read off their
@@ -3608,17 +3652,58 @@
       var stackInk = function () {
         return baselineOf(last, false) - (baselineOf(head, true) - capAscent(head));
       };
-      // In order: the title down to 24 (never smaller), then the dek
-      // down to four-fifths of itself, and what still will not fit the
-      // square gives up — a review's words are never crushed to make
-      // its picture square.
-      // THE SQUARE STAYS WHOLE; THE WORDS YIELD. The title steps down as
-      // far as 16 and the dek to 0.6 of its size before anything else
-      // gives — and nothing else does: the picture keeps its full
-      // square whatever the words measure.
+      // THE TYPE IS STANDARD AND THE WORDS ARE CUT, NOT SHRUNK. The
+      // title holds the sheet's 32 and the dek its 20 on every review;
+      // a title that runs past ONE line and a dek that runs past TWO
+      // are cut to it — words off the end until they hold, the ellipsis
+      // joined on (inline markup kept, so the work's italic survives).
+      // Only a stack that still overruns the square's room with the
+      // dek on two lines takes the dek down to one; nothing is scaled.
+      var linesOf = function (el) {
+        var rg = document.createRange(); rg.selectNodeContents(el);
+        var tops = [];
+        [].forEach.call(rg.getClientRects(), function (r) {
+          if (!r.width || !r.height) return;
+          var t = Math.round(r.top);
+          if (tops.every(function (x) { return Math.abs(x - t) > 3; })) tops.push(t);
+        });
+        return tops.length;
+      };
+      var cutTo = function (el, max) {
+        if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+        var g = 120;
+        while (g-- > 0 && linesOf(el) > max) {
+          if (!popLastWord(el)) break;
+          var tn = lastTextNode(el);
+          if (!tn) break;
+          tn.textContent = tn.textContent.replace(TRAIL_PUNCT, '') + '\u2026';
+        }
+      };
+      var hasDek = !!(dek && shown(dek));
+      cutTo(title, 1);
+      if (hasDek) cutTo(dek, 2);
+      if (hasDek && stackInk() > wordsRoom + 0.25) cutTo(dek, 1);
+      // A CELL THAT STILL OVERRUNS with the dek on one line gives back
+      // the courier's seams first — the 36 over the title and under
+      // the dek (fitContraGap) come down as far as 24 each — and only
+      // then, last of all, steps the type down as it used to: title
+      // and dek together to the title's 24, the dek alone to 0.6 of
+      // itself, the title on down to 16 and never below the dek.
+      var authorEl = cell.querySelector('.cover-meta--author');
+      var over0 = stackInk() - wordsRoom;
+      if (over0 > 0.25) {
+        var give = Math.min(12, over0 / 2);
+        [authorEl, hasDek ? dek : null].forEach(function (el) {
+          if (!el || !shown(el)) return;
+          var mb0 = parseFloat(el.style.marginBottom) || parseFloat(getComputedStyle(el).marginBottom) || 0;
+          el.style.marginBottom = Math.max(0, mb0 - give).toFixed(2) + 'px';
+        });
+      }
+      var size = function (el) { return parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0; };
       var CONTRA_TITLE_FLOOR = 16, CONTRA_DEK_FLOOR = 0.6;
+      var dek0 = hasDek ? size(dek) : 0;
       var shrink = function (el, floorPx) {
-        var sz = parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0;
+        var sz = size(el);
         if (!sz) return false;
         var over = stackInk() - wordsRoom;
         var eh = el.getBoundingClientRect().height;
@@ -3628,42 +3713,6 @@
         el.style.fontSize = next.toFixed(2) + 'px';
         return true;
       };
-      // THE TITLE AND THE DEK STEP DOWN TOGETHER, in proportion, so the
-      // two keep their sizes' relation (32 over 20) as far as the title's
-      // 24; then the dek alone gives, to 0.6 of itself; and only if the
-      // words still overrun does the title go on down to 16 — never
-      // below the dek. The title is always the larger of the two.
-      var size = function (el) { return parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0; };
-      var hasDek = !!(dek && shown(dek));
-      var dek0 = hasDek ? size(dek) : 0;
-      // THE DEK IS CUT BEFORE IT IS SHRUNK. A billing that runs to two
-      // lines used to be scaled down to three-fifths of itself to buy
-      // the room back, and read as small print under the title. It is
-      // cut to ONE LINE instead, at the size it has — words off its end
-      // until it holds one line, the … joined on (inline markup kept,
-      // so the work's italic title survives) — and only a stack that
-      // still overruns with the dek on one line steps its type down
-      // after that (title and dek together, below).
-      var dekLines = function () {
-        var rg = document.createRange(); rg.selectNodeContents(dek);
-        var tops = [];
-        [].forEach.call(rg.getClientRects(), function (r) {
-          if (!r.width || !r.height) return;
-          var t = Math.round(r.top);
-          if (tops.every(function (x) { return Math.abs(x - t) > 3; })) tops.push(t);
-        });
-        return tops.length;
-      };
-      if (hasDek && stackInk() > wordsRoom + 0.25 && dekLines() > 1) {
-        if (!dek.__fullHTML) dek.__fullHTML = dek.innerHTML;
-        var g2 = 80;
-        while (g2-- > 0 && dekLines() > 1) {
-          if (!popLastWord(dek)) break;
-          var tn = lastTextNode(dek);
-          if (!tn) break;
-          tn.textContent = tn.textContent.replace(TRAIL_PUNCT, '') + '\u2026';
-        }
-      }
       var guard = 12;
       while (stackInk() > wordsRoom + 0.25 && guard-- > 0) {
         var t0 = size(title);
@@ -3778,7 +3827,7 @@
       var now = dekCap - baseline;
       var mb = parseFloat(getComputedStyle(title).marginBottom) || 0;
       title.style.marginBottom =
-        Math.max(0, mb + (CONTRA_MATTER_GAP - now)).toFixed(2) + 'px';
+        Math.max(0, mb + (CONTRA_TITLE_DEK_GAP - now)).toFixed(2) + 'px';
       // AND THE COURIER CLOSES THE COLUMN, the same 24 under the dek
       // that the dek keeps under the title — read the same way, off
       // the rendered ink, and paid out of the dek's own bottom margin
@@ -4142,6 +4191,13 @@
     var all = [].slice.call(document.querySelectorAll(
       '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
     var wasOpen = all.map(function (el) { return el.classList.contains('is-open'); });
+    // ONLY THE STILLNESS THIS PASS ADDS IS THIS PASS'S TO TAKE AWAY.
+    // Run inside atRest (every close runs it there), the cards already
+    // stand behind a .fit-still that atRest owns and needs until it
+    // has reopened the cards it shut: stripping it here handed those
+    // cards back with their transitions live, and every other open
+    // preview slid open again each time one was closed.
+    var hadStill = all.map(function (el) { return el.classList.contains('fit-still'); });
     all.forEach(function (el) { el.classList.add('fit-still'); el.classList.add('is-open'); });
     all.forEach(function (el) {
       var pic = el.querySelector('.latest-cover, .duo-card-image');
@@ -4149,7 +4205,7 @@
     });
     all.forEach(function (el, i) { if (!wasOpen[i]) el.classList.remove('is-open'); });
     void document.body.offsetHeight;
-    all.forEach(function (el) { el.classList.remove('fit-still'); });
+    all.forEach(function (el, i) { if (!hadStill[i]) el.classList.remove('fit-still'); });
 
     [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra'), function (cell) {
       seat(cell, cell.querySelector('.latest-title'), cell.querySelector('.latest-cover-col'),
@@ -4178,6 +4234,7 @@
   // is exactly as tall as its whole rows and --plate-h / --pic-h-open
   // move by the same amount. (A plate with one paragraph has no gap to
   // give it to and falls back to half above, half below.)
+  var PLATE_INNER_GAP = 36;
   function seatPlateAir() {
     [].forEach.call(document.querySelectorAll(
       '.latest-cell--ps .latest-plate, .latest-cell--contra .latest-plate, .duo-half--mega .card-preview-block'),
@@ -4222,17 +4279,21 @@
         // unfilled remainder at this point and would put it into C.
         var A = head ? (pinAt(head, true) - capAscent(head)) - bb.top : null;
         var D = padB + (more.getBoundingClientRect().bottom - pinAt(more, false));
-        // Kicker baseline to the first line's cap: the same as A.
+        // THE TWO INNER STEPS STAND 36 OF INK — kicker baseline to the
+        // first line's cap, last baseline to CLOSE PREVIEW's cap — a
+        // half more than the outer 24s the paddings print (A and D).
+        // The stylesheet's margins on the two courier lines carry the
+        // same 36 as a budget for the cut; this seats it exactly.
+        var INNER = PLATE_INNER_GAP;
         if (head && A !== null && isFinite(A)) {
           var b = (pinAt(paras[0], true) - capAscent(paras[0])) - pinAt(head, false);
           var mb = parseFloat(getComputedStyle(head).marginBottom) || 0;
-          head.style.marginBottom = Math.max(0, mb + (A - b)).toFixed(2) + 'px';
+          head.style.marginBottom = Math.max(0, mb + (INNER - b)).toFixed(2) + 'px';
         }
-        // Last baseline to CLOSE PREVIEW's cap: the same as D.
         var lastP = paras[paras.length - 1];
         var c = (pinAt(more, true) - capAscent(more)) - pinAt(lastP, false);
         var mt = parseFloat(getComputedStyle(more).marginTop) || 0;
-        more.style.marginTop = Math.max(0, mt + (D - c)).toFixed(2) + 'px';
+        more.style.marginTop = Math.max(0, mt + (INNER - c)).toFixed(2) + 'px';
         var rem = floor - more.getBoundingClientRect().bottom;
         if (rem < 0.5) return;
         var cell = box.closest('.latest-cell--contra');

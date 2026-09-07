@@ -177,6 +177,10 @@ function applyDekBylines(posts) {
 
     const ps = p.subtitle.match(POSTSCRIPT_DEK);
     if (ps) {
+      // THE ISSUE NUMBER IS KEPT on the post: the postscript's card
+      // prints it in the courier over the title ("No. 21 · Jul 21").
+      const psNoMatch = ps[1].match(/\d+/);
+      if (psNoMatch) p.psNo = Number(psNoMatch[0]);
       const names = splitNames(ps[2]);
       if (names.length) {
         // displayAuthor, not author: the author field still holds the
@@ -199,7 +203,10 @@ function applyDekBylines(posts) {
         p.subtitle = `On ${ps[3]}`;
       } else {
         // The dek didn't split into name/subject — keep whatever it says
-        // and just drop the issue number off the front.
+        // and just drop the issue number off the front (keeping it).
+        const pre = p.subtitle.match(POSTSCRIPT_DEK_PREFIX);
+        const preNo = pre && pre[0].match(/\d+/);
+        if (preNo) p.psNo = Number(preNo[0]);
         p.subtitle = p.subtitle.replace(POSTSCRIPT_DEK_PREFIX, '');
       }
       continue;
@@ -1361,7 +1368,25 @@ function peekLine() {
   return '<p class="cover-meta cover-meta--peek">' +
     '<button type="button" class="peek-open">Read Preview</button></p>';
 }
-function coverMetaLine(post, { authorPrefix = '', only = '', cls = '' } = {}) {
+// THE POSTSCRIPT'S DEK NAMES ITS SUBJECT: "Declan Rexer on Deep Springs"
+// — the name the courier used to carry over the title (w/ ...), set
+// back into the dek before the subtitle, whose own leading "On" is
+// lowered to read on from the name. The courier over the title is the
+// date alone now.
+function psDek(post) {
+  const name = post.psName ? post.psName : authorDisplay(post, false);
+  const sub = String(post.subtitle || '').trim();
+  if (!name && !sub) return '';
+  if (!name) return `<p class="latest-dek">${escapeHtml(sub)}</p>`;
+  if (!sub) return `<p class="latest-dek">${escapeHtml(name)}</p>`;
+  const rest = sub.replace(/^on\s+/i, '');
+  return `<p class="latest-dek">${escapeHtml(`${name} on ${rest}`)}</p>`;
+}
+function coverMetaLine(post, { authorPrefix = '', only = '', cls = '', lead = '' } = {}) {
+  // A LEAD PIECE — the postscript's issue number ("No. 21") — stands
+  // where the author used to, in the author's own span so the fitters
+  // seat the pair as they seated AUTHOR · DATE.
+  const leadPiece = lead ? `<span class="cover-author cover-no">${escapeHtml(lead)}</span>` : '';
   const kicker = post.kicker
     ? `<span class="cover-kicker"><a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></span>`
     : '';
@@ -1372,7 +1397,7 @@ function coverMetaLine(post, { authorPrefix = '', only = '', cls = '' } = {}) {
     ? `<span class="cover-date"><a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText)}</a></span>`
     : '';
   // The kicker is retired from the line: AUTHOR · DATE alone.
-  const parts = (only === 'author' ? [author] : only === 'date' ? [date] : [author, date]).filter(Boolean);
+  const parts = (only === 'author' ? [author] : only === 'date' ? [leadPiece, date] : [author, date]).filter(Boolean);
   // THE DOT TRAVELS WITH WHAT FOLLOWS IT. Each part after the first
   // carries its own separator INSIDE its nowrap span, so when the line
   // breaks the dot opens the second line rather than dangling at the
@@ -2032,7 +2057,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
           <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}</a>
         </div>
         <div class="latest-col">
-          ${matter(psPost, psPost.subtitle ? `<p class="latest-dek">${escapeHtml(psPost.subtitle)}</p>` : '', { before: coverMetaLine(psPost, { authorPrefix: 'w/ ', cls: 'author' }), after: peekLine() })}
+          ${matter(psPost, psDek(psPost), { before: coverMetaLine(psPost, { only: 'date', cls: 'author', lead: psPost.psNo ? `No. ${psPost.psNo}` : '' }), after: peekLine() })}
         </div>
         ${plate(psPost)}
       </div>` : '';

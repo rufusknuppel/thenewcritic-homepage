@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtpfgyzn">
+<link rel="stylesheet" href="style.css?v=mtqix74z">
 <style>html.fonts-loading body{opacity:0}</style>
 <script>
 (function () {
@@ -98,7 +98,7 @@
               <p class="card-meta ground-credit"><a class="meta-author" href="archive.html#sort=author&amp;post=jasmine-suns-project-of-self-transformation">w/ The tech reporter</a><a class="meta-date" href="archive.html#sort=date&amp;post=jasmine-suns-project-of-self-transformation">August 19</a></p>
               <p class="card-dek">On Sontag, Stanford, and Silicon Valley</p>
               
-              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">177</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
+              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">178</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
             </div>
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
@@ -2729,6 +2729,24 @@
       if (!r.height) return;
       b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
       b.classList.toggle('is-at-bottom', Math.abs(r.bottom - vh) <= 0.5);
+      var overWm = false;
+      if (r.top > 1.5 && r.top < vh) {
+        var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
+        overWm = !!(above && above.closest && above.closest(
+          '.topbar-wordmark, .movement > .page-banner:is(.subscribe-band, .events-band, .store-band)'));
+      }
+      b.classList.toggle('is-under-wordmark', overWm);
+    });
+    [].forEach.call(document.querySelectorAll('.movement > .page-banner'), function (b) {
+      var r = b.getBoundingClientRect();
+      if (!r.height) return;
+      b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      var overBand = false;
+      if (r.top > 1.5 && r.top < vh) {
+        var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
+        overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band'));
+      }
+      b.classList.toggle('is-under-band', overBand);
     });
   }
   function fitGroundStops() {
@@ -2994,7 +3012,8 @@
     var shift = targetLeft - inkLeft;
     el.style.transform = 'translateX(' + shift.toFixed(2) + 'px)';
   }
-  var CONTRA_MATTER_GAP = 24;
+  var CONTRA_MATTER_GAP = 36;
+  var CONTRA_TITLE_DEK_GAP = 18;
   var CONTRA_PIC_GAP = 48;
   function baselineOf(el, atStart) {
     var host = el;
@@ -3028,6 +3047,7 @@
       title.style.fontSize = '';
       if (dek) dek.style.fontSize = '';
       if (dek && dek.__fullHTML) dek.innerHTML = dek.__fullHTML;
+      if (title.__fullHTML) title.innerHTML = title.__fullHTML;
       var shown = function (el) { return el && getComputedStyle(el).display !== 'none'; };
       var stack = [meta, title, dek, date].filter(shown);
       var head = stack.reduce(function (a, b) { return b.getBoundingClientRect().top < a.getBoundingClientRect().top ? b : a; });
@@ -3048,9 +3068,45 @@
       var stackInk = function () {
         return baselineOf(last, false) - (baselineOf(head, true) - capAscent(head));
       };
+      var linesOf = function (el) {
+        var rg = document.createRange(); rg.selectNodeContents(el);
+        var tops = [];
+        [].forEach.call(rg.getClientRects(), function (r) {
+          if (!r.width || !r.height) return;
+          var t = Math.round(r.top);
+          if (tops.every(function (x) { return Math.abs(x - t) > 3; })) tops.push(t);
+        });
+        return tops.length;
+      };
+      var cutTo = function (el, max) {
+        if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
+        var g = 120;
+        while (g-- > 0 && linesOf(el) > max) {
+          if (!popLastWord(el)) break;
+          var tn = lastTextNode(el);
+          if (!tn) break;
+          tn.textContent = tn.textContent.replace(TRAIL_PUNCT, '') + '\u2026';
+        }
+      };
+      var hasDek = !!(dek && shown(dek));
+      cutTo(title, 1);
+      if (hasDek) cutTo(dek, 2);
+      if (hasDek && stackInk() > wordsRoom + 0.25) cutTo(dek, 1);
+      var authorEl = cell.querySelector('.cover-meta--author');
+      var over0 = stackInk() - wordsRoom;
+      if (over0 > 0.25) {
+        var give = Math.min(12, over0 / 2);
+        [authorEl, hasDek ? dek : null].forEach(function (el) {
+          if (!el || !shown(el)) return;
+          var mb0 = parseFloat(el.style.marginBottom) || parseFloat(getComputedStyle(el).marginBottom) || 0;
+          el.style.marginBottom = Math.max(0, mb0 - give).toFixed(2) + 'px';
+        });
+      }
+      var size = function (el) { return parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0; };
       var CONTRA_TITLE_FLOOR = 16, CONTRA_DEK_FLOOR = 0.6;
+      var dek0 = hasDek ? size(dek) : 0;
       var shrink = function (el, floorPx) {
-        var sz = parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0;
+        var sz = size(el);
         if (!sz) return false;
         var over = stackInk() - wordsRoom;
         var eh = el.getBoundingClientRect().height;
@@ -3060,29 +3116,6 @@
         el.style.fontSize = next.toFixed(2) + 'px';
         return true;
       };
-      var size = function (el) { return parseFloat(el.style.fontSize) || parseFloat(getComputedStyle(el).fontSize) || 0; };
-      var hasDek = !!(dek && shown(dek));
-      var dek0 = hasDek ? size(dek) : 0;
-      var dekLines = function () {
-        var rg = document.createRange(); rg.selectNodeContents(dek);
-        var tops = [];
-        [].forEach.call(rg.getClientRects(), function (r) {
-          if (!r.width || !r.height) return;
-          var t = Math.round(r.top);
-          if (tops.every(function (x) { return Math.abs(x - t) > 3; })) tops.push(t);
-        });
-        return tops.length;
-      };
-      if (hasDek && stackInk() > wordsRoom + 0.25 && dekLines() > 1) {
-        if (!dek.__fullHTML) dek.__fullHTML = dek.innerHTML;
-        var g2 = 80;
-        while (g2-- > 0 && dekLines() > 1) {
-          if (!popLastWord(dek)) break;
-          var tn = lastTextNode(dek);
-          if (!tn) break;
-          tn.textContent = tn.textContent.replace(TRAIL_PUNCT, '') + '\u2026';
-        }
-      }
       var guard = 12;
       while (stackInk() > wordsRoom + 0.25 && guard-- > 0) {
         var t0 = size(title);
@@ -3172,7 +3205,7 @@
       var now = dekCap - baseline;
       var mb = parseFloat(getComputedStyle(title).marginBottom) || 0;
       title.style.marginBottom =
-        Math.max(0, mb + (CONTRA_MATTER_GAP - now)).toFixed(2) + 'px';
+        Math.max(0, mb + (CONTRA_TITLE_DEK_GAP - now)).toFixed(2) + 'px';
       if (!meta) { dek.style.marginBottom = ''; return; }
       dek.style.marginBottom = '';
       var rgD2 = document.createRange(); rgD2.selectNodeContents(dek);
@@ -3362,6 +3395,7 @@
     var all = [].slice.call(document.querySelectorAll(
       '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
     var wasOpen = all.map(function (el) { return el.classList.contains('is-open'); });
+    var hadStill = all.map(function (el) { return el.classList.contains('fit-still'); });
     all.forEach(function (el) { el.classList.add('fit-still'); el.classList.add('is-open'); });
     all.forEach(function (el) {
       var pic = el.querySelector('.latest-cover, .duo-card-image');
@@ -3369,7 +3403,7 @@
     });
     all.forEach(function (el, i) { if (!wasOpen[i]) el.classList.remove('is-open'); });
     void document.body.offsetHeight;
-    all.forEach(function (el) { el.classList.remove('fit-still'); });
+    all.forEach(function (el, i) { if (!hadStill[i]) el.classList.remove('fit-still'); });
     [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra'), function (cell) {
       seat(cell, cell.querySelector('.latest-title'), cell.querySelector('.latest-cover-col'),
            [cell.querySelector('.latest-title'), cell.querySelector('.latest-dek'), cell.querySelector('.cover-meta')]);
@@ -3379,6 +3413,7 @@
            [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
     });
   }
+  var PLATE_INNER_GAP = 36;
   function seatPlateAir() {
     [].forEach.call(document.querySelectorAll(
       '.latest-cell--ps .latest-plate, .latest-cell--contra .latest-plate, .duo-half--mega .card-preview-block'),
@@ -3410,15 +3445,16 @@
         };
         var A = head ? (pinAt(head, true) - capAscent(head)) - bb.top : null;
         var D = padB + (more.getBoundingClientRect().bottom - pinAt(more, false));
+        var INNER = PLATE_INNER_GAP;
         if (head && A !== null && isFinite(A)) {
           var b = (pinAt(paras[0], true) - capAscent(paras[0])) - pinAt(head, false);
           var mb = parseFloat(getComputedStyle(head).marginBottom) || 0;
-          head.style.marginBottom = Math.max(0, mb + (A - b)).toFixed(2) + 'px';
+          head.style.marginBottom = Math.max(0, mb + (INNER - b)).toFixed(2) + 'px';
         }
         var lastP = paras[paras.length - 1];
         var c = (pinAt(more, true) - capAscent(more)) - pinAt(lastP, false);
         var mt = parseFloat(getComputedStyle(more).marginTop) || 0;
-        more.style.marginTop = Math.max(0, mt + (D - c)).toFixed(2) + 'px';
+        more.style.marginTop = Math.max(0, mt + (INNER - c)).toFixed(2) + 'px';
         var rem = floor - more.getBoundingClientRect().bottom;
         if (rem < 0.5) return;
         var cell = box.closest('.latest-cell--contra');
