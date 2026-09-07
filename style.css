@@ -65,7 +65,7 @@
   --muted: #938F86;
   --faint: #5A574F;
   --like-red: #E2483E;
-  --klein: #002FA7;
+  --klein: #A6002F;
   --accent-essay: #FF6FA8;
   --accent-essay-glow: rgba(255, 111, 168, 0.3);
   --accent-postscript: #C08CFF;
@@ -3368,32 +3368,32 @@ main.has-mega .reprint{ background: var(--chrome); }
 }
 .latest-dek em,
 .card-dek em{ font-style: normal; }
-main.has-mega{ --klein: #002FA7; }
-main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #002FA7; }
-main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #002FA7; }
-body.has-mega .site-nav--top .topbar-rail{ --klein: #002FA7; }
-.site-nav--top .topbar-wordmark{ --klein: #002FA7; }
+main.has-mega{ --klein: #A6002F; }
+main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #A6002F; }
+main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #A6002F; }
+body.has-mega .site-nav--top .topbar-rail{ --klein: #A6002F; }
+.site-nav--top .topbar-wordmark{ --klein: #A6002F; }
 .latest-plate-p,
 .card-preview,
 .card--feature .card-preview,
 .card--duo .card-preview,
 .card .duo-half .duo-panel .card-preview{ font-family: var(--excerpt); }
 main.has-mega :is(.cover-kicker, .cover-cat),
-main.has-mega :is(.cover-kicker, .cover-cat) a{ color: #121417; --klein: #002FA7; }
-body.has-mega .site-nav--top .topbar-rail .rail-mark{ color: #121417; --klein: #002FA7; }
+main.has-mega :is(.cover-kicker, .cover-cat) a{ color: #121417; --klein: #A6002F; }
+body.has-mega .site-nav--top .topbar-rail .rail-mark{ color: #121417; --klein: #A6002F; }
 main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under),
 main.has-mega :is(.latest-courier, .cover-under) :is(span, a),
-main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a{ color: #121417; --klein: #002FA7; }
+main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a{ color: #121417; --klein: #A6002F; }
 .rail-mark,
-.rail-track .rail-mark{ color: #121417; --klein: #002FA7; }
-main.has-mega{ --white: #121417; --muted: #121417; --faint: #121417; --body-text: #121417; --klein: #002FA7; }
-main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #002FA7; }
-main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #002FA7; }
-body.has-mega .site-nav--top .topbar-rail{ --white: #121417; --klein: #002FA7; }
+.rail-track .rail-mark{ color: #121417; --klein: #A6002F; }
+main.has-mega{ --white: #121417; --muted: #121417; --faint: #121417; --body-text: #121417; --klein: #A6002F; }
+main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #A6002F; }
+main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #A6002F; }
+body.has-mega .site-nav--top .topbar-rail{ --white: #121417; --klein: #A6002F; }
 body.has-mega .courier-clone{ --white: #121417; }
 .dek-band--masthead,
 .dek-band.dek-band--masthead a{ color: #121417; }
-.site-nav--top .topbar-wordmark{ --klein: #002FA7; }
+.site-nav--top .topbar-wordmark{ --klein: #A6002F; }
 .movement{ position: relative; }
 .section-band{
   position: sticky;
@@ -3407,7 +3407,7 @@ body.has-mega .courier-clone{ --white: #121417; }
   padding: 24px 48px;
   background: #FFFFFF;
   color: #121417;
-  --klein: #002FA7;
+  --klein: #A6002F;
 }
 .section-band .band-mark{
   font-family: var(--name-face);
@@ -3480,10 +3480,10 @@ body.has-mega::after{ content: none; animation: none; }
 .dek-band--masthead :is(a, span){ position: relative; left: auto; right: auto; color: #121417; }
 .dek-band--masthead a:is(:hover, :focus-visible){ color: var(--paper); }
 .head-rule{ position: static; z-index: auto; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 .site-nav--top .topbar-name{ transition: none; }
 .dek-band--masthead{ justify-content: center; gap: 48px; }
-.dek-band--masthead a:is(:hover, :focus-visible){ color: #002FA7; }
+.dek-band--masthead a:is(:hover, :focus-visible){ color: #A6002F; }
 .dek-band--masthead :is(a, span){ flex: 0 0 auto; width: auto; min-width: 0; text-align: center; }
 .dek-band.dek-band--masthead > :first-child,
 .dek-band.dek-band--masthead > :last-child{ flex: 0 0 auto; text-align: center; }
@@ -3520,13 +3520,13 @@ main.has-mega{ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-posts
 .dek-band--masthead,
 .dek-band.dek-band--masthead a,
 .dek-band--masthead :is(a, span),
-.dek-band--masthead a:is(:hover, :focus-visible){ color: #002FA7; }
+.dek-band--masthead a:is(:hover, :focus-visible){ color: #A6002F; }
 .head-rule{ background: #FFFFFF; }
 .dek-band--masthead{ background: #FFFFFF; }
 .dek-band--masthead,
 .dek-band.dek-band--masthead a,
 .dek-band--masthead :is(a, span),
-.dek-band--masthead a:is(:hover, :focus-visible){ color: #002FA7; }
+.dek-band--masthead a:is(:hover, :focus-visible){ color: #A6002F; }
 .dek-band--masthead > :nth-child(2){
   font-family: var(--byline-face);
   font-style: normal;
@@ -3578,7 +3578,7 @@ body.masthead-picked .section-band .band-mid{ visibility: visible; }
 main.has-mega .latest-courier--cover,
 main.has-mega .latest-courier--cover :is(span, a),
 main.has-mega :is(.card-title, .latest-title),
-main.has-mega :is(.card-title, .latest-title) a{ color: #FFFFFF; --klein: #002FA7; }
+main.has-mega :is(.card-title, .latest-title) a{ color: #FFFFFF; --klein: #A6002F; }
 .latest-courier--cover,
 .cover-under{
   position: absolute;
@@ -3598,7 +3598,7 @@ main.has-mega :is(.card-title, .latest-title) a{ color: #FFFFFF; --klein: #002FA
 main.has-mega :is(.latest-courier--cover, .cover-under),
 main.has-mega :is(.latest-courier--cover, .cover-under) :is(span, a){
   color: #121417;
-  --klein: #002FA7;
+  --klein: #A6002F;
 }
 .card--mega .duo-half--mega.is-open.is-open :is(.cover-under, .mega-cover-head .cover-under),
 .card--mega .duo-half--mega.is-open.is-open .mega-cover-head .latest-courier--cover > :is(.cover-kicker, .cover-date),
@@ -3643,7 +3643,7 @@ main.has-mega .cover-meta,
 main.has-mega .cover-meta :is(span, a),
 main.has-mega .cover-meta a{
   color: #121417;
-  --klein: #002FA7;
+  --klein: #A6002F;
 }
 .cover-meta a{ text-decoration: none; transition: color .15s ease; }
 .cover-meta a:is(:hover, :focus-visible){ color: var(--klein); }
@@ -3751,12 +3751,12 @@ main.has-mega :is(.banner-name, .reprint-name){
   padding: 0;
   clip-path: none;
   color: #FFFFFF;
-  --klein: #002FA7;
+  --klein: #A6002F;
   text-decoration: none;
   transition: none;
 }
 .banner-name:is(:hover, :focus-visible),
-.reprint-name:is(:hover, :focus-visible){ color: #002FA7; }
+.reprint-name:is(:hover, :focus-visible){ color: #A6002F; }
 .dek-band--banner{ display: none; }
 .section-foot{
   height: 80px;
@@ -3839,12 +3839,12 @@ main.has-mega .reprint{
 }
 .banner-name,
 .banner-name--pair a{ transition: color .15s ease; }
-.banner-name:is(:hover, :focus-visible){ color: #002FA7; }
-.banner-name--pair:is(:hover, :focus-visible){ color: #002FA7; }
-.banner-name--pair a:is(:hover, :focus-visible){ color: #002FA7; }
-main.has-mega .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
-main.has-mega .banner-name--pair:is(:hover, :focus-visible){ color: #002FA7; }
-main.has-mega .banner-name--pair a:is(:hover, :focus-visible){ color: #002FA7; }
+.banner-name:is(:hover, :focus-visible){ color: #A6002F; }
+.banner-name--pair:is(:hover, :focus-visible){ color: #A6002F; }
+.banner-name--pair a:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega .banner-name--pair:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega .banner-name--pair a:is(:hover, :focus-visible){ color: #A6002F; }
 .plate-title{
   display: block;
   margin: 0 0 19.2px;
@@ -3863,9 +3863,9 @@ main.has-mega{
   --muted: #FFFFFF;
   --faint: #FFFFFF;
   --body-text: #FFFFFF;
-  --klein: #002FA7;
+  --klein: #A6002F;
 }
-main.has-mega :is(.card-title, .latest-title) a{ --klein: #002FA7; }
+main.has-mega :is(.card-title, .latest-title) a{ --klein: #A6002F; }
 main.has-mega :is(.cover-kicker, .cover-cat) a,
 main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a,
 main.has-mega :is(.latest-courier--cover, .cover-under),
@@ -3874,22 +3874,22 @@ main.has-mega .cover-meta,
 main.has-mega .cover-meta :is(span, a),
 main.has-mega .cover-meta a{
   color: #FFFFFF;
-  --klein: #002FA7;
+  --klein: #A6002F;
 }
 .plate-title{ color: #FFFFFF; }
 .section-band,
-.section-band--colophon{ --klein: #002FA7; }
-.section-band--colophon .band-mark:hover{ color: #002FA7; }
+.section-band--colophon{ --klein: #A6002F; }
+.section-band--colophon .band-mark:hover{ color: #A6002F; }
 .banner-name:is(:hover, :focus-visible),
 .banner-name--pair a:is(:hover, :focus-visible),
 main.has-mega .banner-name:is(:hover, :focus-visible),
-main.has-mega .banner-name--pair a:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .banner-name--pair a:is(:hover, :focus-visible){ color: #A6002F; }
 .site-nav--top .topbar-name{ transition: color .15s ease; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 .reprint-name,
 main.has-mega .reprint-name{ transition: color .15s ease; }
 .reprint-name:is(:hover, :focus-visible),
-main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #A6002F; }
 .section-band .band-mid > :only-child{
   font-family: var(--byline-face);
   font-style: normal;
@@ -3909,7 +3909,7 @@ main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #002FA7; }
 .section-band .band-dek{ text-align: left; flex: 0 1 auto; }
 .site-nav--top .topbar-wordmark{ transition: background-color .15s ease; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #121417; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 .reprint,
 main.has-mega .reprint{
   background: #121417;
@@ -3920,7 +3920,7 @@ main.has-mega .reprint-name{ color: #121417; }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: #FFFFFF; }
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #002FA7; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #A6002F; }
 .latest-cell--ps > .title-halo,
 .latest-cell--contra > .title-halo,
 .duo-half--mega > .title-halo{
@@ -3980,17 +3980,17 @@ main.has-mega .stack-band--bw .banner-name,
 main.has-mega .stack-band--bp .banner-name{ color: #FFFFFF; }
 main.has-mega .stack-band--pb .banner-name,
 main.has-mega .stack-band--pw .banner-name{ color: #121417; }
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
-main.has-mega :is(.stack-band--pb, .stack-band--bp) .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
-main.has-mega :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega :is(.stack-band--pb, .stack-band--bp) .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
 .site-nav--top .topbar-wordmark{ background: #FFFFFF; }
 .site-nav--top .topbar-name,
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #121417; }
 .head-rule{ background: #121417; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ background: #FFFFFF; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name,
-main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ transition: background-color .15s ease; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #121417; }
 .banner-spacer{ background: #121417; }
@@ -3999,32 +3999,32 @@ main.has-mega .reprint{ background: #FFFFFF; }
 .reprint-name,
 main.has-mega .reprint-name,
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #002FA7; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #A6002F; }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: #121417; }
 .foot-field{ background: #121417; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: #FFFFFF; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #FFFFFF; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
-main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #002FA7; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #A6002F; }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: #FFFFFF; }
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #002FA7; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #A6002F; }
 html{ background: #FFFFFF; }
 .head-rule,
 .banner-spacer,
 .foot-field{ transition: background-color .15s ease; }
-.site-nav--top .topbar-name{ color: #002FA7; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #121417; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
-main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #002FA7; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #A6002F; }
 .reprint-name,
 main.has-mega .reprint-name{ color: #121417; }
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #002FA7; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #A6002F; }
 .head-rule,
 .banner-spacer,
 .foot-field{ background: #FFFFFF; }
@@ -4034,16 +4034,16 @@ main.has-mega :is(.subscribe-band, .events-band, .store-band){ box-shadow: none;
 .section-band .band-dek,
 .section-band .band-dek :is(a, span),
 .section-band--colophon .band-dek span{ color: #121417; }
-.section-band .band-dek a:is(:hover, :focus-visible){ color: #002FA7; }
+.section-band .band-dek a:is(:hover, :focus-visible){ color: #A6002F; }
 .head-rule,
 .banner-spacer,
 .foot-field{ box-shadow: none;  }
 .site-nav--top .topbar-name{ color: #121417; }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #002FA7; }
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
 .reprint-name,
 main.has-mega .reprint-name{ color: #121417; }
 .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #002FA7; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name{ color: #A6002F; }
 body{ background: #FFFFFF; }
 main{ background: var(--paper); }
 .reprint,
@@ -4083,10 +4083,10 @@ main.has-mega :is(.card-title, .latest-title) :is(a, .title-line, span){
   transition: color .15s ease;
 }
 main.has-mega .plate-more{ color: #FFFFFF; }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #A6002F; }
 .plate-more,
 main.has-mega .plate-more{ color: #121417; }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #A6002F; }
 .latest-matter > .cover-meta:first-child,
 .duo-half--mega .panel-col--left > .cover-meta{ margin-bottom: 16px; }
 .latest-cell--contra:not(.latest-cell--contra-rev) .latest-matter > .cover-meta:first-child{ margin-top: auto; }
@@ -4121,7 +4121,7 @@ main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
   font-size: 20px;
   line-height: 1.2;
 }
-.card-peek-open:is(:hover, :focus-visible){ color: #002FA7; }
+.card-peek-open:is(:hover, :focus-visible){ color: #A6002F; }
 .card-peek-close{
   position: absolute;
   top: 0;
@@ -4139,7 +4139,7 @@ main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
   transform: translate(-50%, -50%) rotate(45deg);
 }
 .card-peek-close::after{ transform: translate(-50%, -50%) rotate(-45deg); }
-.card-peek-close:is(:hover, :focus-visible){ color: #002FA7; }
+.card-peek-close:is(:hover, :focus-visible){ color: #A6002F; }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-open .card-peek-open{ visibility: hidden; }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-open .card-peek-close{ display: block; }
 .plate-more,
@@ -4150,10 +4150,10 @@ main.has-mega .plate-more{
   background: #FFFFFF;
   color: #121417;
 }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #A6002F; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #121417; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
-main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #002FA7; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #A6002F; }
 .card-peek > .card-peek-open{
   background: #FFFFFF;
   padding: 6.85px 20px 5.15px;
@@ -4171,11 +4171,11 @@ main.has-mega .plate-more{
   background: none;
   color: #121417;
 }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #A6002F; }
 .card-peek-open,
 .card-peek > .card-peek-open{ color: #121417; }
 .card-peek-open:is(:hover, :focus-visible),
-.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #002FA7; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #A6002F; }
 .card-peek > .card-peek-open{
   width: var(--dog, 112px);
   height: var(--dog, 112px);
@@ -4198,14 +4198,14 @@ main.has-mega .duo-half--mega.is-lit .panel-col--left :is(p.cover-meta--author, 
 }
 .plate-more,
 main.has-mega .plate-more{ color: #FFFFFF; }
-main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega a.plate-more:is(:hover, :focus-visible){ color: #A6002F; }
 .card-peek > .card-peek-close{ color: #FFFFFF; }
-.card-peek > .card-peek-close:is(:hover, :focus-visible){ color: #002FA7; }
+.card-peek > .card-peek-close:is(:hover, :focus-visible){ color: #A6002F; }
 .card-peek > .card-peek-close{ width: 16.8px; height: 16.8px; }
 .card-peek > .card-peek-close::before,
 .card-peek > .card-peek-close::after{ width: 19.6px; height: 1.4px; }
 .card-peek > .card-peek-open{ background: var(--paper, #FFFFFF); color: #FFFFFF; }
-.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #002FA7; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #A6002F; }
 .fit-still, .fit-still *{ transition: none !important; animation: none !important; }
 .plate-title,
 .plate-more,
@@ -4244,7 +4244,7 @@ main.has-mega .plate-more{
 }
 .peek-left .card-peek-open,
 .peek-right .card-peek-open{ margin: 0; }
-.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #002FA7; }
+.card-peek > .card-peek-open:is(:hover, :focus-visible){ color: #A6002F; }
 .card .duo-half--mega .duo-panel .panel-col--left{
   flex: 0 0 calc((100% - 96px) / 3 + 72px);
 }
@@ -4279,7 +4279,7 @@ main.has-mega .plate-more{
 }
 .plate-close{ cursor: pointer; }
 main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){
-  color: #002FA7;
+  color: #A6002F;
 }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #FFFFFF; }
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(.latest-title, .latest-title a, .latest-title a *),
@@ -4298,7 +4298,7 @@ main.has-mega .duo-half--mega .panel-col--left :is(
   .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
   .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
   .peek-open:is(:hover, :focus-visible)){
-  color: #002FA7;
+  color: #A6002F;
 }
 main.has-mega .cover-meta--author .cover-sep{ color: #121417; }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-open.is-open:not(a) > .title-halo{
@@ -4334,7 +4334,7 @@ main.has-mega .cover-meta--author .cover-sep{ color: #121417; }
 .head-rule{ height: calc(100vh - var(--band-h, 72px)); }
 .movement:has(+ .movement)::after{ height: var(--band-h, 72px); }
 .movement + .movement{ margin-top: calc(-1 * var(--band-h, 72px)); }
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
 .cover-meta.is-split .cover-sep,
 .plate-more.is-split .cover-sep{ display: none; }
 .cover-meta.is-split .cover-date{ display: block; }
@@ -4342,7 +4342,7 @@ main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :foc
 main.has-mega .stack-band--bw,
 main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: #121417; }
 main.has-mega .stack-band--bw .banner-name{ color: #FFFFFF; }
-main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
 main.has-mega,
 main.has-mega .movement-body,
 main.has-mega .card-preview-block,
@@ -4353,7 +4353,7 @@ body.has-mega .site-header{ background: #121417; }
 main.has-mega .card .duo-half--wide .duo-panel .card-preview-block,
 main.has-mega .card.card--mega .duo-half--mega .duo-panel .card-preview-block,
 main.has-mega .card .duo-half--mega .duo-panel .panel-col--right .ground-credit{ background: #121417; }
-main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){ color: #A6002F; }
 main.has-mega .plate-curtain,
 main.has-mega .plate-curtain *,
 main.has-mega .card-preview-block,
@@ -4361,7 +4361,7 @@ main.has-mega .card-preview-block *,
 main.has-mega .plate-more,
 main.has-mega .plate-more *{ color: #FFFFFF; }
 main.has-mega .stack-band--bw .banner-name{ color: #FFFFFF; }
-main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible){ color: #A6002F; }
 .section-band .band-dek a,
 .section-band--colophon .band-dek span,
 main.has-mega .band-deks.band-dek a{ color: #FFFFFF; }
@@ -4376,7 +4376,7 @@ main.has-mega .card-preview-block,
 main.has-mega .card-preview-block *,
 main.has-mega .plate-more,
 main.has-mega .plate-more *{ color: #121417; }
-main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .plate-more :is(.plate-read, .plate-close):is(:hover, :focus-visible){ color: #A6002F; }
 main.has-mega .latest-plate-p,
 main.has-mega .card-preview{
   text-align: justify;
@@ -4399,7 +4399,7 @@ body.has-mega .site-nav--top .topbar-rail .rail-mark,
 main.has-mega .reprint-name{ color: #FFFFFF; }
 body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name,
 main.has-mega .reprint:is(:hover, :focus-within) .reprint-name,
-main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #A6002F; }
 main.has-mega .plate-curtain{ padding-left: 48px; padding-right: 48px; }
 main.has-mega .card .duo-half .duo-panel .card-preview{ color: #121417; }
 .section-band .band-dek a,
@@ -4409,7 +4409,7 @@ main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band),
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #121417; }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FFFFFF; }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
-main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #002FA7; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #A6002F; }
 .peek-open::before, .peek-open::after,
 .plate-close::before, .plate-close::after{ content: none; }
 .page-banner--blank{
@@ -4426,7 +4426,7 @@ main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: #FFFFFF; }
 main.has-mega .stack-band--wb .banner-name{ color: #FFFFFF; }
 main.has-mega .stack-band--bw .banner-name{ color: #121417; }
 main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:hover, :focus-visible),
-main.has-mega :is(.stack-band--wb, .stack-band--bw):is(:hover, :focus-within) .banner-name{ color: #002FA7; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw):is(:hover, :focus-within) .banner-name{ color: #A6002F; }
 html.has-mega{ background: #121417; }
 .movement-body > .wrap:first-child{ padding-top: 72px; }
 .movement > .page-banner:is(.subscribe-band, .events-band, .store-band){ position: sticky; top: 0; }
@@ -4473,7 +4473,7 @@ main.has-mega .section-band--two > .band-bird{
   display: block;
   cursor: pointer;
 }
-main.has-mega .section-band--two > .band-bird:is(:hover, :focus-visible){ background-color: #002FA7; }
+main.has-mega .section-band--two > .band-bird:is(:hover, :focus-visible){ background-color: #A6002F; }
 .movement > .word-spacer{
   height: calc(100vh - 301px - 72px);
   background: #121417;
@@ -4508,7 +4508,7 @@ main.has-mega .section-band > .band-dek :is(a, span),
 main.has-mega .section-band--colophon .band-dek span,
 main.has-mega .band-deks.band-dek a{ color: #FFFFFF; }
 main.has-mega .section-band .band-deks a:is(:hover, :focus-visible),
-main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #002FA7; }
+main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #A6002F; }
 .latest-cell--contra > .latest-cover-col--square{ overflow: hidden; }
 .latest-cell--contra .latest-cover--square{
   top: calc((100% - var(--pic-h, 100%)) / 2);
@@ -4558,7 +4558,7 @@ main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(
   .card-title:hover, .card-title:hover *, .card-title a:is(:hover, :focus-visible),
   .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
   .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
-  .peek-open:is(:hover, :focus-visible)){ color: #002FA7; }
+  .peek-open:is(:hover, :focus-visible)){ color: #A6002F; }
 .latest-cell--ps::after,
 .latest-cell--contra::after,
 .duo-half--mega::after{ z-index: 20; }
@@ -4591,18 +4591,18 @@ main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(
   .card-title:hover, .card-title:hover *, .card-title a:is(:hover, :focus-visible),
   .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
   .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
-  .peek-open:is(:hover, :focus-visible)){ color: #002FA7; }
+  .peek-open:is(:hover, :focus-visible)){ color: #A6002F; }
 .latest-cell--contra > .latest-plate{ transition: visibility 0s linear .4s; }
 .latest-cell--contra.is-open.is-open > .latest-plate{ transition: none; }
 body.has-mega .site-header,
 body.has-mega .site-nav--top .topbar-wordmark,
 body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible),
 body.has-mega .head-rule,
-main.has-mega .head-rule{ background: #002FA7; }
+main.has-mega .head-rule{ background: #A6002F; }
 body.has-mega .site-nav--top .topbar-name{ color: #121417; }
 body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #FFFFFF; }
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega) > .title-halo,
-:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #002FA7; }
+:is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: #A6002F; }
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
 main.has-mega .duo-half--mega .panel-col--left :is(*, .card-title a:is(:hover, :focus-visible)),
@@ -4641,14 +4641,14 @@ body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar
 }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band),
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within),
-main.has-mega .movement > .word-spacer{ background: #002FA7; }
+main.has-mega .movement > .word-spacer{ background: #A6002F; }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FFFFFF; }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #121417; }
 main.has-mega .stack-band--bw,
 main.has-mega .stack-band--bw:is(:hover, :focus-within),
 main.has-mega .reprint,
-main.has-mega .reprint:is(:hover, :focus-within){ background: #002FA7; }
+main.has-mega .reprint:is(:hover, :focus-within){ background: #A6002F; }
 main.has-mega .stack-band--bw .banner-name,
 main.has-mega .reprint-name{ color: #FFFFFF; }
 main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible),
@@ -4656,16 +4656,16 @@ main.has-mega .stack-band--bw:is(:hover, :focus-within) .banner-name,
 main.has-mega .reprint:is(:hover, :focus-within) .reprint-name,
 main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #121417; }
 .foot-field,
-main.has-mega .foot-field{ background: #002FA7; }
+main.has-mega .foot-field{ background: #A6002F; }
 main.has-mega .stack-band--wb,
-main.has-mega .stack-band--wb:is(:hover, :focus-within){ background: #002FA7; }
+main.has-mega .stack-band--wb:is(:hover, :focus-within){ background: #A6002F; }
 main.has-mega .stack-band--bw,
 main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: #121417; }
 main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name{ color: #FFFFFF; }
 main.has-mega .stack-band--wb .banner-name:is(:hover, :focus-visible),
 main.has-mega .stack-band--wb:is(:hover, :focus-within) .banner-name{ color: #121417; }
 main.has-mega .stack-band--bw .banner-name:is(:hover, :focus-visible),
-main.has-mega .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #002FA7; }
+main.has-mega .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #A6002F; }
 main.has-mega .plate-curtain,
 main.has-mega .plate-curtain *,
 main.has-mega .card-preview-block,
@@ -4674,5 +4674,315 @@ main.has-mega .plate-more,
 main.has-mega .plate-more *,
 main.has-mega .card .duo-half .duo-panel .card-preview,
 main.has-mega .latest-plate-p,
-main.has-mega .plate-title{ color: #002FA7; }
+main.has-mega .plate-title{ color: #A6002F; }
 main.has-mega .plate-more .plate-close:is(:hover, :focus-visible){ color: #121417; }
+main.has-mega .movement > .page-banner.is-at-top{ box-shadow: none; }
+main.has-mega .m--colophon > .stack-band.is-at-top{ box-shadow: none; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon{
+  background: #FFFFFF;
+  color: #A6002F;
+  box-shadow: inset 0 1px 0 0 #A6002F, inset 0 -1px 0 0 #A6002F;
+}
+main.has-mega .section-band .band-deks,
+main.has-mega .section-band .band-deks a,
+main.has-mega .section-band .band-deks span,
+main.has-mega .section-band .band-deks .nav-links-dead,
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+main.has-mega .section-band--colophon .band-dek span,
+main.has-mega .band-deks.band-dek a{ color: #A6002F; }
+main.has-mega .section-band .band-deks a:is(:hover, :focus-visible),
+main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #121417; }
+main.has-mega .section-band.is-at-top{ box-shadow: inset 0 -1px 0 0 #A6002F; }
+main.has-mega .section-band.is-at-bottom{ box-shadow: inset 0 1px 0 0 #A6002F; }
+main.has-mega .section-band.is-at-top.is-at-bottom{ box-shadow: none; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon{ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-top{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-bottom{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-top.is-at-bottom{ box-shadow: none; }
+body.has-mega .site-nav--top .topbar-wordmark,
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){
+  background: #121417;
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}
+body.has-mega .site-nav--top .topbar-name{ color: #FFFFFF; }
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name{ color: #A6002F; }
+main.has-mega .reprint,
+main.has-mega .reprint:is(:hover, :focus-within){
+  background: #121417;
+  box-shadow: inset 0 1px 0 0 #FFFFFF;
+}
+main.has-mega .reprint-name{ color: #FFFFFF; }
+main.has-mega .reprint:is(:hover, :focus-within) .reprint-name,
+main.has-mega .reprint-name:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon{ background: #A6002F; color: #FFFFFF; }
+main.has-mega .section-band .band-deks,
+main.has-mega .section-band .band-deks a,
+main.has-mega .section-band .band-deks span,
+main.has-mega .section-band .band-deks .nav-links-dead,
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+main.has-mega .section-band--colophon .band-dek span,
+main.has-mega .band-deks.band-dek a{ color: #FFFFFF; }
+main.has-mega .section-band .band-deks a:is(:hover, :focus-visible),
+main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #121417; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-top{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-bottom{ box-shadow: none; }
+main.has-mega .section-band.is-at-bottom.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-top.is-at-bottom{ box-shadow: none; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band),
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: #121417; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FFFFFF; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:hover, :focus-visible),
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within) .banner-name{ color: #A6002F; }
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band){
+  box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF;
+}
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-at-top{
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}
+main.has-mega .section-band--colophon,
+main.has-mega .section-band--colophon.is-at-top,
+main.has-mega .section-band--colophon.is-at-bottom{ box-shadow: none; }
+main.has-mega .section-band--colophon.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .m--colophon > .stack-band--wb,
+main.has-mega .m--colophon > .stack-band--wb:is(:hover, :focus-within){ background: #121417; }
+main.has-mega .m--colophon > .stack-band--bw,
+main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within){ background: #A6002F; }
+main.has-mega .m--colophon > :is(.stack-band--wb, .stack-band--bw) .banner-name{ color: #FFFFFF; }
+main.has-mega .m--colophon > .stack-band--wb .banner-name:is(:hover, :focus-visible),
+main.has-mega .m--colophon > .stack-band--wb:is(:hover, :focus-within) .banner-name{ color: #A6002F; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:hover, :focus-visible),
+main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #121417; }
+main.has-mega .section-band--colophon,
+main.has-mega .section-band--colophon.is-at-bottom,
+main.has-mega .section-band--colophon.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .section-band--colophon.is-at-top{ box-shadow: none; }
+.latest-cell--ps::after,
+.latest-cell--contra::after,
+.duo-half--mega::after{ content: none; }
+.latest-cover::before,
+.duo-half--mega .card-image-link::before,
+.latest-cell--contra > .latest-cover-col--square::before{ content: none; }
+main.has-mega .movement > .page-banner:first-child{ margin-top: 0; box-shadow: none; }
+main.has-mega .movement:has(+ .movement)::after{ height: var(--band-h, 72px); }
+main.has-mega .movement + .movement{ margin-top: calc(-1 * var(--band-h, 72px)); }
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band),
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-at-top{
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}
+main.has-mega .m--colophon > .stack-band:first-child,
+main.has-mega .m--colophon > .stack-band:first-child.is-at-top{ box-shadow: none; }
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-under-band{
+  box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF;
+}
+main.has-mega .m--colophon > .stack-band:first-child.is-under-band{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+.latest-cell--ps.pic-left .latest-cover::before,
+.latest-cell--ps.pic-right .latest-cover::before,
+.duo-half--mega.pic-left .card-image-link::before,
+.duo-half--mega.pic-right .card-image-link::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.latest-cell--ps.pic-left .latest-cover::before,
+.duo-half--mega.pic-left .card-image-link::before{ box-shadow: inset -1px 0 0 0 #FFFFFF; }
+.latest-cell--ps.pic-right .latest-cover::before,
+.duo-half--mega.pic-right .card-image-link::before{ box-shadow: inset 1px 0 0 0 #FFFFFF; }
+.latest-cell--contra > .latest-cover-col--square::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}
+.latest-cell--ps.pic-left .latest-cover::before,
+.duo-half--mega.pic-left .card-image-link::before{ box-shadow: inset -1px 0 0 0 #121417; }
+.latest-cell--ps.pic-right .latest-cover::before,
+.duo-half--mega.pic-right .card-image-link::before{ box-shadow: inset 1px 0 0 0 #121417; }
+.latest-cell--contra > .latest-cover-col--square::before{ box-shadow: inset 0 -1px 0 0 #121417; }
+.latest-cell--ps .latest-cover::before,
+.duo-half--mega .card-image-link::before,
+.latest-cell--contra > .latest-cover-col--square::before{ transition: box-shadow 0s linear .4s; }
+.latest-cell--ps.pic-left.is-open .latest-cover::before,
+.duo-half--mega.pic-left.is-open .card-image-link::before{ box-shadow: inset 1px 0 0 0 #121417; transition: none; }
+.latest-cell--ps.pic-right.is-open .latest-cover::before,
+.duo-half--mega.pic-right.is-open .card-image-link::before{ box-shadow: inset -1px 0 0 0 #121417; transition: none; }
+.latest-cell--contra.is-open > .latest-cover-col--square::before{ box-shadow: inset 0 1px 0 0 #121417; transition: none; }
+.latest-cell--contra-rev > .latest-cover-col--square::before{ box-shadow: inset 0 1px 0 0 #121417; }
+.latest-cell--contra-rev.is-open > .latest-cover-col--square::before{ box-shadow: inset 0 -1px 0 0 #121417; transition: none; }
+.fit-still::before, .fit-still::after, .fit-still *::before, .fit-still *::after{ transition: none !important; animation: none !important; }
+main.has-mega .section-band,
+main.has-mega .section-band.is-at-top{ box-shadow: inset 0 -1px 0 0 #121417; }
+main.has-mega .section-band.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #121417, inset 0 -1px 0 0 #121417; }
+main.has-mega .section-band.is-at-bottom,
+main.has-mega .section-band.is-at-top.is-at-bottom{ box-shadow: none; }
+main.has-mega .section-band.is-at-bottom.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #121417; }
+main.has-mega .section-band--colophon,
+main.has-mega .section-band--colophon.is-at-bottom,
+main.has-mega .section-band--colophon.is-under-wordmark{ box-shadow: inset 0 1px 0 0 #121417; }
+main.has-mega .section-band--colophon.is-at-top{ box-shadow: none; }
+body.has-mega .site-nav--top .topbar-wordmark,
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ box-shadow: 0 1px 0 0 #121417; }
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band),
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-at-top{ box-shadow: 0 1px 0 0 #121417; }
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-under-band{ box-shadow: 0 -1px 0 0 #121417, 0 1px 0 0 #121417; }
+main.has-mega .m--colophon > .stack-band:first-child.is-under-band{ box-shadow: 0 -1px 0 0 #121417; }
+main.has-mega .m--colophon > .stack-band--bw{ box-shadow: inset 0 1px 0 0 #121417; }
+main.has-mega .m--colophon > .stack-band--wb{ box-shadow: 0 -1px 0 0 #121417; }
+.foot-field,
+main.has-mega .foot-field{ box-shadow: inset 0 -1px 0 0 #121417; }
+main.has-mega .reprint,
+main.has-mega .reprint:is(:hover, :focus-within){ box-shadow: none; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon,
+main.has-mega .section-band.is-at-top,
+main.has-mega .section-band.is-at-bottom,
+main.has-mega .section-band.is-under-wordmark,
+main.has-mega .section-band.is-at-top.is-at-bottom,
+main.has-mega .section-band.is-at-bottom.is-under-wordmark,
+main.has-mega .section-band--colophon.is-at-top,
+main.has-mega .section-band--colophon.is-at-bottom,
+main.has-mega .section-band--colophon.is-under-wordmark,
+main.has-mega .movement > .page-banner:first-child,
+main.has-mega .movement > .page-banner.is-at-top,
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band),
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-at-top,
+main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-under-band,
+main.has-mega .m--colophon > .stack-band,
+main.has-mega .m--colophon > .stack-band--wb,
+main.has-mega .m--colophon > .stack-band--bw,
+main.has-mega .m--colophon > .stack-band.is-at-top,
+main.has-mega .m--colophon > .stack-band:first-child,
+main.has-mega .m--colophon > .stack-band:first-child.is-at-top,
+main.has-mega .m--colophon > .stack-band:first-child.is-under-band,
+body.has-mega .site-nav--top .topbar-wordmark,
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible),
+.foot-field,
+main.has-mega .foot-field,
+main.has-mega .reprint,
+main.has-mega .reprint:is(:hover, :focus-within){ box-shadow: none; }
+.latest-cell--ps.pic-left .latest-cover::before,
+.latest-cell--ps.pic-right .latest-cover::before,
+.latest-cell--ps.pic-left.is-open .latest-cover::before,
+.latest-cell--ps.pic-right.is-open .latest-cover::before,
+.duo-half--mega.pic-left .card-image-link::before,
+.duo-half--mega.pic-right .card-image-link::before,
+.duo-half--mega.pic-left.is-open .card-image-link::before,
+.duo-half--mega.pic-right.is-open .card-image-link::before,
+.latest-cell--contra > .latest-cover-col--square::before,
+.latest-cell--contra.is-open > .latest-cover-col--square::before,
+.latest-cell--contra-rev > .latest-cover-col--square::before,
+.latest-cell--contra-rev.is-open > .latest-cover-col--square::before{ content: none; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega .panel-col--left :is(*, .card-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega.is-lit .panel-col--left :is(*, .card-title a:is(:hover, :focus-visible)),
+main.has-mega .cover-meta--author .cover-sep,
+main.has-mega .latest-cell.is-lit .cover-meta--author .cover-sep{ color: #121417; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col :is(
+  .latest-title:hover, .latest-title:hover *, .latest-title a:is(:hover, :focus-visible),
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
+  .peek-open:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(
+  .card-title:hover, .card-title:hover *, .card-title a:is(:hover, :focus-visible),
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
+  .peek-open:is(:hover, :focus-visible)){ color: #FFFFFF; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon{ color: #121417; }
+main.has-mega .section-band .band-deks,
+main.has-mega .section-band .band-deks a,
+main.has-mega .section-band .band-deks span,
+main.has-mega .section-band .band-deks .nav-links-dead,
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+main.has-mega .section-band--colophon .band-dek span,
+main.has-mega .band-deks.band-dek a{ color: #121417; }
+main.has-mega .section-band .band-deks a:is(:hover, :focus-visible),
+main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #FFFFFF; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name{ color: #121417; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:hover, :focus-visible),
+main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #FFFFFF; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col .cover-meta:is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col .cover-meta :is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col .cover-meta :is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega .panel-col--left .cover-meta:is(*, .card-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega .panel-col--left .cover-meta :is(*, .card-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega.is-lit .panel-col--left .cover-meta :is(*, .card-title a:is(:hover, :focus-visible)),
+main.has-mega .cover-meta--author .cover-sep,
+main.has-mega .latest-cell.is-lit .cover-meta--author .cover-sep{ color: #FFFFFF; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col .cover-meta :is(
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
+  .peek-open:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left .cover-meta :is(
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
+  .peek-open:is(:hover, :focus-visible)){ color: #121417; }
+main.has-mega .plate-curtain,
+main.has-mega .plate-curtain *,
+main.has-mega .card-preview-block,
+main.has-mega .card-preview-block *,
+main.has-mega .card .duo-half .duo-panel .card-preview,
+main.has-mega .latest-plate-p{ color: #121417; }
+main.has-mega .plate-more,
+main.has-mega .plate-more *,
+main.has-mega .plate-title{ color: #A6002F; }
+main.has-mega .plate-more .plate-close:is(:hover, :focus-visible){ color: #121417; }
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+main.has-mega .section-band--colophon .band-dek span,
+main.has-mega .band-deks.band-dek a{ color: #FFFFFF; }
+main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #121417; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(*, .latest-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega .panel-col--left :is(*, .card-title a:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega.is-lit .panel-col--left :is(*, .card-title a:is(:hover, :focus-visible)){ color: #FFFFFF; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col :is(
+  .latest-title:hover, .latest-title:hover *, .latest-title a:is(:hover, :focus-visible),
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
+  .peek-open:is(:hover, :focus-visible)),
+main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(
+  .card-title:hover, .card-title:hover *, .card-title a:is(:hover, :focus-visible),
+  .cover-author:hover, .cover-author:hover *, .cover-author a:is(:hover, :focus-visible),
+  .cover-date a:is(:hover, :focus-visible), .cover-date a:is(:hover, :focus-visible) *,
+  .peek-open:is(:hover, :focus-visible)){ color: #121417; }
+main.has-mega .section-band,
+main.has-mega .section-band--colophon,
+main.has-mega .section-band .band-deks,
+main.has-mega .section-band .band-deks a,
+main.has-mega .section-band .band-deks span,
+main.has-mega .section-band .band-deks .nav-links-dead,
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+main.has-mega .section-band--colophon .band-dek span,
+main.has-mega .band-deks.band-dek a{ color: #FFFFFF; }
+main.has-mega .section-band .band-deks a:is(:hover, :focus-visible),
+main.has-mega .section-band > .band-dek a:is(:hover, :focus-visible){ color: #121417; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name{ color: #FFFFFF; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:hover, :focus-visible),
+main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #121417; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name{ color: #121417; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:hover, :focus-visible),
+main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #FFFFFF; }
+main.has-mega .plate-more,
+main.has-mega .plate-more *,
+main.has-mega .plate-title{ color: #121417; }
+main.has-mega .plate-more .plate-close:is(:hover, :focus-visible){ color: #A6002F; }
+main.has-mega .plate-title{ margin-bottom: 27.07px; }
+main.has-mega .plate-more{ margin-top: 25.54px; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name{ color: #FFFFFF; }
+main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:hover, :focus-visible),
+main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within) .banner-name{ color: #121417; }
