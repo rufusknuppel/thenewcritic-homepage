@@ -5776,7 +5776,6 @@ body.ledger-page .ledger-band .ledger-slot--mid{
   width: auto;
 }
 body.ledger-page .ledger-band .ledger-slot--right{ grid-column: 3; }
-main.has-mega .section-band{ position: relative; }
 main.has-mega .section-band > .band-dek{
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
