@@ -12684,7 +12684,7 @@ body.ledger-page .ledger-band .ledger-slot--mid{
   width: auto;
 }
 body.ledger-page .ledger-band .ledger-slot--right{ grid-column: 3; }
-main.has-mega .section-band{ position: relative; }
+/* (The band is sticky, which positions it for the courier; no relative here — it would unpin the band.) */
 main.has-mega .section-band > .band-dek{
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
