@@ -41,6 +41,8 @@ http
     // Query strings are cache-busters here, not routes.
     let rel = decodeURIComponent(req.url.split('?')[0]);
     if (rel.endsWith('/')) rel += 'index.html';
+    // /archive resolves to /archive.html, as it does on the live site.
+    if (!path.extname(rel) && fs.existsSync(path.join(ROOT, rel + '.html'))) rel += '.html';
     // Resolve inside ROOT and refuse anything that climbs out of it.
     const file = path.normalize(path.join(ROOT, rel));
     if (!file.startsWith(ROOT)) {

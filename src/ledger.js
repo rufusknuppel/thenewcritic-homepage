@@ -1,302 +1,152 @@
 (function(){
-  // Archive ledger rows: clicking anywhere on a row folds its card open
-  // (cover image + dek/preview/Read on, hidden-by-default markup — see
-  // renderLedgerRow in build.js) and marks the item .open, which the CSS
-  // uses to hold the row white and whiten its bounding dividers. An
-  // accordion: opening a row closes whichever other row was open. Clicks
-  // inside the card itself (its links) don't toggle — only the row does.
-  var ledger = document.querySelector('.arch-ledger');
-  if (!ledger) return;
-  var items = [].slice.call(ledger.querySelectorAll('.arch-ledger-item'));
-  if (!items.length) return;
+  // THE ARCHIVE LEDGER (see renderArchivePage / renderLedgerRow in
+  // build.js): the word at the head is sized to the page; a band opens
+  // its plate on click (an accordion — one plate at a time); the head's
+  // arrows sort, the shuffle deals; deep links from the cards land on a
+  // sorted, opened item.
+  var ledger = document.querySelector('.ledger');
+  var body = ledger && ledger.querySelector('.ledger-body');
+  var items = body ? [].slice.call(body.querySelectorAll('.ledger-item')) : [];
 
-  // The card's height is the image's 16:9 (see style.css) — the text
-  // column is absolutely bound to its grid area. The excerpt runs in two
-  // columns (same rules as the essay panels): the block is capped at a
-  // whole-line multiple ending GAP_BOTTOM above the footer band, the
-  // line remainder shifts the column down (top padding is the minimum),
-  // and a cut ends at its last whole word — with the ellipsis joined onto
-  // it inline UNLESS the cut fell at a paragraph's end, where the text
-  // already reads as finished (see truncateToWord; duo-panel-fit.js has
-  // its own copy for the hover panels and still marks every cut).
-  var TRAIL_PUNCT = /[\s.,;:!?'"‘’“”()\[\]…—–-]+$/;
-
-  function removeAfter(root, node) {
-    var n = node;
-    while (n && n !== root) {
-      while (n.nextSibling) n.parentNode.removeChild(n.nextSibling);
-      n = n.parentNode;
+  // THE WORD AT THE HEAD, sized as the homepage's banners are: the
+  // masthead's own size (THE NEW CRITIC's ink spanning the measure —
+  // the width less one side each way), then the letters tracked out
+  // until ARCHIVE's ink spans the same measure. The ink is read off a
+  // canvas at that size, so the word sits AIR over its caps and AIR
+  // under its feet, and its first ink stands on the left side.
+  function fitMast() {
+    // Every word band on the page — ARCHIVE, SUBSCRIBE, the closing
+    // deck (ABOUT, STORE, EVENTS) and the reprint — sized alike.
+    [].forEach.call(document.querySelectorAll(
+      '.ledger-mast, .ledger-subscribe, .ledger-deck, .ledger-reprint'
+    ), fitWordBand);
+    // THE FOOT FIELD: a viewport less the colophon band and the reprint,
+    // so the page closes on exactly one screen — band, field, name.
+    // THE SPACER UNDER THE WORD: a viewport less the word and the band,
+    // so the page opens on exactly one screen — word, ground, band.
+    var spacer = document.querySelector('.ledger-spacer');
+    var mastEl = document.querySelector('.ledger-mast');
+    var pin = document.querySelector('.ledger-pin');
+    // Only the BAND shows on the first screen: the head stands just
+    // under the fold and comes up with it.
+    var headBand = pin && pin.querySelector('.ledger-band--head');
+    if (spacer && mastEl && headBand) {
+      var open = document.documentElement.clientHeight - mastEl.offsetHeight - headBand.offsetHeight;
+      spacer.style.height = Math.round(Math.max(0, open)) + 'px';
     }
-  }
-
-  function truncateToWord(el) {
-    if (!el.__fullHTML) el.__fullHTML = el.innerHTML;
-    var blockR = el.getBoundingClientRect();
-    var EPS = 2;
-    function fits(r) {
-      return r.bottom <= blockR.bottom + EPS && r.right <= blockR.right + EPS;
-    }
-    var nodes = [];
-    var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-    var n;
-    while ((n = w.nextNode())) nodes.push(n);
-    var cutNode = null, cutEnd = -1;
-    for (var i = nodes.length - 1; i >= 0 && !cutNode; i--) {
-      var t = nodes[i].textContent;
-      var re = /\S+/g, m, best = -1;
-      while ((m = re.exec(t))) {
-        var rng = document.createRange();
-        rng.setStart(nodes[i], m.index);
-        rng.setEnd(nodes[i], m.index + m[0].length);
-        var rs = rng.getClientRects();
-        var ok = !!rs.length;
-        for (var j = 0; j < rs.length; j++) {
-          if (rs[j].width < 1) continue;
-          if (!fits(rs[j])) { ok = false; break; }
+    // (The column head overtakes the band and pins at the top itself —
+    // style.css; nothing to seat here.)
+    // 72 FROM THE COLUMN HEAD'S FOOT TO THE FIRST BAND'S INK: the row's
+    // box carries the line's leading over its caps, so the ledger's air
+    // is cut by what stands between the row's top and the ink.
+    if (ledger && body) {
+      var firstCell = body.querySelector('.ledger-row .ledger-cell');
+      if (firstCell) {
+        ledger.style.paddingTop = '';
+        var fcs = getComputedStyle(firstCell);
+        var cv2 = document.createElement('canvas').getContext('2d');
+        if (cv2) {
+          cv2.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
+          var mm = cv2.measureText((firstCell.textContent || '').trim() || 'X');
+          var probe2 = document.createElement('span');
+          probe2.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+          firstCell.appendChild(probe2);
+          var base2 = probe2.getBoundingClientRect().bottom;
+          firstCell.removeChild(probe2);
+          var rowTop = firstCell.parentElement.getBoundingClientRect().top;
+          var inkIn = base2 - mm.actualBoundingBoxAscent - rowTop;
+          if (isFinite(inkIn)) ledger.style.paddingTop = Math.round(72 - inkIn) + 'px';
         }
-        if (ok) best = m.index + m[0].length;
-      }
-      if (best > -1) { cutNode = nodes[i]; cutEnd = best; }
-    }
-    if (!cutNode) return;
-    // Did the cut land on the END of a paragraph? Then the excerpt closes
-    // on a finished thought, and an ellipsis would only claim a sentence
-    // was interrupted when it wasn't. (Later paragraphs may still be
-    // dropped — the mark is about how the visible text ends, not about
-    // whether anything follows.)
-    var para = cutNode.parentNode;
-    while (para && para !== el && !(para.classList && para.classList.contains('card-preview'))) {
-      para = para.parentNode;
-    }
-    var atParaEnd = false;
-    if (para && para !== el && !/\S/.test(cutNode.textContent.slice(cutEnd))) {
-      var pw = document.createTreeWalker(para, NodeFilter.SHOW_TEXT, null, false);
-      var pn, past = false;
-      atParaEnd = true;
-      while ((pn = pw.nextNode())) {
-        if (pn === cutNode) { past = true; continue; }
-        if (past && /\S/.test(pn.textContent)) { atParaEnd = false; break; }
       }
     }
-    removeAfter(el, cutNode);
-    cutNode.textContent = cutNode.textContent.slice(0, cutEnd);
-    if (atParaEnd) return;
-    var guard = 30;
-    while (guard-- > 0 && cutNode) {
-      cutNode.textContent = cutNode.textContent.replace(TRAIL_PUNCT, '') + '…';
-      var er = document.createRange();
-      er.setStart(cutNode, cutNode.textContent.length - 1);
-      er.setEnd(cutNode, cutNode.textContent.length);
-      if (fits(er.getBoundingClientRect())) return;
-      var rest = cutNode.textContent.slice(0, -1).replace(TRAIL_PUNCT, '').replace(/\S+$/, '');
-      if (rest.trim()) {
-        cutNode.textContent = rest;
-      } else {
-        var w2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-        var n2, prev = null;
-        while ((n2 = w2.nextNode())) {
-          if (n2 === cutNode) break;
-          if (n2.textContent.trim()) prev = n2;
-        }
-        cutNode.parentNode.removeChild(cutNode);
-        cutNode = prev;
-        if (cutNode) removeAfter(el, cutNode);
-      }
+    var field = document.querySelector('.ledger-field');
+    var foot = document.querySelector('.ledger-band--foot');
+    var reprint = document.querySelector('.ledger-reprint');
+    if (field && foot && reprint) {
+      var left = document.documentElement.clientHeight - foot.offsetHeight - reprint.offsetHeight;
+      field.style.height = Math.round(Math.max(0, left)) + 'px';
     }
   }
-
-  function fitCard(card) {
-    var text = card.querySelector('.arch-ledger-card-text');
-    if (!text || card.hidden) return;
-    var band = text.querySelector('.panel-band--bottom');
-    // The band sheds like the homepage cards' (see fitBandBoxes in
-    // duo-panel-fit.js): when the boxes outrun the band, the Share
-    // label goes first, then the art credit — the kicker, likes and
-    // Read on always survive. Restored before each measure so a wider
-    // pass gets them back.
-    if (band) {
-      var shed = [band.querySelector('.copylink-label'), band.querySelector('.pc-art')];
-      shed.forEach(function(el){ if (el) el.style.display = ''; });
-      for (var si = 0; si < shed.length; si++) {
-        if (band.scrollWidth <= band.clientWidth + 1) break;
-        if (shed[si]) shed[si].style.display = 'none';
-      }
+  function fitWordBand(mast) {
+    var word = mast && mast.querySelector('.ledger-word');
+    if (!word) return;
+    var mcs = getComputedStyle(mast);
+    var side = parseFloat(mcs.getPropertyValue('--ledger-side')) || 72;
+    var air = parseFloat(mcs.getPropertyValue('--ledger-air')) || 72;
+    var measure = document.documentElement.clientWidth - side * 2;
+    if (!(measure > 0)) return;
+    word.style.fontSize = '';
+    word.style.letterSpacing = '';
+    word.style.marginLeft = '';
+    word.style.marginTop = '';
+    mast.style.height = '';
+    var wcs = getComputedStyle(word);
+    var face = wcs.fontFamily;
+    var weight = wcs.fontWeight;
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return;
+    var ink = function (text, size) {
+      cv.font = weight + ' ' + size + 'px ' + face;
+      var m = cv.measureText(text);
+      if (m.actualBoundingBoxRight == null) return null;
+      return {
+        left: -m.actualBoundingBoxLeft,
+        right: m.actualBoundingBoxRight,
+        asc: m.actualBoundingBoxAscent,
+        desc: m.actualBoundingBoxDescent
+      };
+    };
+    var text = (word.textContent || '').trim().replace(/\s+/g, ' ').toUpperCase();
+    var cap = ink('THE NEW CRITIC', 100);
+    var w = ink(text, 100);
+    if (!cap || !w) return;
+    var S = measure / ((cap.right - cap.left) / 100);
+    var inkW = (w.right - w.left) * S / 100;
+    var n = text.length;
+    var ls = 0;
+    if (inkW > measure) {
+      S = S * measure / inkW;
+      inkW = measure;
+    } else if (n > 1) {
+      ls = (measure - inkW) / (n - 1);
     }
-    // Restore a previous fit's truncation before anything is measured (or
-    // queried — the paragraphs below must be the fresh nodes).
-    var block0 = text.querySelector('.card-preview-block');
-    if (block0 && block0.__fullHTML) block0.innerHTML = block0.__fullHTML;
-    var paras = text.querySelectorAll('.card-preview');
-    var divider = text.querySelector('.arch-ledger-card-divider');
-    text.style.paddingTop = '';
-    text.style.paddingBottom = '';
-    if (divider) { divider.style.marginTop = ''; divider.style.marginBottom = ''; }
-    [].forEach.call(text.children, function(el){
-      if (el === band) return;
-      el.style.display = '';
-      el.style.maxHeight = '';
-      el.style.height = '';
-      el.style.columnFill = '';
-      el.style.overflow = '';
-    });
-    [].forEach.call(paras, function(p){
-      p.style.display = '';
-      p.style.overflow = '';
-      p.style.maxHeight = '';
-      p.style.webkitBoxOrient = '';
-      p.style.webkitLineClamp = '';
-      p.style.lineClamp = '';
-      p.classList.remove('card-preview--clamped');
-    });
-    // Stacked fallback layout (narrow viewports): the text column is back
-    // in flow and grows with its content — the static CSS clamps handle
-    // length, nothing to fit against.
-    if (getComputedStyle(text).position !== 'absolute') return;
-    [].forEach.call(paras, function(p){
-      p.style.webkitLineClamp = '999';
-      // 'none' disengages the standardized clamp path; a big number
-      // keeps it active, which mid-transition Chrome versions mispaint
-      // (see clampToFit in duo-panel-fit.js).
-      p.style.lineClamp = 'none';
-    });
-    // FOUR equal gaps hold the column: over the dek, under it, over the
-    // body, under the body. 16 is the floor each one gets; whatever
-    // height the body doesn't use is split four ways and added to all of
-    // them, so the stack breathes evenly instead of stranding one hole
-    // above the footer band. The CSS values are only the pre-JS resting
-    // state — every one of the four is written inline below.
-    var MIN_PAD = 16;
-    var textRect = text.getBoundingClientRect();
-    var bandTop = band ? band.getBoundingClientRect().top : textRect.bottom - 33;
-    var bandH = textRect.bottom - bandTop;
-    // Measure from the floor, so "what's left over" is a real figure.
-    text.style.paddingTop = MIN_PAD + 'px';
-    text.style.paddingBottom = (bandH + MIN_PAD) + 'px';
-    if (divider) {
-      divider.style.marginTop = MIN_PAD + 'px';
-      divider.style.marginBottom = MIN_PAD + 'px';
-    }
-    var limit = bandTop - MIN_PAD;
-    var cutting = false;
-    [].forEach.call(text.children, function(el){
-      if (el === band) return;
-      if (getComputedStyle(el).display === 'none') return;
-      if (cutting) { el.style.display = 'none'; return; }
-      if (el.classList.contains('card-preview-block')) {
-        // The excerpt fills the LEFT column to the box height and only
-        // then flows into the right — column-fill:auto against an
-        // explicit height, and nothing else. (It used to hunt for a
-        // height where both columns ran full and neither ended on a
-        // stranded opener; that rule cost whole lines to satisfy and
-        // spent them as a hole above the band.) A right column that runs
-        // out mid-way is simply where the text ends.
-        var firstP = el.querySelector('.card-preview');
-        var plh = parseFloat(getComputedStyle(firstP || el).lineHeight) || 22;
-        var budget = limit - el.getBoundingClientRect().top;
-        var maxLines = Math.floor(budget / plh);
-        if (maxLines < 1) { el.style.display = 'none'; return; }
-        el.style.overflow = 'hidden';
-        el.style.columnFill = 'auto';
-        el.style.height = (maxLines * plh) + 'px';
-        if (el.scrollWidth > el.clientWidth + 1) truncateToWord(el);
-        // What the text actually reaches. With sequential fill this is
-        // the box height whenever the left column fills — the slack case
-        // is a short excerpt that never gets there, and then the block
-        // shrinks to its own last line and the four gaps take the rest.
-        var blockTop = el.getBoundingClientRect().top;
-        var used = 0;
-        [].forEach.call(el.querySelectorAll('.card-preview'), function(p){
-          var rng = document.createRange();
-          rng.selectNodeContents(p);
-          var rs = rng.getClientRects();
-          for (var i = 0; i < rs.length; i++) {
-            if (rs[i].width < 1) continue;
-            var b = rs[i].bottom - blockTop;
-            if (b > used) used = b;
-          }
-        });
-        var usedLines = Math.max(1, Math.min(maxLines, Math.ceil((used - 1) / plh)));
-        el.style.height = (usedLines * plh) + 'px';
-        // Everything the body didn't take — the lines it never needed AND
-        // the sub-line remainder the box could never use — split four ways.
-        var share = (budget - usedLines * plh) / 4;
-        if (share > 0) {
-          text.style.paddingTop = (MIN_PAD + share) + 'px';
-          text.style.paddingBottom = (bandH + MIN_PAD + share) + 'px';
-          if (divider) {
-            divider.style.marginTop = (MIN_PAD + share) + 'px';
-            divider.style.marginBottom = (MIN_PAD + share) + 'px';
-          }
-        }
-        return;
-      }
-      if (el.getBoundingClientRect().bottom > limit) {
-        cutting = true;
-        el.style.display = 'none';
-      }
-    });
+    word.style.fontSize = S.toFixed(3) + 'px';
+    word.style.letterSpacing = ls.toFixed(3) + 'px';
+    word.style.marginLeft = (-(w.left * S / 100)).toFixed(2) + 'px';
+    var capH = w.asc * S / 100;
+    var descH = Math.max(0, w.desc * S / 100);
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    word.appendChild(probe);
+    var baseY = probe.getBoundingClientRect().bottom - word.getBoundingClientRect().top;
+    word.removeChild(probe);
+    word.style.marginTop = (air - (baseY - capH)).toFixed(2) + 'px';
+    // WHOLE PIXELS: a fractional band height leaves a hairline between
+    // one band and the next where the page's canvas shows through.
+    mast.style.height = Math.round(air + capH + descH + air) + 'px';
   }
-
-  function setOpen(item, open) {
-    var row = item.querySelector('.arch-ledger-row');
-    var card = item.querySelector('.arch-ledger-card');
-    item.classList.toggle('open', open);
-    if (card) {
-      card.hidden = !open;
-      // Rearm the fold-out's open ruling (see .card-in in style.css) on
-      // every close so the next open replays it.
-      card.classList.remove('card-in');
-    }
-    if (row) row.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (card && open) {
-      fitCard(card);
-      // One forced reflow between un-hiding and .card-in: a subtree
-      // fresh out of display:none renders straight at its final styles,
-      // so without a committed rest-state frame the ruling's
-      // transitions would never run. (fitCard reads layout, but keep an
-      // explicit read here so the ruling doesn't silently break if
-      // fitCard ever stops forcing one.)
-      void card.offsetWidth;
-      card.classList.add('card-in');
-    }
+  fitMast();
+  addEventListener('load', fitMast);
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('700 100px "OPS Placard"').then(fitMast, function(){});
+    if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
-
-  items.forEach(function(item){
-    var row = item.querySelector('.arch-ledger-row');
-    var card = item.querySelector('.arch-ledger-card');
-    if (!row || !card) return;
-    function toggle(){
-      var opening = !item.classList.contains('open');
-      if (opening) {
-        items.forEach(function(other){
-          if (other !== item && other.classList.contains('open')) setOpen(other, false);
-        });
-      }
-      setOpen(item, opening);
-    }
-    row.addEventListener('click', toggle);
-    // The row is a div acting as a button (role="button" tabindex="0") —
-    // give it the keys a real button would have.
-    row.addEventListener('keydown', function(e){
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle();
-      }
-    });
+  var resizeTimer;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitMast, 100);
   });
+  // Everything from here on is the ledger's own — the archive's sorts,
+  // shuffle and deep links; About carries the word bands alone.
+  if (!ledger || !body) return;
 
-  // Column-head sorting: each .arch-sort button carries data-key (author /
-  // date / section — mirrored as data-* on every item by renderLedgerRow)
-  // and data-dir. Sorting just re-appends the item nodes in order; the
-  // column head is the container's first child and never moves.
-  var sortBtns = ledger.querySelectorAll('.arch-sort');
-  // Assigned by the rule-draw block below (stays null when the effect is
-  // off — reduced motion / no IntersectionObserver): every reorder
-  // re-runs the full drawing cascade over the fresh order.
-  var resetRuling = null;
+  // Column-head sorting: each .arch-sort button carries data-key (title /
+  // author / date / kicker / section — mirrored as data-* on every item
+  // by renderLedgerRow) and data-dir. Sorting re-appends the item nodes
+  // in order; the bands' alternation is by position, so it re-deals.
+  var sortBtns = document.querySelectorAll('.arch-sort');
   function reorder(arr) {
-    arr.forEach(function(it){ ledger.appendChild(it); });
-    if (resetRuling) resetRuling();
+    arr.forEach(function(it){ body.appendChild(it); });
   }
   function clearActive() {
     [].forEach.call(sortBtns, function(b){ b.classList.remove('active'); });
@@ -317,20 +167,7 @@
     });
   });
 
-  // A resize changes the image-driven card height and every line wrap —
-  // refit whichever card is open.
-  var resizeTimer;
-  window.addEventListener('resize', function(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function(){
-      var open = ledger.querySelector('.arch-ledger-item.open .arch-ledger-card');
-      if (open) fitCard(open);
-    }, 100);
-  });
-
-  // The shuffle button beside the Title label: Fisher–Yates over the item
-  // nodes, then the same re-append. Clears any active sort direction.
-  var shuffleBtn = ledger.querySelector('.arch-shuffle');
+  var shuffleBtn = document.querySelector('.arch-shuffle');
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', function(){
       var arr = items.slice();
@@ -343,136 +180,24 @@
     });
   }
 
-  // Scroll-driven ruling: as items enter the viewport their top hairline
-  // draws in left-to-right, the column dividers drop down through the row
-  // behind it, and the text fades up last (see the .rule-draw styles).
-  // The column head joins the set so the whole grid draws in on first
-  // load. The class is added here rather than in the build markup so a
-  // no-JS load keeps its plain static borders; this script is
-  // parser-blocking at the end of body, so the class lands before first
-  // paint. Targets entering together (the initial screenful, or a batch
-  // scrolled into view) are staggered top-to-bottom via --rule-delay, so
-  // the ledger rules itself downward. Every reorder (sort or shuffle)
-  // re-runs the whole cascade over the fresh order via resetRuling.
-  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!prefersReduced && 'IntersectionObserver' in window) {
-    var head = ledger.querySelector('.arch-ledger-head');
-    var revealTargets = (head ? [head] : []).concat(items);
-    revealTargets.forEach(function(it){ it.classList.add('rule-draw'); });
-    var rulePending = revealTargets.slice();
-    function drawIn(list) {
-      list.sort(function(a, b){
-        return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
-      });
-      list.forEach(function(it, i){
-        it.style.setProperty('--rule-delay', (i * 70) + 'ms');
-        it.classList.add('in-view');
-        var idx = rulePending.indexOf(it);
-        if (idx !== -1) rulePending.splice(idx, 1);
-      });
-    }
-    var ruleObserver = new IntersectionObserver(function(entries){
-      drawIn(entries.filter(function(e){
-        return e.isIntersecting && !e.target.classList.contains('in-view');
-      }).map(function(e){ return e.target; }));
-      entries.forEach(function(e){
-        if (e.target.classList.contains('in-view')) ruleObserver.unobserve(e.target);
-      });
-    }, { threshold: 0 });
-    rulePending.forEach(function(it){ ruleObserver.observe(it); });
-    // The observer is only the fast path: in some environments (rendering
-    // pipelines that suspend or throttle — observer callbacks and even
-    // scroll events are frame-coupled) it delivers late or never, and a
-    // scroll effect must degrade to a skipped animation, never to a
-    // ledger stuck blank. Timers keep running everywhere, so a poller
-    // measures the pending rows directly and draws whatever has entered
-    // the viewport; the immediate first call covers the screenful the
-    // page opens on without waiting for anything (this script is
-    // parser-blocking at the end of body, so layout is ready — and the
-    // rect reads commit the undrawn .rule-draw state before .in-view
-    // lands, which is what lets the transitions run instead of snapping
-    // in). The poller also catches unseen rows that a sort or shuffle
-    // moves into the viewport.
-    function drawVisible() {
-      if (!rulePending.length) {
-        if (rulePollTimer != null) {
-          clearInterval(rulePollTimer);
-          rulePollTimer = null;
-        }
-        ruleObserver.disconnect();
-        return;
-      }
-      drawIn(rulePending.filter(function(it){
-        var r = it.getBoundingClientRect();
-        return r.bottom > 0 && r.top < window.innerHeight;
-      }));
-    }
-    var rulePollTimer = null;
-    function ensurePolling() {
-      if (rulePollTimer == null) rulePollTimer = setInterval(drawVisible, 400);
-    }
-    // Reorders replay the effect in full — every row, divider, and text
-    // fade, head included. Removing .in-view alone would *transition*
-    // everything back over 0.6s and the immediate redraw would cancel it
-    // to a visible no-op, so targets flip through .rule-reset (transitions
-    // off) and a forced style flush to snap to the undrawn state first;
-    // everything re-pends, so rows below the fold redraw on scroll too.
-    resetRuling = function(){
-      revealTargets.forEach(function(it){
-        it.classList.add('rule-reset');
-        it.classList.remove('in-view');
-        it.style.removeProperty('--rule-delay');
-      });
-      void ledger.offsetWidth;
-      revealTargets.forEach(function(it){ it.classList.remove('rule-reset'); });
-      rulePending = revealTargets.slice();
-      ruleObserver.disconnect();
-      rulePending.forEach(function(it){ ruleObserver.observe(it); });
-      ensurePolling();
-      drawVisible();
-    };
-    ensurePolling();
-    drawVisible();
-    // Arriving back at the page replays the ruling too: a back/forward
-    // restore (pageshow with persisted) brings the DOM back fully drawn
-    // without re-running scripts, and a load in a hidden tab runs the
-    // cascade unseen — in both cases re-rule when the page is actually
-    // in front of the reader. onVisible dedupes itself, so repeated
-    // traversals can't stack listeners.
-    function onVisible() {
-      if (document.visibilityState !== 'visible') return;
-      document.removeEventListener('visibilitychange', onVisible);
-      resetRuling();
-    }
-    window.addEventListener('pageshow', function(e){
-      if (!e.persisted) return;
-      if (document.visibilityState === 'hidden') {
-        document.addEventListener('visibilitychange', onVisible);
-      } else {
-        resetRuling();
-      }
-    });
-    if (document.visibilityState === 'hidden') {
-      document.addEventListener('visibilitychange', onVisible);
-    }
-  }
 
   // Deep links from the cards' bylines and kickers (see archiveHref in
   // build.js): #sort=<key>&post=<slug> sorts the ledger by that column —
-  // alphabetical for author/kicker, newest-first for date — and folds the
-  // named post's card open in place, so the reader lands on it with its
-  // neighbors around it (the author's other pieces, the tag's other
-  // posts). Runs last so the sort click replays the rule-draw cascade
-  // over the fresh order like any hand sort. Going through the real
-  // button keeps the arrow's active state honest too.
+  // alphabetical for author/kicker, newest-first for date — and lands
+  // on the named post's band (marked .is-target), so the reader finds
+  // it with its neighbours around it.
   var hashParams = {};
   location.hash.slice(1).split('&').forEach(function(kv){
     var eq = kv.indexOf('=');
     if (eq > 0) hashParams[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1));
   });
+  // The ledger loads newest first: the Date column's down arrow prints
+  // active from the start, so the standing order reads on the head.
+  var newestBtn = document.querySelector('.arch-sort[data-key="date"][data-dir="desc"]');
+  if (newestBtn) newestBtn.classList.add('active');
   if (hashParams.sort) {
     var dir = hashParams.sort === 'date' ? 'desc' : 'asc';
-    var sortBtn = ledger.querySelector(
+    var sortBtn = document.querySelector(
       '.arch-sort[data-key="' + hashParams.sort + '"][data-dir="' + dir + '"]'
     );
     if (sortBtn) sortBtn.click();
@@ -483,31 +208,24 @@
       if (it.getAttribute('data-slug') === hashParams.post) target = it;
     });
     if (target) {
-      // The hash names the position — don't let the browser's scroll
-      // restoration put a reload back at the top over it.
       if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      setOpen(target, true);
-      // The open item (row + fold-out) lands mid-viewport; near the top
-      // of the ledger, center clamps at zero scroll, so a target with too
-      // few rows above it simply opens with the page's top in position.
+      target.classList.add('is-target');
       var jumpPoll = null;
       function cancelJumpPoll() {
         if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
       }
       function jumpToTarget() {
-        // A page loaded unseen (a suspended rendering pipeline — same
-        // environments the ruling poller below exists for) reports a
-        // zero-height viewport, and scrollIntoView against it is a no-op.
-        // Poll until the viewport is real, then aim; a reader who scrolls
-        // themselves first keeps their place — any input cancels.
         if (document.documentElement.clientHeight > 0) {
           cancelJumpPoll();
-          // behavior:'instant', not the default: the page sets
-          // scroll-behavior:smooth, which the default (and 'auto') defer
-          // to — and a deep link is an arrival position, not a move to
-          // animate the whole ledger past. Smooth also never completes
-          // in a throttled pipeline, which is how this line was caught.
-          target.scrollIntoView({ block: 'center', behavior: 'instant' });
+          // Centred in the room UNDER the stuck word, not in the
+          // viewport — centred in the viewport, the row lands under
+          // the mast and only the plate's foot shows.
+          var headEl = document.querySelector('.ledger-head');
+          var mastH = headEl ? headEl.offsetHeight : 0;
+          var tr = target.getBoundingClientRect();
+          var room = document.documentElement.clientHeight - mastH;
+          var y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
+          window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
           return;
         }
         if (jumpPoll != null) return;
@@ -516,17 +234,12 @@
         });
         jumpPoll = setInterval(function () {
           if (document.documentElement.clientHeight > 0) {
-            // The auto-open above fit the card against the zero-size
-            // layout — refit against the real one before aiming at it.
-            fitCard(target.querySelector('.arch-ledger-card'));
+            fitMast();
             jumpToTarget();
           }
         }, 300);
       }
       jumpToTarget();
-      // This script runs parser-blocking before load; the browser's own
-      // post-load scroll pass (restoration on reload) lands after and
-      // overrides the early jump — so jump once more when it's done.
       if (document.readyState === 'complete') {
         requestAnimationFrame(jumpToTarget);
       } else {
@@ -534,15 +247,8 @@
           requestAnimationFrame(jumpToTarget);
         });
       }
-      // The auto-open fits its card before the webfonts land; a wrap
-      // shift after they do would leave a stale truncation — and shifted
-      // row heights above the target move it, so re-aim the jump too.
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(function(){
-          if (!target.classList.contains('open')) return;
-          fitCard(target.querySelector('.arch-ledger-card'));
-          jumpToTarget();
-        });
+        document.fonts.ready.then(jumpToTarget);
       }
     }
   }

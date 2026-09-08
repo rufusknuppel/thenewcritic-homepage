@@ -10,7 +10,9 @@
   // measuring so a bigger box really does pull more text. Panels are
   // opacity:0 at rest but still laid out, so everything here is
   // measurable without hovering.
-  if (!document.querySelector('.duo-panel')) return;
+  // A page with no hero panel but with cells of its own (About's one
+  // contra cell) still needs the passes that size and seat them.
+  if (!document.querySelector('.duo-panel, .latest-cell')) return;
 
   // The one floor constant: text and hard blocks alike fit against the
   // panel floor (see panelFloor) minus this. It is a MINIMUM — a short

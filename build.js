@@ -2594,7 +2594,10 @@ function slimJs(js) {
 // bare word: the inlined fitter names .card--mega in its own text on
 // every page, and card--mega-rev is not card--mega.
 function markMega(html) {
-  if (!/class="(?:[^"]*\s)?card--mega(?:\s[^"]*)?"/.test(html)) return html;
+  // A page carrying the front page's cards in a feature block (the
+  // archive's, About's) takes the marks too, hero or no hero: the
+  // cards' rules and the fitter read them.
+  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature)(?:\s[^"]*)?"/.test(html)) return html;
   // The ROOT carries the mark too: the canvas behind the page — what
   // shows when the reader pulls past the foot — is painted from the
   // root's own background (style.css, html.has-mega).
@@ -2608,7 +2611,7 @@ function markMega(html) {
     .replace('<main id="main">', '<main id="main" class="has-mega">');
 }
 
-function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage }) {
+function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage, bare = false }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2631,13 +2634,13 @@ ${renderImgFadeScript()}
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-${renderHeader(currentKey)}
+${bare ? '' : renderHeader(currentKey)}
 
 <main id="main">
 ${bodyHtml}
 </main>
 
-${renderFooter()}
+${bare ? '' : renderFooter()}
 
 ${renderCaterpillarScript()}
 ${renderFoilPourScript()}${extraScripts ? `\n${extraScripts}` : ''}
@@ -3074,7 +3077,24 @@ const ADDITIONAL_PEOPLE_PHOTOS = {
 // rest. (It was a two-column card grid in the hover cards' skin — the
 // .mission-* card/band/column rules went with it; the masthead
 // medallions and the subscribe list keep their mission-* names.)
-function renderAboutPage(founders = [], manifestoHtml = '') {
+// THE MANIFESTO AS A CARD: the About page closes on the Secession post
+// in the front page's own contra cell (renderContraCell) — cover,
+// courier, title, dek and the plate — when main() finds the post in the pool;
+// the preview card below is the fallback. The piece is preformatted
+// (no prose paragraphs for the plate to read), so its opening lines
+// are handed to the plate as paragraphs, read off the manifesto's own
+// rendered blocks.
+function manifestoPlateParas(html, max = 14) {
+  const out = [];
+  const re = /<span class="manifesto-line"[^>]*>([\s\S]*?)<\/span>/g;
+  let m;
+  while ((m = re.exec(String(html || ''))) && out.length < max) {
+    const t = m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+    if (t) out.push(t);
+  }
+  return out;
+}
+function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null) {
   // The masthead panel: a centred list, one heading per role with its
   // people under it, each name a link to that editor's Substack. The
   // roles keep the order they are written in above — a masthead ranks,
@@ -3129,183 +3149,154 @@ function renderAboutPage(founders = [], manifestoHtml = '') {
     })
     .join('\n          ');
 
-  // Each section: its label in the head's column and its panel's inner
-  // HTML — paragraphs stacked single-file down the narrow reveal column,
-  // no rules between them (the head's own divider is the page's last
-  // line). Nothing in here is a button any more: Subscribe is a line of
-  // the same courier under its list, and Give's two destinations are
-  // two links inside one sentence — the paragraph above them already
-  // draws the distinction (Fractured Atlas for a tax-deductible gift,
-  // Stripe for an instant one), so the line itself needs only to name
-  // them.
-  const sections = [
-    {
-      key: 'about',
-      label: 'About',
-      // One sentence, no dek over it: the dek read "The Young American
-      // Magazine" and the body opened "The New Critic publishes …" —
-      // with the rule between them gone and both lines in the same
-      // courier, the pair was one sentence said twice. It says it once.
-      html: `<p class="card-preview">The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.</p>`,
-    },
-    {
-      key: 'subscribe',
-      label: 'Subscriptions',
-      html: `<p class="card-dek">Sign up for our free newsletter<br>or become a paying member.</p>
-      <p class="card-preview">Hundreds of New Critic readers are paid subscribers. For $30 a year, paid subscribers get access to:</p>
+  // ABOUT IS A MOSAIC OF CARDS under the band (renderWordPage): seven
+  // cards on the charcoal, in the content cards' own cut — a courier
+  // kicker over a Garamond title, an italic dek, the body in the
+  // plates' 16 on 19.2, and a courier line at the foot where the cards
+  // print Read Preview. Three columns across the measure, the About and
+  // Give cards two wide, the Manifesto the whole row. The Letter stands
+  // whole (seven paragraphs fit its card); the Manifesto is PREVIEWED —
+  // its opening blocks, and READ ON goes to the post (manifestoPreview).
+  // (src/about-mosaic.js lands a hash on its card and keeps the clamp
+  // machinery for any card that asks for it.)
+  // A card whose title already names it (Contact, Masthead) carries
+  // no kicker — the courier line would only say the title
+  // again. The left column's three stand on charcoal, white.
+  // titleDek: the title said in the dek's own voice — the italic at 20
+  // — where a card is a short thing (Masthead, Contact) and the 48
+  // would shout.
+  // line: a courier line UNDER the title (the Subscribe card's sign-up
+  // clause), where the kicker stands over it.
+  const card = ({ key, size = '', kicker = '', title = '', titleDek = false, line = '', dek = '', body = '', foot = '', clamp = false, dark = false }) =>
+    `<article class="about-card${size ? ` about-card--${size}` : ''}${clamp ? ' about-card--clamped' : ''}${dark ? ' about-card--dark' : ''}" id="${key}" data-key="${key}">${kicker ? `
+      <p class="about-card-kicker">${escapeHtml(kicker)}</p>` : ''}${title ? `
+      <h3 class="about-card-title${titleDek ? ' about-card-title--dek' : ''}">${title}</h3>` : ''}${line ? `
+      <p class="about-card-kicker about-card-line">${line}</p>` : ''}${dek ? `
+      <p class="about-card-dek">${dek}</p>` : ''}${body ? `
+      <div class="about-card-body">${body}</div>` : ''}${foot ? `
+      <p class="about-card-foot">${foot}</p>` : ''}
+    </article>`;
+  const cards = [
+    card({
+      // No title: the card is the sentence, in the dek's voice.
+      key: 'about', dark: true,
+      dek: 'The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.',
+    }),
+    card({
+      // Subscribe leads in the dek's voice, linked; one sentence of
+      // body under it; the list; no foot line.
+      key: 'subscribe', dark: true, titleDek: true,
+      title: `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`,
+      body: `<p>Sign up for our free newsletter, or become a paid subscriber. For $30 a year, hundreds of paid readers get access to:</p>
       <ol class="mission-list">
         <li>Postscript, our interview series</li>
         <li>Contra, our criticism section</li>
         <li>Exclusive New Critic parties</li>
-      </ol>
-      <div class="about-actions"><a class="about-action" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a></div>`,
-    },
-    {
-      key: 'give',
-      label: 'Give',
-      // The panel opens and closes narrow and swells in the middle: an
-      // italic opening at the reveal column's own width, then the two
-      // working paragraphs side by side across a measure far wider than
-      // the column, the Give line back at the column, and the caveat
-      // spilling again to half the wide measure. Every block is centred
-      // on the same axis, so the measure widens and narrows around one
-      // spine (see .about-give-* in style.css).
-      html: `<p class="card-dek">The New Critic finds and supports the extraordinary writers of our generation. Competitive pay and creative license make professional writing possible. When you give to The New Critic, you fund the future of letters.</p>
-      <div class="about-give-cols">
-        <p class="card-preview">Give a different amount than our subscription rate. Any gift, small or large, supports our work. Donations over $300 receive a lifetime subscription.</p>
-        <p class="card-preview">We work with fiscal sponsor Fractured Atlas to allow our patrons to make tax-deductible donations, or you can give any amount instantly through Stripe.</p>
-      </div>
-      <p class="card-preview about-give-line">Give through <a href="${GIVE_LINKS.fracturedAtlas}" rel="noopener" target="_blank">Fractured Atlas</a> or <a href="${GIVE_LINKS.stripe}" rel="noopener" target="_blank">Stripe</a>.</p>
-      <p class="card-preview about-give-caveat">If you are interested in writing a check, donating more than $5,000, or have other questions, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>`,
-    },
-    {
-      key: 'masthead',
-      label: 'Masthead',
-      html: `<div class="mh-list">
+      </ol>`,
+    }),
+    card({
+      key: 'contact', dark: true, titleDek: true,
+      title: 'Contact',
+      body: `<p>To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
+      <p>Subscribe to our <a class="about-social" href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a>.<br>Follow us on <a class="about-social" href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a>.</p>`,
+    }),
+    card({
+      key: 'masthead', dark: true, titleDek: true,
+      title: 'Masthead',
+      body: `<div class="mh-list">
           ${mastheadHtml}
         </div>`,
-    },
-    {
-      key: 'letter',
-      label: 'Letter',
-      // The letter's own title, who signs it in italic under that, then
-      // a blank line and the date — a dateline, roman, so it reads as
-      // the piece's stamp rather than as more of the subtitle.
-      html: `<p class="card-dek">A Letter to Our Readers<br><em>from the founding editors</em><br><br>June 26</p>
-      ${GIVE_LETTER.map((p) => `<p class="card-preview">${escapeHtml(p)}</p>`).join('\n      ')}`,
-    },
-    {
-      key: 'manifesto',
-      label: 'Manifesto',
-      // The Secession post — see renderManifestoHtml for what it prints
-      // and what it cuts. The dek carries the post's own title and
-      // subtitle, and the piece's lede photograph stands under it.
-      html: `<p class="card-dek">The New Critic Secession<br><em>A Manifesto of 42 theses</em><br><br>March 24</p>
-      ${manifestoHtml || `<p class="card-preview">The manifesto is <a href="${MANIFESTO_URL}" rel="noopener" target="_blank">published here</a>.</p>`}`,
-    },
-    {
-      key: 'contact',
-      label: 'Contact',
-      // Hard break before "email": the address stays with the verb that
-      // governs it, and the line above closes on the clause. Under it,
-      // 48 down, the two places to follow the magazine — the same two
-      // the footer and the rail carry, named in a sentence here rather
-      // than as a list of marks.
-      html: `<p class="card-preview">To pitch, submit, or place an inquiry,<br>email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-      <p class="card-preview about-follow">Subscribe on <a href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a><br>Follow us on <a href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a></p>`,
-    },
+    }),
+    card({
+      key: 'manifesto', size: 'full', kicker: 'Manifesto',
+      title: 'The New Critic Secession',
+      dek: '<em>A Manifesto of 42 theses</em><br>March 24',
+      body: manifestoPreview(manifestoHtml) || `<p>The manifesto is <a href="${MANIFESTO_URL}" rel="noopener" target="_blank">published here</a>.</p>`,
+      foot: `<a href="${MANIFESTO_URL}" rel="noopener" target="_blank">Read on</a>`,
+    }),
   ];
-
-  const OPEN_KEY = 'about';
-  // The head reads down one column — About, Subscriptions, Give,
-  // Masthead, Contact — then a 48 of air, then Letter and Manifesto on
-  // lines of their own, each named in one word like the sections above. Both are whole documents rather
-  // than sections of this page, so the gap sets them apart from the
-  // queue above rather than a rule doing it. Seven lines and one gap,
-  // which is what the panel's min-height is measured against (see
-  // .about-panel in style.css).
-  const COLUMN_KEYS = ['about', 'subscribe', 'give', 'masthead', 'contact'];
-  const PARTED_KEYS = ['letter', 'manifesto'];
-  const byKey = new Map(sections.map((s) => [s.key, s]));
-  const headBtn = (s, cls = '') =>
-    `<button type="button" class="contra-filter-link about-link${cls}${s.key === OPEN_KEY ? ' is-active' : ''}" data-key="${s.key}" aria-expanded="${s.key === OPEN_KEY ? 'true' : 'false'}">${escapeHtml(s.label)}</button>`;
-  const bodyHtml = `  <div class="page-rows">
-  <div class="wrap">
-    <header class="card contra-head about-head">
-      <nav class="about-head-list" aria-label="About sections">
-        ${COLUMN_KEYS.map((k) => headBtn(byKey.get(k))).join('\n        ')}
-        ${PARTED_KEYS.map((k, i) => headBtn(byKey.get(k), i === 0 ? ' about-link--parted' : '')).join('\n        ')}
-      </nav>
-    </header>
+  // TWO COLUMNS: the short cards — About, Subscribe, Masthead, Contact
+  // — stacked in a thinner column at the left, the right two thirds
+  // open; the Manifesto across both at
+  // the foot. Each column stacks its cards at their own heights, 72
+  // between.
+  const byKey = new Map(cards.map((html) => [/ id="([a-z]+)"/.exec(html)[1], html]));
+  const col = (keys) => `<div class="about-col">
+        ${keys.map((k) => byKey.get(k)).join('\n        ')}
+      </div>`;
+  let heroHtml = '';
+  if (manifestoPost) {
+    if (!(manifestoPost.previewParagraphs && manifestoPost.previewParagraphs.length)) {
+      const paras = manifestoPlateParas(manifestoHtml);
+      if (paras.length) manifestoPost.previewParagraphs = paras;
+    }
+    manifestoPost.kicker = manifestoPost.kicker || 'Manifesto';
+    // THE SECESSION AS A CONTRA CARD: the review's square cell — the
+    // picture at its head, the words under it — standing alone, centred
+    // under the column at the column's own width.
+    heroHtml = `
+  <div class="movement m--latest ledger-feature about-hero">
+  <div class="movement-body">
+  <div class="wrap m--latest">
+    <section class="card card--latest card--contra-trio about-contra">
+        ${renderContraCell(manifestoPost, { rev: false })}
+      </section>
   </div>
-  <div class="row-divider"></div>
-  <div class="wrap">
-    ${sections
-      .map(
-        (s) => `<section class="about-panel" data-key="${s.key}" aria-label="${escapeHtml(s.label)}"${s.key === OPEN_KEY ? '' : ' hidden'}>
-      ${s.html}
-    </section>`
-      )
-      .join('\n    ')}
   </div>
   </div>`;
-  return renderPageShell({
+  }
+  const contentHtml = `<div class="ledger-content about-mosaic-block${heroHtml ? ' about-mosaic-block--hero-follows' : ''}">
+    <div class="about-mosaic">
+      ${col(['about', 'subscribe', 'masthead', 'contact'])}
+      ${heroHtml ? '' : byKey.get('manifesto')}
+    </div>
+  </div>${heroHtml}`;
+  return renderWordPage({
     currentKey: 'about',
     title: 'About',
     description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
-    bodyHtml,
-    bodyClass: 'about-body',
-    extraScripts: renderLineDrawScript() + renderAboutPanelScript(),
-  });
+    word: 'About',
+    wordHref: 'about.html',
+    mid: 'About The New Critic',
+    contentHtml,
+    deck: [
+      { word: 'Archive', href: 'archive.html', scheme: 'charcoal' },
+      { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'crimson' },
+      { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'charcoal' },
+    ],
+    // With the hero on the page, the front page's scripts ride along for
+    // it (as on the archive's feature block).
+    extraScripts: (heroHtml
+      ? renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript()
+        + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderRailFixScript()
+      : '') + renderAboutMosaicScript() + renderLedgerScript(),
+  // The body carries the page's own mark for what About alone does
+  // (style.css, body.about-page).
+  }).replace('<body class="ledger-page">', '<body class="ledger-page about-page">');
 }
 
-// The archive is a ledger: one full-bleed courier-gray line per post under
-// a Title/Author/Date/Kicker/Section column head, every row a click target
-// that folds out a card (cover image left, dek + preview + Read on right —
-// the same look as the row panels elsewhere). Row text goes white on hover
-// and stays white while its card is open; the open row's bounding
-// dividers go white with it (see the .arch-ledger rules in style.css and
-// src/ledger.js for the toggle).
+function renderAboutMosaicScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/about-mosaic.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
+// THE ARCHIVE IS A LEDGER OF BANDS: one 36px band per post, the post's
+// title / author / tag / section / date in white courier across five
+// columns. A band is a LINK: clicking it goes straight to the post on
+// Substack. (The fold-out plate — cover left, excerpt right — is
+// retired; the front page's cards in the feature block carry the
+// previews now.)
 function renderLedgerRow(post) {
-  const previewParas =
-    post.previewParagraphs && post.previewParagraphs.length
-      ? post.previewParagraphs
-      : post.preview
-        ? [post.preview]
-        : [];
-  const previewBlock = previewParas.length
-    ? `<div class="card-preview-block"><div class="card-preview-cols">${previewParas
-        .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
-        .join('')}</div></div>`
-    : '';
-  const dekHtml = post.subtitle
-    ? `<p class="card-dek">${post.sectionLabel === 'Contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
-    : '';
   const d = post.date;
-  // Current-year dates drop the year — "Jul 15" — while older posts keep
-  // it so the ledger still dates its back catalog unambiguously.
+  // Every date carries its year on the ledger — "Jul 15, 2026" — the
+  // current year included (the cards elsewhere drop it; the ledger is
+  // the one place the whole run is dated in full).
   const dateStr =
     d && !isNaN(d.getTime())
-      ? d.toLocaleDateString('en-US', d.getFullYear() === new Date().getFullYear()
-          ? { month: 'short', day: 'numeric' }
-          : { month: 'short', day: 'numeric', year: 'numeric' })
+      ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       : post.metaDate || '';
-  // Sentence case, and bare — the arrow came off with the caps. "Read
-  // on" reads as the invitation it is; set loud it was shouting the one
-  // thing on the card that didn't need to.
-  const readNowHtml = `<a class="card-preview-cta arch-ledger-readon pc pc-right" href="${escapeHtml(post.link)}" rel="noopener">Read on</a>`;
-  // The fold-out's band: share leads from the LEFT (the row above
-  // already names the topic, so no kicker repeats it here) and Read on
-  // closes it on the right — the fold-out has no linked title, and the
-  // row toggles rather than navigates. The art credit rides the cover as
-  // a chip (see arch-art-chip below), not the band. No likes count: a
-  // heart is a thing to press, and pressing it means leaving for
-  // Substack — the two doors out of this band were one too many, and
-  // Read on is the one that means it.
-  const ledgerCopyBox = copyLinkBtnHtml(post, 'card-copylink pc pc-left');
-  const ledgerArtChip = post.coverArtist
-    ? `<p class="arch-art-chip" aria-hidden="false">Art by ${escapeHtml(post.coverArtist)}</p>`
-    : '';
   // Sort keys for the column-head controls (see src/ledger.js): author and
   // section lowercased for a case-blind alphabetical order, the date as a
   // plain epoch number.
@@ -3318,30 +3309,17 @@ function renderLedgerRow(post) {
     ` data-kicker="${escapeHtml((post.kicker || '').toLowerCase())}"` +
     ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"` +
     // The deep-link target: cards' author/kicker/date links arrive as
-    // #sort=<key>&post=<slug> and ledger.js opens the matching item.
+    // #sort=<key>&post=<slug> and ledger.js lands on the matching item.
     ` data-slug="${escapeHtml(slugOf(post.link))}"`;
   return `
-  <div class="arch-ledger-item"${sortAttrs}>
-    <div class="arch-ledger-row arch-ledger-grid" role="button" tabindex="0" aria-expanded="false">
-      <span class="arch-ledger-cell lc-title"><span class="cell-text">${escapeHtml(post.title)}</span></span>
-      <span class="arch-ledger-cell lc-author"><span class="cell-text">${escapeHtml(post.author || '')}</span></span>
-      <span class="arch-ledger-cell lc-date"><span class="cell-text">${escapeHtml(dateStr)}</span></span>
-      <span class="arch-ledger-cell lc-kicker"><span class="cell-text">${escapeHtml(post.kicker || '')}</span></span>
-      <span class="arch-ledger-cell lc-section"><span class="cell-text">${escapeHtml(post.sectionLabel || '')}</span></span>
-    </div>
-    <div class="arch-ledger-card arch-ledger-grid" hidden>
-      <span class="arch-ledger-card-image"><a href="${escapeHtml(post.link)}" rel="noopener">
-        ${post.image ? `<img ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt="" loading="lazy" decoding="async"${focalStyle(post)}>` : '<span class="card-image--blank"></span>'}
-      </a>${ledgerArtChip}</span>
-      <div class="arch-ledger-card-text">
-        ${dekHtml}
-        ${dekHtml && previewBlock ? '<div class="arch-ledger-card-divider"></div>' : ''}
-        ${previewBlock}
-        <div class="panel-band panel-band--bottom">
-          ${ledgerCopyBox}${readNowHtml}
-        </div>
-      </div>
-    </div>
+  <div class="ledger-item"${sortAttrs}>
+    <a class="ledger-row" href="${escapeHtml(post.link)}" rel="noopener">
+      <span class="ledger-cell lc-title">${escapeHtml(post.title)}</span>
+      <span class="ledger-cell lc-author">${escapeHtml(post.author || '')}</span>
+      <span class="ledger-cell lc-kicker">${escapeHtml(post.kicker || '')}</span>
+      <span class="ledger-cell lc-section">${escapeHtml(post.sectionLabel || '')}</span>
+      <span class="ledger-cell lc-date">${escapeHtml(dateStr)}</span>
+    </a>
   </div>`;
 }
 
@@ -3354,7 +3332,7 @@ ${js}
 
 // Column-head sort control: a stacked up/down arrow pair after the label.
 // Up = ascending (A–Z, oldest first), down = descending; the active
-// direction holds white (see src/ledger.js).
+// direction prints charcoal (see src/ledger.js).
 function sortArrows(key, label) {
   return `<span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="${key}" data-dir="asc" aria-label="Sort by ${label} ascending">&#9650;</button>
@@ -3362,24 +3340,138 @@ function sortArrows(key, label) {
       </span>`;
 }
 
-function renderArchivePage(posts) {
+// THE WORD PAGE: the anatomy the archive set — the page's own word in
+// Placard at the head, stuck under the page; a screen of crimson under
+// it; the masthead's band, which rides up over the word and pins; the
+// page's content; a closing deck of three words, each sticking at the
+// top as it arrives and the next sliding over it; the colophon band,
+// the field and the masthead reprinted (src/ledger.js sizes every word
+// band and the two fields; style.css, THE ARCHIVE IS A LEDGER OF BANDS
+// and after). The archive and About are both built on it.
+function renderWordPage({ currentKey, title, description, word, wordHref, mid, contentHtml, deck = [], extraScripts = '' }) {
+  const deckHtml = deck.map((b, i) =>
+    `<section class="ledger-deck ledger-deck--${i + 1} ledger-deck--${b.scheme}">
+    <a class="ledger-word" href="${escapeHtml(b.href)}"${b.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(b.word)}</a>
+  </section>`).join('\n  ');
+  // The page's own name prints charcoal among the band's links.
+  const links = bandDeks('latest').replace(`<a href="${currentKey}.html">`, `<a href="${currentKey}.html" aria-current="page">`);
   const bodyHtml = `
-  <section class="arch-ledger">
-    <div class="arch-ledger-head arch-ledger-grid">
-      <span class="arch-ledger-cell lc-title"><span class="cell-text"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span></span>
-      <span class="arch-ledger-cell lc-author"><span class="cell-text">Author ${sortArrows('author', 'author')}</span></span>
-      <span class="arch-ledger-cell lc-date"><span class="cell-text">Date ${sortArrows('date', 'date')}</span></span>
-      <span class="arch-ledger-cell lc-kicker"><span class="cell-text">Tag ${sortArrows('kicker', 'tag')}</span></span>
-      <span class="arch-ledger-cell lc-section"><span class="cell-text">Section ${sortArrows('section', 'section')}</span></span>
-    </div>
-    ${posts.map(renderLedgerRow).join('')}
+  <header class="ledger-mast" id="top">
+    <a class="ledger-word" href="${escapeHtml(wordHref)}">${escapeHtml(word)}</a>
+  </header>
+  <div class="ledger-spacer" aria-hidden="true"></div>
+  <div class="ledger-pin">
+  <nav class="ledger-band ledger-band--head" aria-label="The Young American Magazine">
+    <p class="ledger-slot ledger-slot--left"><a href="./">The Young American Magazine</a></p>
+    <p class="ledger-slot ledger-slot--mid"><span>${escapeHtml(mid)}</span></p>
+    <p class="ledger-slot ledger-slot--right">${links}</p>
+  </nav>
+  </div>
+  ${contentHtml}
+  ${deckHtml}
+  <nav class="ledger-band ledger-band--foot" aria-label="Colophon">
+    <p class="ledger-slot ledger-slot--left"><span>Est. May 2025</span></p>
+    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic Inc.</span></p>
+    <p class="ledger-slot ledger-slot--right"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+  </nav>
+  <div class="ledger-field" aria-hidden="true"></div>
+  <section class="ledger-reprint">
+    <a class="ledger-word ledger-word--reprint" href="./" aria-label="The New Critic — home">The New Critic</a>
   </section>`;
+  // The root carries the mark too: the canvas behind the page — what
+  // shows when the reader pulls past either end — is painted charcoal
+  // off it (style.css, html.ledger-root).
   return renderPageShell({
+    currentKey,
+    title,
+    description,
+    bodyHtml,
+    bodyClass: 'ledger-page',
+    bare: true,
+    extraScripts,
+  }).replace('<html lang="en">', '<html lang="en" class="ledger-root">');
+}
+
+// THE FEATURE BLOCK between the band and the column head: the front
+// page's own cards on charcoal — p(doom) as the lead essay, the two
+// postscripts as a pair, Freak Show as the mirrored essay to close —
+// with every hover, plate and preview the homepage gives them (the
+// homepage's scripts ride along; see extraScripts below).
+const LEDGER_FEATURE_SLUGS = {
+  lead: 'pdoom',
+  pair: ['curtis-yarvin-jr', 'beyond-pain-an-interview-with-the'],
+  close: 'freak-show',
+};
+function renderLedgerFeature(features) {
+  if (!features) return '';
+  const rows = [
+    features.lead ? renderMegaHero(features.lead, { label: 'Essays' }) : '',
+    renderPostscriptPair(features.pair[0], features.pair[1]),
+    features.close ? renderMegaHero(features.close, { rev: true, label: 'Essays' }) : '',
+  ].filter(Boolean);
+  if (!rows.length) return '';
+  // The block carries the FIRST MOVEMENT's class (m--latest): the
+  // cards' reveal, stacking and hover rules are written per movement,
+  // and the block borrows the front page's opening one wholesale; the
+  // ground is turned charcoal by .ledger-feature (style.css).
+  return `
+  <div class="movement m--latest ledger-feature">
+  <div class="movement-body">
+  ${rows.map((r) => `<div class="wrap m--latest">
+    ${r}
+  </div>`).join('\n  <div class="row-divider m--latest"></div>\n  ')}
+  </div>
+  </div>`;
+}
+
+function renderArchivePage(posts, features) {
+  const contentHtml = `${renderLedgerFeature(features)}
+  <!-- SUBSCRIBE over the ledger: the word on charcoal, sized like the
+       head's. It rides up over the pinned band and pins in its place;
+       the column head then overtakes it. -->
+  <section class="ledger-subscribe">
+    <a class="ledger-word ledger-word--subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
+  </section>
+  <!-- THE COLUMN HEAD follows SUBSCRIBE up, OVERTAKES it and PINS at
+       the top in its place. -->
+    <div class="ledger-head ledger-row">
+      <span class="ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span>
+      <span class="ledger-cell lc-author">Author ${sortArrows('author', 'author')}</span>
+      <span class="ledger-cell lc-kicker">Tag ${sortArrows('kicker', 'tag')}</span>
+      <span class="ledger-cell lc-section">Section ${sortArrows('section', 'section')}</span>
+      <span class="ledger-cell lc-date">Date ${sortArrows('date', 'date')}</span>
+    </div>
+  <section class="ledger" aria-label="Every post">
+    <div class="ledger-body">${posts.map(renderLedgerRow).join('')}
+    </div>
+  </section>`;
+  return renderWordPage({
     currentKey: 'archive',
     title: 'Archive',
-    bodyHtml,
-    extraScripts: renderLedgerScript(),
+    word: 'Archive',
+    wordHref: 'archive.html',
+    mid: 'Editors’ Picks',
+    contentHtml,
+    deck: [
+      { word: 'About', href: 'about.html', scheme: 'charcoal' },
+      { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'crimson' },
+      { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'charcoal' },
+    ],
+    // The homepage's own scripts for the feature block's cards — the
+    // fitter, the click-to-open plates, the cover colours, share, the
+    // drawn lines, the held heads — then the ledger's own.
+    extraScripts: renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript()
+      + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderRailFixScript()
+      + renderLedgerScript(),
   });
+}
+
+// THE MANIFESTO, PREVIEWED: the About card carries the piece's opening —
+// its first two preformatted blocks, no photograph — and reads on to
+// the post itself.
+function manifestoPreview(html, blocks = 2) {
+  const parts = String(html || '').split(/(?=<pre class="manifesto-pre)|(?=<figure class="manifesto-fig)/);
+  return parts.filter((b) => b.startsWith('<pre class="manifesto-pre')).slice(0, blocks).join('\n');
 }
 
 // Extracts the three founders' name + headshot photo + signature + Substack
@@ -3902,14 +3994,25 @@ async function main() {
   }
 
   const archivePool = archivePosts;
+  // The archive's feature block reads the same post objects the
+  // homepage's rows do (heroArchive first — its objects carry the
+  // From the Archive tagline and previews), by slug.
+  const featureBySlug = (slug) =>
+    [heroArchive, essaysAll, postscriptAll, archivePosts].flat().find((p) => p && slugOf(p.link) === slug) || null;
+  const ledgerFeatures = {
+    lead: featureBySlug(LEDGER_FEATURE_SLUGS.lead),
+    pair: LEDGER_FEATURE_SLUGS.pair.map(featureBySlug),
+    close: featureBySlug(LEDGER_FEATURE_SLUGS.close),
+  };
 
   const pages = {
     'index.html': html,
     'essays.html': renderEssaysPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
     'postscript.html': renderPostscriptPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
     'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll, leadParas: CONTRA_LEAD_PARAS }),
-    'about.html': renderAboutPage(founders, manifestoHtml),
-    'archive.html': renderArchivePage(archivePool),
+    'about.html': renderAboutPage(founders, manifestoHtml,
+      [heroArchive, essaysAll, postscriptAll, archivePosts].flat().find((p) => p && slugOf(p.link) === 'the-new-critic-secession') || null),
+    'archive.html': renderArchivePage(archivePool, ledgerFeatures),
   };
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
