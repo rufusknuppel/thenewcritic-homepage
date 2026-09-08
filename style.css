@@ -12701,3 +12701,89 @@ main.has-mega .section-band > .band-dek{
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
 }
+/* A 1PX WHITE RULE OVER AND UNDER EVERY CONTENT CARD: the essay
+   heroes' box, the postscript cells and the review cells, on the front
+   page and wherever else they stand. Drawn just outside the box, so
+   the cover that fills it never covers the line. */
+.duo-half--mega,
+.latest-cell--ps,
+.latest-cell--contra,
+main.has-mega .duo-half--mega,
+main.has-mega .latest-cell--ps,
+main.has-mega .latest-cell--contra{
+  box-shadow: 0 -1px 0 0 #FFFFFF, 0 1px 0 0 #FFFFFF;
+}
+/* THE TOP RULE RIDES TO THE BAND. Each card's top rule is a sticky line
+   of its own: it comes up with the card, holds at the pinned band's
+   foot (72) while the card scrolls under, and is carried off by the
+   card's own foot, where it meets the bottom rule. Drawn as the box's
+   ::before — one pixel tall, pulled up a pixel so it stands just over
+   the box and takes no room in it; on the flex cells it is a flex item
+   of no width in the row (100% less its own 100%), and of no height in
+   the column. The bottom rule stays the box's own shadow. The hero's
+   empty credit box no longer paints its ground over the line. */
+.duo-half--mega,
+.latest-cell--ps,
+.latest-cell--contra,
+main.has-mega .duo-half--mega,
+main.has-mega .latest-cell--ps,
+main.has-mega .latest-cell--contra{
+  box-shadow: 0 1px 0 0 #FFFFFF;
+}
+.duo-half--mega::before,
+.latest-cell--ps::before,
+.latest-cell--contra::before{
+  content: '';
+  display: block;
+  position: sticky; top: 72px;
+  box-sizing: border-box;
+  width: 100%; height: 1px;
+  margin: -1px -100% 0 0;
+  padding: 0; border: 0;
+  flex: none; align-self: flex-start;
+  background: #FFFFFF;
+  z-index: 20;
+  pointer-events: none;
+}
+main.has-mega .card .duo-half--mega .duo-panel .panel-col--right .ground-credit{ background: transparent; }
+/* THE RULES STAND ON WHAT THE READER SEES. The hero's box hangs 24
+   past its content each side, so its two rules are inset 24 to the
+   content's own edges; the cells' boxes are their content, so theirs
+   run the box's width. The bottom rule is the box's ::after now — the
+   old ring's element, one pixel on the foot alone — so it can be inset
+   like the top; the box's own shadow is struck. */
+.duo-half--mega,
+.latest-cell--ps,
+.latest-cell--contra,
+main.has-mega .duo-half--mega,
+main.has-mega .latest-cell--ps,
+main.has-mega .latest-cell--contra{ box-shadow: none; }
+.latest-cell--ps::after,
+.latest-cell--contra::after,
+.duo-half--mega::after{
+  content: '';
+  position: absolute;
+  inset: auto 0 -1px 0;
+  width: auto; height: 1px;
+  border: 0; box-shadow: none;
+  background: #FFFFFF;
+  z-index: 20;
+  pointer-events: none;
+}
+.duo-half--mega::after{ inset: auto 24px -1px 24px; }
+.duo-half--mega::before{
+  width: calc(100% - 48px);
+  margin: -1px calc(-100% + 24px) 0 24px;
+}
+/* TWO CORRECTIONS TO THE RULES. A postscript cell turned over
+   (pic-right) lays its row from the right, so the sticky line's
+   no-width trick has to give up its width on the LEFT there — as
+   written it stood off the cell's right edge. And the bottom rule
+   stands on the box's own last pixel row rather than under it: the
+   banner that opens the next movement overlaps the last row's foot,
+   and was covering a rule drawn outside the box. */
+.latest-cell--ps.pic-right::before{ margin: -1px 0 0 -100%; }
+.latest-cell--ps::after,
+.latest-cell--contra::after,
+.duo-half--mega::after{ inset: auto 0 0 0; }
+.duo-half--mega::after{ inset: auto 24px 0 24px; }
