@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtsznghz">
+<link rel="stylesheet" href="style.css?v=mtua1rul">
 <style>html.fonts-loading body{opacity:0}</style>
 <script>
 (function () {
@@ -2121,7 +2121,7 @@
       var overBand = false;
       if (r.top > 1.5 && r.top < vh) {
         var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band'));
+      overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band, .stack-band--bw'));
       }
       b.classList.toggle('is-under-band', overBand);
     });
@@ -4074,6 +4074,36 @@
     word.style.marginTop = (air - (baseY - capH)).toFixed(2) + 'px';
     mast.style.height = Math.round(air + capH + descH + air) + 'px';
   }
+  var pinnable = [].slice.call(document.querySelectorAll(
+    '.ledger-band--head, .ledger-head, .ledger-subscribe, .ledger-deck, .ledger-band--foot'
+  ));
+  var mastEl0 = document.querySelector('.ledger-mast');
+  var overtakers = [].slice.call(document.querySelectorAll(
+    '.ledger-subscribe, .ledger-head, .ledger-deck, .ledger-band--foot'
+  ));
+  function markAtTop() {
+    var vh = document.documentElement.clientHeight;
+    pinnable.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      el.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      el.classList.toggle('is-at-bottom', r.bottom >= vh - 0.5 && r.top < vh - 0.5);
+      if (el.classList.contains('ledger-band--head') && mastEl0) {
+        el.classList.toggle('is-under-word', r.top <= mastEl0.getBoundingClientRect().bottom + 0.5);
+      }
+    });
+    overtakers.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      var under = false;
+      if (r.top > 1.5 && r.top < vh) {
+        var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
+        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson'));
+      }
+      el.classList.toggle('is-under-band', under);
+    });
+  }
+  markAtTop();
+  addEventListener('scroll', markAtTop, { passive: true });
+  addEventListener('load', markAtTop);
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
@@ -4083,7 +4113,7 @@
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitMast, 100);
+    resizeTimer = setTimeout(function () { fitMast(); markAtTop(); }, 100);
   });
   if (!ledger || !body) return;
   var sortBtns = document.querySelectorAll('.arch-sort');

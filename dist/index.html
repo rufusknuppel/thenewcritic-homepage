@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtsznghz">
+<link rel="stylesheet" href="style.css?v=mtua1rul">
 <style>html.fonts-loading body{opacity:0}</style>
 <script>
 (function () {
@@ -92,7 +92,7 @@
   <div class="movement m--latest">
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Tuesday, September 8, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Wednesday, September 9, 2026</span></p>
     <p class="band-deks"><a href="archive.html">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="movement-body">
@@ -2665,7 +2665,7 @@
       var overBand = false;
       if (r.top > 1.5 && r.top < vh) {
         var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band'));
+      overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band, .stack-band--bw'));
       }
       b.classList.toggle('is-under-band', overBand);
     });

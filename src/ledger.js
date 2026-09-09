@@ -125,6 +125,47 @@
     // one band and the next where the page's canvas shows through.
     mast.style.height = Math.round(air + capH + descH + air) + 'px';
   }
+  // A BAND PINNED ON THE SITE'S HEAD DROPS ITS TOP RULE: every band and
+  // word band that can pin is marked .is-at-top while its top edge sits
+  // on the viewport's (style.css strikes the rule on the mark).
+  var pinnable = [].slice.call(document.querySelectorAll(
+    '.ledger-band--head, .ledger-head, .ledger-subscribe, .ledger-deck, .ledger-band--foot'
+  ));
+  // …and .is-at-bottom while its foot sits on the viewport's; the head
+  // band is .is-under-word once it has risen to the word's foot (the
+  // spacer between them gone), which is when its top rule comes back.
+  var mastEl0 = document.querySelector('.ledger-mast');
+  // AN OVERTAKER CARRIES THE RULE: a block riding up over a pinned blue
+  // band — SUBSCRIBE over the head band, the column head, a deck word
+  // over the blue word or the band — is .is-under-band while the pixel
+  // above its top edge is a ruled blue band's, and draws the band's
+  // bottom rule on its own top edge as it climbs (style.css).
+  var overtakers = [].slice.call(document.querySelectorAll(
+    '.ledger-subscribe, .ledger-head, .ledger-deck, .ledger-band--foot'
+  ));
+  function markAtTop() {
+    var vh = document.documentElement.clientHeight;
+    pinnable.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      el.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      el.classList.toggle('is-at-bottom', r.bottom >= vh - 0.5 && r.top < vh - 0.5);
+      if (el.classList.contains('ledger-band--head') && mastEl0) {
+        el.classList.toggle('is-under-word', r.top <= mastEl0.getBoundingClientRect().bottom + 0.5);
+      }
+    });
+    overtakers.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      var under = false;
+      if (r.top > 1.5 && r.top < vh) {
+        var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
+        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson'));
+      }
+      el.classList.toggle('is-under-band', under);
+    });
+  }
+  markAtTop();
+  addEventListener('scroll', markAtTop, { passive: true });
+  addEventListener('load', markAtTop);
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
@@ -134,7 +175,7 @@
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitMast, 100);
+    resizeTimer = setTimeout(function () { fitMast(); markAtTop(); }, 100);
   });
   // Everything from here on is the ledger's own — the archive's sorts,
   // shuffle and deep links; About carries the word bands alone.

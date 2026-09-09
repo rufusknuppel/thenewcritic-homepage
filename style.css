@@ -12787,3 +12787,114 @@ main.has-mega .latest-cell--contra{ box-shadow: none; }
 .latest-cell--contra::after,
 .duo-half--mega::after{ inset: auto 0 0 0; }
 .duo-half--mega::after{ inset: auto 24px 0 24px; }
+/* ON ABOUT THE DECK STOOD ON THE CELL'S LAST ROW: ARCHIVE reaches one
+   pixel up in its own charcoal to close seams, and that pixel was the
+   Secession card's bottom rule. The block ends a pixel under the card,
+   so the deck's reach lands on ground instead. */
+body.ledger-page .m--latest.ledger-feature.about-hero .movement-body{ padding-bottom: 1px; }
+
+/* ---------------------------------------------------------------
+   EVERY BLUE BAND AND BANNER IS RULED OVER AND UNDER IN WHITE: the
+   front page's masthead band, section bands and colophon, the blue
+   banners of its closing stack; the word pages' head and foot bands,
+   the ledger's column head, and the blue words of their decks. One
+   pixel inside each edge. (Said past the struck-rule and seam-closer
+   shadows above at their own weights and heavier.) */
+main.has-mega .section-band:is(*, .r.r.r.r.r),
+main.has-mega .section-band--colophon:is(*, .r.r.r.r.r),
+main.has-mega .stack-band--bw:is(*, .r.r.r.r.r),
+main.has-mega .m--colophon > .stack-band--bw:is(*, .r.r.r.r.r){
+  box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF;
+}
+body.ledger-page .ledger-band--head,
+body.ledger-page .ledger-band--foot,
+body.ledger-page .ledger-head,
+body.ledger-page .ledger-deck--crimson{
+  box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF;
+}
+/* THE CARD'S RULE MERGES WITH THE BAND'S: the band's bottom rule sits
+   on its last pixel row, 71 down, so the card's sticky rule holds at
+   71 too — one line, the band's, with the card's under it. */
+.duo-half--mega::before,
+.latest-cell--ps::before,
+.latest-cell--contra::before{ top: 71px; }
+/* A BAND PINNED ON THE SITE'S HEAD DROPS ITS TOP RULE: the screen's
+   edge is line enough. The front page's bands and stack banners carry
+   the fitter's own .is-at-top; the word pages' bands, column head,
+   SUBSCRIBE and decks take it from src/ledger.js. */
+main.has-mega .section-band.is-at-top:is(*, .r.r.r.r.r),
+main.has-mega .stack-band--bw.is-at-top:is(*, .r.r.r.r.r),
+main.has-mega .m--colophon > .stack-band--bw.is-at-top:is(*, .r.r.r.r.r),
+body.ledger-page .ledger-band--head.is-at-top,
+body.ledger-page .ledger-head.is-at-top,
+body.ledger-page .ledger-deck--crimson.is-at-top{
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}
+/* THE RULE STANDS AT THE HEAD OF THE FIELD, NOT ON THE BAND, UNTIL THE
+   BAND ARRIVES. On open a section reads word, field, band: the white
+   line between the word and the blue is drawn at the field's head —
+   under the wordmark, on the spacer's top edge under each section's
+   word, on the ledger pages' spacer — and the band below carries its
+   bottom rule alone. As the band rises the field shrinks under the
+   word; when the band's top meets the word's foot (.is-under-wordmark
+   on the front page, .is-under-word on the word pages) the top rule
+   comes onto the band and rides up with it. A band pinned on the
+   screen's head drops its top rule, one standing on the screen's foot
+   drops its bottom rule. */
+body.has-mega .site-nav--top .topbar-wordmark:is(*, .r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .word-spacer{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-spacer{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .section-band:not(.section-band--colophon):is(*, .r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-under-wordmark:is(*, .r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-top:is(*, .r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .section-band.is-at-bottom:is(*, .r.r.r.r.r.r.r.r){ box-shadow: none; }
+main.has-mega .section-band.is-under-wordmark.is-at-bottom:is(*, .r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-band--head{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-band--head.is-under-word{ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-band--head.is-at-top{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-band--head.is-at-bottom{ box-shadow: none; }
+body.ledger-page .ledger-band--head.is-under-word.is-at-bottom{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-head.is-at-bottom,
+body.ledger-page .ledger-deck--crimson.is-at-bottom{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-head.is-at-top,
+body.ledger-page .ledger-deck--crimson.is-at-top{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+/* AND AT THE PAGE'S END THE SAME IN REVERSE: the colophon band carries
+   its top rule alone, and the line between the blue and the name is
+   drawn at the field's foot, on the reprint's edge, where the field
+   lifts off it. */
+main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .foot-field:is(*, .r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-band--foot{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-field{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+/* (The colophon at the screen's head carries no rule at all: its top
+   is the screen's edge, its foot the field's.) */
+main.has-mega .section-band--colophon.is-at-top:is(*, .r.r.r.r.r.r.r.r.r){ box-shadow: none; }
+/* (The word pages' colophon band at the screen's head, likewise: no
+   rule at all — the screen's edge above, the field's foot below.) */
+body.ledger-page .ledger-band--foot.is-at-top{ box-shadow: none; }
+/* WHEN A BAND IS OVERTAKEN, ITS BOTTOM RULE RIDES UP WITH THE
+   OVERTAKER: the block climbing over a pinned blue band — a section's
+   word or a stack banner on the front page, SUBSCRIBE, the column
+   head, a deck word or the colophon band on the word pages — draws the
+   rule on its own top edge while that edge lies over the band, so the
+   line moves up and covers the band's words with the block. */
+main.has-mega .page-banner.is-under-band:is(*, .r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page :is(.ledger-subscribe, .ledger-deck--charcoal).is-under-band{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page :is(.ledger-head, .ledger-deck--crimson, .ledger-band--foot).is-under-band{ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-band--foot.is-under-band{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+/* THE LINE AT THE FIELD'S HEAD IS DRAWN ON THE WORD'S FOOT, not the
+   spacer's top: the word is pinned a level over the spacer and painted
+   over its first row, so the spacer's rule never showed. The section
+   words, ARCHIVE and ABOUT carry it on their own foot; a word climbing
+   over a ruled band carries both. */
+main.has-mega .word-spacer{ box-shadow: none; }
+body.ledger-page .ledger-spacer{ box-shadow: none; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(*, .r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band).is-under-band:is(*, .r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-mast{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+/* THE TOP RULE IS THE SPACER'S: restored on the spacer's top edge under
+   the section words, ARCHIVE and ABOUT; the word's foot carries none. */
+main.has-mega .word-spacer{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-spacer{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(*, .r.r.r.r.r.r.r){ box-shadow: none; }
+body.ledger-page .ledger-mast{ box-shadow: none; }

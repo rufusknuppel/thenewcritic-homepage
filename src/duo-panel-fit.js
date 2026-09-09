@@ -3111,7 +3111,9 @@
       var overBand = false;
       if (r.top > 1.5 && r.top < vh) {
         var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band'));
+        // A blue stack banner is a ruled band too: the word climbing over
+      // it carries its rule the same way.
+      overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band, .stack-band--bw'));
       }
       b.classList.toggle('is-under-band', overBand);
     });
