@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtsznghz">
+<link rel="stylesheet" href="style.css?v=mtua1rul">
 <style>html.fonts-loading body{opacity:0}</style>
 <script>
 (function () {
@@ -2408,7 +2408,7 @@
       var overBand = false;
       if (r.top > 1.5 && r.top < vh) {
         var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band'));
+      overBand = !!(aboveB && aboveB.closest && aboveB.closest('.section-band, .stack-band--bw'));
       }
       b.classList.toggle('is-under-band', overBand);
     });
