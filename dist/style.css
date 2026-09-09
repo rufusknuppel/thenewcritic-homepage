@@ -5908,3 +5908,6 @@ main.has-mega .word-spacer{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
 body.ledger-page .ledger-spacer{ box-shadow: inset 0 1px 0 0 #FFFFFF; }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(*, .r.r.r.r.r.r.r){ box-shadow: none; }
 body.ledger-page .ledger-mast{ box-shadow: none; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(*, .r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band).is-under-band:is(*, .r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF, inset 0 -1px 0 0 #FFFFFF; }
+body.ledger-page .ledger-mast{ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
