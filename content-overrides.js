@@ -362,6 +362,12 @@ module.exports = {
   'mrbeast-slop-auteur': {
     kicker: 'YouTube Artistry',
   },
+  'present-at-the-creation': {
+    kicker: 'Monitoring the Situation',
+  },
+  'jasmine-suns-project-of-self-transformation': {
+    kicker: 'Journalistic Becoming',
+  },
   'the-doctor-of-girlhood': {
     kicker: 'Books',
   },

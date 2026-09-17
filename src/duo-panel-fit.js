@@ -3409,7 +3409,42 @@
     var inkBottom = baseline2 + inkBelow;
     // THE BAND CLOSES 48 UNDER THE FEET, as it opens 48 over the caps.
     wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
+    seatHit(name, wb.top + AIR, inkBottom);
     return { wb: wb, inkBottom: inkBottom };
+  }
+  // THE WORD TAKES THE POINTER ON ITS INK ALONE (2026-09-17). A word's
+  // link is a block the page's width and the band's height, so the
+  // margins and the air over the caps lit it. The link takes no
+  // pointer now; a box inside it, seated on the ink — cap top to the
+  // feet, first letter's edge to the last's, the counters and the
+  // gaps between letters included — takes it instead, and the link
+  // lights and follows as the box's ancestor.
+  function seatHit(name, top, bottom) {
+    var link = name.closest ? name.closest('a') : null;
+    if (!link) return;
+    var hit = null;
+    for (var c = link.firstElementChild; c; c = c.nextElementSibling) {
+      if (c.classList.contains('ops-hit')) { hit = c; break; }
+    }
+    if (!hit) {
+      hit = document.createElement('span');
+      hit.className = 'ops-hit';
+      hit.setAttribute('aria-hidden', 'true');
+      link.appendChild(hit);
+      link.classList.add('has-hit');
+      // The word's band goes dead with the link: its ground held
+      // under the pointer in the margins as the band's own hover.
+      var band = link.closest('.page-banner, .reprint');
+      if (band) band.classList.add('has-hit');
+    }
+    var i = inkSpanOf(name);
+    if (!i) return;
+    if (getComputedStyle(link).position === 'static') link.style.position = 'relative';
+    var lr = link.getBoundingClientRect();
+    hit.style.left = (i.left - lr.left).toFixed(2) + 'px';
+    hit.style.top = (top - lr.top).toFixed(2) + 'px';
+    hit.style.width = (i.right - i.left).toFixed(2) + 'px';
+    hit.style.height = (bottom - top).toFixed(2) + 'px';
   }
   function fitMastheadFill() {
     var name = document.querySelector('.site-nav--top .topbar-name');

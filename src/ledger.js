@@ -53,6 +53,22 @@
           var over = ink0.top - rr.top;
           ledger.style.paddingTop = Math.max(0, gap - over).toFixed(2) + 'px';
         }
+        // CLEAR FILTER STANDS WHERE THE FIRST ROW'S COURIER STANDS,
+        // in the search column (2026-09-17): the head carries it, so
+        // it holds that seat as the ledger scrolls under the pinned
+        // head. The seat is the first row's line measured from the
+        // ledger's own top (a fixed distance, pinned or not) below
+        // the head's foot.
+        var clearEl = document.querySelector('.ledger-head .arch-clear');
+        var headEl = document.querySelector('.ledger-head');
+        var move = document.querySelector('.m--ledger');
+        if (clearEl && headEl && move && row0) {
+          var rr2 = row0.getBoundingClientRect();
+          var seat = rr2.top - move.getBoundingClientRect().top + headEl.offsetHeight;
+          clearEl.style.top = seat.toFixed(2) + 'px';
+          clearEl.style.height = rr2.height.toFixed(2) + 'px';
+          clearEl.style.lineHeight = rr2.height.toFixed(2) + 'px';
+        }
       }
     }
     var field = document.querySelector('.ledger-field');
@@ -95,14 +111,124 @@
     el.removeChild(probe);
     return { top: base1 - m.actualBoundingBoxAscent, bottom: base2 + m.actualBoundingBoxDescent };
   }
+  // EVERY SYMBOL IN THE HEAD STANDS ON THE INK'S CENTRE (2026-09-17):
+  // the sort arrows, the shuffle, the glass and the X are each seated
+  // so the middle of their own ink is the middle of the ink of the
+  // word beside them — the word's cap top to its baseline (the
+  // descender of Tag's g is left out, so every column's symbols stand
+  // on one line). The words' ink is read as the page reads all air:
+  // a canvas measure of the letters on a probed baseline.
+  function glyphInk(el, text) {
+    var cs = getComputedStyle(el);
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return null;
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var txt = text != null ? text : ((el.textContent || '').trim() || 'X');
+    if (cs.textTransform === 'uppercase') txt = txt.toUpperCase();
+    var m = cv.measureText(txt);
+    if (m.actualBoundingBoxAscent == null) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base = probe.getBoundingClientRect().bottom;
+    el.removeChild(probe);
+    return { top: base - m.actualBoundingBoxAscent, bottom: base + m.actualBoundingBoxDescent, base: base };
+  }
+  function svgInk(svg) {
+    var r = svg.getBoundingClientRect();
+    var vb = svg.viewBox && svg.viewBox.baseVal;
+    var bb = null;
+    try { bb = svg.getBBox(); } catch (e) {}
+    if (!vb || !bb || !vb.height) return { top: r.top, bottom: r.bottom };
+    var k = r.height / vb.height;
+    return { top: r.top + (bb.y - vb.y) * k, bottom: r.top + (bb.y + bb.height - vb.y) * k };
+  }
+  function seatOn(el, ink, target) {
+    if (!el || !ink || !target) return null;
+    // A symbol not on the page (CLEAR FILTER hidden) has no box to
+    // seat; it is seated when it appears (applyFilter refits).
+    if (!el.getBoundingClientRect().height) return null;
+    var want = (target.top + target.bottom) / 2;
+    var have = (ink.top + ink.bottom) / 2;
+    var cur = parseFloat(el.style.top) || 0;
+    el.style.position = 'relative';
+    el.style.top = (cur + want - have).toFixed(2) + 'px';
+    return want - have;
+  }
+  function fitSymbols() {
+    var head = document.querySelector('.ledger-head');
+    if (!head) return [];
+    var out = [];
+    [].forEach.call(head.querySelectorAll('.ledger-cell'), function (cell) {
+      // The word's measure is the face's cap height on its baseline
+      // ('H'), not the letters' own reach: Title's l rises past the
+      // cap and Tag's g drops under the line, and read letter by
+      // letter the columns' symbols would stand on five lines.
+      var label = cell.querySelector('.lc-label');
+      var lk = label && glyphInk(label, 'H');
+      if (lk) lk = { top: lk.top, bottom: lk.base };
+      var arrows = cell.querySelector('.arch-sort-arrows');
+      if (arrows && lk) {
+        var up = arrows.querySelector('.arch-sort[data-dir="asc"]'), dn = arrows.querySelector('.arch-sort[data-dir="desc"]');
+        var iu = up && glyphInk(up), idn = dn && glyphInk(dn);
+        if (iu && idn) out.push(['arrows', seatOn(arrows, { top: iu.top, bottom: idn.bottom }, lk)]);
+      }
+      var shuffle = cell.querySelector('.arch-shuffle');
+      if (shuffle && lk) out.push(['shuffle', seatOn(shuffle, glyphInk(shuffle), lk)]);
+      var field = cell.querySelector('.arch-search');
+      var glass = cell.querySelector('.arch-search-glass');
+      if (field && glass) {
+        // The field's word: its baseline is where a line of its own
+        // height sets one — centred in the box by the face's bounds.
+        var fcs = getComputedStyle(field);
+        var cv = document.createElement('canvas').getContext('2d');
+        cv.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
+        var fm = cv.measureText('H');
+        var fr = field.getBoundingClientRect();
+        var half = (fr.height - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2;
+        var fbase = fr.top + half + fm.fontBoundingBoxAscent;
+        out.push(['glass', seatOn(glass, svgInk(glass), { top: fbase - fm.actualBoundingBoxAscent, bottom: fbase })]);
+      }
+      var clearLabel = cell.querySelector('.arch-clear-label');
+      var x = cell.querySelector('.arch-clear-x');
+      if (clearLabel && x) {
+        var ck = glyphInk(clearLabel, 'H');
+        if (ck) out.push(['x', seatOn(x, svgInk(x), { top: ck.top, bottom: ck.base })]);
+      }
+    });
+    return out;
+  }
+  try { window.__ncFitSymbols = fitSymbols; } catch (e) {}
   function fitInkAir() {
+    fitSymbols();
     var ledgerBody = document.querySelector('.movement.m--ledger > .movement-body');
     if (ledgerBody && body) {
       ledgerBody.style.marginBottom = '';
+      // The pad from the last fit (below) is left in place and taken
+      // out of the measure by arithmetic: resetting it first shrank
+      // the page for a frame and the browser clamped the scroll, so a
+      // refit on resize dropped the pinned head down the screen.
+      var pad0 = parseFloat(ledgerBody.style.paddingBottom) || 0;
       var rows = body.querySelectorAll('.ledger-item:not(.is-filtered-out)');
       var lastTitle = rows.length ? rows[rows.length - 1].querySelector('.lc-title') : null;
       var ink = lastTitle && inkOf(lastTitle);
-      if (ink) ledgerBody.style.marginBottom = (ink.bottom - ledgerBody.getBoundingClientRect().bottom).toFixed(2) + 'px';
+      if (ink) ledgerBody.style.marginBottom = (ink.bottom - (ledgerBody.getBoundingClientRect().bottom - pad0)).toFixed(2) + 'px';
+      // A FILTERED LEDGER CAN BE SHORTER THAN A SCREEN, and then the
+      // column head could never reach the top to pin: the rows' block
+      // is padded under its last row by the shortfall, so the head
+      // lands on the screen's edge with the rows under it and the
+      // page's ground to the reprint.
+      var pad = 0;
+      if (filtered) {
+        var headEl0 = document.querySelector('.ledger-head');
+        if (headEl0) {
+          var headTopDoc = headEl0.getBoundingClientRect().top + window.scrollY;
+          var unpadded = document.documentElement.scrollHeight - pad0;
+          var short = document.documentElement.clientHeight - (unpadded - headTopDoc);
+          if (short > 0) pad = Math.ceil(short);
+        }
+      }
+      ledgerBody.style.paddingBottom = pad ? pad + 'px' : '';
     }
     var mosaic = document.querySelector('.about-mosaic-block');
     if (mosaic) {
@@ -232,7 +358,26 @@
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () { fitMast(); markAtTop(); }, 100);
+    // A refit resets the word bands to measure them, and for that
+    // frame the page is shorter: the browser clamps the scroll, and a
+    // head pinned on a short (filtered) ledger came down the screen.
+    // If the head stood pinned before, it is put back after.
+    var headEl = document.querySelector('.ledger-head');
+    if (headEl && headEl.getBoundingClientRect().top <= 0.5 && headEl.getBoundingClientRect().bottom > 0.5) relandAfterFit = true;
+    resizeTimer = setTimeout(function () {
+      fitMast(); markAtTop();
+      if (relandAfterFit && filtered && !target) land();
+    }, 100);
+  });
+  // The front page's fitter announces the end of each of its passes
+  // (newcritic:fit); its resize pass comes after the one above and
+  // resets the word bands as it measures, so the head is put back
+  // once more when it is done.
+  var relandAfterFit = false;
+  window.addEventListener('newcritic:fit', function () {
+    if (!relandAfterFit) return;
+    if (filtered && !target) { fitMast(); land(); }
+    setTimeout(function () { relandAfterFit = false; }, 400);
   });
   // Everything from here on is the ledger's own — the archive's sorts,
   // shuffle and deep links; About carries the word bands alone.
@@ -314,19 +459,101 @@
     return hp;
   };
   var filtered = false;
-  function applyFilter() {
+  var clearBtn = document.querySelector('.arch-clear');
+  // THE SEARCH (2026-09-17): a courier field in the head's sixth
+  // column. Every keystroke narrows the ledger to the rows whose
+  // title, author, tag, section or date carries the words typed (each
+  // word on its own, in any order); it stacks with the hash's filter,
+  // and CLEAR FILTER empties it with the rest.
+  var searchEl = document.querySelector('.arch-search');
+  var textOf = function (it) {
+    if (it.__text == null) {
+      it.__text = [it.getAttribute('data-title'), it.getAttribute('data-author'),
+        it.getAttribute('data-kicker'), it.getAttribute('data-section'),
+        (it.querySelector('.lc-date') || {}).textContent || ''].join(' ').toLowerCase();
+    }
+    return it.__text;
+  };
+  // `typed`: the change came from the search field. The full refit
+  // (fitMast) resets the word bands to measure them, and for that
+  // frame the page is shorter — the browser clamps the scroll and the
+  // pinned head, with the field in it, jumped down the screen under
+  // the reader's keystroke. Typed, only the air under the rows is
+  // re-fitted (fitInkAir: no reset, arithmetic on the last pad), and
+  // the head is put on the screen's top edge with the rows under it —
+  // a no-op once it stands there.
+  function applyFilter(typed) {
     var hp = readHash();
-    var sec = hp.section || '', topic = hp.topic || '';
-    filtered = !!(sec || topic);
+    var sec = hp.section || '', topic = hp.topic || '', author = hp.author || '';
+    var words = searchEl ? searchEl.value.trim().toLowerCase().split(/\s+/).filter(Boolean) : [];
+    filtered = !!(sec || topic || author || words.length);
     items.forEach(function(it){
       var show = (!sec || it.getAttribute('data-section') === sec)
-        && (!topic || it.getAttribute('data-kicker') === topic);
+        && (!topic || it.getAttribute('data-kicker') === topic)
+        && (!author || it.getAttribute('data-author') === author);
+      if (show && words.length) {
+        var t = textOf(it);
+        for (var w = 0; w < words.length; w++) if (t.indexOf(words[w]) < 0) { show = false; break; }
+      }
       it.classList.toggle('is-filtered-out', !show);
     });
-    fitMast();
+    // CLEAR FILTER stands at the right of the title column's head
+    // while a filter is on.
+    if (clearBtn) clearBtn.hidden = !filtered;
+    if (!typed) { fitMast(); return; }
+    fitInkAir();
+    if (filtered) {
+      var headEl1 = document.querySelector('.ledger-head');
+      var move1 = document.querySelector('.m--ledger');
+      if (headEl1 && move1) {
+        var top1 = move1.getBoundingClientRect().top + window.scrollY - headEl1.offsetHeight;
+        if (Math.abs(window.scrollY - top1) > 0.5) window.scrollTo({ top: Math.max(0, top1), behavior: 'instant' });
+      }
+    }
   }
   applyFilter();
   addEventListener('hashchange', function () { applyFilter(); land(); requestAnimationFrame(land); });
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      // The hash goes without a jump: the rows come back where the
+      // reader stands.
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+      if (searchEl) { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); return; }
+      applyFilter();
+    });
+  }
+  if (searchEl) {
+    // Typing filters in place; the head is not re-landed on — the
+    // reader is at the field, which is in the head.
+    // THE FIELD IS AS WIDE AS ITS WORD: Search, or what is typed,
+    // measured in its own face, so the glass stands beside it.
+    // Measured on a mirror of the text set in the field's own style
+    // (a canvas estimate ran short of the laid-out italic and the
+    // field scrolled its first letters out of its box), with the
+    // field's own side padding for the italic's overhang.
+    var mirror = document.createElement('span');
+    mirror.className = 'arch-search-mirror';
+    mirror.setAttribute('aria-hidden', 'true');
+    searchEl.parentNode.insertBefore(mirror, searchEl);
+    var sizeField = function () {
+      var cs = getComputedStyle(searchEl);
+      mirror.style.font = cs.font;
+      mirror.style.letterSpacing = cs.letterSpacing;
+      mirror.textContent = searchEl.value || searchEl.placeholder || '';
+      var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      searchEl.style.width = Math.ceil(mirror.getBoundingClientRect().width + padX + 2) + 'px';
+    };
+    sizeField();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeField);
+    searchEl.addEventListener('input', function () { sizeField(); applyFilter(true); });
+    // The glass beside the field puts the caret in it.
+    var glass = document.querySelector('.arch-search-glass');
+    if (glass) glass.addEventListener('click', function () { searchEl.focus(); });
+    searchEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); searchEl.blur(); }
+      if (e.key === 'Enter') e.preventDefault();
+    });
+  }
 
   var target = null;
   if (hashParams.post) {
@@ -383,11 +610,17 @@
       document.fonts.ready.then(land);
     }
     // The feature block's cards are fitted a while after the fonts;
-    // the landing is re-taken on each until the reader moves.
-    var settle = 0;
+    // the landing is re-taken every quarter second until the page has
+    // held still under it twice running (or four seconds have gone),
+    // or the reader moves.
+    var settle = 0, still = 0;
     var settleTimer = setInterval(function () {
+      var headEl = document.querySelector('.ledger-head');
+      var before = headEl ? headEl.getBoundingClientRect().top : 0;
       land();
-      if (++settle >= 8) clearInterval(settleTimer);
+      var after = headEl ? headEl.getBoundingClientRect().top : 0;
+      still = (Math.abs(before) < 1 && Math.abs(after) < 1) ? still + 1 : 0;
+      if (++settle >= 16 || still >= 2) clearInterval(settleTimer);
     }, 250);
     ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
       addEventListener(ev, function () { clearInterval(settleTimer); }, { once: true, passive: true });

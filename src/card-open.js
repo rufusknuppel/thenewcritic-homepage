@@ -98,6 +98,17 @@
       // else on it — the paragraphs, the air — is stopped here.
       if (hit(e, '.latest-plate') && !hit(e, '.plate-title')) {
         e.preventDefault(); e.stopPropagation();
+        return;
+      }
+      // THE KICKER FILTERS THE LEDGER (2026-09-17): on the row cells it
+      // stands inside the plate's own link (an anchor cannot hold an
+      // anchor), so it carries its destination as data-href — the
+      // archive filtered to its kind — and the click goes there, not
+      // to the post.
+      var kicker = hit(e, '.plate-title[data-href]');
+      if (kicker) {
+        e.preventDefault(); e.stopPropagation();
+        location.href = kicker.getAttribute('data-href');
       }
     });
     // The bracketed span is not a button, so its keys are its own.

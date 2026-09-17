@@ -12959,8 +12959,10 @@ main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-s
    html[data-theme] and the font gate restores the stored choice
    before first paint.
    =================================================================== */
-html{ --g: #121417; --k: #FFFFFF; }
-html[data-theme="light"]{ --g: #FFFFFF; --k: #121417; }
+/* LIGHT IS THE DEFAULT (2026-09-17, later): the bare page is white
+   with charcoal ink; DARK is the stored choice. */
+html{ --g: #FFFFFF; --k: #121417; }
+html[data-theme="dark"]{ --g: #121417; --k: #FFFFFF; }
 /* ===================================================================
    2026-09-16, LATER: EVERY CHARCOAL AND WHITE BELOW THIS LINE IS SWAPPED
    — the ground, bands and cards are charcoal, the OPS words and every
@@ -13245,8 +13247,8 @@ main.has-mega .marginalia .theme-toggle > .theme-toggle-sep{ line-height: 13px; 
    blue as the hand came to click. */
 main.has-mega .marginalia .theme-toggle > span{ transition: color .25s ease; }
 main.has-mega .marginalia .theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
-html:not([data-theme="light"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-html[data-theme="light"] main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
 /* HEX (2026-09-17): a third word under the two, and under it — shown
    on HEX, gone on Enter, Escape or leaving it — a courier field in the
@@ -13515,9 +13517,175 @@ main.has-mega .marginalia .social-stack > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-decoration: none;
 }
 main.has-mega .marginalia .social-stack > a > svg{ display: block; }
+/* A SQUARE PATCH UNDER THE POINTER (2026-09-17): each mark's link is
+   its 13 square, and a 13 square is a small thing to find. A patch
+   five wider on every side — 23 square, drawn on nothing — takes the
+   pointer for it; the marks and the dashes stand where they stood,
+   the dashes passing the pointer through (seated, they stood over
+   the patch's foot). */
+main.has-mega .marginalia .social-stack > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; }
+main.has-mega .marginalia .social-stack > a::before{
+  content: ''; position: absolute; inset: -5px;
+}
+main.has-mega .marginalia .social-stack > span{ pointer-events: none; }
 
 /* THE MARGINALIA STAND OVER EVERY ROW (2026-09-17): the block is a
    direct child of main and draws no box of its own; its children are
    fixed at 80, over the band's 60, the archive head's 65 and the
    reprint's 70 (build.js, renderMarginalia). */
 main.has-mega > .marginalia{ display: contents; }
+
+/* THE PAGE ARRIVES WHOLE (2026-09-17): while the page is held
+   (html.fonts-loading) a cover that arrives takes its place at once,
+   with no fade of its own — the page fades up as one, and a cover
+   mid-fade at the lift would arrive a beat after the words. The
+   covers' own fade stands for any that arrive later. */
+html.fonts-loading.imgfade img.card-image{ transition: none !important; }
+
+/* CLEAR FILTER (2026-09-17): while the ledger is filtered — by section
+   from the OPS words, by kicker or by author from the cards' courier —
+   a courier descriptor stands at the right of the title column's
+   head; a click restores every row where the reader stands. */
+body.word-page .ledger-head .lc-search{ position: relative; }
+body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* Under Search, on the first row's line (src/ledger.js seats it),
+     in the head's own stacking so it rides pinned with the head. */
+  position: absolute; left: 0; top: 100%;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  /* The words and the X beside them, as the field and its glass. */
+  display: inline-flex; align-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* The courier, as the cards' READ PREVIEW: the head's own labels are
+     the band's Garamond. */
+  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  color: var(--k);
+}
+body.word-page .ledger-head .arch-clear[hidden]:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ display: none; }
+
+/* ---------------------------------------------------------------
+   THE ROW'S CLICK STOPS AT THE MARGIN (2026-09-17). A ledger row is
+   the post's link whole, and it ran the page's full width with its
+   columns inset by the 72 — so the margins either side took the
+   click too. The inset is the row's margin now, not its padding: the
+   columns stand exactly where they stood (the ground is one colour
+   under every row), and the link's box ends where the words' field
+   does. The head keeps its own box; its rules are drawn to the 72.
+   --------------------------------------------------------------- */
+body.word-page .ledger-item > .ledger-row{ padding: 0; margin: 0 var(--ledger-side); }
+
+/* ---------------------------------------------------------------
+   THE SEARCH COLUMN (2026-09-17). A sixth column at the ledger's
+   right; in the head it holds a field, Search, set in the head's own
+   Garamond italic as the other labels are, with a glass to its
+   right; the rows leave the column empty. Typing narrows the ledger
+   in place (src/ledger.js) and CLEAR FILTER empties the field with
+   the rest. EVERY COLUMN BUT THE TITLE'S IS THE SAME WIDTH: author,
+   tag, section, date and search share the measure evenly, the title
+   alone wider.
+   --------------------------------------------------------------- */
+body.word-page .ledger-row{
+  grid-template-columns: minmax(0, 2.6fr) repeat(5, minmax(0, 1fr));
+}
+@media (max-width: 900px){
+  body.word-page .ledger-row{ grid-template-columns: minmax(0, 2.4fr) repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 640px){
+  body.word-page .ledger-row{ grid-template-columns: minmax(0, 2.2fr) repeat(2, minmax(0, 1fr)); }
+}
+body.word-page .ledger-head .lc-search{ overflow: visible; }
+body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  -webkit-appearance: none; appearance: none;
+  /* The field is as wide as its own word — Search, or what is
+     typed (src/ledger.js sizes it) — so the glass stands beside the
+     word, not at the column's far edge. */
+  display: block; flex: 0 1 auto; width: 4em; min-width: 0; max-width: 100%;
+  /* Three each side for the italic's overhang, the left one pulled
+     back so the word's ink stands on the column's edge. */
+  margin: 0 0 0 -3px; padding: 0 3px; border: 0; border-radius: 0;
+  background: none; outline: none; box-shadow: none;
+  /* The dek's voice, as the head's labels: the cards' Garamond
+     italic at 20 on the head's 72. */
+  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-style: italic; font-weight: 400;
+  font-size: 20px; line-height: 72px; letter-spacing: normal;
+  text-transform: none;
+  color: var(--k);
+  caret-color: var(--yves);
+}
+body.word-page .ledger-head .arch-search::placeholder{ color: var(--k); opacity: 1; font-style: italic; }
+/* The word goes as the caret arrives. */
+body.word-page .ledger-head .arch-search:focus::placeholder{ opacity: 0; }
+body.word-page .ledger-head .arch-search::-webkit-search-decoration,
+body.word-page .ledger-head .arch-search::-webkit-search-cancel-button,
+body.word-page .ledger-head .arch-search::-webkit-search-results-button{ -webkit-appearance: none; display: none; }
+body.word-page .ledger-head .arch-search-mirror{
+  position: absolute; left: 0; top: 0;
+  visibility: hidden; white-space: pre; pointer-events: none;
+}
+/* THE X: the glass's own size and stroke, beside CLEAR FILTER. */
+body.word-page .ledger-head .arch-clear-x{
+  flex: 0 0 auto; display: block;
+  width: 12px; height: 12px; margin-left: 6px;
+  color: inherit;
+}
+/* THE GLASS: a small outline in the ink, 12 square, beside the
+   word; a click on it puts the caret in the field. */
+body.word-page .ledger-head .arch-search-glass{
+  flex: 0 0 auto; display: block;
+  width: 12px; height: 12px; margin-left: 6px;
+  color: var(--k); cursor: text;
+}
+
+/* ---------------------------------------------------------------
+   THE OPS WORDS LIGHT ON THEIR INK ALONE (2026-09-17). Each word's
+   link takes no pointer; the box the fitter seats on the ink
+   (src/duo-panel-fit.js, seatHit) takes it, and the link and its
+   band light as its ancestors. The margins, the air over the caps
+   and under the feet are dead to the pointer.
+   --------------------------------------------------------------- */
+main.has-mega a.has-hit{ pointer-events: none; }
+/* The word's band too: its ground held under the pointer in the
+   margins as the band's own hover. Only the ink box is live. */
+main.has-mega :is(.page-banner, .reprint).has-hit{ pointer-events: none; }
+main.has-mega a.has-hit > .ops-hit{
+  position: absolute; display: block;
+  pointer-events: auto; cursor: pointer;
+}
+
+/* THE SHUFFLE STANDS AFTER THE TITLE'S ARROWS (2026-09-17), not
+   before the word: the same 8 that stood on its right now on its left. */
+body.word-page .ledger-head .arch-shuffle{ margin: 0 0 0 8px; }
+
+/* THE ROWS END AT THE DATE COLUMN (2026-09-17): the search column is
+   the head's alone, so a row's link — the post's — stops short of it
+   and neither the pointer over that column nor CLEAR FILTER's seat
+   lights a row. The row keeps the head's first five tracks in the
+   head's own proportions over the width that is left, so its columns
+   stand exactly on the head's: the search track is 1 part of 7.6
+   (2.6 + 5) of the measure between the margins. */
+body.word-page .ledger-item > .ledger-row{
+  margin-right: calc(var(--ledger-side) + (100% - 2 * var(--ledger-side)) / 7.6);
+  grid-template-columns: minmax(0, 2.6fr) repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 900px){
+  body.word-page .ledger-item > .ledger-row{
+    margin-right: calc(var(--ledger-side) + (100% - 2 * var(--ledger-side)) / 6.4);
+    grid-template-columns: minmax(0, 2.4fr) repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px){
+  body.word-page .ledger-item > .ledger-row{
+    margin-right: calc(var(--ledger-side) + (100% - 2 * var(--ledger-side)) / 4.2);
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  }
+}

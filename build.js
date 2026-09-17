@@ -982,6 +982,13 @@ function authorDisplay(post, caps = true) {
 // lands among its neighbors (the author's other pieces, the tag's other
 // posts, the date's contemporaries). src/ledger.js reads the hash.
 function archiveHref(post, key) {
+  // A KICKER OR AN AUTHOR FILTERS THE LEDGER (2026-09-17), as the OPS
+  // words do by section: the archive opens on the column head with
+  // that kind's rows alone under it (src/ledger.js reads #topic= and
+  // #author=). A date still sorts the ledger by date and lands on the
+  // post itself.
+  if (key === 'kicker' && post.kicker) return `archive.html#topic=${encodeURIComponent(post.kicker.toLowerCase())}`;
+  if (key === 'author' && post.author) return `archive.html#author=${encodeURIComponent(post.author.toLowerCase())}`;
   return `archive.html#sort=${key}&post=${slugOf(post.link)}`;
 }
 
@@ -1642,7 +1649,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? post.previewParagraphs
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
-    ? `<div class="card-preview-block"><div class="plate-curtain">${post.kicker ? `<a class="plate-title" href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.kicker)}</a>` : ''}<div class="card-preview-cols">${previewParas
+    ? `<div class="card-preview-block"><div class="plate-curtain">${post.kicker ? `<a class="plate-title" href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a>` : ''}<div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
         .join('')}</div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>`
     : '';
@@ -2083,7 +2090,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
     // unclipped hit box, so the hover that holds on it never loses
     // the pointer mid-draw.
     return paras.length
-      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}<span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>`
+      ? `<a class="latest-plate" href="${escapeHtml(post.link)}" rel="noopener"><span class="plate-curtain">${post.kicker ? `<span class="plate-title" data-href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</span>` : ''}${paras.map((p) => `<span class="latest-plate-p">${emHtml(p)}</span>`).join('')}<span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>`
       : '';
   };
   // `between` stands between the title and the dek — the review's two
@@ -2427,7 +2434,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121417">
+<meta name="theme-color" content="#FFFFFF">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -2525,7 +2532,7 @@ function renderFontGateScript() {
 <script>
 (function () {
   var root = document.documentElement;
-  // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // LIGHT OR DARK, before first paint: the stored choice, else light.
   // THE GROUND: light, dark, or a colour of the reader's own (HEX,
   // 2026-09-17). Light and dark are the two token sets in style.css;
   // a hex colour is written straight onto the root as --g, with --k
@@ -2572,9 +2579,10 @@ function renderFontGateScript() {
       root.style.removeProperty('--g');
       root.style.removeProperty('--k');
       root.style.removeProperty('--yves');
-      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      // Light is the page's own; dark is written on the root.
+      if (mode === 'dark') root.setAttribute('data-theme', 'dark');
       else root.removeAttribute('data-theme');
-      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+      setMeta(mode === 'dark' ? CHARCOAL : WHITE);
     }
   };
   var store = function (mode, hex) {
@@ -2608,6 +2616,11 @@ function renderFontGateScript() {
       var vt;
       try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
       if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A skipped transition (a hidden tab, a second flip mid-dissolve)
+      // rejects every one of its promises; none is an error here.
+      var quiet = function () {};
+      if (vt && vt.ready && vt.ready.then) vt.ready.then(quiet, quiet);
+      if (vt && vt.updateCallbackDone && vt.updateCallbackDone.then) vt.updateCallbackDone.then(quiet, quiet);
       // A hidden tab may never run the animation; let go regardless.
       setTimeout(done, 800);
       return;
@@ -2619,7 +2632,7 @@ function renderFontGateScript() {
   };
   var current = function () {
     var t = root.getAttribute('data-theme');
-    return t === 'light' || t === 'hex' ? t : 'dark';
+    return t === 'dark' || t === 'hex' ? t : 'light';
   };
   // THE HEX FIELD: a courier line under the three words, shown on HEX
   // and hidden on Enter, Escape or leaving it. A valid code paints the
@@ -2673,38 +2686,105 @@ function renderFontGateScript() {
     if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
+  // THE PAGE ARRIVES WHOLE (2026-09-17). Every page is held at opacity
+  // 0 until its fonts are in AND every cover on it is loaded and
+  // decoded, then fades up once, as one — the words in their faces
+  // and the pictures beside them together, on a hard refresh as on
+  // a warm one. No cover arrives after the words next to it and no
+  // fallback face is ever painted. The one exception is a dead font
+  // or picture host: after eight seconds the page lifts with what it
+  // has rather than never.
   var shown = false;
-  // The reveal waits two frames past the fonts so the fitters (which
-  // run on fonts.ready) have already set the wordmark and the field;
-  // the page then fades up over the charcoal ground, and the blue
-  // overscroll ground comes on once the fade is done.
+  var gate = { fonts: 0, covers: 0, lifted: 0 };
+  try { window.__ncGate = gate; } catch (err) {}
+  // THE SAME FADE ON A CLICK AS ON A COLD LOAD (2026-09-17, later).
+  // Chrome holds the OLD page's pixels on a same-site navigation until
+  // the new page's first contentful frame, or half a second. A word
+  // page reached by a click has its faces and covers cached and is
+  // ready in a fraction of that, so its fade ran under the held
+  // homepage and was mostly swallowed: the reader saw a cut where the
+  // front page, whose fitters take longer, shows its ground and then
+  // fades up. So no page lifts before the hold has expired: the lift
+  // waits out the floor (measured from the navigation itself, so a
+  // slow load pays nothing), the ground is seen, and the fade is the
+  // same everywhere.
+  var FLOOR = 600;
   var go = function () {
     if (shown) return;
     shown = true;
+    var wait = Math.max(0, FLOOR - performance.now());
+    setTimeout(reveal, wait);
+  };
+  var reveal = function () {
     var lifted = false;
     var lift = function () {
       if (lifted) return;
       lifted = true;
+      gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
       setTimeout(function () { root.classList.add('page-shown'); }, 400);
     };
+    // Two frames past ready, so the fitters (which run on fonts.ready)
+    // have laid the page out before it is seen.
     requestAnimationFrame(function () { requestAnimationFrame(lift); });
     // A hidden tab runs no frames; lift on a timer there so the page
     // is never left held when the tab is shown.
     setTimeout(lift, 250);
   };
-  var f = document.fonts;
-  if (!f || !f.load) { go(); return; }
-  Promise.all([
-    f.load('700 100px "OPS Placard"'),
-    f.load('400 100px garamond-premier-pro'),
-    f.load('italic 400 100px garamond-premier-pro'),
-    f.load('400 100px trajan-pro-3'),
-    f.load('700 100px trajan-pro-3')
-  ]).then(function () { return f.ready; }).then(go, go);
-  // A slow or dead font host degrades to a fallback paint and one
-  // refit rather than a blank page.
-  setTimeout(go, 1000);
+  // THE FONTS: the five faces the page sets in, then the whole set.
+  var fontsDone = new Promise(function (resolve) {
+    var f = document.fonts;
+    if (!f || !f.load) { resolve(); return; }
+    Promise.all([
+      f.load('700 100px "OPS Placard"'),
+      f.load('400 100px garamond-premier-pro'),
+      f.load('italic 400 100px garamond-premier-pro'),
+      f.load('400 100px trajan-pro-3'),
+      f.load('700 100px trajan-pro-3')
+    ]).then(function () { return f.ready; }).then(resolve, resolve);
+  }).then(function () { gate.fonts = performance.now(); });
+  // THE COVERS: every cover on the page, loaded (or failed) and then
+  // decoded, so the first paint has their pixels ready.
+  var coversDone = new Promise(function (resolve) {
+    var settle = function () {
+      // The decode is asked for, not waited on past a beat: a hidden
+      // tab decodes nothing until it is shown (its decode() promises
+      // simply hang), and a page opened in the background should not
+      // stand blank for the cap once it is brought forward.
+      var imgs = [].slice.call(document.querySelectorAll('img.card-image'));
+      if (document.visibilityState === 'hidden') { resolve(); return; }
+      var decodes = imgs.map(function (img) {
+        return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
+      });
+      var beat = new Promise(function (r) { setTimeout(r, 600); });
+      Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
+    };
+    var pending = function () {
+      var imgs = document.querySelectorAll('img.card-image');
+      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
+      return false;
+    };
+    var watch = function () {
+      if (!pending()) { settle(); return; }
+      var onArrive = function (e) {
+        if (!(e.target && e.target.tagName === 'IMG')) return;
+        if (pending()) return;
+        document.removeEventListener('load', onArrive, true);
+        document.removeEventListener('error', onArrive, true);
+        settle();
+      };
+      document.addEventListener('load', onArrive, true);
+      document.addEventListener('error', onArrive, true);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
+    else watch();
+  }).then(function () { gate.covers = performance.now(); });
+  Promise.all([fontsDone, coversDone]).then(go, go);
+  setTimeout(go, 8000);
+  // Pulled back by the reader (the back/forward cache restores the
+  // page whole, with its class already lifted): nothing to do — but a
+  // page restored still held is let go at once.
+  addEventListener('pageshow', function (e) { if (e.persisted) { shown = true; reveal(); } });
 })();
 </script>`;
 }
@@ -2883,7 +2963,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121417">
+<meta name="theme-color" content="#FFFFFF">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
@@ -3689,11 +3769,12 @@ function renderArchivePage(posts, features) {
   // between SUBSCRIBE's movement and the rows' (style.css, THE WORD
   // PAGES ON THE FRONT PAGE'S ANATOMY).
   const headHtml = `<div class="ledger-head ledger-row">
-      <span class="ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span>
-      <span class="ledger-cell lc-author">Author ${sortArrows('author', 'author')}</span>
-      <span class="ledger-cell lc-kicker">Tag ${sortArrows('kicker', 'tag')}</span>
-      <span class="ledger-cell lc-section">Section ${sortArrows('section', 'section')}</span>
-      <span class="ledger-cell lc-date">Date ${sortArrows('date', 'date')}</span>
+      <span class="ledger-cell lc-title"><span class="lc-label">Title</span>${sortArrows('title', 'title')}<button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button></span>
+      <span class="ledger-cell lc-author"><span class="lc-label">Author</span>${sortArrows('author', 'author')}</span>
+      <span class="ledger-cell lc-kicker"><span class="lc-label">Tag</span>${sortArrows('kicker', 'tag')}</span>
+      <span class="ledger-cell lc-section"><span class="lc-label">Section</span>${sortArrows('section', 'section')}</span>
+      <span class="ledger-cell lc-date"><span class="lc-label">Date</span>${sortArrows('date', 'date')}</span>
+      <span class="ledger-cell lc-search"><input class="arch-search" type="search" placeholder="Search" aria-label="Search the ledger" autocomplete="off" spellcheck="false"><svg class="arch-search-glass" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><button class="arch-clear" type="button" hidden><span class="arch-clear-label">Clear filter</span><svg class="arch-clear-x" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
     </div>`;
   const ledgerHtml = `
   <section class="ledger" aria-label="Every post">
