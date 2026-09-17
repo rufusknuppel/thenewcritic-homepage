@@ -4,8 +4,7 @@
   "private": true,
   "description": "Static homepage for The New Critic, generated at build time from its Substack RSS feed.",
   "scripts": {
-    "build": "node build.js",
-    "overrides": "node make-overrides.js"
+    "build": "node build.js"
   },
   "engines": {
     "node": ">=18"
