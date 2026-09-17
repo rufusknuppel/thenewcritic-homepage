@@ -12,10 +12,16 @@ const path = require('path');
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
 
-// Stamped into the stylesheet link on every build — browsers cache
-// the un-versioned style.css hard, and every design pass was needing
-// a manual hard refresh to show.
-const BUILD_STAMP = Date.now().toString(36);
+// Stamped into the stylesheet link — browsers cache the un-versioned
+// style.css hard, and every design pass was needing a manual hard
+// refresh to show. THE STAMP IS THE STYLESHEET'S OWN HASH (2026-09-17),
+// not the clock: a build that changes nothing writes the same pages,
+// so a rebuild leaves no diff and a ship carries only real change,
+// and browsers refetch exactly when the CSS is new.
+const crypto = require('crypto');
+const BUILD_STAMP = crypto.createHash('sha1')
+  .update(fs.readFileSync(path.join(__dirname, 'style.css')))
+  .digest('hex').slice(0, 8);
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
 const SITE_TAGLINE = 'The Young American Magazine';
@@ -4385,6 +4391,17 @@ async function main() {
   // The bird (assets/bird.png, 640 square, white on black — read as a
   // luminance mask by style.css: the mark at the centre of every two-slot band).
   fs.copyFileSync(path.join(__dirname, 'assets/bird.png'), path.join(OUT_DIR, 'bird.png'));
+  // ONE LINE SAYS WHETHER THE BUILD IS WHOLE (2026-09-17): the pages
+  // are written either way (a card that lost its post page falls back
+  // to the feed), but any post page that never came back is reported
+  // here in a fixed form and the process exits nonzero, so a single
+  // run's exit status is the ship's check — no grepping the log.
+  if (failedPageFetches) {
+    console.error(`FETCH FAILED ${failedPageFetches}`);
+    process.exitCode = 1;
+  } else {
+    console.log('FETCH OK');
+  }
 }
 
 if (require.main === module) {

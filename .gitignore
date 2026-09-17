@@ -1,0 +1,19 @@
+# Local working files — never part of the site or the build.
+.DS_Store
+.claude/settings.local.json
+.wrangler/
+
+# Design sources and experiments kept beside the repo, not in it.
+Berlin Type V1.3/
+Logo Solid copy.png
+assets/bird-logo-bird.png
+assets/bird-logo-frame.png
+assets/bird-solid.png
+logo.svg
+make-logo.js
+editorial-style-guide.md
+editorial-style-guide.docx
+
+# Spreadsheet exports (the overrides live in content-overrides.js now).
+Website Meta*
+posts.csv
