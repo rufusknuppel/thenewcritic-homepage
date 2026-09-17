@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121417">
+<meta name="theme-color" content="#FFFFFF">
 <title>Archive — The New Critic</title>
 <meta property="og:site_name" content="The New Critic">
 <meta property="og:type" content="website">
@@ -15,12 +15,12 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu5rx2th">
+<link rel="stylesheet" href="style.css?v=mu5upwep">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
-  // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // LIGHT OR DARK, before first paint: the stored choice, else light.
   // THE GROUND: light, dark, or a colour of the reader's own (HEX,
   // 2026-09-17). Light and dark are the two token sets in style.css;
   // a hex colour is written straight onto the root as --g, with --k
@@ -67,9 +67,10 @@
       root.style.removeProperty('--g');
       root.style.removeProperty('--k');
       root.style.removeProperty('--yves');
-      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      // Light is the page's own; dark is written on the root.
+      if (mode === 'dark') root.setAttribute('data-theme', 'dark');
       else root.removeAttribute('data-theme');
-      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+      setMeta(mode === 'dark' ? CHARCOAL : WHITE);
     }
   };
   var store = function (mode, hex) {
@@ -103,6 +104,11 @@
       var vt;
       try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
       if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A skipped transition (a hidden tab, a second flip mid-dissolve)
+      // rejects every one of its promises; none is an error here.
+      var quiet = function () {};
+      if (vt && vt.ready && vt.ready.then) vt.ready.then(quiet, quiet);
+      if (vt && vt.updateCallbackDone && vt.updateCallbackDone.then) vt.updateCallbackDone.then(quiet, quiet);
       // A hidden tab may never run the animation; let go regardless.
       setTimeout(done, 800);
       return;
@@ -114,7 +120,7 @@
   };
   var current = function () {
     var t = root.getAttribute('data-theme');
-    return t === 'light' || t === 'hex' ? t : 'dark';
+    return t === 'dark' || t === 'hex' ? t : 'light';
   };
   // THE HEX FIELD: a courier line under the three words, shown on HEX
   // and hidden on Enter, Escape or leaving it. A valid code paints the
@@ -168,38 +174,105 @@
     if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
+  // THE PAGE ARRIVES WHOLE (2026-09-17). Every page is held at opacity
+  // 0 until its fonts are in AND every cover on it is loaded and
+  // decoded, then fades up once, as one — the words in their faces
+  // and the pictures beside them together, on a hard refresh as on
+  // a warm one. No cover arrives after the words next to it and no
+  // fallback face is ever painted. The one exception is a dead font
+  // or picture host: after eight seconds the page lifts with what it
+  // has rather than never.
   var shown = false;
-  // The reveal waits two frames past the fonts so the fitters (which
-  // run on fonts.ready) have already set the wordmark and the field;
-  // the page then fades up over the charcoal ground, and the blue
-  // overscroll ground comes on once the fade is done.
+  var gate = { fonts: 0, covers: 0, lifted: 0 };
+  try { window.__ncGate = gate; } catch (err) {}
+  // THE SAME FADE ON A CLICK AS ON A COLD LOAD (2026-09-17, later).
+  // Chrome holds the OLD page's pixels on a same-site navigation until
+  // the new page's first contentful frame, or half a second. A word
+  // page reached by a click has its faces and covers cached and is
+  // ready in a fraction of that, so its fade ran under the held
+  // homepage and was mostly swallowed: the reader saw a cut where the
+  // front page, whose fitters take longer, shows its ground and then
+  // fades up. So no page lifts before the hold has expired: the lift
+  // waits out the floor (measured from the navigation itself, so a
+  // slow load pays nothing), the ground is seen, and the fade is the
+  // same everywhere.
+  var FLOOR = 600;
   var go = function () {
     if (shown) return;
     shown = true;
+    var wait = Math.max(0, FLOOR - performance.now());
+    setTimeout(reveal, wait);
+  };
+  var reveal = function () {
     var lifted = false;
     var lift = function () {
       if (lifted) return;
       lifted = true;
+      gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
       setTimeout(function () { root.classList.add('page-shown'); }, 400);
     };
+    // Two frames past ready, so the fitters (which run on fonts.ready)
+    // have laid the page out before it is seen.
     requestAnimationFrame(function () { requestAnimationFrame(lift); });
     // A hidden tab runs no frames; lift on a timer there so the page
     // is never left held when the tab is shown.
     setTimeout(lift, 250);
   };
-  var f = document.fonts;
-  if (!f || !f.load) { go(); return; }
-  Promise.all([
-    f.load('700 100px "OPS Placard"'),
-    f.load('400 100px garamond-premier-pro'),
-    f.load('italic 400 100px garamond-premier-pro'),
-    f.load('400 100px trajan-pro-3'),
-    f.load('700 100px trajan-pro-3')
-  ]).then(function () { return f.ready; }).then(go, go);
-  // A slow or dead font host degrades to a fallback paint and one
-  // refit rather than a blank page.
-  setTimeout(go, 1000);
+  // THE FONTS: the five faces the page sets in, then the whole set.
+  var fontsDone = new Promise(function (resolve) {
+    var f = document.fonts;
+    if (!f || !f.load) { resolve(); return; }
+    Promise.all([
+      f.load('700 100px "OPS Placard"'),
+      f.load('400 100px garamond-premier-pro'),
+      f.load('italic 400 100px garamond-premier-pro'),
+      f.load('400 100px trajan-pro-3'),
+      f.load('700 100px trajan-pro-3')
+    ]).then(function () { return f.ready; }).then(resolve, resolve);
+  }).then(function () { gate.fonts = performance.now(); });
+  // THE COVERS: every cover on the page, loaded (or failed) and then
+  // decoded, so the first paint has their pixels ready.
+  var coversDone = new Promise(function (resolve) {
+    var settle = function () {
+      // The decode is asked for, not waited on past a beat: a hidden
+      // tab decodes nothing until it is shown (its decode() promises
+      // simply hang), and a page opened in the background should not
+      // stand blank for the cap once it is brought forward.
+      var imgs = [].slice.call(document.querySelectorAll('img.card-image'));
+      if (document.visibilityState === 'hidden') { resolve(); return; }
+      var decodes = imgs.map(function (img) {
+        return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
+      });
+      var beat = new Promise(function (r) { setTimeout(r, 600); });
+      Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
+    };
+    var pending = function () {
+      var imgs = document.querySelectorAll('img.card-image');
+      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
+      return false;
+    };
+    var watch = function () {
+      if (!pending()) { settle(); return; }
+      var onArrive = function (e) {
+        if (!(e.target && e.target.tagName === 'IMG')) return;
+        if (pending()) return;
+        document.removeEventListener('load', onArrive, true);
+        document.removeEventListener('error', onArrive, true);
+        settle();
+      };
+      document.addEventListener('load', onArrive, true);
+      document.addEventListener('error', onArrive, true);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
+    else watch();
+  }).then(function () { gate.covers = performance.now(); });
+  Promise.all([fontsDone, coversDone]).then(go, go);
+  setTimeout(go, 8000);
+  // Pulled back by the reader (the back/forward cache restores the
+  // page whole, with its class already lifted): nothing to do — but a
+  // page restored still held is let go at once.
+  addEventListener('pageshow', function (e) { if (e.persisted) { shown = true; reveal(); } });
 })();
 </script>
 <script>
@@ -253,7 +326,7 @@
             <div class="panel-col panel-col--left">
               <p class="card-meta ground-kicker"><span class="ground-kicker-line"></span></p>
               <p class="card-meta ground-under ground-under--kicker"></p>
-              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#sort=author&amp;post=pdoom">Rufus Knuppel</a></span><span class="cover-date"><span class="cover-sep" aria-hidden="true">·</span><a href="archive.html#sort=date&amp;post=pdoom">Feb 13</a></span></p>
+              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=rufus%20knuppel">Rufus Knuppel</a></span><span class="cover-date"><span class="cover-sep" aria-hidden="true">·</span><a href="archive.html#sort=date&amp;post=pdoom">Feb 13</a></span></p>
               <h3 class="card-title"><a href="https://www.thenewcritic.com/p/pdoom" rel="noopener">p(doom)</a></h3>
               
               <p class="card-dek">“Can prediction markets shake the hedonistic monkey from their back?”</p>
@@ -264,7 +337,7 @@
             <div class="panel-col panel-col--right">
               <p class="card-meta ground-credit"></p><p class="card-meta ground-under ground-under--date"></p>
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/pdoom" rel="noopener">Quantify Everything</a><div class="card-preview-cols"><p class="card-preview">America has always had her boomtowns, lawless places where heathens mass, where gunslinging bandits and foolhardy speculators go in search of pleasure and risk. Things move quickly in towns that spring up overnight. Some go bust, others get rich. Eventually the barons sniff blood and send their Pinkertons; the army moves in; the government straightens everyone out. The gold rush of our era is gambling on the future, and the anarchic hamlets where online degenerates park their rickshaws are called Polymarket and Kalshi. On prediction markets, the nectar of capital flows, hegemons duel in smokey saloons, and forecasters trade contracts on the outcomes of world events.</p><p class="card-preview">But every boomtown has a friar, too, a bald little man in a robe who cries out his psalms in the dusty square, crooning to the one-handed miners as they line up to guzzle their booze and nail their whores. In Polymarketsville, there’s a sect of Bayesian monks who have been quietly constructing a mission. In fact, they’re the ones who first panned the river, who cleared the land on Main Street all those years ago. These zealots call themselves “rationalists,” and they foretell prediction markets as the salvation for our godless and irrational land.</p><p class="card-preview">“Polymarket” wormed its way into my daydreams through the various troughs I frequent online, where chatter about big bettors tipping off national security crises and White House press secretaries shaving minutes at briefings to hit unders had commenters in a tizzy. The media establishment had caught on, too, to the competitive edge and the foul play. All the big names seemed preoccupied with integrating prediction market probabilities into their institutional forecasting or else finger-wagging about the existential risks of insider trading and the psycho-chemical runoff from the Great Casino-fication of America.</p><p class="card-preview">I imagined the typical Polymarket trader as a cyclops with pizza grease slathered over his monitor, slobbering over bets like a rottweiler admiring a platter of animal organs. He spent the day in a fraternity cave system hooked up to a VPN and an open source intelligence IV, betting on whether Elon Musk would mention “poopoo” at the World Economic Forum in Davos or how many dissident prisoners the Ayatollah Khamenei would execute in the next 72 hours. I would ask him if he’d ever been “rulescucked” or if he thought Barron Trump was the insider behind the whale that bet $30k on the Maduro op for a $400k profit. We would wager on “Taylor Swift pregnant by June?” or “The second coming of Jesus Christ by 2027?” and lounge around in his sunless lair of paranoia — panting, talking ethics, eating Airheads Xtremes, and snorting Adderall — until we doubled up or lost everything.</p><p class="card-preview">I would attempt to locate this fine specimen and give him my money.</p><p class="card-preview">So I started flipping through my rolodex and poking around the internet for clues. Then I got in my wagon and headed West. My journey led me to a strange land called Futarchy.</p><p class="card-preview">The architecture of polymarket.com is rather plain: there are near-infinite boxes on the main scroll, arranged in pleasant quadrilateral geometry, each presenting a question, a mundane or farcical image, a percentage which doubles as both probability and price, and the clickable binary of “Yes” (green) or “No” (red). A week before the Super Bowl, “Will the US acquire part of Greenland in 2026?” sits as the second-billed market on the homepage. An icon of the territory, filled in with the American flag, is priced by the market at a 27% likelihood. I can buy “Yes” shares for 27¢ or “No” shares for 73¢. Should Trump land amphibious warcraft on the beaches of Nuuk come March, the market would resolve: the “Yes” shares to $1, and the “No” shares to $0. Would a storming of Greenland count as an acquisition, though? Quibbles over semantics in the resolution criteria arise often and are mediated through a “Keynesian beauty pageant” conducted by an “UMA oracle” (these terms escape me, too).</p><p class="card-preview">Prediction markets don’t operate like traditional sportsbooks; the Commodity Futures Trading Commission (CFTC) regulates Polymarket and Kalshi, not federal and state gaming agencies. Bettors trade derivatives on a regulated exchange, entering into futures contracts with one another. If one trader buys shares of “Yes,” another matches shares of “No.” Polymarket and Kalshi are legal in states where sports gambling is banned (despite 89% of Kalshi’s total volume in 2025 having been bet on sports). Beyond a loophole in the regulatory matrix, the prediction markets argue that while sportsbooks rip off bettors with outrageous spreads and insurmountable odds, the only money Polymarket and Kalshi take in are the margins required for market making or transaction fees.</p><p class="card-preview">The prediction markets struggle to define and answer to accusations of insider trading. In the common scenario where traders can wager on “what will X say in Y speech” (a mention market), couldn’t Marco Rubio tell his bud that he’s for sure going to mention the long-shot “Golden Dome” in the next cabinet meeting? Wouldn’t one of Bad Bunny’s anonymous sugar canes know the Super Bowl halftime opener from the dress rehearsal? If unusual activity were to alert the market to military action, could Polymarket pose a risk to the cover of dark special ops? How can the companies surveil suspicious behavior over 10,000 markets? How can officials prevent point shaving in the Loyola vs. Champaign Division IX men’s water polo match? From the perspective of the prediction markets or the market makers, insider trading isn’t really a problem for their business. In fact, traders who have been tipped off serve to make prices more accurate and adjust for dumb money (a colloquialism used to describe gut-check bets made with little informational basis). Insiders are only a smear on optics.</p><p class="card-preview">“Act first, apologize later,” is the internal mantra of Shayne Coplan, Polymarket’s founder and CEO. The son of two South African professors, Coplan (only 27) was for a brief two-week period in 2025 the youngest self-made billionaire in the world. A former employee described Polymarket’s early culture: “like, ‘We’re rebels, we’re mavericks, and we’re just gonna build this thing and figure out the regulatory stuff later.’”</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="archive.html#topic=quantify%20everything">Quantify Everything</a><div class="card-preview-cols"><p class="card-preview">America has always had her boomtowns, lawless places where heathens mass, where gunslinging bandits and foolhardy speculators go in search of pleasure and risk. Things move quickly in towns that spring up overnight. Some go bust, others get rich. Eventually the barons sniff blood and send their Pinkertons; the army moves in; the government straightens everyone out. The gold rush of our era is gambling on the future, and the anarchic hamlets where online degenerates park their rickshaws are called Polymarket and Kalshi. On prediction markets, the nectar of capital flows, hegemons duel in smokey saloons, and forecasters trade contracts on the outcomes of world events.</p><p class="card-preview">But every boomtown has a friar, too, a bald little man in a robe who cries out his psalms in the dusty square, crooning to the one-handed miners as they line up to guzzle their booze and nail their whores. In Polymarketsville, there’s a sect of Bayesian monks who have been quietly constructing a mission. In fact, they’re the ones who first panned the river, who cleared the land on Main Street all those years ago. These zealots call themselves “rationalists,” and they foretell prediction markets as the salvation for our godless and irrational land.</p><p class="card-preview">“Polymarket” wormed its way into my daydreams through the various troughs I frequent online, where chatter about big bettors tipping off national security crises and White House press secretaries shaving minutes at briefings to hit unders had commenters in a tizzy. The media establishment had caught on, too, to the competitive edge and the foul play. All the big names seemed preoccupied with integrating prediction market probabilities into their institutional forecasting or else finger-wagging about the existential risks of insider trading and the psycho-chemical runoff from the Great Casino-fication of America.</p><p class="card-preview">I imagined the typical Polymarket trader as a cyclops with pizza grease slathered over his monitor, slobbering over bets like a rottweiler admiring a platter of animal organs. He spent the day in a fraternity cave system hooked up to a VPN and an open source intelligence IV, betting on whether Elon Musk would mention “poopoo” at the World Economic Forum in Davos or how many dissident prisoners the Ayatollah Khamenei would execute in the next 72 hours. I would ask him if he’d ever been “rulescucked” or if he thought Barron Trump was the insider behind the whale that bet $30k on the Maduro op for a $400k profit. We would wager on “Taylor Swift pregnant by June?” or “The second coming of Jesus Christ by 2027?” and lounge around in his sunless lair of paranoia — panting, talking ethics, eating Airheads Xtremes, and snorting Adderall — until we doubled up or lost everything.</p><p class="card-preview">I would attempt to locate this fine specimen and give him my money.</p><p class="card-preview">So I started flipping through my rolodex and poking around the internet for clues. Then I got in my wagon and headed West. My journey led me to a strange land called Futarchy.</p><p class="card-preview">The architecture of polymarket.com is rather plain: there are near-infinite boxes on the main scroll, arranged in pleasant quadrilateral geometry, each presenting a question, a mundane or farcical image, a percentage which doubles as both probability and price, and the clickable binary of “Yes” (green) or “No” (red). A week before the Super Bowl, “Will the US acquire part of Greenland in 2026?” sits as the second-billed market on the homepage. An icon of the territory, filled in with the American flag, is priced by the market at a 27% likelihood. I can buy “Yes” shares for 27¢ or “No” shares for 73¢. Should Trump land amphibious warcraft on the beaches of Nuuk come March, the market would resolve: the “Yes” shares to $1, and the “No” shares to $0. Would a storming of Greenland count as an acquisition, though? Quibbles over semantics in the resolution criteria arise often and are mediated through a “Keynesian beauty pageant” conducted by an “UMA oracle” (these terms escape me, too).</p><p class="card-preview">Prediction markets don’t operate like traditional sportsbooks; the Commodity Futures Trading Commission (CFTC) regulates Polymarket and Kalshi, not federal and state gaming agencies. Bettors trade derivatives on a regulated exchange, entering into futures contracts with one another. If one trader buys shares of “Yes,” another matches shares of “No.” Polymarket and Kalshi are legal in states where sports gambling is banned (despite 89% of Kalshi’s total volume in 2025 having been bet on sports). Beyond a loophole in the regulatory matrix, the prediction markets argue that while sportsbooks rip off bettors with outrageous spreads and insurmountable odds, the only money Polymarket and Kalshi take in are the margins required for market making or transaction fees.</p><p class="card-preview">The prediction markets struggle to define and answer to accusations of insider trading. In the common scenario where traders can wager on “what will X say in Y speech” (a mention market), couldn’t Marco Rubio tell his bud that he’s for sure going to mention the long-shot “Golden Dome” in the next cabinet meeting? Wouldn’t one of Bad Bunny’s anonymous sugar canes know the Super Bowl halftime opener from the dress rehearsal? If unusual activity were to alert the market to military action, could Polymarket pose a risk to the cover of dark special ops? How can the companies surveil suspicious behavior over 10,000 markets? How can officials prevent point shaving in the Loyola vs. Champaign Division IX men’s water polo match? From the perspective of the prediction markets or the market makers, insider trading isn’t really a problem for their business. In fact, traders who have been tipped off serve to make prices more accurate and adjust for dumb money (a colloquialism used to describe gut-check bets made with little informational basis). Insiders are only a smear on optics.</p><p class="card-preview">“Act first, apologize later,” is the internal mantra of Shayne Coplan, Polymarket’s founder and CEO. The son of two South African professors, Coplan (only 27) was for a brief two-week period in 2025 the youngest self-made billionaire in the world. A former employee described Polymarket’s early culture: “like, ‘We’re rebels, we’re mavericks, and we’re just gonna build this thing and figure out the regulatory stuff later.’”</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -291,7 +364,7 @@
             <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Read Preview</button></p>
           </div>
         </div>
-        <a class="latest-plate" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener"><span class="plate-curtain"><span class="plate-title">Right Rationalism</span><span class="latest-plate-p">In 2023, Stevie Miller, then 19, took a leave of absence from Carnegie Mellon University to work for the neo-reactionary, right-wing blogger Curtis Yarvin and live in his Berkeley, California basement.</span><span class="latest-plate-p">Stevie had been a fanatical reader of Yarvin’s blog <em>Unqualified Reservations</em> since middle school, and Yarvin had taken Stevie on as an amanuensis. But when Stevie worked for “Mencius Moldbug” (Yarvin’s internet pseudonym), Yarvin was not nearly so infamous as now. In the years since, Yarvin has been cited by Vice President J.D. Vance, and a Subreddit with over 12k followers, “YarvinConspiracy,” tracks his allegedly deleterious effect on the American right. The mainstream media has caught on too, sleuthing out links between conservative political factions and Yarvin’s extremist, exuberant internet writing. His densely-hyperlinked and referential prose, recondite intellectual heroes (Thomas Carlyle, James Froude, and John Adams, among others), and status as outsider-dissident-genius strike an alluring figure, an allure which he uses to recruit young people — especially young men — to the conservative movement. In June 2025, Ava Kofman wrote an excellent profile of Yarvin for <em>The New Yorke</em> r (a portrait that Stevie told me forms a pretty accurate picture of Yarvin’s psychology):</span><span class="latest-plate-p">So who is this precocious intern? When researching for this interview, I asked a D.C. friend, “Do you know Stevie Miller?”</span><span class="latest-plate-p">“Everyone knows Stevie,” he replied.</span><span class="latest-plate-p">Stevie Miller is the most gregarious, internet-addled, and social science-oriented gen z right-winger I know.</span><span class="latest-plate-p">Now 21, Stevie, who hails from New York’s Upper East Side and the D.C. suburbs, is a fellow of Tyler Cowen’s Emergent Ventures grant. Having returned to CMU after a brief stint at the University of Austin in 2025, he studies “Statistics &amp; Machine Learning” in an honors program for “Quantitative Social Science Scholars.” He sometimes goes by the pseudonym Werner Zagrebbi, especially on Twitter, and he writes the Substack <em>Right Rationalism</em>.</span><span class="latest-plate-p">Much of the social science-driven, right-wing world that Stevie belongs to was born from an interlinked sphere of blogs and forums (4chan, Slate Star Codex, MarginalRevolution, LessWrong, Unqualified Reservations, Overcoming Bias, and others) — following along through some of the hyperlinks in this interview should replicate the feeling of what it is like to be a young right-winger in the burgeoning internet blogosphere. For a broad overview of Yarvin, Stevie’s influences, and many others in the rationalist sphere, Rufus Knuppel’s p(doom) is a great starting place. (Stevie called it “one of the best things we’ve read on the intellectual and cultural history of the contemporary prediction markets boom.”) For the more minute references, I have provided footnotes and links.</span><span class="latest-plate-p">Below, Stevie speaks about his time working for Yarvin, disappointment with various right-wing institutions like the University of Austin and the Hertog Foundation, failed attempts to land a job in the Trump administration, and much, much more.</span><span class="latest-plate-p">I mean, who’s the president? I think if you’re going to write an intellectual history of Trump, you’re not going to look at tariffs and Sam Francis or something. 2 You’ll look at Yarvin and Steve Sailer and these people. And AI is obviously going to become, like, more than half of the economy. Whether that’s in one decade or three, I don’t know, but it’s all a part of this intellectual history. These things are going to get more status.</span><span class="latest-plate-p">It’s really hard to reach your final form at 19. How would you get into a great college now? There are a lot of things you can exploit to do that, but it’s a very different world for us now. I knew the GMU people, but they were a lot less famous then. 3 It wasn’t really social-climbey in high school to be into internet writing. This has been the step-change in the status economics of this sphere. That’s the central fact of the past three years — these people have become a much bigger deal, and people process that in different ways.</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
+        <a class="latest-plate" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener"><span class="plate-curtain"><span class="plate-title" data-href="archive.html#topic=right%20rationalism">Right Rationalism</span><span class="latest-plate-p">In 2023, Stevie Miller, then 19, took a leave of absence from Carnegie Mellon University to work for the neo-reactionary, right-wing blogger Curtis Yarvin and live in his Berkeley, California basement.</span><span class="latest-plate-p">Stevie had been a fanatical reader of Yarvin’s blog <em>Unqualified Reservations</em> since middle school, and Yarvin had taken Stevie on as an amanuensis. But when Stevie worked for “Mencius Moldbug” (Yarvin’s internet pseudonym), Yarvin was not nearly so infamous as now. In the years since, Yarvin has been cited by Vice President J.D. Vance, and a Subreddit with over 12k followers, “YarvinConspiracy,” tracks his allegedly deleterious effect on the American right. The mainstream media has caught on too, sleuthing out links between conservative political factions and Yarvin’s extremist, exuberant internet writing. His densely-hyperlinked and referential prose, recondite intellectual heroes (Thomas Carlyle, James Froude, and John Adams, among others), and status as outsider-dissident-genius strike an alluring figure, an allure which he uses to recruit young people — especially young men — to the conservative movement. In June 2025, Ava Kofman wrote an excellent profile of Yarvin for <em>The New Yorke</em> r (a portrait that Stevie told me forms a pretty accurate picture of Yarvin’s psychology):</span><span class="latest-plate-p">So who is this precocious intern? When researching for this interview, I asked a D.C. friend, “Do you know Stevie Miller?”</span><span class="latest-plate-p">“Everyone knows Stevie,” he replied.</span><span class="latest-plate-p">Stevie Miller is the most gregarious, internet-addled, and social science-oriented gen z right-winger I know.</span><span class="latest-plate-p">Now 21, Stevie, who hails from New York’s Upper East Side and the D.C. suburbs, is a fellow of Tyler Cowen’s Emergent Ventures grant. Having returned to CMU after a brief stint at the University of Austin in 2025, he studies “Statistics &amp; Machine Learning” in an honors program for “Quantitative Social Science Scholars.” He sometimes goes by the pseudonym Werner Zagrebbi, especially on Twitter, and he writes the Substack <em>Right Rationalism</em>.</span><span class="latest-plate-p">Much of the social science-driven, right-wing world that Stevie belongs to was born from an interlinked sphere of blogs and forums (4chan, Slate Star Codex, MarginalRevolution, LessWrong, Unqualified Reservations, Overcoming Bias, and others) — following along through some of the hyperlinks in this interview should replicate the feeling of what it is like to be a young right-winger in the burgeoning internet blogosphere. For a broad overview of Yarvin, Stevie’s influences, and many others in the rationalist sphere, Rufus Knuppel’s p(doom) is a great starting place. (Stevie called it “one of the best things we’ve read on the intellectual and cultural history of the contemporary prediction markets boom.”) For the more minute references, I have provided footnotes and links.</span><span class="latest-plate-p">Below, Stevie speaks about his time working for Yarvin, disappointment with various right-wing institutions like the University of Austin and the Hertog Foundation, failed attempts to land a job in the Trump administration, and much, much more.</span><span class="latest-plate-p">I mean, who’s the president? I think if you’re going to write an intellectual history of Trump, you’re not going to look at tariffs and Sam Francis or something. 2 You’ll look at Yarvin and Steve Sailer and these people. And AI is obviously going to become, like, more than half of the economy. Whether that’s in one decade or three, I don’t know, but it’s all a part of this intellectual history. These things are going to get more status.</span><span class="latest-plate-p">It’s really hard to reach your final form at 19. How would you get into a great college now? There are a lot of things you can exploit to do that, but it’s a very different world for us now. I knew the GMU people, but they were a lot less famous then. 3 It wasn’t really social-climbey in high school to be into internet writing. This has been the step-change in the status economics of this sphere. That’s the central fact of the past three years — these people have become a much bigger deal, and people process that in different ways.</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
       </div>
         <div class="latest-cell latest-cell--ps">
         <!-- THE PICTURE RESTS BARE. Nothing is set into it and nothing
@@ -308,7 +381,7 @@
             <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Read Preview</button></p>
           </div>
         </div>
-        <a class="latest-plate" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener"><span class="plate-curtain"><span class="plate-title">Riding to the Limit</span><span class="latest-plate-p">I started following Bond Almand IV in the same way many other Dartmouth students did: via his thorough, vivid, and thrilling journal entries as he completed his record-breaking Pan-American route, a 14,000-mile cycling journey from Northwest Alaska to Southern Argentina, in 75 days. Almand broke the previous world record by almost nine days, a record that had been established by an athlete with a whole team to change his tires, cook him food, and provide other aid. Almand was self-supported.</span><span class="latest-plate-p">I spoke with Bond about his motivations, hallucinations, writing, and pain.</span><span class="latest-plate-p">Senior fall, I attempt it my first time and I get halfway 72 miles in, and am feeling alright, but it is the middle of the night, and I’ve never done an endurance event through the night. I turn around and start climbing back up the mountains, and I fall into really deep sleep deprivation and just can’t really understand what’s happening to my body and start having crazy hallucinations.</span><span class="latest-plate-p">And so I have these stress fractures in my tibia that are getting worse and worse with every step I take, but I don’t really register how bad it’s getting because I’m just completely out of it. And then around 4:30 a.m. as the sun is coming up, around mile 86 or so, I hear a snap in one of my tibias. The stress fracture had gotten so bad that it split, and I had a pretty clean stress fracture.</span><span class="latest-plate-p">I passed out on the side of the trail and woke up as the first rays of sun started hitting me about 45 minutes later. I couldn’t really walk at that time, since I’d passed out from the pain. Everything had gotten really tight, so on the downhills, I had to kind of crawl.</span><span class="latest-plate-p">I was 14 miles from the nearest trailhead. I kind of broke my leg in the worst possible spot. So since both legs were messed up, since I had a stress fracture in one and a fracture in the other, I couldn’t really walk that well. But yeah, I was obsessed with it. So I healed up and tried it again a couple of months later, and I got a stress fracture again and bailed again. Each time I made it 104 miles. It’s still elusive. The 144-mile Double SCAR is still to be conquered. Hopefully, the third time’s the charm.</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
+        <a class="latest-plate" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener"><span class="plate-curtain"><span class="plate-title" data-href="archive.html#topic=riding%20to%20the%20limit">Riding to the Limit</span><span class="latest-plate-p">I started following Bond Almand IV in the same way many other Dartmouth students did: via his thorough, vivid, and thrilling journal entries as he completed his record-breaking Pan-American route, a 14,000-mile cycling journey from Northwest Alaska to Southern Argentina, in 75 days. Almand broke the previous world record by almost nine days, a record that had been established by an athlete with a whole team to change his tires, cook him food, and provide other aid. Almand was self-supported.</span><span class="latest-plate-p">I spoke with Bond about his motivations, hallucinations, writing, and pain.</span><span class="latest-plate-p">Senior fall, I attempt it my first time and I get halfway 72 miles in, and am feeling alright, but it is the middle of the night, and I’ve never done an endurance event through the night. I turn around and start climbing back up the mountains, and I fall into really deep sleep deprivation and just can’t really understand what’s happening to my body and start having crazy hallucinations.</span><span class="latest-plate-p">And so I have these stress fractures in my tibia that are getting worse and worse with every step I take, but I don’t really register how bad it’s getting because I’m just completely out of it. And then around 4:30 a.m. as the sun is coming up, around mile 86 or so, I hear a snap in one of my tibias. The stress fracture had gotten so bad that it split, and I had a pretty clean stress fracture.</span><span class="latest-plate-p">I passed out on the side of the trail and woke up as the first rays of sun started hitting me about 45 minutes later. I couldn’t really walk at that time, since I’d passed out from the pain. Everything had gotten really tight, so on the downhills, I had to kind of crawl.</span><span class="latest-plate-p">I was 14 miles from the nearest trailhead. I kind of broke my leg in the worst possible spot. So since both legs were messed up, since I had a stress fracture in one and a fracture in the other, I couldn’t really walk that well. But yeah, I was obsessed with it. So I healed up and tried it again a couple of months later, and I got a stress fracture again and bailed again. Each time I made it 104 miles. It’s still elusive. The 144-mile Double SCAR is still to be conquered. Hopefully, the third time’s the charm.</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
       </div>
       </section>
   </div>
@@ -325,7 +398,7 @@
             <div class="panel-col panel-col--left">
               <p class="card-meta ground-kicker"><span class="ground-kicker-line"></span></p>
               <p class="card-meta ground-under ground-under--kicker"></p>
-              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#sort=author&amp;post=freak-show">Theodore Gary</a></span><span class="cover-date"><span class="cover-sep" aria-hidden="true">·</span><a href="archive.html#sort=date&amp;post=freak-show">Feb 25</a></span></p>
+              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=theodore%20gary">Theodore Gary</a></span><span class="cover-date"><span class="cover-sep" aria-hidden="true">·</span><a href="archive.html#sort=date&amp;post=freak-show">Feb 25</a></span></p>
               <h3 class="card-title"><a href="https://www.thenewcritic.com/p/freak-show" rel="noopener">Freak Show</a></h3>
               
               <p class="card-dek">“Algorithms reward attention, and if you can’t get the good kind, then the bad will do.”</p>
@@ -336,7 +409,7 @@
             <div class="panel-col panel-col--right">
               <p class="card-meta ground-credit"></p><p class="card-meta ground-under ground-under--date"></p>
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/freak-show" rel="noopener">Streaming Hazard</a><div class="card-preview-cols"><p class="card-preview">I watched a man with an intense face shamble into the university library three years ago. He sat down at a computer, turned it on, and maneuvered with fits and starts to Facebook. I watched surreptitiously, careful to avoid eye-contact. He either rocked back and forth, snorting and grunting, or sat sinisterly still. He scrolled quickly and roughly, without any discernible scheme, leaning slowly toward the screen, his eyeballs right up against it. He picked up the phone and called, I assume, his ex-wife. They discussed a little boy of unknown origin. He <em>had not</em>, it sounded, had a good experience at somebody’s home. From my side of the one-way conversation, I learned that the bathroom had been fixed. I also learned that things were safe, and that it was time for the boy to visit his dad. I did not get the impression, from the angry noises the man made when the phone call ended, that this was going to happen. He frantically searched Google, and then he left, and the library was quiet again.</p><p class="card-preview">I have ever since then wondered what he looked at after the call. His ex-wife’s Facebook? Pictures of his son? I remember he was on YouTube at one point, listening to music. What is his algorithm like? What is he marketed? Does Google know he is mentally ill, that he is wandering around the University of Illinois’s main library? Is there a little checked box for that sort of thing in his data profile? Does Google know about his lost son? His divorce? Maybe the algorithm could procure for him a diagnosis, a treatment facility, a battery of pills, and the kind of father’s rights attorneys they advertise on sports talk radio. That would be nice.</p><p class="card-preview">As it stands, Google does nothing. It neither helps nor hurts the poor, twitchy man. I suspect its products even provide him validation, joy. It must serve him that which it also serves us: pictures of family, clips from beloved movies, songs from favorite bands, conspiratorial podcasts — all aimed at manipulating those pathetic neuroses we share collectively, inspiring pain and joy, fear and love, endless possibility and stifling inertia. The internet is an ambiguous place. It has no character. We consume it. We populate it. We consume ourselves. It, like a court eunuch, shapes our desires while yielding to our commands. It is a refuge from everyday life and a ceaseless reminder of it. I wonder how much content is created by the wandering and crazy? How fast could I find a picture of the twitchy man’s wife and son? How fast could I track down his life’s wreckage? I could imagine an enjoyable hour, maybe two, spent sifting through that.</p><p class="card-preview">I would like to find his accounts. They are intensely interesting to me. Here is a real man, an unpretentious human life, laid out in pictures, in Facebook comments, in Instagram reels — all of it in fine quality and perfect detail. What a new frontier in entertainment, something truly wilder, weirder, and crazier than its precursors. I would like to watch him smoke meth on Instagram live. This would enthrall me, my sheltered upper-middle class mind — a glimpse of disgusting and intriguing social disorder. On the internet, where we all are equal, I — cocooned in a blanket — may catch a glimpse of those awful, strange things. The algorithm notices, and feeds me more, and an industry is born.</p><p class="card-preview">The internet is a freak show like the old circus. Step inside the tent; see the hermaphrodite, the bearded lady. Enjoy it, but never admit it. You weren’t there. You’d never go. You don’t know anything about it at all. And though much has changed since P.T. Barnum, there remains a serious, well-funded industry of promoters and managers and marketers whose income depends on their association with the physically deformed, mentally ill, and socially maladjusted. These people — famous for their ugliness, homelessness, binge-drinking, and public freakouts — are these days called “Lolcows” by the internet; that is to say, they produce “lols” like a cow does milk — endlessly, or at least until they die.</p><p class="card-preview">The best-known among them must be WorldofTShirts — Joshua Block, to use his given name. Josh is an autistic, gangly twenty-something forced into a liver-shredding alcoholic stupor over the past half-decade by a series of noxious handlers. He has 4 million followers on TikTok. His account blew up during the pandemic, as he, still young and fresh-looking, posted videos of himself doing goofy dances and reviewing various boba teas. In 2021, a video of him screaming the lyrics to “Empire State of Mind” in Times Square amassed 27 million views. So, clever as he is, Josh did it again, and again, and again. Soon enough, he was on a Times Square billboard. Dixie D’Amelio followed him shortly thereafter.</p><p class="card-preview">Sometime after his original first surge in popularity, he takes a trip to Mexico. Josh drinks his first drink here, then chooses to have quite a few more. He loses his phone in an Uber. He turns 21 soon after, and with this Josh has had enough of boba tea. He now drinks liquor, as much as he can get. The songs persist, now sung drunkenly, and a manager enters the picture: Michael Quinn. The former owner of Feltman’s Hotdogs, an oval-faced, barrel-chested, strangely tanned, heavily accented New Yorker, Quinn comes upon Josh’s budding fame and decides to grab a piece of it for himself. Armed with a compulsive need for attention and the money to secure it, he sets about dragging Josh and his roller backpack to the bars, restaurants, and pizza shops of New York City. Together, they have a goofy, silly time. But all is not well. You wouldn’t know it yet, but the man is becoming more erratic, his content more unhinged. Unsupervised by Quinn, Josh records himself licking the subway floor.</p><p class="card-preview">Around this time, Josh meets Jason Itzler, Jeffrey Epstein associate, Josh’s second manager, and the King of All Pimps. In the mid-aughts, Itzler became a sort of small-time New York celebrity as the owner/operator of the high-priced escort service New York Confidential. Sent to Rikers in 2005 for his operation of the company, he reemerged in 2008 as a bit player in the prostitution scandal that scuttled former New York Governor Eliot Spitzer’s political career. In 2011, he was identified as an occupant of the apartment where 21-year-old University of Wisconsin-La Crosse student Julia Sumnicht overdosed on GHB. Now on Kick — which is where they send you once you’re banned by Twitch — he streams under the name Mr. Based. Flanked from behind by a gold statue of the Buddha, a human-sized gnome, a replica sarcophagus, and a several-feet-tall Tony the Tiger, he now spends his nights like a dirtbag cam-girl: $50 to take a shot of Johnny Walker Blue, $200 to smoke a blunt, $300 to huff Galaxy Gas.</p><p class="card-preview">Itzler, I’m sure, needed no advice worming his way into the life of a naïve twenty-something. Isolate. Manipulate. Make him reliant on <em>you.</em> The content became meaner, the fans more rabid, as Itzler established himself in Josh’s life. Gone was that silly and sweet stuff in Josh’s videos, replaced instead by an unrelenting drumbeat of triggers designed to make him go ape. Fans on the street, egged on by Itzler, would yell, “Put the fries in the bag.” “Fuck you, bitch!” Josh would yell back. Mostly, the two sat in Itzler’s opulent apartment, with Josh away from the camera and Itzler right up next to it, drinking until collapse, until Josh went limp. These streams, hard as they are to watch, function as something like a real-time account of Josh’s descent into hell. In a clip pretty neatly summarizing their dynamic, Josh huffs nitrous oxide from a balloon. He jerks and flails and suddenly stops, looking terrified. “I feel lightheaded,” he yells. Peaking over his shoulder, Itzler laughs and points his thumb toward Josh, a smile plastered on his lips. “Look at this guy,” he says. The clip has over 300,000 views.</p><p class="card-preview">Itzler is out of the picture now, relegated once again back to the status of depressing middle-aged man, but the Joshua Block money-making operation churns ever onward. Managed today by MAGA influencer and cocaine aficionado Tony Beam, Josh and his entourage can be found on Parti — which is where they send you when you’re banned by Kick — engaged in the same crap. Josh goes to a bar and gets blackout drunk. Josh gets punched for saying something racist. A sampling of the top posts on his subreddit read, “Josh Confuses a block of cream cheese for his phone,” “Josh block crashed out on me and smacked my phone,” “Josh crashout in Austin,” “Josh says N word hard R,” and so on. You get the picture.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="archive.html#topic=streaming%20hazard">Streaming Hazard</a><div class="card-preview-cols"><p class="card-preview">I watched a man with an intense face shamble into the university library three years ago. He sat down at a computer, turned it on, and maneuvered with fits and starts to Facebook. I watched surreptitiously, careful to avoid eye-contact. He either rocked back and forth, snorting and grunting, or sat sinisterly still. He scrolled quickly and roughly, without any discernible scheme, leaning slowly toward the screen, his eyeballs right up against it. He picked up the phone and called, I assume, his ex-wife. They discussed a little boy of unknown origin. He <em>had not</em>, it sounded, had a good experience at somebody’s home. From my side of the one-way conversation, I learned that the bathroom had been fixed. I also learned that things were safe, and that it was time for the boy to visit his dad. I did not get the impression, from the angry noises the man made when the phone call ended, that this was going to happen. He frantically searched Google, and then he left, and the library was quiet again.</p><p class="card-preview">I have ever since then wondered what he looked at after the call. His ex-wife’s Facebook? Pictures of his son? I remember he was on YouTube at one point, listening to music. What is his algorithm like? What is he marketed? Does Google know he is mentally ill, that he is wandering around the University of Illinois’s main library? Is there a little checked box for that sort of thing in his data profile? Does Google know about his lost son? His divorce? Maybe the algorithm could procure for him a diagnosis, a treatment facility, a battery of pills, and the kind of father’s rights attorneys they advertise on sports talk radio. That would be nice.</p><p class="card-preview">As it stands, Google does nothing. It neither helps nor hurts the poor, twitchy man. I suspect its products even provide him validation, joy. It must serve him that which it also serves us: pictures of family, clips from beloved movies, songs from favorite bands, conspiratorial podcasts — all aimed at manipulating those pathetic neuroses we share collectively, inspiring pain and joy, fear and love, endless possibility and stifling inertia. The internet is an ambiguous place. It has no character. We consume it. We populate it. We consume ourselves. It, like a court eunuch, shapes our desires while yielding to our commands. It is a refuge from everyday life and a ceaseless reminder of it. I wonder how much content is created by the wandering and crazy? How fast could I find a picture of the twitchy man’s wife and son? How fast could I track down his life’s wreckage? I could imagine an enjoyable hour, maybe two, spent sifting through that.</p><p class="card-preview">I would like to find his accounts. They are intensely interesting to me. Here is a real man, an unpretentious human life, laid out in pictures, in Facebook comments, in Instagram reels — all of it in fine quality and perfect detail. What a new frontier in entertainment, something truly wilder, weirder, and crazier than its precursors. I would like to watch him smoke meth on Instagram live. This would enthrall me, my sheltered upper-middle class mind — a glimpse of disgusting and intriguing social disorder. On the internet, where we all are equal, I — cocooned in a blanket — may catch a glimpse of those awful, strange things. The algorithm notices, and feeds me more, and an industry is born.</p><p class="card-preview">The internet is a freak show like the old circus. Step inside the tent; see the hermaphrodite, the bearded lady. Enjoy it, but never admit it. You weren’t there. You’d never go. You don’t know anything about it at all. And though much has changed since P.T. Barnum, there remains a serious, well-funded industry of promoters and managers and marketers whose income depends on their association with the physically deformed, mentally ill, and socially maladjusted. These people — famous for their ugliness, homelessness, binge-drinking, and public freakouts — are these days called “Lolcows” by the internet; that is to say, they produce “lols” like a cow does milk — endlessly, or at least until they die.</p><p class="card-preview">The best-known among them must be WorldofTShirts — Joshua Block, to use his given name. Josh is an autistic, gangly twenty-something forced into a liver-shredding alcoholic stupor over the past half-decade by a series of noxious handlers. He has 4 million followers on TikTok. His account blew up during the pandemic, as he, still young and fresh-looking, posted videos of himself doing goofy dances and reviewing various boba teas. In 2021, a video of him screaming the lyrics to “Empire State of Mind” in Times Square amassed 27 million views. So, clever as he is, Josh did it again, and again, and again. Soon enough, he was on a Times Square billboard. Dixie D’Amelio followed him shortly thereafter.</p><p class="card-preview">Sometime after his original first surge in popularity, he takes a trip to Mexico. Josh drinks his first drink here, then chooses to have quite a few more. He loses his phone in an Uber. He turns 21 soon after, and with this Josh has had enough of boba tea. He now drinks liquor, as much as he can get. The songs persist, now sung drunkenly, and a manager enters the picture: Michael Quinn. The former owner of Feltman’s Hotdogs, an oval-faced, barrel-chested, strangely tanned, heavily accented New Yorker, Quinn comes upon Josh’s budding fame and decides to grab a piece of it for himself. Armed with a compulsive need for attention and the money to secure it, he sets about dragging Josh and his roller backpack to the bars, restaurants, and pizza shops of New York City. Together, they have a goofy, silly time. But all is not well. You wouldn’t know it yet, but the man is becoming more erratic, his content more unhinged. Unsupervised by Quinn, Josh records himself licking the subway floor.</p><p class="card-preview">Around this time, Josh meets Jason Itzler, Jeffrey Epstein associate, Josh’s second manager, and the King of All Pimps. In the mid-aughts, Itzler became a sort of small-time New York celebrity as the owner/operator of the high-priced escort service New York Confidential. Sent to Rikers in 2005 for his operation of the company, he reemerged in 2008 as a bit player in the prostitution scandal that scuttled former New York Governor Eliot Spitzer’s political career. In 2011, he was identified as an occupant of the apartment where 21-year-old University of Wisconsin-La Crosse student Julia Sumnicht overdosed on GHB. Now on Kick — which is where they send you once you’re banned by Twitch — he streams under the name Mr. Based. Flanked from behind by a gold statue of the Buddha, a human-sized gnome, a replica sarcophagus, and a several-feet-tall Tony the Tiger, he now spends his nights like a dirtbag cam-girl: $50 to take a shot of Johnny Walker Blue, $200 to smoke a blunt, $300 to huff Galaxy Gas.</p><p class="card-preview">Itzler, I’m sure, needed no advice worming his way into the life of a naïve twenty-something. Isolate. Manipulate. Make him reliant on <em>you.</em> The content became meaner, the fans more rabid, as Itzler established himself in Josh’s life. Gone was that silly and sweet stuff in Josh’s videos, replaced instead by an unrelenting drumbeat of triggers designed to make him go ape. Fans on the street, egged on by Itzler, would yell, “Put the fries in the bag.” “Fuck you, bitch!” Josh would yell back. Mostly, the two sat in Itzler’s opulent apartment, with Josh away from the camera and Itzler right up next to it, drinking until collapse, until Josh went limp. These streams, hard as they are to watch, function as something like a real-time account of Josh’s descent into hell. In a clip pretty neatly summarizing their dynamic, Josh huffs nitrous oxide from a balloon. He jerks and flails and suddenly stops, looking terrified. “I feel lightheaded,” he yells. Peaking over his shoulder, Itzler laughs and points his thumb toward Josh, a smile plastered on his lips. “Look at this guy,” he says. The clip has over 300,000 views.</p><p class="card-preview">Itzler is out of the picture now, relegated once again back to the status of depressing middle-aged man, but the Joshua Block money-making operation churns ever onward. Managed today by MAGA influencer and cocaine aficionado Tony Beam, Josh and his entourage can be found on Parti — which is where they send you when you’re banned by Kick — engaged in the same crap. Josh goes to a bar and gets blackout drunk. Josh gets punched for saying something racist. A sampling of the top posts on his subreddit read, “Josh Confuses a block of cream cheese for his phone,” “Josh block crashed out on me and smacked my phone,” “Josh crashout in Austin,” “Josh says N word hard R,” and so on. You get the picture.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -353,26 +426,27 @@
       </section>
   </div>
   <div class="ledger-head ledger-row">
-      <span class="ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title <span class="arch-sort-arrows">
+      <span class="ledger-cell lc-title"><span class="lc-label">Title</span><span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="title" data-dir="asc" aria-label="Sort by title ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="title" data-dir="desc" aria-label="Sort by title descending">&#9660;</button>
-      </span></span>
-      <span class="ledger-cell lc-author">Author <span class="arch-sort-arrows">
+      </span><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button></span>
+      <span class="ledger-cell lc-author"><span class="lc-label">Author</span><span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="author" data-dir="asc" aria-label="Sort by author ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="author" data-dir="desc" aria-label="Sort by author descending">&#9660;</button>
       </span></span>
-      <span class="ledger-cell lc-kicker">Tag <span class="arch-sort-arrows">
+      <span class="ledger-cell lc-kicker"><span class="lc-label">Tag</span><span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="kicker" data-dir="asc" aria-label="Sort by tag ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="kicker" data-dir="desc" aria-label="Sort by tag descending">&#9660;</button>
       </span></span>
-      <span class="ledger-cell lc-section">Section <span class="arch-sort-arrows">
+      <span class="ledger-cell lc-section"><span class="lc-label">Section</span><span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="section" data-dir="asc" aria-label="Sort by section ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="section" data-dir="desc" aria-label="Sort by section descending">&#9660;</button>
       </span></span>
-      <span class="ledger-cell lc-date">Date <span class="arch-sort-arrows">
+      <span class="ledger-cell lc-date"><span class="lc-label">Date</span><span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="date" data-dir="asc" aria-label="Sort by date ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="date" data-dir="desc" aria-label="Sort by date descending">&#9660;</button>
       </span></span>
+      <span class="ledger-cell lc-search"><input class="arch-search" type="search" placeholder="Search" aria-label="Search the ledger" autocomplete="off" spellcheck="false"><svg class="arch-search-glass" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><button class="arch-clear" type="button" hidden><span class="arch-clear-label">Clear filter</span><svg class="arch-clear-x" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
     </div>
   <div class="movement m--essays m--ledger">
   
@@ -389,11 +463,11 @@
       <span class="ledger-cell lc-date">Sep 16, 2026</span>
     </a>
   </div>
-  <div class="ledger-item" data-title="jasmine sun’s project of self-transformation" data-author="jasmine sun" data-date="1787169236073" data-kicker="" data-section="postscript" data-slug="jasmine-suns-project-of-self-transformation">
+  <div class="ledger-item" data-title="jasmine sun’s project of self-transformation" data-author="jasmine sun" data-date="1787169236073" data-kicker="journalistic becoming" data-section="postscript" data-slug="jasmine-suns-project-of-self-transformation">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener">
       <span class="ledger-cell lc-title">Jasmine Sun’s Project of Self-Transformation</span>
       <span class="ledger-cell lc-author">Jasmine Sun</span>
-      <span class="ledger-cell lc-kicker"></span>
+      <span class="ledger-cell lc-kicker">Journalistic Becoming</span>
       <span class="ledger-cell lc-section">Postscript</span>
       <span class="ledger-cell lc-date">Aug 19, 2026</span>
     </a>
@@ -407,11 +481,11 @@
       <span class="ledger-cell lc-date">Aug 12, 2026</span>
     </a>
   </div>
-  <div class="ledger-item" data-title="present at the creation" data-author="theo jaffee" data-date="1786384123995" data-kicker="" data-section="postscript" data-slug="present-at-the-creation">
+  <div class="ledger-item" data-title="present at the creation" data-author="theo jaffee" data-date="1786384123995" data-kicker="monitoring the situation" data-section="postscript" data-slug="present-at-the-creation">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/present-at-the-creation" rel="noopener">
       <span class="ledger-cell lc-title">Present at the Creation</span>
       <span class="ledger-cell lc-author">Theo Jaffee</span>
-      <span class="ledger-cell lc-kicker"></span>
+      <span class="ledger-cell lc-kicker">Monitoring the Situation</span>
       <span class="ledger-cell lc-section">Postscript</span>
       <span class="ledger-cell lc-date">Aug 10, 2026</span>
     </a>
@@ -3356,7 +3430,33 @@
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
     wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
+    seatHit(name, wb.top + AIR, inkBottom);
     return { wb: wb, inkBottom: inkBottom };
+  }
+  function seatHit(name, top, bottom) {
+    var link = name.closest ? name.closest('a') : null;
+    if (!link) return;
+    var hit = null;
+    for (var c = link.firstElementChild; c; c = c.nextElementSibling) {
+      if (c.classList.contains('ops-hit')) { hit = c; break; }
+    }
+    if (!hit) {
+      hit = document.createElement('span');
+      hit.className = 'ops-hit';
+      hit.setAttribute('aria-hidden', 'true');
+      link.appendChild(hit);
+      link.classList.add('has-hit');
+      var band = link.closest('.page-banner, .reprint');
+      if (band) band.classList.add('has-hit');
+    }
+    var i = inkSpanOf(name);
+    if (!i) return;
+    if (getComputedStyle(link).position === 'static') link.style.position = 'relative';
+    var lr = link.getBoundingClientRect();
+    hit.style.left = (i.left - lr.left).toFixed(2) + 'px';
+    hit.style.top = (top - lr.top).toFixed(2) + 'px';
+    hit.style.width = (i.right - i.left).toFixed(2) + 'px';
+    hit.style.height = (bottom - top).toFixed(2) + 'px';
   }
   function fitMastheadFill() {
     var name = document.querySelector('.site-nav--top .topbar-name');
@@ -4566,6 +4666,12 @@
       }
       if (hit(e, '.latest-plate') && !hit(e, '.plate-title')) {
         e.preventDefault(); e.stopPropagation();
+        return;
+      }
+      var kicker = hit(e, '.plate-title[data-href]');
+      if (kicker) {
+        e.preventDefault(); e.stopPropagation();
+        location.href = kicker.getAttribute('data-href');
       }
     });
     card.addEventListener('keydown', function (e) {
@@ -5054,6 +5160,16 @@
           var over = ink0.top - rr.top;
           ledger.style.paddingTop = Math.max(0, gap - over).toFixed(2) + 'px';
         }
+        var clearEl = document.querySelector('.ledger-head .arch-clear');
+        var headEl = document.querySelector('.ledger-head');
+        var move = document.querySelector('.m--ledger');
+        if (clearEl && headEl && move && row0) {
+          var rr2 = row0.getBoundingClientRect();
+          var seat = rr2.top - move.getBoundingClientRect().top + headEl.offsetHeight;
+          clearEl.style.top = seat.toFixed(2) + 'px';
+          clearEl.style.height = rr2.height.toFixed(2) + 'px';
+          clearEl.style.lineHeight = rr2.height.toFixed(2) + 'px';
+        }
       }
     }
     var field = document.querySelector('.ledger-field');
@@ -5084,14 +5200,100 @@
     el.removeChild(probe);
     return { top: base1 - m.actualBoundingBoxAscent, bottom: base2 + m.actualBoundingBoxDescent };
   }
+  function glyphInk(el, text) {
+    var cs = getComputedStyle(el);
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return null;
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var txt = text != null ? text : ((el.textContent || '').trim() || 'X');
+    if (cs.textTransform === 'uppercase') txt = txt.toUpperCase();
+    var m = cv.measureText(txt);
+    if (m.actualBoundingBoxAscent == null) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base = probe.getBoundingClientRect().bottom;
+    el.removeChild(probe);
+    return { top: base - m.actualBoundingBoxAscent, bottom: base + m.actualBoundingBoxDescent, base: base };
+  }
+  function svgInk(svg) {
+    var r = svg.getBoundingClientRect();
+    var vb = svg.viewBox && svg.viewBox.baseVal;
+    var bb = null;
+    try { bb = svg.getBBox(); } catch (e) {}
+    if (!vb || !bb || !vb.height) return { top: r.top, bottom: r.bottom };
+    var k = r.height / vb.height;
+    return { top: r.top + (bb.y - vb.y) * k, bottom: r.top + (bb.y + bb.height - vb.y) * k };
+  }
+  function seatOn(el, ink, target) {
+    if (!el || !ink || !target) return null;
+    if (!el.getBoundingClientRect().height) return null;
+    var want = (target.top + target.bottom) / 2;
+    var have = (ink.top + ink.bottom) / 2;
+    var cur = parseFloat(el.style.top) || 0;
+    el.style.position = 'relative';
+    el.style.top = (cur + want - have).toFixed(2) + 'px';
+    return want - have;
+  }
+  function fitSymbols() {
+    var head = document.querySelector('.ledger-head');
+    if (!head) return [];
+    var out = [];
+    [].forEach.call(head.querySelectorAll('.ledger-cell'), function (cell) {
+      var label = cell.querySelector('.lc-label');
+      var lk = label && glyphInk(label, 'H');
+      if (lk) lk = { top: lk.top, bottom: lk.base };
+      var arrows = cell.querySelector('.arch-sort-arrows');
+      if (arrows && lk) {
+        var up = arrows.querySelector('.arch-sort[data-dir="asc"]'), dn = arrows.querySelector('.arch-sort[data-dir="desc"]');
+        var iu = up && glyphInk(up), idn = dn && glyphInk(dn);
+        if (iu && idn) out.push(['arrows', seatOn(arrows, { top: iu.top, bottom: idn.bottom }, lk)]);
+      }
+      var shuffle = cell.querySelector('.arch-shuffle');
+      if (shuffle && lk) out.push(['shuffle', seatOn(shuffle, glyphInk(shuffle), lk)]);
+      var field = cell.querySelector('.arch-search');
+      var glass = cell.querySelector('.arch-search-glass');
+      if (field && glass) {
+        var fcs = getComputedStyle(field);
+        var cv = document.createElement('canvas').getContext('2d');
+        cv.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
+        var fm = cv.measureText('H');
+        var fr = field.getBoundingClientRect();
+        var half = (fr.height - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2;
+        var fbase = fr.top + half + fm.fontBoundingBoxAscent;
+        out.push(['glass', seatOn(glass, svgInk(glass), { top: fbase - fm.actualBoundingBoxAscent, bottom: fbase })]);
+      }
+      var clearLabel = cell.querySelector('.arch-clear-label');
+      var x = cell.querySelector('.arch-clear-x');
+      if (clearLabel && x) {
+        var ck = glyphInk(clearLabel, 'H');
+        if (ck) out.push(['x', seatOn(x, svgInk(x), { top: ck.top, bottom: ck.base })]);
+      }
+    });
+    return out;
+  }
+  try { window.__ncFitSymbols = fitSymbols; } catch (e) {}
   function fitInkAir() {
+    fitSymbols();
     var ledgerBody = document.querySelector('.movement.m--ledger > .movement-body');
     if (ledgerBody && body) {
       ledgerBody.style.marginBottom = '';
+      var pad0 = parseFloat(ledgerBody.style.paddingBottom) || 0;
       var rows = body.querySelectorAll('.ledger-item:not(.is-filtered-out)');
       var lastTitle = rows.length ? rows[rows.length - 1].querySelector('.lc-title') : null;
       var ink = lastTitle && inkOf(lastTitle);
-      if (ink) ledgerBody.style.marginBottom = (ink.bottom - ledgerBody.getBoundingClientRect().bottom).toFixed(2) + 'px';
+      if (ink) ledgerBody.style.marginBottom = (ink.bottom - (ledgerBody.getBoundingClientRect().bottom - pad0)).toFixed(2) + 'px';
+      var pad = 0;
+      if (filtered) {
+        var headEl0 = document.querySelector('.ledger-head');
+        if (headEl0) {
+          var headTopDoc = headEl0.getBoundingClientRect().top + window.scrollY;
+          var unpadded = document.documentElement.scrollHeight - pad0;
+          var short = document.documentElement.clientHeight - (unpadded - headTopDoc);
+          if (short > 0) pad = Math.ceil(short);
+        }
+      }
+      ledgerBody.style.paddingBottom = pad ? pad + 'px' : '';
     }
     var mosaic = document.querySelector('.about-mosaic-block');
     if (mosaic) {
@@ -5208,7 +5410,18 @@
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () { fitMast(); markAtTop(); }, 100);
+    var headEl = document.querySelector('.ledger-head');
+    if (headEl && headEl.getBoundingClientRect().top <= 0.5 && headEl.getBoundingClientRect().bottom > 0.5) relandAfterFit = true;
+    resizeTimer = setTimeout(function () {
+      fitMast(); markAtTop();
+      if (relandAfterFit && filtered && !target) land();
+    }, 100);
+  });
+  var relandAfterFit = false;
+  window.addEventListener('newcritic:fit', function () {
+    if (!relandAfterFit) return;
+    if (filtered && !target) { fitMast(); land(); }
+    setTimeout(function () { relandAfterFit = false; }, 400);
   });
   if (!ledger || !body) return;
   var sortBtns = document.querySelectorAll('.arch-sort');
@@ -5268,19 +5481,75 @@
     return hp;
   };
   var filtered = false;
-  function applyFilter() {
+  var clearBtn = document.querySelector('.arch-clear');
+  var searchEl = document.querySelector('.arch-search');
+  var textOf = function (it) {
+    if (it.__text == null) {
+      it.__text = [it.getAttribute('data-title'), it.getAttribute('data-author'),
+        it.getAttribute('data-kicker'), it.getAttribute('data-section'),
+        (it.querySelector('.lc-date') || {}).textContent || ''].join(' ').toLowerCase();
+    }
+    return it.__text;
+  };
+  function applyFilter(typed) {
     var hp = readHash();
-    var sec = hp.section || '', topic = hp.topic || '';
-    filtered = !!(sec || topic);
+    var sec = hp.section || '', topic = hp.topic || '', author = hp.author || '';
+    var words = searchEl ? searchEl.value.trim().toLowerCase().split(/\s+/).filter(Boolean) : [];
+    filtered = !!(sec || topic || author || words.length);
     items.forEach(function(it){
       var show = (!sec || it.getAttribute('data-section') === sec)
-        && (!topic || it.getAttribute('data-kicker') === topic);
+        && (!topic || it.getAttribute('data-kicker') === topic)
+        && (!author || it.getAttribute('data-author') === author);
+      if (show && words.length) {
+        var t = textOf(it);
+        for (var w = 0; w < words.length; w++) if (t.indexOf(words[w]) < 0) { show = false; break; }
+      }
       it.classList.toggle('is-filtered-out', !show);
     });
-    fitMast();
+    if (clearBtn) clearBtn.hidden = !filtered;
+    if (!typed) { fitMast(); return; }
+    fitInkAir();
+    if (filtered) {
+      var headEl1 = document.querySelector('.ledger-head');
+      var move1 = document.querySelector('.m--ledger');
+      if (headEl1 && move1) {
+        var top1 = move1.getBoundingClientRect().top + window.scrollY - headEl1.offsetHeight;
+        if (Math.abs(window.scrollY - top1) > 0.5) window.scrollTo({ top: Math.max(0, top1), behavior: 'instant' });
+      }
+    }
   }
   applyFilter();
   addEventListener('hashchange', function () { applyFilter(); land(); requestAnimationFrame(land); });
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+      if (searchEl) { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); return; }
+      applyFilter();
+    });
+  }
+  if (searchEl) {
+    var mirror = document.createElement('span');
+    mirror.className = 'arch-search-mirror';
+    mirror.setAttribute('aria-hidden', 'true');
+    searchEl.parentNode.insertBefore(mirror, searchEl);
+    var sizeField = function () {
+      var cs = getComputedStyle(searchEl);
+      mirror.style.font = cs.font;
+      mirror.style.letterSpacing = cs.letterSpacing;
+      mirror.textContent = searchEl.value || searchEl.placeholder || '';
+      var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      searchEl.style.width = Math.ceil(mirror.getBoundingClientRect().width + padX + 2) + 'px';
+    };
+    sizeField();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeField);
+    searchEl.addEventListener('input', function () { sizeField(); applyFilter(true); });
+    var glass = document.querySelector('.arch-search-glass');
+    if (glass) glass.addEventListener('click', function () { searchEl.focus(); });
+    searchEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); searchEl.blur(); }
+      if (e.key === 'Enter') e.preventDefault();
+    });
+  }
   var target = null;
   if (hashParams.post) {
     items.forEach(function(it){
@@ -5331,10 +5600,14 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(land);
     }
-    var settle = 0;
+    var settle = 0, still = 0;
     var settleTimer = setInterval(function () {
+      var headEl = document.querySelector('.ledger-head');
+      var before = headEl ? headEl.getBoundingClientRect().top : 0;
       land();
-      if (++settle >= 8) clearInterval(settleTimer);
+      var after = headEl ? headEl.getBoundingClientRect().top : 0;
+      still = (Math.abs(before) < 1 && Math.abs(after) < 1) ? still + 1 : 0;
+      if (++settle >= 16 || still >= 2) clearInterval(settleTimer);
     }, 250);
     ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
       addEventListener(ev, function () { clearInterval(settleTimer); }, { once: true, passive: true });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121417">
+<meta name="theme-color" content="#FFFFFF">
 <title>About — The New Critic</title>
 <meta name="description" content="The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.">
 <meta property="og:site_name" content="The New Critic">
@@ -17,12 +17,12 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu5rx2th">
+<link rel="stylesheet" href="style.css?v=mu5upwep">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
-  // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // LIGHT OR DARK, before first paint: the stored choice, else light.
   // THE GROUND: light, dark, or a colour of the reader's own (HEX,
   // 2026-09-17). Light and dark are the two token sets in style.css;
   // a hex colour is written straight onto the root as --g, with --k
@@ -69,9 +69,10 @@
       root.style.removeProperty('--g');
       root.style.removeProperty('--k');
       root.style.removeProperty('--yves');
-      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      // Light is the page's own; dark is written on the root.
+      if (mode === 'dark') root.setAttribute('data-theme', 'dark');
       else root.removeAttribute('data-theme');
-      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+      setMeta(mode === 'dark' ? CHARCOAL : WHITE);
     }
   };
   var store = function (mode, hex) {
@@ -105,6 +106,11 @@
       var vt;
       try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
       if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A skipped transition (a hidden tab, a second flip mid-dissolve)
+      // rejects every one of its promises; none is an error here.
+      var quiet = function () {};
+      if (vt && vt.ready && vt.ready.then) vt.ready.then(quiet, quiet);
+      if (vt && vt.updateCallbackDone && vt.updateCallbackDone.then) vt.updateCallbackDone.then(quiet, quiet);
       // A hidden tab may never run the animation; let go regardless.
       setTimeout(done, 800);
       return;
@@ -116,7 +122,7 @@
   };
   var current = function () {
     var t = root.getAttribute('data-theme');
-    return t === 'light' || t === 'hex' ? t : 'dark';
+    return t === 'dark' || t === 'hex' ? t : 'light';
   };
   // THE HEX FIELD: a courier line under the three words, shown on HEX
   // and hidden on Enter, Escape or leaving it. A valid code paints the
@@ -170,38 +176,105 @@
     if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
+  // THE PAGE ARRIVES WHOLE (2026-09-17). Every page is held at opacity
+  // 0 until its fonts are in AND every cover on it is loaded and
+  // decoded, then fades up once, as one — the words in their faces
+  // and the pictures beside them together, on a hard refresh as on
+  // a warm one. No cover arrives after the words next to it and no
+  // fallback face is ever painted. The one exception is a dead font
+  // or picture host: after eight seconds the page lifts with what it
+  // has rather than never.
   var shown = false;
-  // The reveal waits two frames past the fonts so the fitters (which
-  // run on fonts.ready) have already set the wordmark and the field;
-  // the page then fades up over the charcoal ground, and the blue
-  // overscroll ground comes on once the fade is done.
+  var gate = { fonts: 0, covers: 0, lifted: 0 };
+  try { window.__ncGate = gate; } catch (err) {}
+  // THE SAME FADE ON A CLICK AS ON A COLD LOAD (2026-09-17, later).
+  // Chrome holds the OLD page's pixels on a same-site navigation until
+  // the new page's first contentful frame, or half a second. A word
+  // page reached by a click has its faces and covers cached and is
+  // ready in a fraction of that, so its fade ran under the held
+  // homepage and was mostly swallowed: the reader saw a cut where the
+  // front page, whose fitters take longer, shows its ground and then
+  // fades up. So no page lifts before the hold has expired: the lift
+  // waits out the floor (measured from the navigation itself, so a
+  // slow load pays nothing), the ground is seen, and the fade is the
+  // same everywhere.
+  var FLOOR = 600;
   var go = function () {
     if (shown) return;
     shown = true;
+    var wait = Math.max(0, FLOOR - performance.now());
+    setTimeout(reveal, wait);
+  };
+  var reveal = function () {
     var lifted = false;
     var lift = function () {
       if (lifted) return;
       lifted = true;
+      gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
       setTimeout(function () { root.classList.add('page-shown'); }, 400);
     };
+    // Two frames past ready, so the fitters (which run on fonts.ready)
+    // have laid the page out before it is seen.
     requestAnimationFrame(function () { requestAnimationFrame(lift); });
     // A hidden tab runs no frames; lift on a timer there so the page
     // is never left held when the tab is shown.
     setTimeout(lift, 250);
   };
-  var f = document.fonts;
-  if (!f || !f.load) { go(); return; }
-  Promise.all([
-    f.load('700 100px "OPS Placard"'),
-    f.load('400 100px garamond-premier-pro'),
-    f.load('italic 400 100px garamond-premier-pro'),
-    f.load('400 100px trajan-pro-3'),
-    f.load('700 100px trajan-pro-3')
-  ]).then(function () { return f.ready; }).then(go, go);
-  // A slow or dead font host degrades to a fallback paint and one
-  // refit rather than a blank page.
-  setTimeout(go, 1000);
+  // THE FONTS: the five faces the page sets in, then the whole set.
+  var fontsDone = new Promise(function (resolve) {
+    var f = document.fonts;
+    if (!f || !f.load) { resolve(); return; }
+    Promise.all([
+      f.load('700 100px "OPS Placard"'),
+      f.load('400 100px garamond-premier-pro'),
+      f.load('italic 400 100px garamond-premier-pro'),
+      f.load('400 100px trajan-pro-3'),
+      f.load('700 100px trajan-pro-3')
+    ]).then(function () { return f.ready; }).then(resolve, resolve);
+  }).then(function () { gate.fonts = performance.now(); });
+  // THE COVERS: every cover on the page, loaded (or failed) and then
+  // decoded, so the first paint has their pixels ready.
+  var coversDone = new Promise(function (resolve) {
+    var settle = function () {
+      // The decode is asked for, not waited on past a beat: a hidden
+      // tab decodes nothing until it is shown (its decode() promises
+      // simply hang), and a page opened in the background should not
+      // stand blank for the cap once it is brought forward.
+      var imgs = [].slice.call(document.querySelectorAll('img.card-image'));
+      if (document.visibilityState === 'hidden') { resolve(); return; }
+      var decodes = imgs.map(function (img) {
+        return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
+      });
+      var beat = new Promise(function (r) { setTimeout(r, 600); });
+      Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
+    };
+    var pending = function () {
+      var imgs = document.querySelectorAll('img.card-image');
+      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
+      return false;
+    };
+    var watch = function () {
+      if (!pending()) { settle(); return; }
+      var onArrive = function (e) {
+        if (!(e.target && e.target.tagName === 'IMG')) return;
+        if (pending()) return;
+        document.removeEventListener('load', onArrive, true);
+        document.removeEventListener('error', onArrive, true);
+        settle();
+      };
+      document.addEventListener('load', onArrive, true);
+      document.addEventListener('error', onArrive, true);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
+    else watch();
+  }).then(function () { gate.covers = performance.now(); });
+  Promise.all([fontsDone, coversDone]).then(go, go);
+  setTimeout(go, 8000);
+  // Pulled back by the reader (the back/forward cache restores the
+  // page whole, with its class already lifted): nothing to do — but a
+  // page restored still held is let go at once.
+  addEventListener('pageshow', function (e) { if (e.persisted) { shown = true; reveal(); } });
 })();
 </script>
 <script>
@@ -297,13 +370,13 @@
         </div>
         <div class="latest-col">
           <div class="latest-matter">
-            <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#sort=author&amp;post=the-new-critic-secession">The New Critic</a></span><span class="cover-date"><span class="cover-sep" aria-hidden="true">·</span><a href="archive.html#sort=date&amp;post=the-new-critic-secession">Mar 24</a></span></p>
+            <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=the%20new%20critic">The New Critic</a></span><span class="cover-date"><span class="cover-sep" aria-hidden="true">·</span><a href="archive.html#sort=date&amp;post=the-new-critic-secession">Mar 24</a></span></p>
             <h3 class="latest-title"><a href="https://www.thenewcritic.com/p/the-new-critic-secession" rel="noopener">The New Critic Secession</a></h3>
             <p class="latest-dek">A Manifesto of 42 Theses</p>
             <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Read Preview</button></p>
           </div>
         </div>
-        <a class="latest-plate" href="https://www.thenewcritic.com/p/the-new-critic-secession" rel="noopener"><span class="plate-curtain"><span class="plate-title">A New Critic Manifesto</span><span class="latest-plate-p">Von Bar, NY. Bleecker and Bowery. Friday, March 20, 2026.</span><span class="latest-plate-p">The New Critic attends the “Lit Mags Party” of The Republic of Letters.</span><span class="latest-plate-p">At a quarter past nine, we step to the microphone.</span><span class="latest-plate-p">We are to deliver a manifesto to an uproarious crowd; a manifesto that will announce our secession from all who came before.</span><span class="latest-plate-p">Seven editors present 42 theses.</span><span class="latest-plate-p">We print those theses below.</span><span class="latest-plate-p">The 42 Theses of Secession</span><span class="latest-plate-p">| No. 1 |</span><span class="latest-plate-p">All of the world’s problems are the creation of our elders.</span><span class="latest-plate-p">Now they want to make those problems our responsibility.</span><span class="latest-plate-p">So be it.</span><span class="latest-plate-p">We will solve all the problems in the world.</span><span class="latest-plate-p">| No. 2 |</span><span class="latest-plate-p">We are the establishment establishment,</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
+        <a class="latest-plate" href="https://www.thenewcritic.com/p/the-new-critic-secession" rel="noopener"><span class="plate-curtain"><span class="plate-title" data-href="archive.html#topic=a%20new%20critic%20manifesto">A New Critic Manifesto</span><span class="latest-plate-p">Von Bar, NY. Bleecker and Bowery. Friday, March 20, 2026.</span><span class="latest-plate-p">The New Critic attends the “Lit Mags Party” of The Republic of Letters.</span><span class="latest-plate-p">At a quarter past nine, we step to the microphone.</span><span class="latest-plate-p">We are to deliver a manifesto to an uproarious crowd; a manifesto that will announce our secession from all who came before.</span><span class="latest-plate-p">Seven editors present 42 theses.</span><span class="latest-plate-p">We print those theses below.</span><span class="latest-plate-p">The 42 Theses of Secession</span><span class="latest-plate-p">| No. 1 |</span><span class="latest-plate-p">All of the world’s problems are the creation of our elders.</span><span class="latest-plate-p">Now they want to make those problems our responsibility.</span><span class="latest-plate-p">So be it.</span><span class="latest-plate-p">We will solve all the problems in the world.</span><span class="latest-plate-p">| No. 2 |</span><span class="latest-plate-p">We are the establishment establishment,</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
       </div>
       </section>
   </div>
@@ -2462,7 +2535,33 @@
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
     wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
+    seatHit(name, wb.top + AIR, inkBottom);
     return { wb: wb, inkBottom: inkBottom };
+  }
+  function seatHit(name, top, bottom) {
+    var link = name.closest ? name.closest('a') : null;
+    if (!link) return;
+    var hit = null;
+    for (var c = link.firstElementChild; c; c = c.nextElementSibling) {
+      if (c.classList.contains('ops-hit')) { hit = c; break; }
+    }
+    if (!hit) {
+      hit = document.createElement('span');
+      hit.className = 'ops-hit';
+      hit.setAttribute('aria-hidden', 'true');
+      link.appendChild(hit);
+      link.classList.add('has-hit');
+      var band = link.closest('.page-banner, .reprint');
+      if (band) band.classList.add('has-hit');
+    }
+    var i = inkSpanOf(name);
+    if (!i) return;
+    if (getComputedStyle(link).position === 'static') link.style.position = 'relative';
+    var lr = link.getBoundingClientRect();
+    hit.style.left = (i.left - lr.left).toFixed(2) + 'px';
+    hit.style.top = (top - lr.top).toFixed(2) + 'px';
+    hit.style.width = (i.right - i.left).toFixed(2) + 'px';
+    hit.style.height = (bottom - top).toFixed(2) + 'px';
   }
   function fitMastheadFill() {
     var name = document.querySelector('.site-nav--top .topbar-name');
@@ -3672,6 +3771,12 @@
       }
       if (hit(e, '.latest-plate') && !hit(e, '.plate-title')) {
         e.preventDefault(); e.stopPropagation();
+        return;
+      }
+      var kicker = hit(e, '.plate-title[data-href]');
+      if (kicker) {
+        e.preventDefault(); e.stopPropagation();
+        location.href = kicker.getAttribute('data-href');
       }
     });
     card.addEventListener('keydown', function (e) {
@@ -4285,6 +4390,16 @@
           var over = ink0.top - rr.top;
           ledger.style.paddingTop = Math.max(0, gap - over).toFixed(2) + 'px';
         }
+        var clearEl = document.querySelector('.ledger-head .arch-clear');
+        var headEl = document.querySelector('.ledger-head');
+        var move = document.querySelector('.m--ledger');
+        if (clearEl && headEl && move && row0) {
+          var rr2 = row0.getBoundingClientRect();
+          var seat = rr2.top - move.getBoundingClientRect().top + headEl.offsetHeight;
+          clearEl.style.top = seat.toFixed(2) + 'px';
+          clearEl.style.height = rr2.height.toFixed(2) + 'px';
+          clearEl.style.lineHeight = rr2.height.toFixed(2) + 'px';
+        }
       }
     }
     var field = document.querySelector('.ledger-field');
@@ -4315,14 +4430,100 @@
     el.removeChild(probe);
     return { top: base1 - m.actualBoundingBoxAscent, bottom: base2 + m.actualBoundingBoxDescent };
   }
+  function glyphInk(el, text) {
+    var cs = getComputedStyle(el);
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return null;
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var txt = text != null ? text : ((el.textContent || '').trim() || 'X');
+    if (cs.textTransform === 'uppercase') txt = txt.toUpperCase();
+    var m = cv.measureText(txt);
+    if (m.actualBoundingBoxAscent == null) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base = probe.getBoundingClientRect().bottom;
+    el.removeChild(probe);
+    return { top: base - m.actualBoundingBoxAscent, bottom: base + m.actualBoundingBoxDescent, base: base };
+  }
+  function svgInk(svg) {
+    var r = svg.getBoundingClientRect();
+    var vb = svg.viewBox && svg.viewBox.baseVal;
+    var bb = null;
+    try { bb = svg.getBBox(); } catch (e) {}
+    if (!vb || !bb || !vb.height) return { top: r.top, bottom: r.bottom };
+    var k = r.height / vb.height;
+    return { top: r.top + (bb.y - vb.y) * k, bottom: r.top + (bb.y + bb.height - vb.y) * k };
+  }
+  function seatOn(el, ink, target) {
+    if (!el || !ink || !target) return null;
+    if (!el.getBoundingClientRect().height) return null;
+    var want = (target.top + target.bottom) / 2;
+    var have = (ink.top + ink.bottom) / 2;
+    var cur = parseFloat(el.style.top) || 0;
+    el.style.position = 'relative';
+    el.style.top = (cur + want - have).toFixed(2) + 'px';
+    return want - have;
+  }
+  function fitSymbols() {
+    var head = document.querySelector('.ledger-head');
+    if (!head) return [];
+    var out = [];
+    [].forEach.call(head.querySelectorAll('.ledger-cell'), function (cell) {
+      var label = cell.querySelector('.lc-label');
+      var lk = label && glyphInk(label, 'H');
+      if (lk) lk = { top: lk.top, bottom: lk.base };
+      var arrows = cell.querySelector('.arch-sort-arrows');
+      if (arrows && lk) {
+        var up = arrows.querySelector('.arch-sort[data-dir="asc"]'), dn = arrows.querySelector('.arch-sort[data-dir="desc"]');
+        var iu = up && glyphInk(up), idn = dn && glyphInk(dn);
+        if (iu && idn) out.push(['arrows', seatOn(arrows, { top: iu.top, bottom: idn.bottom }, lk)]);
+      }
+      var shuffle = cell.querySelector('.arch-shuffle');
+      if (shuffle && lk) out.push(['shuffle', seatOn(shuffle, glyphInk(shuffle), lk)]);
+      var field = cell.querySelector('.arch-search');
+      var glass = cell.querySelector('.arch-search-glass');
+      if (field && glass) {
+        var fcs = getComputedStyle(field);
+        var cv = document.createElement('canvas').getContext('2d');
+        cv.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
+        var fm = cv.measureText('H');
+        var fr = field.getBoundingClientRect();
+        var half = (fr.height - (fm.fontBoundingBoxAscent + fm.fontBoundingBoxDescent)) / 2;
+        var fbase = fr.top + half + fm.fontBoundingBoxAscent;
+        out.push(['glass', seatOn(glass, svgInk(glass), { top: fbase - fm.actualBoundingBoxAscent, bottom: fbase })]);
+      }
+      var clearLabel = cell.querySelector('.arch-clear-label');
+      var x = cell.querySelector('.arch-clear-x');
+      if (clearLabel && x) {
+        var ck = glyphInk(clearLabel, 'H');
+        if (ck) out.push(['x', seatOn(x, svgInk(x), { top: ck.top, bottom: ck.base })]);
+      }
+    });
+    return out;
+  }
+  try { window.__ncFitSymbols = fitSymbols; } catch (e) {}
   function fitInkAir() {
+    fitSymbols();
     var ledgerBody = document.querySelector('.movement.m--ledger > .movement-body');
     if (ledgerBody && body) {
       ledgerBody.style.marginBottom = '';
+      var pad0 = parseFloat(ledgerBody.style.paddingBottom) || 0;
       var rows = body.querySelectorAll('.ledger-item:not(.is-filtered-out)');
       var lastTitle = rows.length ? rows[rows.length - 1].querySelector('.lc-title') : null;
       var ink = lastTitle && inkOf(lastTitle);
-      if (ink) ledgerBody.style.marginBottom = (ink.bottom - ledgerBody.getBoundingClientRect().bottom).toFixed(2) + 'px';
+      if (ink) ledgerBody.style.marginBottom = (ink.bottom - (ledgerBody.getBoundingClientRect().bottom - pad0)).toFixed(2) + 'px';
+      var pad = 0;
+      if (filtered) {
+        var headEl0 = document.querySelector('.ledger-head');
+        if (headEl0) {
+          var headTopDoc = headEl0.getBoundingClientRect().top + window.scrollY;
+          var unpadded = document.documentElement.scrollHeight - pad0;
+          var short = document.documentElement.clientHeight - (unpadded - headTopDoc);
+          if (short > 0) pad = Math.ceil(short);
+        }
+      }
+      ledgerBody.style.paddingBottom = pad ? pad + 'px' : '';
     }
     var mosaic = document.querySelector('.about-mosaic-block');
     if (mosaic) {
@@ -4439,7 +4640,18 @@
   var resizeTimer;
   window.addEventListener('resize', function(){
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () { fitMast(); markAtTop(); }, 100);
+    var headEl = document.querySelector('.ledger-head');
+    if (headEl && headEl.getBoundingClientRect().top <= 0.5 && headEl.getBoundingClientRect().bottom > 0.5) relandAfterFit = true;
+    resizeTimer = setTimeout(function () {
+      fitMast(); markAtTop();
+      if (relandAfterFit && filtered && !target) land();
+    }, 100);
+  });
+  var relandAfterFit = false;
+  window.addEventListener('newcritic:fit', function () {
+    if (!relandAfterFit) return;
+    if (filtered && !target) { fitMast(); land(); }
+    setTimeout(function () { relandAfterFit = false; }, 400);
   });
   if (!ledger || !body) return;
   var sortBtns = document.querySelectorAll('.arch-sort');
@@ -4499,19 +4711,75 @@
     return hp;
   };
   var filtered = false;
-  function applyFilter() {
+  var clearBtn = document.querySelector('.arch-clear');
+  var searchEl = document.querySelector('.arch-search');
+  var textOf = function (it) {
+    if (it.__text == null) {
+      it.__text = [it.getAttribute('data-title'), it.getAttribute('data-author'),
+        it.getAttribute('data-kicker'), it.getAttribute('data-section'),
+        (it.querySelector('.lc-date') || {}).textContent || ''].join(' ').toLowerCase();
+    }
+    return it.__text;
+  };
+  function applyFilter(typed) {
     var hp = readHash();
-    var sec = hp.section || '', topic = hp.topic || '';
-    filtered = !!(sec || topic);
+    var sec = hp.section || '', topic = hp.topic || '', author = hp.author || '';
+    var words = searchEl ? searchEl.value.trim().toLowerCase().split(/\s+/).filter(Boolean) : [];
+    filtered = !!(sec || topic || author || words.length);
     items.forEach(function(it){
       var show = (!sec || it.getAttribute('data-section') === sec)
-        && (!topic || it.getAttribute('data-kicker') === topic);
+        && (!topic || it.getAttribute('data-kicker') === topic)
+        && (!author || it.getAttribute('data-author') === author);
+      if (show && words.length) {
+        var t = textOf(it);
+        for (var w = 0; w < words.length; w++) if (t.indexOf(words[w]) < 0) { show = false; break; }
+      }
       it.classList.toggle('is-filtered-out', !show);
     });
-    fitMast();
+    if (clearBtn) clearBtn.hidden = !filtered;
+    if (!typed) { fitMast(); return; }
+    fitInkAir();
+    if (filtered) {
+      var headEl1 = document.querySelector('.ledger-head');
+      var move1 = document.querySelector('.m--ledger');
+      if (headEl1 && move1) {
+        var top1 = move1.getBoundingClientRect().top + window.scrollY - headEl1.offsetHeight;
+        if (Math.abs(window.scrollY - top1) > 0.5) window.scrollTo({ top: Math.max(0, top1), behavior: 'instant' });
+      }
+    }
   }
   applyFilter();
   addEventListener('hashchange', function () { applyFilter(); land(); requestAnimationFrame(land); });
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+      if (searchEl) { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); return; }
+      applyFilter();
+    });
+  }
+  if (searchEl) {
+    var mirror = document.createElement('span');
+    mirror.className = 'arch-search-mirror';
+    mirror.setAttribute('aria-hidden', 'true');
+    searchEl.parentNode.insertBefore(mirror, searchEl);
+    var sizeField = function () {
+      var cs = getComputedStyle(searchEl);
+      mirror.style.font = cs.font;
+      mirror.style.letterSpacing = cs.letterSpacing;
+      mirror.textContent = searchEl.value || searchEl.placeholder || '';
+      var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      searchEl.style.width = Math.ceil(mirror.getBoundingClientRect().width + padX + 2) + 'px';
+    };
+    sizeField();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeField);
+    searchEl.addEventListener('input', function () { sizeField(); applyFilter(true); });
+    var glass = document.querySelector('.arch-search-glass');
+    if (glass) glass.addEventListener('click', function () { searchEl.focus(); });
+    searchEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); searchEl.blur(); }
+      if (e.key === 'Enter') e.preventDefault();
+    });
+  }
   var target = null;
   if (hashParams.post) {
     items.forEach(function(it){
@@ -4562,10 +4830,14 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(land);
     }
-    var settle = 0;
+    var settle = 0, still = 0;
     var settleTimer = setInterval(function () {
+      var headEl = document.querySelector('.ledger-head');
+      var before = headEl ? headEl.getBoundingClientRect().top : 0;
       land();
-      if (++settle >= 8) clearInterval(settleTimer);
+      var after = headEl ? headEl.getBoundingClientRect().top : 0;
+      still = (Math.abs(before) < 1 && Math.abs(after) < 1) ? still + 1 : 0;
+      if (++settle >= 16 || still >= 2) clearInterval(settleTimer);
     }, 250);
     ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
       addEventListener(ev, function () { clearInterval(settleTimer); }, { once: true, passive: true });

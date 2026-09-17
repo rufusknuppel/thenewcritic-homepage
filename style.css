@@ -5765,8 +5765,8 @@ main.has-mega .movement-body > .page-banner.ops-word:is(*, .r.r.r.r.r.r.r.r.r.r)
 main.has-mega .movement-body > .page-banner.ops-word + .wrap{ padding-top: 1px; }
 main.has-mega .page-rows > .reprint.is-under-band:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 var(--k); }
 main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: none; }
-html{ --g: #121417; --k: #FFFFFF; }
-html[data-theme="light"]{ --g: #FFFFFF; --k: #121417; }
+html{ --g: #FFFFFF; --k: #121417; }
+html[data-theme="dark"]{ --g: #121417; --k: #FFFFFF; }
 main.has-mega .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 body.ledger-page .ledger-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
@@ -5908,8 +5908,8 @@ main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
 main.has-mega .marginalia .theme-toggle > .theme-toggle-sep{ line-height: 13px; }
 main.has-mega .marginalia .theme-toggle > span{ transition: color .25s ease; }
 main.has-mega .marginalia .theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
-html:not([data-theme="light"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-html[data-theme="light"] main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
 main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   position: fixed;
@@ -6039,4 +6039,95 @@ main.has-mega .marginalia .social-stack > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-decoration: none;
 }
 main.has-mega .marginalia .social-stack > a > svg{ display: block; }
+main.has-mega .marginalia .social-stack > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; }
+main.has-mega .marginalia .social-stack > a::before{
+  content: ''; position: absolute; inset: -5px;
+}
+main.has-mega .marginalia .social-stack > span{ pointer-events: none; }
 main.has-mega > .marginalia{ display: contents; }
+html.fonts-loading.imgfade img.card-image{ transition: none !important; }
+body.word-page .ledger-head .lc-search{ position: relative; }
+body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; top: 100%;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  display: inline-flex; align-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  color: var(--k);
+}
+body.word-page .ledger-head .arch-clear[hidden]:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ display: none; }
+body.word-page .ledger-item > .ledger-row{ padding: 0; margin: 0 var(--ledger-side); }
+body.word-page .ledger-row{
+  grid-template-columns: minmax(0, 2.6fr) repeat(5, minmax(0, 1fr));
+}
+@media (max-width: 900px){
+  body.word-page .ledger-row{ grid-template-columns: minmax(0, 2.4fr) repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 640px){
+  body.word-page .ledger-row{ grid-template-columns: minmax(0, 2.2fr) repeat(2, minmax(0, 1fr)); }
+}
+body.word-page .ledger-head .lc-search{ overflow: visible; }
+body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  -webkit-appearance: none; appearance: none;
+  display: block; flex: 0 1 auto; width: 4em; min-width: 0; max-width: 100%;
+  margin: 0 0 0 -3px; padding: 0 3px; border: 0; border-radius: 0;
+  background: none; outline: none; box-shadow: none;
+  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-style: italic; font-weight: 400;
+  font-size: 20px; line-height: 72px; letter-spacing: normal;
+  text-transform: none;
+  color: var(--k);
+  caret-color: var(--yves);
+}
+body.word-page .ledger-head .arch-search::placeholder{ color: var(--k); opacity: 1; font-style: italic; }
+body.word-page .ledger-head .arch-search:focus::placeholder{ opacity: 0; }
+body.word-page .ledger-head .arch-search::-webkit-search-decoration,
+body.word-page .ledger-head .arch-search::-webkit-search-cancel-button,
+body.word-page .ledger-head .arch-search::-webkit-search-results-button{ -webkit-appearance: none; display: none; }
+body.word-page .ledger-head .arch-search-mirror{
+  position: absolute; left: 0; top: 0;
+  visibility: hidden; white-space: pre; pointer-events: none;
+}
+body.word-page .ledger-head .arch-clear-x{
+  flex: 0 0 auto; display: block;
+  width: 12px; height: 12px; margin-left: 6px;
+  color: inherit;
+}
+body.word-page .ledger-head .arch-search-glass{
+  flex: 0 0 auto; display: block;
+  width: 12px; height: 12px; margin-left: 6px;
+  color: var(--k); cursor: text;
+}
+main.has-mega a.has-hit{ pointer-events: none; }
+main.has-mega :is(.page-banner, .reprint).has-hit{ pointer-events: none; }
+main.has-mega a.has-hit > .ops-hit{
+  position: absolute; display: block;
+  pointer-events: auto; cursor: pointer;
+}
+body.word-page .ledger-head .arch-shuffle{ margin: 0 0 0 8px; }
+body.word-page .ledger-item > .ledger-row{
+  margin-right: calc(var(--ledger-side) + (100% - 2 * var(--ledger-side)) / 7.6);
+  grid-template-columns: minmax(0, 2.6fr) repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 900px){
+  body.word-page .ledger-item > .ledger-row{
+    margin-right: calc(var(--ledger-side) + (100% - 2 * var(--ledger-side)) / 6.4);
+    grid-template-columns: minmax(0, 2.4fr) repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px){
+  body.word-page .ledger-item > .ledger-row{
+    margin-right: calc(var(--ledger-side) + (100% - 2 * var(--ledger-side)) / 4.2);
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  }
+}
