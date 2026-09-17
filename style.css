@@ -4355,23 +4355,6 @@ main.has-mega .section-band > .band-dek :is(a, span){
   text-transform: uppercase;
 }
 main.has-mega .section-band > .band-dek .cover-sep{ color: inherit; padding: 0 12px; }
-main.has-mega .section-band--two > .band-bird{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 36px;
-  height: 36px;
-  transform: translate(-50%, -50%);
-  background-color: var(--g);
-  -webkit-mask-image: url("bird.png"); mask-image: url("bird.png");
-  -webkit-mask-mode: luminance; mask-mode: luminance;
-  -webkit-mask-size: contain; mask-size: contain;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: center; mask-position: center;
-  display: block;
-  cursor: pointer;
-}
-main.has-mega .section-band--two > .band-bird:is(:hover, :focus-visible){ background-color: var(--k); }
 .movement > .word-spacer{
   height: calc(100vh - 301px - 72px);
   background: var(--g);
@@ -6080,7 +6063,7 @@ body.word-page .ledger-head .lc-search{ overflow: visible; }
 body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   -webkit-appearance: none; appearance: none;
   display: block; flex: 0 1 auto; width: 4em; min-width: 0; max-width: 100%;
-  margin: 0 0 0 -3px; padding: 0 3px; border: 0; border-radius: 0;
+  margin: 0 0 0 -6px; padding: 0 6px; border: 0; border-radius: 0;
   background: none; outline: none; box-shadow: none;
   font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
   font-style: italic; font-weight: 400;
