@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=162ba50a">
+<link rel="stylesheet" href="style.css?v=badcbfe5">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -2471,20 +2471,50 @@
       }
       var floorLine = pl.getBoundingClientRect().top + padT + tB + rows * unit + 2;
       var cutDone = false;
-      [].forEach.call(pl.querySelectorAll('.latest-plate-p'), function(p){
+      pl.__gap = null;
+      var allP = [].slice.call(pl.querySelectorAll('.latest-plate-p'));
+      allP.forEach(function(p){
         if (cutDone) { p.style.display = 'none'; return; }
         var r = p.getBoundingClientRect();
         if (r.bottom <= floorLine) return;
         if (r.top >= floorLine - 1) { p.style.display = 'none'; cutDone = true; return; }
         var words = p.textContent.trim().split(/\s+/);
-        var lo = 0, hi = words.length - 1;
-        while (lo < hi) {
-          var mid = (lo + hi + 1) >> 1;
-          p.textContent = words.slice(0, mid).join(' ') + '…';
-          if (p.getBoundingClientRect().bottom > floorLine) hi = mid - 1;
-          else lo = mid;
+        var setCut = function (n) {
+          p.textContent = words.slice(0, n).join(' ').replace(/[.,;:\s]+$/, '');
+          var mark = document.createElement('span');
+          mark.className = 'cut-mark';
+          mark.textContent = '…';
+          p.appendChild(mark);
+        };
+        var probe = function () {
+          var lo = 0, hi = words.length;
+          while (lo < hi) {
+            var mid = (lo + hi + 1) >> 1;
+            setCut(mid);
+            if (p.getBoundingClientRect().bottom > floorLine) hi = mid - 1;
+            else lo = mid;
+          }
+          return lo;
+        };
+        var lo = probe();
+        if (!lo) {
+          var before = allP.slice(0, allP.indexOf(p)).filter(function (q) { return q.style.display !== 'none'; });
+          var G = before.length;
+          if (G >= 1) {
+            var gap = Math.max(0, unit - unit / G);
+            pl.__gap = gap;
+            allP.forEach(function (q, i) { if (i) q.style.marginTop = gap.toFixed(3) + 'px'; });
+            lo = probe();
+          }
+          if (!lo) { p.style.display = 'none'; cutDone = true; return; }
         }
-        p.textContent = words.slice(0, lo).join(' ') + '…';
+        setCut(lo);
+        var mk = p.querySelector('.cut-mark');
+        if (mk) {
+          var h0 = p.getBoundingClientRect().height;
+          mk.classList.add('is-set');
+          if (p.getBoundingClientRect().height > h0 + 1) mk.classList.remove('is-set');
+        }
         cutDone = true;
       });
       var visP = [].filter.call(pl.querySelectorAll('.latest-plate-p'), function(p){
@@ -3383,7 +3413,8 @@
         });
         if (!paras.length) return;
         var unit = parseFloat(getComputedStyle(paras[0]).lineHeight) || 19.2;
-        paras.forEach(function (p, i) { if (i) p.style.marginTop = unit + 'px'; });
+        var gap0 = (box.__gap != null) ? box.__gap : unit;
+        paras.forEach(function (p, i) { if (i) p.style.marginTop = gap0.toFixed(3) + 'px'; });
         var cols = box.querySelector('.card-preview-cols');
         var cols0 = cols && cols.style.height ? parseFloat(cols.style.height) : null;
         var bb = box.getBoundingClientRect();
@@ -3429,7 +3460,7 @@
         }
         if (paras.length > 1) {
           var add = rem / (paras.length - 1);
-          paras.forEach(function (p, i) { if (i) p.style.marginTop = (unit + add).toFixed(2) + 'px'; });
+          paras.forEach(function (p, i) { if (i) p.style.marginTop = (gap0 + add).toFixed(2) + 'px'; });
           if (cols && cols0 !== null) cols.style.height = (cols0 + rem).toFixed(2) + 'px';
         } else {
           var half = rem / 2;
