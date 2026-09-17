@@ -10481,34 +10481,10 @@ main.has-mega .section-band > .band-dek :is(a, span){
 }
 main.has-mega .section-band > .band-dek .cover-sep{ color: inherit; padding: 0 12px; }
 
-/* ---------------------------------------------------------------
-   THE BIRD, SMALL, IN THE MIDDLE OF EVERY BAND.
-   Each two-slot band — the masthead's, the three sections' and the
-   colophon's — carries the mark at its centre, 28 tall, in the
-   band's ink: the white-on-black PNG read as a LUMINANCE MASK over a
-   charcoal fill. It travels with its band and pins with it, so as one
-   band replaces another at the top of the viewport the bird never
-   moves. (The colophon's middle held its copyright line once; that
-   line stands beside EST. MAY 2025 on the left now, so the bird closes
-   the page in the seat it opens it from.)
-   --------------------------------------------------------------- */
-main.has-mega .section-band--two > .band-bird{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 36px;
-  height: 36px;
-  transform: translate(-50%, -50%);
-  background-color: var(--g);
-  -webkit-mask-image: url("bird.png"); mask-image: url("bird.png");
-  -webkit-mask-mode: luminance; mask-mode: luminance;
-  -webkit-mask-size: contain; mask-size: contain;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: center; mask-position: center;
-  display: block;
-  cursor: pointer;
-}
-main.has-mega .section-band--two > .band-bird:is(:hover, :focus-visible){ background-color: var(--k); }
+/* (THE BIRD IN THE MIDDLE OF EVERY BAND IS RETIRED, 2026-09-17: the
+   band-bird element was struck from the markup long since and its
+   luminance-mask rule, which pointed at a bird.png the site never
+   shipped, goes with it.) */
 
 /* ---------------------------------------------------------------
    A CHARCOAL SPACER UNDER EACH SECTION WORD.
@@ -13609,9 +13585,10 @@ body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
      typed (src/ledger.js sizes it) — so the glass stands beside the
      word, not at the column's far edge. */
   display: block; flex: 0 1 auto; width: 4em; min-width: 0; max-width: 100%;
-  /* Three each side for the italic's overhang, the left one pulled
-     back so the word's ink stands on the column's edge. */
-  margin: 0 0 0 -3px; padding: 0 3px; border: 0; border-radius: 0;
+  /* Six each side for the italic's overhang (an f or a j reaches
+     past four), the left one pulled back so the word's ink stands on
+     the column's edge. */
+  margin: 0 0 0 -6px; padding: 0 6px; border: 0; border-radius: 0;
   background: none; outline: none; box-shadow: none;
   /* The dek's voice, as the head's labels: the cards' Garamond
      italic at 20 on the head's 72. */

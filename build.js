@@ -2652,7 +2652,9 @@ function renderFontGateScript() {
     field.value = storedHex || '';
     field.hidden = false;
     field.focus();
-    field.select();
+    // The caret at the end of the code, nothing highlighted: the
+    // field opens to be typed into, not swept.
+    try { var n = field.value.length; field.setSelectionRange(n, n); } catch (err) {}
   };
   var closeField = function () {
     if (field) field.hidden = true;
@@ -4388,9 +4390,7 @@ async function main() {
   // with a space in it, and the root copy is deliberately untracked.
 
   fs.writeFileSync(path.join(OUT_DIR, 'favicon.png'), Buffer.from(FAVICON_B64, 'base64'));
-  // The bird (assets/bird.png, 640 square, white on black — read as a
-  // luminance mask by style.css: the mark at the centre of every two-slot band).
-  fs.copyFileSync(path.join(__dirname, 'assets/bird.png'), path.join(OUT_DIR, 'bird.png'));
+  // (The band's bird mask and its assets/bird.png copy are retired, 2026-09-17.)
   // ONE LINE SAYS WHETHER THE BUILD IS WHOLE (2026-09-17): the pages
   // are written either way (a card that lost its post page falls back
   // to the feed), but any post page that never came back is reported

@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=cf5af52a">
+<link rel="stylesheet" href="style.css?v=162ba50a">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -138,7 +138,9 @@
     field.value = storedHex || '';
     field.hidden = false;
     field.focus();
-    field.select();
+    // The caret at the end of the code, nothing highlighted: the
+    // field opens to be typed into, not swept.
+    try { var n = field.value.length; field.setSelectionRange(n, n); } catch (err) {}
   };
   var closeField = function () {
     if (field) field.hidden = true;

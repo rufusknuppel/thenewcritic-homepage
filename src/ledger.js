@@ -541,7 +541,10 @@
       mirror.style.letterSpacing = cs.letterSpacing;
       mirror.textContent = searchEl.value || searchEl.placeholder || '';
       var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
-      searchEl.style.width = Math.ceil(mirror.getBoundingClientRect().width + padX + 2) + 'px';
+      // Six of slack past the word: the caret stands after the last
+      // letter and the browser scrolls the field to show it, and with
+      // no room it scrolled the first letter's edge out of the box.
+      searchEl.style.width = Math.ceil(mirror.getBoundingClientRect().width + padX + 6) + 'px';
     };
     sizeField();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeField);
