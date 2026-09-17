@@ -90,6 +90,14 @@
         // The fitter re-seats the card once it has travelled back
         // (duo-panel-fit.js) — a shut card is the page at rest.
         try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
+        return;
+      }
+      // THE BODY TEXT TAKES NO CLICK (2026-09-17): on the plate only
+      // the courier kicker goes to the post and CLOSE PREVIEW shuts
+      // it. The plate is the post's link whole, so a click anywhere
+      // else on it — the paragraphs, the air — is stopped here.
+      if (hit(e, '.latest-plate') && !hit(e, '.plate-title')) {
+        e.preventDefault(); e.stopPropagation();
       }
     });
     // The bracketed span is not a button, so its keys are its own.

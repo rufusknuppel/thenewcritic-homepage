@@ -3235,6 +3235,18 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    // THE WORD PAGES CARRY NO MASTHEAD (2026-09-17): ARCHIVE or ABOUT
+    // opens the page where THE NEW CRITIC opens the front page. The
+    // cap is the masthead's size — the name's ink across the measure —
+    // and the reprint at the foot is that same name at that same fit,
+    // so it is fitted first there and its size is the banners' cap.
+    if (!cap) {
+      var repName = document.querySelector('.reprint .reprint-name');
+      if (repName) {
+        fillNameBand(repName, repName.closest('.reprint'), { air: BANNER_AIR, airBottom: BANNER_AIR });
+        cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
+      }
+    }
     // THE BANNERS' WORDS REACH HALFWAY INTO THE MARGINS: the page's
     // 72 at each side, less half — the ink opens and closes 36 from
     // the edges, spreading 50% further out than every row it stands
@@ -4992,8 +5004,54 @@
   // PREVIEW. This writes the fixed piece as clip insets of the rule
   // pseudo-elements' own boxes, which run from the picture's far edge
   // on one side to the box's on the other (the hero's box 24 past).
+  // THE MARGIN STACK IS SEATED BY INK (2026-09-17): LIGHT, a dash,
+  // DARK, a dash, HEX — five lines of 13, and in a 13 line the caps'
+  // ink and the dash's do not centre alike (the dash rides at the
+  // x-height's middle, the caps stand on the baseline), so the gaps
+  // read uneven. Each word's and each dash's painted ink is scanned
+  // off a canvas and the line shifted until that ink's middle is its
+  // line's middle.
+  function fitToggle() {
+    var spans = document.querySelectorAll('.theme-toggle > span, .social-stack > span');
+    if (!spans.length) return;
+    var W = 600, H = 200, scan = 100, y0 = 120;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    if (!g) return;
+    [].forEach.call(spans, function (el) {
+      el.style.top = '';
+      var cs = getComputedStyle(el);
+      var size = parseFloat(cs.fontSize) || 0;
+      var text = (el.textContent || '').trim();
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+      if (!size || !text) return;
+      g.clearRect(0, 0, W, H);
+      g.font = cs.fontWeight + ' ' + scan + 'px ' + cs.fontFamily;
+      g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+      g.fillText(text, 10, y0);
+      var data;
+      try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return; }
+      var topRow = -1, botRow = -1;
+      for (var y = 0; y < H; y++) {
+        for (var x = 0; x < W; x++) {
+          if (data[(y * W + x) * 4 + 3] > 40) { if (topRow < 0) topRow = y; botRow = y; break; }
+        }
+      }
+      if (topRow < 0) return;
+      var midAboveBase = (y0 - (topRow + botRow + 1) / 2) / scan * size;
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.appendChild(probe);
+      var base = probe.getBoundingClientRect().bottom;
+      el.removeChild(probe);
+      var box = el.getBoundingClientRect();
+      var inkMid = base - midAboveBase;
+      el.style.position = 'relative';
+      el.style.top = (box.top + box.height / 2 - inkMid).toFixed(2) + 'px';
+    });
+  }
   function fitCardRules() {
-    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps, main.has-mega .latest-cell--contra');
     function inkEdge(node, side) {
       if (!node) return null;
       var r = document.createRange();
@@ -5009,6 +5067,30 @@
       var box = el.getBoundingClientRect();
       if (!box.width) return;
       var isHero = el.classList.contains('duo-half--mega');
+      // THE REVIEW CELL'S FOOT RULE IS READ PREVIEW'S WIDTH (2026-09-17):
+      // the picture stands above the words, so there is no courier-to-
+      // picture line to draw; the foot rule alone is cut to the ink of
+      // the one line on that row. (The top rule stays whole: it is the
+      // picture's own top line.)
+      if (el.classList.contains('latest-cell--contra')) {
+        var cPeek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+        var cL = inkEdge(cPeek, 'left'), cR = inkEdge(cPeek, 'right');
+        if (cL == null || cR == null) return;
+        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left)) + 'px');
+        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR)) + 'px');
+        // And the top rule, OPEN, is the plate's kicker's width — the
+        // line that stands on the cell's first row once the picture
+        // has gone down to the foot (style.css applies the cut on
+        // .is-open alone; shut, the rule is the picture's own top
+        // line, whole). The kicker is laid out shut, only unseen.
+        var cKicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p');
+        var kL = inkEdge(cKicker, 'left'), kR = inkEdge(cKicker, 'right');
+        if (kL != null && kR != null) {
+          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left)) + 'px');
+          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR)) + 'px');
+        }
+        return;
+      }
       var picLeft = isHero
         ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
         : el.classList.contains('pic-left');
@@ -5105,6 +5187,7 @@
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
     step('fitCardRules', fitCardRules);
+    step('fitToggle', fitToggle);
     // Every fit pass can move document seats (fonts, images, fitted
     // titles) — announce it so rail-fix re-measures its anchors and
     // rebuilds the held clones on the FINAL geometry, not the first

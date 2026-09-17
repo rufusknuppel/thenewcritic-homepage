@@ -15,24 +15,157 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu5phua2">
+<link rel="stylesheet" href="style.css?v=mu5rx2th">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // THE GROUND: light, dark, or a colour of the reader's own (HEX,
+  // 2026-09-17). Light and dark are the two token sets in style.css;
+  // a hex colour is written straight onto the root as --g, with --k
+  // white or charcoal, whichever reads better on it (WCAG contrast).
+  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  var hexOf = function (v) {
+    var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
+    if (!m) return null;
+    var h = m[1].toLowerCase();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return '#' + h;
+  };
+  var lum = function (hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  var inkFor = function (hex) {
+    var L = lum(hex), Lw = 1, Lc = lum(CHARCOAL);
+    var vsWhite = (Lw + 0.05) / (L + 0.05);
+    var vsCharcoal = (L + 0.05) / (Lc + 0.05);
+    return vsWhite >= vsCharcoal ? WHITE : CHARCOAL;
+  };
+  var setMeta = function (colour) {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = colour;
+  };
+  // Paints the choice: the attribute for the stylesheet, the two
+  // tokens inline for a hex ground (and cleared for the others).
+  var paint = function (mode, hex) {
+    if (mode === 'hex' && hex) {
+      var ink = inkFor(hex);
+      root.setAttribute('data-theme', 'hex');
+      root.style.setProperty('--g', hex);
+      root.style.setProperty('--k', ink);
+      // The highlight — the chosen word, every hover — is the OTHER of
+      // charcoal and white on a hex ground, not Yves: white ink takes
+      // charcoal, charcoal ink takes white.
+      root.style.setProperty('--yves', ink === WHITE ? CHARCOAL : WHITE);
+      setMeta(hex);
+    } else {
+      root.style.removeProperty('--g');
+      root.style.removeProperty('--k');
+      root.style.removeProperty('--yves');
+      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      else root.removeAttribute('data-theme');
+      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+    }
+  };
+  var store = function (mode, hex) {
+    try {
+      localStorage.setItem('nc-theme', mode);
+      if (hex) localStorage.setItem('nc-hex', hex);
+    } catch (err) {}
+  };
+  var storedHex = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+    storedHex = hexOf(localStorage.getItem('nc-hex'));
+    if (theme === 'hex' && storedHex) paint('hex', storedHex);
+    else if (theme === 'light' || theme === 'dark') paint(theme);
   } catch (e) {}
+  // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
+  // where the browser has view transitions the old page and the new
+  // are snapshotted whole and dissolved one into the other over .3s —
+  // every colour, ground, rule, picture and the canvas together, with
+  // no per-element transition running underneath (html.theme-instant
+  // holds every transition off for the change's frame, so the new
+  // snapshot is the settled page). Elsewhere the per-element ease
+  // above stands in.
+  var flipTimer = null;
+  var flip = function (mode, hex) {
+    store(mode, hex);
+    var change = function () { paint(mode, hex); };
+    if (document.startViewTransition) {
+      root.classList.add('theme-instant');
+      var done = function () { root.classList.remove('theme-instant'); };
+      var vt;
+      try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
+      if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A hidden tab may never run the animation; let go regardless.
+      setTimeout(done, 800);
+      return;
+    }
+    root.classList.add('theme-flip');
+    clearTimeout(flipTimer);
+    flipTimer = setTimeout(function () { root.classList.remove('theme-flip'); }, 350);
+    change();
+  };
+  var current = function () {
+    var t = root.getAttribute('data-theme');
+    return t === 'light' || t === 'hex' ? t : 'dark';
+  };
+  // THE HEX FIELD: a courier line under the three words, shown on HEX
+  // and hidden on Enter, Escape or leaving it. A valid code paints the
+  // page as it is typed (no dissolve keystroke by keystroke — the
+  // transitions are simply held off for the change); an invalid one
+  // paints nothing.
+  var field = null;
+  var openField = function () {
+    field = field || document.querySelector('.theme-hex');
+    if (!field) return;
+    field.value = storedHex || '';
+    field.hidden = false;
+    field.focus();
+    field.select();
+  };
+  var closeField = function () {
+    if (field) field.hidden = true;
+  };
+  var typed = function () {
+    var hex = hexOf(field.value);
+    if (!hex) return;
+    storedHex = hex;
+    root.classList.add('theme-instant');
+    paint('hex', hex);
+    store('hex', hex);
+    setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
+  };
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
-    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('nc-theme', next); } catch (err) {}
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = next === 'light' ? '#FFFFFF' : '#121417';
+    var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
+    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : t.classList.contains('theme-toggle-dark') ? 'dark' : 'hex')
+      : (current() === 'light' ? 'dark' : 'light');
+    if (mode === 'hex') {
+      openField();
+      if (storedHex && current() !== 'hex') flip('hex', storedHex);
+      return;
+    }
+    closeField();
+    if (mode !== current()) flip(mode);
+  });
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) typed();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!(e.target && e.target.classList && e.target.classList.contains('theme-hex'))) return;
+    if (e.key === 'Enter') { e.preventDefault(); typed(); closeField(); }
+    if (e.key === 'Escape') { e.preventDefault(); closeField(); }
+  });
+  document.addEventListener('focusout', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
   var shown = false;
@@ -87,7 +220,7 @@
 
 </script>
 </head>
-<body class="has-mega ledger-page">
+<body class="has-mega ledger-page word-page">
 
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -95,19 +228,18 @@
 
 <main id="main" class="has-mega">
 
-  <header class="ledger-mast" id="top">
-    <a class="ledger-word" href="archive.html">Archive</a>
-  </header>
-  <div class="ledger-spacer" aria-hidden="true"></div>
-  <div class="ledger-pin">
-  <nav class="ledger-band ledger-band--head" aria-label="The Young American Magazine">
-    <p class="ledger-slot ledger-slot--left"><a href="./">The Young American Magazine</a></p>
-    <p class="ledger-slot ledger-slot--mid"><span>Editors’ Picks</span></p>
-    <p class="ledger-slot ledger-slot--right"><a href="archive.html" aria-current="page">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
+  <div class="page-rows">
+  <nav class="section-band section-band--three" aria-label="The Young American Magazine">
+    <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
+    <p class="band-deks band-dek"><span class="band-date">Thursday, September 17, 2026</span></p>
+    <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
-  </div>
-  
-  <div class="movement m--latest ledger-feature">
+  <div class="head-seam" aria-hidden="true"></div>
+  <div class="head-field" aria-hidden="true"></div>
+  <div class="movement m--latest">
+  <section class="page-banner subscribe-band page-banner--bare">
+        <a class="banner-name" href="archive.html">Archive</a>
+      </section>
   <div class="movement-body">
   <div class="wrap m--latest">
     <section class="card card--duo card--split card--mega">
@@ -132,7 +264,7 @@
             <div class="panel-col panel-col--right">
               <p class="card-meta ground-credit"></p><p class="card-meta ground-under ground-under--date"></p>
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Quantify Everything</span><div class="card-preview-cols"><p class="card-preview">America has always had her boomtowns, lawless places where heathens mass, where gunslinging bandits and foolhardy speculators go in search of pleasure and risk. Things move quickly in towns that spring up overnight. Some go bust, others get rich. Eventually the barons sniff blood and send their Pinkertons; the army moves in; the government straightens everyone out. The gold rush of our era is gambling on the future, and the anarchic hamlets where online degenerates park their rickshaws are called Polymarket and Kalshi. On prediction markets, the nectar of capital flows, hegemons duel in smokey saloons, and forecasters trade contracts on the outcomes of world events.</p><p class="card-preview">But every boomtown has a friar, too, a bald little man in a robe who cries out his psalms in the dusty square, crooning to the one-handed miners as they line up to guzzle their booze and nail their whores. In Polymarketsville, there’s a sect of Bayesian monks who have been quietly constructing a mission. In fact, they’re the ones who first panned the river, who cleared the land on Main Street all those years ago. These zealots call themselves “rationalists,” and they foretell prediction markets as the salvation for our godless and irrational land.</p><p class="card-preview">“Polymarket” wormed its way into my daydreams through the various troughs I frequent online, where chatter about big bettors tipping off national security crises and White House press secretaries shaving minutes at briefings to hit unders had commenters in a tizzy. The media establishment had caught on, too, to the competitive edge and the foul play. All the big names seemed preoccupied with integrating prediction market probabilities into their institutional forecasting or else finger-wagging about the existential risks of insider trading and the psycho-chemical runoff from the Great Casino-fication of America.</p><p class="card-preview">I imagined the typical Polymarket trader as a cyclops with pizza grease slathered over his monitor, slobbering over bets like a rottweiler admiring a platter of animal organs. He spent the day in a fraternity cave system hooked up to a VPN and an open source intelligence IV, betting on whether Elon Musk would mention “poopoo” at the World Economic Forum in Davos or how many dissident prisoners the Ayatollah Khamenei would execute in the next 72 hours. I would ask him if he’d ever been “rulescucked” or if he thought Barron Trump was the insider behind the whale that bet $30k on the Maduro op for a $400k profit. We would wager on “Taylor Swift pregnant by June?” or “The second coming of Jesus Christ by 2027?” and lounge around in his sunless lair of paranoia — panting, talking ethics, eating Airheads Xtremes, and snorting Adderall — until we doubled up or lost everything.</p><p class="card-preview">I would attempt to locate this fine specimen and give him my money.</p><p class="card-preview">So I started flipping through my rolodex and poking around the internet for clues. Then I got in my wagon and headed West. My journey led me to a strange land called Futarchy.</p><p class="card-preview">The architecture of polymarket.com is rather plain: there are near-infinite boxes on the main scroll, arranged in pleasant quadrilateral geometry, each presenting a question, a mundane or farcical image, a percentage which doubles as both probability and price, and the clickable binary of “Yes” (green) or “No” (red). A week before the Super Bowl, “Will the US acquire part of Greenland in 2026?” sits as the second-billed market on the homepage. An icon of the territory, filled in with the American flag, is priced by the market at a 27% likelihood. I can buy “Yes” shares for 27¢ or “No” shares for 73¢. Should Trump land amphibious warcraft on the beaches of Nuuk come March, the market would resolve: the “Yes” shares to $1, and the “No” shares to $0. Would a storming of Greenland count as an acquisition, though? Quibbles over semantics in the resolution criteria arise often and are mediated through a “Keynesian beauty pageant” conducted by an “UMA oracle” (these terms escape me, too).</p><p class="card-preview">Prediction markets don’t operate like traditional sportsbooks; the Commodity Futures Trading Commission (CFTC) regulates Polymarket and Kalshi, not federal and state gaming agencies. Bettors trade derivatives on a regulated exchange, entering into futures contracts with one another. If one trader buys shares of “Yes,” another matches shares of “No.” Polymarket and Kalshi are legal in states where sports gambling is banned (despite 89% of Kalshi’s total volume in 2025 having been bet on sports). Beyond a loophole in the regulatory matrix, the prediction markets argue that while sportsbooks rip off bettors with outrageous spreads and insurmountable odds, the only money Polymarket and Kalshi take in are the margins required for market making or transaction fees.</p><p class="card-preview">The prediction markets struggle to define and answer to accusations of insider trading. In the common scenario where traders can wager on “what will X say in Y speech” (a mention market), couldn’t Marco Rubio tell his bud that he’s for sure going to mention the long-shot “Golden Dome” in the next cabinet meeting? Wouldn’t one of Bad Bunny’s anonymous sugar canes know the Super Bowl halftime opener from the dress rehearsal? If unusual activity were to alert the market to military action, could Polymarket pose a risk to the cover of dark special ops? How can the companies surveil suspicious behavior over 10,000 markets? How can officials prevent point shaving in the Loyola vs. Champaign Division IX men’s water polo match? From the perspective of the prediction markets or the market makers, insider trading isn’t really a problem for their business. In fact, traders who have been tipped off serve to make prices more accurate and adjust for dumb money (a colloquialism used to describe gut-check bets made with little informational basis). Insiders are only a smear on optics.</p><p class="card-preview">“Act first, apologize later,” is the internal mantra of Shayne Coplan, Polymarket’s founder and CEO. The son of two South African professors, Coplan (only 27) was for a brief two-week period in 2025 the youngest self-made billionaire in the world. A former employee described Polymarket’s early culture: “like, ‘We’re rebels, we’re mavericks, and we’re just gonna build this thing and figure out the regulatory stuff later.’”</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/pdoom" rel="noopener">Quantify Everything</a><div class="card-preview-cols"><p class="card-preview">America has always had her boomtowns, lawless places where heathens mass, where gunslinging bandits and foolhardy speculators go in search of pleasure and risk. Things move quickly in towns that spring up overnight. Some go bust, others get rich. Eventually the barons sniff blood and send their Pinkertons; the army moves in; the government straightens everyone out. The gold rush of our era is gambling on the future, and the anarchic hamlets where online degenerates park their rickshaws are called Polymarket and Kalshi. On prediction markets, the nectar of capital flows, hegemons duel in smokey saloons, and forecasters trade contracts on the outcomes of world events.</p><p class="card-preview">But every boomtown has a friar, too, a bald little man in a robe who cries out his psalms in the dusty square, crooning to the one-handed miners as they line up to guzzle their booze and nail their whores. In Polymarketsville, there’s a sect of Bayesian monks who have been quietly constructing a mission. In fact, they’re the ones who first panned the river, who cleared the land on Main Street all those years ago. These zealots call themselves “rationalists,” and they foretell prediction markets as the salvation for our godless and irrational land.</p><p class="card-preview">“Polymarket” wormed its way into my daydreams through the various troughs I frequent online, where chatter about big bettors tipping off national security crises and White House press secretaries shaving minutes at briefings to hit unders had commenters in a tizzy. The media establishment had caught on, too, to the competitive edge and the foul play. All the big names seemed preoccupied with integrating prediction market probabilities into their institutional forecasting or else finger-wagging about the existential risks of insider trading and the psycho-chemical runoff from the Great Casino-fication of America.</p><p class="card-preview">I imagined the typical Polymarket trader as a cyclops with pizza grease slathered over his monitor, slobbering over bets like a rottweiler admiring a platter of animal organs. He spent the day in a fraternity cave system hooked up to a VPN and an open source intelligence IV, betting on whether Elon Musk would mention “poopoo” at the World Economic Forum in Davos or how many dissident prisoners the Ayatollah Khamenei would execute in the next 72 hours. I would ask him if he’d ever been “rulescucked” or if he thought Barron Trump was the insider behind the whale that bet $30k on the Maduro op for a $400k profit. We would wager on “Taylor Swift pregnant by June?” or “The second coming of Jesus Christ by 2027?” and lounge around in his sunless lair of paranoia — panting, talking ethics, eating Airheads Xtremes, and snorting Adderall — until we doubled up or lost everything.</p><p class="card-preview">I would attempt to locate this fine specimen and give him my money.</p><p class="card-preview">So I started flipping through my rolodex and poking around the internet for clues. Then I got in my wagon and headed West. My journey led me to a strange land called Futarchy.</p><p class="card-preview">The architecture of polymarket.com is rather plain: there are near-infinite boxes on the main scroll, arranged in pleasant quadrilateral geometry, each presenting a question, a mundane or farcical image, a percentage which doubles as both probability and price, and the clickable binary of “Yes” (green) or “No” (red). A week before the Super Bowl, “Will the US acquire part of Greenland in 2026?” sits as the second-billed market on the homepage. An icon of the territory, filled in with the American flag, is priced by the market at a 27% likelihood. I can buy “Yes” shares for 27¢ or “No” shares for 73¢. Should Trump land amphibious warcraft on the beaches of Nuuk come March, the market would resolve: the “Yes” shares to $1, and the “No” shares to $0. Would a storming of Greenland count as an acquisition, though? Quibbles over semantics in the resolution criteria arise often and are mediated through a “Keynesian beauty pageant” conducted by an “UMA oracle” (these terms escape me, too).</p><p class="card-preview">Prediction markets don’t operate like traditional sportsbooks; the Commodity Futures Trading Commission (CFTC) regulates Polymarket and Kalshi, not federal and state gaming agencies. Bettors trade derivatives on a regulated exchange, entering into futures contracts with one another. If one trader buys shares of “Yes,” another matches shares of “No.” Polymarket and Kalshi are legal in states where sports gambling is banned (despite 89% of Kalshi’s total volume in 2025 having been bet on sports). Beyond a loophole in the regulatory matrix, the prediction markets argue that while sportsbooks rip off bettors with outrageous spreads and insurmountable odds, the only money Polymarket and Kalshi take in are the margins required for market making or transaction fees.</p><p class="card-preview">The prediction markets struggle to define and answer to accusations of insider trading. In the common scenario where traders can wager on “what will X say in Y speech” (a mention market), couldn’t Marco Rubio tell his bud that he’s for sure going to mention the long-shot “Golden Dome” in the next cabinet meeting? Wouldn’t one of Bad Bunny’s anonymous sugar canes know the Super Bowl halftime opener from the dress rehearsal? If unusual activity were to alert the market to military action, could Polymarket pose a risk to the cover of dark special ops? How can the companies surveil suspicious behavior over 10,000 markets? How can officials prevent point shaving in the Loyola vs. Champaign Division IX men’s water polo match? From the perspective of the prediction markets or the market makers, insider trading isn’t really a problem for their business. In fact, traders who have been tipped off serve to make prices more accurate and adjust for dumb money (a colloquialism used to describe gut-check bets made with little informational basis). Insiders are only a smear on optics.</p><p class="card-preview">“Act first, apologize later,” is the internal mantra of Shayne Coplan, Polymarket’s founder and CEO. The son of two South African professors, Coplan (only 27) was for a brief two-week period in 2025 the youngest self-made billionaire in the world. A former employee described Polymarket’s early culture: “like, ‘We’re rebels, we’re mavericks, and we’re just gonna build this thing and figure out the regulatory stuff later.’”</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -204,7 +336,7 @@
             <div class="panel-col panel-col--right">
               <p class="card-meta ground-credit"></p><p class="card-meta ground-under ground-under--date"></p>
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Streaming Hazard</span><div class="card-preview-cols"><p class="card-preview">I watched a man with an intense face shamble into the university library three years ago. He sat down at a computer, turned it on, and maneuvered with fits and starts to Facebook. I watched surreptitiously, careful to avoid eye-contact. He either rocked back and forth, snorting and grunting, or sat sinisterly still. He scrolled quickly and roughly, without any discernible scheme, leaning slowly toward the screen, his eyeballs right up against it. He picked up the phone and called, I assume, his ex-wife. They discussed a little boy of unknown origin. He <em>had not</em>, it sounded, had a good experience at somebody’s home. From my side of the one-way conversation, I learned that the bathroom had been fixed. I also learned that things were safe, and that it was time for the boy to visit his dad. I did not get the impression, from the angry noises the man made when the phone call ended, that this was going to happen. He frantically searched Google, and then he left, and the library was quiet again.</p><p class="card-preview">I have ever since then wondered what he looked at after the call. His ex-wife’s Facebook? Pictures of his son? I remember he was on YouTube at one point, listening to music. What is his algorithm like? What is he marketed? Does Google know he is mentally ill, that he is wandering around the University of Illinois’s main library? Is there a little checked box for that sort of thing in his data profile? Does Google know about his lost son? His divorce? Maybe the algorithm could procure for him a diagnosis, a treatment facility, a battery of pills, and the kind of father’s rights attorneys they advertise on sports talk radio. That would be nice.</p><p class="card-preview">As it stands, Google does nothing. It neither helps nor hurts the poor, twitchy man. I suspect its products even provide him validation, joy. It must serve him that which it also serves us: pictures of family, clips from beloved movies, songs from favorite bands, conspiratorial podcasts — all aimed at manipulating those pathetic neuroses we share collectively, inspiring pain and joy, fear and love, endless possibility and stifling inertia. The internet is an ambiguous place. It has no character. We consume it. We populate it. We consume ourselves. It, like a court eunuch, shapes our desires while yielding to our commands. It is a refuge from everyday life and a ceaseless reminder of it. I wonder how much content is created by the wandering and crazy? How fast could I find a picture of the twitchy man’s wife and son? How fast could I track down his life’s wreckage? I could imagine an enjoyable hour, maybe two, spent sifting through that.</p><p class="card-preview">I would like to find his accounts. They are intensely interesting to me. Here is a real man, an unpretentious human life, laid out in pictures, in Facebook comments, in Instagram reels — all of it in fine quality and perfect detail. What a new frontier in entertainment, something truly wilder, weirder, and crazier than its precursors. I would like to watch him smoke meth on Instagram live. This would enthrall me, my sheltered upper-middle class mind — a glimpse of disgusting and intriguing social disorder. On the internet, where we all are equal, I — cocooned in a blanket — may catch a glimpse of those awful, strange things. The algorithm notices, and feeds me more, and an industry is born.</p><p class="card-preview">The internet is a freak show like the old circus. Step inside the tent; see the hermaphrodite, the bearded lady. Enjoy it, but never admit it. You weren’t there. You’d never go. You don’t know anything about it at all. And though much has changed since P.T. Barnum, there remains a serious, well-funded industry of promoters and managers and marketers whose income depends on their association with the physically deformed, mentally ill, and socially maladjusted. These people — famous for their ugliness, homelessness, binge-drinking, and public freakouts — are these days called “Lolcows” by the internet; that is to say, they produce “lols” like a cow does milk — endlessly, or at least until they die.</p><p class="card-preview">The best-known among them must be WorldofTShirts — Joshua Block, to use his given name. Josh is an autistic, gangly twenty-something forced into a liver-shredding alcoholic stupor over the past half-decade by a series of noxious handlers. He has 4 million followers on TikTok. His account blew up during the pandemic, as he, still young and fresh-looking, posted videos of himself doing goofy dances and reviewing various boba teas. In 2021, a video of him screaming the lyrics to “Empire State of Mind” in Times Square amassed 27 million views. So, clever as he is, Josh did it again, and again, and again. Soon enough, he was on a Times Square billboard. Dixie D’Amelio followed him shortly thereafter.</p><p class="card-preview">Sometime after his original first surge in popularity, he takes a trip to Mexico. Josh drinks his first drink here, then chooses to have quite a few more. He loses his phone in an Uber. He turns 21 soon after, and with this Josh has had enough of boba tea. He now drinks liquor, as much as he can get. The songs persist, now sung drunkenly, and a manager enters the picture: Michael Quinn. The former owner of Feltman’s Hotdogs, an oval-faced, barrel-chested, strangely tanned, heavily accented New Yorker, Quinn comes upon Josh’s budding fame and decides to grab a piece of it for himself. Armed with a compulsive need for attention and the money to secure it, he sets about dragging Josh and his roller backpack to the bars, restaurants, and pizza shops of New York City. Together, they have a goofy, silly time. But all is not well. You wouldn’t know it yet, but the man is becoming more erratic, his content more unhinged. Unsupervised by Quinn, Josh records himself licking the subway floor.</p><p class="card-preview">Around this time, Josh meets Jason Itzler, Jeffrey Epstein associate, Josh’s second manager, and the King of All Pimps. In the mid-aughts, Itzler became a sort of small-time New York celebrity as the owner/operator of the high-priced escort service New York Confidential. Sent to Rikers in 2005 for his operation of the company, he reemerged in 2008 as a bit player in the prostitution scandal that scuttled former New York Governor Eliot Spitzer’s political career. In 2011, he was identified as an occupant of the apartment where 21-year-old University of Wisconsin-La Crosse student Julia Sumnicht overdosed on GHB. Now on Kick — which is where they send you once you’re banned by Twitch — he streams under the name Mr. Based. Flanked from behind by a gold statue of the Buddha, a human-sized gnome, a replica sarcophagus, and a several-feet-tall Tony the Tiger, he now spends his nights like a dirtbag cam-girl: $50 to take a shot of Johnny Walker Blue, $200 to smoke a blunt, $300 to huff Galaxy Gas.</p><p class="card-preview">Itzler, I’m sure, needed no advice worming his way into the life of a naïve twenty-something. Isolate. Manipulate. Make him reliant on <em>you.</em> The content became meaner, the fans more rabid, as Itzler established himself in Josh’s life. Gone was that silly and sweet stuff in Josh’s videos, replaced instead by an unrelenting drumbeat of triggers designed to make him go ape. Fans on the street, egged on by Itzler, would yell, “Put the fries in the bag.” “Fuck you, bitch!” Josh would yell back. Mostly, the two sat in Itzler’s opulent apartment, with Josh away from the camera and Itzler right up next to it, drinking until collapse, until Josh went limp. These streams, hard as they are to watch, function as something like a real-time account of Josh’s descent into hell. In a clip pretty neatly summarizing their dynamic, Josh huffs nitrous oxide from a balloon. He jerks and flails and suddenly stops, looking terrified. “I feel lightheaded,” he yells. Peaking over his shoulder, Itzler laughs and points his thumb toward Josh, a smile plastered on his lips. “Look at this guy,” he says. The clip has over 300,000 views.</p><p class="card-preview">Itzler is out of the picture now, relegated once again back to the status of depressing middle-aged man, but the Joshua Block money-making operation churns ever onward. Managed today by MAGA influencer and cocaine aficionado Tony Beam, Josh and his entourage can be found on Parti — which is where they send you when you’re banned by Kick — engaged in the same crap. Josh goes to a bar and gets blackout drunk. Josh gets punched for saying something racist. A sampling of the top posts on his subreddit read, “Josh Confuses a block of cream cheese for his phone,” “Josh block crashed out on me and smacked my phone,” “Josh crashout in Austin,” “Josh says N word hard R,” and so on. You get the picture.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/freak-show" rel="noopener">Streaming Hazard</a><div class="card-preview-cols"><p class="card-preview">I watched a man with an intense face shamble into the university library three years ago. He sat down at a computer, turned it on, and maneuvered with fits and starts to Facebook. I watched surreptitiously, careful to avoid eye-contact. He either rocked back and forth, snorting and grunting, or sat sinisterly still. He scrolled quickly and roughly, without any discernible scheme, leaning slowly toward the screen, his eyeballs right up against it. He picked up the phone and called, I assume, his ex-wife. They discussed a little boy of unknown origin. He <em>had not</em>, it sounded, had a good experience at somebody’s home. From my side of the one-way conversation, I learned that the bathroom had been fixed. I also learned that things were safe, and that it was time for the boy to visit his dad. I did not get the impression, from the angry noises the man made when the phone call ended, that this was going to happen. He frantically searched Google, and then he left, and the library was quiet again.</p><p class="card-preview">I have ever since then wondered what he looked at after the call. His ex-wife’s Facebook? Pictures of his son? I remember he was on YouTube at one point, listening to music. What is his algorithm like? What is he marketed? Does Google know he is mentally ill, that he is wandering around the University of Illinois’s main library? Is there a little checked box for that sort of thing in his data profile? Does Google know about his lost son? His divorce? Maybe the algorithm could procure for him a diagnosis, a treatment facility, a battery of pills, and the kind of father’s rights attorneys they advertise on sports talk radio. That would be nice.</p><p class="card-preview">As it stands, Google does nothing. It neither helps nor hurts the poor, twitchy man. I suspect its products even provide him validation, joy. It must serve him that which it also serves us: pictures of family, clips from beloved movies, songs from favorite bands, conspiratorial podcasts — all aimed at manipulating those pathetic neuroses we share collectively, inspiring pain and joy, fear and love, endless possibility and stifling inertia. The internet is an ambiguous place. It has no character. We consume it. We populate it. We consume ourselves. It, like a court eunuch, shapes our desires while yielding to our commands. It is a refuge from everyday life and a ceaseless reminder of it. I wonder how much content is created by the wandering and crazy? How fast could I find a picture of the twitchy man’s wife and son? How fast could I track down his life’s wreckage? I could imagine an enjoyable hour, maybe two, spent sifting through that.</p><p class="card-preview">I would like to find his accounts. They are intensely interesting to me. Here is a real man, an unpretentious human life, laid out in pictures, in Facebook comments, in Instagram reels — all of it in fine quality and perfect detail. What a new frontier in entertainment, something truly wilder, weirder, and crazier than its precursors. I would like to watch him smoke meth on Instagram live. This would enthrall me, my sheltered upper-middle class mind — a glimpse of disgusting and intriguing social disorder. On the internet, where we all are equal, I — cocooned in a blanket — may catch a glimpse of those awful, strange things. The algorithm notices, and feeds me more, and an industry is born.</p><p class="card-preview">The internet is a freak show like the old circus. Step inside the tent; see the hermaphrodite, the bearded lady. Enjoy it, but never admit it. You weren’t there. You’d never go. You don’t know anything about it at all. And though much has changed since P.T. Barnum, there remains a serious, well-funded industry of promoters and managers and marketers whose income depends on their association with the physically deformed, mentally ill, and socially maladjusted. These people — famous for their ugliness, homelessness, binge-drinking, and public freakouts — are these days called “Lolcows” by the internet; that is to say, they produce “lols” like a cow does milk — endlessly, or at least until they die.</p><p class="card-preview">The best-known among them must be WorldofTShirts — Joshua Block, to use his given name. Josh is an autistic, gangly twenty-something forced into a liver-shredding alcoholic stupor over the past half-decade by a series of noxious handlers. He has 4 million followers on TikTok. His account blew up during the pandemic, as he, still young and fresh-looking, posted videos of himself doing goofy dances and reviewing various boba teas. In 2021, a video of him screaming the lyrics to “Empire State of Mind” in Times Square amassed 27 million views. So, clever as he is, Josh did it again, and again, and again. Soon enough, he was on a Times Square billboard. Dixie D’Amelio followed him shortly thereafter.</p><p class="card-preview">Sometime after his original first surge in popularity, he takes a trip to Mexico. Josh drinks his first drink here, then chooses to have quite a few more. He loses his phone in an Uber. He turns 21 soon after, and with this Josh has had enough of boba tea. He now drinks liquor, as much as he can get. The songs persist, now sung drunkenly, and a manager enters the picture: Michael Quinn. The former owner of Feltman’s Hotdogs, an oval-faced, barrel-chested, strangely tanned, heavily accented New Yorker, Quinn comes upon Josh’s budding fame and decides to grab a piece of it for himself. Armed with a compulsive need for attention and the money to secure it, he sets about dragging Josh and his roller backpack to the bars, restaurants, and pizza shops of New York City. Together, they have a goofy, silly time. But all is not well. You wouldn’t know it yet, but the man is becoming more erratic, his content more unhinged. Unsupervised by Quinn, Josh records himself licking the subway floor.</p><p class="card-preview">Around this time, Josh meets Jason Itzler, Jeffrey Epstein associate, Josh’s second manager, and the King of All Pimps. In the mid-aughts, Itzler became a sort of small-time New York celebrity as the owner/operator of the high-priced escort service New York Confidential. Sent to Rikers in 2005 for his operation of the company, he reemerged in 2008 as a bit player in the prostitution scandal that scuttled former New York Governor Eliot Spitzer’s political career. In 2011, he was identified as an occupant of the apartment where 21-year-old University of Wisconsin-La Crosse student Julia Sumnicht overdosed on GHB. Now on Kick — which is where they send you once you’re banned by Twitch — he streams under the name Mr. Based. Flanked from behind by a gold statue of the Buddha, a human-sized gnome, a replica sarcophagus, and a several-feet-tall Tony the Tiger, he now spends his nights like a dirtbag cam-girl: $50 to take a shot of Johnny Walker Blue, $200 to smoke a blunt, $300 to huff Galaxy Gas.</p><p class="card-preview">Itzler, I’m sure, needed no advice worming his way into the life of a naïve twenty-something. Isolate. Manipulate. Make him reliant on <em>you.</em> The content became meaner, the fans more rabid, as Itzler established himself in Josh’s life. Gone was that silly and sweet stuff in Josh’s videos, replaced instead by an unrelenting drumbeat of triggers designed to make him go ape. Fans on the street, egged on by Itzler, would yell, “Put the fries in the bag.” “Fuck you, bitch!” Josh would yell back. Mostly, the two sat in Itzler’s opulent apartment, with Josh away from the camera and Itzler right up next to it, drinking until collapse, until Josh went limp. These streams, hard as they are to watch, function as something like a real-time account of Josh’s descent into hell. In a clip pretty neatly summarizing their dynamic, Josh huffs nitrous oxide from a balloon. He jerks and flails and suddenly stops, looking terrified. “I feel lightheaded,” he yells. Peaking over his shoulder, Itzler laughs and points his thumb toward Josh, a smile plastered on his lips. “Look at this guy,” he says. The clip has over 300,000 views.</p><p class="card-preview">Itzler is out of the picture now, relegated once again back to the status of depressing middle-aged man, but the Joshua Block money-making operation churns ever onward. Managed today by MAGA influencer and cocaine aficionado Tony Beam, Josh and his entourage can be found on Parti — which is where they send you when you’re banned by Kick — engaged in the same crap. Josh goes to a bar and gets blackout drunk. Josh gets punched for saying something racist. A sampling of the top posts on his subreddit read, “Josh Confuses a block of cream cheese for his phone,” “Josh block crashed out on me and smacked my phone,” “Josh crashout in Austin,” “Josh says N word hard R,” and so on. You get the picture.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -215,15 +347,12 @@
   </div>
   </div>
   </div>
-  <!-- SUBSCRIBE over the ledger: the word on charcoal, sized like the
-       head's. It rides up over the pinned band and pins in its place;
-       the column head then overtakes it. -->
-  <section class="ledger-subscribe">
-    <a class="ledger-word ledger-word--subscribe" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
-  </section>
-  <!-- THE COLUMN HEAD follows SUBSCRIBE up, OVERTAKES it and PINS at
-       the top in its place. -->
-    <div class="ledger-head ledger-row">
+  <div class="movement m--essays">
+  <section class="page-banner events-band page-banner--bare">
+        <a class="banner-name" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
+      </section>
+  </div>
+  <div class="ledger-head ledger-row">
       <span class="ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title <span class="arch-sort-arrows">
         <button class="arch-sort" type="button" data-key="title" data-dir="asc" aria-label="Sort by title ascending">&#9650;</button>
         <button class="arch-sort" type="button" data-key="title" data-dir="desc" aria-label="Sort by title descending">&#9660;</button>
@@ -245,6 +374,10 @@
         <button class="arch-sort" type="button" data-key="date" data-dir="desc" aria-label="Sort by date descending">&#9660;</button>
       </span></span>
     </div>
+  <div class="movement m--essays m--ledger">
+  
+  <div class="movement-body">
+  
   <section class="ledger" aria-label="Every post">
     <div class="ledger-body">
   <div class="ledger-item" data-title="mrbeast, slop auteur" data-author="will diana" data-date="1789583977861" data-kicker="youtube artistry" data-section="essays" data-slug="mrbeast-slop-auteur">
@@ -1068,24 +1201,23 @@
   </div>
     </div>
   </section>
-  <section class="ledger-deck ledger-deck--1 ledger-deck--charcoal">
-    <a class="ledger-word" href="about.html">About</a>
+  </div>
+  </div>
+  <section class="reprint">
+    <div class="reprint-rule" aria-hidden="true"></div>
+    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
   </section>
-  <section class="ledger-deck ledger-deck--2 ledger-deck--crimson">
-    <a class="ledger-word" href="https://www.thenewcritic.com/subscribe" rel="noopener">Store</a>
-  </section>
-  <section class="ledger-deck ledger-deck--3 ledger-deck--charcoal">
-    <a class="ledger-word" href="https://www.thenewcritic.com/subscribe" rel="noopener">Events</a>
-  </section>
-  <nav class="ledger-band ledger-band--foot" aria-label="Colophon">
-    <p class="ledger-slot ledger-slot--left"><span>Est. May 2025</span></p>
-    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic, Inc.</span></p>
-    <p class="ledger-slot ledger-slot--right"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+  <div class="foot-field" aria-hidden="true"></div>
+  <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
+    <p class="band-deks band-name"><span>Est. May 2025</span></p>
+    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>
-  <div class="ledger-field" aria-hidden="true"></div>
-  <section class="ledger-reprint">
-    <a class="ledger-word ledger-word--reprint" href="./" aria-label="The New Critic — home">The New Critic</a>
-  </section>
+  </div>
+  <div class="marginalia">
+  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  <span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a><span class="social-stack-sep" aria-hidden="true">—</span><a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a><span class="social-stack-sep" aria-hidden="true">—</span><a href="mailto:editors@thenewcritic.com" aria-label="Email"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a></span>
+  </div>
 </main>
 
 
@@ -3127,6 +3259,13 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    if (!cap) {
+      var repName = document.querySelector('.reprint .reprint-name');
+      if (repName) {
+        fillNameBand(repName, repName.closest('.reprint'), { air: BANNER_AIR, airBottom: BANNER_AIR });
+        cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
+      }
+    }
     var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
@@ -4153,8 +4292,47 @@
       sp.style.marginTop = '-1px';
     });
   }
+  function fitToggle() {
+    var spans = document.querySelectorAll('.theme-toggle > span, .social-stack > span');
+    if (!spans.length) return;
+    var W = 600, H = 200, scan = 100, y0 = 120;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    if (!g) return;
+    [].forEach.call(spans, function (el) {
+      el.style.top = '';
+      var cs = getComputedStyle(el);
+      var size = parseFloat(cs.fontSize) || 0;
+      var text = (el.textContent || '').trim();
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+      if (!size || !text) return;
+      g.clearRect(0, 0, W, H);
+      g.font = cs.fontWeight + ' ' + scan + 'px ' + cs.fontFamily;
+      g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+      g.fillText(text, 10, y0);
+      var data;
+      try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return; }
+      var topRow = -1, botRow = -1;
+      for (var y = 0; y < H; y++) {
+        for (var x = 0; x < W; x++) {
+          if (data[(y * W + x) * 4 + 3] > 40) { if (topRow < 0) topRow = y; botRow = y; break; }
+        }
+      }
+      if (topRow < 0) return;
+      var midAboveBase = (y0 - (topRow + botRow + 1) / 2) / scan * size;
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.appendChild(probe);
+      var base = probe.getBoundingClientRect().bottom;
+      el.removeChild(probe);
+      var box = el.getBoundingClientRect();
+      var inkMid = base - midAboveBase;
+      el.style.position = 'relative';
+      el.style.top = (box.top + box.height / 2 - inkMid).toFixed(2) + 'px';
+    });
+  }
   function fitCardRules() {
-    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps, main.has-mega .latest-cell--contra');
     function inkEdge(node, side) {
       if (!node) return null;
       var r = document.createRange();
@@ -4169,6 +4347,20 @@
       var box = el.getBoundingClientRect();
       if (!box.width) return;
       var isHero = el.classList.contains('duo-half--mega');
+      if (el.classList.contains('latest-cell--contra')) {
+        var cPeek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+        var cL = inkEdge(cPeek, 'left'), cR = inkEdge(cPeek, 'right');
+        if (cL == null || cR == null) return;
+        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left)) + 'px');
+        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR)) + 'px');
+        var cKicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p');
+        var kL = inkEdge(cKicker, 'left'), kR = inkEdge(cKicker, 'right');
+        if (kL != null && kR != null) {
+          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left)) + 'px');
+          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR)) + 'px');
+        }
+        return;
+      }
       var picLeft = isHero
         ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
         : el.classList.contains('pic-left');
@@ -4237,6 +4429,7 @@
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
     step('fitCardRules', fitCardRules);
+    step('fitToggle', fitToggle);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
   (function(){
@@ -4369,6 +4562,10 @@
         e.preventDefault(); e.stopPropagation();
         card.classList.remove('is-open'); travel();
         try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
+        return;
+      }
+      if (hit(e, '.latest-plate') && !hit(e, '.plate-title')) {
+        e.preventDefault(); e.stopPropagation();
       }
     });
     card.addEventListener('keydown', function (e) {
@@ -4846,22 +5043,16 @@
       spacer.style.height = Math.round(Math.max(0, open)) + 'px';
     }
     if (ledger && body) {
-      var firstCell = body.querySelector('.ledger-row .ledger-cell');
-      if (firstCell) {
+      var firstTitle = body.querySelector('.ledger-item:not(.is-filtered-out) .ledger-row .lc-title');
+      if (firstTitle) {
         ledger.style.paddingTop = '';
-        var fcs = getComputedStyle(firstCell);
-        var cv2 = document.createElement('canvas').getContext('2d');
-        if (cv2) {
-          cv2.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
-          var mm = cv2.measureText((firstCell.textContent || '').trim() || 'X');
-          var probe2 = document.createElement('span');
-          probe2.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-          firstCell.appendChild(probe2);
-          var base2 = probe2.getBoundingClientRect().bottom;
-          firstCell.removeChild(probe2);
-          var rowTop = firstCell.parentElement.getBoundingClientRect().top;
-          var inkIn = base2 - mm.actualBoundingBoxAscent - rowTop;
-          if (isFinite(inkIn)) ledger.style.paddingTop = Math.round(72 - inkIn) + 'px';
+        var ink0 = inkOf(firstTitle);
+        var row0 = firstTitle.closest('.ledger-row');
+        if (ink0 && row0) {
+          var rr = row0.getBoundingClientRect();
+          var gap = rr.height - (ink0.bottom - ink0.top);
+          var over = ink0.top - rr.top;
+          ledger.style.paddingTop = Math.max(0, gap - over).toFixed(2) + 'px';
         }
       }
     }
@@ -4871,6 +5062,55 @@
     if (field && foot && reprint) {
       var left = document.documentElement.clientHeight - foot.offsetHeight - reprint.offsetHeight;
       field.style.height = Math.round(Math.max(0, left)) + 'px';
+    }
+    fitInkAir();
+  }
+  var AIR = 72;
+  function inkOf(el) {
+    var cs = getComputedStyle(el);
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return null;
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var txt = (el.textContent || '').trim() || 'X';
+    if (cs.textTransform === 'uppercase') txt = txt.toUpperCase();
+    var m = cv.measureText(txt);
+    if (m.actualBoundingBoxAscent == null) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base1 = probe.getBoundingClientRect().bottom;
+    el.appendChild(probe);
+    var base2 = probe.getBoundingClientRect().bottom;
+    el.removeChild(probe);
+    return { top: base1 - m.actualBoundingBoxAscent, bottom: base2 + m.actualBoundingBoxDescent };
+  }
+  function fitInkAir() {
+    var ledgerBody = document.querySelector('.movement.m--ledger > .movement-body');
+    if (ledgerBody && body) {
+      ledgerBody.style.marginBottom = '';
+      var rows = body.querySelectorAll('.ledger-item:not(.is-filtered-out)');
+      var lastTitle = rows.length ? rows[rows.length - 1].querySelector('.lc-title') : null;
+      var ink = lastTitle && inkOf(lastTitle);
+      if (ink) ledgerBody.style.marginBottom = (ink.bottom - ledgerBody.getBoundingClientRect().bottom).toFixed(2) + 'px';
+    }
+    var mosaic = document.querySelector('.about-mosaic-block');
+    if (mosaic) {
+      mosaic.style.marginTop = '';
+      mosaic.style.marginBottom = '';
+      mosaic.style.paddingBottom = '';
+      var firstText = mosaic.querySelector('.about-card > *');
+      var i1 = firstText && inkOf(firstText);
+      if (i1) mosaic.style.marginTop = (mosaic.getBoundingClientRect().top - i1.top).toFixed(2) + 'px';
+      var cards = mosaic.querySelectorAll('.about-card');
+      var lastCard = cards.length ? cards[cards.length - 1] : null;
+      var lines = lastCard ? lastCard.querySelectorAll('p, li, h3, .about-card-foot') : [];
+      var lastText = lines.length ? lines[lines.length - 1] : null;
+      var i2 = lastText && inkOf(lastText);
+      if (i2) {
+        var diff = AIR - (mosaic.getBoundingClientRect().bottom - i2.bottom);
+        if (diff >= 0) mosaic.style.paddingBottom = diff.toFixed(2) + 'px';
+        else mosaic.style.marginBottom = diff.toFixed(2) + 'px';
+      }
     }
   }
   function fitWordBand(mast) {
@@ -4951,7 +5191,7 @@
       var under = false;
       if (r.top > 1.5 && r.top < vh) {
         var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson'));
+        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson, .section-band'));
       }
       el.classList.toggle('is-under-band', under);
     });
@@ -5019,52 +5259,86 @@
     );
     if (sortBtn) sortBtn.click();
   }
+  var readHash = function () {
+    var hp = {};
+    location.hash.slice(1).split('&').forEach(function(kv){
+      var eq = kv.indexOf('=');
+      if (eq > 0) hp[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1)).toLowerCase();
+    });
+    return hp;
+  };
+  var filtered = false;
+  function applyFilter() {
+    var hp = readHash();
+    var sec = hp.section || '', topic = hp.topic || '';
+    filtered = !!(sec || topic);
+    items.forEach(function(it){
+      var show = (!sec || it.getAttribute('data-section') === sec)
+        && (!topic || it.getAttribute('data-kicker') === topic);
+      it.classList.toggle('is-filtered-out', !show);
+    });
+    fitMast();
+  }
+  applyFilter();
+  addEventListener('hashchange', function () { applyFilter(); land(); requestAnimationFrame(land); });
+  var target = null;
   if (hashParams.post) {
-    var target = null;
     items.forEach(function(it){
       if (it.getAttribute('data-slug') === hashParams.post) target = it;
     });
-    if (target) {
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      target.classList.add('is-target');
-      var jumpPoll = null;
-      function cancelJumpPoll() {
-        if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
-      }
-      function jumpToTarget() {
-        if (document.documentElement.clientHeight > 0) {
-          cancelJumpPoll();
-          var headEl = document.querySelector('.ledger-head');
-          var mastH = headEl ? headEl.offsetHeight : 0;
-          var tr = target.getBoundingClientRect();
-          var room = document.documentElement.clientHeight - mastH;
-          var y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
-          window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
-          return;
-        }
-        if (jumpPoll != null) return;
-        ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
-          addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
-        });
-        jumpPoll = setInterval(function () {
-          if (document.documentElement.clientHeight > 0) {
-            fitMast();
-            jumpToTarget();
-          }
-        }, 300);
-      }
-      jumpToTarget();
-      if (document.readyState === 'complete') {
-        requestAnimationFrame(jumpToTarget);
+    if (target) target.classList.add('is-target');
+  }
+  var jumpPoll = null;
+  function cancelJumpPoll() {
+    if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
+  }
+  function land() {
+    if (!target && !filtered) return;
+    if (document.documentElement.clientHeight > 0) {
+      cancelJumpPoll();
+      var headEl = document.querySelector('.ledger-head');
+      var mastH = headEl ? headEl.offsetHeight : 0;
+      var y;
+      if (target) {
+        var tr = target.getBoundingClientRect();
+        var room = document.documentElement.clientHeight - mastH;
+        y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
       } else {
-        addEventListener('load', function () {
-          requestAnimationFrame(jumpToTarget);
-        });
+        y = headEl ? window.scrollY + headEl.getBoundingClientRect().top : 0;
       }
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(jumpToTarget);
-      }
+      window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+      return;
     }
+    if (jumpPoll != null) return;
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
+    });
+    jumpPoll = setInterval(function () {
+      if (document.documentElement.clientHeight > 0) {
+        fitMast();
+        land();
+      }
+    }, 300);
+  }
+  if (target || filtered) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    land();
+    if (document.readyState === 'complete') {
+      requestAnimationFrame(land);
+    } else {
+      addEventListener('load', function () { requestAnimationFrame(land); });
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(land);
+    }
+    var settle = 0;
+    var settleTimer = setInterval(function () {
+      land();
+      if (++settle >= 8) clearInterval(settleTimer);
+    }, 250);
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      addEventListener(ev, function () { clearInterval(settleTimer); }, { once: true, passive: true });
+    });
   }
 })();
 

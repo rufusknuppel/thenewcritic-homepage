@@ -1176,9 +1176,11 @@ function renderNav(currentKey = 'home') {
 // banner that opens the next, whose own band then takes the seat.
 const SECTION_BANDS = {
   latest: { word: 'The Latest', href: './' },
-  essays: { word: 'Essays', href: 'essays.html' },
-  postscript: { word: 'Postscript', href: 'postscript.html' },
-  contra: { word: 'Contra', href: 'contra.html' },
+  // The words go to the ledger, filtered to their kind (2026-09-17;
+  // src/ledger.js reads #section=), not to the section pages.
+  essays: { word: 'Essays', href: 'archive.html#section=essays' },
+  postscript: { word: 'Postscript', href: 'archive.html#section=postscript' },
+  contra: { word: 'Contra', href: 'archive.html#section=contra' },
 };
 function bandDeks(m) {
   if (m === 'latest') {
@@ -1229,16 +1231,49 @@ const BAND_LINES = {
 // ALL … at the right, in the list's italic, to the section's page.
 // (SEE is struck: the line is a destination, not an instruction.)
 const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'All Criticism' };
-function renderSectionBand(m) {
+// The word pages (renderWordPage) take the masthead's band too, with
+// their own line in the middle slot in place of the date (mid) and
+// their own link among the right slot's marked current (currentKey).
+// THE SOCIAL STACK (2026-09-17): Substack, Instagram and Email as
+// marks in the LEFT margin, the toggle's mirror — three 13px marks
+// drawn in the ink with a dash between each, fixed at the viewport's
+// centre (style.css, .social-stack; the dashes are seated by ink with
+// the toggle's lines, fitToggle). Each mark is its own link and takes
+// the highlight under the pointer.
+// THE MARGINALIA (2026-09-17): the toggle and its field in the right
+// margin, the social marks in the left — fixed to the viewport, and
+// standing as a direct child of <main> rather than inside the band:
+// inside the band they stood in ITS stacking context, at the band's
+// own level, and the reprint and the archive's column head, a level
+// or two over the band, covered them as they rose (and the browser's
+// rubber-band past the foot brought the reprint over them). Here they
+// stand over every row of the page.
+function renderMarginalia() {
+  return `<div class="marginalia">
+  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  ${renderSocialStack()}
+  </div>`;
+}
+function renderSocialStack() {
+  const substack = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+  const instagram = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg>';
+  const email = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+  const sep = '<span class="social-stack-sep" aria-hidden="true">—</span>';
+  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
+}
+function renderSectionBand(m, { mid = '', currentKey = '' } = {}) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
   if (m === 'latest') {
     // The masthead's band: the site's links, the magazine's name, the
     // date. The name no longer rides in the courier beside the date —
     // it has the middle to itself.
+    const links = currentKey
+      ? bandDeks(m).replace(`<a href="${currentKey}.html">`, `<a href="${currentKey}.html" aria-current="page">`)
+      : bandDeks(m);
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek"><span class="band-date">${bandDate()}</span></p>
-    <p class="band-deks">${bandDeks(m)}<button type="button" class="theme-toggle" aria-label="Switch between light and dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span></button></p>
+    <p class="band-deks band-dek">${mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
+    <p class="band-deks">${links}</p>
   </nav>`;
   }
   const line = BAND_LINES[m] || '';
@@ -1253,6 +1288,21 @@ function renderSectionBand(m) {
 // in the list's italic at the left, where the magazine's name stands
 // above; the copyright line in the courier between; the socials in
 // that same italic at the right.
+// THE FOOT IS THE HEAD TURNED OVER: the reprint — THE NEW CRITIC
+// again at full width — rises in the flow, overtakes the pinned band
+// at the screen's top and sticks there; under it the blue field, a
+// viewport less the name and the band; and the colophon band closes
+// the page on the screen's foot (style.css, THE FOOT IS THE HEAD
+// TURNED OVER). The front page and the word pages close alike.
+function renderPageFoot() {
+  return `
+  <section class="reprint">
+    <div class="reprint-rule" aria-hidden="true"></div>
+    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
+  </section>
+  <div class="foot-field" aria-hidden="true"></div>
+  ${renderColophonBand()}`;
+}
 function renderColophonBand() {
   return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     ${bandName('<span>Est. May 2025</span>')}
@@ -1592,7 +1642,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
     ? post.previewParagraphs
     : (post.preview ? [post.preview] : []);
   const previewHtml = previewParas.length
-    ? `<div class="card-preview-block"><div class="plate-curtain">${post.kicker ? `<span class="plate-title">${escapeHtml(post.kicker)}</span>` : ''}<div class="card-preview-cols">${previewParas
+    ? `<div class="card-preview-block"><div class="plate-curtain">${post.kicker ? `<a class="plate-title" href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.kicker)}</a>` : ''}<div class="card-preview-cols">${previewParas
         .map((p) => `<p class="card-preview">${emHtml(p)}</p>`)
         .join('')}</div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>`
     : '';
@@ -2370,19 +2420,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // last review row straight to the reprint. STACK stays declared
   // against its return.)
   void STACK;
-  duoHtml += `
-  <!-- THE FOOT IS THE HEAD TURNED OVER: the reprint — THE NEW CRITIC
-       again at full width — rises in the flow, overtakes the pinned
-       band at the screen's top and sticks there; under it the blue
-       field, a viewport less the name and the band; and the colophon
-       band closes the page on the screen's foot (style.css, THE FOOT
-       IS THE HEAD TURNED OVER). -->
-  <section class="reprint">
-    <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
-  </section>
-  <div class="foot-field" aria-hidden="true"></div>
-  ${renderColophonBand()}`;
+  duoHtml += renderPageFoot();
 
   return `<!doctype html>
 <html lang="en">
@@ -2449,7 +2487,7 @@ ${duoHtml}
 
   <!-- (The colophon stands in the last section's foot band now —
        renderColophonBand.) -->
-
+${renderMarginalia()}
 </main>
 
 ${renderFooter()}
@@ -2488,18 +2526,151 @@ function renderFontGateScript() {
 (function () {
   var root = document.documentElement;
   // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // THE GROUND: light, dark, or a colour of the reader's own (HEX,
+  // 2026-09-17). Light and dark are the two token sets in style.css;
+  // a hex colour is written straight onto the root as --g, with --k
+  // white or charcoal, whichever reads better on it (WCAG contrast).
+  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  var hexOf = function (v) {
+    var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
+    if (!m) return null;
+    var h = m[1].toLowerCase();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return '#' + h;
+  };
+  var lum = function (hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  var inkFor = function (hex) {
+    var L = lum(hex), Lw = 1, Lc = lum(CHARCOAL);
+    var vsWhite = (Lw + 0.05) / (L + 0.05);
+    var vsCharcoal = (L + 0.05) / (Lc + 0.05);
+    return vsWhite >= vsCharcoal ? WHITE : CHARCOAL;
+  };
+  var setMeta = function (colour) {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = colour;
+  };
+  // Paints the choice: the attribute for the stylesheet, the two
+  // tokens inline for a hex ground (and cleared for the others).
+  var paint = function (mode, hex) {
+    if (mode === 'hex' && hex) {
+      var ink = inkFor(hex);
+      root.setAttribute('data-theme', 'hex');
+      root.style.setProperty('--g', hex);
+      root.style.setProperty('--k', ink);
+      // The highlight — the chosen word, every hover — is the OTHER of
+      // charcoal and white on a hex ground, not Yves: white ink takes
+      // charcoal, charcoal ink takes white.
+      root.style.setProperty('--yves', ink === WHITE ? CHARCOAL : WHITE);
+      setMeta(hex);
+    } else {
+      root.style.removeProperty('--g');
+      root.style.removeProperty('--k');
+      root.style.removeProperty('--yves');
+      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      else root.removeAttribute('data-theme');
+      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+    }
+  };
+  var store = function (mode, hex) {
+    try {
+      localStorage.setItem('nc-theme', mode);
+      if (hex) localStorage.setItem('nc-hex', hex);
+    } catch (err) {}
+  };
+  var storedHex = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+    storedHex = hexOf(localStorage.getItem('nc-hex'));
+    if (theme === 'hex' && storedHex) paint('hex', storedHex);
+    else if (theme === 'light' || theme === 'dark') paint(theme);
   } catch (e) {}
+  // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
+  // where the browser has view transitions the old page and the new
+  // are snapshotted whole and dissolved one into the other over .3s —
+  // every colour, ground, rule, picture and the canvas together, with
+  // no per-element transition running underneath (html.theme-instant
+  // holds every transition off for the change's frame, so the new
+  // snapshot is the settled page). Elsewhere the per-element ease
+  // above stands in.
+  var flipTimer = null;
+  var flip = function (mode, hex) {
+    store(mode, hex);
+    var change = function () { paint(mode, hex); };
+    if (document.startViewTransition) {
+      root.classList.add('theme-instant');
+      var done = function () { root.classList.remove('theme-instant'); };
+      var vt;
+      try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
+      if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A hidden tab may never run the animation; let go regardless.
+      setTimeout(done, 800);
+      return;
+    }
+    root.classList.add('theme-flip');
+    clearTimeout(flipTimer);
+    flipTimer = setTimeout(function () { root.classList.remove('theme-flip'); }, 350);
+    change();
+  };
+  var current = function () {
+    var t = root.getAttribute('data-theme');
+    return t === 'light' || t === 'hex' ? t : 'dark';
+  };
+  // THE HEX FIELD: a courier line under the three words, shown on HEX
+  // and hidden on Enter, Escape or leaving it. A valid code paints the
+  // page as it is typed (no dissolve keystroke by keystroke — the
+  // transitions are simply held off for the change); an invalid one
+  // paints nothing.
+  var field = null;
+  var openField = function () {
+    field = field || document.querySelector('.theme-hex');
+    if (!field) return;
+    field.value = storedHex || '';
+    field.hidden = false;
+    field.focus();
+    field.select();
+  };
+  var closeField = function () {
+    if (field) field.hidden = true;
+  };
+  var typed = function () {
+    var hex = hexOf(field.value);
+    if (!hex) return;
+    storedHex = hex;
+    root.classList.add('theme-instant');
+    paint('hex', hex);
+    store('hex', hex);
+    setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
+  };
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
-    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('nc-theme', next); } catch (err) {}
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = next === 'light' ? '#FFFFFF' : '#121417';
+    var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
+    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : t.classList.contains('theme-toggle-dark') ? 'dark' : 'hex')
+      : (current() === 'light' ? 'dark' : 'light');
+    if (mode === 'hex') {
+      openField();
+      if (storedHex && current() !== 'hex') flip('hex', storedHex);
+      return;
+    }
+    closeField();
+    if (mode !== current()) flip(mode);
+  });
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) typed();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!(e.target && e.target.classList && e.target.classList.contains('theme-hex'))) return;
+    if (e.key === 'Enter') { e.preventDefault(); typed(); closeField(); }
+    if (e.key === 'Escape') { e.preventDefault(); closeField(); }
+  });
+  document.addEventListener('focusout', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
   var shown = false;
@@ -2692,7 +2863,7 @@ function markMega(html) {
   // A page carrying the front page's cards in a feature block (the
   // archive's, About's) takes the marks too, hero or no hero: the
   // cards' rules and the fitter read them.
-  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature)(?:\s[^"]*)?"/.test(html)) return html;
+  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature|word-page)(?:\s[^"]*)?"/.test(html)) return html;
   // The ROOT carries the mark too: the canvas behind the page — what
   // shows when the reader pulls past the foot — is painted from the
   // root's own background (style.css, html.has-mega).
@@ -3330,14 +3501,10 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
     // picture at its head, the words under it — standing alone, centred
     // under the column at the column's own width.
     heroHtml = `
-  <div class="movement m--latest ledger-feature about-hero">
-  <div class="movement-body">
-  <div class="wrap m--latest">
+  <div class="wrap m--latest about-hero">
     <section class="card card--latest card--contra-trio about-contra">
         ${renderContraCell(manifestoPost, { rev: false })}
       </section>
-  </div>
-  </div>
   </div>`;
   }
   const contentHtml = `<div class="ledger-content about-mosaic-block${heroHtml ? ' about-mosaic-block--hero-follows' : ''}">
@@ -3350,14 +3517,12 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
     currentKey: 'about',
     title: 'About',
     description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
-    word: 'About',
-    wordHref: 'about.html',
-    mid: 'About The New Critic',
-    contentHtml,
-    deck: [
-      { word: 'Archive', href: 'archive.html', scheme: 'charcoal' },
-      { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'crimson' },
-      { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'charcoal' },
+    // The band is the front page's own, the date in its middle
+    // (2026-09-17; it read About The New Critic for a spell).
+    // ABOUT over the mosaic and the Secession's cell; then the reprint.
+    // (The closing deck — ARCHIVE, STORE, EVENTS — is struck, 2026-09-17.)
+    movements: [
+      { word: 'About', href: 'about.html', hook: 'subscribe-band', body: contentHtml },
     ],
     // With the hero on the page, the front page's scripts ride along for
     // it (as on the archive's feature block).
@@ -3367,7 +3532,7 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
       : '') + renderAboutMosaicScript() + renderLedgerScript(),
   // The body carries the page's own mark for what About alone does
   // (style.css, body.about-page).
-  }).replace('<body class="ledger-page">', '<body class="ledger-page about-page">');
+  }).replace('<body class="ledger-page word-page">', '<body class="ledger-page word-page about-page">');
 }
 
 function renderAboutMosaicScript() {
@@ -3435,53 +3600,56 @@ function sortArrows(key, label) {
       </span>`;
 }
 
-// THE WORD PAGE: the anatomy the archive set — the page's own word in
-// Placard at the head, stuck under the page; a screen of crimson under
-// it; the masthead's band, which rides up over the word and pins; the
-// page's content; a closing deck of three words, each sticking at the
-// top as it arrives and the next sliding over it; the colophon band,
-// the field and the masthead reprinted (src/ledger.js sizes every word
-// band and the two fields; style.css, THE ARCHIVE IS A LEDGER OF BANDS
-// and after). The archive and About are both built on it.
-function renderWordPage({ currentKey, title, description, word, wordHref, mid, contentHtml, deck = [], extraScripts = '' }) {
-  const deckHtml = deck.map((b, i) =>
-    `<section class="ledger-deck ledger-deck--${i + 1} ledger-deck--${b.scheme}">
-    <a class="ledger-word" href="${escapeHtml(b.href)}"${b.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(b.word)}</a>
-  </section>`).join('\n  ');
-  // The page's own name prints charcoal among the band's links.
-  const links = bandDeks('latest').replace(`<a href="${currentKey}.html">`, `<a href="${currentKey}.html" aria-current="page">`);
+// THE WORD PAGE IS THE FRONT PAGE'S ANATOMY (2026-09-17): the
+// masthead's band pinned at the top from the first pixel, with the
+// page's own line in its middle and the light/dark toggle in its
+// right margin; the seam under it; then the page's WORD — ARCHIVE,
+// ABOUT — as the first movement's banner, in OPS Placard across the
+// measure exactly as ESSAYS opens the front page's second movement;
+// the content in that movement's body; further movements each on a
+// banner (SUBSCRIBE over the ledger); the closing deck — three words
+// one under another, each a bare banner — and the front page's own
+// foot: the reprint, the field and the colophon band. The front
+// page's style and fitter do the work; nothing here is the ledger's
+// own but the column head and the rows (src/ledger.js sorts them).
+// (The mast, the crimson spacer, the pinned .ledger-band, the deck
+// sections and the ledger reprint of the earlier anatomy are gone.)
+//   movements: [{ word, href, hook, body }] — the first is the page's
+//   own word; hook is one of the front page's three banner classes
+//   (subscribe-band, events-band, store-band — the style hooks every
+//   banner rule is keyed on); body is the movement's content, or
+//   nothing for a deck word.
+function renderWordPage({ currentKey, title, description, mid, movements = [], extraScripts = '' }) {
+  const banner = (m) => `<section class="page-banner ${m.hook || 'store-band'} page-banner--bare">
+        <a class="banner-name" href="${escapeHtml(m.href)}"${m.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(m.word)}</a>
+      </section>`;
+  //   An entry may instead be { raw } — markup set straight into
+  //   .page-rows between movements (the archive's column head, which
+  //   pins over the band like the reprint does) — or carry a body and
+  //   no word: a movement with no banner (the ledger's rows).
+  const movementHtml = movements.map((m, i) => m.raw ? `\n  ${m.raw}` : `
+  <div class="movement ${i === 0 ? 'm--latest' : 'm--essays'}${m.cls ? ` ${m.cls}` : ''}">
+  ${m.word ? banner(m) : ''}${m.body ? `
+  <div class="movement-body">
+  ${m.body}
+  </div>` : ''}
+  </div>`).join('');
   const bodyHtml = `
-  <header class="ledger-mast" id="top">
-    <a class="ledger-word" href="${escapeHtml(wordHref)}">${escapeHtml(word)}</a>
-  </header>
-  <div class="ledger-spacer" aria-hidden="true"></div>
-  <div class="ledger-pin">
-  <nav class="ledger-band ledger-band--head" aria-label="The Young American Magazine">
-    <p class="ledger-slot ledger-slot--left"><a href="./">The Young American Magazine</a></p>
-    <p class="ledger-slot ledger-slot--mid"><span>${escapeHtml(mid)}</span></p>
-    <p class="ledger-slot ledger-slot--right">${links}</p>
-  </nav>
+  <div class="page-rows">
+  ${renderSectionBand('latest', { mid, currentKey })}
+  <div class="head-seam" aria-hidden="true"></div>
+  <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
   </div>
-  ${contentHtml}
-  ${deckHtml}
-  <nav class="ledger-band ledger-band--foot" aria-label="Colophon">
-    <p class="ledger-slot ledger-slot--left"><span>Est. May 2025</span></p>
-    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic, Inc.</span></p>
-    <p class="ledger-slot ledger-slot--right"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
-  </nav>
-  <div class="ledger-field" aria-hidden="true"></div>
-  <section class="ledger-reprint">
-    <a class="ledger-word ledger-word--reprint" href="./" aria-label="The New Critic — home">The New Critic</a>
-  </section>`;
-  // The root carries the mark too: the canvas behind the page — what
-  // shows when the reader pulls past either end — is painted charcoal
-  // off it (style.css, html.ledger-root).
+  ${renderMarginalia()}`;
   return renderPageShell({
     currentKey,
     title,
     description,
     bodyHtml,
-    bodyClass: 'ledger-page',
+    // ledger-page keeps the column head's, the rows' and About's
+    // mosaic's own rules; word-page is the anatomy's mark (style.css,
+    // THE WORD PAGES ON THE FRONT PAGE'S ANATOMY; markMega reads it).
+    bodyClass: 'ledger-page word-page',
     bare: true,
     extraScripts,
   }).replace('<html lang="en">', '<html lang="en" class="ledger-root">');
@@ -3505,37 +3673,29 @@ function renderLedgerFeature(features) {
     features.close ? renderMegaHero(features.close, { rev: true, label: 'Essays' }) : '',
   ].filter(Boolean);
   if (!rows.length) return '';
-  // The block carries the FIRST MOVEMENT's class (m--latest): the
-  // cards' reveal, stacking and hover rules are written per movement,
-  // and the block borrows the front page's opening one wholesale; the
-  // ground is turned charcoal by .ledger-feature (style.css).
-  return `
-  <div class="movement m--latest ledger-feature">
-  <div class="movement-body">
-  ${rows.map((r) => `<div class="wrap m--latest">
+  // The rows stand in the word page's first movement (m--latest, the
+  // front page's opening one), under the page's word: the cards'
+  // reveal, stacking and hover rules are written per movement, and
+  // the rows borrow the front page's wholesale (renderWordPage).
+  return rows.map((r) => `<div class="wrap m--latest">
     ${r}
-  </div>`).join('\n  <div class="row-divider m--latest"></div>\n  ')}
-  </div>
-  </div>`;
+  </div>`).join('\n  <div class="row-divider m--latest"></div>\n  ');
 }
 
 function renderArchivePage(posts, features) {
-  const contentHtml = `${renderLedgerFeature(features)}
-  <!-- SUBSCRIBE over the ledger: the word on charcoal, sized like the
-       head's. It rides up over the pinned band and pins in its place;
-       the column head then overtakes it. -->
-  <section class="ledger-subscribe">
-    <a class="ledger-word ledger-word--subscribe" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
-  </section>
-  <!-- THE COLUMN HEAD follows SUBSCRIBE up, OVERTAKES it and PINS at
-       the top in its place. -->
-    <div class="ledger-head ledger-row">
+  // THE COLUMN HEAD rides up over the pinned band and PINS at the top
+  // in its place, the ledger scrolling under it — so it stands in
+  // .page-rows itself, a level over the band and under the reprint,
+  // between SUBSCRIBE's movement and the rows' (style.css, THE WORD
+  // PAGES ON THE FRONT PAGE'S ANATOMY).
+  const headHtml = `<div class="ledger-head ledger-row">
       <span class="ledger-cell lc-title"><button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button> Title ${sortArrows('title', 'title')}</span>
       <span class="ledger-cell lc-author">Author ${sortArrows('author', 'author')}</span>
       <span class="ledger-cell lc-kicker">Tag ${sortArrows('kicker', 'tag')}</span>
       <span class="ledger-cell lc-section">Section ${sortArrows('section', 'section')}</span>
       <span class="ledger-cell lc-date">Date ${sortArrows('date', 'date')}</span>
-    </div>
+    </div>`;
+  const ledgerHtml = `
   <section class="ledger" aria-label="Every post">
     <div class="ledger-body">${posts.map(renderLedgerRow).join('')}
     </div>
@@ -3543,14 +3703,18 @@ function renderArchivePage(posts, features) {
   return renderWordPage({
     currentKey: 'archive',
     title: 'Archive',
-    word: 'Archive',
-    wordHref: 'archive.html',
-    mid: 'Editors’ Picks',
-    contentHtml,
-    deck: [
-      { word: 'About', href: 'about.html', scheme: 'charcoal' },
-      { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'crimson' },
-      { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'charcoal' },
+    // The band is the front page's own, the date in its middle
+    // (2026-09-17; it read Editors’ Picks for a spell).
+    // ARCHIVE over the feature block; SUBSCRIBE over the ledger; then
+    // the reprint. (The closing deck — ABOUT, STORE, EVENTS — is
+    // struck, 2026-09-17: the page goes from the ledger's last row
+    // straight to the reprint, as the front page goes from its last
+    // review row.)
+    movements: [
+      { word: 'Archive', href: 'archive.html', hook: 'subscribe-band', body: renderLedgerFeature(features) },
+      { word: 'Subscribe', href: `${SITE_URL}/subscribe`, hook: 'events-band' },
+      { raw: headHtml },
+      { cls: 'm--ledger', body: ledgerHtml },
     ],
     // The homepage's own scripts for the feature block's cards — the
     // fitter, the click-to-open plates, the cover colours, share, the

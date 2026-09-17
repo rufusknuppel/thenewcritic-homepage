@@ -36,26 +36,22 @@
     }
     // (The column head overtakes the band and pins at the top itself —
     // style.css; nothing to seat here.)
-    // 72 FROM THE COLUMN HEAD'S FOOT TO THE FIRST BAND'S INK: the row's
-    // box carries the line's leading over its caps, so the ledger's air
-    // is cut by what stands between the row's top and the ink.
+    // THE FIRST ROW STANDS UNDER THE HEAD AT THE ROWS' OWN SPACING
+    // (2026-09-17): the air between the head's foot rule and the first
+    // row's ink is the air between one row's ink and the next's — the
+    // row's height less its ink — so the ledger is padded by that less
+    // what the row already carries over its ink.
     if (ledger && body) {
-      var firstCell = body.querySelector('.ledger-row .ledger-cell');
-      if (firstCell) {
+      var firstTitle = body.querySelector('.ledger-item:not(.is-filtered-out) .ledger-row .lc-title');
+      if (firstTitle) {
         ledger.style.paddingTop = '';
-        var fcs = getComputedStyle(firstCell);
-        var cv2 = document.createElement('canvas').getContext('2d');
-        if (cv2) {
-          cv2.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
-          var mm = cv2.measureText((firstCell.textContent || '').trim() || 'X');
-          var probe2 = document.createElement('span');
-          probe2.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-          firstCell.appendChild(probe2);
-          var base2 = probe2.getBoundingClientRect().bottom;
-          firstCell.removeChild(probe2);
-          var rowTop = firstCell.parentElement.getBoundingClientRect().top;
-          var inkIn = base2 - mm.actualBoundingBoxAscent - rowTop;
-          if (isFinite(inkIn)) ledger.style.paddingTop = Math.round(72 - inkIn) + 'px';
+        var ink0 = inkOf(firstTitle);
+        var row0 = firstTitle.closest('.ledger-row');
+        if (ink0 && row0) {
+          var rr = row0.getBoundingClientRect();
+          var gap = rr.height - (ink0.bottom - ink0.top);
+          var over = ink0.top - rr.top;
+          ledger.style.paddingTop = Math.max(0, gap - over).toFixed(2) + 'px';
         }
       }
     }
@@ -65,6 +61,67 @@
     if (field && foot && reprint) {
       var left = document.documentElement.clientHeight - foot.offsetHeight - reprint.offsetHeight;
       field.style.height = Math.round(Math.max(0, left)) + 'px';
+    }
+    fitInkAir();
+  }
+  // THE AIR IS MEASURED TO THE INK (2026-09-17). The banners and the
+  // reprint open 72 over their caps and close 72 under their feet on
+  // their own (duo-panel-fit.js, fillNameBand), so a block whose box
+  // meets theirs meets their ink at 72 — what is seated here is the
+  // TEXT'S side of each meeting: the block is drawn up or padded until
+  // its own first or last line of ink stands where its box edge would.
+  // On the archive: the last row's ink 72 over the reprint's caps. On
+  // About: the first card's ink 72 under ABOUT's feet, the last card's
+  // ink 72 over the Secession's cell.
+  var AIR = 72;
+  function inkOf(el) {
+    // The ink of a text block's first and last lines, viewport
+    // coordinates: the baselines off a zero-size inline probe at each
+    // end, the ascent and descent off a canvas measure of its text.
+    var cs = getComputedStyle(el);
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return null;
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var txt = (el.textContent || '').trim() || 'X';
+    if (cs.textTransform === 'uppercase') txt = txt.toUpperCase();
+    var m = cv.measureText(txt);
+    if (m.actualBoundingBoxAscent == null) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base1 = probe.getBoundingClientRect().bottom;
+    el.appendChild(probe);
+    var base2 = probe.getBoundingClientRect().bottom;
+    el.removeChild(probe);
+    return { top: base1 - m.actualBoundingBoxAscent, bottom: base2 + m.actualBoundingBoxDescent };
+  }
+  function fitInkAir() {
+    var ledgerBody = document.querySelector('.movement.m--ledger > .movement-body');
+    if (ledgerBody && body) {
+      ledgerBody.style.marginBottom = '';
+      var rows = body.querySelectorAll('.ledger-item:not(.is-filtered-out)');
+      var lastTitle = rows.length ? rows[rows.length - 1].querySelector('.lc-title') : null;
+      var ink = lastTitle && inkOf(lastTitle);
+      if (ink) ledgerBody.style.marginBottom = (ink.bottom - ledgerBody.getBoundingClientRect().bottom).toFixed(2) + 'px';
+    }
+    var mosaic = document.querySelector('.about-mosaic-block');
+    if (mosaic) {
+      mosaic.style.marginTop = '';
+      mosaic.style.marginBottom = '';
+      mosaic.style.paddingBottom = '';
+      var firstText = mosaic.querySelector('.about-card > *');
+      var i1 = firstText && inkOf(firstText);
+      if (i1) mosaic.style.marginTop = (mosaic.getBoundingClientRect().top - i1.top).toFixed(2) + 'px';
+      var cards = mosaic.querySelectorAll('.about-card');
+      var lastCard = cards.length ? cards[cards.length - 1] : null;
+      var lines = lastCard ? lastCard.querySelectorAll('p, li, h3, .about-card-foot') : [];
+      var lastText = lines.length ? lines[lines.length - 1] : null;
+      var i2 = lastText && inkOf(lastText);
+      if (i2) {
+        var diff = AIR - (mosaic.getBoundingClientRect().bottom - i2.bottom);
+        if (diff >= 0) mosaic.style.paddingBottom = diff.toFixed(2) + 'px';
+        else mosaic.style.marginBottom = diff.toFixed(2) + 'px';
+      }
     }
   }
   function fitWordBand(mast) {
@@ -158,7 +215,7 @@
       var under = false;
       if (r.top > 1.5 && r.top < vh) {
         var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson'));
+        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson, .section-band'));
       }
       el.classList.toggle('is-under-band', under);
     });
@@ -243,54 +300,97 @@
     );
     if (sortBtn) sortBtn.click();
   }
+  // THE LEDGER FILTERED (2026-09-17): #section=<essays|postscript|contra>
+  // (the front page's OPS words) or #topic=<kicker> (the categories)
+  // hides every row that is not of that kind, and the page lands on the
+  // column head, pinned at the top with the kind's rows under it. The
+  // hash is read again if it changes in place.
+  var readHash = function () {
+    var hp = {};
+    location.hash.slice(1).split('&').forEach(function(kv){
+      var eq = kv.indexOf('=');
+      if (eq > 0) hp[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1)).toLowerCase();
+    });
+    return hp;
+  };
+  var filtered = false;
+  function applyFilter() {
+    var hp = readHash();
+    var sec = hp.section || '', topic = hp.topic || '';
+    filtered = !!(sec || topic);
+    items.forEach(function(it){
+      var show = (!sec || it.getAttribute('data-section') === sec)
+        && (!topic || it.getAttribute('data-kicker') === topic);
+      it.classList.toggle('is-filtered-out', !show);
+    });
+    fitMast();
+  }
+  applyFilter();
+  addEventListener('hashchange', function () { applyFilter(); land(); requestAnimationFrame(land); });
+
+  var target = null;
   if (hashParams.post) {
-    var target = null;
     items.forEach(function(it){
       if (it.getAttribute('data-slug') === hashParams.post) target = it;
     });
-    if (target) {
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      target.classList.add('is-target');
-      var jumpPoll = null;
-      function cancelJumpPoll() {
-        if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
-      }
-      function jumpToTarget() {
-        if (document.documentElement.clientHeight > 0) {
-          cancelJumpPoll();
-          // Centred in the room UNDER the stuck word, not in the
-          // viewport — centred in the viewport, the row lands under
-          // the mast and only the plate's foot shows.
-          var headEl = document.querySelector('.ledger-head');
-          var mastH = headEl ? headEl.offsetHeight : 0;
-          var tr = target.getBoundingClientRect();
-          var room = document.documentElement.clientHeight - mastH;
-          var y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
-          window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
-          return;
-        }
-        if (jumpPoll != null) return;
-        ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
-          addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
-        });
-        jumpPoll = setInterval(function () {
-          if (document.documentElement.clientHeight > 0) {
-            fitMast();
-            jumpToTarget();
-          }
-        }, 300);
-      }
-      jumpToTarget();
-      if (document.readyState === 'complete') {
-        requestAnimationFrame(jumpToTarget);
+    if (target) target.classList.add('is-target');
+  }
+  // THE LANDING: on the named row, centred in the room under the
+  // pinned head; or, filtered with no row named, on the head itself.
+  // The page's blocks are fitted as the fonts arrive, so the landing
+  // is re-taken for a while until the reader moves.
+  var jumpPoll = null;
+  function cancelJumpPoll() {
+    if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
+  }
+  function land() {
+    if (!target && !filtered) return;
+    if (document.documentElement.clientHeight > 0) {
+      cancelJumpPoll();
+      var headEl = document.querySelector('.ledger-head');
+      var mastH = headEl ? headEl.offsetHeight : 0;
+      var y;
+      if (target) {
+        var tr = target.getBoundingClientRect();
+        var room = document.documentElement.clientHeight - mastH;
+        y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
       } else {
-        addEventListener('load', function () {
-          requestAnimationFrame(jumpToTarget);
-        });
+        y = headEl ? window.scrollY + headEl.getBoundingClientRect().top : 0;
       }
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(jumpToTarget);
-      }
+      window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+      return;
     }
+    if (jumpPoll != null) return;
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
+    });
+    jumpPoll = setInterval(function () {
+      if (document.documentElement.clientHeight > 0) {
+        fitMast();
+        land();
+      }
+    }, 300);
+  }
+  if (target || filtered) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    land();
+    if (document.readyState === 'complete') {
+      requestAnimationFrame(land);
+    } else {
+      addEventListener('load', function () { requestAnimationFrame(land); });
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(land);
+    }
+    // The feature block's cards are fitted a while after the fonts;
+    // the landing is re-taken on each until the reader moves.
+    var settle = 0;
+    var settleTimer = setInterval(function () {
+      land();
+      if (++settle >= 8) clearInterval(settleTimer);
+    }, 250);
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      addEventListener(ev, function () { clearInterval(settleTimer); }, { once: true, passive: true });
+    });
   }
 })();
