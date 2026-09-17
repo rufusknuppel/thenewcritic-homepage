@@ -3095,15 +3095,39 @@
       }
       b.classList.toggle('is-under-wordmark', overWm);
     });
+    // (The masthead's foot rule no longer waits on a class: the seam
+    // under the field is a sticky 1px element of its own, .head-seam,
+    // that rides up with the field and pins under the band — the
+    // scroll handler ran a frame behind the compositor, and the
+    // handoff showed two lines for that frame.)
+    // THE REPRINT CARRIES THE BAND'S FOOT RULE UP AS IT OVERTAKES IT:
+    // rising over the pinned band from the foot up, its top edge is
+    // the seam between the band's blue and its own charcoal, and it
+    // draws the line there — moving up with it — until it pins on the
+    // screen's top and the band is covered whole, where the line goes.
+    var rep = document.querySelector('.page-rows > .reprint');
+    var repBand = document.querySelector('.page-rows > .section-band');
+    if (rep && repBand) {
+      var rr = rep.getBoundingClientRect();
+      var bb = repBand.getBoundingClientRect();
+      rep.classList.toggle('is-at-top', rr.top <= 0.5 && rr.bottom > 0.5);
+      rep.classList.toggle('is-under-band', rr.top > 0.5 && rr.top < bb.bottom - 0.5);
+    }
     // NO RULE IS PINNED TO THE TOP OF THE SITE. The OPS banners
     // (SUBSCRIBE, EVENTS, STORE, the closing stack) are sticky too
     // and carry a 1px rule along their top edge; pinned on the
     // viewport's edge that rule would stand on the screen's own
     // line, so the banner drops it there, as the bands do.
+    // THE SCREEN'S TOP IS THE PINNED BAND'S FOOT NOW: the band holds
+    // through the whole site, so a banner is "at the top" when it
+    // stands directly under the band — the closing deck pins there —
+    // and drops its top rule against the band's foot rule.
+    var pinned = document.querySelector('.page-rows > .section-band');
+    var topLine = pinned ? pinned.getBoundingClientRect().bottom : 0;
     [].forEach.call(document.querySelectorAll('.movement > .page-banner'), function (b) {
       var r = b.getBoundingClientRect();
       if (!r.height) return;
-      b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      b.classList.toggle('is-at-top', r.top <= topLine + 0.5 && r.bottom > topLine + 0.5);
       // THE BANNER'S TOP RULE IS THE BAND'S FOOT RULE, CARRIED UP. A
       // banner rising over the pinned band covers it from the foot up;
       // the band's foot rule goes under first, so the banner's own top
@@ -3211,11 +3235,30 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    // THE BANNERS' WORDS REACH HALFWAY INTO THE MARGINS: the page's
+    // 72 at each side, less half — the ink opens and closes 36 from
+    // the edges, spreading 50% further out than every row it stands
+    // between. (fillNameBand's own default is the same 36 now, so the
+    // masthead and the reprint read it too; stated here regardless.)
+    var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
+    // EVERY NAME BLOCK STANDS IN THE PAGE'S 72, over the caps and under
+    // the feet alike — the words, the masthead and the reprint. (They
+    // stood in a doubled 144 on one side or the other for a while.)
+    var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
-      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: BANNER_AIR });
+      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: WORD_AIR, airBottom: BANNER_AIR, side: BANNER_SIDE });
     });
+    // The reprint stands in the same doubled air as the words (the
+    // masthead too, fitMastheadFill), so the foot field — a viewport
+    // less the band and the masthead's height — still closes the page
+    // on the colophon band exactly.
+    // THE REPRINT: the same 72 over and under. Its height is its own
+    // token (--reprint-h), read by the foot field so the last screen
+    // closes on the colophon band whatever the two blocks measure.
     [].forEach.call(document.querySelectorAll('.reprint'), function (band) {
-      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR });
+      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR, airBottom: BANNER_AIR });
+      var rh = band.getBoundingClientRect().height;
+      if (rh) document.documentElement.style.setProperty('--reprint-h', Math.round(rh) + 'px');
     });
   }
   // THE WORDMARK'S INK TOUCHES BOTH EDGES OF THE SITE. Measured, not
@@ -3244,44 +3287,52 @@
     // to the font's boxes, which on a display face hang well past what
     // prints.
     var AIR = (opts && opts.air) || 48;
+    // THE AIR UNDER THE FEET may differ from the air over the caps: the
+    // words and the masthead close on their ink now (0), the reprint
+    // alone keeps the full measure below (the default: the same AIR).
+    var AIR_B = (opts && opts.airBottom != null) ? opts.airBottom : AIR;
     name.style.fontSize = '';
     name.style.transform = 'none';
     name.style.marginTop = '';
     name.style.letterSpacing = '';
     wm.style.height = '';
-    // THE INK KEEPS THE PAGE'S OWN 72 at each side — the measure every
-    // row and every band on the page opens and closes on (48, grown by
-    // half) — rather than bleeding off the edges.
-    var SIDE = 72;
-    var vw = document.documentElement.clientWidth - SIDE * 2;
+    // TWO MEASURES. The SIZE is fitted to the page's own 72 at each
+    // side — the measure every row and every band on the page opens
+    // and closes on (48, grown by half) — exactly as it always was.
+    // The INK then reaches halfway into that margin, 36 from each
+    // edge, by TRACKING: the letters are spaced out over the wider
+    // span, the size untouched. (A caller may ask for other insets.)
+    var SIDE = (opts && opts.side != null) ? opts.side : 72; // ink tracked to 72 from each edge, on the cards' line
+    var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
+    var cw = document.documentElement.clientWidth;
+    var vw = cw - SIDE * 2;
+    var vwSize = cw - SIZE_SIDE * 2;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
-    if (!s0 || !vw) return;
+    if (!s0 || !vw || !vwSize) return;
     var i0 = inkSpanOf(name);
     if (!i0) return;
     var w0 = i0.right - i0.left;
     if (!(w0 > 0)) return;
-    var fitted = s0 * vw / w0;
+    var fitted = s0 * vwSize / w0;
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
-    // A CAPPED WORD KEEPS THE HEADER'S MEASURE BY TRACKING: the letters
-    // are spaced out until the ink runs from 48 to 48, the way the
-    // banners always read — the size is the masthead's, the span is
-    // the page's. (CSS lays a space after EVERY letter, the last one
-    // included, so the ink grows by only n-1 of them.)
-    if (capped) {
-      // Every character opens a gap, the word space between two words
-      // included (ARCHIVE ABOUT), so n counts the trimmed string whole.
-      var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
-      var n = word.length;
-      var ink1 = i1.right - i1.left;
-      if (n > 1 && vw > ink1) {
-        name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
-        i1 = inkSpanOf(name) || i1;
-      }
+    // EVERY WORD REACHES ITS SPAN BY TRACKING: the letters are spaced
+    // out until the ink runs from 36 to 36 — the masthead and the
+    // reprint from the size the 72 measure gave them, a capped banner
+    // from the masthead's own. (CSS lays a space after EVERY letter,
+    // the last one included, so the ink grows by only n-1 of them.)
+    // Every character opens a gap, the word space between two words
+    // included (ARCHIVE ABOUT), so n counts the trimmed string whole.
+    var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
+    var n = word.length;
+    var ink1 = i1.right - i1.left;
+    if (n > 1 && vw > ink1) {
+      name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
+      i1 = inkSpanOf(name) || i1;
     }
     name.style.transform = 'translateX(' + (wb.left + SIDE - i1.left).toFixed(2) + 'px)';
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
@@ -3345,7 +3396,7 @@
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
     // THE BAND CLOSES 48 UNDER THE FEET, as it opens 48 over the caps.
-    wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR)) + 'px';
+    wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
     return { wb: wb, inkBottom: inkBottom };
   }
   function fitMastheadFill() {
@@ -3353,10 +3404,10 @@
     if (!name) return;
     var wm = name.closest('.topbar-wordmark') || name.parentElement;
     // THE HEADER'S WORDMARK KEEPS THE PAGE'S 72 like every other banner
-    // (the foot's reprint already does) — over the ink and under it,
-    // and the masthead line slots into that same 72 under the feet.
+    // — over the ink and under it.
     var AIR = 72;
-    var f = fillNameBand(name, wm, { air: AIR });
+    var AIR_B = 72;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B });
     if (!f) return;
     var wb = f.wb, inkBottom = f.inkBottom;
     // The block ends ON the ink's foot, one pixel of allowance under
@@ -3370,7 +3421,7 @@
     // caps; the line stands in the charcoal below it, centred in its
     // own 48.
     var band = document.querySelector('.dek-band--masthead');
-    var wmH = Math.max(0, inkBottom - wb.top + AIR);
+    var wmH = Math.max(0, inkBottom - wb.top + AIR_B);
     if (band) {
       // THE STRIP IS THE BAND'S OWN, ahead of time: the same height and
       // the same middle box, so when the section band rides up over it
@@ -3399,7 +3450,11 @@
       });
     }
     wm.style.height = Math.round(wmH) + 'px';
-    document.documentElement.style.setProperty('--masthead-h', wmH.toFixed(2) + 'px');
+    // THE TOKEN IS THE BLOCK'S OWN ROUNDED HEIGHT, not the measured
+    // fraction: the head field is a viewport less the band and this,
+    // and a fraction here put the wordmark's foot a hair past the fold
+    // — and the first row's rule a hair inside it.
+    document.documentElement.style.setProperty('--masthead-h', Math.round(wmH) + 'px');
   }
   // A line's TRUE ink edges, read from layout: the first and last
   // characters' own boxes give the glyph origins, and the face's
@@ -4238,7 +4293,10 @@
   // is exactly as tall as its whole rows and --plate-h / --pic-h-open
   // move by the same amount. (A plate with one paragraph has no gap to
   // give it to and falls back to half above, half below.)
-  var PLATE_INNER_GAP = 36;
+  // 24 NOW, THE OUTER STEPS' OWN: the courier lines stand the same 24
+  // off the body's ink as they stand off the plate's edges (they held
+  // 36, a half more, for a while).
+  var PLATE_INNER_GAP = 24;
   function seatPlateAir() {
     [].forEach.call(document.querySelectorAll(
       '.latest-cell--ps .latest-plate, .latest-cell--contra .latest-plate, .duo-half--mega .card-preview-block'),
@@ -4283,11 +4341,11 @@
         // unfilled remainder at this point and would put it into C.
         var A = head ? (pinAt(head, true) - capAscent(head)) - bb.top : null;
         var D = padB + (more.getBoundingClientRect().bottom - pinAt(more, false));
-        // THE TWO INNER STEPS STAND 36 OF INK — kicker baseline to the
-        // first line's cap, last baseline to CLOSE PREVIEW's cap — a
-        // half more than the outer 24s the paddings print (A and D).
-        // The stylesheet's margins on the two courier lines carry the
-        // same 36 as a budget for the cut; this seats it exactly.
+        // THE TWO INNER STEPS STAND 24 OF INK — kicker baseline to the
+        // first line's cap, last baseline to CLOSE PREVIEW's cap — the
+        // same as the outer 24s the paddings print (A and D). The
+        // stylesheet's margins on the two courier lines carry the same
+        // 24 as a budget for the cut; this seats it exactly.
         var INNER = PLATE_INNER_GAP;
         if (head && A !== null && isFinite(A)) {
           var b = (pinAt(paras[0], true) - capAscent(paras[0])) - pinAt(head, false);

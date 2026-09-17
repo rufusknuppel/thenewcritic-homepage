@@ -15,25 +15,44 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtuaiuvf">
-<style>html.fonts-loading body{opacity:0}</style>
+<link rel="stylesheet" href="style.css?v=mu56682h">
+<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   root.classList.add('fonts-loading');
-  var done = function () { root.classList.remove('fonts-loading'); };
+  var shown = false;
+  // The reveal waits two frames past the fonts so the fitters (which
+  // run on fonts.ready) have already set the wordmark and the field;
+  // the page then fades up over the charcoal ground, and the blue
+  // overscroll ground comes on once the fade is done.
+  var go = function () {
+    if (shown) return;
+    shown = true;
+    var lifted = false;
+    var lift = function () {
+      if (lifted) return;
+      lifted = true;
+      root.classList.remove('fonts-loading');
+      setTimeout(function () { root.classList.add('page-shown'); }, 400);
+    };
+    requestAnimationFrame(function () { requestAnimationFrame(lift); });
+    // A hidden tab runs no frames; lift on a timer there so the page
+    // is never left held when the tab is shown.
+    setTimeout(lift, 250);
+  };
   var f = document.fonts;
-  if (!f || !f.load) { done(); return; }
-  Promise.race([
-    Promise.all([
-      f.load('700 100px "OPS Placard"'),
-      f.load('400 100px garamond-premier-pro'),
-      f.load('italic 400 100px garamond-premier-pro'),
-      f.load('400 100px trajan-pro-3'),
-      f.load('700 100px trajan-pro-3')
-    ]),
-    new Promise(function (r) { setTimeout(r, 800); })
-  ]).then(done, done);
+  if (!f || !f.load) { go(); return; }
+  Promise.all([
+    f.load('700 100px "OPS Placard"'),
+    f.load('400 100px garamond-premier-pro'),
+    f.load('italic 400 100px garamond-premier-pro'),
+    f.load('400 100px trajan-pro-3'),
+    f.load('700 100px trajan-pro-3')
+  ]).then(function () { return f.ready; }).then(go, go);
+  // A slow or dead font host degrades to a fallback paint and one
+  // refit rather than a blank page.
+  setTimeout(go, 1000);
 })();
 </script>
 <script>
@@ -80,7 +99,7 @@
     <section class="card card--duo card--split card--mega">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/pdoom" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!uRkh!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 480w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 800w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!uRkh!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 480w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 800w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -116,7 +135,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!iaVB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!iaVB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 480w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 800w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!iaVB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!iaVB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 480w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 800w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!iaVB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc0670d60-5aed-45a3-9776-3adab4a43cb7_1356x1629.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -133,7 +152,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!NHLP!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic" srcset="https://substackcdn.com/image/fetch/$s_!NHLP!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 480w, https://substackcdn.com/image/fetch/$s_!NHLP!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 800w, https://substackcdn.com/image/fetch/$s_!NHLP!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 1200w, https://substackcdn.com/image/fetch/$s_!NHLP!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!NHLP!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic" srcset="https://substackcdn.com/image/fetch/$s_!NHLP!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 480w, https://substackcdn.com/image/fetch/$s_!NHLP!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 800w, https://substackcdn.com/image/fetch/$s_!NHLP!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 1200w, https://substackcdn.com/image/fetch/$s_!NHLP!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F414957de-e59c-4346-adb6-b9eb73d906b4_2981x2102.heic 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -152,7 +171,7 @@
     <section class="card card--duo card--split card--mega card--mega-rev">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/freak-show" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 480w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 800w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 480w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 800w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -214,11 +233,20 @@
     </div>
   <section class="ledger" aria-label="Every post">
     <div class="ledger-body">
-  <div class="ledger-item" data-title="jasmine sun’s project of self‑transformation" data-author="jasmine sun" data-date="1787169236073" data-kicker="becoming a tech reporter" data-section="postscript" data-slug="jasmine-suns-project-of-self-transformation">
+  <div class="ledger-item" data-title="mrbeast, slop auteur" data-author="will diana" data-date="1789583977861" data-kicker="youtube artistry" data-section="essays" data-slug="mrbeast-slop-auteur">
+    <a class="ledger-row" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener">
+      <span class="ledger-cell lc-title">MrBeast, Slop Auteur</span>
+      <span class="ledger-cell lc-author">Will Diana</span>
+      <span class="ledger-cell lc-kicker">YouTube Artistry</span>
+      <span class="ledger-cell lc-section">Essays</span>
+      <span class="ledger-cell lc-date">Sep 16, 2026</span>
+    </a>
+  </div>
+  <div class="ledger-item" data-title="jasmine sun’s project of self-transformation" data-author="jasmine sun" data-date="1787169236073" data-kicker="" data-section="postscript" data-slug="jasmine-suns-project-of-self-transformation">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener">
-      <span class="ledger-cell lc-title">Jasmine Sun’s Project of Self‑Transformation</span>
+      <span class="ledger-cell lc-title">Jasmine Sun’s Project of Self-Transformation</span>
       <span class="ledger-cell lc-author">Jasmine Sun</span>
-      <span class="ledger-cell lc-kicker">Becoming a Tech Reporter</span>
+      <span class="ledger-cell lc-kicker"></span>
       <span class="ledger-cell lc-section">Postscript</span>
       <span class="ledger-cell lc-date">Aug 19, 2026</span>
     </a>
@@ -232,11 +260,11 @@
       <span class="ledger-cell lc-date">Aug 12, 2026</span>
     </a>
   </div>
-  <div class="ledger-item" data-title="present at the creation" data-author="theo jaffee" data-date="1786384123995" data-kicker="monitoring the situation" data-section="postscript" data-slug="present-at-the-creation">
+  <div class="ledger-item" data-title="present at the creation" data-author="theo jaffee" data-date="1786384123995" data-kicker="" data-section="postscript" data-slug="present-at-the-creation">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/present-at-the-creation" rel="noopener">
       <span class="ledger-cell lc-title">Present at the Creation</span>
       <span class="ledger-cell lc-author">Theo Jaffee</span>
-      <span class="ledger-cell lc-kicker">Monitoring the Situation</span>
+      <span class="ledger-cell lc-kicker"></span>
       <span class="ledger-cell lc-section">Postscript</span>
       <span class="ledger-cell lc-date">Aug 10, 2026</span>
     </a>
@@ -419,6 +447,15 @@
       <span class="ledger-cell lc-kicker">Ranch University</span>
       <span class="ledger-cell lc-section">Postscript</span>
       <span class="ledger-cell lc-date">May 30, 2026</span>
+    </a>
+  </div>
+  <div class="ledger-item" data-title="american berserk" data-author="samuel rigg" data-date="1779998933931" data-kicker="an englishman goes south" data-section="essays" data-slug="american-berserk">
+    <a class="ledger-row" href="https://www.thenewcritic.com/p/american-berserk" rel="noopener">
+      <span class="ledger-cell lc-title">American Berserk</span>
+      <span class="ledger-cell lc-author">Samuel Rigg</span>
+      <span class="ledger-cell lc-kicker">An Englishman Goes South</span>
+      <span class="ledger-cell lc-section">Essays</span>
+      <span class="ledger-cell lc-date">May 28, 2026</span>
     </a>
   </div>
   <div class="ledger-item" data-title="not new york" data-author="declan rexer" data-date="1779824522490" data-kicker="postgraduate exodus" data-section="essays" data-slug="not-new-york">
@@ -1028,7 +1065,7 @@
   </section>
   <nav class="ledger-band ledger-band--foot" aria-label="Colophon">
     <p class="ledger-slot ledger-slot--left"><span>Est. May 2025</span></p>
-    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic Inc.</span></p>
+    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic, Inc.</span></p>
     <p class="ledger-slot ledger-slot--right"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>
   <div class="ledger-field" aria-hidden="true"></div>
@@ -2988,10 +3025,20 @@
       }
       b.classList.toggle('is-under-wordmark', overWm);
     });
+    var rep = document.querySelector('.page-rows > .reprint');
+    var repBand = document.querySelector('.page-rows > .section-band');
+    if (rep && repBand) {
+      var rr = rep.getBoundingClientRect();
+      var bb = repBand.getBoundingClientRect();
+      rep.classList.toggle('is-at-top', rr.top <= 0.5 && rr.bottom > 0.5);
+      rep.classList.toggle('is-under-band', rr.top > 0.5 && rr.top < bb.bottom - 0.5);
+    }
+    var pinned = document.querySelector('.page-rows > .section-band');
+    var topLine = pinned ? pinned.getBoundingClientRect().bottom : 0;
     [].forEach.call(document.querySelectorAll('.movement > .page-banner'), function (b) {
       var r = b.getBoundingClientRect();
       if (!r.height) return;
-      b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      b.classList.toggle('is-at-top', r.top <= topLine + 0.5 && r.bottom > topLine + 0.5);
       var overBand = false;
       if (r.top > 1.5 && r.top < vh) {
         var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
@@ -3066,45 +3113,51 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
+    var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
-      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: BANNER_AIR });
+      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: WORD_AIR, airBottom: BANNER_AIR, side: BANNER_SIDE });
     });
     [].forEach.call(document.querySelectorAll('.reprint'), function (band) {
-      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR });
+      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR, airBottom: BANNER_AIR });
+      var rh = band.getBoundingClientRect().height;
+      if (rh) document.documentElement.style.setProperty('--reprint-h', Math.round(rh) + 'px');
     });
   }
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
     var AIR = (opts && opts.air) || 48;
+    var AIR_B = (opts && opts.airBottom != null) ? opts.airBottom : AIR;
     name.style.fontSize = '';
     name.style.transform = 'none';
     name.style.marginTop = '';
     name.style.letterSpacing = '';
     wm.style.height = '';
-    var SIDE = 72;
-    var vw = document.documentElement.clientWidth - SIDE * 2;
+    var SIDE = (opts && opts.side != null) ? opts.side : 72; // ink tracked to 72 from each edge, on the cards' line
+    var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
+    var cw = document.documentElement.clientWidth;
+    var vw = cw - SIDE * 2;
+    var vwSize = cw - SIZE_SIDE * 2;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
-    if (!s0 || !vw) return;
+    if (!s0 || !vw || !vwSize) return;
     var i0 = inkSpanOf(name);
     if (!i0) return;
     var w0 = i0.right - i0.left;
     if (!(w0 > 0)) return;
-    var fitted = s0 * vw / w0;
+    var fitted = s0 * vwSize / w0;
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
-    if (capped) {
-      var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
-      var n = word.length;
-      var ink1 = i1.right - i1.left;
-      if (n > 1 && vw > ink1) {
-        name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
-        i1 = inkSpanOf(name) || i1;
-      }
+    var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
+    var n = word.length;
+    var ink1 = i1.right - i1.left;
+    if (n > 1 && vw > ink1) {
+      name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
+      i1 = inkSpanOf(name) || i1;
     }
     name.style.transform = 'translateX(' + (wb.left + SIDE - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
@@ -3149,7 +3202,7 @@
     var fr2 = rg2.getBoundingClientRect();
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
-    wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR)) + 'px';
+    wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
     return { wb: wb, inkBottom: inkBottom };
   }
   function fitMastheadFill() {
@@ -3157,11 +3210,12 @@
     if (!name) return;
     var wm = name.closest('.topbar-wordmark') || name.parentElement;
     var AIR = 72;
-    var f = fillNameBand(name, wm, { air: AIR });
+    var AIR_B = 72;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B });
     if (!f) return;
     var wb = f.wb, inkBottom = f.inkBottom;
     var band = document.querySelector('.dek-band--masthead');
-    var wmH = Math.max(0, inkBottom - wb.top + AIR);
+    var wmH = Math.max(0, inkBottom - wb.top + AIR_B);
     if (band) {
       var sect = document.querySelector('.section-band');
       var bandH = band.children.length ? (sect ? sect.getBoundingClientRect().height : 72) : 0;
@@ -3183,7 +3237,7 @@
       });
     }
     wm.style.height = Math.round(wmH) + 'px';
-    document.documentElement.style.setProperty('--masthead-h', wmH.toFixed(2) + 'px');
+    document.documentElement.style.setProperty('--masthead-h', Math.round(wmH) + 'px');
   }
   function inkPieces(el) {
     var out = [];
@@ -3664,7 +3718,7 @@
            [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
     });
   }
-  var PLATE_INNER_GAP = 36;
+  var PLATE_INNER_GAP = 24;
   function seatPlateAir() {
     [].forEach.call(document.querySelectorAll(
       '.latest-cell--ps .latest-plate, .latest-cell--contra .latest-plate, .duo-half--mega .card-preview-block'),

@@ -339,31 +339,33 @@ function normalizeTagPost(p) {
 // publication regardless of any `tag` query param — and bucket each post
 // ourselves using its real `postTags`. This gets every post, not just the
 // first page.
-const ARCHIVE_API_PAGE_SIZE = 24;
+// PAGE SIZE 12, AND THE OFFSET ADVANCES BY WHAT CAME BACK. Asked for 24
+// (or anything larger) the API answers the first page one short — 23
+// posts — and a fixed-stride offset of 24 then skipped the 24th-newest
+// post outright (Voluntary Oasis went missing this way, 2026-09-16).
+// Pages of 12 come back full, and stepping the offset by the count
+// actually received means a short page can never open a gap.
+const ARCHIVE_API_PAGE_SIZE = 12;
 
 async function fetchFullArchive() {
   const all = [];
-  const MAX_PAGES = 50;
-  const WINDOW = 3; // fetch up to 3 pages concurrently
-  let pageIndex = 0;
-  let done = false;
-
-  while (!done && pageIndex < MAX_PAGES) {
-    const batch = [];
-    for (let w = 0; w < WINDOW && pageIndex + w < MAX_PAGES; w++) {
-      const offset = (pageIndex + w) * ARCHIVE_API_PAGE_SIZE;
-      const url = `${SITE_URL}/api/v1/archive?sort=new&offset=${offset}&limit=${ARCHIVE_API_PAGE_SIZE}`;
-      batch.push(fetchHtml(url));
+  const seen = new Set();
+  const MAX_PAGES = 100;
+  let offset = 0;
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const url = `${SITE_URL}/api/v1/archive?sort=new&offset=${offset}&limit=${ARCHIVE_API_PAGE_SIZE}`;
+    const json = await fetchHtml(url);
+    if (!json) break;
+    let items;
+    try { items = JSON.parse(json); } catch { break; }
+    if (!Array.isArray(items) || items.length === 0) break;
+    for (const p of items) {
+      const key = p.canonical_url || p.slug || p.id;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      all.push(p);
     }
-    const results = await Promise.all(batch);
-    for (const json of results) {
-      if (!json) { done = true; break; }
-      let page;
-      try { page = JSON.parse(json); } catch { done = true; break; }
-      if (!Array.isArray(page) || page.length === 0) { done = true; break; }
-      all.push(...page);
-    }
-    pageIndex += batch.length;
+    offset += items.length;
   }
   return all;
 }
@@ -495,7 +497,16 @@ function focalStyle(post) {
 // a 218KB cover came back at 25KB).
 function cdnVariant(url, w) {
   const m = /^(https:\/\/substackcdn\.com\/image\/fetch\/)([^/]+)(\/.+)$/.exec(url);
-  if (!m) return null;
+  if (!m) {
+    // A cover the API hands over as the raw S3 upload (four posts as of
+    // 2026-09-16; one is the 3839px original at 5.5MB) goes through the
+    // same CDN fetch route, which takes the S3 URL as its source and
+    // serves the sized, progressive variant like every other cover.
+    if (/^https:\/\/substack-post-media\.s3\.amazonaws\.com\//.test(url)) {
+      return `https://substackcdn.com/image/fetch/w_${w},c_limit,f_auto,q_auto:good,fl_progressive:steep/${encodeURIComponent(url)}`;
+    }
+    return null;
+  }
   const params = m[2].split(',');
   params.splice(params[0].startsWith('$') ? 1 : 0, 0, `w_${w}`, 'c_limit');
   return `${m[1]}${params.join(',')}${m[3]}`;
@@ -1245,7 +1256,7 @@ function renderSectionBand(m) {
 function renderColophonBand() {
   return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     ${bandName('<span>Est. May 2025</span>')}
-    <p class="band-deks band-dek"><span>Copyright The New Critic Inc.</span></p>
+    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>`;
 }
@@ -1468,7 +1479,10 @@ function artBoxHtml(post, side = 'right') {
 // fallback if that fetch didn't run.
 function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) {
   const dekHtml = post.subtitle ? `<p class="card-dek">${escapeHtml(truncate(post.subtitle, dekLength))}</p>` : '';
-  const imgAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+  // Covers always load — never lazily — so a preview never slides open on
+  // an empty picture; the ones past the fold go at low priority so the
+  // first screen's type and styles come first.
+  const imgAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="eager" fetchpriority="low"';
 
   const previewParas = post.previewParagraphs && post.previewParagraphs.length
     ? post.previewParagraphs
@@ -1794,7 +1808,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
-          ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
+          ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
           ${cornersHtml}
@@ -1996,7 +2010,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   const courierHead = () => `<p class="latest-courier"></p>
         <div class="latest-rule"></div>`;
   const coverImg = (post) => post.image
-    ? `<img class="card-image" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="lazy" decoding="async">`
+    ? `<img class="card-image" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">`
     : '';
   // THE PLATE, the card's covered body text: on hover the artwork
   // slides over the title/dek matter and this stands revealed where
@@ -2104,7 +2118,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // visitor sees — preloaded the way the old hero was.
   const lead = essays[0];
   const leadPreload = lead?.image
-    ? `<link rel="preload" as="image" ${coverSrcAttrs(lead.image, COVER_SIZES.wide, { preload: true })} fetchpriority="high">`
+    ? `<link rel="preload" as="image" ${coverSrcAttrs(lead.image, COVER_SIZES.wide, { preload: true })}>`
     : '';
 
   // The homepage grid, top to bottom — no separate hero card. Every
@@ -2161,6 +2175,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   blocks.push(renderLatestRow(postscripts[0], contras[0]));
+  // SUBSCRIBE UNDER THE FIRST ROW: the word in the sections' own
+  // dress — white Placard on the charcoal, spanning the measure, in
+  // the flow — standing straight under the latest row inside the
+  // first movement, not opening one (the .ops-word class keeps it out
+  // of the movement loop's banner test; it stands in the body between
+  // the rows, no wrap and no divider around it, the next row opening
+  // 72 under its feet as under any section word).
+  blocks.push(renderBanner({ word: 'Subscribe', href: `${SITE_URL}/subscribe`, modifier: 'subscribe-word' }).replace('class="page-banner', 'class="ops-word page-banner'));
   // The SECOND essay as a mirrored hero inside the first movement —
   // cover left, ground right — then the next postscript/contra pair
   // MIRRORED too: contra left, postscript right with its text in the
@@ -2182,15 +2204,16 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // THE SECOND MOVEMENT, under the band: the next essay as a
   // MIRRORED hero (cover left, ground right, labelled Essay), then
   // the next contra/postscript pair mirrored the same way.
-  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true }));
-  // The essays run on under it, ALTERNATING — base, mirrored, base,
-  // mirrored — all carrying the second movement's seat. essays[0] and
-  // [1] are spent in the first movement, so this movement reads from
-  // [2] and repeats nothing.
-  blocks.push(renderMegaHero(essays[3], { label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[5], { label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true }));
+  // THE ESSAYS OPEN ON THE BASE BUILD — title column LEFT, cover
+  // right, as the page's own hero — and alternate from there: base,
+  // mirrored, base, mirrored, base. essays[0] and [1] are spent in the
+  // first movement, so this movement reads from [2] and repeats
+  // nothing.
+  blocks.push(renderMegaHero(essays[2], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[4], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[6], { label: 'Essays', m2: true }));
   // EVENTS closes the essays — the word alone, like STORE.
   blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band' }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
@@ -2244,7 +2267,25 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // BANNERS PLAY THE HEADER'S OPENING in style.css): the page's own
   // gutters are transparent, and a banner pinned beneath them showed
   // through every strip between two cards.
-  const openMovement = (m) => { duoHtml += `\n  <div class="movement m--${m}">\n  ${renderSectionBand(m)}\n  <div class="movement-body">`; open = true; };
+  // THE HEADER TURNED OVER: the first movement opens on its band —
+  // pinned to the screen's top from the first pixel — then the blue
+  // field, then the wordmark in the flow under both, its foot on the
+  // fold. Scrolling, the field shrinks under the pinned band until it
+  // is gone, and the wordmark then passes under the band the way every
+  // row does (see THE HEADER TURNED OVER in style.css). The wordmark
+  // is the site header itself, moved here from the top of the body.
+  // ONE BAND FOR THE WHOLE SITE. The masthead's band stands in
+  // .page-rows AHEAD of the first movement, so its sticky box is the
+  // page itself: pinned to the screen's top from the first pixel to
+  // the last screen, where the reprint overtakes it. The sections
+  // carry no band of their own any more (and no field): their words
+  // pass under this one the way the wordmark does.
+  const openMovement = (m) => {
+    const head = m === 'latest'
+      ? `\n  ${renderSectionBand(m)}\n  <div class="head-seam" aria-hidden="true"></div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
+      : `\n  <div class="movement m--${m}">`;
+    duoHtml += `${head}\n  <div class="movement-body">`; open = true;
+  };
   // EVERY MOVEMENT CLOSES ON AN EMPTY BAND — the section band's own
   // charcoal block, 80 tall, full bleed, with nothing in it: 48 under
   // the movement's last row, flush over the banner (or 48 over the
@@ -2255,7 +2296,17 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   const closeMovement = () => { if (open) { duoHtml += '\n  </div>\n  </div>'; open = false; } };
   blocks.forEach((block, i) => {
     const isBanner = /class="page-banner/.test(block);
+    const isWord = /class="ops-word/.test(block);
     const last = i === blocks.length - 1;
+    const nextIsWord = !last && /class="ops-word/.test(blocks[i + 1]);
+    // AN IN-MOVEMENT WORD (SUBSCRIBE): straight into the body, no wrap,
+    // no divider before or after it.
+    if (isWord) {
+      const mw = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
+      if (!open) openMovement(mw);
+      duoHtml += `\n  ${block}`;
+      return;
+    }
     // A BANNER OPENS THE NEXT MOVEMENT, INSIDE IT — the first thing in
     // the container, ahead of the section band — so it can play the
     // header's own opening: the word band STICKS to the viewport's
@@ -2275,7 +2326,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // word's own ground (fitWordSpacers sizes it to the viewport less
       // the word and the band), so the section's band arrives at the
       // fold's foot as the word pins.
-      duoHtml += `\n  <div class="movement m--${m}">\n  ${block}\n  <div class="word-spacer" aria-hidden="true"></div>\n  ${renderSectionBand(m)}\n  <div class="movement-body">`;
+      // (The word's field and the section's own band are struck: the
+      // masthead's band holds through the whole site, and the word
+      // scrolls under it in the flow, its rows 72 under its feet.)
+      duoHtml += `\n  <div class="movement m--${m}">\n  ${block}\n  <div class="movement-body">`;
       open = true;
       return;
     }
@@ -2284,7 +2338,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     duoHtml += `
   <div class="wrap m--${m}">
     ${block}
-  </div>${last ? '' : `\n  <div class="row-divider m--${m}"></div>`}`;
+  </div>${last || nextIsWord ? '' : `\n  <div class="row-divider m--${m}"></div>`}`;
   });
   closeMovement();
   // THE LAST MOVEMENT IS THE PAGE'S CLOSE: it opens on a banner —
@@ -2309,17 +2363,26 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     { word: 'About', href: 'about.html', scheme: 'bw' },
     { word: 'Store', href: `${SITE_URL}/subscribe`, scheme: 'wb' },
     { word: 'Events', href: `${SITE_URL}/subscribe`, scheme: 'bw' },
-    { word: 'Subscribe', href: `${SITE_URL}/subscribe`, scheme: 'wb' },
+    // (SUBSCRIBE left the deck for the first movement, under the
+    // latest row.)
   ];
+  // (THE DECK IS STRUCK: no closing stack — the page goes from the
+  // last review row straight to the reprint. STACK stays declared
+  // against its return.)
+  void STACK;
   duoHtml += `
-  <div class="movement m--colophon">
-  ${STACK.map((b) => renderBanner({ word: b.word, href: b.href, modifier: `stack-band stack-band--${b.scheme}`, spacer: false })).join('\n  ')}
-  ${renderColophonBand()}
-  <!-- THE FOOT FIELD: the head rule's mirror — the charcoal between
-       the colophon and the name, a viewport less the band and the
-       name, so the page closes as it opens, in reverse. -->
+  <!-- THE FOOT IS THE HEAD TURNED OVER: the reprint — THE NEW CRITIC
+       again at full width — rises in the flow, overtakes the pinned
+       band at the screen's top and sticks there; under it the blue
+       field, a viewport less the name and the band; and the colophon
+       band closes the page on the screen's foot (style.css, THE FOOT
+       IS THE HEAD TURNED OVER). -->
+  <section class="reprint">
+    <div class="reprint-rule" aria-hidden="true"></div>
+    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
+  </section>
   <div class="foot-field" aria-hidden="true"></div>
-  </div>`;
+  ${renderColophonBand()}`;
 
   return `<!doctype html>
 <html lang="en">
@@ -2349,7 +2412,10 @@ ${renderImgFadeScript()}
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-${renderHeader()}
+<!-- (The site header — the wordmark — stands INSIDE the first
+     movement now, under its band and the blue field: see
+     openMovement. The head rule and the dek band below stay, empty
+     and flat, because the fitters still measure them.) -->
 
 <!-- THE HEAD RULE: a full-measure divider under the masthead — 48
      from the name's ink to the line, 48 from the line to the hero
@@ -2378,14 +2444,8 @@ ${duoHtml}
   <!-- (The movements' rails are retired: each movement carries its
        section band at its head instead — see renderSectionBand.) -->
 
-  <!-- THE REPRINT: the masthead again at full width, closing the
-       front page — the wordmark's mirror: STUCK to the viewport's
-       bottom under the page (style.css, THE PAGE LIFTS OFF THE
-       REPRINT), so the field and the rows lift away and reveal it. -->
-  <section class="reprint">
-    <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
-  </section>
+  <!-- (The reprint stands inside .page-rows now, at the head of the
+       page's closing screen — see the foot above.) -->
 
   <!-- (The colophon stands in the last section's foot band now —
        renderColophonBand.) -->
@@ -2417,28 +2477,49 @@ ${renderRailFixScript()}
 // before the parser-blocking fitters measure. And until they land the
 // body holds at opacity 0 (opacity, not visibility: layout and every
 // fitter guard behave identically, the frame is simply not shown), so
-// whatever motion remains happens off stage. The race caps the hold at
-// 800ms — a slow or dead font host degrades to the old behaviour, a
+// whatever motion remains happens off stage. The reveal waits two frames
+// past fonts.ready so the fitters have seated the wordmark, then fades
+// the body up over the charcoal ground. The cap holds the wait at
+// 1000ms — a slow or dead font host degrades to the old behaviour, a
 // fallback paint and one refit, rather than a blank page.
 function renderFontGateScript() {
-  return `<style>html.fonts-loading body{opacity:0}</style>
+  return `<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   root.classList.add('fonts-loading');
-  var done = function () { root.classList.remove('fonts-loading'); };
+  var shown = false;
+  // The reveal waits two frames past the fonts so the fitters (which
+  // run on fonts.ready) have already set the wordmark and the field;
+  // the page then fades up over the charcoal ground, and the blue
+  // overscroll ground comes on once the fade is done.
+  var go = function () {
+    if (shown) return;
+    shown = true;
+    var lifted = false;
+    var lift = function () {
+      if (lifted) return;
+      lifted = true;
+      root.classList.remove('fonts-loading');
+      setTimeout(function () { root.classList.add('page-shown'); }, 400);
+    };
+    requestAnimationFrame(function () { requestAnimationFrame(lift); });
+    // A hidden tab runs no frames; lift on a timer there so the page
+    // is never left held when the tab is shown.
+    setTimeout(lift, 250);
+  };
   var f = document.fonts;
-  if (!f || !f.load) { done(); return; }
-  Promise.race([
-    Promise.all([
-      f.load('700 100px "OPS Placard"'),
-      f.load('400 100px garamond-premier-pro'),
-      f.load('italic 400 100px garamond-premier-pro'),
-      f.load('400 100px trajan-pro-3'),
-      f.load('700 100px trajan-pro-3')
-    ]),
-    new Promise(function (r) { setTimeout(r, 800); })
-  ]).then(done, done);
+  if (!f || !f.load) { go(); return; }
+  Promise.all([
+    f.load('700 100px "OPS Placard"'),
+    f.load('400 100px garamond-premier-pro'),
+    f.load('italic 400 100px garamond-premier-pro'),
+    f.load('400 100px trajan-pro-3'),
+    f.load('700 100px trajan-pro-3')
+  ]).then(function () { return f.ready; }).then(go, go);
+  // A slow or dead font host degrades to a fallback paint and one
+  // refit rather than a blank page.
+  setTimeout(go, 1000);
 })();
 </script>`;
 }
@@ -3371,7 +3452,7 @@ function renderWordPage({ currentKey, title, description, word, wordHref, mid, c
   ${deckHtml}
   <nav class="ledger-band ledger-band--foot" aria-label="Colophon">
     <p class="ledger-slot ledger-slot--left"><span>Est. May 2025</span></p>
-    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic Inc.</span></p>
+    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic, Inc.</span></p>
     <p class="ledger-slot ledger-slot--right"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>
   <div class="ledger-field" aria-hidden="true"></div>

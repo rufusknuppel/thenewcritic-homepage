@@ -16,25 +16,44 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mtuaiuvf">
-<style>html.fonts-loading body{opacity:0}</style>
+<link rel="stylesheet" href="style.css?v=mu56682h">
+<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   root.classList.add('fonts-loading');
-  var done = function () { root.classList.remove('fonts-loading'); };
+  var shown = false;
+  // The reveal waits two frames past the fonts so the fitters (which
+  // run on fonts.ready) have already set the wordmark and the field;
+  // the page then fades up over the charcoal ground, and the blue
+  // overscroll ground comes on once the fade is done.
+  var go = function () {
+    if (shown) return;
+    shown = true;
+    var lifted = false;
+    var lift = function () {
+      if (lifted) return;
+      lifted = true;
+      root.classList.remove('fonts-loading');
+      setTimeout(function () { root.classList.add('page-shown'); }, 400);
+    };
+    requestAnimationFrame(function () { requestAnimationFrame(lift); });
+    // A hidden tab runs no frames; lift on a timer there so the page
+    // is never left held when the tab is shown.
+    setTimeout(lift, 250);
+  };
   var f = document.fonts;
-  if (!f || !f.load) { done(); return; }
-  Promise.race([
-    Promise.all([
-      f.load('700 100px "OPS Placard"'),
-      f.load('400 100px garamond-premier-pro'),
-      f.load('italic 400 100px garamond-premier-pro'),
-      f.load('400 100px trajan-pro-3'),
-      f.load('700 100px trajan-pro-3')
-    ]),
-    new Promise(function (r) { setTimeout(r, 800); })
-  ]).then(done, done);
+  if (!f || !f.load) { go(); return; }
+  Promise.all([
+    f.load('700 100px "OPS Placard"'),
+    f.load('400 100px garamond-premier-pro'),
+    f.load('italic 400 100px garamond-premier-pro'),
+    f.load('400 100px trajan-pro-3'),
+    f.load('700 100px trajan-pro-3')
+  ]).then(function () { return f.ready; }).then(go, go);
+  // A slow or dead font host degrades to a fallback paint and one
+  // refit rather than a blank page.
+  setTimeout(go, 1000);
 })();
 </script>
 <script>
@@ -129,7 +148,7 @@
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kfWq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kfWq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -159,7 +178,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!wGxB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 480w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 800w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!wGxB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 480w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 800w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -189,7 +208,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" srcset="https://substackcdn.com/image/fetch/$s_!7T76!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 480w, https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 800w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1200w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" srcset="https://substackcdn.com/image/fetch/$s_!7T76!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 480w, https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 800w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1200w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -224,7 +243,7 @@
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 480w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 800w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 480w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 800w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -254,7 +273,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!DRni!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 480w, https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 800w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!DRni!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 480w, https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 800w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -284,7 +303,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!WbnN!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 480w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 800w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!WbnN!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 480w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 800w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -319,7 +338,7 @@
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">
-          <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -349,7 +368,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kRyn!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kRyn!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -379,7 +398,7 @@
       <div class="duo-half-divider" role="separator"></div>
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">
-          <img class="card-image" src="https://substack-post-media.s3.amazonaws.com/public/images/69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F69037333-e4a1-41d2-890f-cd4d8160c477_4192x2566.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -414,7 +433,7 @@
     <article class="card card--duo card--quad card--quad-open">
       <div class="duo-half duo-half--contra">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/contra" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AIKi!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!AIKi!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 480w, https://substackcdn.com/image/fetch/$s_!AIKi!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 800w, https://substackcdn.com/image/fetch/$s_!AIKi!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!AIKi!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="lazy" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AIKi!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!AIKi!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 480w, https://substackcdn.com/image/fetch/$s_!AIKi!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 800w, https://substackcdn.com/image/fetch/$s_!AIKi!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!AIKi!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0afbaf9e-9bee-4606-b0ff-b1422ba27e7c_4695x3682.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -2401,10 +2420,20 @@
       }
       b.classList.toggle('is-under-wordmark', overWm);
     });
+    var rep = document.querySelector('.page-rows > .reprint');
+    var repBand = document.querySelector('.page-rows > .section-band');
+    if (rep && repBand) {
+      var rr = rep.getBoundingClientRect();
+      var bb = repBand.getBoundingClientRect();
+      rep.classList.toggle('is-at-top', rr.top <= 0.5 && rr.bottom > 0.5);
+      rep.classList.toggle('is-under-band', rr.top > 0.5 && rr.top < bb.bottom - 0.5);
+    }
+    var pinned = document.querySelector('.page-rows > .section-band');
+    var topLine = pinned ? pinned.getBoundingClientRect().bottom : 0;
     [].forEach.call(document.querySelectorAll('.movement > .page-banner'), function (b) {
       var r = b.getBoundingClientRect();
       if (!r.height) return;
-      b.classList.toggle('is-at-top', r.top <= 0.5 && r.bottom > 0.5);
+      b.classList.toggle('is-at-top', r.top <= topLine + 0.5 && r.bottom > topLine + 0.5);
       var overBand = false;
       if (r.top > 1.5 && r.top < vh) {
         var aboveB = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
@@ -2479,45 +2508,51 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
+    var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
-      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: BANNER_AIR });
+      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: WORD_AIR, airBottom: BANNER_AIR, side: BANNER_SIDE });
     });
     [].forEach.call(document.querySelectorAll('.reprint'), function (band) {
-      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR });
+      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR, airBottom: BANNER_AIR });
+      var rh = band.getBoundingClientRect().height;
+      if (rh) document.documentElement.style.setProperty('--reprint-h', Math.round(rh) + 'px');
     });
   }
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
     var AIR = (opts && opts.air) || 48;
+    var AIR_B = (opts && opts.airBottom != null) ? opts.airBottom : AIR;
     name.style.fontSize = '';
     name.style.transform = 'none';
     name.style.marginTop = '';
     name.style.letterSpacing = '';
     wm.style.height = '';
-    var SIDE = 72;
-    var vw = document.documentElement.clientWidth - SIDE * 2;
+    var SIDE = (opts && opts.side != null) ? opts.side : 72; // ink tracked to 72 from each edge, on the cards' line
+    var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
+    var cw = document.documentElement.clientWidth;
+    var vw = cw - SIDE * 2;
+    var vwSize = cw - SIZE_SIDE * 2;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
-    if (!s0 || !vw) return;
+    if (!s0 || !vw || !vwSize) return;
     var i0 = inkSpanOf(name);
     if (!i0) return;
     var w0 = i0.right - i0.left;
     if (!(w0 > 0)) return;
-    var fitted = s0 * vw / w0;
+    var fitted = s0 * vwSize / w0;
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
-    if (capped) {
-      var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
-      var n = word.length;
-      var ink1 = i1.right - i1.left;
-      if (n > 1 && vw > ink1) {
-        name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
-        i1 = inkSpanOf(name) || i1;
-      }
+    var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
+    var n = word.length;
+    var ink1 = i1.right - i1.left;
+    if (n > 1 && vw > ink1) {
+      name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
+      i1 = inkSpanOf(name) || i1;
     }
     name.style.transform = 'translateX(' + (wb.left + SIDE - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
@@ -2562,7 +2597,7 @@
     var fr2 = rg2.getBoundingClientRect();
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
-    wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR)) + 'px';
+    wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
     return { wb: wb, inkBottom: inkBottom };
   }
   function fitMastheadFill() {
@@ -2570,11 +2605,12 @@
     if (!name) return;
     var wm = name.closest('.topbar-wordmark') || name.parentElement;
     var AIR = 72;
-    var f = fillNameBand(name, wm, { air: AIR });
+    var AIR_B = 72;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B });
     if (!f) return;
     var wb = f.wb, inkBottom = f.inkBottom;
     var band = document.querySelector('.dek-band--masthead');
-    var wmH = Math.max(0, inkBottom - wb.top + AIR);
+    var wmH = Math.max(0, inkBottom - wb.top + AIR_B);
     if (band) {
       var sect = document.querySelector('.section-band');
       var bandH = band.children.length ? (sect ? sect.getBoundingClientRect().height : 72) : 0;
@@ -2596,7 +2632,7 @@
       });
     }
     wm.style.height = Math.round(wmH) + 'px';
-    document.documentElement.style.setProperty('--masthead-h', wmH.toFixed(2) + 'px');
+    document.documentElement.style.setProperty('--masthead-h', Math.round(wmH) + 'px');
   }
   function inkPieces(el) {
     var out = [];
@@ -3077,7 +3113,7 @@
            [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
     });
   }
-  var PLATE_INNER_GAP = 36;
+  var PLATE_INNER_GAP = 24;
   function seatPlateAir() {
     [].forEach.call(document.querySelectorAll(
       '.latest-cell--ps .latest-plate, .latest-cell--contra .latest-plate, .duo-half--mega .card-preview-block'),
