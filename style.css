@@ -12903,8 +12903,8 @@ main.has-mega .movement > .page-banner:first-child:is(*, .r.r.r.r.r.r.r.r.r.r){ 
 /* (2026-09-16: white on both sides of the reveal — the page is white
    now, so a charcoal ground under the load would flash before it, and
    a pull past the top or the foot shows white.) */
-html:has(> body.has-mega){ background: #121417; }
-html.page-shown:has(> body.has-mega){ background: #121417; }
+html:has(> body.has-mega){ background: var(--g, #121417); }
+html.page-shown:has(> body.has-mega){ background: var(--g, #121417); }
 body.has-mega{ background: #FFFFFF; }
 
 /* ---------------------------------------------------------------
@@ -12952,6 +12952,16 @@ main.has-mega .page-rows > .reprint.is-under-band:is(*, .r.r.r.r.r.r.r.r.r.r){ b
 main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: none; }
 
 /* ===================================================================
+   LIGHT AND DARK (2026-09-17). Everything below this line is written
+   in two tokens: --g, the ground, and --k, the ink — charcoal and
+   white in the dark, white and charcoal in the light. The toggle in
+   the band's right column (build.js, renderSectionBand) flips
+   html[data-theme] and the font gate restores the stored choice
+   before first paint.
+   =================================================================== */
+html{ --g: #121417; --k: #FFFFFF; }
+html[data-theme="light"]{ --g: #FFFFFF; --k: #121417; }
+/* ===================================================================
    2026-09-16, LATER: EVERY CHARCOAL AND WHITE BELOW THIS LINE IS SWAPPED
    — the ground, bands and cards are charcoal, the OPS words and every
    rule are white. (The blocks' own titles read as written before the
@@ -12967,13 +12977,13 @@ main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-s
 main.has-mega .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 body.ledger-page .ledger-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  background: #121417; /* white again, 2026-09-16, charcoal ink */
-  color: #FFFFFF;
+  background: var(--g); /* white again, 2026-09-16, charcoal ink */
+  color: var(--k);
 }
 main.has-mega .section-band :is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band--colophon :is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 body.ledger-page .ledger-band :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #FFFFFF;
+  color: var(--k);
 }
 
 /* ---------------------------------------------------------------
@@ -12986,7 +12996,7 @@ body.ledger-page .ledger-band :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
    cards' edges stand as before.
    --------------------------------------------------------------- */
 main.has-mega .card :is(.title-halo, .card-preview-block, .plate-curtain, .latest-plate):is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  background-color: #121417 !important; /* white again, 2026-09-16 */
+  background-color: var(--g) !important; /* white again, 2026-09-16 */
 }
 /* The hero's panel box runs 24 past the plates on each side (48 from
    the edge against the plates' 72); it paints nothing of its own, or
@@ -12998,7 +13008,7 @@ main.has-mega .card :is(.duo-panel, .panel-col):is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
    .panel-col--left *) are flagged so, and this stands over them. */
 main.has-mega .card:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .card :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #FFFFFF !important; /* charcoal ink on the white plate */
+  color: var(--k) !important; /* charcoal ink on the white plate */
 }
 
 /* ---------------------------------------------------------------
@@ -13014,17 +13024,17 @@ main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.movement, .movement-body, .page-banner, .topbar-wordmark, .reprint, .dek-band--masthead, .head-rule):is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .movement:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega .movement:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{
-  background-color: #121417 !important;
+  background-color: var(--g) !important;
 }
 main.has-mega :is(.topbar-name, .banner-name, .banner-name--pair, .reprint-name, .subscribe-name):is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.topbar-wordmark, .page-banner, .reprint) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #FFFFFF !important;
+  color: var(--k) !important;
 }
 
 /* THE SPACERS ARE WHITE (2026-09-16; charcoal for a spell): the field under the band over
    the wordmark, and the field under the reprint over the colophon. */
 main.has-mega :is(.head-field, .foot-field):is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  background-color: #121417 !important; /* white again, 2026-09-16 */
+  background-color: var(--g) !important; /* white again, 2026-09-16 */
 }
 
 /* NO SEAMS ON THE COVERS (2026-09-16): the 1px rules drawn on the
@@ -13041,10 +13051,16 @@ main.has-mega :is(.latest-cell--ps, .latest-cell--contra, .latest-cell--contra-r
    the pinned band's foot, and the foot rule, both charcoal on the
    white. No side rules. */
 main.has-mega :is(.duo-half--mega, .duo-half--wide, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{
-  background-color: #FFFFFF !important;
+  /* Drawn as a shadow, not a background (2026-09-17): a row can sit
+     on a half pixel, and a painted background and a box-shadow snap
+     to the device grid differently there — where the picture's own
+     shadow-drawn line overlapped this one the rule read heavier. Two
+     shadows on the same rect rasterise the same. */
+  background-color: transparent !important;
+  box-shadow: inset 0 1px 0 0 var(--k) !important;
 }
 main.has-mega :is(.duo-half--mega, .duo-half--wide, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::after{
-  box-shadow: inset 0 -1px 0 0 #FFFFFF !important;
+  box-shadow: inset 0 -1px 0 0 var(--k) !important;
 }
 
 /* ---------------------------------------------------------------
@@ -13083,9 +13099,9 @@ a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):is(:hover, :f
 /* THE BAND'S RULE IS CHARCOAL (2026-09-16): the seam pixel under the
    masthead's band (and the ledger head band's rule) in charcoal on the
    white, so the pinned band closes on a line. */
-main.has-mega .page-rows > .head-seam:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ background: #FFFFFF; }
-body.ledger-page .ledger-band--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
-body.ledger-page .ledger-band--foot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .page-rows > .head-seam:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ background: var(--k); }
+body.ledger-page .ledger-band--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 var(--k); }
+body.ledger-page .ledger-band--foot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 var(--k); }
 
 /* THE REPRINT CARRIES THE CHARCOAL RULE UP (2026-09-16): rising over
    the pinned band it covers the seam, and draws the line on its own
@@ -13098,7 +13114,7 @@ main.has-mega .page-rows > .reprint.is-under-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r
   position: absolute;
   top: 0; left: 72px; right: 72px;
   height: 1px;
-  background: #FFFFFF;
+  background: var(--k);
   pointer-events: none;
 }
 main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{ content: none; }
@@ -13111,7 +13127,7 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   position: absolute;
   top: 0; left: 72px; right: 72px;
   height: 1px;
-  background: #FFFFFF;
+  background: var(--k);
   pointer-events: none;
 }
 
@@ -13150,7 +13166,7 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega):is(*, .r.r.r.r.r.r.r.r.r.r.
    shadow on a pseudo-element painted over the artwork. */
 main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
-  box-shadow: 0 -1px 0 0 #FFFFFF;
+  box-shadow: 0 -1px 0 0 var(--k);
 }
 main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
@@ -13159,5 +13175,59 @@ main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+  /* The bottom line, and (2026-09-17) the two side lines: drawn inside
+     the picture's own box, over the artwork, so they travel with it and
+     never stand on another rule — the card carries no side rules, and
+     the top and foot rules meet them at the corners. */
+  box-shadow: inset 0 -1px 0 0 var(--k), inset 1px 0 0 0 var(--k), inset -1px 0 0 0 var(--k);
 }
+
+/* THE BODY TEXT IS CENTRED (2026-09-17): the preview paragraphs on the
+   plates — the hero's and the row cells' — set centred like the
+   titles and deks above them. */
+main.has-mega :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: center;
+  text-align-last: center;
+  hyphens: manual;
+}
+
+/* THE TOGGLE: LIGHT over DARK in the courier, stacked in the right
+   margin at the viewport's centre, fixed there; the selected one in
+   Yves blue and the other in the ink;
+   hover takes Yves like every control. */
+main.has-mega .section-band .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* In the right MARGIN — the 72 outside the columns — centred on it,
+     and pinned to the viewport at its vertical centre, so it rides
+     with the reader down the whole page. */
+  position: fixed;
+  top: 50%; right: 0; bottom: auto;
+  transform: translateY(-50%);
+  width: 72px;
+  z-index: 80;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  color: var(--k);
+}
+/* A dash stands between the two words, in the ink. */
+main.has-mega .section-band .theme-toggle > .theme-toggle-sep{ line-height: 13px; }
+/* The selected mode stands in Yves blue, the other in the ink — and
+   the other STAYS in the ink under the pointer: the site-wide hover
+   rule turns a button's every word blue, which had both modes going
+   blue as the hand came to click. */
+main.has-mega .section-band .theme-toggle > span{ transition: color .25s ease; }
+main.has-mega .section-band .theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
+html:not([data-theme="light"]) main.has-mega .section-band .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="light"] main.has-mega .section-band .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }

@@ -5749,8 +5749,8 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r){
   margin: 0;
 }
 main.has-mega .movement > .page-banner:first-child:is(*, .r.r.r.r.r.r.r.r.r.r){ margin-top: 0; }
-html:has(> body.has-mega){ background: #121417; }
-html.page-shown:has(> body.has-mega){ background: #121417; }
+html:has(> body.has-mega){ background: var(--g, #121417); }
+html.page-shown:has(> body.has-mega){ background: var(--g, #121417); }
 body.has-mega{ background: #FFFFFF; }
 main.has-mega .m--colophon > .stack-band.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: none; }
 main.has-mega .m--colophon > .stack-band--bw.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
@@ -5765,49 +5765,52 @@ main.has-mega .movement-body > .page-banner.ops-word:is(*, .r.r.r.r.r.r.r.r.r.r)
 main.has-mega .movement-body > .page-banner.ops-word + .wrap{ padding-top: 1px; }
 main.has-mega .page-rows > .reprint.is-under-band:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF; }
 main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-shadow: none; }
+html{ --g: #121417; --k: #FFFFFF; }
+html[data-theme="light"]{ --g: #FFFFFF; --k: #121417; }
 main.has-mega .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 body.ledger-page .ledger-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  background: #121417; 
-  color: #FFFFFF;
+  background: var(--g); 
+  color: var(--k);
 }
 main.has-mega .section-band :is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band--colophon :is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 body.ledger-page .ledger-band :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #FFFFFF;
+  color: var(--k);
 }
 main.has-mega .card :is(.title-halo, .card-preview-block, .plate-curtain, .latest-plate):is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  background-color: #121417 !important; 
+  background-color: var(--g) !important; 
 }
 main.has-mega .card :is(.duo-panel, .panel-col):is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
   background-color: transparent !important;
 }
 main.has-mega .card:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .card :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #FFFFFF !important; 
+  color: var(--k) !important; 
 }
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.movement, .movement-body, .page-banner, .topbar-wordmark, .reprint, .dek-band--masthead, .head-rule):is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .movement:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega .movement:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{
-  background-color: #121417 !important;
+  background-color: var(--g) !important;
 }
 main.has-mega :is(.topbar-name, .banner-name, .banner-name--pair, .reprint-name, .subscribe-name):is(*, .r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.topbar-wordmark, .page-banner, .reprint) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #FFFFFF !important;
+  color: var(--k) !important;
 }
 main.has-mega :is(.head-field, .foot-field):is(*, .r.r.r.r.r.r.r.r.r.r.r.r){
-  background-color: #121417 !important; 
+  background-color: var(--g) !important; 
 }
 main.has-mega :is(.latest-cell--ps, .latest-cell--contra, .latest-cell--contra-rev, .duo-half--mega) :is(.latest-cover, .card-image-link, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{
   content: none !important;
   box-shadow: none !important;
 }
 main.has-mega :is(.duo-half--mega, .duo-half--wide, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{
-  background-color: #FFFFFF !important;
+  background-color: transparent !important;
+  box-shadow: inset 0 1px 0 0 var(--k) !important;
 }
 main.has-mega :is(.duo-half--mega, .duo-half--wide, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::after{
-  box-shadow: inset 0 -1px 0 0 #FFFFFF !important;
+  box-shadow: inset 0 -1px 0 0 var(--k) !important;
 }
 :root{ --yves: #002FA7; }
 :is(a:not(.latest-cover, .latest-plate, .card-image-link, .ticker-cover-link, .duo-card-image, .card-image-frame),
@@ -5825,16 +5828,16 @@ a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):is(:hover, :f
 :is(button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--yves) !important;
 }
-main.has-mega .page-rows > .head-seam:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ background: #FFFFFF; }
-body.ledger-page .ledger-band--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 #FFFFFF; }
-body.ledger-page .ledger-band--foot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 #FFFFFF; }
+main.has-mega .page-rows > .head-seam:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ background: var(--k); }
+body.ledger-page .ledger-band--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 -1px 0 0 var(--k); }
+body.ledger-page .ledger-band--foot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: inset 0 1px 0 0 var(--k); }
 main.has-mega .page-rows > .reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: none; }
 main.has-mega .page-rows > .reprint.is-under-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{
   content: '';
   position: absolute;
   top: 0; left: 72px; right: 72px;
   height: 1px;
-  background: #FFFFFF;
+  background: var(--k);
   pointer-events: none;
 }
 main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r.r.r)::before{ content: none; }
@@ -5843,7 +5846,7 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   position: absolute;
   top: 0; left: 72px; right: 72px;
   height: 1px;
-  background: #FFFFFF;
+  background: var(--k);
   pointer-events: none;
 }
 main.has-mega .page-rows > :is(.head-field, .foot-field):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ display: none; }
@@ -5855,7 +5858,7 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega):is(*, .r.r.r.r.r.r.r.r.r.r.
 }
 main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
-  box-shadow: 0 -1px 0 0 #FFFFFF;
+  box-shadow: 0 -1px 0 0 var(--k);
 }
 main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
@@ -5864,5 +5867,38 @@ main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+  box-shadow: inset 0 -1px 0 0 var(--k), inset 1px 0 0 0 var(--k), inset -1px 0 0 0 var(--k);
 }
+main.has-mega :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: center;
+  text-align-last: center;
+  hyphens: manual;
+}
+main.has-mega .section-band .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: fixed;
+  top: 50%; right: 0; bottom: auto;
+  transform: translateY(-50%);
+  width: 72px;
+  z-index: 80;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  color: var(--k);
+}
+main.has-mega .section-band .theme-toggle > .theme-toggle-sep{ line-height: 13px; }
+main.has-mega .section-band .theme-toggle > span{ transition: color .25s ease; }
+main.has-mega .section-band .theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
+html:not([data-theme="light"]) main.has-mega .section-band .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="light"] main.has-mega .section-band .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }

@@ -19,11 +19,25 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu5oywbf">
+<link rel="stylesheet" href="style.css?v=mu5phua2">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
+  // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  try {
+    var theme = localStorage.getItem('nc-theme');
+    if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+  } catch (e) {}
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
+    if (!b) return;
+    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nc-theme', next); } catch (err) {}
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = next === 'light' ? '#FFFFFF' : '#121417';
+  });
   root.classList.add('fonts-loading');
   var shown = false;
   // The reveal waits two frames past the fonts so the fitters (which
@@ -107,7 +121,7 @@
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
     <p class="band-deks band-dek"><span class="band-date">Thursday, September 17, 2026</span></p>
-    <p class="band-deks"><a href="archive.html">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
+    <p class="band-deks"><a href="archive.html">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a><button type="button" class="theme-toggle" aria-label="Switch between light and dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span></button></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
   <div class="head-field" aria-hidden="true"></div>

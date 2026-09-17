@@ -1238,7 +1238,7 @@ function renderSectionBand(m) {
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
     <p class="band-deks band-dek"><span class="band-date">${bandDate()}</span></p>
-    <p class="band-deks">${bandDeks(m)}</p>
+    <p class="band-deks">${bandDeks(m)}<button type="button" class="theme-toggle" aria-label="Switch between light and dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span></button></p>
   </nav>`;
   }
   const line = BAND_LINES[m] || '';
@@ -2487,6 +2487,20 @@ function renderFontGateScript() {
 <script>
 (function () {
   var root = document.documentElement;
+  // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  try {
+    var theme = localStorage.getItem('nc-theme');
+    if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+  } catch (e) {}
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
+    if (!b) return;
+    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('nc-theme', next); } catch (err) {}
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = next === 'light' ? '#FFFFFF' : '#121417';
+  });
   root.classList.add('fonts-loading');
   var shown = false;
   // The reveal waits two frames past the fonts so the fitters (which
