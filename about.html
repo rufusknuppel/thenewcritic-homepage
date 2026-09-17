@@ -17,24 +17,157 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu5phua2">
+<link rel="stylesheet" href="style.css?v=mu5rx2th">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // THE GROUND: light, dark, or a colour of the reader's own (HEX,
+  // 2026-09-17). Light and dark are the two token sets in style.css;
+  // a hex colour is written straight onto the root as --g, with --k
+  // white or charcoal, whichever reads better on it (WCAG contrast).
+  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  var hexOf = function (v) {
+    var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
+    if (!m) return null;
+    var h = m[1].toLowerCase();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return '#' + h;
+  };
+  var lum = function (hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  var inkFor = function (hex) {
+    var L = lum(hex), Lw = 1, Lc = lum(CHARCOAL);
+    var vsWhite = (Lw + 0.05) / (L + 0.05);
+    var vsCharcoal = (L + 0.05) / (Lc + 0.05);
+    return vsWhite >= vsCharcoal ? WHITE : CHARCOAL;
+  };
+  var setMeta = function (colour) {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = colour;
+  };
+  // Paints the choice: the attribute for the stylesheet, the two
+  // tokens inline for a hex ground (and cleared for the others).
+  var paint = function (mode, hex) {
+    if (mode === 'hex' && hex) {
+      var ink = inkFor(hex);
+      root.setAttribute('data-theme', 'hex');
+      root.style.setProperty('--g', hex);
+      root.style.setProperty('--k', ink);
+      // The highlight — the chosen word, every hover — is the OTHER of
+      // charcoal and white on a hex ground, not Yves: white ink takes
+      // charcoal, charcoal ink takes white.
+      root.style.setProperty('--yves', ink === WHITE ? CHARCOAL : WHITE);
+      setMeta(hex);
+    } else {
+      root.style.removeProperty('--g');
+      root.style.removeProperty('--k');
+      root.style.removeProperty('--yves');
+      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      else root.removeAttribute('data-theme');
+      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+    }
+  };
+  var store = function (mode, hex) {
+    try {
+      localStorage.setItem('nc-theme', mode);
+      if (hex) localStorage.setItem('nc-hex', hex);
+    } catch (err) {}
+  };
+  var storedHex = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+    storedHex = hexOf(localStorage.getItem('nc-hex'));
+    if (theme === 'hex' && storedHex) paint('hex', storedHex);
+    else if (theme === 'light' || theme === 'dark') paint(theme);
   } catch (e) {}
+  // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
+  // where the browser has view transitions the old page and the new
+  // are snapshotted whole and dissolved one into the other over .3s —
+  // every colour, ground, rule, picture and the canvas together, with
+  // no per-element transition running underneath (html.theme-instant
+  // holds every transition off for the change's frame, so the new
+  // snapshot is the settled page). Elsewhere the per-element ease
+  // above stands in.
+  var flipTimer = null;
+  var flip = function (mode, hex) {
+    store(mode, hex);
+    var change = function () { paint(mode, hex); };
+    if (document.startViewTransition) {
+      root.classList.add('theme-instant');
+      var done = function () { root.classList.remove('theme-instant'); };
+      var vt;
+      try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
+      if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A hidden tab may never run the animation; let go regardless.
+      setTimeout(done, 800);
+      return;
+    }
+    root.classList.add('theme-flip');
+    clearTimeout(flipTimer);
+    flipTimer = setTimeout(function () { root.classList.remove('theme-flip'); }, 350);
+    change();
+  };
+  var current = function () {
+    var t = root.getAttribute('data-theme');
+    return t === 'light' || t === 'hex' ? t : 'dark';
+  };
+  // THE HEX FIELD: a courier line under the three words, shown on HEX
+  // and hidden on Enter, Escape or leaving it. A valid code paints the
+  // page as it is typed (no dissolve keystroke by keystroke — the
+  // transitions are simply held off for the change); an invalid one
+  // paints nothing.
+  var field = null;
+  var openField = function () {
+    field = field || document.querySelector('.theme-hex');
+    if (!field) return;
+    field.value = storedHex || '';
+    field.hidden = false;
+    field.focus();
+    field.select();
+  };
+  var closeField = function () {
+    if (field) field.hidden = true;
+  };
+  var typed = function () {
+    var hex = hexOf(field.value);
+    if (!hex) return;
+    storedHex = hex;
+    root.classList.add('theme-instant');
+    paint('hex', hex);
+    store('hex', hex);
+    setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
+  };
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
-    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('nc-theme', next); } catch (err) {}
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = next === 'light' ? '#FFFFFF' : '#121417';
+    var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
+    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : t.classList.contains('theme-toggle-dark') ? 'dark' : 'hex')
+      : (current() === 'light' ? 'dark' : 'light');
+    if (mode === 'hex') {
+      openField();
+      if (storedHex && current() !== 'hex') flip('hex', storedHex);
+      return;
+    }
+    closeField();
+    if (mode !== current()) flip(mode);
+  });
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) typed();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!(e.target && e.target.classList && e.target.classList.contains('theme-hex'))) return;
+    if (e.key === 'Enter') { e.preventDefault(); typed(); closeField(); }
+    if (e.key === 'Escape') { e.preventDefault(); closeField(); }
+  });
+  document.addEventListener('focusout', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
   var shown = false;
@@ -89,7 +222,7 @@
 
 </script>
 </head>
-<body class="has-mega ledger-page about-page">
+<body class="has-mega ledger-page word-page about-page">
 
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -97,17 +230,19 @@
 
 <main id="main" class="has-mega">
 
-  <header class="ledger-mast" id="top">
-    <a class="ledger-word" href="about.html">About</a>
-  </header>
-  <div class="ledger-spacer" aria-hidden="true"></div>
-  <div class="ledger-pin">
-  <nav class="ledger-band ledger-band--head" aria-label="The Young American Magazine">
-    <p class="ledger-slot ledger-slot--left"><a href="./">The Young American Magazine</a></p>
-    <p class="ledger-slot ledger-slot--mid"><span>About The New Critic</span></p>
-    <p class="ledger-slot ledger-slot--right"><a href="archive.html">Archive</a>, <a href="about.html" aria-current="page">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
+  <div class="page-rows">
+  <nav class="section-band section-band--three" aria-label="The Young American Magazine">
+    <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
+    <p class="band-deks band-dek"><span class="band-date">Thursday, September 17, 2026</span></p>
+    <p class="band-deks"><a href="archive.html">Archive</a>, <a href="about.html" aria-current="page">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
-  </div>
+  <div class="head-seam" aria-hidden="true"></div>
+  <div class="head-field" aria-hidden="true"></div>
+  <div class="movement m--latest">
+  <section class="page-banner subscribe-band page-banner--bare">
+        <a class="banner-name" href="about.html">About</a>
+      </section>
+  <div class="movement-body">
   <div class="ledger-content about-mosaic-block about-mosaic-block--hero-follows">
     <div class="about-mosaic">
       <div class="about-col">
@@ -154,9 +289,7 @@
       
     </div>
   </div>
-  <div class="movement m--latest ledger-feature about-hero">
-  <div class="movement-body">
-  <div class="wrap m--latest">
+  <div class="wrap m--latest about-hero">
     <section class="card card--latest card--contra-trio about-contra">
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
@@ -176,24 +309,21 @@
   </div>
   </div>
   </div>
-  <section class="ledger-deck ledger-deck--1 ledger-deck--charcoal">
-    <a class="ledger-word" href="archive.html">Archive</a>
+  <section class="reprint">
+    <div class="reprint-rule" aria-hidden="true"></div>
+    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
   </section>
-  <section class="ledger-deck ledger-deck--2 ledger-deck--crimson">
-    <a class="ledger-word" href="https://www.thenewcritic.com/subscribe" rel="noopener">Store</a>
-  </section>
-  <section class="ledger-deck ledger-deck--3 ledger-deck--charcoal">
-    <a class="ledger-word" href="https://www.thenewcritic.com/subscribe" rel="noopener">Events</a>
-  </section>
-  <nav class="ledger-band ledger-band--foot" aria-label="Colophon">
-    <p class="ledger-slot ledger-slot--left"><span>Est. May 2025</span></p>
-    <p class="ledger-slot ledger-slot--mid"><span>Copyright The New Critic, Inc.</span></p>
-    <p class="ledger-slot ledger-slot--right"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+  <div class="foot-field" aria-hidden="true"></div>
+  <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
+    <p class="band-deks band-name"><span>Est. May 2025</span></p>
+    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>
-  <div class="ledger-field" aria-hidden="true"></div>
-  <section class="ledger-reprint">
-    <a class="ledger-word ledger-word--reprint" href="./" aria-label="The New Critic — home">The New Critic</a>
-  </section>
+  </div>
+  <div class="marginalia">
+  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  <span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a><span class="social-stack-sep" aria-hidden="true">—</span><a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a><span class="social-stack-sep" aria-hidden="true">—</span><a href="mailto:editors@thenewcritic.com" aria-label="Email"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a></span>
+  </div>
 </main>
 
 
@@ -2235,6 +2365,13 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    if (!cap) {
+      var repName = document.querySelector('.reprint .reprint-name');
+      if (repName) {
+        fillNameBand(repName, repName.closest('.reprint'), { air: BANNER_AIR, airBottom: BANNER_AIR });
+        cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
+      }
+    }
     var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
@@ -3261,8 +3398,47 @@
       sp.style.marginTop = '-1px';
     });
   }
+  function fitToggle() {
+    var spans = document.querySelectorAll('.theme-toggle > span, .social-stack > span');
+    if (!spans.length) return;
+    var W = 600, H = 200, scan = 100, y0 = 120;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    if (!g) return;
+    [].forEach.call(spans, function (el) {
+      el.style.top = '';
+      var cs = getComputedStyle(el);
+      var size = parseFloat(cs.fontSize) || 0;
+      var text = (el.textContent || '').trim();
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+      if (!size || !text) return;
+      g.clearRect(0, 0, W, H);
+      g.font = cs.fontWeight + ' ' + scan + 'px ' + cs.fontFamily;
+      g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+      g.fillText(text, 10, y0);
+      var data;
+      try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return; }
+      var topRow = -1, botRow = -1;
+      for (var y = 0; y < H; y++) {
+        for (var x = 0; x < W; x++) {
+          if (data[(y * W + x) * 4 + 3] > 40) { if (topRow < 0) topRow = y; botRow = y; break; }
+        }
+      }
+      if (topRow < 0) return;
+      var midAboveBase = (y0 - (topRow + botRow + 1) / 2) / scan * size;
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.appendChild(probe);
+      var base = probe.getBoundingClientRect().bottom;
+      el.removeChild(probe);
+      var box = el.getBoundingClientRect();
+      var inkMid = base - midAboveBase;
+      el.style.position = 'relative';
+      el.style.top = (box.top + box.height / 2 - inkMid).toFixed(2) + 'px';
+    });
+  }
   function fitCardRules() {
-    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps, main.has-mega .latest-cell--contra');
     function inkEdge(node, side) {
       if (!node) return null;
       var r = document.createRange();
@@ -3277,6 +3453,20 @@
       var box = el.getBoundingClientRect();
       if (!box.width) return;
       var isHero = el.classList.contains('duo-half--mega');
+      if (el.classList.contains('latest-cell--contra')) {
+        var cPeek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+        var cL = inkEdge(cPeek, 'left'), cR = inkEdge(cPeek, 'right');
+        if (cL == null || cR == null) return;
+        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left)) + 'px');
+        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR)) + 'px');
+        var cKicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p');
+        var kL = inkEdge(cKicker, 'left'), kR = inkEdge(cKicker, 'right');
+        if (kL != null && kR != null) {
+          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left)) + 'px');
+          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR)) + 'px');
+        }
+        return;
+      }
       var picLeft = isHero
         ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
         : el.classList.contains('pic-left');
@@ -3345,6 +3535,7 @@
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
     step('fitCardRules', fitCardRules);
+    step('fitToggle', fitToggle);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
   (function(){
@@ -3477,6 +3668,10 @@
         e.preventDefault(); e.stopPropagation();
         card.classList.remove('is-open'); travel();
         try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
+        return;
+      }
+      if (hit(e, '.latest-plate') && !hit(e, '.plate-title')) {
+        e.preventDefault(); e.stopPropagation();
       }
     });
     card.addEventListener('keydown', function (e) {
@@ -4079,22 +4274,16 @@
       spacer.style.height = Math.round(Math.max(0, open)) + 'px';
     }
     if (ledger && body) {
-      var firstCell = body.querySelector('.ledger-row .ledger-cell');
-      if (firstCell) {
+      var firstTitle = body.querySelector('.ledger-item:not(.is-filtered-out) .ledger-row .lc-title');
+      if (firstTitle) {
         ledger.style.paddingTop = '';
-        var fcs = getComputedStyle(firstCell);
-        var cv2 = document.createElement('canvas').getContext('2d');
-        if (cv2) {
-          cv2.font = fcs.fontStyle + ' ' + fcs.fontWeight + ' ' + fcs.fontSize + ' ' + fcs.fontFamily;
-          var mm = cv2.measureText((firstCell.textContent || '').trim() || 'X');
-          var probe2 = document.createElement('span');
-          probe2.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-          firstCell.appendChild(probe2);
-          var base2 = probe2.getBoundingClientRect().bottom;
-          firstCell.removeChild(probe2);
-          var rowTop = firstCell.parentElement.getBoundingClientRect().top;
-          var inkIn = base2 - mm.actualBoundingBoxAscent - rowTop;
-          if (isFinite(inkIn)) ledger.style.paddingTop = Math.round(72 - inkIn) + 'px';
+        var ink0 = inkOf(firstTitle);
+        var row0 = firstTitle.closest('.ledger-row');
+        if (ink0 && row0) {
+          var rr = row0.getBoundingClientRect();
+          var gap = rr.height - (ink0.bottom - ink0.top);
+          var over = ink0.top - rr.top;
+          ledger.style.paddingTop = Math.max(0, gap - over).toFixed(2) + 'px';
         }
       }
     }
@@ -4104,6 +4293,55 @@
     if (field && foot && reprint) {
       var left = document.documentElement.clientHeight - foot.offsetHeight - reprint.offsetHeight;
       field.style.height = Math.round(Math.max(0, left)) + 'px';
+    }
+    fitInkAir();
+  }
+  var AIR = 72;
+  function inkOf(el) {
+    var cs = getComputedStyle(el);
+    var cv = document.createElement('canvas').getContext('2d');
+    if (!cv) return null;
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var txt = (el.textContent || '').trim() || 'X';
+    if (cs.textTransform === 'uppercase') txt = txt.toUpperCase();
+    var m = cv.measureText(txt);
+    if (m.actualBoundingBoxAscent == null) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base1 = probe.getBoundingClientRect().bottom;
+    el.appendChild(probe);
+    var base2 = probe.getBoundingClientRect().bottom;
+    el.removeChild(probe);
+    return { top: base1 - m.actualBoundingBoxAscent, bottom: base2 + m.actualBoundingBoxDescent };
+  }
+  function fitInkAir() {
+    var ledgerBody = document.querySelector('.movement.m--ledger > .movement-body');
+    if (ledgerBody && body) {
+      ledgerBody.style.marginBottom = '';
+      var rows = body.querySelectorAll('.ledger-item:not(.is-filtered-out)');
+      var lastTitle = rows.length ? rows[rows.length - 1].querySelector('.lc-title') : null;
+      var ink = lastTitle && inkOf(lastTitle);
+      if (ink) ledgerBody.style.marginBottom = (ink.bottom - ledgerBody.getBoundingClientRect().bottom).toFixed(2) + 'px';
+    }
+    var mosaic = document.querySelector('.about-mosaic-block');
+    if (mosaic) {
+      mosaic.style.marginTop = '';
+      mosaic.style.marginBottom = '';
+      mosaic.style.paddingBottom = '';
+      var firstText = mosaic.querySelector('.about-card > *');
+      var i1 = firstText && inkOf(firstText);
+      if (i1) mosaic.style.marginTop = (mosaic.getBoundingClientRect().top - i1.top).toFixed(2) + 'px';
+      var cards = mosaic.querySelectorAll('.about-card');
+      var lastCard = cards.length ? cards[cards.length - 1] : null;
+      var lines = lastCard ? lastCard.querySelectorAll('p, li, h3, .about-card-foot') : [];
+      var lastText = lines.length ? lines[lines.length - 1] : null;
+      var i2 = lastText && inkOf(lastText);
+      if (i2) {
+        var diff = AIR - (mosaic.getBoundingClientRect().bottom - i2.bottom);
+        if (diff >= 0) mosaic.style.paddingBottom = diff.toFixed(2) + 'px';
+        else mosaic.style.marginBottom = diff.toFixed(2) + 'px';
+      }
     }
   }
   function fitWordBand(mast) {
@@ -4184,7 +4422,7 @@
       var under = false;
       if (r.top > 1.5 && r.top < vh) {
         var above = document.elementFromPoint(Math.round(r.left + r.width / 2), r.top - 1);
-        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson'));
+        under = !!(above && above.closest && above.closest('.ledger-band--head, .ledger-head, .ledger-deck--crimson, .section-band'));
       }
       el.classList.toggle('is-under-band', under);
     });
@@ -4252,52 +4490,86 @@
     );
     if (sortBtn) sortBtn.click();
   }
+  var readHash = function () {
+    var hp = {};
+    location.hash.slice(1).split('&').forEach(function(kv){
+      var eq = kv.indexOf('=');
+      if (eq > 0) hp[kv.slice(0, eq)] = decodeURIComponent(kv.slice(eq + 1)).toLowerCase();
+    });
+    return hp;
+  };
+  var filtered = false;
+  function applyFilter() {
+    var hp = readHash();
+    var sec = hp.section || '', topic = hp.topic || '';
+    filtered = !!(sec || topic);
+    items.forEach(function(it){
+      var show = (!sec || it.getAttribute('data-section') === sec)
+        && (!topic || it.getAttribute('data-kicker') === topic);
+      it.classList.toggle('is-filtered-out', !show);
+    });
+    fitMast();
+  }
+  applyFilter();
+  addEventListener('hashchange', function () { applyFilter(); land(); requestAnimationFrame(land); });
+  var target = null;
   if (hashParams.post) {
-    var target = null;
     items.forEach(function(it){
       if (it.getAttribute('data-slug') === hashParams.post) target = it;
     });
-    if (target) {
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      target.classList.add('is-target');
-      var jumpPoll = null;
-      function cancelJumpPoll() {
-        if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
-      }
-      function jumpToTarget() {
-        if (document.documentElement.clientHeight > 0) {
-          cancelJumpPoll();
-          var headEl = document.querySelector('.ledger-head');
-          var mastH = headEl ? headEl.offsetHeight : 0;
-          var tr = target.getBoundingClientRect();
-          var room = document.documentElement.clientHeight - mastH;
-          var y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
-          window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
-          return;
-        }
-        if (jumpPoll != null) return;
-        ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
-          addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
-        });
-        jumpPoll = setInterval(function () {
-          if (document.documentElement.clientHeight > 0) {
-            fitMast();
-            jumpToTarget();
-          }
-        }, 300);
-      }
-      jumpToTarget();
-      if (document.readyState === 'complete') {
-        requestAnimationFrame(jumpToTarget);
+    if (target) target.classList.add('is-target');
+  }
+  var jumpPoll = null;
+  function cancelJumpPoll() {
+    if (jumpPoll != null) { clearInterval(jumpPoll); jumpPoll = null; }
+  }
+  function land() {
+    if (!target && !filtered) return;
+    if (document.documentElement.clientHeight > 0) {
+      cancelJumpPoll();
+      var headEl = document.querySelector('.ledger-head');
+      var mastH = headEl ? headEl.offsetHeight : 0;
+      var y;
+      if (target) {
+        var tr = target.getBoundingClientRect();
+        var room = document.documentElement.clientHeight - mastH;
+        y = window.scrollY + tr.top - mastH - Math.max(0, (room - tr.height) / 2);
       } else {
-        addEventListener('load', function () {
-          requestAnimationFrame(jumpToTarget);
-        });
+        y = headEl ? window.scrollY + headEl.getBoundingClientRect().top : 0;
       }
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(jumpToTarget);
-      }
+      window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+      return;
     }
+    if (jumpPoll != null) return;
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      addEventListener(ev, cancelJumpPoll, { once: true, passive: true });
+    });
+    jumpPoll = setInterval(function () {
+      if (document.documentElement.clientHeight > 0) {
+        fitMast();
+        land();
+      }
+    }, 300);
+  }
+  if (target || filtered) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    land();
+    if (document.readyState === 'complete') {
+      requestAnimationFrame(land);
+    } else {
+      addEventListener('load', function () { requestAnimationFrame(land); });
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(land);
+    }
+    var settle = 0;
+    var settleTimer = setInterval(function () {
+      land();
+      if (++settle >= 8) clearInterval(settleTimer);
+    }, 250);
+    ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+      addEventListener(ev, function () { clearInterval(settleTimer); }, { once: true, passive: true });
+    });
   }
 })();
 

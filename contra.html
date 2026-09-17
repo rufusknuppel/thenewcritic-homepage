@@ -16,24 +16,157 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu5phua2">
+<link rel="stylesheet" href="style.css?v=mu5rx2th">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   // LIGHT OR DARK, before first paint: the stored choice, else dark.
+  // THE GROUND: light, dark, or a colour of the reader's own (HEX,
+  // 2026-09-17). Light and dark are the two token sets in style.css;
+  // a hex colour is written straight onto the root as --g, with --k
+  // white or charcoal, whichever reads better on it (WCAG contrast).
+  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  var hexOf = function (v) {
+    var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
+    if (!m) return null;
+    var h = m[1].toLowerCase();
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return '#' + h;
+  };
+  var lum = function (hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  var inkFor = function (hex) {
+    var L = lum(hex), Lw = 1, Lc = lum(CHARCOAL);
+    var vsWhite = (Lw + 0.05) / (L + 0.05);
+    var vsCharcoal = (L + 0.05) / (Lc + 0.05);
+    return vsWhite >= vsCharcoal ? WHITE : CHARCOAL;
+  };
+  var setMeta = function (colour) {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = colour;
+  };
+  // Paints the choice: the attribute for the stylesheet, the two
+  // tokens inline for a hex ground (and cleared for the others).
+  var paint = function (mode, hex) {
+    if (mode === 'hex' && hex) {
+      var ink = inkFor(hex);
+      root.setAttribute('data-theme', 'hex');
+      root.style.setProperty('--g', hex);
+      root.style.setProperty('--k', ink);
+      // The highlight — the chosen word, every hover — is the OTHER of
+      // charcoal and white on a hex ground, not Yves: white ink takes
+      // charcoal, charcoal ink takes white.
+      root.style.setProperty('--yves', ink === WHITE ? CHARCOAL : WHITE);
+      setMeta(hex);
+    } else {
+      root.style.removeProperty('--g');
+      root.style.removeProperty('--k');
+      root.style.removeProperty('--yves');
+      if (mode === 'light') root.setAttribute('data-theme', 'light');
+      else root.removeAttribute('data-theme');
+      setMeta(mode === 'light' ? WHITE : CHARCOAL);
+    }
+  };
+  var store = function (mode, hex) {
+    try {
+      localStorage.setItem('nc-theme', mode);
+      if (hex) localStorage.setItem('nc-hex', hex);
+    } catch (err) {}
+  };
+  var storedHex = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+    storedHex = hexOf(localStorage.getItem('nc-hex'));
+    if (theme === 'hex' && storedHex) paint('hex', storedHex);
+    else if (theme === 'light' || theme === 'dark') paint(theme);
   } catch (e) {}
+  // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
+  // where the browser has view transitions the old page and the new
+  // are snapshotted whole and dissolved one into the other over .3s —
+  // every colour, ground, rule, picture and the canvas together, with
+  // no per-element transition running underneath (html.theme-instant
+  // holds every transition off for the change's frame, so the new
+  // snapshot is the settled page). Elsewhere the per-element ease
+  // above stands in.
+  var flipTimer = null;
+  var flip = function (mode, hex) {
+    store(mode, hex);
+    var change = function () { paint(mode, hex); };
+    if (document.startViewTransition) {
+      root.classList.add('theme-instant');
+      var done = function () { root.classList.remove('theme-instant'); };
+      var vt;
+      try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
+      if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
+      // A hidden tab may never run the animation; let go regardless.
+      setTimeout(done, 800);
+      return;
+    }
+    root.classList.add('theme-flip');
+    clearTimeout(flipTimer);
+    flipTimer = setTimeout(function () { root.classList.remove('theme-flip'); }, 350);
+    change();
+  };
+  var current = function () {
+    var t = root.getAttribute('data-theme');
+    return t === 'light' || t === 'hex' ? t : 'dark';
+  };
+  // THE HEX FIELD: a courier line under the three words, shown on HEX
+  // and hidden on Enter, Escape or leaving it. A valid code paints the
+  // page as it is typed (no dissolve keystroke by keystroke — the
+  // transitions are simply held off for the change); an invalid one
+  // paints nothing.
+  var field = null;
+  var openField = function () {
+    field = field || document.querySelector('.theme-hex');
+    if (!field) return;
+    field.value = storedHex || '';
+    field.hidden = false;
+    field.focus();
+    field.select();
+  };
+  var closeField = function () {
+    if (field) field.hidden = true;
+  };
+  var typed = function () {
+    var hex = hexOf(field.value);
+    if (!hex) return;
+    storedHex = hex;
+    root.classList.add('theme-instant');
+    paint('hex', hex);
+    store('hex', hex);
+    setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
+  };
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
-    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('nc-theme', next); } catch (err) {}
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = next === 'light' ? '#FFFFFF' : '#121417';
+    var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
+    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : t.classList.contains('theme-toggle-dark') ? 'dark' : 'hex')
+      : (current() === 'light' ? 'dark' : 'light');
+    if (mode === 'hex') {
+      openField();
+      if (storedHex && current() !== 'hex') flip('hex', storedHex);
+      return;
+    }
+    closeField();
+    if (mode !== current()) flip(mode);
+  });
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) typed();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!(e.target && e.target.classList && e.target.classList.contains('theme-hex'))) return;
+    if (e.key === 'Enter') { e.preventDefault(); typed(); closeField(); }
+    if (e.key === 'Escape') { e.preventDefault(); closeField(); }
+  });
+  document.addEventListener('focusout', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
   var shown = false;
@@ -181,7 +314,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Theater</span><div class="card-preview-cols"><p class="card-preview">Before the mid-19th century, reading a new book required a bit of preparation: you had to cut every single page loose with a knife. But to make Daniel Gavilovski’s three-play collection <em>Carbon Pages</em>, published by Unreal Press earlier this year, readable, you should simply take your knife and remove the full text of the first and third plays, as well as the preface. 1 Now, Gavilovski is a talented writer and a serious playwright — these plays have been staged, except for <em>No Weapon Formed Against You</em>, his “attempt at epic drama,” which has “eluded all attempts.” 2 But if you don’t take blade to page as I suggest, it is unlikely you will get far enough into <em>Carbon Pages</em> to realize this.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">Theater</a><div class="card-preview-cols"><p class="card-preview">Before the mid-19th century, reading a new book required a bit of preparation: you had to cut every single page loose with a knife. But to make Daniel Gavilovski’s three-play collection <em>Carbon Pages</em>, published by Unreal Press earlier this year, readable, you should simply take your knife and remove the full text of the first and third plays, as well as the preface. 1 Now, Gavilovski is a talented writer and a serious playwright — these plays have been staged, except for <em>No Weapon Formed Against You</em>, his “attempt at epic drama,” which has “eluded all attempts.” 2 But if you don’t take blade to page as I suggest, it is unlikely you will get far enough into <em>Carbon Pages</em> to realize this.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -211,7 +344,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Books</span><div class="card-preview-cols"><p class="card-preview">Over the past few years, researchers and professors have put their heads down and uncovered a set of statistics about gen z ineptitude that we can all recite in our sleep now: we are more anxious, more lonely, and less likely to go out with friends or on dates; we’re having less fun and less sex, destroying our bodies, and melting our minds.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener">Books</a><div class="card-preview-cols"><p class="card-preview">Over the past few years, researchers and professors have put their heads down and uncovered a set of statistics about gen z ineptitude that we can all recite in our sleep now: we are more anxious, more lonely, and less likely to go out with friends or on dates; we’re having less fun and less sex, destroying our bodies, and melting our minds.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -241,7 +374,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Movies</span><div class="card-preview-cols"><p class="card-preview">There seems to be about one movie a year that manages to penetrate the zeitgeist. This year, it appears to be <em>Obsession</em>. In a little over a month, on a budget of $750,000, it has grossed nearly $330 million. Instagram, X, and TikTok are flooded with stills, clips, frame-by-frame analyses, deep-dive video essays, cultural commentaries, and AI-generated tweets about the movie. Like <em>Backrooms</em> director Kane Parsons, 26-year-old <em>Obsession</em> writer-director Curry Barker got his start on YouTube, releasing horror short <em>The Chair</em> in 2023 and feature <em>Milk and Cereal</em> in 2024 before signing a deal with Focus Features, a real distributor, and bringing <em>Obsession</em> into the world two years later. He’s been tapped as the next director of the <em>Texas Chainsaw Massacre</em> franchise, and in June, he signed an 8-figure deal to direct a horror film with Universal.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener">Movies</a><div class="card-preview-cols"><p class="card-preview">There seems to be about one movie a year that manages to penetrate the zeitgeist. This year, it appears to be <em>Obsession</em>. In a little over a month, on a budget of $750,000, it has grossed nearly $330 million. Instagram, X, and TikTok are flooded with stills, clips, frame-by-frame analyses, deep-dive video essays, cultural commentaries, and AI-generated tweets about the movie. Like <em>Backrooms</em> director Kane Parsons, 26-year-old <em>Obsession</em> writer-director Curry Barker got his start on YouTube, releasing horror short <em>The Chair</em> in 2023 and feature <em>Milk and Cereal</em> in 2024 before signing a deal with Focus Features, a real distributor, and bringing <em>Obsession</em> into the world two years later. He’s been tapped as the next director of the <em>Texas Chainsaw Massacre</em> franchise, and in June, he signed an 8-figure deal to direct a horror film with Universal.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -276,7 +409,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Music</span><div class="card-preview-cols"><p class="card-preview">Singer-songwriter phenom Olivia Rodrigo’s revamped website features a collaged e-bedroom setting, replete with pink guitar, pink laptop computer, and diary with pink key and lock. There is a bookshelf which, once clicked, allows one to purchase Rodrigo’s CDs. If you press the red bra spilling out of the hand-drawn dresser drawer, the website takes you straight to Rodrigo’s online store. In honor of her new album, Instagram released a custom Rodrigo-designed typeface to every one of its 3 billion monthly active users. YouTube provides a custom pink yarn ball cursor anytime you watch one of her music videos. It’s a veritable fangirl’s wonderland. It seems the entire internet has conspired to promote <em>you seem pretty sad for a girl so in love</em>.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener">Music</a><div class="card-preview-cols"><p class="card-preview">Singer-songwriter phenom Olivia Rodrigo’s revamped website features a collaged e-bedroom setting, replete with pink guitar, pink laptop computer, and diary with pink key and lock. There is a bookshelf which, once clicked, allows one to purchase Rodrigo’s CDs. If you press the red bra spilling out of the hand-drawn dresser drawer, the website takes you straight to Rodrigo’s online store. In honor of her new album, Instagram released a custom Rodrigo-designed typeface to every one of its 3 billion monthly active users. YouTube provides a custom pink yarn ball cursor anytime you watch one of her music videos. It’s a veritable fangirl’s wonderland. It seems the entire internet has conspired to promote <em>you seem pretty sad for a girl so in love</em>.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -306,7 +439,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Movies</span><div class="card-preview-cols"><p class="card-preview">When the average film directors are a decade south of receiving an AARP subscription, it’s a breath of fresh air to see young faces. Kane Parsons, the director of A24’s new movie <em>Backrooms,</em> is the youngest we’ve seen in a while. What started in 2019 as an anonymous 4chan creepypasta (a horror related short story) turned into Parsons’s directorial debut at the sober age of 20.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener">Movies</a><div class="card-preview-cols"><p class="card-preview">When the average film directors are a decade south of receiving an AARP subscription, it’s a breath of fresh air to see young faces. Kane Parsons, the director of A24’s new movie <em>Backrooms,</em> is the youngest we’ve seen in a while. What started in 2019 as an anonymous 4chan creepypasta (a horror related short story) turned into Parsons’s directorial debut at the sober age of 20.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -336,7 +469,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Books</span><div class="card-preview-cols"><p class="card-preview">It is hard to imagine a reporter having more success out of the gate than (the then 17-year-old) Theo Baker. By the time he returned home after the autumn quarter of his first year at Stanford in 2022, the <em>Stanford Daily</em> journalist had already broken three major stories: the university’s heavy-handed suppression of parties in the post-Covid years; its failure to act against a con man who had lived illegally in student dorms for the better part of a year and allegedly harassed a female student; and the revelation that a series of papers published by then‑university president Marc Tessier‑Lavigne (almost always referred to by his initials, MTL) showed a clear pattern of research misconduct through the use of doctored images.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener">Books</a><div class="card-preview-cols"><p class="card-preview">It is hard to imagine a reporter having more success out of the gate than (the then 17-year-old) Theo Baker. By the time he returned home after the autumn quarter of his first year at Stanford in 2022, the <em>Stanford Daily</em> journalist had already broken three major stories: the university’s heavy-handed suppression of parties in the post-Covid years; its failure to act against a con man who had lived illegally in student dorms for the better part of a year and allegedly harassed a female student; and the revelation that a series of papers published by then‑university president Marc Tessier‑Lavigne (almost always referred to by his initials, MTL) showed a clear pattern of research misconduct through the use of doctored images.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -371,7 +504,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Music</span><div class="card-preview-cols"><p class="card-preview">Perhaps the most important quality in a young musician is their ability to make beautiful that which their parents would find hideous. As a teenager, you want to listen to music that makes you feel free, music to play fucking loud, the kind of music your parents would demand you turn off. In short, you’re after awful-sounding music that, once illicit, becomes mystical and possessive, all yours, just yours.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener">Music</a><div class="card-preview-cols"><p class="card-preview">Perhaps the most important quality in a young musician is their ability to make beautiful that which their parents would find hideous. As a teenager, you want to listen to music that makes you feel free, music to play fucking loud, the kind of music your parents would demand you turn off. In short, you’re after awful-sounding music that, once illicit, becomes mystical and possessive, all yours, just yours.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -401,7 +534,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Theater</span><div class="card-preview-cols"><p class="card-preview">I’m running late to catch the tail end of the thrice-extended, off-broadway run of <em>Dad Don’t Read This</em>, a surprise NYT Critic’s Pick by 20-something playwright Eliya Smith and director Chloe Claudel. St. Luke’s Theatre is not quite a basement, but it’s not far from it. Once I settle on a metal stool the producer sets down for me on the periphery, I clock Jesse Eisenberg with his parents in the back. Next to me, a girl with a tooth gap tells me she’s working with a director who’s worked with Nicole Kidman. So it’s a hot show.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener">Theater</a><div class="card-preview-cols"><p class="card-preview">I’m running late to catch the tail end of the thrice-extended, off-broadway run of <em>Dad Don’t Read This</em>, a surprise NYT Critic’s Pick by 20-something playwright Eliya Smith and director Chloe Claudel. St. Luke’s Theatre is not quite a basement, but it’s not far from it. Once I settle on a metal stool the producer sets down for me on the periphery, I clock Jesse Eisenberg with his parents in the back. Next to me, a girl with a tooth gap tells me she’s working with a director who’s worked with Nicole Kidman. So it’s a hot show.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -431,7 +564,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">Books</span><div class="card-preview-cols"><p class="card-preview">Nelio Biedermann is the rarest of young men: a mainstream literary wunderkind and recipient of the <em>New York Times</em> imprimatur. His Instagram shows him signing books with Patti Smith and modeling for a Warby Parker ad campaign. The jacket blurb from novelist Daniel Kehlmann on <em>Lázár</em>, Biedermann’s recently translated novel, reads like stage directions: “A truly great writer steps onto the stage, in full possession of his powers.” Biedermann, a 22-year-old writer from Zurich, has been called the next Thomas Mann, the next Joseph Roth, and the next Gabriel García Márquez. He is very handsome, and his novel — a multi-generational story told in a distinctly European idiom — has been selling.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/young-mann-in-a-hurry" rel="noopener">Books</a><div class="card-preview-cols"><p class="card-preview">Nelio Biedermann is the rarest of young men: a mainstream literary wunderkind and recipient of the <em>New York Times</em> imprimatur. His Instagram shows him signing books with Patti Smith and modeling for a Warby Parker ad campaign. The jacket blurb from novelist Daniel Kehlmann on <em>Lázár</em>, Biedermann’s recently translated novel, reads like stage directions: “A truly great writer steps onto the stage, in full possession of his powers.” Biedermann, a 22-year-old writer from Zurich, has been called the next Thomas Mann, the next Joseph Roth, and the next Gabriel García Márquez. He is very handsome, and his novel — a multi-generational story told in a distinctly European idiom — has been selling.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -466,7 +599,7 @@
             <div class="panel-col panel-col--right">
               
               <div class="duo-quote-divider"></div>
-              <div class="card-preview-block"><div class="plate-curtain"><span class="plate-title">The New Critic’s Criticism</span><div class="card-preview-cols"><p class="card-preview">The critic has two roles: to worship excellence and to wage war on its behalf.</p><p class="card-preview">Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.</p><p class="card-preview">Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?</p><p class="card-preview">The duty falls on us, the New Critics, to wield the sword of Sontag and Trilling, of Mencken and Kael.</p><p class="card-preview">Today marks the introduction of lean and mean criticism to the New Critic retinue.</p><p class="card-preview">In Contra, our critics will impress the nutrients of a healthy culture — the requisite cruelty, suspicion, spite, and congratulation — upon the significant works of generation z.</p><p class="card-preview">We, the editors, will match our critics and subjects like psychic partners: in exposing something about the other, they shall reveal something, too, about themselves. The two will meet in the arena of our reviews like sumo wrestlers, thwacking their bellyrolls together in eternal, aesthetic combat.</p><p class="card-preview">New Critics, excess eats the page away; dispassion begets the languor of indifference. Do not interpret, nor reference, the work to death. Do not fear the almighty <em>I</em> — its lifeforce is the soul of everything. Do not cower below the blanket of your reputation.</p><p class="card-preview">At last, rush to the theater! It will not write about itself.</p><p class="card-preview">Thus begins Review Week — five days of Contra, five nights of gore and glory.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
+              <div class="card-preview-block"><div class="plate-curtain"><a class="plate-title" href="https://www.thenewcritic.com/p/contra" rel="noopener">The New Critic’s Criticism</a><div class="card-preview-cols"><p class="card-preview">The critic has two roles: to worship excellence and to wage war on its behalf.</p><p class="card-preview">Critics are the torchbearers of taste. For every generation of renegades and dilettantes, a new class of sentries must rise up to defend the gates of excellence.</p><p class="card-preview">Now a young fleet of artists takes to the fore. They are our comrades and rivals, our ex-lovers and sworn enemies. Who will challenge them? Who will reward their victories and punish their crimes?</p><p class="card-preview">The duty falls on us, the New Critics, to wield the sword of Sontag and Trilling, of Mencken and Kael.</p><p class="card-preview">Today marks the introduction of lean and mean criticism to the New Critic retinue.</p><p class="card-preview">In Contra, our critics will impress the nutrients of a healthy culture — the requisite cruelty, suspicion, spite, and congratulation — upon the significant works of generation z.</p><p class="card-preview">We, the editors, will match our critics and subjects like psychic partners: in exposing something about the other, they shall reveal something, too, about themselves. The two will meet in the arena of our reviews like sumo wrestlers, thwacking their bellyrolls together in eternal, aesthetic combat.</p><p class="card-preview">New Critics, excess eats the page away; dispassion begets the languor of indifference. Do not interpret, nor reference, the work to death. Do not fear the almighty <em>I</em> — its lifeforce is the soul of everything. Do not cower below the blanket of your reputation.</p><p class="card-preview">At last, rush to the theater! It will not write about itself.</p><p class="card-preview">Thus begins Review Week — five days of Contra, five nights of gore and glory.</p></div><p class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></p></div></div>
             </div>
           </div>
         </div>
@@ -2522,6 +2655,13 @@
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
     var BANNER_AIR = 72;
+    if (!cap) {
+      var repName = document.querySelector('.reprint .reprint-name');
+      if (repName) {
+        fillNameBand(repName, repName.closest('.reprint'), { air: BANNER_AIR, airBottom: BANNER_AIR });
+        cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
+      }
+    }
     var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
@@ -3548,8 +3688,47 @@
       sp.style.marginTop = '-1px';
     });
   }
+  function fitToggle() {
+    var spans = document.querySelectorAll('.theme-toggle > span, .social-stack > span');
+    if (!spans.length) return;
+    var W = 600, H = 200, scan = 100, y0 = 120;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    if (!g) return;
+    [].forEach.call(spans, function (el) {
+      el.style.top = '';
+      var cs = getComputedStyle(el);
+      var size = parseFloat(cs.fontSize) || 0;
+      var text = (el.textContent || '').trim();
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+      if (!size || !text) return;
+      g.clearRect(0, 0, W, H);
+      g.font = cs.fontWeight + ' ' + scan + 'px ' + cs.fontFamily;
+      g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+      g.fillText(text, 10, y0);
+      var data;
+      try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return; }
+      var topRow = -1, botRow = -1;
+      for (var y = 0; y < H; y++) {
+        for (var x = 0; x < W; x++) {
+          if (data[(y * W + x) * 4 + 3] > 40) { if (topRow < 0) topRow = y; botRow = y; break; }
+        }
+      }
+      if (topRow < 0) return;
+      var midAboveBase = (y0 - (topRow + botRow + 1) / 2) / scan * size;
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.appendChild(probe);
+      var base = probe.getBoundingClientRect().bottom;
+      el.removeChild(probe);
+      var box = el.getBoundingClientRect();
+      var inkMid = base - midAboveBase;
+      el.style.position = 'relative';
+      el.style.top = (box.top + box.height / 2 - inkMid).toFixed(2) + 'px';
+    });
+  }
   function fitCardRules() {
-    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps, main.has-mega .latest-cell--contra');
     function inkEdge(node, side) {
       if (!node) return null;
       var r = document.createRange();
@@ -3564,6 +3743,20 @@
       var box = el.getBoundingClientRect();
       if (!box.width) return;
       var isHero = el.classList.contains('duo-half--mega');
+      if (el.classList.contains('latest-cell--contra')) {
+        var cPeek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+        var cL = inkEdge(cPeek, 'left'), cR = inkEdge(cPeek, 'right');
+        if (cL == null || cR == null) return;
+        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left)) + 'px');
+        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR)) + 'px');
+        var cKicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p');
+        var kL = inkEdge(cKicker, 'left'), kR = inkEdge(cKicker, 'right');
+        if (kL != null && kR != null) {
+          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left)) + 'px');
+          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR)) + 'px');
+        }
+        return;
+      }
       var picLeft = isHero
         ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
         : el.classList.contains('pic-left');
@@ -3632,6 +3825,7 @@
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
     step('fitCardRules', fitCardRules);
+    step('fitToggle', fitToggle);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
   (function(){
