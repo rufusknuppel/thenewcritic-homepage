@@ -5,20 +5,53 @@ A static homepage for `thenewcritic.com`, generated at build time by
 `build.js` from the Substack RSS feed at `https://www.thenewcritic.com/feed`.
 No framework, no npm dependencies — one Node script, zero `npm install`.
 
-## The bigger plan (context for any future work here)
-- `www.thenewcritic.com` is the existing Substack-hosted site. It is NOT
+## Where things stand (read this before touching anything live)
+- `www.thenewcritic.com` is the Substack-hosted magazine. It is NOT
   changing. All real posts, comments, likes, paywalls, and Substack's
-  discovery network live there permanently.
-- `thenewcritic.com` (the bare apex domain) currently 301-redirects to
-  `www`. That redirect needs to be removed and replaced with this build,
-  deployed via Cloudflare Pages (nameservers are already on Cloudflare,
-  so apex CNAME flattening is automatic through Pages' custom domain flow).
+  discovery network live there permanently. Its DNS record (a proxied
+  CNAME to `target.substack-custom-domains.com`) must never be touched.
+- `thenewcritic.com` (the bare apex) currently **301-redirects to `www`**
+  via a Cloudflare Redirect Rule named `apex to www`. This is deliberate:
+  the apex shows Substack until the user pulls the big trigger (below).
+  The only apex path that does not redirect is `/give*`, which the
+  `give-redirect` Worker serves.
+- The built homepage is live but unlinked: `dist/` is pushed to the
+  `gh-pages` branch and served by GitHub Pages at
+  `https://rufusknuppel.github.io/thenewcritic-homepage/`.
+- `cloudflare/worker.js` is the edge router that would put this build on
+  the apex: front-door paths (the files `build.js` emits) proxy to GitHub
+  Pages, everything else proxies to Substack. Its code is deployed to the
+  Cloudflare Worker named `thenewcritic`, but that Worker has **no route
+  and no custom domain**, so it does nothing today.
+- The apex DNS A record points at a dead EC2 host that answers every path
+  with an empty 200. It is harmless because the Redirect Rule (and, after
+  the switch, the Worker route) answers before the origin is contacted.
+  Do not "fix" it.
 - Every post link on the generated homepage points straight to
-  `https://www.thenewcritic.com/p/...` — this page is just a front door,
-  not a replacement reading experience.
-- Once deployed, the homepage should rebuild on a schedule (Cloudflare
-  Pages Deploy Hook + a free cron service like cron-job.org hitting it
-  every hour or two) since Substack doesn't send a webhook on publish.
+  `https://www.thenewcritic.com/p/...` — this page is a front door, not a
+  replacement reading experience.
+
+## The big trigger (switching the apex to this build)
+Do NOT do this unless the user explicitly asks to flip the apex. It is two
+dashboard changes on the `thenewcritic.com` zone, in this order:
+1. Workers & Pages → `thenewcritic` → Domains → Add Route:
+   `thenewcritic.com/*` (exactly that — no leading `*.`, which would
+   also capture `www` and hijack Substack). Zone `thenewcritic.com`.
+   The existing `thenewcritic.com/give*` route keeps going to
+   `give-redirect` because Cloudflare picks the most specific route.
+2. Rules → Redirect Rules → disable (or delete) `apex to www`. Redirect
+   Rules run before Workers, so while it is active the Worker never sees
+   apex traffic.
+Then verify from a terminal: `/`, `/style.css`, `/essays.html` should
+return the build (GitHub headers), `/p/anything` and `/feed` should come
+from Substack, `/give` should still be the custom give page, and
+`www.thenewcritic.com/` must still say `x-served-by: Substack`.
+Reverting is the same two steps backwards.
+
+If `cloudflare/worker.js` changes, the Worker must be redeployed by hand:
+Workers & Pages → `thenewcritic` → Edit code → paste the file → Deploy.
+The deployed version is a comment-trimmed copy of the repo file; the code
+is identical.
 
 ## Design
 Matches the existing `thenewcritic.com/give` page exactly — that page was
@@ -36,17 +69,16 @@ reused, not reinvented:
 - Reveal-on-scroll via IntersectionObserver, respects
   `prefers-reduced-motion`, copied verbatim from the Give page's script.
 
-## Status / open items
-- Build script is tested against a hand-written fixture RSS feed (CDATA
-  titles, missing fields, enclosure images) — logic confirmed sound.
-- Has NOT yet been verified end-to-end against the real, live feed from
-  inside an AI sandbox (no outbound network there) — only from the user's
-  own machine, where it worked and parsed 20 real posts successfully.
-- Not yet deployed to Cloudflare Pages. Not yet scheduled to rebuild.
-- The apex redirect-to-www has not yet been removed.
+## Open items
+- Once the apex is switched, the homepage should rebuild on a schedule
+  (re-run the build and push `gh-pages`) since Substack doesn't send a
+  webhook on publish. Nothing is scheduled yet.
+- The Cloudflare dashboard's code editor and rule forms do not cooperate
+  with browser automation; dashboard changes are done by the user.
 
 ## Commands
-- `npm run build` — fetches the feed, writes `dist/index.html` + `dist/style.css`
+- `npm run build` — fetches the feed, writes `dist/` (index, section
+  pages, style.css, fonts, images)
 - No test suite; no lint config. Keep it dependency-free if possible.
 
 ## Files
@@ -55,4 +87,5 @@ reused, not reinvented:
   dek, author/date meta, paragraph preview), keyed by post URL slug;
   overrides whatever the feed provides
 - `style.css` — copied as-is into `dist/` on build
-- `README.md` — deployment walkthrough for Cloudflare Pages
+- `cloudflare/worker.js` — the apex edge router (deployed, unrouted)
+- `README.md` — how it is hosted and how to flip the apex

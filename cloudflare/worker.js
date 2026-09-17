@@ -46,13 +46,34 @@ function isGithubPath(pathname) {
 
 async function proxy(request, origin, pathname, search) {
   const upstream = new URL(pathname + search, origin);
-  const upstreamReq = new Request(upstream, request);
-  const res = await fetch(upstreamReq);
+  // Build the upstream request by hand rather than `new Request(upstream,
+  // request)`: that form copies the incoming Host header, and Cloudflare
+  // honours a Host override on subrequests to hostnames it serves — so the
+  // subrequest was routed back to this same Worker and died with error
+  // 1042 instead of ever reaching GitHub or Substack.
+  const headers = new Headers(request.headers);
+  headers.delete('host');
+  headers.delete('cf-connecting-ip');
+  headers.delete('cf-ray');
+  headers.delete('cf-visitor');
+  headers.delete('cf-ipcountry');
+  headers.delete('x-forwarded-proto');
+  headers.delete('x-real-ip');
+  const method = request.method.toUpperCase();
+  const hasBody = method !== 'GET' && method !== 'HEAD';
+  const res = await fetch(upstream, {
+    method,
+    headers,
+    body: hasBody ? request.body : undefined,
+    // Hand Substack's redirects back to the browser untouched rather than
+    // following them inside the Worker.
+    redirect: 'manual',
+  });
   // Strip backend-identifying headers before handing the response back;
   // everything else (content-type, cache-control, etc.) passes through.
-  const headers = new Headers(res.headers);
-  headers.delete('server');
-  return new Response(res.body, { status: res.status, headers });
+  const out = new Headers(res.headers);
+  out.delete('server');
+  return new Response(res.body, { status: res.status, headers: out });
 }
 
 export default {
