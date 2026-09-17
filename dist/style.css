@@ -6114,3 +6114,12 @@ body.word-page .ledger-item > .ledger-row{
     grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
   }
 }
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass){
+  transition: color .25s ease, opacity .25s ease;
+}
+body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--yves) !important; opacity: 1;
+}
+.latest-plate .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
+.latest-plate .cut-mark.is-set{ display: inline; width: auto; }

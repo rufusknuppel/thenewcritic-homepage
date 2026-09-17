@@ -2839,7 +2839,16 @@
       }
       var floorLine = pl.getBoundingClientRect().top + padT + tB + rows * unit + 2;
       var cutDone = false;
-      [].forEach.call(pl.querySelectorAll('.latest-plate-p'), function(p){
+      // THE GAP THE CUT CHOSE (2026-09-17): one slot between paragraphs,
+      // unless the straddling paragraph's first line was refused only
+      // because its own blank line took the last row — then every gap
+      // on the plate is pulled in evenly by the one row it needs, and
+      // the line comes in with the … (a bare … on a line of its own,
+      // overflowing the plate, is what stood there). seatPlateAir reads
+      // it back rather than resetting the gaps to the slot.
+      pl.__gap = null;
+      var allP = [].slice.call(pl.querySelectorAll('.latest-plate-p'));
+      allP.forEach(function(p){
         if (cutDone) { p.style.display = 'none'; return; }
         var r = p.getBoundingClientRect();
         if (r.bottom <= floorLine) return;
@@ -2852,14 +2861,56 @@
         // load (measured), three passes over. The fit is monotone in the
         // word count, so probe it: ~7 writes land on the same word the
         // pop loop found.
-        var lo = 0, hi = words.length - 1;
-        while (lo < hi) {
-          var mid = (lo + hi + 1) >> 1;
-          p.textContent = words.slice(0, mid).join(' ') + '…';
-          if (p.getBoundingClientRect().bottom > floorLine) hi = mid - 1;
-          else lo = mid;
+        // THE … HANGS (2026-09-17): it is set in a mark of no width
+        // at the end of the cut, so it costs the line nothing and the
+        // cut keeps every word the line holds on its own — the mark
+        // was taking a word's room and the last word wrapped away.
+        var setCut = function (n) {
+          // The cut's last word gives up its trailing point or comma
+          // to the mark ("below." reads "below…", not "below.…").
+          p.textContent = words.slice(0, n).join(' ').replace(/[.,;:\s]+$/, '');
+          var mark = document.createElement('span');
+          mark.className = 'cut-mark';
+          mark.textContent = '…';
+          p.appendChild(mark);
+        };
+        // The whole paragraph is tried too: a short one that straddled
+        // only by its blank line fits whole once the gaps are pulled in.
+        var probe = function () {
+          var lo = 0, hi = words.length;
+          while (lo < hi) {
+            var mid = (lo + hi + 1) >> 1;
+            setCut(mid);
+            if (p.getBoundingClientRect().bottom > floorLine) hi = mid - 1;
+            else lo = mid;
+          }
+          return lo;
+        };
+        var lo = probe();
+        if (!lo) {
+          // No word fits: the gaps before it give up one row between
+          // them and the search runs again on the row freed.
+          var before = allP.slice(0, allP.indexOf(p)).filter(function (q) { return q.style.display !== 'none'; });
+          var G = before.length;
+          if (G >= 1) {
+            var gap = Math.max(0, unit - unit / G);
+            pl.__gap = gap;
+            allP.forEach(function (q, i) { if (i) q.style.marginTop = gap.toFixed(3) + 'px'; });
+            lo = probe();
+          }
+          if (!lo) { p.style.display = 'none'; cutDone = true; return; }
         }
-        p.textContent = words.slice(0, lo).join(' ') + '…';
+        setCut(lo);
+        // THE LINE IS CENTRED WITH ITS MARK: where the line has room
+        // for the … the mark takes its own width and the line centres
+        // on words and mark together; only a line filled to the
+        // measure keeps it hanging past the edge.
+        var mk = p.querySelector('.cut-mark');
+        if (mk) {
+          var h0 = p.getBoundingClientRect().height;
+          mk.classList.add('is-set');
+          if (p.getBoundingClientRect().height > h0 + 1) mk.classList.remove('is-set');
+        }
         cutDone = true;
       });
       // The plate ALWAYS closes on the … it owes — whether the cut
@@ -4360,7 +4411,10 @@
         // The gaps between paragraphs back to one slot (the cut set
         // them there; a pass before this one may have widened them).
         var unit = parseFloat(getComputedStyle(paras[0]).lineHeight) || 19.2;
-        paras.forEach(function (p, i) { if (i) p.style.marginTop = unit + 'px'; });
+        // (Or to the gap the cut chose, where it pulled them in to
+        // seat a straddling paragraph's first line — cutPlates.)
+        var gap0 = (box.__gap != null) ? box.__gap : unit;
+        paras.forEach(function (p, i) { if (i) p.style.marginTop = gap0.toFixed(3) + 'px'; });
         // The essay's paragraphs stand in a column box cut to its rows
         // (overflow hidden): it must grow by whatever the gaps take.
         var cols = box.querySelector('.card-preview-cols');
@@ -4424,7 +4478,7 @@
         }
         if (paras.length > 1) {
           var add = rem / (paras.length - 1);
-          paras.forEach(function (p, i) { if (i) p.style.marginTop = (unit + add).toFixed(2) + 'px'; });
+          paras.forEach(function (p, i) { if (i) p.style.marginTop = (gap0 + add).toFixed(2) + 'px'; });
           if (cols && cols0 !== null) cols.style.height = (cols0 + rem).toFixed(2) + 'px';
         } else {
           var half = rem / 2;

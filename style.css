@@ -13666,3 +13666,33 @@ body.word-page .ledger-item > .ledger-row{
     grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
   }
 }
+
+/* ---------------------------------------------------------------
+   LIGHT, DARK AND HEX HOVER LIKE THE REST OF THE COURIER (2026-09-17):
+   the word under the pointer goes to the highlight, the others stay
+   in the ink — each word is its own span, so only the one under the
+   hand lights, not the whole button as the site-wide rule would have
+   it. The dashes take no hover. (Earlier the words were held in the
+   ink under the pointer on purpose; that is undone.)
+   --------------------------------------------------------------- */
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+
+/* THE HEAD'S SYMBOLS HOVER AS THE WORDS DO (2026-09-17): the sort
+   arrows, the shuffle and the glass go to the highlight under the
+   pointer, whole, on the courier's own quarter-second ease — not the
+   opacity step they had. The active arrow is already the highlight
+   and stays it; CLEAR FILTER's X lights with its words. */
+body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass){
+  transition: color .25s ease, opacity .25s ease;
+}
+body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--yves) !important; opacity: 1;
+}
+
+/* THE CUT'S … HANGS PAST THE LAST WORD (2026-09-17): a mark of no
+   width, so the line keeps every word it holds on its own and the
+   mark stands just past the last (src/duo-panel-fit.js, cutPlates). */
+.latest-plate .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
+/* Set in the line where the line has room for it (cutPlates decides),
+   so the line centres on its words and the mark together. */
+.latest-plate .cut-mark.is-set{ display: inline; width: auto; }
