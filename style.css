@@ -5847,11 +5847,22 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   pointer-events: none;
 }
 main.has-mega .page-rows > :is(.head-field, .foot-field):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ display: none; }
-main.has-mega .latest-cell--ps.pic-left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: 50%; width: 50%; }
-main.has-mega .latest-cell--ps.pic-left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ left: 50%; }
-main.has-mega .latest-cell--ps.pic-right:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: 0; width: 50%; }
-main.has-mega .latest-cell--ps.pic-right:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ right: 50%; }
-main.has-mega .card:not(.card--mega-rev) .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: 24px; width: calc(100% / 3 + 24px); }
-main.has-mega .card:not(.card--mega-rev) .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ right: calc(200% / 3 - 48px); }
-main.has-mega .card--mega-rev .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: calc(200% / 3 - 48px); width: calc(100% / 3 + 24px); }
-main.has-mega .card--mega-rev .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ left: calc(200% / 3 - 48px); }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  clip-path: inset(0 var(--rule-top-r, 0px) 0 var(--rule-top-l, 0px));
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  clip-path: inset(0 var(--rule-foot-r, 0px) 0 var(--rule-foot-l, 0px));
+}
+main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: 0 -1px 0 0 #FFFFFF;
+}
+main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}

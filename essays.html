@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu56682h">
+<link rel="stylesheet" href="style.css?v=mu5oywbf">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -117,7 +117,7 @@
               <p class="card-meta ground-credit"><a class="meta-author" href="archive.html#sort=author&amp;post=mrbeast-slop-auteur">Will Diana</a><a class="meta-date" href="archive.html#sort=date&amp;post=mrbeast-slop-auteur">September 16</a></p>
               <p class="card-dek">“According to the memo, MrBeast’s art justifies all — there is no reason to live, it seems, except to make a MrBeast video.”</p>
               
-              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">53</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/mrbeast-slop-auteur" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
+              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">72</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/mrbeast-slop-auteur" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
             </div>
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
@@ -4768,6 +4768,43 @@
       sp.style.marginTop = '-1px';
     });
   }
+  function fitCardRules() {
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    function inkEdge(node, side) {
+      if (!node) return null;
+      var r = document.createRange();
+      r.selectNodeContents(node);
+      var b = r.getBoundingClientRect();
+      if (!b.width) return null;
+      if (side === 'left') return b.left;
+      var ls = parseFloat(getComputedStyle(node).letterSpacing) || 0;
+      return b.right - ls;
+    }
+    [].forEach.call(cards, function (el) {
+      var box = el.getBoundingClientRect();
+      if (!box.width) return;
+      var isHero = el.classList.contains('duo-half--mega');
+      var picLeft = isHero
+        ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
+        : el.classList.contains('pic-left');
+      var pad = isHero ? 24 : 0;
+      var ruleL = box.left + pad, ruleR = box.right - pad;
+      var courier = el.querySelector('.cover-meta--author');
+      var peek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+      var kicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p, .card-preview');
+      var close = el.querySelector('.plate-close') || el.querySelector('.plate-more');
+      var tL = picLeft ? inkEdge(kicker, 'left') : inkEdge(courier, 'left');
+      var tR = picLeft ? inkEdge(courier, 'right') : inkEdge(kicker, 'right');
+      var fL = picLeft ? inkEdge(close, 'left') : inkEdge(peek, 'left');
+      var fR = picLeft ? inkEdge(peek, 'right') : inkEdge(close, 'right');
+      if (tL == null || tR == null || fL == null || fR == null) return;
+      var clamp = function (v) { return Math.max(0, Math.round(v)); };
+      el.style.setProperty('--rule-top-l', clamp(tL - ruleL) + 'px');
+      el.style.setProperty('--rule-top-r', clamp(ruleR - tR) + 'px');
+      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL) + 'px');
+      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR) + 'px');
+    });
+  }
   function fitAll() { whenStill(fitAllNow); }
   function fitAllNow() {
     fitErrors.length = 0;
@@ -4814,6 +4851,7 @@
     step('fitCourierDots#2', fitCourierDots);
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
+    step('fitCardRules', fitCardRules);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
   (function(){
