@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=mu56682h">
+<link rel="stylesheet" href="style.css?v=mu5oywbf">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -106,7 +106,7 @@
 
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Wednesday, September 16, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Thursday, September 17, 2026</span></p>
     <p class="band-deks"><a href="archive.html">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
@@ -3761,6 +3761,43 @@
       sp.style.marginTop = '-1px';
     });
   }
+  function fitCardRules() {
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    function inkEdge(node, side) {
+      if (!node) return null;
+      var r = document.createRange();
+      r.selectNodeContents(node);
+      var b = r.getBoundingClientRect();
+      if (!b.width) return null;
+      if (side === 'left') return b.left;
+      var ls = parseFloat(getComputedStyle(node).letterSpacing) || 0;
+      return b.right - ls;
+    }
+    [].forEach.call(cards, function (el) {
+      var box = el.getBoundingClientRect();
+      if (!box.width) return;
+      var isHero = el.classList.contains('duo-half--mega');
+      var picLeft = isHero
+        ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
+        : el.classList.contains('pic-left');
+      var pad = isHero ? 24 : 0;
+      var ruleL = box.left + pad, ruleR = box.right - pad;
+      var courier = el.querySelector('.cover-meta--author');
+      var peek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+      var kicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p, .card-preview');
+      var close = el.querySelector('.plate-close') || el.querySelector('.plate-more');
+      var tL = picLeft ? inkEdge(kicker, 'left') : inkEdge(courier, 'left');
+      var tR = picLeft ? inkEdge(courier, 'right') : inkEdge(kicker, 'right');
+      var fL = picLeft ? inkEdge(close, 'left') : inkEdge(peek, 'left');
+      var fR = picLeft ? inkEdge(peek, 'right') : inkEdge(close, 'right');
+      if (tL == null || tR == null || fL == null || fR == null) return;
+      var clamp = function (v) { return Math.max(0, Math.round(v)); };
+      el.style.setProperty('--rule-top-l', clamp(tL - ruleL) + 'px');
+      el.style.setProperty('--rule-top-r', clamp(ruleR - tR) + 'px');
+      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL) + 'px');
+      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR) + 'px');
+    });
+  }
   function fitAll() { whenStill(fitAllNow); }
   function fitAllNow() {
     fitErrors.length = 0;
@@ -3807,6 +3844,7 @@
     step('fitCourierDots#2', fitCourierDots);
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
+    step('fitCardRules', fitCardRules);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
   (function(){

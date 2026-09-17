@@ -13121,17 +13121,43 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
    under the reprint. */
 main.has-mega .page-rows > :is(.head-field, .foot-field):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ display: none; }
 
-/* THE RULES STAND ON THE WORDS, NOT THE PICTURE (2026-09-16). On the
-   postscript cells and the essay heroes the top and foot rules run
-   from the cover image's inner edge to the far edge of the courier's
-   column — the text column only — rather than across the picture.
-   The postscript cell is halves; the hero's column is a third of the
-   half plus its 24 inset, on whichever side the title stands. */
-main.has-mega .latest-cell--ps.pic-left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: 50%; width: 50%; }
-main.has-mega .latest-cell--ps.pic-left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ left: 50%; }
-main.has-mega .latest-cell--ps.pic-right:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: 0; width: 50%; }
-main.has-mega .latest-cell--ps.pic-right:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ right: 50%; }
-main.has-mega .card:not(.card--mega-rev) .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: 24px; width: calc(100% / 3 + 24px); }
-main.has-mega .card:not(.card--mega-rev) .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ right: calc(200% / 3 - 48px); }
-main.has-mega .card--mega-rev .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ margin-left: calc(200% / 3 - 48px); width: calc(100% / 3 + 24px); }
-main.has-mega .card--mega-rev .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ left: calc(200% / 3 - 48px); }
+/* THE RULES RUN FROM THE COURIER'S INK TO THE PICTURE'S FAR EDGE
+   (2026-09-17). On the postscript cells and the essay heroes each rule
+   is two pieces: a FIXED piece from the far edge of the courier line's
+   ink to the far edge of the body preview's kicker (clip insets on the
+   rule pseudo-elements, measured by fitCardRules in duo-panel-fit.js),
+   and a piece on the picture's own top and bottom edges that travels
+   with it as it slides. Shut, their union runs from the courier across
+   the picture to its far edge; open, from the picture's new far edge
+   to the kicker; between, the picture's edge picks the line up and
+   carries it — never ahead of it, since the fixed piece never moves.
+   The pseudo-elements keep their own boxes (the sticky top rule is in
+   the cell's flow; narrowing it re-wrapped the cell), only their paint
+   is clipped. Until the fitter runs the insets are 0: the full line. */
+main.has-mega :is(.latest-cell--ps, .duo-half--mega):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  clip-path: inset(0 var(--rule-top-r, 0px) 0 var(--rule-top-l, 0px));
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  clip-path: inset(0 var(--rule-foot-r, 0px) 0 var(--rule-foot-l, 0px));
+}
+/* The picture's own piece: 1px white along its top and bottom edges,
+   moving with it. The fixed top rule stands on the row ABOVE the card's
+   box (the sticky line's -1px margin) and the picture's box opens on
+   the card's first row, so the top line is the picture element's own
+   outer shadow one pixel above its box — its overflow clips its
+   children, not its own shadow, and its parents clip nothing. The foot
+   rule stands on the box's last row, so the bottom line is an inset
+   shadow on a pseudo-element painted over the artwork. */
+main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: 0 -1px 0 0 #FFFFFF;
+}
+main.has-mega .duo-half--mega .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 -1px 0 0 #FFFFFF;
+}

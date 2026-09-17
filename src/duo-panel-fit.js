@@ -4977,6 +4977,63 @@
       sp.style.marginTop = '-1px';
     });
   }
+  // THE CARD RULES RUN FROM THE COURIER'S INK TO THE PICTURE'S FAR EDGE
+  // (2026-09-17). On the essay heroes and the postscript cells each rule
+  // is two pieces whose union is the line: a FIXED piece from the far
+  // edge of the courier line's ink ("WILL DIANA · SEP 16") to the far
+  // edge of the body preview's kicker (the ink of whichever stands on
+  // the plate — the kicker line, or the first paragraph where a post
+  // has none), and a piece drawn on the picture's own top edge that
+  // travels with it (style.css). Shut, the picture stands on the far
+  // side and the union runs courier-to-picture-edge; open, it has
+  // slid across and the union runs picture-edge-to-kicker; between,
+  // the picture's edge picks the line up and carries it, never ahead
+  // of it. The foot rule is the same between READ PREVIEW and CLOSE
+  // PREVIEW. This writes the fixed piece as clip insets of the rule
+  // pseudo-elements' own boxes, which run from the picture's far edge
+  // on one side to the box's on the other (the hero's box 24 past).
+  function fitCardRules() {
+    var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps');
+    function inkEdge(node, side) {
+      if (!node) return null;
+      var r = document.createRange();
+      r.selectNodeContents(node);
+      var b = r.getBoundingClientRect();
+      if (!b.width) return null;
+      if (side === 'left') return b.left;
+      // A letter-spaced line carries its spacing after the last glyph too.
+      var ls = parseFloat(getComputedStyle(node).letterSpacing) || 0;
+      return b.right - ls;
+    }
+    [].forEach.call(cards, function (el) {
+      var box = el.getBoundingClientRect();
+      if (!box.width) return;
+      var isHero = el.classList.contains('duo-half--mega');
+      var picLeft = isHero
+        ? !!(el.closest('.card') && el.closest('.card').classList.contains('card--mega-rev'))
+        : el.classList.contains('pic-left');
+      var pad = isHero ? 24 : 0;
+      var ruleL = box.left + pad, ruleR = box.right - pad;
+      var courier = el.querySelector('.cover-meta--author');
+      var peek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
+      var kicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p, .card-preview');
+      var close = el.querySelector('.plate-close') || el.querySelector('.plate-more');
+      // The words' side is away from the picture; the plate's is where
+      // the picture stands. Each fixed piece runs between the two far
+      // edges: on a picture-right card from the courier's LEFT ink to
+      // the kicker's RIGHT, and mirrored on a picture-left one.
+      var tL = picLeft ? inkEdge(kicker, 'left') : inkEdge(courier, 'left');
+      var tR = picLeft ? inkEdge(courier, 'right') : inkEdge(kicker, 'right');
+      var fL = picLeft ? inkEdge(close, 'left') : inkEdge(peek, 'left');
+      var fR = picLeft ? inkEdge(peek, 'right') : inkEdge(close, 'right');
+      if (tL == null || tR == null || fL == null || fR == null) return;
+      var clamp = function (v) { return Math.max(0, Math.round(v)); };
+      el.style.setProperty('--rule-top-l', clamp(tL - ruleL) + 'px');
+      el.style.setProperty('--rule-top-r', clamp(ruleR - tR) + 'px');
+      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL) + 'px');
+      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR) + 'px');
+    });
+  }
   function fitAll() { whenStill(fitAllNow); }
   function fitAllNow() {
     fitErrors.length = 0;
@@ -5047,6 +5104,7 @@
     step('fitCourierDots#2', fitCourierDots);
     step('seatPlateAir', seatPlateAir);
     step('fitTitleHalo', fitTitleHalo);
+    step('fitCardRules', fitCardRules);
     // Every fit pass can move document seats (fonts, images, fitted
     // titles) — announce it so rail-fix re-measures its anchors and
     // rebuilds the held clones on the FINAL geometry, not the first
