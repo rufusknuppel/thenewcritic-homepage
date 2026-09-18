@@ -352,7 +352,7 @@
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('400 100px oculi-display').then(fitMast, function(){});
+    document.fonts.load('400 100px "OPS Placard"').then(fitMast, function(){});
     if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
   var resizeTimer;

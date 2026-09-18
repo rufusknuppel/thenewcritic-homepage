@@ -16,7 +16,8 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=901e3a63">
+<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=b37436e0">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -227,7 +228,7 @@
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('400 100px oculi-display'),
+      f.load('400 100px "OPS Placard"'),
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -4810,7 +4811,7 @@
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('400 100px oculi-display').then(fitMast, function(){});
+    document.fonts.load('400 100px "OPS Placard"').then(fitMast, function(){});
     if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
   var resizeTimer;

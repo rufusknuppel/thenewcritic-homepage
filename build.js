@@ -2495,6 +2495,7 @@ ${leadPreload}
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
+<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
@@ -2785,7 +2786,7 @@ function renderFontGateScript() {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('400 100px oculi-display'),
+      f.load('400 100px "OPS Placard"'),
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -3032,6 +3033,7 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
+<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
 ${renderImgFadeScript()}

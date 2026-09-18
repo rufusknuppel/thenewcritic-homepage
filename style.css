@@ -199,12 +199,12 @@
      tagline, titles, deks and byline strips. Playfair Display speaks
      the excerpts. (--display-face kept as an unused Archivo fallback.) */
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  /* OCULI DISPLAY off the Adobe kit (2026-09-17), in capitals,
-     centred, untracked — the names stand at their natural spacing in
-     the middle of their bands (fillNameBand no longer spreads the
-     letters to the measure). Placard, the Antenne trial, is retired;
-     its @font-face above stays declared but unfetched. */
-  --title-face: 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* OPS PLACARD AGAIN (2026-09-18; a day in Oculi Display), in the
+     case each site keeps — the names in capitals, the titles as
+     written — centred, untracked but for the names' touch. One bold
+     cut, self-hosted (the @font-face above); the licence note there
+     still stands. */
+  --title-face: 'OPS Placard', 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
   /* Bare SYSTEM Courier first — the Antenne Books move (they declare
      `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
