@@ -199,8 +199,12 @@
      tagline, titles, deks and byline strips. Playfair Display speaks
      the excerpts. (--display-face kept as an unused Archivo fallback.) */
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  /* OPS Placard on TRIAL ahead of the Neue Haas it may replace. */
-  --title-face: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* OCULI DISPLAY off the Adobe kit (2026-09-17), in capitals,
+     centred, untracked — the names stand at their natural spacing in
+     the middle of their bands (fillNameBand no longer spreads the
+     letters to the measure). Placard, the Antenne trial, is retired;
+     its @font-face above stays declared but unfetched. */
+  --title-face: 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
   /* Bare SYSTEM Courier first — the Antenne Books move (they declare
      `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
@@ -208,7 +212,12 @@
      black of the reference, at a plain 400. Kit Courier Std backs it
      up where the system face is missing; Windows aliases "Courier" to
      Courier New and gets the thinner cut (accepted, as Antenne do). */
-  --byline-face: Courier, 'courier-std', 'Courier New', monospace;
+  /* COURIER STD, Adobe's cut off the kit, FIRST (2026-09-17, after an
+     hour each in Acumin Wide and Roboto Mono): the one drawing on
+     every platform, where the bare "Courier" before it meant Apple's
+     dark cut on a Mac and Courier New on Windows. The system faces
+     back it up where the kit is missing. */
+  --byline-face: 'courier-std', Courier, 'Courier New', monospace;
   /* Both Courier roles — byline strip and dek — sit at 14px. */
   /* ONE courier size — corners, tagline, socials, bylines, every
      credit voice reads this token. */
@@ -7778,8 +7787,10 @@ body.has-mega::before{ content: none; }
    Hover keeps the site's Klein (the trade above this block still
    wins on the pointer). */
 .site-nav--top .topbar-name{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: #0B0B0B;
   margin-top: calc(24px - 0.2169 * var(--masthead-size-top));
 }
@@ -7944,8 +7955,8 @@ body.has-mega::before{ content: none; }
     #b3b0ab;
 }
 .banner-name{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
   color: #0B0B0B;
   font-size: var(--masthead-size-top);
   /* Placard's seats: cap climb 0.2169 of the size, the empty head
@@ -7970,8 +7981,8 @@ main.has-mega .reprint{
     #b3b0ab;
 }
 .reprint-name{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
   color: #0B0B0B;
   font-size: var(--masthead-size-top);
   transform: translateX(var(--masthead-ink-shift-top));
@@ -8489,18 +8500,20 @@ body.has-mega::after{ content: none; animation: none; }
 /* ---------- THE WORDMARK AND THE BANDS' MARKS BACK IN PLACARD ---------- */
 .site-nav--top .topbar-name,
 .section-band .band-mark{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
 }
 .section-band .band-mark{ font-size: 36px; }
 
-/* ---------- THE ARTICLE TITLES IN PLACARD ---------- */
+/* ---------- THE ARTICLE TITLES IN THE TITLE FACE ----------
+   Oculi Display, sentence case, with the names (2026-09-17); they
+   were Placard caps. */
 .card-title,
 .latest-title,
 .card .duo-half--mega .duo-panel .card-title{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-family: var(--title-face);
+  font-weight: 400;
+  text-transform: none;
 }
 
 
@@ -8885,15 +8898,18 @@ main.has-mega :is(.page-banner, .reprint){
 main.has-mega :is(.banner-name, .reprint-name){
   display: block;
   position: relative;
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
   font-style: normal;
+  /* CAPITALS (2026-09-17; sentence case for a spell that day). */
   text-transform: uppercase;
   white-space: nowrap;
   line-height: 1;
   /* The token is the first guess only; the fitter rescales it. */
   font-size: var(--masthead-size-top);
-  letter-spacing: normal;
+  /* A TOUCH OF TRACKING on the capitals (2026-09-17): three
+     hundredths of an em, scaling with the fitted size. */
+  letter-spacing: 0.03em;
   text-align: center;
   transform: none;
   margin: 0;
@@ -9558,14 +9574,17 @@ main.has-mega{ background: var(--paper); }
 .reprint,
 main.has-mega .reprint{ position: relative; bottom: auto; z-index: auto; }
 
-/* ---------- THE TITLES IN GARAMOND, AS WRITTEN ----------
+/* ---------- THE TITLES IN OCULI, AS WRITTEN ----------
    Every card title — the heroes', the postscripts', the reviews' —
-   sets in the dek's Garamond, upright, in its own case: no Placard,
-   no capitals, no tracking. The fitters measure the face they find,
-   so the sizes and seats follow. */
+   sets in the names' Oculi Display (2026-09-17, for good this time:
+   Garamond, then Oculi, then Garamond again through the day),
+   upright, in its own case: no capitals, no tracking. The fitters
+   measure the face they find, so the sizes and seats follow. On a
+   hex ground the titles wear the names' opposite ink too — see THE
+   NAMES ON A HEX GROUND at the foot. */
 main.has-mega :is(.card-title, .latest-title),
 main.has-mega :is(.card-title, .latest-title) :is(a, .title-line, span){
-  font-family: var(--excerpt);
+  font-family: var(--title-face);
   font-weight: 400;
   font-style: normal;
   text-transform: none;
@@ -11411,7 +11430,7 @@ body.ledger-page{
   --ledger-air: 72px;
   --ledger-crimson: var(--k); /* the blue, set to white 2026-09-16 */
   --ledger-charcoal: var(--g);
-  --ledger-courier: Courier, 'courier-std', 'Courier New', monospace;
+  --ledger-courier: var(--byline-face); /* one token with every other courier role since 2026-09-17 */
   background: var(--ledger-charcoal); background-image: none;
   color: var(--k);
   font-family: var(--ledger-courier);
@@ -11431,8 +11450,8 @@ body.ledger-page #main{ padding: 0; margin: 0; max-width: none; }
 .ledger-word{
   display: block;
   margin: 0; padding: 0 0 0 var(--ledger-side);
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700; font-size: 14vw; line-height: 1;
+  font-family: var(--title-face);
+  font-weight: 400; font-size: 14vw; line-height: 1;
   text-transform: uppercase; white-space: nowrap;
   color: var(--k); text-decoration: none;
   transition: color .15s ease;
@@ -11595,7 +11614,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
 .ledger-band--head .ledger-slot{ flex: none; }
 .ledger-band--head .ledger-slot--left,
 .ledger-band--head .ledger-slot--right{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 20px; letter-spacing: normal;
 }
@@ -11638,7 +11657,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
 .ledger-band--foot .ledger-slot{ flex: none; }
 .ledger-band--foot .ledger-slot--left,
 .ledger-band--foot .ledger-slot--right{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 20px; letter-spacing: normal;
 }
@@ -11680,7 +11699,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
    and go crimson under the pointer. */
 .ledger-row,
 .ledger-cell{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 36px; letter-spacing: normal;
   text-transform: none;
@@ -11708,7 +11727,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
    charcoal, hyphenated, one line of air between paragraphs — in two
    columns here. */
 .ledger-cols{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: normal; font-weight: 400;
   font-size: 16px; line-height: 19.2px; letter-spacing: normal;
   color: var(--g);
@@ -11952,7 +11971,7 @@ body.ledger-page .ledger-tabs{
 }
 body.ledger-page .ledger-tabs .about-link{
   background: none; border: 0; padding: 0; margin: 0;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 20px; letter-spacing: normal;
   text-transform: none;
@@ -12029,14 +12048,14 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card-kicker,
 .about-card-foot{
   margin: 0;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-size: 13px; line-height: 18.2px; letter-spacing: -0.26px;
   text-transform: uppercase; font-weight: 400;
   color: var(--g);
 }
 .about-card-title{
   margin: 36px 0 0;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-weight: 400; font-style: normal;
   font-size: 48px; line-height: 1.1; letter-spacing: normal;
   text-transform: none;
@@ -12045,7 +12064,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card-dek{
   margin: 18px auto 0;
   max-width: 34em;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px;
   color: var(--g);
@@ -12054,7 +12073,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
   margin: 36px auto 0;
   width: 100%; max-width: 720px;
   text-align: left;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-size: 16px; line-height: 19.2px; font-style: normal; font-weight: 400;
   color: var(--g);
   hyphens: auto; -webkit-hyphens: auto;
@@ -12085,7 +12104,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card .mh-list{ text-align: center; }
 .about-card .mh-role{
   margin: 0 0 6px;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-size: 13px; line-height: 18.2px; letter-spacing: -0.26px;
   text-transform: uppercase; font-weight: 400; font-style: normal;
   color: var(--g);
@@ -12093,7 +12112,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card .mh-group + .mh-group{ margin-top: 24px; }
 .about-card .mh-name{
   display: block;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px;
   text-transform: none; letter-spacing: normal;
@@ -12184,7 +12203,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
    Garamond italic at 20 on 24 — at the kicker's line. */
 .about-card-title--dek{
   margin-top: 0;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px; letter-spacing: normal;
   text-transform: none;
@@ -12198,7 +12217,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
    the Garamond italic at 20 on 24 — not the courier. */
 #subscribe .about-card-foot,
 #subscribe .about-card-foot a{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px; letter-spacing: normal;
   text-transform: none;
@@ -12255,7 +12274,7 @@ body.ledger-page .about-mosaic-block{ z-index: 1; }
 /* THE COLUMN READS CENTRED — every line of it, the sign-up clause in
    the body's Garamond now — but the numbered list keeps its left edge. */
 .about-col .about-card-line{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-size: 16px; line-height: 19.2px; letter-spacing: normal;
   text-transform: none; font-weight: 400; font-style: normal;
 }
@@ -13166,7 +13185,20 @@ main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::
 main.has-mega :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-align: center;
   text-align-last: center;
-  hyphens: manual;
+  /* A SMOOTHER RAG (2026-09-17): the engine looks several lines ahead
+     and trades a shorter line for an even edge and no one-word last
+     line (text-wrap: pretty — Chrome and Edge; others wrap as
+     before), and long words break at a syllable rather than dragging
+     whole to the next line — eight letters or more, four kept on
+     each side of the hyphen, so the hyphens stay few. The page's
+     lang supplies the dictionary. The plate cutter measures the
+     lines as laid out, so it follows either. */
+  text-wrap: pretty;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
+  hyphenate-limit-chars: 8 4 4;
 }
 /* …AND, LATER THE SAME DAY, ALIGNED TO THE PICTURE: on the heroes and
    the postscript cells the body text is ranged on whichever of its
@@ -13183,6 +13215,77 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-preview
 main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-align: right;
   text-align-last: right;
+}
+/* AND THE PLATE'S COURIER WITH THE BODY (2026-09-17): the kicker over
+   the paragraphs and CLOSE PREVIEW under them range on the same edge
+   the body does — flush left where the body is, flush right where it
+   is, centred where it is (the review cells). */
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.plate-title, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: left;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.plate-title, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: right;
+}
+/* AND THE TITLE COLUMN TUCKED AGAINST THE PICTURE (2026-09-17): the
+   closed card's matter — the courier line, the title's lines, the
+   dek and READ PREVIEW — ranges on the edge that faces the cover:
+   right where the picture rests at the right, left where it rests
+   at the left (the body text behind it does the reverse, since the
+   picture has slid to the other side by the time it shows). The
+   reviews, centred, are untouched. */
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) :is(.latest-matter, .latest-title, .card-title, .title-line, .latest-dek, .card-dek, .cover-meta, .card-meta--line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: left;
+  justify-content: flex-start;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) :is(.latest-matter, .latest-title, .card-title, .title-line, .latest-dek, .card-dek, .cover-meta, .card-meta--line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: right;
+  justify-content: flex-end;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-left: 0; margin-right: auto; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-left: auto; margin-right: 0; }
+/* THE TITLE TAKES THE POINTER ON ITS INK ALONE (2026-09-17): the
+   title's link is a block the column's width, so the air beside a
+   short line lit it. Each fitted line is shrunk to its own words
+   (fit-content, kept on the column's edge by its margins — auto both
+   sides where the title is centred, one side where it is ranged with
+   the picture) and takes the pointer; the link and the title behind
+   it take none, and light and follow as the line's ancestors. Only a
+   title the fitter has set in lines (every card's, once fitted) is
+   treated so — a bare title keeps its block, and its link. */
+main.has-mega :is(.card-title, .latest-title):has(.title-line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title):has(.title-line) > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+main.has-mega :is(.card-title, .latest-title) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  pointer-events: auto;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-inline: 0 auto; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-inline: auto 0; }
+/* THE DEK'S FAR MARGIN GROWS BY 48 (2026-09-17): tucked against the
+   picture with the rest of the column, the dek alone stops 48
+   shorter on the side away from it — a narrower measure, so its
+   lines rag well clear of the column's far edge. The fitter reads
+   the dek's box after layout, so the seat follows. */
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) :is(.latest-dek, .card-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 48px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) :is(.latest-dek, .card-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 48px; }
+/* THE FAR MARGIN GROWS (2026-09-17): the ragged edge — the side away
+   from the picture, where nothing is ranged — stands 96 from the
+   plate's edge on the postscripts (24, then 12, then 12 over the 48
+   the aligned edge keeps) and 144 on the essays (24, then 24 more). Stated on the
+   curtain, the inner box that carries the 48s on the postscript
+   plates and inside the essays' preview block alike. */
+main.has-mega .latest-cell--ps.pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-right: 96px;
+}
+main.has-mega .latest-cell--ps.pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 96px;
+}
+main.has-mega .duo-half--mega.pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-right: 144px;
+}
+main.has-mega .duo-half--mega.pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 144px;
 }
 
 /* THE TOGGLE: LIGHT over DARK in the courier, stacked in the right
@@ -13207,7 +13310,7 @@ main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   border: 0;
   background: none;
   cursor: pointer;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-size: 13px;
   line-height: 13px;
@@ -13245,7 +13348,7 @@ main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none;
   outline: none;
   box-shadow: none;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-size: 13px;
   line-height: 13px;
@@ -13475,9 +13578,12 @@ main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* NO DASHES between the marks (2026-09-17): the 13 line each dash
+     stood in is the stack's gap now. */
+  gap: 13px;
   margin: 0;
   padding: 0;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-style: normal;
   font-size: 13px;
@@ -13537,7 +13643,7 @@ body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   cursor: pointer;
   /* The courier, as the cards' READ PREVIEW: the head's own labels are
      the band's Garamond. */
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-style: normal;
   font-size: 13px;
@@ -13592,7 +13698,7 @@ body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none; outline: none; box-shadow: none;
   /* The dek's voice, as the head's labels: the cards' Garamond
      italic at 20 on the head's 72. */
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 72px; letter-spacing: normal;
   text-transform: none;
@@ -13696,3 +13802,210 @@ body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass):i
 /* Set in the line where the line has room for it (cutPlates decides),
    so the line centres on its words and the mark together. */
 .latest-plate .cut-mark.is-set{ display: inline; width: auto; }
+
+/* ---------- THE COURIER'S WEIGHT AND CASE (2026-09-17) ----------
+   Courier Std at its regular, in CAPITALS, on every courier role —
+   the strips, corners, bylines, margins, the ledger's rows and bands,
+   the fields. Every selector that names the face is restated here so
+   the one block is the last word on both. (Written for an hour of
+   Acumin Wide, bold and in sentence case, then Roboto Mono; it keeps
+   its place because the sites above carry a mixed dressing.) NOT the
+   ledger pages' body, though it names the face: capitals stated
+   there ran down into every Garamond line on the archive and the
+   about page. */
+.nav-social a,
+.nav-links .nav-item--tagline a,
+.nav-tagline,
+.card--duo .duo-panel .card-meta--line,
+.card--feature .duo-panel .card-meta--line,
+.ticker-item .duo-panel .card-meta--line,
+.contra-lead .card-meta--line,
+.card .duo-half .duo-panel .wide-corner,
+.card .duo-half .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under),
+.latest-courier,
+.dek-band,
+.dek-band--foot,
+.site-nav--top .topbar-tagline,
+.site-nav--top .topbar-tagline-under,
+.hover-meta,
+.cover-under,
+.dek-band--masthead > :nth-child(2),
+.section-band .band-mid > :nth-child(2),
+.section-band .band-mid,
+.section-band .band-mid a,
+.cover-meta,
+.section-band .band-mid > :only-child,
+.movement:not(.m--latest) .section-band .band-mid > *,
+.plate-title,
+.plate-more,
+main.has-mega .plate-more,
+.card-peek-open,
+.card-peek > .card-peek-open,
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+.ledger-band,
+.ledger-row,
+.ledger-cols,
+.ledger-band--head .ledger-slot--mid,
+.ledger-band--foot .ledger-slot--mid,
+.ledger-head .arch-sort,
+.ledger-head .arch-shuffle,
+.ledger-item > .ledger-row,
+.ledger-item > .ledger-row .ledger-cell,
+.about-card-kicker,
+.about-card-foot,
+.about-card .mh-role,
+main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* ---------- THE NAMES ON A HEX GROUND (2026-09-17) ----------
+   On a chosen ground the Oculi — the names, and the card titles with
+   them — wear the OTHER of charcoal and white from the rest of the
+   text: the highlight token, which the hex paint sets to the ink's
+   opposite (build.js, paint). Under the hand they take the ink, so
+   the hover still turns. Flagged, since the generic link hover is. */
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a, .card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a, .card-title, .latest-title) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-name :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* The NEW span inside the name is restated with it — a rule on the
+     words inside the wordmarks had it in the ink, so THE and CRITIC
+     turned and NEW stayed. One colour, the whole name. */
+  color: var(--yves) !important;
+}
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .banner-name--pair:is(:hover, :focus-within) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+
+/* ---------- THE WORDMARK'S MINIATURE IN THE BAND (2026-09-17) ----------
+   src/band-mark.js: as the wordmark's ink goes under the pinned
+   band's rule the date fades out over the first quarter of the
+   passage, and a miniature of the name — the same face, case and
+   tracking, its caps sized so its air in the band is the wordmark's
+   own air in proportion — fades in over the remaining three quarters,
+   centred where the date stood. The script sets the size, the seat and both opacities; the
+   sheet gives the miniature its face and its colour, and hides it
+   until it has any opacity. Full, it is a link home. */
+/* (The date's opacity is the script's, written on scroll: full at
+   the first touch, gone when half the wordmark's ink is under.) */
+main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; top: 0;
+  display: block;
+  margin: 0; padding: 0;
+  font-family: var(--title-face);
+  font-weight: 400;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  white-space: nowrap;
+  /* The band's own ink — inherited, so the miniature reads on the
+     band's ground in every theme. (var(--g) put it in the ground's
+     colour, and only NEW, in the ink by the wordmark-span rule, showed.) */
+  color: inherit;
+  text-decoration: none;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+  /* Its opacity is the scroll's, written each frame: no eased
+     transition on it (the generic link ease would lag the hand). The
+     colour still eases under the pointer, on its own. */
+  transition: color .25s ease !important;
+}
+main.has-mega .section-band > .band-mini :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: inherit !important; }
+main.has-mega .section-band > .band-mini.is-shown:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ visibility: visible; }
+main.has-mega .section-band > .band-mini.is-home:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: auto; }
+main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+
+/* ---------- THE SUBSCRIBE BAND'S LINE (2026-09-17) ----------
+   SUBSCRIBE carries the offer under it, one courier line in
+   capitals, standing INSIDE the page's own 72 under the word's feet
+   — its cap ink under the feet by the courier's gap, what the hero's
+   line stands under its rule (seated by the fitter,
+   fitSubscribeName); the 72 over the caps as on every band.
+   (For an afternoon the band wore the page's ink as its ground with
+   the terms in Garamond under the offer; struck — it stands on the
+   page's ground in the page's ink like every band.) */
+main.has-mega .page-banner--apart:not(.subscribe-band):not(.events-band):not(.store-band):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; }
+main.has-mega .page-banner--apart .banner-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; right: 0; top: 0;
+  margin: 0; padding: 0 72px;
+  text-align: center;
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  color: var(--k) !important;
+  pointer-events: none;
+}
+main.has-mega .page-banner--apart .banner-line :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
+main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: table;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* ---------- THE LATEST, AN ISLAND ON THE FIRST HERO (2026-09-17) ----------
+   A rule on the hero's own rule line, with THE LATEST hanging under
+   it in the dek's Garamond — 20 italic, as written — ranged left on
+   the top seam's line and centred on WILL DIANA's ink, the band's
+   own way, by painted ink
+   (fitLatestIsland sets the margin, the width, the rule's width and
+   start — the words' painted ink exactly, --rule-w and --rule-x —
+   and the words' seat).
+   THE HERO'S RULE IS STICKY: a pseudo-element that pins 71 under the
+   band's top as the card scrolls under it. So the island's rule is
+   the same thing — sticky at the same 71, no height in the flow (the
+   rule is absolute inside it), pinning and releasing with the hero's
+   own line, so the two stay one line at every scroll. THE WORDS ARE
+   NOT: they stand beside the island as their own absolute element
+   (fitLatestIsland seats them on the byline) and scroll under the
+   band with the hero's content, as WILL DIANA does. Both inert: no
+   pointer, so the hero's hover stands as it stood. */
+main.has-mega .latest-island:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: sticky; top: 71px;
+  display: block;
+  height: 0; overflow: visible;
+  margin: -1px 0 0; padding: 0;
+  border: 0;
+  background: transparent;
+  z-index: 20;
+  pointer-events: none;
+}
+main.has-mega .latest-island::before{
+  content: '';
+  position: absolute; left: var(--rule-x, 0px); top: 0;
+  height: 1px;
+  width: var(--rule-w, 100%);
+  background: var(--k);
+}
+main.has-mega .latest-tag:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; top: 0;
+  z-index: 2;
+  pointer-events: none;
+  margin: 0; padding: 0;
+  font-family: var(--excerpt);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: normal;
+  text-transform: none;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--k);
+}

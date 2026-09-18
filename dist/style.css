@@ -81,8 +81,8 @@
   --body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --title: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --title-face: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --byline-face: Courier, 'courier-std', 'Courier New', monospace;
+  --title-face: 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --byline-face: 'courier-std', Courier, 'Courier New', monospace;
   --courier-size: 13px;
   --excerpt: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
   --mono: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -3093,8 +3093,10 @@ body.has-mega::before{ content: none; }
   transition: background-position .6s ease;
 }
 .site-nav--top .topbar-name{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: #0B0B0B;
   margin-top: calc(24px - 0.2169 * var(--masthead-size-top));
 }
@@ -3152,8 +3154,8 @@ body.has-mega::before{ content: none; }
     #b3b0ab;
 }
 .banner-name{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
   color: #0B0B0B;
   font-size: var(--masthead-size-top);
   margin-top: calc(0px - 0.2169 * var(--masthead-size-top));
@@ -3169,8 +3171,8 @@ main.has-mega .reprint{
     #b3b0ab;
 }
 .reprint-name{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
   color: #0B0B0B;
   font-size: var(--masthead-size-top);
   transform: translateX(var(--masthead-ink-shift-top));
@@ -3436,16 +3438,16 @@ body.has-mega::after{ content: none; animation: none; }
 }
 .site-nav--top .topbar-name,
 .section-band .band-mark{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
 }
 .section-band .band-mark{ font-size: 36px; }
 .card-title,
 .latest-title,
 .card .duo-half--mega .duo-panel .card-title{
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-family: var(--title-face);
+  font-weight: 400;
+  text-transform: none;
 }
 :root{ --c-latest: var(--k); --c-essays: var(--k); --c-postscript: var(--k); --c-contra: var(--k); }
 main.has-mega{ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-postscript); --g4: var(--c-contra); }
@@ -3671,14 +3673,14 @@ main.has-mega :is(.page-banner, .reprint){
 main.has-mega :is(.banner-name, .reprint-name){
   display: block;
   position: relative;
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-family: var(--title-face);
+  font-weight: 400;
   font-style: normal;
   text-transform: uppercase;
   white-space: nowrap;
   line-height: 1;
   font-size: var(--masthead-size-top);
-  letter-spacing: normal;
+  letter-spacing: 0.03em;
   text-align: center;
   transform: none;
   margin: 0;
@@ -3967,7 +3969,7 @@ main.has-mega{ background: var(--paper); }
 main.has-mega .reprint{ position: relative; bottom: auto; z-index: auto; }
 main.has-mega :is(.card-title, .latest-title),
 main.has-mega :is(.card-title, .latest-title) :is(a, .title-line, span){
-  font-family: var(--excerpt);
+  font-family: var(--title-face);
   font-weight: 400;
   font-style: normal;
   text-transform: none;
@@ -4772,7 +4774,7 @@ body.ledger-page{
   --ledger-air: 72px;
   --ledger-crimson: var(--k); 
   --ledger-charcoal: var(--g);
-  --ledger-courier: Courier, 'courier-std', 'Courier New', monospace;
+  --ledger-courier: var(--byline-face); 
   background: var(--ledger-charcoal); background-image: none;
   color: var(--k);
   font-family: var(--ledger-courier);
@@ -4788,8 +4790,8 @@ body.ledger-page #main{ padding: 0; margin: 0; max-width: none; }
 .ledger-word{
   display: block;
   margin: 0; padding: 0 0 0 var(--ledger-side);
-  font-family: 'OPS Placard', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: 700; font-size: 14vw; line-height: 1;
+  font-family: var(--title-face);
+  font-weight: 400; font-size: 14vw; line-height: 1;
   text-transform: uppercase; white-space: nowrap;
   color: var(--k); text-decoration: none;
   transition: color .15s ease;
@@ -4929,7 +4931,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
 .ledger-band--head .ledger-slot{ flex: none; }
 .ledger-band--head .ledger-slot--left,
 .ledger-band--head .ledger-slot--right{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 20px; letter-spacing: normal;
 }
@@ -4965,7 +4967,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
 .ledger-band--foot .ledger-slot{ flex: none; }
 .ledger-band--foot .ledger-slot--left,
 .ledger-band--foot .ledger-slot--right{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 20px; letter-spacing: normal;
 }
@@ -4998,7 +5000,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
 .ledger-reprint{ position: relative; z-index: 6; }
 .ledger-row,
 .ledger-cell{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 36px; letter-spacing: normal;
   text-transform: none;
@@ -5020,7 +5022,7 @@ body.ledger-page{ -webkit-font-smoothing: antialiased; }
   font-size: 13px; line-height: 36px; letter-spacing: -0.26px;
 }
 .ledger-cols{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: normal; font-weight: 400;
   font-size: 16px; line-height: 19.2px; letter-spacing: normal;
   color: var(--g);
@@ -5174,7 +5176,7 @@ body.ledger-page .ledger-tabs{
 }
 body.ledger-page .ledger-tabs .about-link{
   background: none; border: 0; padding: 0; margin: 0;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 20px; letter-spacing: normal;
   text-transform: none;
@@ -5231,14 +5233,14 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card-kicker,
 .about-card-foot{
   margin: 0;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-size: 13px; line-height: 18.2px; letter-spacing: -0.26px;
   text-transform: uppercase; font-weight: 400;
   color: var(--g);
 }
 .about-card-title{
   margin: 36px 0 0;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-weight: 400; font-style: normal;
   font-size: 48px; line-height: 1.1; letter-spacing: normal;
   text-transform: none;
@@ -5247,7 +5249,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card-dek{
   margin: 18px auto 0;
   max-width: 34em;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px;
   color: var(--g);
@@ -5256,7 +5258,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
   margin: 36px auto 0;
   width: 100%; max-width: 720px;
   text-align: left;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-size: 16px; line-height: 19.2px; font-style: normal; font-weight: 400;
   color: var(--g);
   hyphens: auto; -webkit-hyphens: auto;
@@ -5284,7 +5286,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card .mh-list{ text-align: center; }
 .about-card .mh-role{
   margin: 0 0 6px;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-size: 13px; line-height: 18.2px; letter-spacing: -0.26px;
   text-transform: uppercase; font-weight: 400; font-style: normal;
   color: var(--g);
@@ -5292,7 +5294,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card .mh-group + .mh-group{ margin-top: 24px; }
 .about-card .mh-name{
   display: block;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px;
   text-transform: none; letter-spacing: normal;
@@ -5366,7 +5368,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card--dark .about-card-body a:focus-visible, .about-card--dark .about-card-foot a:focus-visible{ color: #002FA7; }
 .about-card-title--dek{
   margin-top: 0;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px; letter-spacing: normal;
   text-transform: none;
@@ -5376,7 +5378,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card > .about-card-dek:first-child{ margin-top: 0; }
 #subscribe .about-card-foot,
 #subscribe .about-card-foot a{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 24px; letter-spacing: normal;
   text-transform: none;
@@ -5409,7 +5411,7 @@ body.ledger-page .about-mosaic-block{ z-index: 1; }
 .ledger-head,
 .ledger-band--head{ box-shadow: 0 -1px 0 0 var(--k); }
 .about-col .about-card-line{
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-size: 16px; line-height: 19.2px; letter-spacing: normal;
   text-transform: none; font-weight: 400; font-style: normal;
 }
@@ -5855,7 +5857,12 @@ main.has-mega .latest-cell--ps .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r)::
 main.has-mega :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-align: center;
   text-align-last: center;
-  hyphens: manual;
+  text-wrap: pretty;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
+  hyphenate-limit-chars: 8 4 4;
 }
 main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-align: left;
@@ -5864,6 +5871,46 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-preview
 main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.card-preview, .latest-plate-p, .card-preview-cols p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   text-align: right;
   text-align-last: right;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.plate-title, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: left;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.plate-title, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: right;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) :is(.latest-matter, .latest-title, .card-title, .title-line, .latest-dek, .card-dek, .cover-meta, .card-meta--line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: left;
+  justify-content: flex-start;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) :is(.latest-matter, .latest-title, .card-title, .title-line, .latest-dek, .card-dek, .cover-meta, .card-meta--line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: right;
+  justify-content: flex-end;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-left: 0; margin-right: auto; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-left: auto; margin-right: 0; }
+main.has-mega :is(.card-title, .latest-title):has(.title-line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title):has(.title-line) > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+main.has-mega :is(.card-title, .latest-title) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  pointer-events: auto;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-inline: 0 auto; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-inline: auto 0; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) :is(.latest-dek, .card-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 48px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) :is(.latest-dek, .card-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 48px; }
+main.has-mega .latest-cell--ps.pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-right: 96px;
+}
+main.has-mega .latest-cell--ps.pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 96px;
+}
+main.has-mega .duo-half--mega.pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-right: 144px;
+}
+main.has-mega .duo-half--mega.pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 144px;
 }
 main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   position: fixed;
@@ -5880,7 +5927,7 @@ main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   border: 0;
   background: none;
   cursor: pointer;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-size: 13px;
   line-height: 13px;
@@ -5908,7 +5955,7 @@ main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none;
   outline: none;
   box-shadow: none;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-size: 13px;
   line-height: 13px;
@@ -6004,9 +6051,10 @@ main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 13px;
   margin: 0;
   padding: 0;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-style: normal;
   font-size: 13px;
@@ -6039,7 +6087,7 @@ body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   border: 0;
   background: none;
   cursor: pointer;
-  font-family: Courier, 'courier-std', 'Courier New', monospace;
+  font-family: var(--byline-face);
   font-weight: 400;
   font-style: normal;
   font-size: 13px;
@@ -6065,7 +6113,7 @@ body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   display: block; flex: 0 1 auto; width: 4em; min-width: 0; max-width: 100%;
   margin: 0 0 0 -6px; padding: 0 6px; border: 0; border-radius: 0;
   background: none; outline: none; box-shadow: none;
-  font-family: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
+  font-family: var(--excerpt);
   font-style: italic; font-weight: 400;
   font-size: 20px; line-height: 72px; letter-spacing: normal;
   text-transform: none;
@@ -6123,3 +6171,143 @@ body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass):i
 }
 .latest-plate .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
 .latest-plate .cut-mark.is-set{ display: inline; width: auto; }
+.nav-social a,
+.nav-links .nav-item--tagline a,
+.nav-tagline,
+.card--duo .duo-panel .card-meta--line,
+.card--feature .duo-panel .card-meta--line,
+.ticker-item .duo-panel .card-meta--line,
+.contra-lead .card-meta--line,
+.card .duo-half .duo-panel .wide-corner,
+.card .duo-half .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under),
+.latest-courier,
+.dek-band,
+.dek-band--foot,
+.site-nav--top .topbar-tagline,
+.site-nav--top .topbar-tagline-under,
+.hover-meta,
+.cover-under,
+.dek-band--masthead > :nth-child(2),
+.section-band .band-mid > :nth-child(2),
+.section-band .band-mid,
+.section-band .band-mid a,
+.cover-meta,
+.section-band .band-mid > :only-child,
+.movement:not(.m--latest) .section-band .band-mid > *,
+.plate-title,
+.plate-more,
+main.has-mega .plate-more,
+.card-peek-open,
+.card-peek > .card-peek-open,
+main.has-mega .section-band > .band-dek,
+main.has-mega .section-band > .band-dek :is(a, span),
+.ledger-band,
+.ledger-row,
+.ledger-cols,
+.ledger-band--head .ledger-slot--mid,
+.ledger-band--foot .ledger-slot--mid,
+.ledger-head .arch-sort,
+.ledger-head .arch-shuffle,
+.ledger-item > .ledger-row,
+.ledger-item > .ledger-row .ledger-cell,
+.about-card-kicker,
+.about-card-foot,
+.about-card .mh-role,
+main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-weight: 400;
+  text-transform: uppercase;
+}
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a, .card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a, .card-title, .latest-title) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-name :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--yves) !important;
+}
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .banner-name--pair:is(:hover, :focus-within) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; top: 0;
+  display: block;
+  margin: 0; padding: 0;
+  font-family: var(--title-face);
+  font-weight: 400;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: color .25s ease !important;
+}
+main.has-mega .section-band > .band-mini :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: inherit !important; }
+main.has-mega .section-band > .band-mini.is-shown:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ visibility: visible; }
+main.has-mega .section-band > .band-mini.is-home:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: auto; }
+main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+main.has-mega .page-banner--apart:not(.subscribe-band):not(.events-band):not(.store-band):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; }
+main.has-mega .page-banner--apart .banner-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; right: 0; top: 0;
+  margin: 0; padding: 0 72px;
+  text-align: center;
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  color: var(--k) !important;
+  pointer-events: none;
+}
+main.has-mega .page-banner--apart .banner-line :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
+main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: table;
+  margin: 0 auto;
+  text-align: left;
+}
+main.has-mega .latest-island:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: sticky; top: 71px;
+  display: block;
+  height: 0; overflow: visible;
+  margin: -1px 0 0; padding: 0;
+  border: 0;
+  background: transparent;
+  z-index: 20;
+  pointer-events: none;
+}
+main.has-mega .latest-island::before{
+  content: '';
+  position: absolute; left: var(--rule-x, 0px); top: 0;
+  height: 1px;
+  width: var(--rule-w, 100%);
+  background: var(--k);
+}
+main.has-mega .latest-tag:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 0; top: 0;
+  z-index: 2;
+  pointer-events: none;
+  margin: 0; padding: 0;
+  font-family: var(--excerpt);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: normal;
+  text-transform: none;
+  text-align: left;
+  white-space: nowrap;
+  color: var(--k);
+}

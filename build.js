@@ -1249,10 +1249,11 @@ const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'A
 // their own link among the right slot's marked current (currentKey).
 // THE SOCIAL STACK (2026-09-17): Substack, Instagram and Email as
 // marks in the LEFT margin, the toggle's mirror — three 13px marks
-// drawn in the ink with a dash between each, fixed at the viewport's
-// centre (style.css, .social-stack; the dashes are seated by ink with
-// the toggle's lines, fitToggle). Each mark is its own link and takes
-// the highlight under the pointer.
+// drawn in the ink, fixed at the viewport's centre (style.css,
+// .social-stack). The dashes that stood between them are struck
+// (later on 2026-09-17): the marks stand a dash's line apart, 13, on
+// the stack's own gap. Each mark is its own link and takes the
+// highlight under the pointer.
 // THE MARGINALIA (2026-09-17): the toggle and its field in the right
 // margin, the social marks in the left — fixed to the viewport, and
 // standing as a direct child of <main> rather than inside the band:
@@ -1263,7 +1264,7 @@ const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'A
 // stand over every row of the page.
 function renderMarginalia() {
   return `<div class="marginalia">
-  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
   ${renderSocialStack()}
   </div>`;
 }
@@ -1271,7 +1272,7 @@ function renderSocialStack() {
   const substack = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
   const instagram = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg>';
   const email = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
-  const sep = '<span class="social-stack-sep" aria-hidden="true">—</span>';
+  const sep = '';
   return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
 }
 function renderSectionBand(m, { mid = '', currentKey = '' } = {}) {
@@ -1344,7 +1345,32 @@ function renderPageRail({ side, word, href, after, before, categories }) {
 // measure (fitSubscribeName in duo-panel-fit.js sets the letter-
 // spacing), and one courier line centred under it. SUBSCRIBE closes
 // the first movement; EVENTS closes the essays.
-function renderBanner({ word, href, words, line, modifier, spacer = true }) {
+// THE SUBSCRIBE BAND'S LINE (2026-09-17): the offer alone, one courier
+// line in capitals under the word, seated by ink 32 off its feet
+// (fitSubscribeName, duo-panel-fit.js). (The terms and the list stood
+// under it in Garamond for a spell; struck.)
+const SUBSCRIBE_ABOVE = [];
+const SUBSCRIBE_BELOW = ['Sign up for our free newsletter, or become a paid subscriber.'];
+// A run of numbered lines (1. 2. 3.) is one LIST: set ragged-left
+// inside a block that is itself centred, so the numbers stand in a
+// column and the list stands on the page's axis (style.css,
+// .banner-list), and stood off the line before it by the same ink
+// gap the message stands off the word (fitSubscribeName).
+const bannerLines = (lines, where) => {
+  if (!lines || !lines.length) return '';
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\d+\.\s/.test(lines[i])) {
+      const run = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) run.push(escapeHtml(lines[i++]));
+      i--;
+      out.push(`<span class="banner-list">${run.join('<br>')}</span>`);
+    } else out.push(lines[i] ? escapeHtml(lines[i]) : '&nbsp;');
+  }
+  return `<p class="banner-line banner-line--${where}">${out.join('<br>')}</p>`;
+};
+
+function renderBanner({ word, href, words, line, modifier, spacer = true, above, below }) {
   // A banner may carry no courier line at all — STORE is the word by
   // itself, so the charcoal closes on its baseline ink instead of on
   // a band's 48 box (see .page-banner--bare).
@@ -1361,7 +1387,7 @@ function renderBanner({ word, href, words, line, modifier, spacer = true }) {
   // and the viewport-tall spacer that used to stand BELOW the word is
   // gone.
   return `<section class="page-banner ${modifier}${line ? '' : ' page-banner--bare'}">
-        ${name}
+        ${bannerLines(above, 'above')}${name}${bannerLines(below, 'below')}
         ${line ? `<div class="dek-band dek-band--banner">
           <span>${escapeHtml(line)}</span>
         </div>` : ''}
@@ -2245,7 +2271,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // of the movement loop's banner test; it stands in the body between
   // the rows, no wrap and no divider around it, the next row opening
   // 72 under its feet as under any section word).
-  blocks.push(renderBanner({ word: 'Subscribe', href: `${SITE_URL}/subscribe`, modifier: 'subscribe-word' }).replace('class="page-banner', 'class="ops-word page-banner'));
+  // …AND CARRIES THE OFFER UNDER THE WORD (2026-09-17; the class
+  // names the band with the message — it wore a colour of its own
+  // for an afternoon, struck).
+  blocks.push(renderBanner({ word: 'Subscribe', href: `${SITE_URL}/subscribe`, modifier: 'subscribe-word page-banner--apart', above: SUBSCRIBE_ABOVE, below: SUBSCRIBE_BELOW }).replace('class="page-banner', 'class="ops-word page-banner'));
   // The SECOND essay as a mirrored hero inside the first movement —
   // cover left, ground right — then the next postscript/contra pair
   // MIRRORED too: contra left, postscript right with its text in the
@@ -2343,6 +2372,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the last screen, where the reprint overtakes it. The sections
   // carry no band of their own any more (and no field): their words
   // pass under this one the way the wordmark does.
+  let tagged = false;
   const openMovement = (m) => {
     const head = m === 'latest'
       ? `\n  ${renderSectionBand(m)}\n  <div class="head-seam" aria-hidden="true"></div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
@@ -2398,9 +2428,20 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }
     const m = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
     if (!open) openMovement(m);
+    // THE LATEST, an island over the first hero (2026-09-17): a rule
+    // the hero's width, the band's 24 of air, and the words in the
+    // dek's Garamond at the left — its own block in the flow under the
+    // wordmark, 72 under the feet like everything (style.css,
+    // .latest-island). The wordmark stands where it stood; the hero
+    // moves down by the island.
+    // (The rule and the words are two elements: the rule pins under the
+    // band with the hero's own rule, the words scroll under the band
+    // with the hero's content.)
+    const tag = m === 'latest' && !tagged ? '<div class="latest-island" aria-hidden="true"></div><p class="latest-tag">The Latest</p>\n    ' : '';
+    if (tag) tagged = true;
     duoHtml += `
   <div class="wrap m--${m}">
-    ${block}
+    ${tag}${block}
   </div>${last || nextIsWord ? '' : `\n  <div class="row-divider m--${m}"></div>`}`;
   });
   closeMovement();
@@ -2451,7 +2492,6 @@ ${ogTags({
   })}
 <link rel="icon" href="favicon.png">
 ${leadPreload}
-<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
@@ -2514,6 +2554,7 @@ ${renderCoverColorScript()}
 ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 ${renderRailFixScript()}
+${renderBandMarkScript()}
 </body>
 </html>`;
 }
@@ -2744,7 +2785,8 @@ function renderFontGateScript() {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px "OPS Placard"'),
+      f.load('400 100px oculi-display'),
+      f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
       f.load('400 100px trajan-pro-3'),
@@ -2801,6 +2843,17 @@ function renderFontGateScript() {
 // on scroll while the hero slides under the divider (src/rail-fix.js).
 function renderRailFixScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/rail-fix.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
+// THE WORDMARK'S MINIATURE IN THE BAND — the date goes as the
+// wordmark's ink touches the pinned band's rule, and a miniature of
+// the name descends into the band as the ink passes under, settling
+// centred when the feet have gone (src/band-mark.js).
+function renderBandMarkScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/band-mark.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -2976,7 +3029,6 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
 <link rel="icon" href="favicon.png">
-<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
@@ -3708,8 +3760,8 @@ function sortArrows(key, label) {
 //   banner rule is keyed on); body is the movement's content, or
 //   nothing for a deck word.
 function renderWordPage({ currentKey, title, description, mid, movements = [], extraScripts = '' }) {
-  const banner = (m) => `<section class="page-banner ${m.hook || 'store-band'} page-banner--bare">
-        <a class="banner-name" href="${escapeHtml(m.href)}"${m.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(m.word)}</a>
+  const banner = (m) => `<section class="page-banner ${m.hook || 'store-band'} page-banner--bare${m.apart ? ' page-banner--apart' : ''}">
+        ${bannerLines(m.above, 'above')}<a class="banner-name" href="${escapeHtml(m.href)}"${m.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(m.word)}</a>${bannerLines(m.below, 'below')}
       </section>`;
   //   An entry may instead be { raw } — markup set straight into
   //   .page-rows between movements (the archive's column head, which
@@ -3801,7 +3853,7 @@ function renderArchivePage(posts, features) {
     // review row.)
     movements: [
       { word: 'Archive', href: 'archive.html', hook: 'subscribe-band', body: renderLedgerFeature(features) },
-      { word: 'Subscribe', href: `${SITE_URL}/subscribe`, hook: 'events-band' },
+      { word: 'Subscribe', href: `${SITE_URL}/subscribe`, hook: 'events-band', apart: true, above: SUBSCRIBE_ABOVE, below: SUBSCRIBE_BELOW },
       { raw: headHtml },
       { cls: 'm--ledger', body: ledgerHtml },
     ],

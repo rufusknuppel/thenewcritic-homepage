@@ -486,6 +486,9 @@
   // sizing off the panel would put 60px type in a 294px column, the exact
   // mismatch this rule exists to prevent.
   var TITLE_PER_PX = 0.15;
+  // THE POSTER TITLES' CEILING (2026-09-17): 72, down from the 84 the
+  // stacked cells and the hero capped at — a seventh smaller.
+  var TITLE_MAX = 72;
   // Whether this engine will hyphenate a TITLE-CASE English word — which
   // is stricter than having a dictionary: engines deliberately skip
   // capitalized words (so proper nouns never break), and titles are
@@ -553,7 +556,12 @@
     while (el && getComputedStyle(el).display === 'contents') el = el.parentElement;
     if (!el) return 0;
     var cs = getComputedStyle(el);
-    return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    // LESS THE ELEMENT'S OWN SIDE PADDING (2026-09-17): the deks carry
+    // 48 on their far side now (style.css, THE DEK'S FAR MARGIN), and
+    // a line fitted to the column's full width would print into it.
+    var own = getComputedStyle(title);
+    return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
+      - (parseFloat(own.paddingLeft) || 0) - (parseFloat(own.paddingRight) || 0);
   }
 
   // The stretch core, the masthead's way: the element's text is broken
@@ -948,7 +956,10 @@
       // the painted-ink rescale below — a cap here is washed out by
       // that pass's own fill.)
       // CAPPED AT THE HOUSE 84 on the hero too (it ran to 140 uncapped).
-      maxSize: poster ? 84 : 0,
+      // THE CEILING COMES DOWN TO 72 (2026-09-17): the 84 less a
+      // seventh, the page's own unit — on every poster title, the
+      // stacked cells' and the hero's alike.
+      maxSize: poster ? TITLE_MAX : 0,
       lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
     });
     // The CAP INK lands on the ground's 24 line, not the line box: the
@@ -1007,9 +1018,10 @@
         // Man's two lines) can't print bigger than the three-line
         // posters around it.
         if (isFinite(maxH) && maxH > 0) inkS = Math.min(inkS, maxH / 3.3);
-        // AND NEVER PAST THE HOUSE 84: this fill to the column's ink
-        // width ran the poster to 140.
-        inkS = Math.min(inkS, 84);
+        // AND NEVER PAST THE CEILING (TITLE_MAX, 72 since 2026-09-17;
+        // the house 84 before): this fill to the column's ink width
+        // ran the poster to 140.
+        inkS = Math.min(inkS, TITLE_MAX);
         [].forEach.call(inkLns, function(ln){ ln.style.fontSize = inkS.toFixed(2) + 'px'; });
         // AND THE RENDERED INK IS BROUGHT INSIDE THE MARGIN. The fill
         // above sizes from CANVAS metrics, which are an estimate of
@@ -2685,8 +2697,9 @@
       // Ceilinged at the STACKED CELLS' own 84 (the house poster
       // cap): the hero-scale ceiling read too big at row width —
       // a short title (Present at the Creation) fills to it, the
-      // long ones (Jasmine's) stay bound by their own words.
-      maxSize: 84,
+      // long ones (Jasmine's) stay bound by their own words. (72
+      // since 2026-09-17, with every poster title — TITLE_MAX.)
+      maxSize: TITLE_MAX,
     };
     if (availW > 0 && maxH > 40) {
       stretchFill(title, availW, maxH, opts);
@@ -3285,6 +3298,9 @@
     // header's height, centred, rather than the measure's width.
     var mast = document.querySelector('.site-nav--top .topbar-name');
     var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
+    // THE PAGE'S OWN 72 over the caps and under the feet, on the words
+    // and the reprint (2026-09-17: 108 and 144 were tried and taken
+    // back the same day).
     var BANNER_AIR = 72;
     // THE WORD PAGES CARRY NO MASTHEAD (2026-09-17): ARCHIVE or ABOUT
     // opens the page where THE NEW CRITIC opens the front page. The
@@ -3309,7 +3325,87 @@
     // stood in a doubled 144 on one side or the other for a while.)
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
-      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: WORD_AIR, airBottom: BANNER_AIR, side: BANNER_SIDE });
+      // THE BAND THAT STANDS APART CARRIES TWO COURIER BLOCKS (2026-09-17):
+      // the offer over the word and the terms under it, each 36 off
+      // the word's ink and 36 inside the band's colour, which itself
+      // starts 36 in from the block's edge. So the block's air grows
+      // by each block's ink and its 36, and the blocks are seated by
+      // ink afterwards: the top one's cap 72 under the band's top
+      // edge, the bottom one's feet 72 over its bottom edge.
+      // AND STANDS IN THE PAGE'S OWN 72 (2026-09-17: it wore a colour
+      // of its own for an afternoon, with airs inside it; the colour
+      // is struck and the airs with it): 72 over the caps, 72 under
+      // the feet, the courier line inside that 72.
+      var LINE_GAP = 32;
+      var airTop = WORD_AIR;
+      var airBot = BANNER_AIR;
+      var above = band.querySelector('.banner-line--above');
+      var below = band.querySelector('.banner-line--below');
+      var extraTop = 0, extraBot = 0;
+      if (above) { above.style.top = ''; var ia = inkSpan(above); if (ia) extraTop = ia.ink + LINE_GAP; }
+      // THE LINE UNDER THE WORD STANDS INSIDE THE 72 (2026-09-17): the
+      // band keeps the page's own 72 from the word's feet to what
+      // follows, and the courier line stands within that air, its cap
+      // ink under the feet by the courier's gap — what the hero's own
+      // line stands under its rule (courierGap). Nothing is added to
+      // the block for it.
+      if (below) {
+        below.style.top = '';
+        var list = below.querySelector('.banner-list');
+        if (list) {
+          list.style.marginTop = '';
+          var prev = list.previousSibling;
+          while (prev && !(prev.nodeType === 3 && prev.textContent.trim())) prev = prev.previousSibling;
+          if (prev) {
+            // By PAINTED ink, as the word is seated: the line before
+            // the list ends in descenders (y, p, g) that the font's
+            // metric model puts four pixels above where they print,
+            // and the gap read four short. Each line's reach above
+            // and below its baseline is scanned off a canvas, and the
+            // baselines are read off zero probes at the seam.
+            var bcs = getComputedStyle(below);
+            var bsize = parseFloat(bcs.fontSize) || 16;
+            var reach = function (text) {
+              var scanPx = 200, W = 3000, H = 320, y0 = 240;
+              var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+              var g = cv.getContext('2d');
+              if (!g) return null;
+              g.font = bcs.fontWeight + ' ' + scanPx + 'px ' + bcs.fontFamily;
+              g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+              g.fillText(text, 20, y0);
+              var data;
+              try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return null; }
+              var top = -1, bot = -1;
+              for (var y = 0; y < H; y++) {
+                for (var x = 0; x < W; x++) { if (data[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; bot = y; break; } }
+              }
+              if (top < 0) return null;
+              return { above: (y0 - top) / scanPx * bsize, below: (bot + 1 - y0) / scanPx * bsize };
+            };
+            var probe = document.createElement('span');
+            probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            below.insertBefore(probe, prev.nextSibling);
+            var prevBase = probe.getBoundingClientRect().bottom;
+            probe.remove();
+            list.insertBefore(probe, list.firstChild);
+            var listBase = probe.getBoundingClientRect().bottom;
+            probe.remove();
+            var firstLine = list.firstChild && list.firstChild.nodeType === 3 ? list.firstChild.textContent : (list.textContent || '');
+            var rPrev = reach(prev.textContent), rList = reach(firstLine);
+            if (rPrev && rList) {
+              var prevFoot = prevBase + rPrev.below;
+              var listCap = listBase - rList.above;
+              list.style.marginTop = (LINE_GAP - (listCap - prevFoot)).toFixed(2) + 'px';
+            }
+          }
+        }
+      }
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var bb = band.getBoundingClientRect();
+      if (above) { var ia2 = inkSpan(above); if (ia2) above.style.top = (airTop - (ia2.top - bb.top)).toFixed(2) + 'px'; }
+      // (The line's own seat is written late — fitSubscribeLines — once
+      // the hero's courier line, whose gap it borrows, is seated.)
+      void fitted;
     });
     // The reprint stands in the same doubled air as the words (the
     // masthead too, fitMastheadFill), so the foot field — a viewport
@@ -3366,6 +3462,8 @@
     // edge, by TRACKING: the letters are spaced out over the wider
     // span, the size untouched. (A caller may ask for other insets.)
     var SIDE = (opts && opts.side != null) ? opts.side : 72; // ink tracked to 72 from each edge, on the cards' line
+    // THE PAGE'S OWN 72 from each edge (2026-09-17: 108 and 144 were
+    // tried and taken back the same day).
     var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
     var cw = document.documentElement.clientWidth;
     var vw = cw - SIDE * 2;
@@ -3383,21 +3481,14 @@
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
-    // EVERY WORD REACHES ITS SPAN BY TRACKING: the letters are spaced
-    // out until the ink runs from 36 to 36 — the masthead and the
-    // reprint from the size the 72 measure gave them, a capped banner
-    // from the masthead's own. (CSS lays a space after EVERY letter,
-    // the last one included, so the ink grows by only n-1 of them.)
-    // Every character opens a gap, the word space between two words
-    // included (ARCHIVE ABOUT), so n counts the trimmed string whole.
-    var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
-    var n = word.length;
+    // NO TRACKING, CENTRED (2026-09-17): the word keeps the face's own
+    // spacing and stands in the middle of the band by its ink — a
+    // capped banner short of the measure as much as a name fitted to
+    // it. (The letters were spread to 36 from each edge before; that
+    // block is struck, and SIDE only names the measure now.)
     var ink1 = i1.right - i1.left;
-    if (n > 1 && vw > ink1) {
-      name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
-      i1 = inkSpanOf(name) || i1;
-    }
-    name.style.transform = 'translateX(' + (wb.left + SIDE - i1.left).toFixed(2) + 'px)';
+    void vw;
+    name.style.transform = 'translateX(' + (wb.left + (wb.width - ink1) / 2 - i1.left).toFixed(2) + 'px)';
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
     // sit lower than the canvas 'H' model says (the model put them 25
     // above where they print). The string is drawn on a canvas at a
@@ -5277,6 +5368,7 @@
     step('fitTitleHalo', fitTitleHalo);
     step('fitCardRules', fitCardRules);
     step('fitToggle', fitToggle);
+    step('fitSubscribeLines', fitSubscribeLines);
     // Every fit pass can move document seats (fonts, images, fitted
     // titles) — announce it so rail-fix re-measures its anchors and
     // rebuilds the held clones on the FINAL geometry, not the first
@@ -5306,6 +5398,142 @@
   // picture landing late, a row turning over — is corrected the moment
   // the reader shuts the card, which is the one point where the page
   // is certainly back at rest. The wait is the card's own .4s travel.
+  // THE LATEST, seated (2026-09-17): the tag stands over the hero's
+  // top rule by exactly what the hero's own courier line stands under
+  // it — the line's cap ink to the rule, mirrored — and its left edge
+  // is that line's ink, ranged as the line is, whichever side the
+  // picture put it on. Set against the tag's offset parent, so it
+  // needs no positioned wrap. (It stood centred in the air under the
+  // wordmark for a moment.)
+  // A LINE'S PAINTED INK (2026-09-17): its reach above and below the
+  // baseline scanned off a canvas at its own size and case, the
+  // baseline read off a zero probe at its head. Where the font's
+  // metric model (inkOffsets) says where ink should be, this says
+  // where it is — the courier's seats against rules read exact by it.
+  function inkReach(el) {
+    var cs = getComputedStyle(el);
+    var size = parseFloat(cs.fontSize) || 13;
+    var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    var scanPx = 200, W = 3000, H = 320, y0 = 240;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    if (!g || !text) return null;
+    g.font = cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+    g.fillText(text, 20, y0);
+    var data;
+    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return null; }
+    var top = -1, bot = -1;
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) { if (data[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; bot = y; break; } }
+    }
+    if (top < 0) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base = probe.getBoundingClientRect().bottom;
+    probe.remove();
+    return { capTop: base - (y0 - top) / scanPx * size, foot: base + (bot + 1 - y0) / scanPx * size };
+  }
+  // THE COURIER'S GAP UNDER A RULE, read off the first hero: its
+  // courier line's cap ink to the rule it stands under. The line
+  // under SUBSCRIBE keeps it. 24 where there is no hero to read (the
+  // word pages).
+  function courierGap() {
+    var hero = document.querySelector('.card--mega');
+    var line = hero && hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
+    var edge = hero && (hero.querySelector('.duo-half') || hero);
+    if (!line || !edge) return 24;
+    var r = inkReach(line);
+    return r ? r.capTop - edge.getBoundingClientRect().top : 24;
+  }
+  // THE LINE UNDER SUBSCRIBE stands under the word's feet by the
+  // courier's gap (2026-09-17): cap ink to feet, by painted ink on
+  // both. Written late, after the hero's own line — whose gap under
+  // its rule this borrows (courierGap) — has been seated: read in
+  // fitSubscribeName it was still 32. (THE LATEST is its own island
+  // in the flow now, style.css, and takes no seat.)
+  // THE LATEST'S ISLAND, seated (2026-09-17): its rule runs end to end
+  // with the hero's (the hero's box overruns the wrap by 24 at the
+  // right; the island takes the same margin), and the words stand 24
+  // under the rule and 24 over the hero's — the band's own 24 — by
+  // painted ink, the paddings closing the difference the line box
+  // leaves.
+  function fitLatestIsland() {
+    var island = document.querySelector('.latest-island');
+    if (!island) return;
+    var tag = island.parentElement.querySelector('.latest-tag');
+    var hero = island.nextElementSibling;
+    while (hero && !hero.classList.contains('card--mega')) hero = hero.nextElementSibling;
+    if (!tag || !hero) return;
+    // THE HERO'S RULE runs from its courier line's ink to the picture's
+    // far edge, a sticky line on the first half; the island is sticky
+    // with it (style.css), so only the sideways seat and the words'
+    // seat are written here — both scroll-invariant, the two boxes
+    // pinning alike.
+    var edge = hero.querySelector('.duo-half') || hero;
+    var line = hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
+    island.style.marginLeft = ''; island.style.width = '';
+    tag.style.top = ''; tag.style.left = '';
+    // ON THE TOP RULE'S LEFT END: the seam under the head band runs 72
+    // in from the page's edge; the island's rule opens on that line.
+    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
+    var left = seam ? seam.getBoundingClientRect().left : 72;
+    if (!(left > 0)) left = 72;
+    var ir = island.getBoundingClientRect(), er = edge.getBoundingClientRect();
+    island.style.marginLeft = (left - ir.left).toFixed(2) + 'px';
+    island.style.width = Math.max(0, er.right - left).toFixed(2) + 'px';
+    // The words open on the same line, set against their own offset
+    // parent (they are not in the sticky box).
+    var tr0 = tag.getBoundingClientRect();
+    tag.style.left = (left - tr0.left).toFixed(2) + 'px';
+    var r = inkReach(tag);
+    if (!r) return;
+    // THE RULE IS THE WORDS' OWN LENGTH, from the left (a quarter more
+    // for a moment): from the words' left edge — the seam's line, where
+    // the words stand — to the last letter's painted ink, so the line
+    // opens with the words and ends where their ink does.
+    var rg = document.createRange(); rg.selectNodeContents(tag);
+    var rs = rg.getClientRects(), il = Infinity, irt = -Infinity;
+    for (var i = 0; i < rs.length; i++) { if (rs[i].width > 0) { il = Math.min(il, rs[i].left); irt = Math.max(irt, rs[i].right); } }
+    if (isFinite(il)) {
+      var tcs = getComputedStyle(tag);
+      var g = document.createElement('canvas').getContext('2d');
+      var w = irt - il, bl = 0, br = 0;
+      if (g) {
+        g.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
+        var m = g.measureText((tag.textContent || '').trim());
+        w = m.actualBoundingBoxRight || m.width;
+      }
+      void bl; void br;
+      island.style.setProperty('--rule-w', w.toFixed(2) + 'px');
+      island.style.setProperty('--rule-x', '0px');
+    }
+    // THE TWO LINES CENTRED ON EACH OTHER BY INK, the way the band
+    // centres its Garamond and its courier on one middle
+    // (inkCenterBands): the byline stays where the hero seats it, and
+    // the words' painted ink — ascender to foot — is centred on the
+    // byline's. Where there is no byline, the courier's 24 under the
+    // rule.
+    ir = island.getBoundingClientRect();
+    var lr = line ? inkReach(line) : null;
+    var want = lr ? (lr.capTop + lr.foot) / 2 - (r.foot - r.capTop) / 2 : ir.top + 1 + 24;
+    tag.style.top = (want - r.capTop).toFixed(2) + 'px';
+  }
+  function fitSubscribeLines() {
+    fitLatestIsland();
+    var gap = courierGap();
+    [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
+      var name = band.querySelector('.banner-name');
+      var below = band.querySelector('.banner-line--below');
+      if (!name || !below) return;
+      below.style.top = '';
+      var nr = inkReach(name), lr = inkReach(below);
+      if (!nr || !lr) return;
+      below.style.top = (nr.foot + gap - lr.capTop).toFixed(2) + 'px';
+    });
+  }
   function refitAfterClose() { atRest(function () { step('fitTitleHalo#close', fitTitleHalo); }); }
   window.addEventListener('newcritic:closed', function () { whenStill(refitAfterClose); });
   var resizeTimer;
