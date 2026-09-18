@@ -35,6 +35,13 @@
   src: url(fonts/ops-placard-bold.woff2) format('woff2');
 }
 @font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(fonts/roboto-mono-regular.woff2) format('woff2');
+}
+@font-face {
   font-family: 'Playfair Display';
   font-style: normal;
   font-weight: 500;
@@ -81,8 +88,8 @@
   --body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --title: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --title-face: 'OPS Placard', 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --byline-face: 'courier-std', Courier, 'Courier New', monospace;
+  --title-face: 'futura-pt-condensed', 'OPS Placard', 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --byline-face: 'Roboto Mono', 'roboto-mono', 'courier-std', Courier, 'Courier New', monospace;
   --courier-size: 13px;
   --excerpt: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
   --mono: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -6039,7 +6046,7 @@ main.has-mega .card :is(.latest-plate, .card-preview-block) :is(.plate-title, .p
 main.has-mega .card :is(.latest-plate, .card-preview-block) .plate-title:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
 body.word-page section.ledger:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-top: 0; }
 body.word-page .ledger-row:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-body.word-page .ledger-row :is(.ledger-cell, .arch-sort, .arch-shuffle):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ text-transform: uppercase; }
+body.word-page .ledger-row :is(.ledger-cell, .arch-sort, .arch-shuffle):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ text-transform: none; }
 body.word-page .ledger-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 body.word-page .ledger-head :is(.ledger-cell, .arch-sort, .arch-shuffle):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ text-transform: none; }
 main.has-mega .card .plate-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -6223,7 +6230,7 @@ main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   font-weight: 400;
-  text-transform: uppercase;
+  text-transform: none;
 }
 html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a, .card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html[data-theme="hex"] main.has-mega :is(.banner-name, .reprint-name, .banner-name--pair a, .card-title, .latest-title) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -6275,7 +6282,7 @@ main.has-mega .page-banner--apart .banner-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
   font-size: 13px;
   line-height: 13px;
   letter-spacing: -0.26px;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--k) !important;
   pointer-events: none;
 }
@@ -6285,36 +6292,48 @@ main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r
   margin: 0 auto;
   text-align: left;
 }
-main.has-mega .latest-island:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  position: sticky; top: 71px;
-  display: block;
-  height: 0; overflow: visible;
-  margin: -1px 0 0; padding: 0;
-  border: 0;
-  background: transparent;
-  z-index: 20;
-  pointer-events: none;
-}
-main.has-mega .latest-island::before{
-  content: '';
-  position: absolute; left: var(--rule-x, 0px); top: 0;
-  height: 1px;
-  width: var(--rule-w, 100%);
-  background: var(--k);
-}
-main.has-mega .latest-tag:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  position: absolute; left: 0; top: 0;
-  z-index: 2;
-  pointer-events: none;
-  margin: 0; padding: 0;
-  font-family: var(--excerpt);
+:root{ --word-face: var(--excerpt); }
+.banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.card-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.latest-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) :is(a, .title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--word-face);
   font-weight: 400;
-  font-style: italic;
-  font-size: 20px;
-  line-height: 24px;
-  letter-spacing: normal;
+  font-style: normal;
+  letter-spacing: 0;
   text-transform: none;
-  text-align: left;
-  white-space: nowrap;
-  color: var(--k);
+}
+.card-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.latest-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) :is(a, .title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--word-face);
+  font-weight: 400;
+  font-style: normal;
+  text-transform: none;
+}
+.banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 24px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 24px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 24px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 24px; }
+main.has-mega .card--ps-pair .latest-cell--ps.pic-left .latest-col .latest-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 0; }
+main.has-mega .card--ps-pair .latest-cell--ps.pic-right .latest-col .latest-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 0; }
+main.has-mega .card--ps-pair .latest-cell--ps.pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 48px; }
+main.has-mega .card--ps-pair .latest-cell--ps.pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 48px; }
+.site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--title-face);
+  font-weight: 700;
 }
