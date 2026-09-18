@@ -11,11 +11,10 @@
 <meta property="og:url" content="https://thenewcritic.com/archive.html">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.png">
-<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=badcbfe5">
+<link rel="stylesheet" href="style.css?v=901e3a63">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -226,7 +225,8 @@
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px "OPS Placard"'),
+      f.load('400 100px oculi-display'),
+      f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
       f.load('400 100px trajan-pro-3'),
@@ -306,7 +306,7 @@
   <div class="page-rows">
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Thursday, September 17, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Friday, September 18, 2026</span></p>
     <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
@@ -423,8 +423,8 @@
   </div>
   </div>
   <div class="movement m--essays">
-  <section class="page-banner events-band page-banner--bare">
-        <a class="banner-name" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
+  <section class="page-banner events-band page-banner--bare page-banner--apart">
+        <a class="banner-name" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a><p class="banner-line banner-line--below">Sign up for our free newsletter, or become a paid subscriber.</p>
       </section>
   </div>
   <div class="ledger-head ledger-row">
@@ -1291,8 +1291,8 @@
   </nav>
   </div>
   <div class="marginalia">
-  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">—</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
-  <span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a><span class="social-stack-sep" aria-hidden="true">—</span><a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a><span class="social-stack-sep" aria-hidden="true">—</span><a href="mailto:editors@thenewcritic.com" aria-label="Email"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a></span>
+  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  <span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a><a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a><a href="mailto:editors@thenewcritic.com" aria-label="Email"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a></span>
   </div>
 </main>
 
@@ -1811,6 +1811,7 @@
     return firstFull;
   }
   var TITLE_PER_PX = 0.15;
+  var TITLE_MAX = 72;
   var CAN_HYPHENATE = (function(){
     var probe = document.createElement('span');
     probe.lang = 'en';
@@ -1848,7 +1849,9 @@
     while (el && getComputedStyle(el).display === 'contents') el = el.parentElement;
     if (!el) return 0;
     var cs = getComputedStyle(el);
-    return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var own = getComputedStyle(title);
+    return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
+      - (parseFloat(own.paddingLeft) || 0) - (parseFloat(own.paddingRight) || 0);
   }
   var LINE_MAX_PER_PX = 0.22;
   function balancedPartition(words, k, w100) {
@@ -2070,7 +2073,7 @@
       maxLines: stackTitle ? 6 : 2,
       preferMostLines: stackTitle,
       stackOnlyIfBigger: stackTitle && !wideTitle,
-      maxSize: poster ? 84 : 0,
+      maxSize: poster ? TITLE_MAX : 0,
       lineMax: (panel.clientWidth - 48) * LINE_MAX_PER_PX
     });
     if (posterFit) {
@@ -2110,7 +2113,7 @@
         }
         var inkS = inkS0 * inkF;
         if (isFinite(maxH) && maxH > 0) inkS = Math.min(inkS, maxH / 3.3);
-        inkS = Math.min(inkS, 84);
+        inkS = Math.min(inkS, TITLE_MAX);
         [].forEach.call(inkLns, function(ln){ ln.style.fontSize = inkS.toFixed(2) + 'px'; });
         var pb = title.getBoundingClientRect();
         if (pb.width) {
@@ -2999,7 +3002,7 @@
       maxLines: 3,
       preferMostLines: true,
       lineMax: availW * LINE_MAX_PER_PX,
-      maxSize: 84,
+      maxSize: TITLE_MAX,
     };
     if (availW > 0 && maxH > 40) {
       stretchFill(title, availW, maxH, opts);
@@ -3375,7 +3378,62 @@
     var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
-      fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: WORD_AIR, airBottom: BANNER_AIR, side: BANNER_SIDE });
+      var LINE_GAP = 32;
+      var airTop = WORD_AIR;
+      var airBot = BANNER_AIR;
+      var above = band.querySelector('.banner-line--above');
+      var below = band.querySelector('.banner-line--below');
+      var extraTop = 0, extraBot = 0;
+      if (above) { above.style.top = ''; var ia = inkSpan(above); if (ia) extraTop = ia.ink + LINE_GAP; }
+      if (below) {
+        below.style.top = '';
+        var list = below.querySelector('.banner-list');
+        if (list) {
+          list.style.marginTop = '';
+          var prev = list.previousSibling;
+          while (prev && !(prev.nodeType === 3 && prev.textContent.trim())) prev = prev.previousSibling;
+          if (prev) {
+            var bcs = getComputedStyle(below);
+            var bsize = parseFloat(bcs.fontSize) || 16;
+            var reach = function (text) {
+              var scanPx = 200, W = 3000, H = 320, y0 = 240;
+              var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+              var g = cv.getContext('2d');
+              if (!g) return null;
+              g.font = bcs.fontWeight + ' ' + scanPx + 'px ' + bcs.fontFamily;
+              g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+              g.fillText(text, 20, y0);
+              var data;
+              try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return null; }
+              var top = -1, bot = -1;
+              for (var y = 0; y < H; y++) {
+                for (var x = 0; x < W; x++) { if (data[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; bot = y; break; } }
+              }
+              if (top < 0) return null;
+              return { above: (y0 - top) / scanPx * bsize, below: (bot + 1 - y0) / scanPx * bsize };
+            };
+            var probe = document.createElement('span');
+            probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            below.insertBefore(probe, prev.nextSibling);
+            var prevBase = probe.getBoundingClientRect().bottom;
+            probe.remove();
+            list.insertBefore(probe, list.firstChild);
+            var listBase = probe.getBoundingClientRect().bottom;
+            probe.remove();
+            var firstLine = list.firstChild && list.firstChild.nodeType === 3 ? list.firstChild.textContent : (list.textContent || '');
+            var rPrev = reach(prev.textContent), rList = reach(firstLine);
+            if (rPrev && rList) {
+              var prevFoot = prevBase + rPrev.below;
+              var listCap = listBase - rList.above;
+              list.style.marginTop = (LINE_GAP - (listCap - prevFoot)).toFixed(2) + 'px';
+            }
+          }
+        }
+      }
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var bb = band.getBoundingClientRect();
+      if (above) { var ia2 = inkSpan(above); if (ia2) above.style.top = (airTop - (ia2.top - bb.top)).toFixed(2) + 'px'; }
+      void fitted;
     });
     [].forEach.call(document.querySelectorAll('.reprint'), function (band) {
       fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR, airBottom: BANNER_AIR });
@@ -3411,14 +3469,9 @@
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
-    var word = (name.textContent || '').trim().replace(/\s+/g, ' ');
-    var n = word.length;
     var ink1 = i1.right - i1.left;
-    if (n > 1 && vw > ink1) {
-      name.style.letterSpacing = ((vw - ink1) / (n - 1)).toFixed(3) + 'px';
-      i1 = inkSpanOf(name) || i1;
-    }
-    name.style.transform = 'translateX(' + (wb.left + SIDE - i1.left).toFixed(2) + 'px)';
+    void vw;
+    name.style.transform = 'translateX(' + (wb.left + (wb.width - ink1) / 2 - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
     var size = parseFloat(ncs.fontSize) || 0;
     var text = (name.textContent || '').trim();
@@ -4563,6 +4616,7 @@
     step('fitTitleHalo', fitTitleHalo);
     step('fitCardRules', fitCardRules);
     step('fitToggle', fitToggle);
+    step('fitSubscribeLines', fitSubscribeLines);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
   }
   (function(){
@@ -4574,6 +4628,95 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
   if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', function () { fitAll(); });
   window.addEventListener('load', fitAll);
+  function inkReach(el) {
+    var cs = getComputedStyle(el);
+    var size = parseFloat(cs.fontSize) || 13;
+    var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    var scanPx = 200, W = 3000, H = 320, y0 = 240;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d');
+    if (!g || !text) return null;
+    g.font = cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+    g.fillText(text, 20, y0);
+    var data;
+    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return null; }
+    var top = -1, bot = -1;
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) { if (data[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; bot = y; break; } }
+    }
+    if (top < 0) return null;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base = probe.getBoundingClientRect().bottom;
+    probe.remove();
+    return { capTop: base - (y0 - top) / scanPx * size, foot: base + (bot + 1 - y0) / scanPx * size };
+  }
+  function courierGap() {
+    var hero = document.querySelector('.card--mega');
+    var line = hero && hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
+    var edge = hero && (hero.querySelector('.duo-half') || hero);
+    if (!line || !edge) return 24;
+    var r = inkReach(line);
+    return r ? r.capTop - edge.getBoundingClientRect().top : 24;
+  }
+  function fitLatestIsland() {
+    var island = document.querySelector('.latest-island');
+    if (!island) return;
+    var tag = island.parentElement.querySelector('.latest-tag');
+    var hero = island.nextElementSibling;
+    while (hero && !hero.classList.contains('card--mega')) hero = hero.nextElementSibling;
+    if (!tag || !hero) return;
+    var edge = hero.querySelector('.duo-half') || hero;
+    var line = hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
+    island.style.marginLeft = ''; island.style.width = '';
+    tag.style.top = ''; tag.style.left = '';
+    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
+    var left = seam ? seam.getBoundingClientRect().left : 72;
+    if (!(left > 0)) left = 72;
+    var ir = island.getBoundingClientRect(), er = edge.getBoundingClientRect();
+    island.style.marginLeft = (left - ir.left).toFixed(2) + 'px';
+    island.style.width = Math.max(0, er.right - left).toFixed(2) + 'px';
+    var tr0 = tag.getBoundingClientRect();
+    tag.style.left = (left - tr0.left).toFixed(2) + 'px';
+    var r = inkReach(tag);
+    if (!r) return;
+    var rg = document.createRange(); rg.selectNodeContents(tag);
+    var rs = rg.getClientRects(), il = Infinity, irt = -Infinity;
+    for (var i = 0; i < rs.length; i++) { if (rs[i].width > 0) { il = Math.min(il, rs[i].left); irt = Math.max(irt, rs[i].right); } }
+    if (isFinite(il)) {
+      var tcs = getComputedStyle(tag);
+      var g = document.createElement('canvas').getContext('2d');
+      var w = irt - il, bl = 0, br = 0;
+      if (g) {
+        g.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
+        var m = g.measureText((tag.textContent || '').trim());
+        w = m.actualBoundingBoxRight || m.width;
+      }
+      void bl; void br;
+      island.style.setProperty('--rule-w', w.toFixed(2) + 'px');
+      island.style.setProperty('--rule-x', '0px');
+    }
+    ir = island.getBoundingClientRect();
+    var lr = line ? inkReach(line) : null;
+    var want = lr ? (lr.capTop + lr.foot) / 2 - (r.foot - r.capTop) / 2 : ir.top + 1 + 24;
+    tag.style.top = (want - r.capTop).toFixed(2) + 'px';
+  }
+  function fitSubscribeLines() {
+    fitLatestIsland();
+    var gap = courierGap();
+    [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
+      var name = band.querySelector('.banner-name');
+      var below = band.querySelector('.banner-line--below');
+      if (!name || !below) return;
+      below.style.top = '';
+      var nr = inkReach(name), lr = inkReach(below);
+      if (!nr || !lr) return;
+      below.style.top = (nr.foot + gap - lr.capTop).toFixed(2) + 'px';
+    });
+  }
   function refitAfterClose() { atRest(function () { step('fitTitleHalo#close', fitTitleHalo); }); }
   window.addEventListener('newcritic:closed', function () { whenStill(refitAfterClose); });
   var resizeTimer;
@@ -5437,7 +5580,7 @@
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('700 100px "OPS Placard"').then(fitMast, function(){});
+    document.fonts.load('400 100px oculi-display').then(fitMast, function(){});
     if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
   var resizeTimer;
