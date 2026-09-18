@@ -60,6 +60,19 @@
   font-display: block;
   src: url(fonts/ops-placard-bold.woff2) format('woff2');
 }
+/* Roboto Mono Regular (Apache 2.0), self-hosted (2026-09-18: the
+   Light for an hour, a step under the Garamond dek italic's greyness
+   — on a canvas the dek's ink density is 0.16, Roboto Mono's 300
+   reads 0.197 and its 400 0.282 — then a shade heavier, in sentence
+   case). The latin subset from Google Fonts; the kit serves the same
+   400 and a 700, and stands next in the stack with Courier Std. */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(fonts/roboto-mono-regular.woff2) format('woff2');
+}
 /* The excerpts' face — Playfair Display Medium (self-hosted OFL cuts
    from the variable family's 500 instance), with its real italic for
    the <em>-heavy excerpts. */
@@ -204,7 +217,7 @@
      written — centred, untracked but for the names' touch. One bold
      cut, self-hosted (the @font-face above); the licence note there
      still stands. */
-  --title-face: 'OPS Placard', 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --title-face: 'futura-pt-condensed', 'OPS Placard', 'oculi-display', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
   /* Bare SYSTEM Courier first — the Antenne Books move (they declare
      `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
@@ -217,7 +230,7 @@
      every platform, where the bare "Courier" before it meant Apple's
      dark cut on a Mac and Courier New on Windows. The system faces
      back it up where the kit is missing. */
-  --byline-face: 'courier-std', Courier, 'Courier New', monospace;
+  --byline-face: 'Roboto Mono', 'roboto-mono', 'courier-std', Courier, 'Courier New', monospace;
   /* Both Courier roles — byline strip and dek — sit at 14px. */
   /* ONE courier size — corners, tagline, socials, bylines, every
      credit voice reads this token. */
@@ -13548,7 +13561,7 @@ body.word-page section.ledger:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-top: 
    the first row and pads the ledger so the air over it is the air
    between one row's ink and the next's. */
 body.word-page .ledger-row:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-body.word-page .ledger-row :is(.ledger-cell, .arch-sort, .arch-shuffle):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ text-transform: uppercase; }
+body.word-page .ledger-row :is(.ledger-cell, .arch-sort, .arch-shuffle):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ text-transform: none; }
 /* …the column head excepted: its labels — Title, Author, Tag,
    Section, Date — keep their own case over the capitals below. */
 body.word-page .ledger-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -13811,7 +13824,9 @@ body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass):i
 .latest-plate .cut-mark.is-set{ display: inline; width: auto; }
 
 /* ---------- THE COURIER'S WEIGHT AND CASE (2026-09-17) ----------
-   Courier Std at its regular, in CAPITALS, on every courier role —
+   The courier face (Roboto Mono Light, 2026-09-18, after an hour of
+   IBM Plex Mono; Courier Std before it, bold for an hour and regular the day before), in
+   CAPITALS, on every courier role —
    the strips, corners, bylines, margins, the ledger's rows and bands,
    the fields. Every selector that names the face is restated here so
    the one block is the last word on both. (Written for an hour of
@@ -13866,8 +13881,11 @@ main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* REGULAR, SENTENCE CASE (2026-09-18; light for an hour, the
+     medium and the bold before it, Courier's regular capitals the
+     day before): Roboto Mono's 400 on every role, as written. */
   font-weight: 400;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 /* ---------- THE NAMES ON A HEX GROUND (2026-09-17) ----------
@@ -13962,7 +13980,7 @@ main.has-mega .page-banner--apart .banner-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
   font-size: 13px;
   line-height: 13px;
   letter-spacing: -0.26px;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--k) !important;
   pointer-events: none;
 }
@@ -13973,53 +13991,96 @@ main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r
   text-align: left;
 }
 
-/* ---------- THE LATEST, AN ISLAND ON THE FIRST HERO (2026-09-17) ----------
-   A rule on the hero's own rule line, with THE LATEST hanging under
-   it in the dek's Garamond — 20 italic, as written — ranged left on
-   the top seam's line and centred on WILL DIANA's ink, the band's
-   own way, by painted ink
-   (fitLatestIsland sets the margin, the width, the rule's width and
-   start — the words' painted ink exactly, --rule-w and --rule-x —
-   and the words' seat).
-   THE HERO'S RULE IS STICKY: a pseudo-element that pins 71 under the
-   band's top as the card scrolls under it. So the island's rule is
-   the same thing — sticky at the same 71, no height in the flow (the
-   rule is absolute inside it), pinning and releasing with the hero's
-   own line, so the two stay one line at every scroll. THE WORDS ARE
-   NOT: they stand beside the island as their own absolute element
-   (fitLatestIsland seats them on the byline) and scroll under the
-   band with the hero's content, as WILL DIANA does. Both inert: no
-   pointer, so the hero's hover stands as it stood. */
-main.has-mega .latest-island:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  position: sticky; top: 71px;
-  display: block;
-  height: 0; overflow: visible;
-  margin: -1px 0 0; padding: 0;
-  border: 0;
-  background: transparent;
-  z-index: 20;
-  pointer-events: none;
-}
-main.has-mega .latest-island::before{
-  content: '';
-  position: absolute; left: var(--rule-x, 0px); top: 0;
-  height: 1px;
-  width: var(--rule-w, 100%);
-  background: var(--k);
-}
-main.has-mega .latest-tag:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  position: absolute; left: 0; top: 0;
-  z-index: 2;
-  pointer-events: none;
-  margin: 0; padding: 0;
-  font-family: var(--excerpt);
+/* ---------- THE WORDS IN GARAMOND; THE NAME ALONE IN PLACARD (2026-09-18) ----------
+   Every word that wore the title face except THE NEW CRITIC itself —
+   the section words on their banners (Essays, Postscript, Contra,
+   Subscribe, the deck's Archive / About / Store), the archive page's
+   own word, and the card titles — sets in the body's
+   Garamond at regular weight, untracked, in sentence case as written.
+   The wordmark, its miniature in the head band, its reprint at the
+   foot and the rail's stacked name keep Placard. The fitter measures the painted glyphs, so every
+   seat re-derives itself off the new face. Stated over the capitals
+   and tracking rules of 2026-09-17. */
+:root{ --word-face: var(--excerpt); }
+.banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.card-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.latest-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) :is(a, .title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--word-face);
   font-weight: 400;
-  font-style: italic;
-  font-size: 20px;
-  line-height: 24px;
-  letter-spacing: normal;
+  font-style: normal;
+  letter-spacing: 0;
   text-transform: none;
-  text-align: left;
-  white-space: nowrap;
-  color: var(--k);
+}
+/* THE CARD TITLES IN THE GARAMOND ROMAN, sentence case as written
+   (2026-09-18; Futura's condensed bold wore them for an hour). Stated
+   here over the word block's own rule so the record of the hour
+   stands in one place. */
+.card-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.latest-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) :is(a, .title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--word-face);
+  font-weight: 400;
+  font-style: normal;
+  text-transform: none;
+}
+/* THE WORDS THE SAME (2026-09-18; Garamond italic, then Futura's book
+   oblique, each for an hour): the section words, the deck's and the
+   archive page's own, in the condensed bold capitals with the titles
+   and the name. */
+.banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+/* ---------- THE COLUMN STANDS 24 FROM THE PICTURE (2026-09-18) ----------
+   The courier holds the corners of every text column 24 under the top
+   rule and 24 over the foot rule; the column stood 48 in from the
+   picture's edge. It stands the same 24 from the picture now — the
+   courier, the title and the dek together — on the aligned side; the
+   far side keeps its own margin. The plate the same: its aligned side
+   is the picture's OPEN side, the opposite of the closed column's
+   (pic-left opens the plate at the left with the picture at the right,
+   so its body ranges right and stands 24 from that edge). The fitter
+   reads the boxes, so every seat and every title re-derives itself. */
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 24px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 24px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 24px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 24px; }
+/* THE PAIR CELLS' DEKS GIVE UP THE FAR 48 (2026-09-18): their text
+   column is half the latest rows' — 106 inside its two 48s — and the
+   dek's let-out far margin left it 58, one word to the line and every
+   long word spilling past the edge into the padding. The far side
+   keeps the column's own 48 there. */
+main.has-mega .card--ps-pair .latest-cell--ps.pic-left .latest-col .latest-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 0; }
+main.has-mega .card--ps-pair .latest-cell--ps.pic-right .latest-col .latest-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 0; }
+/* AND THEIR PLATES GIVE UP THE FAR 96 the same way: the plate stands
+   in the picture's 202, and 96 at the far side with 48 at the near
+   left 58 for the body — the kicker and the long words spilled past
+   the near edge toward the picture. The far side is the column's own
+   48 in the pair cells; the latest rows keep the let-out 96. */
+main.has-mega .card--ps-pair .latest-cell--ps.pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 48px; }
+main.has-mega .card--ps-pair .latest-cell--ps.pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 48px; }
+
+/* ---------- THE NAME IN FUTURA (2026-09-18) ----------
+   Futura PT Condensed at its bold, from the kit, on every role that
+   wore Placard: the wordmark, its miniature in the head band, its
+   reprint at the foot, the rail's stacked name and the bands' marks.
+   Placard's one cut answered every weight, so those roles asked for
+   400; Futura has a book at 400 and the bold at 700, and the bold is
+   the Placard weight. Stated over the roles' own rules. The fitter
+   seats the names by painted ink, so the 72s re-derive themselves. */
+.site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--title-face);
+  font-weight: 700;
 }

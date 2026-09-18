@@ -2267,7 +2267,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // rows, the postscript trio, the archive rows) was cleared — it
   // lives in git history at 73f10d7 — and the new composition begins
   // below with the latest row.
-  blocks.push(renderMegaHero(essays[0], { label: 'Essays' }));
+  // EVERY ESSAY TURNED (2026-09-18): picture LEFT on the lead, then
+  // alternating — each card the mirror of what it was.
+  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays' }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   blocks.push(renderLatestRow(postscripts[0], contras[0]));
@@ -2287,7 +2289,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // MIRRORED too: contra left, postscript right with its text in the
   // middle and its cover closing the row's right end. Both keep the
   // lead seat (the rail is on the right up here, so no m2).
-  blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays' }));
+  blocks.push(renderMegaHero(essays[1], { label: 'Essays' }));
   blocks.push(renderLatestRow(postscripts[1], contras[1], { rev: true }));
   // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
   // block full-bleed, SUBSCRIBE in the masthead voice centred where
@@ -2299,7 +2301,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // THE SECTION BANNERS NAME THE SECTIONS THEY OPEN — ESSAYS, POSTSCRIPT,
   // CONTRA. (The modifiers keep their old names: the fitter's ground
   // stops and rail-fix read them.)
-  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band' }));
+  // EACH SECTION'S WORD CARRIES ITS LINE (2026-09-18): one courier
+  // sentence under the word, inside the 72 under its feet, seated the
+  // way SUBSCRIBE's offer is (fitSubscribeLines, .page-banner--apart).
+  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart', below: ['The greatest writing of our generation.'] }));
   // THE SECOND MOVEMENT, under the band: the next essay as a
   // MIRRORED hero (cover left, ground right, labelled Essay), then
   // the next contra/postscript pair mirrored the same way.
@@ -2308,13 +2313,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // mirrored, base, mirrored, base. essays[0] and [1] are spent in the
   // first movement, so this movement reads from [2] and repeats
   // nothing.
-  blocks.push(renderMegaHero(essays[2], { label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[4], { label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[6], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[3], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[5], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true }));
   // EVENTS closes the essays — the word alone, like STORE.
-  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band' }));
+  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart', below: ['TNC editors interview extraordinary gen zers.'] }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
   // build, then the pair MIRRORED, then the base again. All three
   // keep the base SEAT (the strip is back on the right down here), so
@@ -2331,7 +2336,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // And a third pair back in the base build — covers on the left.
   blocks.push(renderPostscriptPair(postscripts[6], postscripts[7], { stacked: true }));
   // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band' }));
+  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart', below: ['New Critics take on the works of our age.'] }));
   // THE CONTRA MOVEMENT: the section's own row formation, three
   // squares across, twice — reading from the reviews the rows above
   // haven't already spent.
@@ -2381,7 +2386,6 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the last screen, where the reprint overtakes it. The sections
   // carry no band of their own any more (and no field): their words
   // pass under this one the way the wordmark does.
-  let tagged = false;
   const openMovement = (m) => {
     const head = m === 'latest'
       ? `\n  ${renderSectionBand(m)}\n  <div class="head-seam" aria-hidden="true"></div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
@@ -2437,20 +2441,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }
     const m = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
     if (!open) openMovement(m);
-    // THE LATEST, an island over the first hero (2026-09-17): a rule
-    // the hero's width, the band's 24 of air, and the words in the
-    // dek's Garamond at the left — its own block in the flow under the
-    // wordmark, 72 under the feet like everything (style.css,
-    // .latest-island). The wordmark stands where it stood; the hero
-    // moves down by the island.
-    // (The rule and the words are two elements: the rule pins under the
-    // band with the hero's own rule, the words scroll under the band
-    // with the hero's content.)
-    const tag = m === 'latest' && !tagged ? '<div class="latest-island" aria-hidden="true"></div><p class="latest-tag">The Latest</p>\n    ' : '';
-    if (tag) tagged = true;
     duoHtml += `
   <div class="wrap m--${m}">
-    ${tag}${block}
+    ${block}
   </div>${last || nextIsWord ? '' : `\n  <div class="row-divider m--${m}"></div>`}`;
   });
   closeMovement();
@@ -2504,7 +2497,7 @@ ${leadPreload}
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
@@ -2795,7 +2788,9 @@ function renderFontGateScript() {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('400 100px "OPS Placard"'),
+      f.load('700 100px futura-pt-condensed'),
+      f.load('italic 400 100px futura-pt'),
+      f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -3042,7 +3037,7 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
 ${renderImgFadeScript()}

@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="preload" href="fonts/ops-placard-bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=b8592eed">
+<link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=e2666419">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -228,7 +228,9 @@
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('400 100px "OPS Placard"'),
+      f.load('700 100px futura-pt-condensed'),
+      f.load('italic 400 100px futura-pt'),
+      f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -2451,6 +2453,29 @@
     });
     return isFinite(top) ? { top: top, bot: bot } : null;
   }
+  function capSpan(el) {
+    var top = Infinity, bot = -Infinity;
+    var g = document.createElement('canvas').getContext('2d');
+    inkPieces(el).forEach(function (node) {
+      var text = node.nodeValue;
+      if (!text.trim()) return;
+      var host = node.parentElement || el;
+      var cs = getComputedStyle(host);
+      g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = g.measureText(text);
+      var capH = g.measureText('H').actualBoundingBoxAscent || m.actualBoundingBoxAscent || 0;
+      var rg = document.createRange();
+      rg.selectNodeContents(node);
+      var r = rg.getBoundingClientRect();
+      if (!r.height) return;
+      var half = (r.height - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2;
+      var base = r.top + half + m.fontBoundingBoxAscent;
+      var t = base - capH;
+      if (t < top) top = t;
+      if (base > bot) bot = base;
+    });
+    return isFinite(top) ? { top: top, bot: bot } : null;
+  }
   function fitBands() {
     var first = document.querySelector('.section-band');
     if (first) {
@@ -2463,7 +2488,7 @@
       var mid = bb.top + bb.height / 2;
       [].forEach.call(band.querySelectorAll('.band-mark, .band-mid, .band-deks'), function (el) {
         el.style.top = '';
-        var i = paintedSpan(el) || inkSpan(el);
+        var i = capSpan(el) || paintedSpan(el) || inkSpan(el);
         if (!i) return;
         el.style.position = 'relative';
         el.style.top = (mid - (i.top + i.bot) / 2).toFixed(2) + 'px';
@@ -2481,6 +2506,8 @@
         cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
       }
     }
+    var WORD_OF_MAST = 1 / 2;
+    var wordCap = cap * WORD_OF_MAST;
     var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
@@ -2506,7 +2533,7 @@
               var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
               var g = cv.getContext('2d');
               if (!g) return null;
-              g.font = bcs.fontWeight + ' ' + scanPx + 'px ' + bcs.fontFamily;
+              g.font = bcs.fontStyle + ' ' + bcs.fontWeight + ' ' + scanPx + 'px ' + bcs.fontFamily;
               g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
               g.fillText(text, 20, y0);
               var data;
@@ -2536,7 +2563,7 @@
           }
         }
       }
-      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
       var bb = band.getBoundingClientRect();
       if (above) { var ia2 = inkSpan(above); if (ia2) above.style.top = (airTop - (ia2.top - bb.top)).toFixed(2) + 'px'; }
       void fitted;
@@ -2586,7 +2613,7 @@
     var scan = 200, cw = 3000, chh = 320, y0 = 240;
     var cv = document.createElement('canvas'); cv.width = cw; cv.height = chh;
     var g = cv.getContext('2d');
-    g.font = ncs.fontWeight + ' ' + scan + 'px ' + ncs.fontFamily;
+    g.font = ncs.fontStyle + ' ' + ncs.fontWeight + ' ' + scan + 'px ' + ncs.fontFamily;
     g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
     g.fillText(text, 20, y0);
     var data;
@@ -2598,7 +2625,7 @@
     if (topRow < 0) return;
     var inkAbove = (y0 - topRow) / scan * size;
     var m = g.measureText('H');
-    g.font = ncs.fontWeight + ' ' + size + 'px ' + ncs.fontFamily;
+    g.font = ncs.fontStyle + ' ' + ncs.fontWeight + ' ' + size + 'px ' + ncs.fontFamily;
     var mm = g.measureText('H');
     var pieces = inkPieces(name);
     if (!pieces.length) return;
@@ -3250,7 +3277,8 @@
       probe.appendChild(pin);
       var base = pin.getBoundingClientRect().top;
       probe.removeChild(pin);
-      var above = caps ? H / 2 : (H + x) / 4;
+      var above = H / 2;
+      void x;
       var inkMid = base - above;
       var bb = band.getBoundingClientRect();
       return (bb.top + bb.height / 2) - inkMid;
@@ -3743,7 +3771,7 @@
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var g = cv.getContext('2d');
     if (!g || !text) return null;
-    g.font = cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
     g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
     g.fillText(text, 20, y0);
     var data;
@@ -3768,50 +3796,7 @@
     var r = inkReach(line);
     return r ? r.capTop - edge.getBoundingClientRect().top : 24;
   }
-  function fitLatestIsland() {
-    var island = document.querySelector('.latest-island');
-    if (!island) return;
-    var tag = island.parentElement.querySelector('.latest-tag');
-    var hero = island.nextElementSibling;
-    while (hero && !hero.classList.contains('card--mega')) hero = hero.nextElementSibling;
-    if (!tag || !hero) return;
-    var edge = hero.querySelector('.duo-half') || hero;
-    var line = hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
-    island.style.marginLeft = ''; island.style.width = '';
-    tag.style.top = ''; tag.style.left = '';
-    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
-    var left = seam ? seam.getBoundingClientRect().left : 72;
-    if (!(left > 0)) left = 72;
-    var ir = island.getBoundingClientRect(), er = edge.getBoundingClientRect();
-    island.style.marginLeft = (left - ir.left).toFixed(2) + 'px';
-    island.style.width = Math.max(0, er.right - left).toFixed(2) + 'px';
-    var tr0 = tag.getBoundingClientRect();
-    tag.style.left = (left - tr0.left).toFixed(2) + 'px';
-    var r = inkReach(tag);
-    if (!r) return;
-    var rg = document.createRange(); rg.selectNodeContents(tag);
-    var rs = rg.getClientRects(), il = Infinity, irt = -Infinity;
-    for (var i = 0; i < rs.length; i++) { if (rs[i].width > 0) { il = Math.min(il, rs[i].left); irt = Math.max(irt, rs[i].right); } }
-    if (isFinite(il)) {
-      var tcs = getComputedStyle(tag);
-      var g = document.createElement('canvas').getContext('2d');
-      var w = irt - il, bl = 0, br = 0;
-      if (g) {
-        g.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
-        var m = g.measureText((tag.textContent || '').trim());
-        w = m.actualBoundingBoxRight || m.width;
-      }
-      void bl; void br;
-      island.style.setProperty('--rule-w', w.toFixed(2) + 'px');
-      island.style.setProperty('--rule-x', '0px');
-    }
-    ir = island.getBoundingClientRect();
-    var lr = line ? inkReach(line) : null;
-    var want = lr ? (lr.capTop + lr.foot) / 2 - (r.foot - r.capTop) / 2 : ir.top + 1 + 24;
-    tag.style.top = (want - r.capTop).toFixed(2) + 'px';
-  }
   function fitSubscribeLines() {
-    fitLatestIsland();
     var gap = courierGap();
     [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
       var name = band.querySelector('.banner-name');
@@ -3834,6 +3819,7 @@
     if (e.persisted) fitAll();
   });
   if (/[?&]diag\b/.test(location.search)) {
+    window.__fitBands = fitBands; window.__capSpan = capSpan; window.__paintedSpan = paintedSpan; window.__inkSpan = inkSpan;
     var diagBox = null;
     var diag = function () {
       var mid = window.innerHeight / 2, best = null, bestD = Infinity;
@@ -4811,7 +4797,7 @@
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('400 100px "OPS Placard"').then(fitMast, function(){});
+    document.fonts.load('700 100px futura-pt-condensed').then(fitMast, function(){});
     if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
   var resizeTimer;

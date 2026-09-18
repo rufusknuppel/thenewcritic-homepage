@@ -3268,6 +3268,35 @@
     return isFinite(top) ? { top: top, bot: bot } : null;
   }
 
+  // THE CAP BLOCK of an element's text: from the top of its capitals
+  // to its baseline, ascenders, descenders and punctuation left out.
+  // Measured per text node like paintedSpan — the baseline off the
+  // node's line box and the face's bounds, the cap height off a
+  // canvas H in the node's own font.
+  function capSpan(el) {
+    var top = Infinity, bot = -Infinity;
+    var g = document.createElement('canvas').getContext('2d');
+    inkPieces(el).forEach(function (node) {
+      var text = node.nodeValue;
+      if (!text.trim()) return;
+      var host = node.parentElement || el;
+      var cs = getComputedStyle(host);
+      g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = g.measureText(text);
+      var capH = g.measureText('H').actualBoundingBoxAscent || m.actualBoundingBoxAscent || 0;
+      var rg = document.createRange();
+      rg.selectNodeContents(node);
+      var r = rg.getBoundingClientRect();
+      if (!r.height) return;
+      var half = (r.height - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2;
+      var base = r.top + half + m.fontBoundingBoxAscent;
+      var t = base - capH;
+      if (t < top) top = t;
+      if (base > bot) bot = base;
+    });
+    return isFinite(top) ? { top: top, bot: bot } : null;
+  }
+
   function fitBands() {
     // The first screen ends ON the band: the spacer under the wordmark
     // runs a viewport LESS the band's own height, so at rest the band
@@ -3281,9 +3310,16 @@
       var bb = band.getBoundingClientRect();
       if (!bb.height) return;
       var mid = bb.top + bb.height / 2;
+      // ON THE CAP BLOCK (2026-09-18), not the painted ink: centred on
+      // its full ink, the tagline's g and the deks' commas lifted their
+      // letters off the band's axis while NEW and the miniature (which
+      // seats itself by its caps, band-mark.js) stood on it — the
+      // Garamond read high of the courier date by two pixels. Every
+      // item now stands with its caps and its baseline equidistant
+      // from the band's edges, whatever hangs above or below them.
       [].forEach.call(band.querySelectorAll('.band-mark, .band-mid, .band-deks'), function (el) {
         el.style.top = '';
-        var i = paintedSpan(el) || inkSpan(el);
+        var i = capSpan(el) || paintedSpan(el) || inkSpan(el);
         if (!i) return;
         el.style.position = 'relative';
         el.style.top = (mid - (i.top + i.bot) / 2).toFixed(2) + 'px';
@@ -3314,6 +3350,15 @@
         cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
       }
     }
+    // A MODERATE SIZE FOR THE WORDS (2026-09-18): in Garamond the
+    // section words and SUBSCRIBE fitted to the measure all reached
+    // the masthead's cap and stood as tall as the name. Their own
+    // ceiling is half of it (two thirds for an hour) — the masthead's scale, so
+    // it follows the viewport, but a word, not a second wordmark. The
+    // reprint at the foot IS the name and keeps the full cap. (Read
+    // after the word pages derive their cap from the reprint.)
+    var WORD_OF_MAST = 1 / 2;
+    var wordCap = cap * WORD_OF_MAST;
     // THE BANNERS' WORDS REACH HALFWAY INTO THE MARGINS: the page's
     // 72 at each side, less half — the ink opens and closes 36 from
     // the edges, spreading 50% further out than every row it stands
@@ -3370,7 +3415,7 @@
               var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
               var g = cv.getContext('2d');
               if (!g) return null;
-              g.font = bcs.fontWeight + ' ' + scanPx + 'px ' + bcs.fontFamily;
+              g.font = bcs.fontStyle + ' ' + bcs.fontWeight + ' ' + scanPx + 'px ' + bcs.fontFamily;
               g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
               g.fillText(text, 20, y0);
               var data;
@@ -3400,7 +3445,7 @@
           }
         }
       }
-      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: cap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
       var bb = band.getBoundingClientRect();
       if (above) { var ia2 = inkSpan(above); if (ia2) above.style.top = (airTop - (ia2.top - bb.top)).toFixed(2) + 'px'; }
       // (The line's own seat is written late — fitSubscribeLines — once
@@ -3503,7 +3548,7 @@
     var scan = 200, cw = 3000, chh = 320, y0 = 240;
     var cv = document.createElement('canvas'); cv.width = cw; cv.height = chh;
     var g = cv.getContext('2d');
-    g.font = ncs.fontWeight + ' ' + scan + 'px ' + ncs.fontFamily;
+    g.font = ncs.fontStyle + ' ' + ncs.fontWeight + ' ' + scan + 'px ' + ncs.fontFamily;
     g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
     g.fillText(text, 20, y0);
     var data;
@@ -3515,7 +3560,10 @@
     if (topRow < 0) return;
     var inkAbove = (y0 - topRow) / scan * size;
     var m = g.measureText('H');
-    g.font = ncs.fontWeight + ' ' + size + 'px ' + ncs.fontFamily;
+    // In the face's own STYLE: the italic's bounds differ from the
+    // roman's, and a roman model under an italic word seated SUBSCRIBE
+    // two and a half pixels high (2026-09-18).
+    g.font = ncs.fontStyle + ' ' + ncs.fontWeight + ' ' + size + 'px ' + ncs.fontFamily;
     var mm = g.measureText('H');
     var pieces = inkPieces(name);
     if (!pieces.length) return;
@@ -4610,7 +4658,14 @@
       probe.appendChild(pin);
       var base = pin.getBoundingClientRect().top;
       probe.removeChild(pin);
-      var above = caps ? H / 2 : (H + x) / 4;
+      // ON THE CAP BLOCK FOR EVERY CASE (2026-09-18): the mixed-case
+      // Garamond was seated between its cap band's middle and its x
+      // band's, which put its baseline 1.8 under the courier date's and
+      // read uneven against the date, NEW and the miniature, all three
+      // on their caps. The mean of cap and x is struck; caps and
+      // baseline stand equidistant from the band's edges, as they do.
+      var above = H / 2;
+      void x;
       var inkMid = base - above;
       var bb = band.getBoundingClientRect();
       return (bb.top + bb.height / 2) - inkMid;
@@ -5419,7 +5474,7 @@
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var g = cv.getContext('2d');
     if (!g || !text) return null;
-    g.font = cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
     g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
     g.fillText(text, 20, y0);
     var data;
@@ -5460,69 +5515,7 @@
   // under the rule and 24 over the hero's — the band's own 24 — by
   // painted ink, the paddings closing the difference the line box
   // leaves.
-  function fitLatestIsland() {
-    var island = document.querySelector('.latest-island');
-    if (!island) return;
-    var tag = island.parentElement.querySelector('.latest-tag');
-    var hero = island.nextElementSibling;
-    while (hero && !hero.classList.contains('card--mega')) hero = hero.nextElementSibling;
-    if (!tag || !hero) return;
-    // THE HERO'S RULE runs from its courier line's ink to the picture's
-    // far edge, a sticky line on the first half; the island is sticky
-    // with it (style.css), so only the sideways seat and the words'
-    // seat are written here — both scroll-invariant, the two boxes
-    // pinning alike.
-    var edge = hero.querySelector('.duo-half') || hero;
-    var line = hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
-    island.style.marginLeft = ''; island.style.width = '';
-    tag.style.top = ''; tag.style.left = '';
-    // ON THE TOP RULE'S LEFT END: the seam under the head band runs 72
-    // in from the page's edge; the island's rule opens on that line.
-    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
-    var left = seam ? seam.getBoundingClientRect().left : 72;
-    if (!(left > 0)) left = 72;
-    var ir = island.getBoundingClientRect(), er = edge.getBoundingClientRect();
-    island.style.marginLeft = (left - ir.left).toFixed(2) + 'px';
-    island.style.width = Math.max(0, er.right - left).toFixed(2) + 'px';
-    // The words open on the same line, set against their own offset
-    // parent (they are not in the sticky box).
-    var tr0 = tag.getBoundingClientRect();
-    tag.style.left = (left - tr0.left).toFixed(2) + 'px';
-    var r = inkReach(tag);
-    if (!r) return;
-    // THE RULE IS THE WORDS' OWN LENGTH, from the left (a quarter more
-    // for a moment): from the words' left edge — the seam's line, where
-    // the words stand — to the last letter's painted ink, so the line
-    // opens with the words and ends where their ink does.
-    var rg = document.createRange(); rg.selectNodeContents(tag);
-    var rs = rg.getClientRects(), il = Infinity, irt = -Infinity;
-    for (var i = 0; i < rs.length; i++) { if (rs[i].width > 0) { il = Math.min(il, rs[i].left); irt = Math.max(irt, rs[i].right); } }
-    if (isFinite(il)) {
-      var tcs = getComputedStyle(tag);
-      var g = document.createElement('canvas').getContext('2d');
-      var w = irt - il, bl = 0, br = 0;
-      if (g) {
-        g.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
-        var m = g.measureText((tag.textContent || '').trim());
-        w = m.actualBoundingBoxRight || m.width;
-      }
-      void bl; void br;
-      island.style.setProperty('--rule-w', w.toFixed(2) + 'px');
-      island.style.setProperty('--rule-x', '0px');
-    }
-    // THE TWO LINES CENTRED ON EACH OTHER BY INK, the way the band
-    // centres its Garamond and its courier on one middle
-    // (inkCenterBands): the byline stays where the hero seats it, and
-    // the words' painted ink — ascender to foot — is centred on the
-    // byline's. Where there is no byline, the courier's 24 under the
-    // rule.
-    ir = island.getBoundingClientRect();
-    var lr = line ? inkReach(line) : null;
-    var want = lr ? (lr.capTop + lr.foot) / 2 - (r.foot - r.capTop) / 2 : ir.top + 1 + 24;
-    tag.style.top = (want - r.capTop).toFixed(2) + 'px';
-  }
   function fitSubscribeLines() {
-    fitLatestIsland();
     var gap = courierGap();
     [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
       var name = band.querySelector('.banner-name');
@@ -5560,6 +5553,8 @@
   // of it says what DevTools would. Temporary; strike it when the
   // question is answered.
   if (/[?&]diag\b/.test(location.search)) {
+    // The band fitter and its two measures, for a console to call.
+    window.__fitBands = fitBands; window.__capSpan = capSpan; window.__paintedSpan = paintedSpan; window.__inkSpan = inkSpan;
     var diagBox = null;
     var diag = function () {
       // THE COVER IN FRONT OF THE READER: the hero whose picture is
