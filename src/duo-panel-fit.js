@@ -515,10 +515,29 @@
   })();
   // Shared scratch context for measuring words without touching the DOM.
   var measureCtx = document.createElement('canvas').getContext('2d');
+  // CSS TRACKING IS NOT IN THE CANVAS'S MEASURE (2026-09-18). measureText
+  // answers the advance of the glyphs and nothing else; the layout adds
+  // the element's letter-spacing after EVERY character, the last one
+  // included. The card titles took 0.045em this morning, and nine letters
+  // of Voluntary are 12px the line was set wider than the size it was
+  // fitted for — the y's tail hanging over the picture's edge, which is
+  // how it was caught. Every width measured here is paid that tracking
+  // per character now.
+  // Read as a RATIO of the element's own size: the sheet states it in em,
+  // so the ratio holds at whatever size the fitter is trying, and a
+  // tracking stated in px converts at the size it was read at. 'normal'
+  // is 0.
+  function trackEm(cs) {
+    var ls = parseFloat(cs.letterSpacing);
+    if (!ls) return 0;
+    var size = parseFloat(cs.fontSize) || 0;
+    return size ? ls / size : 0;
+  }
   function longestWordWidth(title, fontPx) {
     var cs = getComputedStyle(title);
     measureCtx.font = cs.fontWeight + ' ' + fontPx + 'px ' + cs.fontFamily;
-    var hyphenW = measureCtx.measureText('\u2010').width;
+    var track = trackEm(cs) * fontPx;
+    var hyphenW = measureCtx.measureText('\u2010').width + track;
     // Measure what the browser SETS, not what the markup says: CSS
     // text-transform never touches textContent, and capitals run wider \u2014
     // measuring the raw case approved sizes whose uppercase rendering
@@ -534,7 +553,7 @@
       // the break paints — not the whole word.
       var frags = word.split('\u00AD');
       frags.forEach(function(frag, i){
-        var ww = measureCtx.measureText(frag).width
+        var ww = measureCtx.measureText(frag).width + track * frag.length
           + (frags.length > 1 && i < frags.length - 1 ? hyphenW : 0);
         if (ww > w) w = ww;
       });
@@ -637,7 +656,8 @@
     var shownWords = shown.split(' ');
     if (!rawWords.length || !raw) return;
     measureCtx.font = cs.fontWeight + ' 100px ' + cs.fontFamily;
-    var w100 = function(s){ return measureCtx.measureText(s).width; };
+    var track100 = trackEm(cs) * 100;
+    var w100 = function(s){ return measureCtx.measureText(s).width + track100 * s.length; };
 
     // Candidate settings: the whole text on one stretched line, any
     // two-line word partition, and (when maxLines allows — the deks) a
@@ -3235,7 +3255,13 @@
   window.addEventListener('scroll', function () {
     if (stopsQueued) return;
     stopsQueued = true;
-    requestAnimationFrame(function () { stopsQueued = false; fitGroundStops(); fitPickup(); });
+    // ON SCROLL, THE EDGE MARKS ALONE (2026-09-18): the ground stops are
+    // the bands' seats in the flow and do not move with the scroll —
+    // they are set on every fit and resize — so the per-frame pass
+    // toggles the at-top / under-band classes and rewrites nothing
+    // else. (Rewriting the three stops on the main element each frame
+    // invalidated the whole page's style whenever a value moved.)
+    requestAnimationFrame(function () { stopsQueued = false; markBandEdges(); fitPickup(); });
   }, { passive: true });
   // THE PAINTED INK OF A LINE, top to bottom — not the cap-to-baseline
   // span every other seat on the page uses. Garamond's ascenders (the
@@ -3357,8 +3383,18 @@
     // it follows the viewport, but a word, not a second wordmark. The
     // reprint at the foot IS the name and keeps the full cap. (Read
     // after the word pages derive their cap from the reprint.)
-    var WORD_OF_MAST = 1 / 2;
-    var wordCap = cap * WORD_OF_MAST;
+    // HALFWAY BETWEEN THE NAME AND THE TITLES' CEILING (2026-09-18):
+    // the words took the titles' own max, 72, and read as a caption
+    // beside a masthead three inches tall; they took half the
+    // masthead's size, and the band miniature's, before that. Their
+    // ceiling is the mean of the two now — the wordmark's fitted size
+    // and TITLE_MAX — so they stand well clear of a card title and
+    // still short of the name. It follows the viewport, since the
+    // masthead's size does. (cap is the masthead's on the front page
+    // and the reprint's on the word pages, fitted just above; with no
+    // name to read, the titles' ceiling alone.)
+    var TITLE_MAX = 72;
+    var wordCap = cap ? (cap + TITLE_MAX) / 2 : TITLE_MAX;
     // THE BANNERS' WORDS REACH HALFWAY INTO THE MARGINS: the page's
     // 72 at each side, less half — the ink opens and closes 36 from
     // the edges, spreading 50% further out than every row it stands
@@ -4827,6 +4863,35 @@
   // column's foot — by stating both margins outright.
   var MATTER_GAP = 48;
 
+  // A RULE BETWEEN THE TITLE AND THE DEK (2026-09-18), drawn as the
+  // card's own top and foot rules are: one pixel in the ink, running
+  // PAST THE INK IT DIVIDES BY THE 24 those rules run past the courier
+  // and the kicker, and standing the same 24 clear of the type on each
+  // side — the distance the courier itself keeps from the rule above
+  // it and the rule below. So the title's baseline, 24, the rule, 24,
+  // the dek's cap: the one joint in the matter that opens to 49 where
+  // every other stays at the plain 24. The fitter writes three
+  // measures on the title and the sheet paints them (style.css, A RULE
+  // BETWEEN THE TITLE AND THE DEK); until it has, the rule has no
+  // width.
+  var TITLE_RULE_PAD = 24;
+  var TITLE_RULE_W = 1;
+  var TITLE_DEK_RULE = TITLE_RULE_PAD * 2 + TITLE_RULE_W;
+  // The far ends of an element's painted ink across ALL its lines — a
+  // ragged block's widest reach, which is what the rule is cut to.
+  function inkEdges(el) {
+    if (!el || getComputedStyle(el).display === 'none') return null;
+    var r = document.createRange();
+    r.selectNodeContents(el);
+    var rs = [].filter.call(r.getClientRects(), function (x) { return x.width > 0 && x.height > 0; });
+    if (!rs.length) return null;
+    var l = Infinity, rr = -Infinity;
+    for (var i = 0; i < rs.length; i++) { l = Math.min(l, rs[i].left); rr = Math.max(rr, rs[i].right); }
+    // A letter-spaced line carries its spacing after the last glyph too.
+    var ls = parseFloat(getComputedStyle(el).letterSpacing) || 0;
+    return { l: l, r: rr - ls };
+  }
+
   // Box-top to cap-top, and baseline to box-bottom, for whatever face
   // and size this element actually renders at (a stretch-fitted title
   // carries its size inline, per line).
@@ -4964,7 +5029,7 @@
         m = (j.meta && j.meta !== j.date && getComputedStyle(j.meta).display !== 'none') ? inkSpan(j.meta) : null;
         dt = (j.date && getComputedStyle(j.date).display !== 'none') ? inkSpan(j.date) : null;
         if (!t) return null;
-        return t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) + (m ? TITLE_DEK_GAP + m.ink : 0) + (dt ? TITLE_DEK_GAP + dt.ink : 0);
+        return t.ink + (d ? TITLE_DEK_RULE + d.ink : 0) + (m ? TITLE_DEK_GAP + m.ink : 0) + (dt ? TITLE_DEK_GAP + dt.ink : 0);
       };
       var span = pb.height;
       var total = block();
@@ -5010,7 +5075,7 @@
       var mid = function () {
         t = inkSpan(j.title);
         d = (j.dek && getComputedStyle(j.dek).display !== 'none') ? inkSpan(j.dek) : null;
-        return t ? t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) : null;
+        return t ? t.ink + (d ? TITLE_DEK_RULE + d.ink : 0) : null;
       };
       var room = bandBot - bandTop;
       var midH = mid();
@@ -5035,10 +5100,66 @@
       j.title.style.top = ((parseFloat(j.title.style.top) || 0) + (cap - t.top)).toFixed(2) + 'px';
       cap += t.ink;
       if (d) {
-        cap += TITLE_DEK_GAP;
+        cap += TITLE_DEK_RULE;
         j.dek.style.position = 'relative';
         j.dek.style.top = ((parseFloat(j.dek.style.top) || 0) + (cap - d.top)).toFixed(2) + 'px';
       }
+      // THE RULE IN THE JOINT, read where both blocks finally landed.
+      // ITS LINE is 24 under the title's baseline (the dek's cap the
+      // same 24 under it).
+      // ITS LENGTH is the card's own two rules, measured NOT whole —
+      // they cross the picture, and the whole of either is longer than
+      // the column the title stands in — but by the TAIL each one
+      // leaves over its courier: from the picture's edge, where the
+      // rule comes off the artwork, out to the end of its cut, which
+      // is the 24 past the byline's ink on the top and past READ
+      // PREVIEW's on the foot. The shorter of those two tails, less
+      // one more 24. (The arithmetic lands it at the shorter courier's
+      // own ink plus a single reach — about 114 at this width.)
+      // ITS SEAT is the picture's edge, the end the two tails start
+      // from, so the three lines range flush on that side and step in:
+      // the longer courier's tail, the shorter's, and this.
+      // Written against the title's own box, which the seat above
+      // positions, so the rule travels with it.
+      (function () {
+        j.title.style.removeProperty('--tdr-top');
+        j.title.style.removeProperty('--tdr-left');
+        j.title.style.removeProperty('--tdr-w');
+        if (!d) return;
+        var ti = inkSpan(j.title);
+        if (!ti) return;
+        var au = inkEdges(j.meta && j.meta !== j.date ? j.meta : null);
+        var pkEl = j.date ? (j.date.querySelector('.peek-open') || j.date) : null;
+        var pk = inkEdges(pkEl);
+        if (!au || !pk) return;
+        var cell = j.title.closest('.duo-half--mega, .latest-cell--ps');
+        if (!cell) return;
+        // WHICH SIDE THE PICTURE STANDS ON, by the class that decides it
+        // — the hero's card carries the turn, the postscript's cell does
+        // — and NOT by reading the picture's box: this pass runs before
+        // the one that gives the hero's frame its last 24, so a box read
+        // here is 24 out on those cards and was throwing both the length
+        // and the seat.
+        var picLeft = cell.classList.contains('duo-half--mega')
+          ? !!(cell.closest('.card') && cell.closest('.card').classList.contains('card--mega-rev'))
+          : cell.classList.contains('pic-left');
+        // THE PICTURE'S EDGE WITHOUT THE PICTURE: the column stands 24
+        // off it (THE COLUMN STANDS 24 FROM THE PICTURE, style.css), so
+        // the couriers' own aligned ink, less that 24, IS the edge —
+        // read in the same tick as the ink the tails are cut from.
+        var edge = picLeft
+          ? Math.min(au.l, pk.l) - TITLE_RULE_PAD
+          : Math.max(au.r, pk.r) + TITLE_RULE_PAD;
+        var tailTop = picLeft ? (au.r + RULE_REACH) - edge : edge - (au.l - RULE_REACH);
+        var tailFoot = picLeft ? (pk.r + RULE_REACH) - edge : edge - (pk.l - RULE_REACH);
+        var len = Math.min(tailTop, tailFoot) - TITLE_RULE_PAD;
+        if (!(len > 0)) return;
+        var tb = j.title.getBoundingClientRect();
+        var L = picLeft ? edge : edge - len;
+        j.title.style.setProperty('--tdr-top', (ti.top + ti.ink + TITLE_RULE_PAD - tb.top).toFixed(2) + 'px');
+        j.title.style.setProperty('--tdr-left', (L - tb.left).toFixed(2) + 'px');
+        j.title.style.setProperty('--tdr-w', len.toFixed(2) + 'px');
+      })();
       // OPEN PREVIEW last, off a FRESH read: it stands in flow under the
       // title, so the title's shrink above moved it, and an ink span
       // carries no bottom of its own (top + ink).
@@ -5285,6 +5406,13 @@
       el.style.top = (box.top + box.height / 2 - inkMid).toFixed(2) + 'px';
     });
   }
+  // THE RULES RUN 24 PAST THE COURIER (2026-09-18): the courier stands
+  // 24 off the picture, and each fixed rule now carries the same 24
+  // past the far end of the line it is cut to — past the byline and
+  // READ PREVIEW on the words' side, past the kicker and CLOSE PREVIEW
+  // on the plate's, and past both ends of the one line on a review
+  // cell. Never past the rule's own box: the cut stops at 0.
+  var RULE_REACH = 24;
   function fitCardRules() {
     var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps, main.has-mega .latest-cell--contra');
     function inkEdge(node, side) {
@@ -5311,8 +5439,8 @@
         var cPeek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
         var cL = inkEdge(cPeek, 'left'), cR = inkEdge(cPeek, 'right');
         if (cL == null || cR == null) return;
-        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left)) + 'px');
-        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR)) + 'px');
+        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left - RULE_REACH)) + 'px');
+        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR - RULE_REACH)) + 'px');
         // And the top rule, OPEN, is the plate's kicker's width — the
         // line that stands on the cell's first row once the picture
         // has gone down to the foot (style.css applies the cut on
@@ -5321,8 +5449,8 @@
         var cKicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p');
         var kL = inkEdge(cKicker, 'left'), kR = inkEdge(cKicker, 'right');
         if (kL != null && kR != null) {
-          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left)) + 'px');
-          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR)) + 'px');
+          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left - RULE_REACH)) + 'px');
+          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR - RULE_REACH)) + 'px');
         }
         return;
       }
@@ -5345,10 +5473,10 @@
       var fR = picLeft ? inkEdge(peek, 'right') : inkEdge(close, 'right');
       if (tL == null || tR == null || fL == null || fR == null) return;
       var clamp = function (v) { return Math.max(0, Math.round(v)); };
-      el.style.setProperty('--rule-top-l', clamp(tL - ruleL) + 'px');
-      el.style.setProperty('--rule-top-r', clamp(ruleR - tR) + 'px');
-      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL) + 'px');
-      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR) + 'px');
+      el.style.setProperty('--rule-top-l', clamp(tL - ruleL - RULE_REACH) + 'px');
+      el.style.setProperty('--rule-top-r', clamp(ruleR - tR - RULE_REACH) + 'px');
+      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL - RULE_REACH) + 'px');
+      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR - RULE_REACH) + 'px');
     });
   }
   function fitAll() { whenStill(fitAllNow); }
@@ -5525,7 +5653,7 @@
     var card = stack.parentElement;
     var onLeft = stack.classList.contains('latest-stack--left');
     var half = card.querySelector('.duo-half') || card;
-    var first = stack.querySelector('span:not(.latest-stack-gap)');
+    var first = stack.querySelector(':scope > span:not(.latest-stack-gap)');
     if (!first) return;
     stack.style.top = '0px'; stack.style.right = ''; stack.style.left = ''; stack.style.fontSize = '';
     var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
@@ -5544,7 +5672,7 @@
     // with the size (line pitch and cap alike), so one reading at the
     // sheet's size gives the size that ends the stack on the card's
     // foot.
-    var letters = stack.querySelectorAll('span:not(.latest-stack-gap)');
+    var letters = stack.querySelectorAll(':scope > span:not(.latest-stack-gap)');
     var last = letters[letters.length - 1];
     var r0 = inkReach(first), rl = inkReach(last);
     var hr = half.getBoundingClientRect();
@@ -5559,9 +5687,15 @@
       var s0 = parseFloat(getComputedStyle(stack).fontSize) || 60;
       stack.style.fontSize = (s0 * (endY - startY) / (rl.foot - r0.capTop)).toFixed(2) + 'px';
     }
-    var r = inkReach(first);
+    // CENTRED ON THE CARD'S HEIGHT (2026-09-18): the size is still the
+    // one that spans the byline's cap line to the card's middle, but
+    // the stack no longer hangs from that line — its ink, first cap to
+    // last foot, stands centred between the card's two rules.
+    var r = inkReach(first), rEnd = inkReach(last);
     if (!r) return;
-    stack.style.top = (startY - r.capTop).toFixed(2) + 'px';
+    var inkH = rEnd ? rEnd.foot - r.capTop : 0;
+    var topY = inkH > 0 ? hr.top + (hr.height - inkH) / 2 : startY;
+    stack.style.top = (topY - r.capTop).toFixed(2) + 'px';
   }
   // THE NAME IN THE BAND'S MIDDLE on the word pages: sized off the
   // reprint's fit the way band-mark.js sizes the front page's

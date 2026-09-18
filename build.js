@@ -1247,10 +1247,10 @@ const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'A
 // The word pages (renderWordPage) take the masthead's band too, with
 // their own line in the middle slot in place of the date (mid) and
 // their own link among the right slot's marked current (currentKey).
-// THE SOCIAL STACK (2026-09-17): Substack, Instagram and Email as
-// marks in the LEFT margin, the toggle's mirror — three 13px marks
-// drawn in the ink, fixed at the viewport's centre (style.css,
-// .social-stack). The dashes that stood between them are struck
+// THE SOCIAL STACK (2026-09-17; X added 2026-09-18): Substack,
+// Instagram, X and Email as marks in the LEFT margin, the toggle's
+// mirror — four 13px marks drawn in the ink, fixed at the viewport's
+// centre (style.css, .social-stack). The dashes that stood between them are struck
 // (later on 2026-09-17): the marks stand a dash's line apart, 13, on
 // the stack's own gap. Each mark is its own link and takes the
 // highlight under the pointer.
@@ -1271,9 +1271,15 @@ function renderMarginalia() {
 function renderSocialStack() {
   const substack = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
   const instagram = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg>';
+  // X (2026-09-18): the mark's own silhouette, filled in the ink rather
+  // than drawn in strokes like the three beside it — the letter is the
+  // logo, and two crossed strokes would read as a close button. Its
+  // bars run about 2.6 of the 24 wide against the others' 2.2, so it
+  // stands with them at 13 without a rule of its own.
+  const x = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.153h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" fill="currentColor"/></svg>';
   const email = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
   const sep = '';
-  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
+  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="https://x.com/thenewcritic" rel="noopener" aria-label="X">${x}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
 }
 function renderSectionBand(m, { mid = '', currentKey = '', nameMid = false } = {}) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
@@ -2016,9 +2022,12 @@ function renderArchiveMosaic(posts, opts) {
 // Absolute in the card (style.css, .latest-stack); the fitter seats
 // the first cap on the card's top edge (fitLatestStack).
 // (Either margin — the front page's THE LATEST at the right, the
-// archive's EDITORS' PICKS at the left; an apostrophe rides on the
-// line of the letter before it.)
-const stackHtml = (text, side = 'right') => `<p class="latest-stack latest-stack--${side}" aria-label="${escapeHtml(text)}">${text.match(/ |[^\s'’]['’]?/g).map((ch) => ch === ' ' ? '<span class="latest-stack-gap" aria-hidden="true"></span>' : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('')}</p>`;
+// archive's EDITORS' PICKS at the left. An apostrophe rides on the
+// line of the letter before it, HUNG off that letter's right: the
+// letter centres on the column's axis like every other and the mark
+// stands outside it, absolute on the letter's own box — style.css,
+// .latest-stack-mark.)
+const stackHtml = (text, side = 'right') => `<p class="latest-stack latest-stack--${side}" aria-label="${escapeHtml(text)}">${text.match(/ |[^\s'’]['’]?/g).map((ch) => ch === ' ' ? '<span class="latest-stack-gap" aria-hidden="true"></span>' : ch.length > 1 ? `<span aria-hidden="true"><span class="latest-stack-glyph">${escapeHtml(ch[0])}<span class="latest-stack-mark">${escapeHtml(ch.slice(1))}</span></span></span>` : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('')}</p>`;
 function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right' } = {}) {
   if (!post) return '';
   const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html', megaLabel: label, megaSwapMeta: rev }, 'duo-half--wide duo-half--mega');
@@ -2313,7 +2322,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // EACH SECTION'S WORD CARRIES ITS LINE (2026-09-18): one courier
   // sentence under the word, inside the 72 under its feet, seated the
   // way SUBSCRIBE's offer is (fitSubscribeLines, .page-banner--apart).
-  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart', below: ['The greatest writing of our generation.'] }));
+  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart', below: ['The great writing of our generation.'] }));
   // THE SECOND MOVEMENT, under the band: the next essay as a
   // MIRRORED hero (cover left, ground right, labelled Essay), then
   // the next contra/postscript pair mirrored the same way.
@@ -2597,6 +2606,10 @@ function renderFontGateScript() {
   // a hex colour is written straight onto the root as --g, with --k
   // white or charcoal, whichever reads better on it (WCAG contrast).
   var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  // THE GROUND HEX OPENS ON (2026-09-18): a slate blue-grey the white
+  // ink reads well on, until the reader types a code of their own.
+  // (#888899, a paler cast of the same, for the first hours.)
+  var DEFAULT_HEX = '#556677';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -2604,19 +2617,9 @@ function renderFontGateScript() {
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     return '#' + h;
   };
-  var lum = function (hex) {
-    var c = [1, 3, 5].map(function (i) {
-      var v = parseInt(hex.substr(i, 2), 16) / 255;
-      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
-  };
-  var inkFor = function (hex) {
-    var L = lum(hex), Lw = 1, Lc = lum(CHARCOAL);
-    var vsWhite = (Lw + 0.05) / (L + 0.05);
-    var vsCharcoal = (L + 0.05) / (Lc + 0.05);
-    return vsWhite >= vsCharcoal ? WHITE : CHARCOAL;
-  };
+  // (The contrast rule that chose the ink — luminance against white
+  // and charcoal — is struck with the choice: a hex ground is inked in
+  // white, always. 2026-09-18.)
   var setMeta = function (colour) {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
@@ -2625,14 +2628,16 @@ function renderFontGateScript() {
   // tokens inline for a hex ground (and cleared for the others).
   var paint = function (mode, hex) {
     if (mode === 'hex' && hex) {
-      var ink = inkFor(hex);
+      // ALL WHITE ON ANY GROUND (2026-09-18): the ink is white whatever
+      // code is chosen — text, rules, marks, names and titles together —
+      // and the highlight, the chosen word and every hover, is the
+      // charcoal. (The ink was picked by contrast before, white or
+      // charcoal, with the names in its opposite; a pale ground is the
+      // reader's own lookout now.)
       root.setAttribute('data-theme', 'hex');
       root.style.setProperty('--g', hex);
-      root.style.setProperty('--k', ink);
-      // The highlight — the chosen word, every hover — is the OTHER of
-      // charcoal and white on a hex ground, not Yves: white ink takes
-      // charcoal, charcoal ink takes white.
-      root.style.setProperty('--yves', ink === WHITE ? CHARCOAL : WHITE);
+      root.style.setProperty('--k', WHITE);
+      root.style.setProperty('--yves', CHARCOAL);
       setMeta(hex);
     } else {
       root.style.removeProperty('--g');
@@ -2654,8 +2659,17 @@ function renderFontGateScript() {
   try {
     var theme = localStorage.getItem('nc-theme');
     storedHex = hexOf(localStorage.getItem('nc-hex'));
-    if (theme === 'hex' && storedHex) paint('hex', storedHex);
+    if (theme === 'hex') paint('hex', storedHex || DEFAULT_HEX);
     else if (theme === 'light' || theme === 'dark') paint(theme);
+  } catch (e) {}
+  // HEX always has a ground to open on: the reader's last, or the default.
+  storedHex = storedHex || DEFAULT_HEX;
+  // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
+  // paints that ground for this view only — nothing is stored, and the
+  // reader's own choice stands on the next plain visit.
+  try {
+    var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
+    if (qHex) paint('hex', qHex);
   } catch (e) {}
   // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
   // where the browser has view transitions the old page and the new
@@ -2797,7 +2811,8 @@ function renderFontGateScript() {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px futura-pt-condensed'),
+      f.load('700 100px neue-haas-grotesk-display'),
+      f.load('400 100px neue-haas-grotesk-display'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
