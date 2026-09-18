@@ -1275,7 +1275,7 @@ function renderSocialStack() {
   const sep = '';
   return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
 }
-function renderSectionBand(m, { mid = '', currentKey = '' } = {}) {
+function renderSectionBand(m, { mid = '', currentKey = '', nameMid = false } = {}) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
   if (m === 'latest') {
     // The masthead's band: the site's links, the magazine's name, the
@@ -1286,7 +1286,7 @@ function renderSectionBand(m, { mid = '', currentKey = '' } = {}) {
       : bandDeks(m);
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek">${mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
+    <p class="band-deks band-dek">${nameMid ? `<a class="band-name-mid" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>` : mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -2010,7 +2010,16 @@ function renderArchiveMosaic(posts, opts) {
 // covering the left three fifths and the cover showing beside it; its
 // height runs to the bottom of the rail's TIC (see .card--mega in
 // style.css).
-function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false } = {}) {
+// THE LATEST, STACKED (2026-09-18): the two words one letter to the
+// line, in the name's condensed bold, against the right margin's line
+// from the top of the lead card down — a blank line between the words.
+// Absolute in the card (style.css, .latest-stack); the fitter seats
+// the first cap on the card's top edge (fitLatestStack).
+// (Either margin — the front page's THE LATEST at the right, the
+// archive's EDITORS' PICKS at the left; an apostrophe rides on the
+// line of the letter before it.)
+const stackHtml = (text, side = 'right') => `<p class="latest-stack latest-stack--${side}" aria-label="${escapeHtml(text)}">${text.match(/ |[^\s'’]['’]?/g).map((ch) => ch === ' ' ? '<span class="latest-stack-gap" aria-hidden="true"></span>' : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('')}</p>`;
+function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right' } = {}) {
   if (!post) return '';
   const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html', megaLabel: label, megaSwapMeta: rev }, 'duo-half--wide duo-half--mega');
   // (The hero's masthead row is retired — the top header carries the
@@ -2018,7 +2027,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false } 
   // The REV hero mirrors the composition — cover left, ground right
   // (see THE SECOND HERO in style.css).
   return `<section class="card card--duo card--split card--mega${rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}">
-        ${half}</section>`;
+        ${half}${stack ? stackHtml(stack, stackSide) : ''}</section>`;
 }
 
 // THE SECTION SHELVES: two half-page boxes side by side under the
@@ -2269,7 +2278,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // below with the latest row.
   // EVERY ESSAY TURNED (2026-09-18): picture LEFT on the lead, then
   // alternating — each card the mirror of what it was.
-  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays' }));
+  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest' }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   blocks.push(renderLatestRow(postscripts[0], contras[0]));
@@ -3782,7 +3791,7 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   </div>`).join('');
   const bodyHtml = `
   <div class="page-rows">
-  ${renderSectionBand('latest', { mid, currentKey })}
+  ${renderSectionBand('latest', { mid, currentKey, nameMid: true })}
   <div class="head-seam" aria-hidden="true"></div>
   <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
   </div>
@@ -3814,7 +3823,9 @@ const LEDGER_FEATURE_SLUGS = {
 function renderLedgerFeature(features) {
   if (!features) return '';
   const rows = [
-    features.lead ? renderMegaHero(features.lead, { label: 'Essays' }) : '',
+    // EDITORS' PICKS stacked on the left margin, as THE LATEST stands on
+    // the front page's right (2026-09-18).
+    features.lead ? renderMegaHero(features.lead, { label: 'Essays', stack: 'Editors’ Picks', stackSide: 'left' }) : '',
     renderPostscriptPair(features.pair[0], features.pair[1]),
     features.close ? renderMegaHero(features.close, { rev: true, label: 'Essays' }) : '',
   ].filter(Boolean);

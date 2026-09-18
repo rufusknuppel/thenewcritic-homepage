@@ -14026,17 +14026,17 @@ main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r
   font-style: normal;
   text-transform: none;
 }
-/* THE WORDS THE SAME (2026-09-18; Garamond italic, then Futura's book
-   oblique, each for an hour): the section words, the deck's and the
-   archive page's own, in the condensed bold capitals with the titles
-   and the name. */
+/* THE WORDS IN THE GARAMOND ITALIC (2026-09-18, back again after an
+   hour each in Futura's book oblique and its condensed bold capitals):
+   the section words, SUBSCRIBE, the deck's and the archive page's
+   own, sentence case as written. */
 .banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 .banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 .ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  font-family: var(--title-face);
-  font-weight: 700;
-  font-style: normal;
-  text-transform: uppercase;
+  font-family: var(--word-face);
+  font-weight: 400;
+  font-style: italic;
+  text-transform: none;
 }
 
 /* ---------- THE COLUMN STANDS 24 FROM THE PICTURE (2026-09-18) ----------
@@ -14084,3 +14084,73 @@ main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   font-family: var(--title-face);
   font-weight: 700;
 }
+
+/* ---------- THE LATEST, STACKED ON THE RIGHT MARGIN (2026-09-18) ----------
+   The two words one letter to the line, in the name's condensed bold
+   (60 on the sheet; the fitter sizes it to run from the byline's cap
+   line to the card's middle, ~15 at this width), ranged right on the
+   margin's line (the seam's right end, 24 inside the card's box), a blank
+   line between the words. Inert: no pointer, and it scrolls with the
+   card. The fitter seats the first cap's ink on the card's top edge
+   and the column on the seam (fitLatestStack). */
+main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; right: 24px; top: 0;
+  z-index: 6;
+  margin: 0; padding: 0;
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  /* CENTRED ON ONE AXIS (2026-09-18): the block is the widest letter's
+     width, on the seam; the narrower letters centre inside it. */
+  width: fit-content;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--k);
+  pointer-events: none;
+}
+main.has-mega .card--mega > .latest-stack.latest-stack--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ right: auto; left: 24px; }
+main.has-mega .card--mega > .latest-stack > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: block; }
+main.has-mega .card--mega > .latest-stack > .latest-stack-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 1em; }
+/* On a hex ground it turns with the name. */
+html[data-theme="hex"] main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+
+/* ---------- THE NAME IN THE BAND'S MIDDLE ON THE WORD PAGES (2026-09-18) ----------
+   Archive and About carry no masthead, so the band's middle carries
+   the name instead of the date, dressed as the front page's miniature:
+   the condensed bold capitals, tracked a touch, sized so its air in
+   the band is the name's own air in proportion (fitBandNameMid reads
+   the reprint's fit), seated on its caps with the band's other items
+   (inkCenterDeks). A link home; the ink's colour, the highlight under
+   the hand, and turned on hex with the name. */
+main.has-mega .section-band .band-name-mid:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  font-size: 45px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  transition: color .25s ease;
+}
+/* NEW inside the name takes the name's own dressing: the band's
+   middle-slot rule sets every span there in the courier at the
+   courier's size, which printed a small New between THE and CRITIC. */
+main.has-mega .section-band .band-name-mid :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: inherit !important;
+  font: inherit !important;
+  letter-spacing: inherit !important;
+  text-transform: inherit !important;
+  vertical-align: baseline !important;
+  display: inline !important;
+  margin: 0 !important; padding: 0 !important;
+}
+main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }

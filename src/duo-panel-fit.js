@@ -5515,7 +5515,81 @@
   // under the rule and 24 over the hero's — the band's own 24 — by
   // painted ink, the paddings closing the difference the line box
   // leaves.
+  // THE STACK'S SEAT: its first letter's cap ink on the card's top
+  // edge (the hero half's top, where the rule stands), its right edge
+  // on the seam's right end.
+  function fitLatestStack() {
+    [].forEach.call(document.querySelectorAll('.card--mega > .latest-stack'), fitOneStack);
+  }
+  function fitOneStack(stack) {
+    var card = stack.parentElement;
+    var onLeft = stack.classList.contains('latest-stack--left');
+    var half = card.querySelector('.duo-half') || card;
+    var first = stack.querySelector('span:not(.latest-stack-gap)');
+    if (!first) return;
+    stack.style.top = '0px'; stack.style.right = ''; stack.style.left = ''; stack.style.fontSize = '';
+    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
+    var cr = card.getBoundingClientRect();
+    if (seam) {
+      var sr = seam.getBoundingClientRect();
+      if (sr.width) {
+        if (onLeft) stack.style.left = (sr.left - cr.left).toFixed(2) + 'px';
+        else stack.style.right = (cr.right - sr.right).toFixed(2) + 'px';
+      }
+    }
+    // SIZED TO THE CARD (2026-09-18): at the sheet's 60 the ten lines
+    // ran 580 where the card stands 344, the tail over the next row's
+    // cover; it fills the card's top half now. The span from the first
+    // cap's ink to the last foot scales
+    // with the size (line pitch and cap alike), so one reading at the
+    // sheet's size gives the size that ends the stack on the card's
+    // foot.
+    var letters = stack.querySelectorAll('span:not(.latest-stack-gap)');
+    var last = letters[letters.length - 1];
+    var r0 = inkReach(first), rl = inkReach(last);
+    var hr = half.getBoundingClientRect();
+    // FROM THE COURIER'S LINE TO THE CARD'S MIDDLE (2026-09-18): the
+    // first cap opens where the byline's cap ink opens, 24 under the
+    // card's top, and the last foot lands on the card's middle.
+    var line = half.querySelector('.panel-col--left .cover-meta:not(.cover-meta--peek), .panel-col--left .card-meta--line');
+    var lr = line ? inkReach(line) : null;
+    var startY = lr ? lr.capTop : hr.top + 24;
+    var endY = hr.top + hr.height * 0.5;
+    if (r0 && rl && rl.foot > r0.capTop && endY > startY) {
+      var s0 = parseFloat(getComputedStyle(stack).fontSize) || 60;
+      stack.style.fontSize = (s0 * (endY - startY) / (rl.foot - r0.capTop)).toFixed(2) + 'px';
+    }
+    var r = inkReach(first);
+    if (!r) return;
+    stack.style.top = (startY - r.capTop).toFixed(2) + 'px';
+  }
+  // THE NAME IN THE BAND'S MIDDLE on the word pages: sized off the
+  // reprint's fit the way band-mark.js sizes the front page's
+  // miniature off the wordmark — the cap C at the reprint's size, the
+  // air ratio r = 72 / C, and the band's cap c = B / (2r + 1) — then
+  // the band's items are re-seated on their caps, since the deks pass
+  // ran before the reprint was fitted.
+  function fitBandNameMid() {
+    var mid = document.querySelector('.section-band .band-name-mid');
+    if (!mid) return;
+    var rep = document.querySelector('.reprint .reprint-name');
+    var band = mid.closest('.section-band');
+    if (!rep || !band) return;
+    var rcs = getComputedStyle(rep);
+    var S = parseFloat(rcs.fontSize) || 0;
+    var B = band.getBoundingClientRect().height;
+    if (!S || !B) return;
+    var g = document.createElement('canvas').getContext('2d');
+    if (!g) return;
+    g.font = rcs.fontStyle + ' ' + rcs.fontWeight + ' 200px ' + rcs.fontFamily;
+    var above = (g.measureText('H').actualBoundingBoxAscent || 140) / 200;
+    var C = S * above, r = 72 / C, c = B / (2 * r + 1);
+    mid.style.fontSize = (c / above).toFixed(3) + 'px';
+    inkCenterDeks();
+  }
   function fitSubscribeLines() {
+    fitLatestStack();
+    fitBandNameMid();
     var gap = courierGap();
     [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
       var name = band.querySelector('.banner-name');

@@ -6316,10 +6316,10 @@ main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r
 .banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 .banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 .ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  font-family: var(--title-face);
-  font-weight: 700;
-  font-style: normal;
-  text-transform: uppercase;
+  font-family: var(--word-face);
+  font-weight: 400;
+  font-style: italic;
+  text-transform: none;
 }
 main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 24px; }
 main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 24px; }
@@ -6337,3 +6337,49 @@ main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   font-family: var(--title-face);
   font-weight: 700;
 }
+main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; right: 24px; top: 0;
+  z-index: 6;
+  margin: 0; padding: 0;
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  width: fit-content;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--k);
+  pointer-events: none;
+}
+main.has-mega .card--mega > .latest-stack.latest-stack--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ right: auto; left: 24px; }
+main.has-mega .card--mega > .latest-stack > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: block; }
+main.has-mega .card--mega > .latest-stack > .latest-stack-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 1em; }
+html[data-theme="hex"] main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+main.has-mega .section-band .band-name-mid:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  font-size: 45px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  transition: color .25s ease;
+}
+main.has-mega .section-band .band-name-mid :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: inherit !important;
+  font: inherit !important;
+  letter-spacing: inherit !important;
+  text-transform: inherit !important;
+  vertical-align: baseline !important;
+  display: inline !important;
+  margin: 0 !important; padding: 0 !important;
+}
+main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
