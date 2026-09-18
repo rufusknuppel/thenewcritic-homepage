@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=e2666419">
+<link rel="stylesheet" href="style.css?v=f147478e">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -309,7 +309,7 @@
   <div class="page-rows">
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Friday, September 18, 2026</span></p>
+    <p class="band-deks band-dek"><a class="band-name-mid" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a></p>
     <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
@@ -349,7 +349,7 @@
         <!-- THE BILLING CHIP IS STRUCK. Kicker, author and date read on
              one courier line in the words' column now, under the dek;
              the picture rests bare, with nothing set into it. -->
-      </div></section>
+      </div><p class="latest-stack latest-stack--left" aria-label="Editors’ Picks"><span aria-hidden="true">E</span><span aria-hidden="true">d</span><span aria-hidden="true">i</span><span aria-hidden="true">t</span><span aria-hidden="true">o</span><span aria-hidden="true">r</span><span aria-hidden="true">s’</span><span class="latest-stack-gap" aria-hidden="true"></span><span aria-hidden="true">P</span><span aria-hidden="true">i</span><span aria-hidden="true">c</span><span aria-hidden="true">k</span><span aria-hidden="true">s</span></p></section>
   </div>
   <div class="row-divider m--latest"></div>
   <div class="wrap m--latest">
@@ -4691,7 +4691,62 @@
     var r = inkReach(line);
     return r ? r.capTop - edge.getBoundingClientRect().top : 24;
   }
+  function fitLatestStack() {
+    [].forEach.call(document.querySelectorAll('.card--mega > .latest-stack'), fitOneStack);
+  }
+  function fitOneStack(stack) {
+    var card = stack.parentElement;
+    var onLeft = stack.classList.contains('latest-stack--left');
+    var half = card.querySelector('.duo-half') || card;
+    var first = stack.querySelector('span:not(.latest-stack-gap)');
+    if (!first) return;
+    stack.style.top = '0px'; stack.style.right = ''; stack.style.left = ''; stack.style.fontSize = '';
+    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
+    var cr = card.getBoundingClientRect();
+    if (seam) {
+      var sr = seam.getBoundingClientRect();
+      if (sr.width) {
+        if (onLeft) stack.style.left = (sr.left - cr.left).toFixed(2) + 'px';
+        else stack.style.right = (cr.right - sr.right).toFixed(2) + 'px';
+      }
+    }
+    var letters = stack.querySelectorAll('span:not(.latest-stack-gap)');
+    var last = letters[letters.length - 1];
+    var r0 = inkReach(first), rl = inkReach(last);
+    var hr = half.getBoundingClientRect();
+    var line = half.querySelector('.panel-col--left .cover-meta:not(.cover-meta--peek), .panel-col--left .card-meta--line');
+    var lr = line ? inkReach(line) : null;
+    var startY = lr ? lr.capTop : hr.top + 24;
+    var endY = hr.top + hr.height * 0.5;
+    if (r0 && rl && rl.foot > r0.capTop && endY > startY) {
+      var s0 = parseFloat(getComputedStyle(stack).fontSize) || 60;
+      stack.style.fontSize = (s0 * (endY - startY) / (rl.foot - r0.capTop)).toFixed(2) + 'px';
+    }
+    var r = inkReach(first);
+    if (!r) return;
+    stack.style.top = (startY - r.capTop).toFixed(2) + 'px';
+  }
+  function fitBandNameMid() {
+    var mid = document.querySelector('.section-band .band-name-mid');
+    if (!mid) return;
+    var rep = document.querySelector('.reprint .reprint-name');
+    var band = mid.closest('.section-band');
+    if (!rep || !band) return;
+    var rcs = getComputedStyle(rep);
+    var S = parseFloat(rcs.fontSize) || 0;
+    var B = band.getBoundingClientRect().height;
+    if (!S || !B) return;
+    var g = document.createElement('canvas').getContext('2d');
+    if (!g) return;
+    g.font = rcs.fontStyle + ' ' + rcs.fontWeight + ' 200px ' + rcs.fontFamily;
+    var above = (g.measureText('H').actualBoundingBoxAscent || 140) / 200;
+    var C = S * above, r = 72 / C, c = B / (2 * r + 1);
+    mid.style.fontSize = (c / above).toFixed(3) + 'px';
+    inkCenterDeks();
+  }
   function fitSubscribeLines() {
+    fitLatestStack();
+    fitBandNameMid();
     var gap = courierGap();
     [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
       var name = band.querySelector('.banner-name');
