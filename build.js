@@ -2062,9 +2062,13 @@ function renderContraCell(post, { rev = false } = {}) {
 // TWO POSTSCRIPTS TO A LINE: each cell keeps its cover-and-text pair,
 // so four columns share the measure and every one of them narrows by
 // the same amount (the cover column is stated as half its own cell).
+// THE PICTURES MEET IN THE MIDDLE: the LEFT postscript of each pair
+// reads turned over — words at the rail, picture toward the seam — so
+// its cover and the right cell's stand side by side down the centre
+// of the row, and the two text columns take the outer edges.
 function renderPostscriptPair(a, b, { stacked = false, rev = false } = {}) {
   const cells = [a, b].filter(Boolean)
-    .map((p) => renderLatestRow(p, null, { cellOnly: 'ps', noLabel: true }))
+    .map((p, i) => renderLatestRow(p, null, { cellOnly: 'ps', noLabel: true, psRev: i === 0 }))
     .join('\n        ');
   if (!cells) return '';
   return `<section class="card card--latest card--ps-pair${rev ? ' card--latest-rev' : ''}${stacked ? ' card--stacked' : ''}">
@@ -2087,7 +2091,7 @@ function renderContraTrio(posts, { stacked = false } = {}) {
       </section>`;
 }
 
-function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked = false, cellOnly = false, noLabel = false } = {}) {
+function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked = false, cellOnly = false, noLabel = false, psRev = false } = {}) {
   if (!psPost && !contraPost) return '';
   // THE TEXT COLUMN'S HEAD stands empty on every cell now — the
   // postscript reads its kicker, subject and date on the cover's own
@@ -2152,7 +2156,10 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   // and the rules travel with it on the same transform.)
   const coverHead = (post, { rule = true, ...opts } = {}) => `<p class="latest-courier latest-courier--cover">${coverHeadPair(post, opts)}</p>${rule ? `
         <div class="latest-rule"></div>` : ''}`;
-  const ps = psPost ? `<div class="latest-cell latest-cell--ps">
+  // psRev turns the ONE cell over — text left, cover right — without
+  // the row modifier (.latest-cell--ps-rev in style.css shares the
+  // mirrored row's rules); the pairs use it on their left cell.
+  const ps = psPost ? `<div class="latest-cell latest-cell--ps${psRev ? ' latest-cell--ps-rev' : ''}">
         <!-- THE PICTURE RESTS BARE. Nothing is set into it and nothing
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
@@ -2313,7 +2320,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // keep the base SEAT (the strip is back on the right down here), so
   // the middle one mirrors its contents without moving its box.
   // The contras have left these rows — this movement is postscripts
-  // alone, each row's two columns splitting the whole measure.
+  // alone, each row's two columns splitting the whole measure. In
+  // every pair the LEFT cell reads turned over (renderPostscriptPair),
+  // so the two pictures stand together at the row's centre.
   blocks.push(renderPostscriptPair(postscripts[2], postscripts[3]));
   // The middle pair reads REVERSED — cover right, text left.
   // The middle pair used to mirror (picture on the other side); every

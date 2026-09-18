@@ -6306,11 +6306,14 @@ body::before{
 /* ---------- THE SECOND LATEST ROW (mirrored) ----------
    .card--latest-rev mirrors the pair — CONTRA LEFT, POSTSCRIPT
    RIGHT — and inside the postscript cell the columns reverse: text
-   left, cover right. Every directional hover reach flips with it:
+   left, cover right. (.latest-cell--ps-rev turns ONE cell over the
+   same way with no row modifier — the postscript pairs put it on
+   their left cell so the two pictures meet at the row's centre.) Every directional hover reach flips with it:
    the drawn rule extends RIGHT, the sliding meta items are the
    RIGHT-side pair (author, date) landing on the cell's right edge,
    and the held-hover mask grows rightward. */
-.card--latest-rev .latest-cell--ps{
+.card--latest-rev .latest-cell--ps,
+.latest-cell--ps.latest-cell--ps-rev{
   flex-direction: row-reverse;
 }
 /* The square hover image prints on the matter's RIGHT edge. */
@@ -6318,7 +6321,8 @@ body::before{
    square on the matter's trailing edge for a mirrored row.) */
 /* The reverse draw extends RIGHT from the rule's right end. (Meta
    column only — the cover head's rule spans its image and no more.) */
-.card--latest-rev .latest-cell--ps .latest-col .latest-rule::before{
+.card--latest-rev .latest-cell--ps .latest-col .latest-rule::before,
+.latest-cell--ps.latest-cell--ps-rev .latest-col .latest-rule::before{
   right: auto;
   left: 100%;
 }
@@ -6328,13 +6332,15 @@ body::before{
    while the CATEGORY and KICKER hold their seats. The base hover
    rule still reaches these cells' first-childs, so it is stood down
    explicitly. */
-.card--latest-rev .latest-cell--ps .latest-col .latest-courier span + span{
+.card--latest-rev .latest-cell--ps .latest-col .latest-courier span + span,
+.latest-cell--ps.latest-cell--ps-rev .latest-col .latest-courier span + span{
   position: relative;
   left: 0;
   transition: left .3s ease;
 }
 /* The arriving author's paper chip (the base category's, mirrored). */
-.card--latest-rev .latest-cell--ps .latest-col .latest-courier:not(.latest-courier--under) span + span{
+.card--latest-rev .latest-cell--ps .latest-col .latest-courier:not(.latest-courier--under) span + span,
+.latest-cell--ps.latest-cell--ps-rev .latest-col .latest-courier:not(.latest-courier--under) span + span{
   background: var(--paper);
 }
 /* The held-hover mask grows RIGHTWARD across the plate's reach. */
@@ -6991,6 +6997,7 @@ body.has-mega::before{ content: none; }
 .latest-cell--ps .latest-col .latest-rule::before,
 .latest-cell--ps .latest-col .latest-courier span:first-child,
 .card--latest-rev .latest-cell--ps .latest-col .latest-courier span + span,
+.latest-cell--ps.latest-cell--ps-rev .latest-col .latest-courier span + span,
 .card .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under),
 .card--mega-rev .duo-half--mega .duo-panel .panel-col--right :is(.ground-credit, .ground-under){
   transition: none;
@@ -13927,6 +13934,13 @@ main.has-mega .section-band > .band-mini :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
 main.has-mega .section-band > .band-mini.is-shown:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ visibility: visible; }
 main.has-mega .section-band > .band-mini.is-home:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: auto; }
 main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+/* ON A HEX GROUND the miniature turns with the wordmark it stands in
+   for: the highlight token, the ink's opposite (as every name and
+   title does above), and the ink itself under the hand. Stated over
+   the hover rule's weight, so the flip holds at rest and turns back
+   on hover. */
+html[data-theme="hex"] main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
 
 /* ---------- THE SUBSCRIBE BAND'S LINE (2026-09-17) ----------
    SUBSCRIBE carries the offer under it, one courier line in
