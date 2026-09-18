@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=f147478e">
+<link rel="stylesheet" href="style.css?v=caee5112">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -28,6 +28,10 @@
   // a hex colour is written straight onto the root as --g, with --k
   // white or charcoal, whichever reads better on it (WCAG contrast).
   var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  // THE GROUND HEX OPENS ON (2026-09-18): a slate blue-grey the white
+  // ink reads well on, until the reader types a code of their own.
+  // (#888899, a paler cast of the same, for the first hours.)
+  var DEFAULT_HEX = '#556677';
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
     if (!m) return null;
@@ -35,19 +39,9 @@
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     return '#' + h;
   };
-  var lum = function (hex) {
-    var c = [1, 3, 5].map(function (i) {
-      var v = parseInt(hex.substr(i, 2), 16) / 255;
-      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
-  };
-  var inkFor = function (hex) {
-    var L = lum(hex), Lw = 1, Lc = lum(CHARCOAL);
-    var vsWhite = (Lw + 0.05) / (L + 0.05);
-    var vsCharcoal = (L + 0.05) / (Lc + 0.05);
-    return vsWhite >= vsCharcoal ? WHITE : CHARCOAL;
-  };
+  // (The contrast rule that chose the ink — luminance against white
+  // and charcoal — is struck with the choice: a hex ground is inked in
+  // white, always. 2026-09-18.)
   var setMeta = function (colour) {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
@@ -56,14 +50,16 @@
   // tokens inline for a hex ground (and cleared for the others).
   var paint = function (mode, hex) {
     if (mode === 'hex' && hex) {
-      var ink = inkFor(hex);
+      // ALL WHITE ON ANY GROUND (2026-09-18): the ink is white whatever
+      // code is chosen — text, rules, marks, names and titles together —
+      // and the highlight, the chosen word and every hover, is the
+      // charcoal. (The ink was picked by contrast before, white or
+      // charcoal, with the names in its opposite; a pale ground is the
+      // reader's own lookout now.)
       root.setAttribute('data-theme', 'hex');
       root.style.setProperty('--g', hex);
-      root.style.setProperty('--k', ink);
-      // The highlight — the chosen word, every hover — is the OTHER of
-      // charcoal and white on a hex ground, not Yves: white ink takes
-      // charcoal, charcoal ink takes white.
-      root.style.setProperty('--yves', ink === WHITE ? CHARCOAL : WHITE);
+      root.style.setProperty('--k', WHITE);
+      root.style.setProperty('--yves', CHARCOAL);
       setMeta(hex);
     } else {
       root.style.removeProperty('--g');
@@ -85,8 +81,17 @@
   try {
     var theme = localStorage.getItem('nc-theme');
     storedHex = hexOf(localStorage.getItem('nc-hex'));
-    if (theme === 'hex' && storedHex) paint('hex', storedHex);
+    if (theme === 'hex') paint('hex', storedHex || DEFAULT_HEX);
     else if (theme === 'light' || theme === 'dark') paint(theme);
+  } catch (e) {}
+  // HEX always has a ground to open on: the reader's last, or the default.
+  storedHex = storedHex || DEFAULT_HEX;
+  // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
+  // paints that ground for this view only — nothing is stored, and the
+  // reader's own choice stands on the next plain visit.
+  try {
+    var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
+    if (qHex) paint('hex', qHex);
   } catch (e) {}
   // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
   // where the browser has view transitions the old page and the new
@@ -228,7 +233,8 @@
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px futura-pt-condensed'),
+      f.load('700 100px neue-haas-grotesk-display'),
+      f.load('400 100px neue-haas-grotesk-display'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
@@ -400,7 +406,7 @@
   </div>
   <div class="marginalia">
   <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
-  <span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a><a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a><a href="mailto:editors@thenewcritic.com" aria-label="Email"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a></span>
+  <span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M2 2.5h20M2 7.5h20M2 12.5h20v9l-10-5.5L2 21.5v-9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a><a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a><a href="https://x.com/thenewcritic" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.153h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" fill="currentColor"/></svg></a><a href="mailto:editors@thenewcritic.com" aria-label="Email"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></a></span>
   </div>
 </main>
 
@@ -933,10 +939,17 @@
     return broke;
   })();
   var measureCtx = document.createElement('canvas').getContext('2d');
+  function trackEm(cs) {
+    var ls = parseFloat(cs.letterSpacing);
+    if (!ls) return 0;
+    var size = parseFloat(cs.fontSize) || 0;
+    return size ? ls / size : 0;
+  }
   function longestWordWidth(title, fontPx) {
     var cs = getComputedStyle(title);
     measureCtx.font = cs.fontWeight + ' ' + fontPx + 'px ' + cs.fontFamily;
-    var hyphenW = measureCtx.measureText('\u2010').width;
+    var track = trackEm(cs) * fontPx;
+    var hyphenW = measureCtx.measureText('\u2010').width + track;
     var text = title.textContent.trim();
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
     else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
@@ -945,7 +958,7 @@
     (text.split(/\s+/)).forEach(function(word){
       var frags = word.split('\u00AD');
       frags.forEach(function(frag, i){
-        var ww = measureCtx.measureText(frag).width
+        var ww = measureCtx.measureText(frag).width + track * frag.length
           + (frags.length > 1 && i < frags.length - 1 ? hyphenW : 0);
         if (ww > w) w = ww;
       });
@@ -1004,7 +1017,8 @@
     var shownWords = shown.split(' ');
     if (!rawWords.length || !raw) return;
     measureCtx.font = cs.fontWeight + ' 100px ' + cs.fontFamily;
-    var w100 = function(s){ return measureCtx.measureText(s).width; };
+    var track100 = trackEm(cs) * 100;
+    var w100 = function(s){ return measureCtx.measureText(s).width + track100 * s.length; };
     var fitW = availW - 0.5;
     var lineMax = opts.lineMax || availW * LINE_MAX_PER_PX;
     var candidates = [[rawWords.length]];
@@ -2427,7 +2441,7 @@
   window.addEventListener('scroll', function () {
     if (stopsQueued) return;
     stopsQueued = true;
-    requestAnimationFrame(function () { stopsQueued = false; fitGroundStops(); fitPickup(); });
+    requestAnimationFrame(function () { stopsQueued = false; markBandEdges(); fitPickup(); });
   }, { passive: true });
   function paintedSpan(el) {
     var top = Infinity, bot = -Infinity;
@@ -2506,8 +2520,8 @@
         cap = parseFloat(getComputedStyle(repName).fontSize) || 0;
       }
     }
-    var WORD_OF_MAST = 1 / 2;
-    var wordCap = cap * WORD_OF_MAST;
+    var TITLE_MAX = 72;
+    var wordCap = cap ? (cap + TITLE_MAX) / 2 : TITLE_MAX;
     var BANNER_SIDE = 72; // the words track out to the cards' and the band's own 72
     var WORD_AIR = BANNER_AIR;
     [].forEach.call(document.querySelectorAll('.page-banner'), function (band) {
@@ -3360,6 +3374,20 @@
     fitContra();
   }
   var MATTER_GAP = 48;
+  var TITLE_RULE_PAD = 24;
+  var TITLE_RULE_W = 1;
+  var TITLE_DEK_RULE = TITLE_RULE_PAD * 2 + TITLE_RULE_W;
+  function inkEdges(el) {
+    if (!el || getComputedStyle(el).display === 'none') return null;
+    var r = document.createRange();
+    r.selectNodeContents(el);
+    var rs = [].filter.call(r.getClientRects(), function (x) { return x.width > 0 && x.height > 0; });
+    if (!rs.length) return null;
+    var l = Infinity, rr = -Infinity;
+    for (var i = 0; i < rs.length; i++) { l = Math.min(l, rs[i].left); rr = Math.max(rr, rs[i].right); }
+    var ls = parseFloat(getComputedStyle(el).letterSpacing) || 0;
+    return { l: l, r: rr - ls };
+  }
   function inkOffsets(el) {
     var cs = getComputedStyle(el);
     var size = parseFloat(cs.fontSize) || 0;
@@ -3456,7 +3484,7 @@
         m = (j.meta && j.meta !== j.date && getComputedStyle(j.meta).display !== 'none') ? inkSpan(j.meta) : null;
         dt = (j.date && getComputedStyle(j.date).display !== 'none') ? inkSpan(j.date) : null;
         if (!t) return null;
-        return t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) + (m ? TITLE_DEK_GAP + m.ink : 0) + (dt ? TITLE_DEK_GAP + dt.ink : 0);
+        return t.ink + (d ? TITLE_DEK_RULE + d.ink : 0) + (m ? TITLE_DEK_GAP + m.ink : 0) + (dt ? TITLE_DEK_GAP + dt.ink : 0);
       };
       var span = pb.height;
       var total = block();
@@ -3487,7 +3515,7 @@
       var mid = function () {
         t = inkSpan(j.title);
         d = (j.dek && getComputedStyle(j.dek).display !== 'none') ? inkSpan(j.dek) : null;
-        return t ? t.ink + (d ? TITLE_DEK_GAP + d.ink : 0) : null;
+        return t ? t.ink + (d ? TITLE_DEK_RULE + d.ink : 0) : null;
       };
       var room = bandBot - bandTop;
       var midH = mid();
@@ -3512,10 +3540,39 @@
       j.title.style.top = ((parseFloat(j.title.style.top) || 0) + (cap - t.top)).toFixed(2) + 'px';
       cap += t.ink;
       if (d) {
-        cap += TITLE_DEK_GAP;
+        cap += TITLE_DEK_RULE;
         j.dek.style.position = 'relative';
         j.dek.style.top = ((parseFloat(j.dek.style.top) || 0) + (cap - d.top)).toFixed(2) + 'px';
       }
+      (function () {
+        j.title.style.removeProperty('--tdr-top');
+        j.title.style.removeProperty('--tdr-left');
+        j.title.style.removeProperty('--tdr-w');
+        if (!d) return;
+        var ti = inkSpan(j.title);
+        if (!ti) return;
+        var au = inkEdges(j.meta && j.meta !== j.date ? j.meta : null);
+        var pkEl = j.date ? (j.date.querySelector('.peek-open') || j.date) : null;
+        var pk = inkEdges(pkEl);
+        if (!au || !pk) return;
+        var cell = j.title.closest('.duo-half--mega, .latest-cell--ps');
+        if (!cell) return;
+        var picLeft = cell.classList.contains('duo-half--mega')
+          ? !!(cell.closest('.card') && cell.closest('.card').classList.contains('card--mega-rev'))
+          : cell.classList.contains('pic-left');
+        var edge = picLeft
+          ? Math.min(au.l, pk.l) - TITLE_RULE_PAD
+          : Math.max(au.r, pk.r) + TITLE_RULE_PAD;
+        var tailTop = picLeft ? (au.r + RULE_REACH) - edge : edge - (au.l - RULE_REACH);
+        var tailFoot = picLeft ? (pk.r + RULE_REACH) - edge : edge - (pk.l - RULE_REACH);
+        var len = Math.min(tailTop, tailFoot) - TITLE_RULE_PAD;
+        if (!(len > 0)) return;
+        var tb = j.title.getBoundingClientRect();
+        var L = picLeft ? edge : edge - len;
+        j.title.style.setProperty('--tdr-top', (ti.top + ti.ink + TITLE_RULE_PAD - tb.top).toFixed(2) + 'px');
+        j.title.style.setProperty('--tdr-left', (L - tb.left).toFixed(2) + 'px');
+        j.title.style.setProperty('--tdr-w', len.toFixed(2) + 'px');
+      })();
       if (dt) {
         var base = baselineOf(j.date, false);
         if (isFinite(base)) {
@@ -3651,6 +3708,7 @@
       el.style.top = (box.top + box.height / 2 - inkMid).toFixed(2) + 'px';
     });
   }
+  var RULE_REACH = 24;
   function fitCardRules() {
     var cards = document.querySelectorAll('main.has-mega .duo-half--mega, main.has-mega .latest-cell--ps, main.has-mega .latest-cell--contra');
     function inkEdge(node, side) {
@@ -3671,13 +3729,13 @@
         var cPeek = el.querySelector('.cover-meta--peek .peek-open') || el.querySelector('.cover-meta--peek');
         var cL = inkEdge(cPeek, 'left'), cR = inkEdge(cPeek, 'right');
         if (cL == null || cR == null) return;
-        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left)) + 'px');
-        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR)) + 'px');
+        el.style.setProperty('--rule-foot-l', Math.max(0, Math.round(cL - box.left - RULE_REACH)) + 'px');
+        el.style.setProperty('--rule-foot-r', Math.max(0, Math.round(box.right - cR - RULE_REACH)) + 'px');
         var cKicker = el.querySelector('.plate-title') || el.querySelector('.latest-plate-p');
         var kL = inkEdge(cKicker, 'left'), kR = inkEdge(cKicker, 'right');
         if (kL != null && kR != null) {
-          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left)) + 'px');
-          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR)) + 'px');
+          el.style.setProperty('--rule-top-l', Math.max(0, Math.round(kL - box.left - RULE_REACH)) + 'px');
+          el.style.setProperty('--rule-top-r', Math.max(0, Math.round(box.right - kR - RULE_REACH)) + 'px');
         }
         return;
       }
@@ -3696,10 +3754,10 @@
       var fR = picLeft ? inkEdge(peek, 'right') : inkEdge(close, 'right');
       if (tL == null || tR == null || fL == null || fR == null) return;
       var clamp = function (v) { return Math.max(0, Math.round(v)); };
-      el.style.setProperty('--rule-top-l', clamp(tL - ruleL) + 'px');
-      el.style.setProperty('--rule-top-r', clamp(ruleR - tR) + 'px');
-      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL) + 'px');
-      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR) + 'px');
+      el.style.setProperty('--rule-top-l', clamp(tL - ruleL - RULE_REACH) + 'px');
+      el.style.setProperty('--rule-top-r', clamp(ruleR - tR - RULE_REACH) + 'px');
+      el.style.setProperty('--rule-foot-l', clamp(fL - ruleL - RULE_REACH) + 'px');
+      el.style.setProperty('--rule-foot-r', clamp(ruleR - fR - RULE_REACH) + 'px');
     });
   }
   function fitAll() { whenStill(fitAllNow); }
@@ -3803,7 +3861,7 @@
     var card = stack.parentElement;
     var onLeft = stack.classList.contains('latest-stack--left');
     var half = card.querySelector('.duo-half') || card;
-    var first = stack.querySelector('span:not(.latest-stack-gap)');
+    var first = stack.querySelector(':scope > span:not(.latest-stack-gap)');
     if (!first) return;
     stack.style.top = '0px'; stack.style.right = ''; stack.style.left = ''; stack.style.fontSize = '';
     var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
@@ -3815,7 +3873,7 @@
         else stack.style.right = (cr.right - sr.right).toFixed(2) + 'px';
       }
     }
-    var letters = stack.querySelectorAll('span:not(.latest-stack-gap)');
+    var letters = stack.querySelectorAll(':scope > span:not(.latest-stack-gap)');
     var last = letters[letters.length - 1];
     var r0 = inkReach(first), rl = inkReach(last);
     var hr = half.getBoundingClientRect();
@@ -3827,9 +3885,11 @@
       var s0 = parseFloat(getComputedStyle(stack).fontSize) || 60;
       stack.style.fontSize = (s0 * (endY - startY) / (rl.foot - r0.capTop)).toFixed(2) + 'px';
     }
-    var r = inkReach(first);
+    var r = inkReach(first), rEnd = inkReach(last);
     if (!r) return;
-    stack.style.top = (startY - r.capTop).toFixed(2) + 'px';
+    var inkH = rEnd ? rEnd.foot - r.capTop : 0;
+    var topY = inkH > 0 ? hr.top + (hr.height - inkH) / 2 : startY;
+    stack.style.top = (topY - r.capTop).toFixed(2) + 'px';
   }
   function fitBandNameMid() {
     var mid = document.querySelector('.section-band .band-name-mid');
@@ -4852,7 +4912,7 @@
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('700 100px futura-pt-condensed').then(fitMast, function(){});
+    document.fonts.load('700 100px neue-haas-grotesk-display').then(fitMast, function(){});
     if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
   var resizeTimer;
