@@ -4513,10 +4513,23 @@
           Math.max(0, bot - land.bottom).toFixed(2) + 'px ' +
           Math.max(0, land.left - l).toFixed(2) + 'px');
       }
-      host.style.setProperty('--hl-l', (l - h.left).toFixed(2) + 'px');
-      host.style.setProperty('--hl-t', (top - h.top).toFixed(2) + 'px');
-      host.style.setProperty('--hl-w', (r - l).toFixed(2) + 'px');
-      host.style.setProperty('--hl-h', (bot - top).toFixed(2) + 'px');
+      // WHOLE PIXELS, OR THE EDGE IS A HAIRLINE (2026-09-19). These were
+      // written to two decimals, so the block's edges fell inside a
+      // pixel — 333.33 wide, a third of one. A part-covered pixel is
+      // blended, and while everything rasterises together that blend is
+      // invisible; the moment a neighbour is promoted to a compositing
+      // layer of its own (a hover does it — a transform on the sliding
+      // picture, a filter on the dimmed one) the block is rasterised
+      // apart from what sits under it and the blended edge shows as a
+      // hairline standing beside the words. It is rounded in the
+      // VIEWPORT's frame, not the host's: the offsets stay fractional
+      // so that left + offset lands on a whole number, which is where
+      // the edge is actually painted. */
+      var L = Math.round(l), R = Math.round(r), T = Math.round(top), B = Math.round(bot);
+      host.style.setProperty('--hl-l', (L - h.left).toFixed(2) + 'px');
+      host.style.setProperty('--hl-t', (T - h.top).toFixed(2) + 'px');
+      host.style.setProperty('--hl-w', (R - L) + 'px');
+      host.style.setProperty('--hl-h', (B - T) + 'px');
     }
     // WHERE EVERY PICTURE LANDS, MEASURED. The cards are opened all at
     // once behind a .fit-still — no transition runs, and nothing is
@@ -4880,7 +4893,15 @@
   // width.
   var TITLE_RULE_PAD = 24;
   var TITLE_RULE_W = 1;
-  var TITLE_DEK_RULE = TITLE_RULE_PAD * 2 + TITLE_RULE_W;
+  // THE RULE IS STRUCK (2026-09-19, style.css: THE CARDS GIVE UP THEIR
+  // RULES) along with the card's own two, and the joint it opened
+  // closes behind it: 24, a rule, 24 was room made FOR the rule, and
+  // with nothing standing in it the title and the dek would have been
+  // held 49 apart for no reason the reader could see. The measures
+  // below are still taken and still written — the sheet simply paints
+  // none of them — so the rule can be asked for again without being
+  // measured again.
+  var TITLE_DEK_RULE = TITLE_DEK_GAP;
   // The far ends of an element's painted ink across ALL its lines — a
   // ragged block's widest reach, which is what the rule is cut to.
   function inkEdges(el) {
@@ -5506,6 +5527,14 @@
     });
   }
   function fitAllSteps() {
+    // THE BLOCKS ARE SEATED ON EVERY PAGE, and last. It hung off
+    // fitSubscribeLines, which is a step about the offer's own lines
+    // and does not run where there is no offer — so the archive's band
+    // name was never measured and kept the older box-painted block,
+    // which is what put a bar round it wider and taller than its
+    // letters with the band's rule crossing it. Last, because it reads
+    // boxes that every step above it moves.
+    var seatLast = true;
     // The columns' 24 step into their blocks (fitTitleHalo) is a
     // transform the rest of the pass must not measure: cleared first,
     // written last, so every seat is taken off the untransformed box
@@ -5562,6 +5591,9 @@
     // paint's (stale anchors made the held couriers jump at the
     // lock-in).
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
+    step('seatInkBlocks', seatInkBlocks);
+    step('seatDekBlocks', seatDekBlocks);
+    step('fitBandDekInset', fitBandDekInset);
   }
 
   (function(){
@@ -5623,6 +5655,55 @@
     probe.remove();
     return { capTop: base - (y0 - top) / scanPx * size, foot: base + (bot + 1 - y0) / scanPx * size };
   }
+  // THE SAME SCAN, ACROSS (2026-09-19). inkReach finds a line's ink top
+  // and foot by rasterising it; this finds how WIDE the ink actually
+  // runs, which is what a highlight has to form to. Advance widths are
+  // no use for it: they carry the side bearings and the trailing
+  // letter-space, which is air, not ink.
+  function inkWidth(el) {
+    var cs = getComputedStyle(el);
+    var size = parseFloat(cs.fontSize) || 13;
+    var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    if (!text) return 0;
+    var scanPx = 200, W = 3000, H = 320, y0 = 240;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d'); if (!g) return 0;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+    g.fillText(text, 20, y0);
+    var data;
+    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return 0; }
+    var lo = -1, hi = -1;
+    for (var x = 0; x < W; x++) {
+      for (var y = 0; y < H; y++) {
+        if (data[(y * W + x) * 4 + 3] > 40) { if (lo < 0) lo = x; hi = x; break; }
+      }
+    }
+    if (lo < 0) return 0;
+    return (hi + 1 - lo) / scanPx * size;
+  }
+  // THE MARGIN LABEL'S BLOCK FORMS TO ITS INK (2026-09-19). The stack's
+  // box is the margin's whole 72 with the letters centred in it, so a
+  // block on that box stood a third empty either side of a letter while
+  // it hugged the caps top and bottom — the air read as three different
+  // paddings on four sides. Measured here instead: the widest letter's
+  // INK for the width, the first cap's ink top and the last foot for
+  // the ends, all off the rasteriser. The block is drawn from those in
+  // style.css, so every side clears the ink by --hl-pad and no side by
+  // anything else.
+  function seatStackBlock(stack) {
+    var letters = stack.querySelectorAll(':scope > span:not(.latest-stack-gap)');
+    if (!letters.length) return;
+    var w = 0;
+    [].forEach.call(letters, function (L) { var v = inkWidth(L); if (v > w) w = v; });
+    var first = inkReach(letters[0]), last = inkReach(letters[letters.length - 1]);
+    var box = stack.getBoundingClientRect();
+    if (!w || !first || !last || !box.height) return;
+    stack.style.setProperty('--stk-w', w.toFixed(2) + 'px');
+    stack.style.setProperty('--stk-t', (first.capTop - box.top).toFixed(2) + 'px');
+    stack.style.setProperty('--stk-b', (box.bottom - last.foot).toFixed(2) + 'px');
+  }
   // THE COURIER'S GAP UNDER A RULE, read off the first hero: its
   // courier line's cap ink to the rule it stands under. The line
   // under SUBSCRIBE keeps it. 24 where there is no hero to read (the
@@ -5674,9 +5755,20 @@
       var card = mv.querySelector('.card--mega') || mv.querySelector('.card');
       var word = (name.textContent || '').trim();
       if (!card || !word) return;
-      var stack = document.createElement('p');
+      // A LINK, TO THE LEDGER UNDER ITS OWN SECTION (2026-09-19). The
+      // label names a section and now goes where the band's word goes
+      // — archive.html#section=<word> — so the margin is a way in and
+      // not just a marker. It takes the band's own href rather than
+      // building one, so the two can never drift apart. Still hidden
+      // from the reader who is listening and kept out of the tab order:
+      // the band's word stands a few lines away and says the same
+      // thing, and a second stop on it would only repeat itself.
+      var stack = document.createElement('a');
       stack.className = 'latest-stack latest-stack--left';
       stack.setAttribute('aria-hidden', 'true');
+      stack.setAttribute('tabindex', '-1');
+      var secHref = name.getAttribute('href');
+      if (secHref) stack.setAttribute('href', secHref);
       word.split('').forEach(function (ch) {
         var sp = document.createElement('span');
         if (ch === ' ') sp.className = 'latest-stack-gap';
@@ -5701,6 +5793,7 @@
     var one = Infinity;
     all.forEach(function (st) { var v = parseFloat(st.style.fontSize) || 0; if (v && v < one) one = v; });
     if (isFinite(one)) all.forEach(function (st) { fitOneStack(st, one); });
+    all.forEach(seatStackBlock);
   }
   // THE STACKS STAND IN THE PAGE'S LEFT MARGIN (2026-09-18), where the
   // social marks stood until this morning — not on their card's own
@@ -5866,6 +5959,591 @@
     var C = S * above, r = 72 / C, c = B / (2 * r + 1);
     mid.style.fontSize = (c / above).toFixed(3) + 'px';
     inkCenterDeks();
+  }
+  // ---------- EVERY BLOCK FORMS TO ITS INK (2026-09-19) ----------
+  // The highlight was painted on the element's own BOX, and a box is
+  // not the ink: a block name at line-height 1 carries its caps 0.139em
+  // down from the top and its baseline 0.115em up from the bottom, and
+  // an inline link's box is the font's whole ascent-and-descent, half
+  // again taller than the letters standing in it. So the air read at
+  // roughly three times above and below what it read at the sides.
+  // MEASURED HERE, ONCE PER DRESS. The two numbers a block needs are
+  // the gap from its box's top to the CAP ink and the gap from the
+  // BASELINE to its box's foot; both fall out of the font's own
+  // metrics, so this costs a measureText and no raster at all, and the
+  // answer is cached on the font/size/leading/display it was read for.
+  // Cap to baseline is the whole of it: a descender BREAKS the edge
+  // rather than pushing the block down, which is the reading asked for.
+  // WRAPPED INLINE TEXT IS LEFT ALONE. The block is drawn as a pseudo,
+  // and one absolute box cannot follow a link that breaks over two
+  // lines — that wants a box per line box, which is what the element's
+  // own background already gives it. Those keep it, and say so with a
+  // class, so the sheet can tell the two apart.
+  var inkCv = null;
+  // THE ASCENT OF THIS WORD, not of a capital H. Measured on the
+  // element's own text: an H is the cap line, but Archive inks higher
+  // than that on its h, and a block formed to the cap would clear the
+  // ascender by less than it clears everything else. Cheap — a
+  // measureText, no raster — and the answer is cached on the dress and
+  // the word together.
+  var ascMemo = {}, descMemo = {};
+  // THE FACE'S DESCENDER, not this word's. The pad is capped in pixels
+  // now, so above a certain size it is shallower than a descender and
+  // the bottom has to be given the descender's own depth instead. Read
+  // off the face rather than the word so that every line of a title
+  // takes the same depth and the stack does not come out ragged: a
+  // line with a y would otherwise hang lower than the line above it.
+  function descOf(cs, fs) {
+    var key = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontFamily + '|' + fs;
+    if (descMemo[key] != null) return descMemo[key];
+    var g = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+    if (!g) return 0;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+    var d = g.measureText('gjpqy').actualBoundingBoxDescent || 0;
+    descMemo[key] = d;
+    return d;
+  }
+  function inkAscent(cs, fs, text) {
+    var key = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontFamily + '|' + fs + '|' + text;
+    if (ascMemo[key] != null) return ascMemo[key];
+    var g = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+    if (!g) return 0;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+    var a = g.measureText(text).actualBoundingBoxAscent || 0;
+    ascMemo[key] = a;
+    return a;
+  }
+  var INK_SEL = 'a:not(.latest-cover):not(.latest-plate):not(.card-image-link)'
+    + ':not(.ticker-cover-link):not(.latest-stack):not(.topbar-wordmark):not(.nav-wordmark-link)'
+    // .has-hit is NOT excluded: it sits on the oversized wordmark LINK
+    // (named out above) but also on .banner-name and .reprint-name,
+    // which are the names themselves and want the block like any
+    // other word.
+    + ':not(.reprint-link):not(.skip-link), button:not(.theme-toggle), [role="button"],'
+    // NOT .card-title / .latest-title THEMSELVES (2026-09-19): where a
+    // title is cut into lines the LINES carry the block, and where it
+    // is not, the link inside it does. Seated as a carrier as well,
+    // the container drew a second block behind the whole title and its
+    // edge stood past the lines' as a hairline.
+    + ' .peek-open, .plate-close, .plate-read, .title-line,'
+    + ' .banner-name, .topbar-name, .reprint-name, .ledger-word, .band-name-mid, .band-mini,'
+    + ' .banner-line--below,'
+    + ' .theme-toggle > span:not(.theme-toggle-sep)';
+  // THE BASELINE IS PROBED, NOT PREDICTED. Canvas reports the font's
+  // own ascent and descent, and a browser does not always lay a line
+  // box out on those — read against the rasteriser the prediction ran
+  // half a pixel out, which is a third of the pad at courier size. So
+  // the baseline is taken the way inkReach takes it: a zero-sized
+  // inline-block seated on it, read off the layout itself. Every probe
+  // goes in, every rect comes out, then every probe comes out — three
+  // passes and three reflows for the whole page rather than one each.
+  // THE RUN IS THE ELEMENT'S OWN TEXT, AND NOTHING ELSE (2026-09-19).
+  // A range over the whole contents hands back a rect for EVERY box in
+  // it, the out-of-flow ones included — and the section words carry an
+  // invisible hit patch, absolutely positioned, that takes the pointer
+  // for them. Its rect sits on a line of its own, so the run read as
+  // wrapped, gave up, and left the word with no left and right at all:
+  // the block formed to the BOX instead, which on a section word is
+  // the whole 1600 of the band. A yellow bar from glass to glass under
+  // ESSAYS, and the line under it correct, which is what said where to
+  // look.
+  // So the text is walked instead of ranged: every text node the
+  // element actually sets, skipping any child taken out of flow and
+  // anything display:none. Still one line or nothing — a true wrap has
+  // no single rectangle to give — but the patch no longer counts as a
+  // second line.
+  function inFlowRun(el) {
+    var lo = Infinity, hi = -Infinity, top = null, ok = true;
+    var walk = function (node) {
+      for (var n = node.firstChild; ok && n; n = n.nextSibling) {
+        if (n.nodeType === 3) {
+          if (!n.data || !n.data.trim()) continue;
+          var rg = document.createRange();
+          rg.selectNodeContents(n);
+          var rs = rg.getClientRects();
+          for (var i = 0; i < rs.length; i++) {
+            if (!rs[i].width || !rs[i].height) continue;
+            if (top === null) top = rs[i].top;
+            else if (Math.abs(rs[i].top - top) > 1) { ok = false; return; }
+            if (rs[i].left < lo) lo = rs[i].left;
+            if (rs[i].right > hi) hi = rs[i].right;
+          }
+        } else if (n.nodeType === 1) {
+          var cs = getComputedStyle(n);
+          if (cs.display === 'none' || cs.position === 'absolute' || cs.position === 'fixed') continue;
+          walk(n);
+        }
+      }
+    };
+    walk(el);
+    return (ok && isFinite(lo) && isFinite(hi) && hi > lo) ? { left: lo, right: hi } : null;
+  }
+  function seatInkBlocks() {
+    var list;
+    try { list = document.querySelectorAll(INK_SEL); } catch (e) { return; }
+    var jobs = [];
+    [].forEach.call(list, function (el) {
+      var cs = getComputedStyle(el);
+      if (cs.display === 'none') return;
+      var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+      if (!text) { el.classList.remove('hl-ink', 'hl-wrapped'); return; }
+      // ONE LINE OR TWO, not one rect or three. getClientRects gives a
+      // rect per BOX: an inline that holds a span of its own — The NEW
+      // Critic in the band's middle — comes back as three on a single
+      // line, and counting them read it as wrapped, so it was refused
+      // the block and kept the older box-painted one. They are one run
+      // if they share a top.
+      var rects = el.getClientRects();
+      var oneLine = true, uL = Infinity, uR = -Infinity, uT = Infinity, uB = -Infinity;
+      for (var q = 0; q < rects.length; q++) {
+        if (Math.abs(rects[q].top - rects[0].top) > 1) { oneLine = false; break; }
+        if (rects[q].left < uL) uL = rects[q].left;
+        if (rects[q].right > uR) uR = rects[q].right;
+        if (rects[q].top < uT) uT = rects[q].top;
+        if (rects[q].bottom > uB) uB = rects[q].bottom;
+      }
+      // A BLOCK CAN WRAP TOO. The inline test asks whether its rects
+      // share a top; a block's rect is one box however many lines are
+      // in it, so it is asked against its own leading instead. Either
+      // way, more than one line wants a box to a line and the pseudo
+      // cannot give it.
+      var lh0 = cs.lineHeight === 'normal' ? 0 : parseFloat(cs.lineHeight) || 0;
+      var tall = lh0 && rects.length && (rects[0].height > lh0 * 1.5);
+      var wrapped = tall || (cs.display === 'inline' && !oneLine);
+      el.classList.toggle('hl-wrapped', wrapped);
+      if (wrapped || !rects.length) {
+        el.classList.remove('hl-ink');
+        el.style.removeProperty('--hl-up'); el.style.removeProperty('--hl-dn');
+        return;
+      }
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+      else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.insertBefore(probe, el.firstChild);
+      // AFTER the probe: a range over the whole contents takes the
+      // zero-sized probe in with the text and comes back as two rects,
+      // which reads as wrapped and gives up the measurement.
+      // the run's union, so an inline split over several boxes is
+      // measured as the one line it is
+      var span = (rects.length && oneLine)
+        ? { left: uL, right: uR, top: uT, bottom: uB } : null;
+      jobs.push({ el: el, cs: cs, text: text, probe: probe, span: span });
+    });
+    jobs.forEach(function (j) {
+      j.rect = j.span || j.el.getClientRects()[0] || j.el.getBoundingClientRect();
+      j.base = j.probe.getBoundingClientRect().bottom;
+      // the TEXT's own advance box, wherever the alignment put it —
+      // read here so left and right can be taken off the ink too
+      // A rect per BOX, not per line: The NEW Critic carries a span of
+      // its own and comes back as three. They are one run if they sit
+      // on one line, and the run is their union.
+      j.run = inFlowRun(j.el);
+    });
+    jobs.forEach(function (j) {
+      j.probe.remove();
+      var fs = parseFloat(j.cs.fontSize) || 0;
+      if (!fs || !j.rect) { j.el.classList.remove('hl-ink'); return; }
+      var asc = inkAscent(j.cs, fs, j.text);
+      if (!asc) { j.el.classList.remove('hl-ink'); return; }
+      var up = (j.base - asc) - j.rect.top;
+      var dn = j.rect.bottom - j.base;
+      j.el.style.setProperty('--hl-up', up.toFixed(2) + 'px');
+      j.el.style.setProperty('--hl-dn', dn.toFixed(2) + 'px');
+      j.el.style.setProperty('--hl-desc', descOf(j.cs, fs).toFixed(2) + 'px');
+      // the pseudo needs a frame; give one only where there is none,
+      // so nothing that seats itself is unseated (see style.css)
+      if (j.cs.position === 'static') j.el.style.position = 'relative';
+      // LEFT AND RIGHT OFF THE INK AS WELL (2026-09-19). The block ran
+      // to the element's BOX either side, and a box is not the ink
+      // there either: CSS letter-spacing is laid after EVERY character
+      // including the last, so a tracked word carries a dead column of
+      // tracking inside its own right edge, and the first and last
+      // glyphs bring whatever side bearings they happen to have. The
+      // wordmark came out some 3px wider on the right than the left for
+      // exactly that. The bearings are read off the same measureText —
+      // actualBoundingBoxLeft/Right are the ink's reach either side of
+      // where the text starts — against the range's advance box, which
+      // already sits where the alignment put it.
+      var lft = 0, rgt = 0;
+      if (j.run) {
+        var gg = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+        if (gg) {
+          try { gg.letterSpacing = j.cs.letterSpacing === 'normal' ? '0px' : j.cs.letterSpacing; } catch (e) {}
+          gg.font = j.cs.fontStyle + ' ' + j.cs.fontWeight + ' ' + fs + 'px ' + j.cs.fontFamily;
+          gg.textAlign = 'left'; gg.textBaseline = 'alphabetic';
+          var mm = gg.measureText(j.text);
+          var inkL = j.run.left - (mm.actualBoundingBoxLeft || 0);
+          var inkR = j.run.left + (mm.actualBoundingBoxRight || 0);
+          if (isFinite(inkL) && isFinite(inkR) && inkR > inkL) {
+            lft = inkL - j.rect.left;
+            rgt = j.rect.right - inkR;
+            if (lft < 0) lft = 0;
+            if (rgt < 0) rgt = 0;
+          }
+        }
+      }
+      j.el.style.setProperty('--hl-lft', lft.toFixed(2) + 'px');
+      j.el.style.setProperty('--hl-rgt', rgt.toFixed(2) + 'px');
+      j.el.classList.add('hl-ink');
+    });
+    // A COLUMN OF LINES KEEPS ITS EDGE (2026-09-19). Hugging the ink is
+    // right for a word standing on its own and wrong for a stack of
+    // them: the lines of a title are RANGED, and the ink of M, S and A
+    // does not begin in the same place. MrBeast, / Slop / Auteur came
+    // back 4.75, 2.74 and 0.22 off the box they share, so three blocks
+    // stood in a ragged column under type that is flush — the eye reads
+    // the blocks' edge, not the letters', and the letters had lost it.
+    // So the lines of one title take ONE edge on the ranged side: the
+    // outermost of them, the leftmost left or the rightmost right, so
+    // no line is cropped to reach it and only the ones that ink short
+    // of the column carry a little more air. Centred type has no such
+    // edge and is left alone. The other side stays each line's own —
+    // that is the rag, and it belongs to the type.
+    // The pad is not guessed at again here: the pseudo's own left (or
+    // right) is read back, which is the sheet's calc already resolved,
+    // so lines set at different sizes — each with a pad of its own em —
+    // still land on one edge.
+    var owners = [], lines = [];
+    jobs.forEach(function (j) {
+      if (!j.el.classList.contains('title-line')) return;
+      if (!j.el.classList.contains('hl-ink')) return;
+      var p = j.el.parentNode, i = owners.indexOf(p);
+      if (i < 0) { owners.push(p); lines.push([j]); } else lines[i].push(j);
+    });
+    lines.forEach(function (g) {
+      if (g.length < 2) return;
+      var al = g[0].cs.textAlign, side, prop;
+      if (al === 'left' || al === 'start') { side = 'left'; prop = '--hl-lft'; }
+      else if (al === 'right' || al === 'end') { side = 'right'; prop = '--hl-rgt'; }
+      else return;
+      // both are insets from the box's own edge, so the SMALLEST of
+      // them is the one that reaches furthest out
+      var edges = g.map(function (j) {
+        return parseFloat(getComputedStyle(j.el, '::after')[side]) || 0;
+      });
+      var out = Math.min.apply(Math, edges);
+      g.forEach(function (j, k) {
+        if (Math.abs(edges[k] - out) < 0.01) return;
+        var was = parseFloat(j.el.style.getPropertyValue(prop)) || 0;
+        j.el.style.setProperty(prop, (was + (out - edges[k])).toFixed(2) + 'px');
+      });
+    });
+  }
+  // ---------- THE DEK TAKES ONE BLOCK, NOT ONE A LINE (2026-09-19) ----
+  // The Garamond under a title belongs to the title's mark: a hand on
+  // the words, or on the picture they name, lights both. But a dek is
+  // PROSE — three or four lines of it — and the line-by-line block the
+  // titles use would draw three ragged bars stepping down the column,
+  // which is a mark on each line rather than a mark on the dek. One
+  // rectangle over the whole paragraph instead: a short last line
+  // simply leaves air inside the block, which is what a block around a
+  // paragraph is.
+  // AND IT JOINS THE TITLE'S. The two are one mark, so they are one
+  // shape: the dek's block opens exactly where the title's last line
+  // closes — no white seam between them — and stands on the title's
+  // own flush edge, the edge the title's lines already share. The rag
+  // side and the foot stay the dek's own ink. Centred matter has no
+  // flush side and keeps its ink either side; it still joins at the
+  // top. Both corrections are made by reading the pseudo's OWN
+  // resolved inset back and moving it, so the pad in the sheet is
+  // never restated here.
+  // THE LAST BASELINE WITHOUT A LAST PROBE. A zero-width probe appended
+  // to the end is a break opportunity, and on a paragraph whose last
+  // line is full it would take a line of its own and hand back the
+  // baseline of a line that is not there. The lines are all one leading
+  // apart, so the last baseline is the first plus the distance between
+  // the first line box and the last.
+  // EVERY LINE'S OWN INK, NOT ITS ADVANCE BOX. The box a line occupies
+  // is not where its ink is: the opening quote inks nearly 3 of its own
+  // 4 pixels in from the left of its box, and an italic j on the line
+  // below reaches nearly 4 past it the other way — on a 6px pad, that
+  // is the difference between a block that fits the paragraph and one
+  // that clips a descender. So the first and last GLYPH of each line
+  // are found (a binary search down the run for where the line turns,
+  // over non-space characters only, whose rects are never degenerate)
+  // and their bearings taken off the same canvas the carriers use.
+  var DEK_SEL = '.card-dek, .latest-dek';
+  function dekRuns(el) {
+    var walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    var ps = [], n;
+    while ((n = walk.nextNode())) {
+      for (var i = 0; i < n.data.length; i++) if (!/\s/.test(n.data[i])) ps.push([n, i]);
+    }
+    if (!ps.length) return null;
+    var rectAt = function (k) {
+      var r = document.createRange();
+      r.setStart(ps[k][0], ps[k][1]);
+      r.setEnd(ps[k][0], ps[k][1] + 1);
+      return r.getBoundingClientRect();
+    };
+    var charAt = function (k) { return ps[k][0].data[ps[k][1]]; };
+    var lines = [], i = 0, guard = 0;
+    while (i < ps.length && guard++ < 64) {
+      var top = rectAt(i).top;
+      var lo = i, hi = ps.length - 1;
+      while (lo < hi) {
+        var mid = (lo + hi + 1) >> 1;
+        if (rectAt(mid).top < top + 1) lo = mid; else hi = mid - 1;
+      }
+      lines.push({ a: i, b: lo });
+      i = lo + 1;
+    }
+    return { lines: lines, rectAt: rectAt, charAt: charAt };
+  }
+  function seatDekBlocks() {
+    var list;
+    try { list = document.querySelectorAll(DEK_SEL); } catch (e) { return; }
+    var jobs = [];
+    [].forEach.call(list, function (el) {
+      var cs = getComputedStyle(el);
+      var text = (el.textContent || '').trim();
+      if (cs.display === 'none' || !text) { el.classList.remove('hl-blk'); return; }
+      var head = document.createElement('span');
+      head.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.insertBefore(head, el.firstChild);
+      jobs.push({ el: el, cs: cs, head: head });
+    });
+    jobs.forEach(function (j) {
+      j.box = j.el.getBoundingClientRect();
+      j.base = j.head.getBoundingClientRect().bottom;
+      j.run = dekRuns(j.el);
+    });
+    jobs.forEach(function (j) {
+      j.head.remove();
+      var fs = parseFloat(j.cs.fontSize) || 0;
+      if (!fs || !j.run || !j.run.lines.length) { j.el.classList.remove('hl-blk'); return; }
+      var g = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+      if (!g) { j.el.classList.remove('hl-blk'); return; }
+      g.font = j.cs.fontStyle + ' ' + j.cs.fontWeight + ' ' + fs + 'px ' + j.cs.fontFamily;
+      g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+      var ls = j.cs.letterSpacing === 'normal' ? 0 : (parseFloat(j.cs.letterSpacing) || 0);
+      var lines = j.run.lines, lo = Infinity, hi = -Infinity, first = '', drop = 0;
+      for (var k = 0; k < lines.length; k++) {
+        var ra = j.run.rectAt(lines[k].a), rb = j.run.rectAt(lines[k].b);
+        var ma = g.measureText(j.run.charAt(lines[k].a));
+        var mb = g.measureText(j.run.charAt(lines[k].b));
+        var L = ra.left - (ma.actualBoundingBoxLeft || 0);
+        // the advance the last glyph leaves unpainted, and the letter-
+        // space laid after it, are both air
+        var R = rb.right - ls - (mb.width - (mb.actualBoundingBoxRight || 0));
+        if (L < lo) lo = L;
+        if (R > hi) hi = R;
+        if (k === lines.length - 1) drop = rb.top - ra.top;
+      }
+      drop = j.run.rectAt(lines[lines.length - 1].a).top - j.run.rectAt(lines[0].a).top;
+      // the FIRST line's own cap, not the whole paragraph's tallest
+      for (var q = lines[0].a; q <= lines[0].b; q++) first += j.run.charAt(q);
+      var asc = inkAscent(j.cs, fs, first);
+      if (!asc || !isFinite(lo) || !isFinite(hi) || hi <= lo) { j.el.classList.remove('hl-blk'); return; }
+      j.el.style.setProperty('--dk-t', ((j.base - asc) - j.box.top).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-b', (j.box.bottom - (j.base + drop)).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-l', (lo - j.box.left).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-r', (j.box.right - hi).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-desc', descOf(j.cs, fs).toFixed(2) + 'px');
+      // a frame only where there is none, as the carriers take one
+      if (j.cs.position === 'static') j.el.style.position = 'relative';
+      j.el.classList.add('hl-blk');
+    });
+    // THE JOIN. Made last, and read back off the pseudo itself: the
+    // sheet has already resolved every pad and every em by the time
+    // these are asked for, so the two edges that answer to the title
+    // are MOVED to it rather than solved again from measures this
+    // function would have to keep in step with the sheet.
+    jobs.forEach(function (j) {
+      if (!j.el.classList.contains('hl-blk')) return;
+      var title = j.el.previousElementSibling;
+      if (!title || !/(^|\s)(card|latest)-title(\s|$)/.test(title.className || '')) return;
+      var marks = title.querySelectorAll('.hl-ink');
+      if (!marks.length) return;
+      var foot = -Infinity, lft = Infinity, rgt = -Infinity;
+      for (var i = 0; i < marks.length; i++) {
+        var mr = marks[i].getBoundingClientRect();
+        var ms = getComputedStyle(marks[i], '::after');
+        var f = mr.bottom - (parseFloat(ms.bottom) || 0);
+        var l = mr.left + (parseFloat(ms.left) || 0);
+        var r = mr.right - (parseFloat(ms.right) || 0);
+        if (f > foot) foot = f;
+        if (l < lft) lft = l;
+        if (r > rgt) rgt = r;
+      }
+      // THE TITLE'S OWN PAD, read back the way everything else here is:
+      // the sheet sets the block's top to (ink - pad), so the pad is
+      // what is left when the resolved top is taken off the ink. Given
+      // to the dek before its own insets are asked for, so the join and
+      // the flush edge below are solved against the air they will
+      // actually be drawn with.
+      var lead = marks[0];
+      var up = parseFloat(lead.style.getPropertyValue('--hl-up'));
+      var pad = isFinite(up) ? up - (parseFloat(getComputedStyle(lead, '::after').top) || 0) : NaN;
+      if (isFinite(pad) && pad > 0) j.el.style.setProperty('--dk-pad', pad.toFixed(2) + 'px');
+      var box = j.el.getBoundingClientRect();
+      var own = getComputedStyle(j.el, '::after');
+      var myTop = box.top + (parseFloat(own.top) || 0);
+      var myLeft = box.left + (parseFloat(own.left) || 0);
+      var myRight = box.right - (parseFloat(own.right) || 0);
+      var bump = function (name, by) {
+        var was = parseFloat(j.el.style.getPropertyValue(name)) || 0;
+        j.el.style.setProperty(name, (was + by).toFixed(2) + 'px');
+      };
+      if (isFinite(foot)) bump('--dk-t', foot - myTop);
+      var al = getComputedStyle(title).textAlign;
+      if (al === 'left' || al === 'start') { if (isFinite(lft)) bump('--dk-l', lft - myLeft); }
+      else if (al === 'right' || al === 'end') { if (isFinite(rgt)) bump('--dk-r', myRight - rgt); }
+    });
+    // ---------- AND THE WHOLE MARK IS ONE RECTANGLE ----------
+    // The pieces are measured first and squared off last. Every line
+    // of the title carries a block cut to its own ink, and the dek
+    // carries one cut to its paragraph; drawn as they are, the mark
+    // steps in and out down the column. One rectangle over all of
+    // them instead — their union, which is the shape a reader would
+    // draw round the words with a marker.
+    // THE PIECES ARE NOT STRUCK. Each one is inscribed in the union by
+    // definition, in the same yellow, so nothing of them shows; and
+    // where the union cannot be measured the mark is still the pieces
+    // rather than nothing at all. The rectangle is the TITLE's own
+    // ::before, inside the stacking context the title already keeps,
+    // so it lies behind the title's letters, and the dek — a sibling
+    // painted after the whole of the title — stands on it too.
+    [].forEach.call(document.querySelectorAll('.card-title, .latest-title'), function (title) {
+      var parts = [].slice.call(title.querySelectorAll('.hl-ink'));
+      var dek = title.nextElementSibling;
+      if (dek && dek.classList && dek.classList.contains('hl-blk')) parts.push(dek);
+      squareUp(title, parts);
+    });
+    // AND A SECTION WORD IS ONE MARK WITH ITS COURIER. The word and the
+    // Roboto line under it are two elements and were two blocks, lit on
+    // the same frame but drawn as two — a wide one over the word, a
+    // narrow one under it. They square up the same way the title and
+    // its dek do: one rectangle over the pair, on the banner that holds
+    // them both.
+    [].forEach.call(document.querySelectorAll('.page-banner, .subscribe-band, .events-band, .store-band'), function (band) {
+      squareUp(band, [band.querySelector('.banner-name'), band.querySelector('.banner-line--below')]);
+    });
+  }
+
+  // ---------- ONE RECTANGLE OVER A SET OF BLOCKS (2026-09-19) --------
+  // The pieces are measured first and squared off last. Each block is
+  // cut to its own ink, which is how the shape is got right; drawn as
+  // they are, a mark of several pieces steps in and out. The union of
+  // them is the shape a reader would draw round the words with a
+  // marker, and that is what is painted.
+  // THE PIECES ARE NOT STRUCK. Each is inscribed in the union by
+  // definition and in the same yellow, so none shows through it, and a
+  // set the union cannot be measured for still lights piece by piece
+  // rather than not at all.
+  function blockBox(el) {
+    if (!el) return null;
+    var c = getComputedStyle(el, '::after');
+    if (c.content === 'none') return null;
+    var r = el.getBoundingClientRect();
+    return {
+      top: r.top + (parseFloat(c.top) || 0),
+      bottom: r.bottom - (parseFloat(c.bottom) || 0),
+      left: r.left + (parseFloat(c.left) || 0),
+      right: r.right - (parseFloat(c.right) || 0)
+    };
+  }
+  function squareUp(host, parts) {
+    var t = Infinity, b = -Infinity, l = Infinity, rr = -Infinity, any = false;
+    for (var i = 0; i < parts.length; i++) {
+      var k = blockBox(parts[i]);
+      if (!k) continue;
+      any = true;
+      if (k.top < t) t = k.top;
+      if (k.bottom > b) b = k.bottom;
+      if (k.left < l) l = k.left;
+      if (k.right > rr) rr = k.right;
+    }
+    if (!any || !(b > t) || !(rr > l)) { host.classList.remove('hl-rect'); return; }
+    var hb = host.getBoundingClientRect();
+    host.style.setProperty('--tx-t', (t - hb.top).toFixed(2) + 'px');
+    host.style.setProperty('--tx-b', (hb.bottom - b).toFixed(2) + 'px');
+    host.style.setProperty('--tx-l', (l - hb.left).toFixed(2) + 'px');
+    host.style.setProperty('--tx-r', (hb.right - rr).toFixed(2) + 'px');
+    host.classList.add('hl-rect');
+  }
+
+  // ---------- THE BAND'S DEKS KEEP THEIR OWN AIR (2026-09-19) ----------
+  // The band takes the window edge to edge now, and its Garamond stood
+  // ON the glass — the name's T on the left edge, Subscribe's e on the
+  // right — while the same words sat 28 or so under the band's top.
+  // They stand off the sides by what they stand off the top: each dek's
+  // own air, measured to its own INK and not to its box, since a box
+  // here is a line box with half-leading above it and a link with side
+  // bearings and a trailing letter-space inside it, and none of that is
+  // anything the reader sees.
+  // THE INK IS THE SEATING'S OWN. Every word in the band carries a
+  // highlight block, and the block is already formed to the ink — the
+  // cap it opens on, the first letter's bearing, the last letter's.
+  // Those three measures are read back here rather than taken again, so
+  // the air around the band is the air the reader sees around a block.
+  // (Which is why this runs after seatInkBlocks and not before it.)
+  // The middle dek is the date and keeps the window's centre: the
+  // margins go on the deks, inside the band's two 1fr tracks, so the
+  // tracks do not resize and the centre column does not move.
+  function inkOf(el) {
+    var up = parseFloat(el.style.getPropertyValue('--hl-up'));
+    if (!isFinite(up)) return null;
+    var lf = parseFloat(el.style.getPropertyValue('--hl-lft'));
+    var rg = parseFloat(el.style.getPropertyValue('--hl-rgt'));
+    var r = el.getBoundingClientRect();
+    return {
+      top: r.top + up,
+      left: r.left + (isFinite(lf) ? lf : 0),
+      right: r.right - (isFinite(rg) ? rg : 0)
+    };
+  }
+  // A dek's ink is the reach of every seated word in it: the highest
+  // cap of the run, its leftmost bearing and its rightmost.
+  function dekInk(dek) {
+    var words = dek.querySelectorAll('.hl-ink');
+    var t = Infinity, l = Infinity, r = -Infinity;
+    for (var i = 0; i < words.length; i++) {
+      var k = inkOf(words[i]);
+      if (!k) continue;
+      if (k.top < t) t = k.top;
+      if (k.left < l) l = k.left;
+      if (k.right > r) r = k.right;
+    }
+    if (isFinite(t) && isFinite(l) && isFinite(r)) return { top: t, left: l, right: r };
+    // NOT EVERY NAME IS A LINK (2026-09-19). The head band's name is
+    // one and carries a block; the colophon's — EST. MAY 2025 — is a
+    // plain span that goes nowhere, so there is no seated block to read
+    // the ink back from and it sat flush on the glass while the links
+    // opposite kept their air. Measured directly instead: the run's own
+    // reach across, and its cap off the rasteriser, which is where the
+    // carriers' own measures come from in the first place.
+    var run = inFlowRun(dek), reach = inkReach(dek);
+    return (run && reach) ? { top: reach.capTop, left: run.left, right: run.right } : null;
+  }
+  function fitBandDekInset() {
+    [].forEach.call(document.querySelectorAll('.page-rows > .section-band'), function (band) {
+      // THE COLOPHON ANSWERS TO THE HEAD BAND (2026-09-19): it kept the
+      // page's measure while the head band took the window, and the two
+      // are the same piece of furniture at either end of the page. Both
+      // now.
+      var deks = [].filter.call(band.children, function (el) {
+        return el.classList.contains('band-deks');
+      });
+      if (deks.length < 2) return;
+      var pair = [
+        { el: deks[0], side: 'marginLeft' },
+        { el: deks[deks.length - 1], side: 'marginRight' }
+      ];
+      // cleared first, so the seat is solved from the band's own edge
+      // every pass and no run can drift on the last one's answer
+      pair.forEach(function (p) { p.el.style[p.side] = ''; });
+      var box = band.getBoundingClientRect();
+      pair.forEach(function (p) {
+        var ink = dekInk(p.el);
+        if (!ink) return;
+        var air = ink.top - box.top;
+        if (!(air > 0)) return;
+        var now = p.side === 'marginLeft' ? ink.left - box.left : box.right - ink.right;
+        p.el.style[p.side] = Math.max(0, air - now).toFixed(2) + 'px';
+      });
+    });
   }
   function fitSubscribeLines() {
     fitLatestStack();

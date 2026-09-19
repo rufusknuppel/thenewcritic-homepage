@@ -212,17 +212,21 @@
      tagline, titles, deks and byline strips. Playfair Display speaks
      the excerpts. (--display-face kept as an unused Archivo fallback.) */
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  /* AZO SANS at its bold (2026-09-18 — Nimbus Sans for a few minutes
-     before it, Neue Haas Grotesk Display before that, Futura PT
-     Condensed's hour, OPS Placard's day, and Oculi's). Rui Abreu's
-     geometric, off the same kit, named azo-sans-web there; book and
-     bold with both italics, azo-sans-uber beside it unused. A
-     GEOMETRIC after four grotesques, which is Futura's line rather
-     than Helvetica's. Every role the title face answers takes it: the
-     names in capitals, the section words in capitals with them, the
-     card titles as written. Nimbus stands behind it, then Neue Haas,
-     Futura, Placard and Oculi. */
-  --title-face: 'azo-sans-web', 'nimbus-sans', 'neue-haas-grotesk-display', 'futura-pt-condensed', 'OPS Placard', 'oculi-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* HELVETICA NEUE, THE REAL ONE (2026-09-19 — Azo Sans for a day
+     before it, Nimbus Sans for a few minutes, Neue Haas Grotesk
+     Display before those, Futura PT Condensed's hour, OPS Placard's
+     day, and Oculi's). Added to the same kit and named
+     helvetica-neue-lt-pro there: Linotype's own Helvetica Neue LT Pro,
+     roman and bold with both italics, the condensed and the World cut
+     beside it in the kit and unused. The line comes back to a
+     grotesque after the geometric's day, and this time it is the face
+     the whole chain has been standing in for — the system 'Helvetica
+     Neue' at the end of it is the same design, so a kit that fails to
+     load now falls back to the drawing rather than to a substitute
+     for it. Every role the title face answers takes it at the weights
+     it already asks for, 700 on the names and 400 on the titles, both
+     of which the kit serves. Nimbus and Neue Haas stand behind it. */
+  --title-face: 'helvetica-neue-lt-pro', 'nimbus-sans', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
   /* Bare SYSTEM Courier first — the Antenne Books move (they declare
      `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
@@ -7058,6 +7062,23 @@ body.has-mega::before{ content: none; }
   inherits: true;
   initial-value: 1;
 }
+/* ---------- THE CURTAIN'S BOX IS THE BLOCK IT IS IN (2026-09-18) ----------
+   .plate-curtain is `position: absolute; inset: 0` and .card-preview-block
+   — the thing that opens and shuts, and clips with overflow: hidden —
+   was STATIC, so the curtain never resolved against it. It resolved
+   against the nearest positioned ancestor instead (.duo-panel-top),
+   which is the whole matter column: on the front page the two boxes
+   happen to coincide when the preview is open, so nothing showed, but
+   on the pages where the block stays SHUT the curtain kept the column's
+   full height and stood over the matter, opaque and taking the pointer.
+   Measured on contra: a 269 by 48 shut block with a 221 by 229 curtain
+   hanging out of it, over the card titles — which is why a contra title
+   could not be hovered and took no highlight, and why the shut preview
+   showed where nothing should. Positioning the block makes it the
+   containing block, so inset: 0 means the block and overflow: hidden
+   bites. The front page measures identically before and after (333 by
+   344 either way): it only ever mattered where the block was shut. */
+.card-preview-block{ position: relative; }
 .plate-curtain{
   position: absolute;
   inset: 0;
@@ -14439,8 +14460,8 @@ main.has-mega :is(.card-title, .latest-title) a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
      is the one mark here that is not type. */
   transition: none !important;
 }
-main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title).is-cued a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title).is-cued a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--hl-ink) !important;
   background-color: var(--yves) !important;
 }
@@ -14520,24 +14541,36 @@ body.has-mega .site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
    gap between the letters and the edge is the same all round. The
    vertical padding is paid back as a negative margin, so a hovered
    name moves nothing under it. */
-:root{ --hl-pad: 0.12em; }
-main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid).is-cued:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  width: fit-content;
-  margin-inline: auto;
-  /* THE AIR IS PAINTED, NOT SPACED (2026-09-18). It was padding with a
-     negative margin to pay it back — and these blocks carry margins
-     and tops the FITTER writes inline, which an ordinary rule cannot
-     outrank: the pay-back was lost, the padding was not, and every
-     name stepped down the moment it was pointed at. A box-shadow with
-     spread paints outside the border box and changes no layout at all,
-     so nothing can move. Three of them: one for the sides, two offset
-     up and down for the 0.14em the letters overhang their own box. */
-  box-shadow:
-    0 0 0 var(--hl-pad) var(--yves),
-    0 0.14em 0 var(--hl-pad) var(--yves),
-    0 -0.14em 0 var(--hl-pad) var(--yves);
+/* ROUGHLY DOUBLE, AND DEEP ENOUGH TO HOLD A DESCENDER (2026-09-19).
+   The block is seated on the ink cap-to-baseline, so the pad is what a
+   descender has to fall into: measured on the page, the deepest is the
+   Garamond italic's at 0.278em (Azo's bold 0.231, Roboto Mono's
+   0.213). 0.24 — a clean doubling — would have left the italic's g
+   hanging through the foot of its own block, so the pad is 0.32: over
+   double, and 0.042em of daylight under the deepest descender there is
+   rather than a graze. It is one token and it moves all four sides at
+   once, so the air stays even wherever it lands. */
+:root{ --hl-pad: min(0.32em, 32px); }
+/* CAPPED IN PIXELS (2026-09-19). 0.32em is a proportion, so the biggest
+   type on the page took the biggest block — a hero title at 104 carried
+   33 of air a side where a courier line carried 4, and past a point the
+   block stops reading as a mark on a word and starts reading as a
+   panel. It is held at 32 from here up: the air grows with the type to
+   100 and then stands still. The BOTTOM is the exception, below: a
+   descender is a proportion whatever the pad does, and it still has to
+   fall inside its own block. */
+main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid, .band-mini):is(:hover, :focus-visible, :focus, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid, .band-mini).is-cued:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus, :focus-within) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* EMPTIED (2026-09-19). This shrank a name to fit-content under the
+     hand so its box could serve as the block. The block is drawn from
+     the INK now and needs no help from the box — and the shrinking was
+     making the section words FLICKER: these names give their pointer
+     events up to an invisible hit patch sized on the name, so changing
+     the name's width under the hand moved the patch out from under the
+     pointer, which dropped the hover, which restored the width, which
+     took the hover back. A loop at frame rate. The ground and the
+     painted air went with it; both are the pseudo's now. */
 }
 /* And the ordinary boxes — a link in a line of text — take the same
    side air. Their vertical air is their line box's already, which is
@@ -14561,7 +14594,28 @@ main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r
    pointer. (Stated over the sheet's own eases, which name
    background-color among four or five properties in one shorthand;
    the colour, the border and the rest keep theirs.) */
-:is(a, button, [role="button"], span, p, h1, h2, h3, h4, em, i, b, strong, .peek-open, .plate-close, .plate-read, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+/* THE SUBJECT IS THE EASE'S OWN, NOT EVERY ELEMENT ON THE PAGE
+   (2026-09-18). This began as a blanket list — a, span, p, h1-h4, em,
+   i, b, strong — and transition-property REPLACES a list, it does not
+   subtract from one: every element that was transitioning something
+   else lost it and kept only these four. What was transitioning
+   something else was THE SLIDE. The postscripts' covers (a.latest-cover)
+   and the heroes' artwork (span.duo-card-image) carry
+   `transition: transform .4s ease`; they held the .4s and dropped the
+   transform, so the picture jumped across the card instead of
+   travelling. The sheet has been here before — the note at the ease
+   itself records a blanket rule on every descendant of a link taking
+   the plate's slide away — and the ease was given careful exclusions
+   for exactly these elements. This rule counters that ease, so it
+   takes that ease's subject, exclusions and all: it strikes where the
+   ease was set and nowhere else. */
+:is(a:not(.latest-cover, .latest-plate, .card-image-link, .ticker-cover-link, .duo-card-image, .card-image-frame),
+button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more,
+.banner-name, .topbar-name, .reprint-name, .band-mark, .band-dek, .band-mid, .band-deks,
+.title-line, .card-title, .latest-title, .cover-author, .cover-sep,
+.plate-title, .card-dek, .latest-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(a, button) > :is(em, i, b, strong):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-name, .reprint-name, .banner-name, .banner-name--pair) :is(*):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.banner-name, .banner-name--pair a, .ledger-word, .reprint-name, .band-name-mid, .band-mini, .topbar-name, .card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   /* AND NOT color EITHER (2026-09-18). The block snapped and the ink
@@ -14582,13 +14636,21 @@ main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r
    words with the same air as every other box — and the link gives its
    background up. Ranged as the column is, so the bars stack on the
    side the words do. */
-main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+/* ONLY WHERE A LINE IS THERE TO TAKE IT (2026-09-19). The link gives
+   its block up because the LINES carry it — but a title is only cut
+   into lines where the fitter has cut it. The home page's contra
+   titles are one short link with no span inside at all (8 of the 23
+   titles on the page): the link gave its block up and there was
+   nothing underneath to take it, so those titles lit nothing. The
+   give-up is conditional on the line existing now; a title that is
+   one bare link keeps its own box, as any other link does. */
+:is(.card-title, .latest-title).is-cued a:has(> :is(.title-line, span)):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) a:has(> :is(.title-line, span)):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none !important;
   box-shadow: none !important;
 }
-main.has-mega :is(.card-title, .latest-title).is-cued :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(.title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.card-title, .latest-title).is-cued :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(.title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   width: fit-content;
   background-color: var(--yves) !important;
   color: var(--hl-ink) !important;
@@ -14612,7 +14674,7 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, 
    to the highlight — written when the highlight was a colour for ink
    and a line, and a yellow line running the width of the site reads as
    the band's rule stretching out. The rule holds the ink. */
-:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link, .reprint, .has-hit):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link, .reprint):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   box-shadow: none !important;
 }
 :is(.dek-band, .dek-band--masthead, .head-rule, .head-seam):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -14633,4 +14695,561 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, 
 :is(.card-image-link, .latest-cover, .ticker-cover-link, .latest-plate):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background-color: transparent !important;
   box-shadow: none !important;
+}
+
+/* ---------- THE INK THAT COMES WITH THE BLOCK, ON EVERY PATH (2026-09-18) ----------
+   The block was fitted to the HAND and the hand only. A name reached
+   by a CLICK or by the keyboard took the yellow from the old focus
+   rules — written when the highlight was a colour for ink — and the
+   ink with it was set to the GROUND (var(--g)) by a later family of
+   rules still keeping a focused name legible on a dark band. Ground on
+   yellow: a ghost-white word on a banana block, measured at every
+   theme. And because width:fit-content hung on :hover and
+   :focus-visible alone, a name focused by a click kept its full
+   measure: a yellow bar the width of the site.
+   The geometry is answered above (:focus joins the gate). The INK is
+   answered here, once, over every one of those rules: wherever the
+   block is painted the word on it is the charcoal, as it is under the
+   hand. */
+:is(.banner-name, .banner-name--pair, .banner-name--pair a, .reprint-name, .ledger-word,
+    .band-name-mid, .band-mini, .topbar-name):is(:hover, :focus-visible, :focus, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.page-banner, .subscribe-band, .events-band, .store-band, .stack-band, .reprint):is(:focus-within)
+    :is(.banner-name, .banner-name--pair a, .reprint-name):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus, :focus-within) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+}
+
+/* ---------- THE DATE LETS GO OF THE MINIATURE (2026-09-18) ----------
+   The band's date fades out as the name's miniature comes in
+   (src/band-mark.js) — fades, and keeps its box: 196 by 17 of
+   opacity-0 text sitting dead across the middle of the 365-wide
+   wordmark under it. The middle of The New Critic could not be
+   hovered and could not be clicked; the pointer found the date. It is
+   a date, nothing is ever pointed at it, and it gives the pointer up
+   whether it is showing or not. */
+.section-band .band-date:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+/* AND THE PARAGRAPH THE DATE IS ALONE IN. The date is the whole of
+   its dek line — a 196 by 13 box over the miniature's middle — so
+   striking the span moved the block down one level and no further.
+   The line goes with it, guarded on holding no link of its own, so
+   the colophon's deks (which do) are untouched. */
+.section-band .band-dek:has(> .band-date):not(:has(a)):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+
+/* ---------- ONE BOX TO A WORD IN THE TOGGLE (2026-09-18) ----------
+   Light · Dark · Hex is ONE BUTTON, 72 by 65, holding five spans — and
+   the ordinary block paints a hovered button AND everything under it.
+   So a hand anywhere near the toggle lit the whole control: a yellow
+   slab the size of the button, with all three words and both middots
+   marked inside it, and no way to see which word was under the
+   pointer. It is the masthead's fault again (a link whose box is the
+   whole head), and it takes the masthead's answer: the CONTROL gives
+   its block up, the separators never take one, and of the words only
+   the one actually under the pointer is marked. The chosen word's own
+   mark is stated after this and outranks it, so the word in force
+   keeps its block while its neighbour is pointed at. */
+.theme-toggle:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+.theme-toggle:is(:hover, :focus-visible) > :is(:not(:hover), .theme-toggle-sep):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------- ONE BOX TO CLOSE PREVIEW (2026-09-18) ----------
+   The closer is a ROW — p.plate-more, the full measure of the plate —
+   holding the words in a span of its own (.plate-close, .plate-read).
+   Both were painting: a bar the width of the column with a second box
+   on the words inside it, where the mark belongs on the words alone.
+   Measured: 281 by 18 behind 98 by 17 on the essays plate, 165 behind
+   98 on the front page's. The row gives its block up, and only where
+   an inner span is actually there to carry one — on the cards where
+   .plate-more IS the words, it keeps its own. */
+.plate-more:has(> :is(.plate-close, .plate-read)):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.plate-more:has(> :is(.plate-close, .plate-read)):is(:hover, :focus-visible) > :not(.plate-close):not(.plate-read):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------- A CHOSEN THING IS NOT A POINTED-AT THING (2026-09-19) ----------
+   These marks say CHOSEN, not under-the-hand: the theme word in force,
+   the page you are on in the colophon, the sort the ledger is holding.
+   They took the BLOCK for a day, which put a standing yellow bar in
+   the margin and left the pointer nothing to add. The block is the
+   POINTER's mark alone now — they take it on hover like every other
+   word and drop it the moment they are the selected one, keeping only
+   a change of colour to say so.
+   THE COLOUR IS THE INK, AND ITS NEIGHBOURS STAND BACK. Charcoal alone
+   said nothing: the words NOT chosen were already charcoal, so the
+   chosen one was marked by being identical to them. The chosen word
+   takes the page's full ink (var(--k) — charcoal on the light ground,
+   ghost white on the dark, so it reads on every theme) and the ones
+   beside it are muted. The distinction is the pair, not the one. */
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+/* only the SETS that have a chosen member: a row of links one of
+   which is the page you are on, or the sorts one of which is held.
+   The band's tagline and its own name sit in the same deks and
+   belong to no such set — muting them read as the band being half
+   switched off. */
+.section-band .band-deks:has(a[aria-current="page"]) a:not([aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head:has(.arch-sort.active) .arch-sort:not(.active):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* NOT var(--muted): the bands and the colophon redefine it AS the
+     ink (--muted: var(--k)), so muting to it changed nothing at all.
+     Mixed from the ink toward the ground instead, which sits between
+     the two on the light theme, the dark one and a hex ground alike. */
+  color: color-mix(in srgb, var(--k) 45%, var(--g)) !important;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-deks a[aria-current="page"]:not(.wordmark):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-links a[aria-current="page"]:not(.wordmark):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head .arch-sort.active:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+/* and the chosen one still takes the block under the hand, like any
+   other word — the pseudo does that, so nothing is stated here */
+
+/* ---------- THE LAST TWO INKS THAT LAGGED THEIR BLOCK (2026-09-18) ----------
+   Narrowing the snap to the ease's own subject (above) left two block
+   carriers outside it. The band's miniature MATCHES that subject and
+   still loses — a later rule in the bands sets `transition: color .25s`
+   on it with a chain of its own — and the toggle's words are spans,
+   which the narrowed subject no longer names; both kept a quarter
+   second of colour. The block snaps and the word eased to meet it,
+   which is the one thing the block exists to prevent: for that quarter
+   second the word sits in its old colour on a yellow ground. Named
+   here, after everything, so the ink lands on the block's own frame. */
+:is(.band-mini, .arch-sort, .band-deks a[aria-current="page"], .nav-links a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  transition-property: border-color, opacity, background-size, filter !important;
+}
+
+/* ---------- THE MARGIN LABELS ARE WAYS IN (2026-09-19) ----------
+   THE LATEST, EDITORS' PICKS, ESSAYS, POSTSCRIPT and CONTRA stood in
+   the margin as marks and nothing more — pointer-events: none, a
+   paragraph, inert by design. They are LINKS now: the latest to the
+   ledger whole, each section word to the ledger under its own filter
+   (archive.html#section=<word>), taken from the band's own href so the
+   two cannot drift. The pointer is given back here, since the rule
+   that took it away stands above with the seat.
+   AND THE BLOCK IS ONE BOX, AS A NAME'S IS. A stack is one letter to
+   the line, so the ordinary block would have marked each letter on its
+   own — a column of small squares. The LINK carries it, every letter
+   gives its own up, and what lights is a single vertical bar the width
+   of the margin the letters are centred in (the 72 the seat is stated
+   in). No painted air on it: the column IS the air, and a spread would
+   push the bar out of the margin and onto the page. */
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* THE BLOCK IS A PSEUDO SEATED ON THE INK, not the stack's own box.
+   The box is the margin's 72 with the letters centred in it; the ink
+   is barely half that. The fitter measures the widest letter's ink and
+   the caps' top and foot (seatStackBlock, duo-panel-fit.js) and writes
+   them here, and the block is drawn from those: --hl-pad clear of the
+   ink on all four sides and nothing else on any of them. It is DRAWN
+   or not drawn — display, not opacity — so it cannot fade in against
+   the snap every other block keeps. */
+main.has-mega .latest-stack::before{
+  content: '';
+  position: absolute;
+  display: none;
+  left: 50%;
+  width: calc(var(--stk-w, 0px) + 2 * var(--hl-pad));
+  margin-left: calc((var(--stk-w, 0px) + 2 * var(--hl-pad)) / -2);
+  top: calc(var(--stk-t, 0px) - var(--hl-pad));
+  bottom: calc(var(--stk-b, 0px) - var(--hl-pad));
+  background: var(--yves);
+  z-index: -1;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible)::before{ display: block; }
+main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  color: var(--hl-ink) !important;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible) :is(*):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: none !important;
+}
+/* and the bar takes no spread: the margin is the air it has */
+main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: none !important;
+}
+
+/* ---------- THE BLOCK FORMS TO THE INK (2026-09-19) ----------
+   Stated last, over every rule that painted a highlight on an
+   element's own box. A box is not the ink — a block name at
+   line-height 1 holds its caps 0.139em down from its top and its
+   baseline 0.115em up from its foot, and an inline link's box is the
+   font's whole ascent-and-descent, so the air stood at about three
+   times above and below what it stood at the sides. It is drawn from
+   the INK now: the fitter reads the gap from the box to the cap and
+   from the baseline to the foot for each dress in use (seatInkBlocks,
+   duo-panel-fit.js) and writes the pair here, and the block clears the
+   ink by --hl-pad on all four sides and by nothing else on any of
+   them.
+   CAP TO BASELINE, AND A DESCENDER BREAKS THE EDGE — the g of a
+   hovered word hangs below its block rather than pushing the block
+   down and leaving every word without a descender carrying a fifth of
+   an em of air it did not ask for.
+   ISOLATED, NOT BURIED. The block is a pseudo behind its own words, so
+   it wants a negative z — and a negative z alone would put it behind
+   the CARD's ground as well and paint nothing. isolation: isolate
+   gives the word a stacking context of its own, so behind means behind
+   the letters and nothing further.
+   W.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.rPPED INLINE TEXT KEEPS THE OLD BOX. One absolute pseudo cannot
+   follow a link broken over two lines; that wants a box to a line box,
+   which the element's own background with box-decoration-break already
+   draws. The fitter marks those .hl-wrapped and they are left alone. */
+/* NO position HERE (2026-09-19). The block is an absolute pseudo, so
+   its carrier has to be a containing block — but stating
+   `position: relative` on every carrier RESTATED it for the carriers
+   that already had a position of their own, and at a chain long enough
+   to win: the band's miniature is `absolute; left:0; top:0` and was
+   dropped into the flow by it, which broke the top band outright. The
+   fitter sets it inline instead, and only where the computed position
+   is static, so an element that seats itself keeps its own seat.
+   (Relative with no offsets moves nothing; it only makes the pseudo's
+   frame.) */
+:is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  isolation: isolate;
+}
+:is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  display: none;
+  /* off the ink either side, not the box — the box holds a word's
+     trailing tracking and its side bearings (see seatInkBlocks) */
+  left: calc(var(--hl-lft, 0px) - var(--hl-pad));
+  right: calc(var(--hl-rgt, 0px) - var(--hl-pad));
+  top: calc(var(--hl-up, 0px) - var(--hl-pad));
+  /* the deeper of the pad and the face's own descender, so a capped
+     pad at large sizes never cuts a g off at the foot */
+  bottom: calc(var(--hl-dn, 0px) - max(var(--hl-pad), var(--hl-desc, 0px)));
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+/* THE HIT PATCH LIGHTS THE NAME (2026-09-19). The masthead's name is a
+   SIBLING of the invisible patch that takes the pointer for it
+   (a.has-hit gives up pointer-events; .ops-hit holds them), so
+   .topbar-name is never itself :hover and its block never showed —
+   leaving the older box-painted one to draw a band the width of the
+   head. The link's own hover lights it instead. (The section words and
+   the reprint carry their patch INSIDE the name, so :hover reaches
+   them on its own.) */
+/* THE SECTION WORD AND ITS COURIER LINE ARE ONE MARK (2026-09-19).
+   The word and the Roboto line under it are SIBLINGS in the banner,
+   not one element, so a hand on the word lit the word alone and the
+   line answered separately or not at all. The banner's own hover lights
+   both — the word gives its pointer to a patch inside itself, so
+   :hover reaches the banner, and from there both blocks are drawn on
+   the one frame. */
+:is(.page-banner, .subscribe-band, .events-band, .store-band):is(:hover, :focus-within) :is(.banner-name, .banner-line--below):is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.hl-ink):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-title, .latest-title).is-cued :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-title, .latest-title).is-cued a.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+/* and the word itself stops painting its box: the pseudo is the mark */
+:is(.page-banner, .subscribe-band, .events-band, .store-band):is(:hover, :focus-within) :is(.banner-name, .banner-line--below):is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.hl-ink):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).is-cued :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).is-cued a.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ---------- A TITLE'S LINES SHARE ONE GROUND (2026-09-19) ----------
+   Two faults, one cause. Every carrier was given a stacking context of
+   its own so its block could sit behind its own letters and no
+   further — but a card title is a stack of LINES, each a carrier, and
+   the block runs --hl-pad past the baseline while the next line begins
+   less than that below it. Isolated line by line, the second line's
+   block painted over the first line's context entire: the y and the p
+   of the line above were cut off by the ground of the word below.
+   THE CONTEXT BELONGS TO THE TITLE, NOT THE LINE. The title isolates,
+   the lines do not, so every line's block falls back into the title's
+   own context — all the grounds beneath all the letters, in one plane,
+   and a descender lies over the block of the line under it instead of
+   being buried by it. */
+:is(.card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+  isolation: isolate;
+}
+:is(.hl-ink).title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: auto; }
+
+/* ---------- THE CARDS GIVE UP THEIR RULES (2026-09-19) ----------
+   Three lines were drawn on every content card — the essay heroes'
+   box, the postscript cells and the reviews': one over it, one under
+   it, and a third in the matter between the title and the dek. All
+   three are struck. The third goes with the other two by its own
+   logic as much as by instruction: its length was measured off THEM,
+   the tails they left past their couriers, and a rule ranged on the
+   ends of rules that are no longer drawn measures nothing.
+   The cards keep their air and give up their frame: the pictures'
+   own edges and the bands' rules do the dividing now.
+   (The joint the third rule opened — 24, the rule, 24 — closes back
+   to the matter's plain 24 in the fitter, TITLE_DEK_RULE.) */
+:is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+:is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.latest-cell--ps, .duo-half--mega) :is(.card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: none;
+}
+
+/* ---------- AND THE PICTURES GIVE UP THEIRS (2026-09-19) ----------
+   The artwork was boxed as well: a white line one pixel over the
+   picture, drawn as the element's own outer shadow so the overflow
+   that clips the artwork could not clip it, and three more inset on a
+   pseudo over the artwork — the foot and both sides — so that the
+   frame travelled with the picture as it slid. Every one of them is
+   struck, on the heroes' pictures, the postscripts' portraits and the
+   reviews' squares alike, at rest and open.
+   The SHADOWS are struck and not the pseudos, which carry the covers'
+   grey and their READ NOW besides: a pseudo with nothing left to paint
+   paints nothing, and everything else drawn on it stands. The picture
+   is its own edge now — its ground ends where the artwork ends, which
+   is the only line these pictures ever really needed. */
+:is(.duo-card-image, .card-image-frame, .card-image-link, .latest-cover,
+  .latest-cover-col, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.duo-card-image, .card-image-frame, .card-image-link, .latest-cover,
+  .latest-cover-col, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+:is(.duo-card-image, .card-image-frame, .card-image-link, .latest-cover,
+  .latest-cover-col, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  box-shadow: none;
+}
+
+/* ---------- AND 12 MORE OFF THE PICTURE (2026-09-19) ----------
+   The column and the plate stood 24 from the artwork's edge — the
+   courier's own measure, carried sideways. With the picture's frame
+   struck there is no line between the two any more, only the artwork
+   ending and the words beginning, and 24 of white is not enough air
+   to do the work the line was doing. 36 on the picture's side, on
+   both faces of it: the title column where the words are ranged
+   toward the picture, and the preview's body behind it, which opens
+   on the picture's other edge. The far sides are untouched — they
+   answer the card's margin, not the artwork. The fitter reads the
+   boxes, so every title re-sizes itself into the narrower column. */
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 36px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 36px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 36px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 36px; }
+
+/* ---------- THE TOP BAND RUNS EDGE TO EDGE (2026-09-19) ----------
+   Everything else on the page is set in the measure — 72 of margin
+   either side, the masthead, the cards and the pictures all ranged on
+   it — and the band at the head of the site was set in it too: its
+   ground ran the window's whole width, but the magazine's name, the
+   date and the links stood 72 in from the glass, and the rule under
+   them was 144 short of the window on the same account.
+   The band is furniture, not matter. It takes the window itself now:
+   no side padding, so the name sits on the left edge and the links
+   close on the right, and the seam under it gives up the margins that
+   cut it short. The colophon at the foot keeps the measure — it reads
+   as the page's own last line, not as the frame of the window. */
+.page-rows > .section-band:first-child:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 0;
+  padding-right: 0;
+}
+.page-rows > .head-seam:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ---------- THE LABELS PASS UNDER THE BAND (2026-09-19) ----------
+   The margin's stacked names rode at 80, over the head band at 60 and
+   its seam at 50 — all three in <main>'s one stacking context, so the
+   number alone decided it — and a label leaving the top of the screen
+   crossed the band and its rule and went out over the glass instead of
+   under the furniture. They travel at 40 now: over the cards, whose
+   own pieces stand at 20 and under, and under the band, the seam, and
+   every other band the page pins. A name scrolling up is cut off by
+   the rule and gone, which is what a rule at the head of a page is
+   for. */
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ z-index: 40; }
+
+/* ---------- THE DEK IS PART OF THE TITLE'S MARK (2026-09-19) ---------
+   The Garamond under a title reads with it and is now lit with it: a
+   hand on the title, or on the picture the title names, takes both.
+   ONE BLOCK FOR THE WHOLE DEK, not one to a line. The titles are cut
+   into lines and each line carries its own, because a title is a
+   display line and its rag is the shape you are meant to see. A dek is
+   prose, and three bars stepping down a paragraph would mark each line
+   instead of marking the dek. So the rectangle runs from the first
+   line's ink to the last line's baseline and across the widest line's
+   reach, and the short last line simply leaves air inside it — which is
+   what a block around a paragraph is.
+   Measured by the fitter (duo-panel-fit.js, seatDekBlocks) on the same
+   terms as every other block on the site: the pad off the ink on all
+   four sides, and the foot taking the deeper of the pad and the face's
+   own descender so no g is cut. The ink turns charcoal on the yellow,
+   as the title's does. */
+:is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: isolate; }
+:is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  display: none;
+  /* THE DEK'S AIR IS THE TITLE'S (2026-09-19), not its own em. The pad
+     is 0.32em everywhere, which on a 20px dek is 6 and on a 72px title
+     23 — and the two blocks are ONE shape now, so a dek carrying a
+     sixth of the title's air read as the mark narrowing under itself.
+     The fitter writes --dk-pad with the pad it reads back off the
+     title's own block, so the shape has one measure of air all round
+     whatever size either is set at. (Its own, --hl-pad, is the fallback
+     where there is no title to ask.) The foot still takes the deeper of
+     the pad and the face's descender, so no g is cut. */
+  left: calc(var(--dk-l, 0px) - var(--dk-pad, var(--hl-pad)));
+  right: calc(var(--dk-r, 0px) - var(--dk-pad, var(--hl-pad)));
+  top: calc(var(--dk-t, 0px) - var(--dk-pad, var(--hl-pad)));
+  bottom: calc(var(--dk-b, 0px) - max(var(--dk-pad, var(--hl-pad)), var(--dk-desc, 0px)));
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within) ~ :is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within) ~ :is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within) ~ :is(.card-dek, .latest-dek).hl-blk :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+}
+
+/* ---------- A HAND ON THE DEK RAISES THE WHOLE MARK (2026-09-19) -----
+   The dek is part of the title's mark and now answers for it: the
+   title's lines light, the dek's own block lights, and the picture
+   goes grey with READ NOW in its middle, exactly as a hand on the
+   title does. The cue script writes .is-cued on the TITLE from a hand
+   anywhere in the words (src/cover-cue.js, WORDS), which is what the
+   rules above hang on; these two say the same thing in the sheet, so
+   the blocks answer on the hover itself and a page whose script never
+   ran still has the mark. No box is painted here — the pseudo is the
+   mark, and the ink turns charcoal on it. */
+main.has-mega :is(.card-title, .latest-title):has(+ :is(.card-dek, .latest-dek):hover) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega :is(.card-title, .latest-title):has(+ :is(.card-dek, .latest-dek):hover) :is(.title-line, a, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ---------- THE MARK IS ONE RECTANGLE (2026-09-19) ----------
+   The title's lines and the dek each carry a block cut to their own
+   ink, which is how they are MEASURED; drawn as they are, the mark
+   steps in and out down the column. Squared off here: one rectangle
+   over the union of them all — the shape a reader would draw round
+   the words with a marker — written by the fitter (duo-panel-fit.js,
+   the pass at the foot of seatDekBlocks) as four insets on the title.
+   No pad is said here: the pieces it unions have already paid theirs.
+   The pieces are not struck. Each is inscribed in the union, in the
+   same yellow, so none of them shows through it, and a title the
+   union could not be measured for still lights piece by piece rather
+   than not at all.
+   It is the TITLE's ::before, inside the stacking context the title
+   already keeps, so it lies behind the title's own letters; the dek
+   is a sibling painted after the whole of the title, so its words
+   stand on the rectangle too. */
+:is(.card-title, .latest-title).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '';
+  position: absolute;
+  display: none;
+  top: var(--tx-t, 0px);
+  bottom: var(--tx-b, 0px);
+  left: var(--tx-l, 0px);
+  right: var(--tx-r, 0px);
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+main.has-mega :is(.card-title, .latest-title).hl-rect:is(.is-cued, :hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega :is(.card-title, .latest-title).hl-rect:has(+ :is(.card-dek, .latest-dek):hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  display: block;
+}
+
+/* ---------- THE COMMAS STAND ON THE BLOCK (2026-09-19) ----------
+   Archive, About, Store, Events, Subscribe: five words, four commas,
+   and the commas are the PARAGRAPH's own text between the links. Each
+   link was given a stacking context of its own so its block could sit
+   behind its letters — but an isolated, positioned inline paints with
+   the positioned layer, which is above its parent's inline text, so
+   the whole link went over the comma beside it and the block's pad
+   took the comma with it. A hand on Archive and the comma after it was
+   gone.
+   THE CONTEXT BELONGS TO THE RUN, NOT THE WORD — the same correction
+   the card titles' lines needed. The paragraph isolates, the links do
+   not, so every block falls into the paragraph's own context, painted
+   under all of its text: the yellow runs behind the comma and the
+   comma stays on it. */
+:is(.band-deks, .band-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: isolate; }
+:is(.band-deks, .band-dek) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: auto; }
+
+/* ---------- THE BANDS KEEP THEIR OWN TWO FACES (2026-09-19) --------
+   For an hour the head band and the colophon set their NAMES in the
+   Helvetica capitals — at the Garamond's 20 first, which ran the name
+   into the date on any window under a thousand, then at the courier's
+   13 — and then traded that face with the courier so the date and the
+   copyright wore the capitals instead. Struck, both of them: the names
+   are the Garamond again and the middle line is the Roboto again,
+   which is how the bands were drawn.
+   What the hour left standing, because it was asked for on its own and
+   is nothing to do with the faces: both bands take the window edge to
+   edge, their rules run the full width, and the fitter seats every
+   slot off its own ink so each stands the same distance from its side
+   as from the top. */
+
+/* ---------- THE COLOPHON IS THE HEAD BAND TURNED OVER (2026-09-19) --
+   It kept the page's 72 either side while the band at the head took
+   the window edge to edge, and its rule was cut to the same 72. They
+   are one piece of furniture at either end of the page: the colophon
+   gives up its side padding, its rule runs the window, and the fitter
+   seats its two Garamond runs off their own ink exactly as it seats
+   the head band's (duo-panel-fit.js, fitBandDekInset, which no longer
+   asks which band it is looking at). */
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 0;
+  padding-right: 0;
+}
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  left: 0;
+  right: 0;
+}
+
+/* ---------- A SECTION WORD AND ITS COURIER ARE ONE RECTANGLE --------
+   (2026-09-19) The word and the Roboto line under it were lit on one
+   frame and drawn as two blocks — a wide one over ESSAYS and a narrow
+   one beneath it. Squared off the way a title and its dek are: one
+   rectangle over the union, drawn on the banner that holds them both,
+   behind everything in it. */
+:is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+  isolation: isolate;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '';
+  position: absolute;
+  display: none;
+  top: var(--tx-t, 0px);
+  bottom: var(--tx-b, 0px);
+  left: var(--tx-l, 0px);
+  right: var(--tx-r, 0px);
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  display: block;
 }

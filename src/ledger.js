@@ -352,7 +352,7 @@
   fitMast();
   addEventListener('load', fitMast);
   if (document.fonts && document.fonts.load) {
-    document.fonts.load('700 100px azo-sans-web').then(fitMast, function(){});
+    document.fonts.load('700 100px helvetica-neue-lt-pro').then(fitMast, function(){});
     if (document.fonts.ready) document.fonts.ready.then(fitMast, function(){});
   }
   var resizeTimer;

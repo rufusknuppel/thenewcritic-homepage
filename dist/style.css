@@ -88,7 +88,7 @@
   --body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --title: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --title-face: 'azo-sans-web', 'nimbus-sans', 'neue-haas-grotesk-display', 'futura-pt-condensed', 'OPS Placard', 'oculi-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --title-face: 'helvetica-neue-lt-pro', 'nimbus-sans', 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --byline-face: 'Roboto Mono', 'roboto-mono', 'courier-std', Courier, 'Courier New', monospace;
   --courier-size: 13px;
   --excerpt: 'garamond-premier-pro', 'Playfair Display', Georgia, serif;
@@ -2882,6 +2882,7 @@ body.has-mega::before{ content: none; }
   inherits: true;
   initial-value: 1;
 }
+.card-preview-block{ position: relative; }
 .plate-curtain{
   position: absolute;
   inset: 0;
@@ -6506,8 +6507,8 @@ main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r
 main.has-mega :is(.card-title, .latest-title) a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   transition: none !important;
 }
-main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title).is-cued a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title).is-cued a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--hl-ink) !important;
   background-color: var(--yves) !important;
 }
@@ -6534,34 +6535,34 @@ body.has-mega .site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
-:root{ --hl-pad: 0.12em; }
-main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid).is-cued:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  width: fit-content;
-  margin-inline: auto;
-  box-shadow:
-    0 0 0 var(--hl-pad) var(--yves),
-    0 0.14em 0 var(--hl-pad) var(--yves),
-    0 -0.14em 0 var(--hl-pad) var(--yves);
+:root{ --hl-pad: min(0.32em, 32px); }
+main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid, .band-mini):is(:hover, :focus-visible, :focus, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid, .band-mini).is-cued:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus, :focus-within) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
 }
 a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):not(.latest-cover):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 :is(button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   box-shadow: 0 0 0 var(--hl-pad) var(--yves);
 }
-:is(a, button, [role="button"], span, p, h1, h2, h3, h4, em, i, b, strong, .peek-open, .plate-close, .plate-read, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(a:not(.latest-cover, .latest-plate, .card-image-link, .ticker-cover-link, .duo-card-image, .card-image-frame),
+button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more,
+.banner-name, .topbar-name, .reprint-name, .band-mark, .band-dek, .band-mid, .band-deks,
+.title-line, .card-title, .latest-title, .cover-author, .cover-sep,
+.plate-title, .card-dek, .latest-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(a, button) > :is(em, i, b, strong):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-name, .reprint-name, .banner-name, .banner-name--pair) :is(*):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.banner-name, .banner-name--pair a, .ledger-word, .reprint-name, .band-name-mid, .band-mini, .topbar-name, .card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   transition-property: border-color, opacity, background-size, filter;
 }
-main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.card-title, .latest-title).is-cued a:has(> :is(.title-line, span)):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) a:has(> :is(.title-line, span)):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none !important;
   box-shadow: none !important;
 }
-main.has-mega :is(.card-title, .latest-title).is-cued :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(.title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.card-title, .latest-title).is-cued :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(.title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   width: fit-content;
   background-color: var(--yves) !important;
   color: var(--hl-ink) !important;
@@ -6573,7 +6574,7 @@ main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(.
 main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, .latest-title) :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   margin-left: auto;
 }
-:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link, .reprint, .has-hit):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link, .reprint):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   box-shadow: none !important;
 }
 :is(.dek-band, .dek-band--masthead, .head-rule, .head-seam):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -6585,4 +6586,215 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, 
 :is(.card-image-link, .latest-cover, .ticker-cover-link, .latest-plate):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background-color: transparent !important;
   box-shadow: none !important;
+}
+:is(.banner-name, .banner-name--pair, .banner-name--pair a, .reprint-name, .ledger-word,
+    .band-name-mid, .band-mini, .topbar-name):is(:hover, :focus-visible, :focus, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.page-banner, .subscribe-band, .events-band, .store-band, .stack-band, .reprint):is(:focus-within)
+    :is(.banner-name, .banner-name--pair a, .reprint-name):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus, :focus-within) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+}
+.section-band .band-date:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+.section-band .band-dek:has(> .band-date):not(:has(a)):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+.theme-toggle:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+.theme-toggle:is(:hover, :focus-visible) > :is(:not(:hover), .theme-toggle-sep):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+.plate-more:has(> :is(.plate-close, .plate-read)):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.plate-more:has(> :is(.plate-close, .plate-read)):is(:hover, :focus-visible) > :not(.plate-close):not(.plate-read):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-deks:has(a[aria-current="page"]) a:not([aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head:has(.arch-sort.active) .arch-sort:not(.active):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: color-mix(in srgb, var(--k) 45%, var(--g)) !important;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-deks a[aria-current="page"]:not(.wordmark):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-links a[aria-current="page"]:not(.wordmark):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head .arch-sort.active:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+:is(.band-mini, .arch-sort, .band-deks a[aria-current="page"], .nav-links a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  transition-property: border-color, opacity, background-size, filter !important;
+}
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto;
+  text-decoration: none;
+  cursor: pointer;
+}
+main.has-mega .latest-stack::before{
+  content: '';
+  position: absolute;
+  display: none;
+  left: 50%;
+  width: calc(var(--stk-w, 0px) + 2 * var(--hl-pad));
+  margin-left: calc((var(--stk-w, 0px) + 2 * var(--hl-pad)) / -2);
+  top: calc(var(--stk-t, 0px) - var(--hl-pad));
+  bottom: calc(var(--stk-b, 0px) - var(--hl-pad));
+  background: var(--yves);
+  z-index: -1;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible)::before{ display: block; }
+main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  color: var(--hl-ink) !important;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible) :is(*):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: none !important;
+}
+main.has-mega .latest-stack:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: none !important;
+}
+:is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  isolation: isolate;
+}
+:is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  display: none;
+  left: calc(var(--hl-lft, 0px) - var(--hl-pad));
+  right: calc(var(--hl-rgt, 0px) - var(--hl-pad));
+  top: calc(var(--hl-up, 0px) - var(--hl-pad));
+  bottom: calc(var(--hl-dn, 0px) - max(var(--hl-pad), var(--hl-desc, 0px)));
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band):is(:hover, :focus-within) :is(.banner-name, .banner-line--below):is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.hl-ink):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-title, .latest-title).is-cued :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-title, .latest-title).is-cued a.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band):is(:hover, :focus-within) :is(.banner-name, .banner-line--below):is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.hl-ink):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).is-cued :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).is-cued a.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+:is(.card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+  isolation: isolate;
+}
+:is(.hl-ink).title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: auto; }
+:is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+:is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.latest-cell--ps, .duo-half--mega) :is(.card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: none;
+}
+:is(.duo-card-image, .card-image-frame, .card-image-link, .latest-cover,
+  .latest-cover-col, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.duo-card-image, .card-image-frame, .card-image-link, .latest-cover,
+  .latest-cover-col, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+:is(.duo-card-image, .card-image-frame, .card-image-link, .latest-cover,
+  .latest-cover-col, .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  box-shadow: none;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 36px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 36px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-right: 36px; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding-left: 36px; }
+.page-rows > .section-band:first-child:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 0;
+  padding-right: 0;
+}
+.page-rows > .head-seam:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-left: 0;
+  margin-right: 0;
+}
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ z-index: 40; }
+:is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: isolate; }
+:is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  display: none;
+  left: calc(var(--dk-l, 0px) - var(--dk-pad, var(--hl-pad)));
+  right: calc(var(--dk-r, 0px) - var(--dk-pad, var(--hl-pad)));
+  top: calc(var(--dk-t, 0px) - var(--dk-pad, var(--hl-pad)));
+  bottom: calc(var(--dk-b, 0px) - max(var(--dk-pad, var(--hl-pad)), var(--dk-desc, 0px)));
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within) ~ :is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within) ~ :is(.card-dek, .latest-dek).hl-blk:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within) ~ :is(.card-dek, .latest-dek).hl-blk :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+}
+main.has-mega :is(.card-title, .latest-title):has(+ :is(.card-dek, .latest-dek):hover) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega :is(.card-title, .latest-title):has(+ :is(.card-dek, .latest-dek):hover) :is(.title-line, a, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+:is(.card-title, .latest-title).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '';
+  position: absolute;
+  display: none;
+  top: var(--tx-t, 0px);
+  bottom: var(--tx-b, 0px);
+  left: var(--tx-l, 0px);
+  right: var(--tx-r, 0px);
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+main.has-mega :is(.card-title, .latest-title).hl-rect:is(.is-cued, :hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega :is(.card-title, .latest-title).hl-rect:has(+ :is(.card-dek, .latest-dek):hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  display: block;
+}
+:is(.band-deks, .band-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: isolate; }
+:is(.band-deks, .band-dek) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ isolation: auto; }
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 0;
+  padding-right: 0;
+}
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  left: 0;
+  right: 0;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+  isolation: isolate;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '';
+  position: absolute;
+  display: none;
+  top: var(--tx-t, 0px);
+  bottom: var(--tx-b, 0px);
+  left: var(--tx-l, 0px);
+  right: var(--tx-r, 0px);
+  background: var(--yves);
+  z-index: -1;
+  pointer-events: none;
+}
+:is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  display: block;
 }

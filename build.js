@@ -269,9 +269,9 @@ const SITE_LINKS = [
   // navLink in renderNav; the sidebar's own permanent gloss replaced About's
   // copy of it there). A newline is a HARD break where it's rendered —
   // these are set to specific line shapes, not left to wrap.
-  { key: 'essays', label: 'Essays', href: 'essays.html' },
-  { key: 'postscript', label: 'Postscript', href: 'postscript.html', dek: 'Interviews w/\nextraordinary gen zers' },
-  { key: 'contra', label: 'Contra', href: 'contra.html', dek: 'New Critics take on\nsignificant gen z works' },
+  { key: 'essays', label: 'Essays', href: 'archive.html#section=essays' },
+  { key: 'postscript', label: 'Postscript', href: 'archive.html#section=postscript', dek: 'Interviews w/\nextraordinary gen zers' },
+  { key: 'contra', label: 'Contra', href: 'archive.html#section=contra', dek: 'New Critics take on\nsignificant gen z works' },
   { key: 'archive', label: 'Archive', href: 'archive.html' },
   { key: 'about', label: 'About', href: 'about.html', dek: 'The Young\nAmerican Magazine' },
 ];
@@ -1325,11 +1325,25 @@ function renderPageFoot() {
   <div class="foot-field" aria-hidden="true"></div>
   ${renderColophonBand()}`;
 }
+// THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
+// band opens on its NAME at the left and closes on its links at the
+// right; the colophon takes the same pair the other way round — the
+// socials at the left, EST. MAY 2025 at the right — so the two bands
+// mirror each other across the page rather than repeating each other.
+// (It stood this way first to put the Garamond opposite the Helvetica
+// capitals the names wore for an hour. The capitals are struck and
+// both names are the Garamond again; the turn stays on its own
+// account.)
+// The order here is the order on the page — the band is a grid of 1fr
+// auto 1fr and the sheet ranges the first slot left and the last right
+// — so the turn is made by emitting them the other way, not by
+// ordering them in CSS where the ranging would then be arguing with
+// the markup.
 function renderColophonBand() {
   return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
-    ${bandName('<span>Est. May 2025</span>')}
-    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="https://x.com/thenewcritic" rel="noopener">X</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
+    ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
 }
 function renderPageRail({ side, word, href, after, before, categories }) {
@@ -1728,7 +1742,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // deep-link into the archive by topic; contra's carries the filtered
   // contra-page link (it used to ride the footer, now dropped from there).
   const kickerHref = section === 'contra'
-    ? `contra.html#${escapeHtml(post.kicker ? post.kicker.toLowerCase() : '')}`
+    ? `archive.html#section=contra&topic=${escapeHtml(post.kicker ? post.kicker.toLowerCase() : '')}`
     : escapeHtml(archiveHref(post, 'kicker'));
   const bylineKickerBox = post.kicker
     ? `<a class="meta-kicker" href="${kickerHref}">${escapeHtml(post.kicker)}</a>`
@@ -1948,10 +1962,10 @@ const DUO_DIVIDER = '<div class="duo-half-divider" role="separator"></div>';
 function renderSplitRow(essayPost, psPost, { flip = false, wideOpts, narrowOpts, showDek = true } = {}) {
   const halves = [
     essayPost
-      ? renderDuoHalf(essayPost, wideOpts || { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html', showDek }, 'duo-half--wide')
+      ? renderDuoHalf(essayPost, wideOpts || { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', showDek }, 'duo-half--wide')
       : '<div class="duo-half duo-half--ghost duo-half--wide" aria-hidden="true"></div>',
     psPost
-      ? renderDuoHalf(psPost, narrowOpts || { tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'postscript.html', showDek }, 'duo-half--narrow')
+      ? renderDuoHalf(psPost, narrowOpts || { tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'archive.html#section=postscript', showDek }, 'duo-half--narrow')
       : '<div class="duo-half duo-half--ghost duo-half--narrow" aria-hidden="true"></div>',
   ];
   if (flip) halves.reverse();
@@ -1962,7 +1976,7 @@ function renderSplitRow(essayPost, psPost, { flip = false, wideOpts, narrowOpts,
 }
 
 function renderDuoCard(posts, opts = {}) {
-  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = 'essays.html', extraClass = '', padTo = 0, sectionBtn = true, showDek = true } = opts;
+  const { tag = 'From the Essay', btnLabel = 'Essays', btnHref = 'archive.html#section=essays', extraClass = '', padTo = 0, sectionBtn = true, showDek = true } = opts;
   if (!posts.length) return '';
   const cells = posts.map((post) => renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn, showDek }));
   // A short last row (the section pages render every post, so their post
@@ -2029,16 +2043,16 @@ function renderArchiveMosaic(posts, opts) {
 // letter centres on the column's axis like every other and the mark
 // stands outside it, absolute on the letter's own box — style.css,
 // .latest-stack-mark.)
-const stackHtml = (text, side = 'right') => `<p class="latest-stack latest-stack--${side}" aria-label="${escapeHtml(text)}">${text.match(/ |[^\s'’]['’]?/g).map((ch) => ch === ' ' ? '<span class="latest-stack-gap" aria-hidden="true"></span>' : ch.length > 1 ? `<span aria-hidden="true"><span class="latest-stack-glyph">${escapeHtml(ch[0])}<span class="latest-stack-mark">${escapeHtml(ch.slice(1))}</span></span></span>` : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('')}</p>`;
-function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right' } = {}) {
+const stackHtml = (text, side = 'right', href = 'archive.html') => `<a class="latest-stack latest-stack--${side}" href="${escapeHtml(href)}" aria-label="${escapeHtml(text)}">${text.match(/ |[^\s'’]['’]?/g).map((ch) => ch === ' ' ? '<span class="latest-stack-gap" aria-hidden="true"></span>' : ch.length > 1 ? `<span aria-hidden="true"><span class="latest-stack-glyph">${escapeHtml(ch[0])}<span class="latest-stack-mark">${escapeHtml(ch.slice(1))}</span></span></span>` : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('')}</a>`;
+function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html' } = {}) {
   if (!post) return '';
-  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html', megaLabel: label, megaSwapMeta: rev }, 'duo-half--wide duo-half--mega');
+  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev }, 'duo-half--wide duo-half--mega');
   // (The hero's masthead row is retired — the top header carries the
   // brand; the hero opens straight on its courier band.)
   // The REV hero mirrors the composition — cover left, ground right
   // (see THE SECOND HERO in style.css).
   return `<section class="card card--duo card--split card--mega${rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}">
-        ${half}${stack ? stackHtml(stack, stackSide) : ''}</section>`;
+        ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
 // THE SECTION SHELVES: two half-page boxes side by side under the
@@ -2047,7 +2061,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
 // box's right half. (The second box comes next.)
 function renderShelvesRow(psPost) {
   if (!psPost) return '';
-  const psHalf = renderDuoHalf(psPost, { tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'postscript.html' });
+  const psHalf = renderDuoHalf(psPost, { tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'archive.html#section=postscript' });
   return `<section class="card card--duo card--split card--shelves">
         <div class="section-box section-box--interviews">
           <p class="section-box-label">Interviews</p>
@@ -2276,7 +2290,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       blocks.push(renderDuoCard(row, {
         tag: 'From the Review',
         btnLabel: 'Contra',
-        btnHref: 'contra.html',
+        btnHref: 'archive.html#section=contra',
         extraClass: 'card--quad card--quad-open',
         padTo: 3,
       }));
@@ -2289,7 +2303,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // below with the latest row.
   // EVERY ESSAY TURNED (2026-09-18): picture LEFT on the lead, then
   // alternating — each card the mirror of what it was.
-  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest' }));
+  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html' }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   blocks.push(renderLatestRow(postscripts[0], contras[0]));
@@ -2859,8 +2873,8 @@ function renderFontGateScript() {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px azo-sans-web'),
-      f.load('400 100px azo-sans-web'),
+      f.load('700 100px helvetica-neue-lt-pro'),
+      f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
@@ -3149,12 +3163,12 @@ ${renderFoilPourScript()}${extraScripts ? `\n${extraScripts}` : ''}
 // (card--trio), contra as three-across small squares (card--quad styling —
 // same look as the homepage's quad row, one cell fewer per row).
 const LIST_ROWS = {
-  essays: { perRow: 2, extraClass: '', tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'essays.html' },
-  postscript: { perRow: 3, extraClass: 'card--trio', tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'postscript.html' },
+  essays: { perRow: 2, extraClass: '', tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays' },
+  postscript: { perRow: 3, extraClass: 'card--trio', tag: 'From the Interview', btnLabel: 'Postscript', btnHref: 'archive.html#section=postscript' },
   // card--quad-open lifts the homepage quad's hide-the-excerpt rules —
   // these cells are a third wider than the homepage's four-across squares,
   // wide enough to open on the review's first paragraph (see style.css).
-  contra: { perRow: 3, extraClass: 'card--quad card--quad-open', tag: 'From the Review', btnLabel: 'Contra', btnHref: 'contra.html' },
+  contra: { perRow: 3, extraClass: 'card--quad card--quad-open', tag: 'From the Review', btnLabel: 'Contra', btnHref: 'archive.html#section=contra' },
 };
 
 // The Contra! manifesto AS EDITED for the page (hand-tuned copy handed
@@ -3290,7 +3304,7 @@ function renderEssaysPage({ currentKey, label, posts }) {
   // likes bottom-right. False gave this page its own cut — the topic
   // repeated as a chip in the byline, the share up beside it, and the
   // cover credit closing the band.
-  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Essay', btnLabel: label, btnHref: 'essays.html', sectionBtn: true, restChipArt: true }, 'duo-half--wide')}</div>`;
+  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Essay', btnLabel: label, btnHref: 'archive.html#section=essays', sectionBtn: true, restChipArt: true }, 'duo-half--wide')}</div>`;
   // Date, then topic, then writer. Each span keeps the class that names
   // what it holds — -name is the person, -dek the date — so only the
   // order moves here; which line is italic and which takes the Klein is
@@ -3483,7 +3497,7 @@ function renderPostscriptPage({ currentKey, label, posts }) {
   // goes back to the band with it (showArtInBand defaults true), where
   // every other section page bills it; the cover chip it used to ride
   // went with the column.
-  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Interview', btnLabel: label, btnHref: 'postscript.html', sectionBtn: false, restChipArt: true })}</div>`;
+  const cellHtml = (p, i) => `<div class="ps-hero-cell" data-idx="${i}"${i === newestIdx ? '' : ' hidden'}>${renderDuoHalf(p, { tag: 'From the Interview', btnLabel: label, btnHref: 'archive.html#section=postscript', sectionBtn: false, restChipArt: true })}</div>`;
   const bodyHtml = `
   <div class="page-rows">
   <div class="wrap">
@@ -3899,7 +3913,7 @@ function renderLedgerFeature(features) {
   const rows = [
     // EDITORS' PICKS stacked on the left margin, as THE LATEST stands on
     // the front page's right (2026-09-18).
-    features.lead ? renderMegaHero(features.lead, { label: 'Essays', stack: 'Editors’ Picks', stackSide: 'left' }) : '',
+    features.lead ? renderMegaHero(features.lead, { label: 'Essays', stack: 'Editors’ Picks', stackSide: 'left', stackHref: 'archive.html#section=editors' }) : '',
     renderPostscriptPair(features.pair[0], features.pair[1]),
     features.close ? renderMegaHero(features.close, { rev: true, label: 'Essays' }) : '',
   ].filter(Boolean);
@@ -4324,7 +4338,8 @@ async function main() {
   );
 
   // The first N posts of each tag list double as their list page's lead
-  // cards (essays.html/postscript.html/contra.html) — same array
+  // cards (the section pages are retired; their rows live in the
+  // archive ledger under #section=essays/postscript/contra) — same array
   // references as essaysAll/postscriptAll/contraAll (slice() copies the
   // array, not the post objects), so backfilling their preview text here
   // also seeds it there.
@@ -4501,9 +4516,6 @@ async function main() {
 
   const pages = {
     'index.html': html,
-    'essays.html': renderEssaysPage({ currentKey: 'essays', label: 'Essays', posts: essaysAll }),
-    'postscript.html': renderPostscriptPage({ currentKey: 'postscript', label: 'Postscript', posts: postscriptAll }),
-    'contra.html': renderListPage({ currentKey: 'contra', label: 'Contra', posts: contraAll, leadParas: CONTRA_LEAD_PARAS }),
     'about.html': renderAboutPage(founders, manifestoHtml,
       [heroArchive, essaysAll, postscriptAll, archivePosts].flat().find((p) => p && slugOf(p.link) === 'the-new-critic-secession') || null),
     'archive.html': renderArchivePage(archivePool, ledgerFeatures),

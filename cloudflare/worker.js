@@ -25,9 +25,6 @@ const SUBSTACK_ORIGIN = 'https://www.thenewcritic.com';
 // Exact paths this repo's build.js writes to dist/.
 const STATIC_PAGES = new Set([
   '/', '/index.html',
-  '/essays.html',
-  '/postscript.html',
-  '/contra.html',
   '/about.html',
   '/archive.html',
   '/style.css',

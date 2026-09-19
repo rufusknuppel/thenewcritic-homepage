@@ -34,16 +34,111 @@
   // eases, so the jump from the middle to the pointer is the same
   // instant snap as the one back out.
   var TITLES = '.card-title, .latest-title';
+  // The words of a card: its title and the dek under it, which answer
+  // as one (see resolveFrom).
+  var WORDS = '.card-title, .latest-title, .card-dek, .latest-dek';
   var CELLS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
+  // THE MARK'S OWN BOX, not the element's: where a title has been
+  // squared off the rectangle it draws IS the mark, and it is neither
+  // the title's box (the column's whole width) nor the dek's. Read off
+  // the pseudo the sheet draws, so what the hand is tested against is
+  // exactly what the reader can see.
+  function markBox(title) {
+    if (!title) return null;
+    var r = title.getBoundingClientRect();
+    if (!title.classList.contains('hl-rect')) return r;
+    var c = getComputedStyle(title, '::before');
+    if (c.content === 'none') return r;
+    return {
+      top: r.top + (parseFloat(c.top) || 0),
+      bottom: r.bottom - (parseFloat(c.bottom) || 0),
+      left: r.left + (parseFloat(c.left) || 0),
+      right: r.right - (parseFloat(c.right) || 0)
+    };
+  }
+  function inBox(b) {
+    return !!b && px >= b.left && px <= b.right && py >= b.top && py <= b.bottom;
+  }
+  // The gap between two boxes that do not overlap, as a box of its own:
+  // the two facing edges, and the run they share on the other axis. Set
+  // beside each other it is the gutter; set one above the other — the
+  // reviews, whose picture stands over its words — it is the seam
+  // between them. A hand crossing straight from one to the other is in
+  // it the whole way; a hand leaving at a corner is not, and the mark
+  // ends, which is what leaving means.
+  function gapBox(a, b) {
+    if (!a || !b) return null;
+    if (a.right <= b.left || b.right <= a.left) {
+      return {
+        left: Math.min(a.right, b.right), right: Math.max(a.left, b.left),
+        top: Math.max(a.top, b.top), bottom: Math.min(a.bottom, b.bottom)
+      };
+    }
+    if (a.bottom <= b.top || b.bottom <= a.top) {
+      return {
+        top: Math.min(a.bottom, b.bottom), bottom: Math.max(a.top, b.top),
+        left: Math.max(a.left, b.left), right: Math.min(a.right, b.right)
+      };
+    }
+    return null;
+  }
+  function inMark(cell) {
+    var mark = markBox(cell.querySelector(TITLES));
+    var cover = host && host.getBoundingClientRect ? host.getBoundingClientRect() : null;
+    if (inBox(mark) || inBox(cover)) return true;
+    return inBox(gapBox(mark, cover));
+  }
   // What the point under the hand asks for: which picture is lit, and
   // whether the words are said over it.
   function resolveFrom(node) {
     if (!node || !node.closest) return null;
     var direct = node.closest(COVERS);
-    if (direct) return { cover: direct, say: true, mid: false, title: null };
-    var title = node.closest(TITLES);
-    if (!title) return null;
-    var cell = title.closest(CELLS);
+    if (direct) {
+      // AND THE PICTURE LIGHTS ITS WORDS BACK (2026-09-19). The title
+      // lit its own picture from the start; the picture returned
+      // nothing, so a hand on the artwork left the title and its dek
+      // dark and the card answered with half a mark. The pair is one
+      // card either way round — the cell's own title, found the way the
+      // title finds its cover.
+      var back = direct.closest(CELLS);
+      return {
+        cover: direct, say: true, mid: false,
+        title: back ? back.querySelector(TITLES) : null
+      };
+    }
+    // THE DEK RAISES IT TOO (2026-09-19). The Garamond under a title is
+    // part of the title's mark — it lights with it and joins its block —
+    // so a hand on the dek is a hand on the words, and asks for what a
+    // hand on the title asks for: the picture grey, READ NOW in the
+    // middle of it since there is no pointer over there to stand on,
+    // and the cue on the title, which is where the whole mark hangs.
+    var words = node.closest(WORDS);
+    if (!words) {
+      // THE GUTTER IS NOT A WAY OUT, AND NOTHING ELSE IS A WAY IN
+      // (2026-09-19). The words stand 36 from the artwork and that 36 is
+      // neither: crossing it the hand passed over the column's own
+      // padding, nothing answered, and the whole mark — the blocks, the
+      // grey, READ NOW — dropped and came back in the space of the
+      // crossing. A mark already up holds across it.
+      // ONLY across it. The hold was the whole CARD for an hour, which
+      // is more card than the mark covers: the byline over the title and
+      // READ PREVIEW under it kept a mark that had nothing to do with
+      // them, and the mark outlived the box it is drawn in. The hold is
+      // the mark's OWN geometry now — the rectangle, the picture, and
+      // the rectangle of gap between the two, which is the one place the
+      // hand must pass through to get from one to the other. Leave any
+      // of them and it ends.
+      // It only ever HOLDS: nothing here lights a mark that was not lit,
+      // so the pad around the words raises nothing until the hand
+      // reaches them.
+      var within = node.closest(CELLS);
+      if (within && host && within.contains(host) && inMark(within)) {
+        return { cover: host, say: true, mid: true, title: within.querySelector(TITLES) };
+      }
+      return null;
+    }
+    var cell = words.closest(CELLS);
+    var title = words.closest(TITLES) || (cell ? cell.querySelector(TITLES) : null);
     var cover = cell ? cell.querySelector('.card-image-link, .latest-cover') : null;
     return cover ? { cover: cover, say: true, mid: true, title: title } : null;
   }
