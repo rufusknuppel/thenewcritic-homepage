@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=311ef70c">
+<link rel="stylesheet" href="style.css?v=0c6b97d2">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -280,8 +280,8 @@
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px azo-sans-web'),
-      f.load('400 100px azo-sans-web'),
+      f.load('700 100px helvetica-neue-lt-pro'),
+      f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
@@ -382,7 +382,7 @@
 
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Friday, September 18, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Saturday, September 19, 2026</span></p>
     <p class="band-deks"><a href="archive.html">Archive</a>, <a href="about.html">About</a>, <span class="nav-links-dead">Store</span>, <span class="nav-links-dead">Events</span>, <a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
@@ -427,7 +427,7 @@
         <!-- THE BILLING CHIP IS STRUCK. Kicker, author and date read on
              one courier line in the words' column now, under the dek;
              the picture rests bare, with nothing set into it. -->
-      </div><p class="latest-stack latest-stack--right" aria-label="The Latest"><span aria-hidden="true">T</span><span aria-hidden="true">h</span><span aria-hidden="true">e</span><span class="latest-stack-gap" aria-hidden="true"></span><span aria-hidden="true">L</span><span aria-hidden="true">a</span><span aria-hidden="true">t</span><span aria-hidden="true">e</span><span aria-hidden="true">s</span><span aria-hidden="true">t</span></p></section>
+      </div><a class="latest-stack latest-stack--right" href="archive.html" aria-label="The Latest"><span aria-hidden="true">T</span><span aria-hidden="true">h</span><span aria-hidden="true">e</span><span class="latest-stack-gap" aria-hidden="true"></span><span aria-hidden="true">L</span><span aria-hidden="true">a</span><span aria-hidden="true">t</span><span aria-hidden="true">e</span><span aria-hidden="true">s</span><span aria-hidden="true">t</span></a></section>
   </div>
   <div class="row-divider m--latest"></div>
   <div class="wrap m--latest">
@@ -945,9 +945,9 @@
   </section>
   <div class="foot-field" aria-hidden="true"></div>
   <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
-    <p class="band-deks band-name"><span>Est. May 2025</span></p>
-    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="https://x.com/thenewcritic" rel="noopener">X</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
+    <p class="band-deks band-name"><span>Est. May 2025</span></p>
   </nav>
   </div>
 
@@ -3736,10 +3736,11 @@
           Math.max(0, bot - land.bottom).toFixed(2) + 'px ' +
           Math.max(0, land.left - l).toFixed(2) + 'px');
       }
-      host.style.setProperty('--hl-l', (l - h.left).toFixed(2) + 'px');
-      host.style.setProperty('--hl-t', (top - h.top).toFixed(2) + 'px');
-      host.style.setProperty('--hl-w', (r - l).toFixed(2) + 'px');
-      host.style.setProperty('--hl-h', (bot - top).toFixed(2) + 'px');
+      var L = Math.round(l), R = Math.round(r), T = Math.round(top), B = Math.round(bot);
+      host.style.setProperty('--hl-l', (L - h.left).toFixed(2) + 'px');
+      host.style.setProperty('--hl-t', (T - h.top).toFixed(2) + 'px');
+      host.style.setProperty('--hl-w', (R - L) + 'px');
+      host.style.setProperty('--hl-h', (B - T) + 'px');
     }
     var all = [].slice.call(document.querySelectorAll(
       '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
@@ -3935,7 +3936,7 @@
   var MATTER_GAP = 48;
   var TITLE_RULE_PAD = 24;
   var TITLE_RULE_W = 1;
-  var TITLE_DEK_RULE = TITLE_RULE_PAD * 2 + TITLE_RULE_W;
+  var TITLE_DEK_RULE = TITLE_DEK_GAP;
   function inkEdges(el) {
     if (!el || getComputedStyle(el).display === 'none') return null;
     var r = document.createRange();
@@ -4334,6 +4335,7 @@
     });
   }
   function fitAllSteps() {
+    var seatLast = true;
     step('clearTitleStep', function () {
       [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra, .duo-half--mega'), function (h) {
         h.style.removeProperty('--hl-dx'); h.style.removeProperty('--hl-dy');
@@ -4369,6 +4371,9 @@
     step('fitToggle', fitToggle);
     step('fitSubscribeLines', fitSubscribeLines);
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
+    step('seatInkBlocks', seatInkBlocks);
+    step('seatDekBlocks', seatDekBlocks);
+    step('fitBandDekInset', fitBandDekInset);
   }
   (function(){
     if (!heroLink) return;
@@ -4405,6 +4410,41 @@
     probe.remove();
     return { capTop: base - (y0 - top) / scanPx * size, foot: base + (bot + 1 - y0) / scanPx * size };
   }
+  function inkWidth(el) {
+    var cs = getComputedStyle(el);
+    var size = parseFloat(cs.fontSize) || 13;
+    var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    if (!text) return 0;
+    var scanPx = 200, W = 3000, H = 320, y0 = 240;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var g = cv.getContext('2d'); if (!g) return 0;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+    g.fillText(text, 20, y0);
+    var data;
+    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return 0; }
+    var lo = -1, hi = -1;
+    for (var x = 0; x < W; x++) {
+      for (var y = 0; y < H; y++) {
+        if (data[(y * W + x) * 4 + 3] > 40) { if (lo < 0) lo = x; hi = x; break; }
+      }
+    }
+    if (lo < 0) return 0;
+    return (hi + 1 - lo) / scanPx * size;
+  }
+  function seatStackBlock(stack) {
+    var letters = stack.querySelectorAll(':scope > span:not(.latest-stack-gap)');
+    if (!letters.length) return;
+    var w = 0;
+    [].forEach.call(letters, function (L) { var v = inkWidth(L); if (v > w) w = v; });
+    var first = inkReach(letters[0]), last = inkReach(letters[letters.length - 1]);
+    var box = stack.getBoundingClientRect();
+    if (!w || !first || !last || !box.height) return;
+    stack.style.setProperty('--stk-w', w.toFixed(2) + 'px');
+    stack.style.setProperty('--stk-t', (first.capTop - box.top).toFixed(2) + 'px');
+    stack.style.setProperty('--stk-b', (box.bottom - last.foot).toFixed(2) + 'px');
+  }
   function courierGap() {
     var hero = document.querySelector('.card--mega');
     var line = hero && hero.querySelector('.duo-half--mega .panel-col--left .cover-meta:not(.cover-meta--peek), .duo-half--mega .panel-col--left .card-meta--line');
@@ -4427,9 +4467,12 @@
       var card = mv.querySelector('.card--mega') || mv.querySelector('.card');
       var word = (name.textContent || '').trim();
       if (!card || !word) return;
-      var stack = document.createElement('p');
+      var stack = document.createElement('a');
       stack.className = 'latest-stack latest-stack--left';
       stack.setAttribute('aria-hidden', 'true');
+      stack.setAttribute('tabindex', '-1');
+      var secHref = name.getAttribute('href');
+      if (secHref) stack.setAttribute('href', secHref);
       word.split('').forEach(function (ch) {
         var sp = document.createElement('span');
         if (ch === ' ') sp.className = 'latest-stack-gap';
@@ -4447,6 +4490,7 @@
     var one = Infinity;
     all.forEach(function (st) { var v = parseFloat(st.style.fontSize) || 0; if (v && v < one) one = v; });
     if (isFinite(one)) all.forEach(function (st) { fitOneStack(st, one); });
+    all.forEach(seatStackBlock);
   }
   function homeStack(stack) {
     if (stack.__card) return stack.__card;
@@ -4541,6 +4585,362 @@
     var C = S * above, r = 72 / C, c = B / (2 * r + 1);
     mid.style.fontSize = (c / above).toFixed(3) + 'px';
     inkCenterDeks();
+  }
+  var inkCv = null;
+  var ascMemo = {}, descMemo = {};
+  function descOf(cs, fs) {
+    var key = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontFamily + '|' + fs;
+    if (descMemo[key] != null) return descMemo[key];
+    var g = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+    if (!g) return 0;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+    var d = g.measureText('gjpqy').actualBoundingBoxDescent || 0;
+    descMemo[key] = d;
+    return d;
+  }
+  function inkAscent(cs, fs, text) {
+    var key = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontFamily + '|' + fs + '|' + text;
+    if (ascMemo[key] != null) return ascMemo[key];
+    var g = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+    if (!g) return 0;
+    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+    var a = g.measureText(text).actualBoundingBoxAscent || 0;
+    ascMemo[key] = a;
+    return a;
+  }
+  var INK_SEL = 'a:not(.latest-cover):not(.latest-plate):not(.card-image-link)'
+    + ':not(.ticker-cover-link):not(.latest-stack):not(.topbar-wordmark):not(.nav-wordmark-link)'
+    + ':not(.reprint-link):not(.skip-link), button:not(.theme-toggle), [role="button"],'
+    + ' .peek-open, .plate-close, .plate-read, .title-line,'
+    + ' .banner-name, .topbar-name, .reprint-name, .ledger-word, .band-name-mid, .band-mini,'
+    + ' .banner-line--below,'
+    + ' .theme-toggle > span:not(.theme-toggle-sep)';
+  function inFlowRun(el) {
+    var lo = Infinity, hi = -Infinity, top = null, ok = true;
+    var walk = function (node) {
+      for (var n = node.firstChild; ok && n; n = n.nextSibling) {
+        if (n.nodeType === 3) {
+          if (!n.data || !n.data.trim()) continue;
+          var rg = document.createRange();
+          rg.selectNodeContents(n);
+          var rs = rg.getClientRects();
+          for (var i = 0; i < rs.length; i++) {
+            if (!rs[i].width || !rs[i].height) continue;
+            if (top === null) top = rs[i].top;
+            else if (Math.abs(rs[i].top - top) > 1) { ok = false; return; }
+            if (rs[i].left < lo) lo = rs[i].left;
+            if (rs[i].right > hi) hi = rs[i].right;
+          }
+        } else if (n.nodeType === 1) {
+          var cs = getComputedStyle(n);
+          if (cs.display === 'none' || cs.position === 'absolute' || cs.position === 'fixed') continue;
+          walk(n);
+        }
+      }
+    };
+    walk(el);
+    return (ok && isFinite(lo) && isFinite(hi) && hi > lo) ? { left: lo, right: hi } : null;
+  }
+  function seatInkBlocks() {
+    var list;
+    try { list = document.querySelectorAll(INK_SEL); } catch (e) { return; }
+    var jobs = [];
+    [].forEach.call(list, function (el) {
+      var cs = getComputedStyle(el);
+      if (cs.display === 'none') return;
+      var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
+      if (!text) { el.classList.remove('hl-ink', 'hl-wrapped'); return; }
+      var rects = el.getClientRects();
+      var oneLine = true, uL = Infinity, uR = -Infinity, uT = Infinity, uB = -Infinity;
+      for (var q = 0; q < rects.length; q++) {
+        if (Math.abs(rects[q].top - rects[0].top) > 1) { oneLine = false; break; }
+        if (rects[q].left < uL) uL = rects[q].left;
+        if (rects[q].right > uR) uR = rects[q].right;
+        if (rects[q].top < uT) uT = rects[q].top;
+        if (rects[q].bottom > uB) uB = rects[q].bottom;
+      }
+      var lh0 = cs.lineHeight === 'normal' ? 0 : parseFloat(cs.lineHeight) || 0;
+      var tall = lh0 && rects.length && (rects[0].height > lh0 * 1.5);
+      var wrapped = tall || (cs.display === 'inline' && !oneLine);
+      el.classList.toggle('hl-wrapped', wrapped);
+      if (wrapped || !rects.length) {
+        el.classList.remove('hl-ink');
+        el.style.removeProperty('--hl-up'); el.style.removeProperty('--hl-dn');
+        return;
+      }
+      if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+      else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.insertBefore(probe, el.firstChild);
+      var span = (rects.length && oneLine)
+        ? { left: uL, right: uR, top: uT, bottom: uB } : null;
+      jobs.push({ el: el, cs: cs, text: text, probe: probe, span: span });
+    });
+    jobs.forEach(function (j) {
+      j.rect = j.span || j.el.getClientRects()[0] || j.el.getBoundingClientRect();
+      j.base = j.probe.getBoundingClientRect().bottom;
+      j.run = inFlowRun(j.el);
+    });
+    jobs.forEach(function (j) {
+      j.probe.remove();
+      var fs = parseFloat(j.cs.fontSize) || 0;
+      if (!fs || !j.rect) { j.el.classList.remove('hl-ink'); return; }
+      var asc = inkAscent(j.cs, fs, j.text);
+      if (!asc) { j.el.classList.remove('hl-ink'); return; }
+      var up = (j.base - asc) - j.rect.top;
+      var dn = j.rect.bottom - j.base;
+      j.el.style.setProperty('--hl-up', up.toFixed(2) + 'px');
+      j.el.style.setProperty('--hl-dn', dn.toFixed(2) + 'px');
+      j.el.style.setProperty('--hl-desc', descOf(j.cs, fs).toFixed(2) + 'px');
+      if (j.cs.position === 'static') j.el.style.position = 'relative';
+      var lft = 0, rgt = 0;
+      if (j.run) {
+        var gg = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+        if (gg) {
+          try { gg.letterSpacing = j.cs.letterSpacing === 'normal' ? '0px' : j.cs.letterSpacing; } catch (e) {}
+          gg.font = j.cs.fontStyle + ' ' + j.cs.fontWeight + ' ' + fs + 'px ' + j.cs.fontFamily;
+          gg.textAlign = 'left'; gg.textBaseline = 'alphabetic';
+          var mm = gg.measureText(j.text);
+          var inkL = j.run.left - (mm.actualBoundingBoxLeft || 0);
+          var inkR = j.run.left + (mm.actualBoundingBoxRight || 0);
+          if (isFinite(inkL) && isFinite(inkR) && inkR > inkL) {
+            lft = inkL - j.rect.left;
+            rgt = j.rect.right - inkR;
+            if (lft < 0) lft = 0;
+            if (rgt < 0) rgt = 0;
+          }
+        }
+      }
+      j.el.style.setProperty('--hl-lft', lft.toFixed(2) + 'px');
+      j.el.style.setProperty('--hl-rgt', rgt.toFixed(2) + 'px');
+      j.el.classList.add('hl-ink');
+    });
+    var owners = [], lines = [];
+    jobs.forEach(function (j) {
+      if (!j.el.classList.contains('title-line')) return;
+      if (!j.el.classList.contains('hl-ink')) return;
+      var p = j.el.parentNode, i = owners.indexOf(p);
+      if (i < 0) { owners.push(p); lines.push([j]); } else lines[i].push(j);
+    });
+    lines.forEach(function (g) {
+      if (g.length < 2) return;
+      var al = g[0].cs.textAlign, side, prop;
+      if (al === 'left' || al === 'start') { side = 'left'; prop = '--hl-lft'; }
+      else if (al === 'right' || al === 'end') { side = 'right'; prop = '--hl-rgt'; }
+      else return;
+      var edges = g.map(function (j) {
+        return parseFloat(getComputedStyle(j.el, '::after')[side]) || 0;
+      });
+      var out = Math.min.apply(Math, edges);
+      g.forEach(function (j, k) {
+        if (Math.abs(edges[k] - out) < 0.01) return;
+        var was = parseFloat(j.el.style.getPropertyValue(prop)) || 0;
+        j.el.style.setProperty(prop, (was + (out - edges[k])).toFixed(2) + 'px');
+      });
+    });
+  }
+  var DEK_SEL = '.card-dek, .latest-dek';
+  function dekRuns(el) {
+    var walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    var ps = [], n;
+    while ((n = walk.nextNode())) {
+      for (var i = 0; i < n.data.length; i++) if (!/\s/.test(n.data[i])) ps.push([n, i]);
+    }
+    if (!ps.length) return null;
+    var rectAt = function (k) {
+      var r = document.createRange();
+      r.setStart(ps[k][0], ps[k][1]);
+      r.setEnd(ps[k][0], ps[k][1] + 1);
+      return r.getBoundingClientRect();
+    };
+    var charAt = function (k) { return ps[k][0].data[ps[k][1]]; };
+    var lines = [], i = 0, guard = 0;
+    while (i < ps.length && guard++ < 64) {
+      var top = rectAt(i).top;
+      var lo = i, hi = ps.length - 1;
+      while (lo < hi) {
+        var mid = (lo + hi + 1) >> 1;
+        if (rectAt(mid).top < top + 1) lo = mid; else hi = mid - 1;
+      }
+      lines.push({ a: i, b: lo });
+      i = lo + 1;
+    }
+    return { lines: lines, rectAt: rectAt, charAt: charAt };
+  }
+  function seatDekBlocks() {
+    var list;
+    try { list = document.querySelectorAll(DEK_SEL); } catch (e) { return; }
+    var jobs = [];
+    [].forEach.call(list, function (el) {
+      var cs = getComputedStyle(el);
+      var text = (el.textContent || '').trim();
+      if (cs.display === 'none' || !text) { el.classList.remove('hl-blk'); return; }
+      var head = document.createElement('span');
+      head.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.insertBefore(head, el.firstChild);
+      jobs.push({ el: el, cs: cs, head: head });
+    });
+    jobs.forEach(function (j) {
+      j.box = j.el.getBoundingClientRect();
+      j.base = j.head.getBoundingClientRect().bottom;
+      j.run = dekRuns(j.el);
+    });
+    jobs.forEach(function (j) {
+      j.head.remove();
+      var fs = parseFloat(j.cs.fontSize) || 0;
+      if (!fs || !j.run || !j.run.lines.length) { j.el.classList.remove('hl-blk'); return; }
+      var g = (inkCv || (inkCv = document.createElement('canvas'))).getContext('2d');
+      if (!g) { j.el.classList.remove('hl-blk'); return; }
+      g.font = j.cs.fontStyle + ' ' + j.cs.fontWeight + ' ' + fs + 'px ' + j.cs.fontFamily;
+      g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+      var ls = j.cs.letterSpacing === 'normal' ? 0 : (parseFloat(j.cs.letterSpacing) || 0);
+      var lines = j.run.lines, lo = Infinity, hi = -Infinity, first = '', drop = 0;
+      for (var k = 0; k < lines.length; k++) {
+        var ra = j.run.rectAt(lines[k].a), rb = j.run.rectAt(lines[k].b);
+        var ma = g.measureText(j.run.charAt(lines[k].a));
+        var mb = g.measureText(j.run.charAt(lines[k].b));
+        var L = ra.left - (ma.actualBoundingBoxLeft || 0);
+        var R = rb.right - ls - (mb.width - (mb.actualBoundingBoxRight || 0));
+        if (L < lo) lo = L;
+        if (R > hi) hi = R;
+        if (k === lines.length - 1) drop = rb.top - ra.top;
+      }
+      drop = j.run.rectAt(lines[lines.length - 1].a).top - j.run.rectAt(lines[0].a).top;
+      for (var q = lines[0].a; q <= lines[0].b; q++) first += j.run.charAt(q);
+      var asc = inkAscent(j.cs, fs, first);
+      if (!asc || !isFinite(lo) || !isFinite(hi) || hi <= lo) { j.el.classList.remove('hl-blk'); return; }
+      j.el.style.setProperty('--dk-t', ((j.base - asc) - j.box.top).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-b', (j.box.bottom - (j.base + drop)).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-l', (lo - j.box.left).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-r', (j.box.right - hi).toFixed(2) + 'px');
+      j.el.style.setProperty('--dk-desc', descOf(j.cs, fs).toFixed(2) + 'px');
+      if (j.cs.position === 'static') j.el.style.position = 'relative';
+      j.el.classList.add('hl-blk');
+    });
+    jobs.forEach(function (j) {
+      if (!j.el.classList.contains('hl-blk')) return;
+      var title = j.el.previousElementSibling;
+      if (!title || !/(^|\s)(card|latest)-title(\s|$)/.test(title.className || '')) return;
+      var marks = title.querySelectorAll('.hl-ink');
+      if (!marks.length) return;
+      var foot = -Infinity, lft = Infinity, rgt = -Infinity;
+      for (var i = 0; i < marks.length; i++) {
+        var mr = marks[i].getBoundingClientRect();
+        var ms = getComputedStyle(marks[i], '::after');
+        var f = mr.bottom - (parseFloat(ms.bottom) || 0);
+        var l = mr.left + (parseFloat(ms.left) || 0);
+        var r = mr.right - (parseFloat(ms.right) || 0);
+        if (f > foot) foot = f;
+        if (l < lft) lft = l;
+        if (r > rgt) rgt = r;
+      }
+      var lead = marks[0];
+      var up = parseFloat(lead.style.getPropertyValue('--hl-up'));
+      var pad = isFinite(up) ? up - (parseFloat(getComputedStyle(lead, '::after').top) || 0) : NaN;
+      if (isFinite(pad) && pad > 0) j.el.style.setProperty('--dk-pad', pad.toFixed(2) + 'px');
+      var box = j.el.getBoundingClientRect();
+      var own = getComputedStyle(j.el, '::after');
+      var myTop = box.top + (parseFloat(own.top) || 0);
+      var myLeft = box.left + (parseFloat(own.left) || 0);
+      var myRight = box.right - (parseFloat(own.right) || 0);
+      var bump = function (name, by) {
+        var was = parseFloat(j.el.style.getPropertyValue(name)) || 0;
+        j.el.style.setProperty(name, (was + by).toFixed(2) + 'px');
+      };
+      if (isFinite(foot)) bump('--dk-t', foot - myTop);
+      var al = getComputedStyle(title).textAlign;
+      if (al === 'left' || al === 'start') { if (isFinite(lft)) bump('--dk-l', lft - myLeft); }
+      else if (al === 'right' || al === 'end') { if (isFinite(rgt)) bump('--dk-r', myRight - rgt); }
+    });
+    [].forEach.call(document.querySelectorAll('.card-title, .latest-title'), function (title) {
+      var parts = [].slice.call(title.querySelectorAll('.hl-ink'));
+      var dek = title.nextElementSibling;
+      if (dek && dek.classList && dek.classList.contains('hl-blk')) parts.push(dek);
+      squareUp(title, parts);
+    });
+    [].forEach.call(document.querySelectorAll('.page-banner, .subscribe-band, .events-band, .store-band'), function (band) {
+      squareUp(band, [band.querySelector('.banner-name'), band.querySelector('.banner-line--below')]);
+    });
+  }
+  function blockBox(el) {
+    if (!el) return null;
+    var c = getComputedStyle(el, '::after');
+    if (c.content === 'none') return null;
+    var r = el.getBoundingClientRect();
+    return {
+      top: r.top + (parseFloat(c.top) || 0),
+      bottom: r.bottom - (parseFloat(c.bottom) || 0),
+      left: r.left + (parseFloat(c.left) || 0),
+      right: r.right - (parseFloat(c.right) || 0)
+    };
+  }
+  function squareUp(host, parts) {
+    var t = Infinity, b = -Infinity, l = Infinity, rr = -Infinity, any = false;
+    for (var i = 0; i < parts.length; i++) {
+      var k = blockBox(parts[i]);
+      if (!k) continue;
+      any = true;
+      if (k.top < t) t = k.top;
+      if (k.bottom > b) b = k.bottom;
+      if (k.left < l) l = k.left;
+      if (k.right > rr) rr = k.right;
+    }
+    if (!any || !(b > t) || !(rr > l)) { host.classList.remove('hl-rect'); return; }
+    var hb = host.getBoundingClientRect();
+    host.style.setProperty('--tx-t', (t - hb.top).toFixed(2) + 'px');
+    host.style.setProperty('--tx-b', (hb.bottom - b).toFixed(2) + 'px');
+    host.style.setProperty('--tx-l', (l - hb.left).toFixed(2) + 'px');
+    host.style.setProperty('--tx-r', (hb.right - rr).toFixed(2) + 'px');
+    host.classList.add('hl-rect');
+  }
+  function inkOf(el) {
+    var up = parseFloat(el.style.getPropertyValue('--hl-up'));
+    if (!isFinite(up)) return null;
+    var lf = parseFloat(el.style.getPropertyValue('--hl-lft'));
+    var rg = parseFloat(el.style.getPropertyValue('--hl-rgt'));
+    var r = el.getBoundingClientRect();
+    return {
+      top: r.top + up,
+      left: r.left + (isFinite(lf) ? lf : 0),
+      right: r.right - (isFinite(rg) ? rg : 0)
+    };
+  }
+  function dekInk(dek) {
+    var words = dek.querySelectorAll('.hl-ink');
+    var t = Infinity, l = Infinity, r = -Infinity;
+    for (var i = 0; i < words.length; i++) {
+      var k = inkOf(words[i]);
+      if (!k) continue;
+      if (k.top < t) t = k.top;
+      if (k.left < l) l = k.left;
+      if (k.right > r) r = k.right;
+    }
+    if (isFinite(t) && isFinite(l) && isFinite(r)) return { top: t, left: l, right: r };
+    var run = inFlowRun(dek), reach = inkReach(dek);
+    return (run && reach) ? { top: reach.capTop, left: run.left, right: run.right } : null;
+  }
+  function fitBandDekInset() {
+    [].forEach.call(document.querySelectorAll('.page-rows > .section-band'), function (band) {
+      var deks = [].filter.call(band.children, function (el) {
+        return el.classList.contains('band-deks');
+      });
+      if (deks.length < 2) return;
+      var pair = [
+        { el: deks[0], side: 'marginLeft' },
+        { el: deks[deks.length - 1], side: 'marginRight' }
+      ];
+      pair.forEach(function (p) { p.el.style[p.side] = ''; });
+      var box = band.getBoundingClientRect();
+      pair.forEach(function (p) {
+        var ink = dekInk(p.el);
+        if (!ink) return;
+        var air = ink.top - box.top;
+        if (!(air > 0)) return;
+        var now = p.side === 'marginLeft' ? ink.left - box.left : box.right - ink.right;
+        p.el.style[p.side] = Math.max(0, air - now).toFixed(2) + 'px';
+      });
+    });
   }
   function fitSubscribeLines() {
     fitLatestStack();
@@ -5267,14 +5667,66 @@
   if (!window.matchMedia || !matchMedia('(hover: hover)').matches) return;
   var COVERS = '.card-image-link, .latest-cover, .ticker-cover-link';
   var TITLES = '.card-title, .latest-title';
+  var WORDS = '.card-title, .latest-title, .card-dek, .latest-dek';
   var CELLS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
+  function markBox(title) {
+    if (!title) return null;
+    var r = title.getBoundingClientRect();
+    if (!title.classList.contains('hl-rect')) return r;
+    var c = getComputedStyle(title, '::before');
+    if (c.content === 'none') return r;
+    return {
+      top: r.top + (parseFloat(c.top) || 0),
+      bottom: r.bottom - (parseFloat(c.bottom) || 0),
+      left: r.left + (parseFloat(c.left) || 0),
+      right: r.right - (parseFloat(c.right) || 0)
+    };
+  }
+  function inBox(b) {
+    return !!b && px >= b.left && px <= b.right && py >= b.top && py <= b.bottom;
+  }
+  function gapBox(a, b) {
+    if (!a || !b) return null;
+    if (a.right <= b.left || b.right <= a.left) {
+      return {
+        left: Math.min(a.right, b.right), right: Math.max(a.left, b.left),
+        top: Math.max(a.top, b.top), bottom: Math.min(a.bottom, b.bottom)
+      };
+    }
+    if (a.bottom <= b.top || b.bottom <= a.top) {
+      return {
+        top: Math.min(a.bottom, b.bottom), bottom: Math.max(a.top, b.top),
+        left: Math.max(a.left, b.left), right: Math.min(a.right, b.right)
+      };
+    }
+    return null;
+  }
+  function inMark(cell) {
+    var mark = markBox(cell.querySelector(TITLES));
+    var cover = host && host.getBoundingClientRect ? host.getBoundingClientRect() : null;
+    if (inBox(mark) || inBox(cover)) return true;
+    return inBox(gapBox(mark, cover));
+  }
   function resolveFrom(node) {
     if (!node || !node.closest) return null;
     var direct = node.closest(COVERS);
-    if (direct) return { cover: direct, say: true, mid: false, title: null };
-    var title = node.closest(TITLES);
-    if (!title) return null;
-    var cell = title.closest(CELLS);
+    if (direct) {
+      var back = direct.closest(CELLS);
+      return {
+        cover: direct, say: true, mid: false,
+        title: back ? back.querySelector(TITLES) : null
+      };
+    }
+    var words = node.closest(WORDS);
+    if (!words) {
+      var within = node.closest(CELLS);
+      if (within && host && within.contains(host) && inMark(within)) {
+        return { cover: host, say: true, mid: true, title: within.querySelector(TITLES) };
+      }
+      return null;
+    }
+    var cell = words.closest(CELLS);
+    var title = words.closest(TITLES) || (cell ? cell.querySelector(TITLES) : null);
     var cover = cell ? cell.querySelector('.card-image-link, .latest-cover') : null;
     return cover ? { cover: cover, say: true, mid: true, title: title } : null;
   }
