@@ -31,6 +31,16 @@
   // ink reads well on, until the reader types a code of their own.
   // (#888899, a paler cast of the same, for the first hours.)
   var DEFAULT_HEX = '#556677';
+  // THE DEFAULTS THAT CAME BEFORE (2026-09-18). A stored ground beats
+  // the default, so moving the default reached nobody who had ever
+  // opened hex — they kept the ground they were handed and had never
+  // chosen. The paint STAMPS the ground it hands out (nc-hex-auto);
+  // when the default moves, a stored ground still wearing its stamp is
+  // replaced, and a ground the reader TYPED is left alone. The readers
+  // who took #888899 in the hours before the stamp existed carry no
+  // mark, so it is named here by hand — the one cost being a reader
+  // who typed that exact code in those hours, who is moved with them.
+  var HEX_WAS = ['#888899'];
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
     if (!m) return null;
@@ -73,13 +83,37 @@
   var store = function (mode, hex) {
     try {
       localStorage.setItem('nc-theme', mode);
-      if (hex) localStorage.setItem('nc-hex', hex);
+      if (hex) {
+        localStorage.setItem('nc-hex', hex);
+        // The stamp rides with a ground that IS the default — handed
+        // out, not chosen. typed() strikes it whatever was typed.
+        if (hex === DEFAULT_HEX) localStorage.setItem('nc-hex-auto', DEFAULT_HEX);
+        else localStorage.removeItem('nc-hex-auto');
+      }
     } catch (err) {}
   };
   var storedHex = null;
   try {
     var theme = localStorage.getItem('nc-theme');
     storedHex = hexOf(localStorage.getItem('nc-hex'));
+    // THE DEFAULT MOVES THE READERS IT HANDED ITSELF TO, and only
+    // those: a stored ground wearing the stamp of an older default —
+    // or, for the unstamped hours, standing in HEX_WAS — is replaced
+    // by the one in force, and re-stamped. A ground that was typed
+    // carries no stamp and is never touched.
+    if (storedHex && storedHex !== DEFAULT_HEX) {
+      var stamp = hexOf(localStorage.getItem('nc-hex-auto'));
+      if (stamp ? stamp === storedHex : HEX_WAS.indexOf(storedHex) >= 0) {
+        storedHex = DEFAULT_HEX;
+        // Its own try: a browser that reads storage but refuses to
+        // write it (a private window) must still reach the paint
+        // below rather than fall out of this block into the light.
+        try {
+          localStorage.setItem('nc-hex', DEFAULT_HEX);
+          localStorage.setItem('nc-hex-auto', DEFAULT_HEX);
+        } catch (e2) {}
+      }
+    }
     if (theme === 'hex') paint('hex', storedHex || DEFAULT_HEX);
     else if (theme === 'light' || theme === 'dark') paint(theme);
   } catch (e) {}
@@ -154,6 +188,9 @@
     root.classList.add('theme-instant');
     paint('hex', hex);
     store('hex', hex);
+    // TYPED IS CHOSEN, even where the code typed is the default's own:
+    // the stamp comes off, and no later default will move this reader.
+    try { localStorage.removeItem('nc-hex-auto'); } catch (err) {}
     setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
   };
   document.addEventListener('click', function (e) {
@@ -348,7 +385,7 @@
               <p class="card-meta ground-credit"><a class="meta-author" href="archive.html#author=will%20diana">Will Diana</a><a class="meta-date" href="archive.html#sort=date&amp;post=mrbeast-slop-auteur">September 16</a></p>
               <p class="card-dek">“According to the memo, MrBeast’s art justifies all — there is no reason to live, it seems, except to make a MrBeast video.”</p>
               
-              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">107</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/mrbeast-slop-auteur" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
+              <p class="card-meta ground-foot"><span class="ground-likes"><a class="likes" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener" title="Like this on Substack"><svg class="likes-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="likes-count">115</span></a></span><button type="button" class="ground-share" data-copy-link="https://www.thenewcritic.com/p/mrbeast-slop-auteur" title="Share" aria-label="Share — copy link to this post"><svg class="copylink-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><svg class="copylink-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="copylink-label">Share</span></button></p>
             </div>
             <div class="panel-col-divider" role="separator"></div>
             <div class="panel-col panel-col--right">
