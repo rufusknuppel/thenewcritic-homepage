@@ -121,13 +121,17 @@
     if (p < 0) p = 0; if (p > 1) p = 1;
     if (p === lastP) return;
     lastP = p;
-    // A QUARTER AND THREE. The date fades out over the first quarter:
-    // full at the first touch, gone at a quarter. The miniature fades
-    // in over the remaining three: nothing until the date is gone,
-    // full as the feet go under. The same way back.
-    var DATE_OUT = 0.25;
+    // A QUARTER OUT, A QUARTER IN, AND THE REST STANDING (2026-09-18;
+    // the miniature took the whole remaining three quarters to arrive
+    // before this). The date fades out over the first quarter of the
+    // wordmark's passage: full at the first touch, gone at a quarter.
+    // The miniature comes in over the NEXT quarter and is at full
+    // strength by the time HALF the name has gone under — it stands
+    // whole for the second half of the passage rather than still
+    // arriving as the feet disappear. The same way back.
+    var DATE_OUT = 0.25, MINI_FULL = 0.5;
     if (date) date.style.opacity = Math.max(0, 1 - p / DATE_OUT).toFixed(3);
-    var q = Math.max(0, (p - DATE_OUT) / (1 - DATE_OUT));
+    var q = Math.max(0, Math.min(1, (p - DATE_OUT) / (MINI_FULL - DATE_OUT)));
     mini.style.opacity = q.toFixed(3);
     // Seated centred in the band by its ink, whatever its opacity.
     var top = (g.B - g.c) / 2;

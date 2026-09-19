@@ -163,7 +163,7 @@
   --like-red: #E2483E;
   /* Klein blue — the site's one accent; every hover/active tell reads
      this token. (It took a terracotta detour; back to Yves.) */
-  --klein: #A6002F;
+  --klein: #FFE135;
   /* Section accents, kept but UNBOUND — see the .duo-half--essay block
      below for how to switch them back on. Nothing reads these today: the
      cards' hover colour, their glows, the title rule and the likes heart
@@ -177,7 +177,7 @@
   /* Fallbacks for any card without a section (editors' notes): the old
      white treatment, unchanged. */
   --accent: var(--white);
-  --accent-glow: rgba(255, 255, 255, 0.3);
+  --accent-glow: rgba(248, 248, 255, 0.3);
   /* No dividers: every hairline on the site reads these two tokens,
      and both are transparent — the ruling is gone but its 1px boxes
      remain in flow, so every measured gap stands. (Restore a color
@@ -212,14 +212,17 @@
      tagline, titles, deks and byline strips. Playfair Display speaks
      the excerpts. (--display-face kept as an unused Archivo fallback.) */
   --display-face: 'Archivo Black', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  /* NEUE HAAS GROTESK DISPLAY (2026-09-18, after Futura PT Condensed's
-     hour, OPS Placard's day, and Oculi's before that): the Helvetica
-     as it was first drawn, off the same Adobe kit, book and bold with
-     both italics. Every role the title face answers takes it — the
-     names in capitals, the section words and the card titles as
-     written. Futura stands behind it, then Placard and Oculi, then the
-     system grotesques. */
-  --title-face: 'neue-haas-grotesk-display', 'futura-pt-condensed', 'OPS Placard', 'oculi-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  /* AZO SANS at its bold (2026-09-18 — Nimbus Sans for a few minutes
+     before it, Neue Haas Grotesk Display before that, Futura PT
+     Condensed's hour, OPS Placard's day, and Oculi's). Rui Abreu's
+     geometric, off the same kit, named azo-sans-web there; book and
+     bold with both italics, azo-sans-uber beside it unused. A
+     GEOMETRIC after four grotesques, which is Futura's line rather
+     than Helvetica's. Every role the title face answers takes it: the
+     names in capitals, the section words in capitals with them, the
+     card titles as written. Nimbus stands behind it, then Neue Haas,
+     Futura, Placard and Oculi. */
+  --title-face: 'azo-sans-web', 'nimbus-sans', 'neue-haas-grotesk-display', 'futura-pt-condensed', 'OPS Placard', 'oculi-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   /* The byline strip's cut — Adobe's Courier Std, off the same kit. */
   /* Bare SYSTEM Courier first — the Antenne Books move (they declare
      `"Courier", monospace` outright): macOS/iOS serve Apple's bundled
@@ -308,7 +311,7 @@ body{
 }
 img, svg{ display:block; max-width:100%; }
 a{ color: inherit; }
-::selection{ background: rgba(255, 255, 255,0.18); }
+::selection{ background: rgba(248, 248, 255,0.18); }
 
 :focus-visible{
   outline: 2px solid var(--white);
@@ -474,7 +477,7 @@ a{ color: inherit; }
    its own list row), so pointing at either blues both together — one
    phrase, one light. */
 .nav-links:has(.nav-item--tagline :is(a:focus-visible)) .nav-item--tagline a{
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 /* Each item is a title over a gloss, the same shape the cards use: white
    name, gray dek beneath. The <li> stays a plain block and the dek is a
@@ -657,7 +660,7 @@ a{ color: inherit; }
 
    :focus-visible rather than :focus-within — the wordmark is a link, and
    a plain focus rule would leave it lit after a mouse click. */
-.wordmark:is(:focus-visible){ color: var(--klein); }
+.wordmark:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 /* .nav-wordmark carries its own color:white, so the span itself is tinted,
    not just the anchor — see the masthead trade below. */
 .nav-wordmark{ transition: color .15s ease; }
@@ -670,8 +673,8 @@ a{ color: inherit; }
    siblings in the nav; no descendant selector reaches across. (The bird
    that stood between them was the third term of this pairing; it's
    gone, and the two ends of the rail answer for the brand now.) */
-.site-nav:has(:is(.wordmark, .nav-tagline):is(:focus-visible)) .nav-wordmark{ color: var(--klein); }
-.site-nav:has(:is(.wordmark, .nav-tagline):is(:focus-visible)) .nav-tagline{ color: var(--klein); }
+.site-nav:has(:is(.wordmark, .nav-tagline):is(:focus-visible)) .nav-wordmark{ color: var(--hl-ink); background-color: var(--klein); }
+.site-nav:has(:is(.wordmark, .nav-tagline):is(:focus-visible)) .nav-tagline{ color: var(--hl-ink); background-color: var(--klein); }
 /* The social links are WORDS now — Instagram · Substack · Email — in
    the footer's own chip cut (the .foot-chip class rides on their row).
    White like every link on the site, Klein on hover, no underline draw:
@@ -738,7 +741,7 @@ main, footer{ margin-left: 205px; }
 }
 .btn--primary{ background: transparent; border-color: var(--white); color: var(--white); }
 .btn:hover{
-  box-shadow: 0 0 14px 3px rgba(255, 255, 255,0.3);
+  box-shadow: 0 0 14px 3px rgba(248, 248, 255,0.3);
 }
 .btn[href*="/subscribe"]:hover::before{ animation-play-state: paused; opacity: 0; }
 /* "Small" now only tightens the padding — the type stays at the one
@@ -2616,8 +2619,9 @@ a.likes:hover::after,
    icon-first order, the label's stock left margin as the gap. */
 /* Klein on hover — the courier credits blue like the site's other
    links; the heart's fill follows its count. */
-.card .duo-half .duo-panel .wide-corner a:focus-visible, .card .duo-half .duo-panel .wide-corner-share:focus-visible{
-  color: var(--klein);
+.card .duo-half .duo-panel .wide-corner a:focus-visible,
+.card .duo-half .duo-panel .wide-corner-share:focus-visible{
+  color: var(--hl-ink); background-color: var(--klein);
 }
 .card .duo-half .duo-panel .wide-corner--meta a.likes:hover .likes-heart,
 .card .duo-half .duo-panel .wide-corner--meta a.likes:focus-visible .likes-heart{
@@ -2656,7 +2660,7 @@ a.likes:hover::after,
   color: var(--white); text-decoration: none;
 }
 .card .duo-half .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under) a:focus-visible{
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 .card .duo-half .duo-panel :is(.ground-kicker, .ground-credit, .ground-foot, .ground-under) :is(.meta-author, .meta-date){
   margin: 0; padding: 0;
@@ -2697,7 +2701,7 @@ a.likes:hover::after,
   color: var(--white); cursor: pointer;
   display: inline-flex; align-items: center;
 }
-.card .duo-half .duo-panel .ground-share:focus-visible{ color: var(--klein); }
+.card .duo-half .duo-panel .ground-share:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 .card .duo-half .duo-panel .ground-share .copylink-icon,
 .card .duo-half .duo-panel .ground-share .copylink-check{ height: 10px; }
 
@@ -2797,7 +2801,7 @@ a.likes:hover::after,
   text-decoration: none;
 }
 .card--mega .mega-masthead .mega-substack:focus-visible{
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 /* The foot lands on the TOP OF CRI's ink: the foot wordmark pins to
    the rail's bottom, so CRI's cap sits a fixed 225.9 above the
@@ -3278,7 +3282,7 @@ a.likes:hover::after,
 /* (RETIRED WITH THE CURTAIN — see THE PICTURE SLIDES. the text column's mask reach) */
 
 .latest-courier a{ color: var(--white); text-decoration: none; transition: color .15s ease; }
-.latest-courier a:focus-visible{ color: var(--klein); }
+.latest-courier a:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 .latest-rule{ height: 1px; background: var(--white); }
 .latest-cover{ display: block; position: relative; overflow: hidden; }
 .latest-cover img{ width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -3410,7 +3414,7 @@ a.likes:hover::after,
 .hover-meta .likes-heart{
   height: 9.6px; width: auto; fill: var(--white); transition: fill .15s ease;
 }
-.hover-meta .likes:is(:focus-visible){ color: var(--klein); }
+.hover-meta .likes:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 .hover-meta .likes:is(:hover, :focus-visible) .likes-heart{ fill: var(--klein); }
 .under-share{
   display: inline-flex; align-items: center;
@@ -3418,7 +3422,7 @@ a.likes:hover::after,
   font: inherit; letter-spacing: inherit; text-transform: inherit;
   color: var(--white); cursor: pointer; transition: color .15s ease;
 }
-.under-share:is(:focus-visible){ color: var(--klein); }
+.under-share:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 .hover-meta :is(.copylink-icon, .copylink-check){
   width: 9.6px; height: 9.6px; stroke: currentColor; fill: none;
   /* Stated in the icon's own viewBox units, so it shrinks with the
@@ -3431,7 +3435,7 @@ a.likes:hover::after,
 .latest-courier--cover :is(.cover-kicker, .cover-date) a{
   color: var(--white); text-decoration: none; transition: color .15s ease;
 }
-.latest-courier--cover :is(.cover-kicker, .cover-date) a:focus-visible{ color: var(--klein); }
+.latest-courier--cover :is(.cover-kicker, .cover-date) a:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 /* The hero poster's own voice, at row scale. */
 .latest-title{
   margin: 0;
@@ -3453,7 +3457,7 @@ a.likes:hover::after,
    under the panel scope, and without it the spans run inline,
    butting their line-ends together with no space between. */
 .latest-title .title-line{ display: block; }
-.latest-title a:focus-visible{ color: var(--klein); }
+.latest-title a:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 .latest-dek{
   margin: 16px 0 0;
   font-family: var(--excerpt);
@@ -3645,7 +3649,7 @@ a.likes:hover::after,
   text-decoration: none;
   transition: color .15s ease;
 }
-.reprint-name:focus-visible{ color: var(--klein); }
+.reprint-name:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 /* The RELEASE: as the reprint's rule reaches the 48 line above the
    fold's foot, the whole sidebar apparatus LOCKS to the page and
    rides up 1:1 — rail, foot mark and the opaque right strip. NO
@@ -4382,7 +4386,7 @@ img.card-image.is-loaded,
   transition: color .2s ease;
 }
 .duo-panel .card-title a:focus-visible{
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 /* Site-wide rule under every title, dek to meta — see .card-title-divider
    for the markup. Owns the gap on both sides (title/dek margins that
@@ -5133,7 +5137,7 @@ a.about-action:hover{  border-color: var(--white); }
   text-decoration: none;
   transition: color .15s ease;
 }
-.mh-name:focus-visible{ color: var(--klein); }
+.mh-name:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 /* The portrait waits beside the name and arrives on hover, centred on
    the name's own middle, 48 clear of it — left of the first name, right
    of the second, alternating down the list so the column doesn't lean.
@@ -5314,7 +5318,7 @@ main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transpar
   cursor: pointer;
   transition: color .15s ease;
 }
-.arch-ledger-row:focus-visible{ color: var(--klein); outline: none; }
+.arch-ledger-row:focus-visible{ color: var(--hl-ink); background-color: var(--klein); outline: none; }
 /* The open row HOLDS its Klein while the fold-out is out — the one row
    allowed to keep the hover colour, saying "this is the one you opened"
    over a card that carries no title of its own. */
@@ -5730,7 +5734,7 @@ main, footer{ margin-left: 0; }
    link on the site (the name's own explicit white blocks the anchor's
    inherited hover, so the blue is restated at the span). */
 .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 /* THE HEAD RULE: a divider under the masthead, EDGE TO EDGE — the
    full bleed, no gutters. The name's box runs below its BASELINE
@@ -5837,7 +5841,7 @@ body.has-mega .head-rule{
   transition: color .15s ease;
 }
 .dek-band:not(.dek-band--foot) a:focus-visible{
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 /* THE FOOT BAND: the dek band's twin between the middle and the
    reprint — same gold ribbon, same spread, but the COLOPHON speaks
@@ -5871,7 +5875,7 @@ body.has-mega .head-rule{
   position: absolute;
   inset: -15px -12px;
 }
-.dek-band--foot a:focus-visible{ color: var(--klein); }
+.dek-band--foot a:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 /* THE MINI-RAIL: the tagline over its own SHORT divider, the section
    list stacked below, the hero riding beside it (see .card--mega's
    margin-left below). STICKY at 48 with a zero-height box: it takes
@@ -6186,7 +6190,7 @@ body::before{
   text-decoration: none;
   transition: color .15s ease;
 }
-.rail-mark:focus-visible{ color: var(--klein); }
+.rail-mark:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 .rail-mark span{ display: block; }
 
 /* ---------- THE FRONT-PAGE GROUND ----------
@@ -6529,7 +6533,7 @@ body.has-mega::before{ content: none; }
   text-decoration: none;
   transition: color .15s ease;
 }
-.banner-name:focus-visible{ color: var(--klein); }
+.banner-name:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 /* A BARE BANNER (STORE): no courier line, so nothing below the word
    carries the closing air — the charcoal takes it as padding
    instead, measured to the same 48 under the baseline ink (the box
@@ -6768,7 +6772,7 @@ body.has-mega::before{ content: none; }
 .latest-courier--cover .cover-date a{
   color: var(--white); text-decoration: none; transition: color .15s ease;
 }
-.latest-courier--cover .cover-date a:is(:focus-visible){ color: var(--klein); }
+.latest-courier--cover .cover-date a:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 
 /* ---------- THE ONE COURIER FORMAT ----------
    Essays, postscripts and reviews all read the same four corners of
@@ -6886,7 +6890,7 @@ body.has-mega::before{ content: none; }
 }
 .cover-under > span{ min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cover-under a{ color: var(--white); text-decoration: none; transition: color .15s ease; }
-.cover-under a:is(:focus-visible){ color: var(--klein); }
+.cover-under a:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 
 /* (THE SECTION NAME'S WITHHOLDING IS RETIRED. It hid on the essays
    and postscripts because their under row printed over the picture's
@@ -7612,7 +7616,8 @@ body.has-mega::before{ content: none; }
 /* THE TITLES TRADE FOR WHITE. They rest charcoal, so the pointer takes
    them to the page's other ink — the biggest change either colour can
    make on this ground, and no third colour enters. */
-.latest-title a:focus-visible, .duo-panel .card-title a:focus-visible{ color: var(--klein); }
+.latest-title a:focus-visible,
+.duo-panel .card-title a:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 
 /* THE COURIER SPEAKS IN WHITE, wherever it runs. Inside the cards —
    the cells' head rows and billings, the heroes' ground rows, the
@@ -7650,8 +7655,10 @@ body.has-mega::before{ content: none; }
    already, where a charcoal hover would simply be the word going out;
    those dim to --muted instead, the palette's own grey, so the trade
    stays inside the colours the page already holds. */
-.latest-courier a:is(:focus-visible), .cover-under a:is(:focus-visible), .latest-courier--cover :is(.cover-kicker, .cover-date) a:is(:focus-visible){
-  color: var(--klein);
+.latest-courier a:is(:focus-visible),
+.cover-under a:is(:focus-visible),
+.latest-courier--cover :is(.cover-kicker, .cover-date) a:is(:focus-visible){
+  color: var(--hl-ink); background-color: var(--klein);
 }
 .dek-band a:is(:focus-visible), .dek-band:not(.dek-band--foot) a:is(:focus-visible){ color: var(--muted); }
 
@@ -7732,7 +7739,7 @@ body.has-mega::before{ content: none; }
 /* (The MARK is out of this list too: it hovers with the titles now —
    white to charcoal — and this scope outranked that trade.) */
 .topbar-rail :is(.nav-links a, .nav-social a):is(:focus-visible){
-  color: var(--klein);
+  color: var(--hl-ink); background-color: var(--klein);
 }
 /* The top rail rides the right flank: its own 24 from the page edge
    comes off, and the 24 it gives up is the 24 the gap gains. */
@@ -7748,7 +7755,10 @@ body.has-mega::before{ content: none; }
 .banner-name,
 .reprint-name,
 .site-nav--top .topbar-name{ color: var(--g); }
-.rail-mark:focus-visible, .banner-name:focus-visible, .reprint-name:focus-visible, .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--klein); }
+.rail-mark:focus-visible,
+.banner-name:focus-visible,
+.reprint-name:focus-visible,
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: var(--klein); }
 
 /* ---------- THE CHROME'S THREE BANDS ----------
    The masthead line, the line under SUBSCRIBE and the footer's
@@ -7789,7 +7799,7 @@ body.has-mega::before{ content: none; }
      no-JS fallback, static at centre. */
   background:
     var(--foil-sheen-img,
-      linear-gradient(100deg, rgba(255,255,255,0) 34%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.14) 52%, rgba(255,255,255,0) 64%))
+      linear-gradient(100deg, rgba(248,248,255,0) 34%, rgba(248,248,255,.5) 46%, rgba(248,248,255,.14) 52%, rgba(248,248,255,0) 64%))
     var(--foil-sheen, 50%) top / 240% 100vh no-repeat,
     var(--foil-uri, var(--foil-fallback))
     top center / 100% 100vh no-repeat,
@@ -7834,7 +7844,7 @@ body.has-mega::before{ content: none; }
 }
 .dek-band--masthead::before{ display: none; }
 .dek-band.dek-band--masthead a{ color: var(--g); }
-.dek-band.dek-band--masthead a:focus-visible{ color: var(--klein); }
+.dek-band.dek-band--masthead a:focus-visible{ color: var(--hl-ink); background-color: var(--klein); }
 /* The condensed NEW pulled the date's and tagline's glyph anchors
    (the N and the C — see alignBands) closer together; below ~1120
    the 20px lines outgrow the gap and print over each other, so the
@@ -7971,7 +7981,7 @@ body.has-mega::before{ content: none; }
 .page-banner{
   background:
     var(--foil-sheen-img,
-      linear-gradient(100deg, rgba(255,255,255,0) 34%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.14) 52%, rgba(255,255,255,0) 64%))
+      linear-gradient(100deg, rgba(248,248,255,0) 34%, rgba(248,248,255,.5) 46%, rgba(248,248,255,.14) 52%, rgba(248,248,255,0) 64%))
     var(--foil-sheen, 50%) top / 240% 100vh no-repeat,
     var(--foil-uri, var(--foil-fallback)) top center / 100% 100vh no-repeat,
     #b3b0ab;
@@ -7997,7 +8007,7 @@ body.has-mega::before{ content: none; }
 main.has-mega .reprint{
   background:
     var(--foil-sheen-img,
-      linear-gradient(100deg, rgba(255,255,255,0) 34%, rgba(255,255,255,.5) 46%, rgba(255,255,255,.14) 52%, rgba(255,255,255,0) 64%))
+      linear-gradient(100deg, rgba(248,248,255,0) 34%, rgba(248,248,255,.5) 46%, rgba(248,248,255,.14) 52%, rgba(248,248,255,0) 64%))
     var(--foil-sheen, 50%) top / 240% 100vh no-repeat,
     var(--foil-uri, var(--foil-fallback)) top center / 100% 100vh no-repeat,
     #b3b0ab;
@@ -8272,11 +8282,11 @@ main.has-mega .reprint{ background: var(--chrome); }
    traded, no third colour. On the charcoal chrome white text turns
    tan. The rail (outside main, on the tan) trades charcoal for white
    like the cards; the masthead trades white for tan like the bands. */
-main.has-mega{ --klein: #A6002F; }
-main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #A6002F; }
-main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #A6002F; }
-body.has-mega .site-nav--top .topbar-rail{ --klein: #A6002F; }
-.site-nav--top .topbar-wordmark{ --klein: #A6002F; }
+main.has-mega{ --klein: #FFE135; }
+main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #FFE135; }
+main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #FFE135; }
+body.has-mega .site-nav--top .topbar-rail{ --klein: #FFE135; }
+.site-nav--top .topbar-wordmark{ --klein: #FFE135; }
 
 /* ---------- THE BODY TEXT BACK IN GARAMOND ----------
    (Trajan has no lowercase — the running text set as small caps.) */
@@ -8294,12 +8304,12 @@ body.has-mega .site-nav--top .topbar-rail{ --klein: #A6002F; }
    pointer; the author and the date keep the page's ink and trade the
    other way. */
 main.has-mega :is(.cover-kicker, .cover-cat),
-main.has-mega :is(.cover-kicker, .cover-cat) a{ color: var(--g); --klein: #A6002F; }
+main.has-mega :is(.cover-kicker, .cover-cat) a{ color: var(--g); --klein: #FFE135; }
 
 /* ---------- THE SIDEBAR'S TITLES IN WHITE ----------
    The marks print white on the tan like the titles, and trade for
    charcoal on the pointer like them. */
-body.has-mega .site-nav--top .topbar-rail .rail-mark{ color: var(--g); --klein: #A6002F; }
+body.has-mega .site-nav--top .topbar-rail .rail-mark{ color: var(--g); --klein: #FFE135; }
 
 /* ---------- ALL THE COURIER IN WHITE ----------
    Every courier line on the cards — both pairs on every cover, the
@@ -8307,14 +8317,14 @@ body.has-mega .site-nav--top .topbar-rail .rail-mark{ color: var(--g); --klein: 
    charcoal on the pointer. */
 main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under),
 main.has-mega :is(.latest-courier, .cover-under) :is(span, a),
-main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a{ color: var(--g); --klein: #A6002F; }
+main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a{ color: var(--g); --klein: #FFE135; }
 
 /* ---------- EVERY SIDEBAR MARK IN WHITE ----------
    The movement rails (ESSAYS, POSTSCRIPT, CONTRA) carry marks of
    their own outside the header's rail; all of them print white and
    trade for charcoal on the pointer. */
 .rail-mark,
-.rail-track .rail-mark{ color: var(--g); --klein: #A6002F; }
+.rail-track .rail-mark{ color: var(--g); --klein: #FFE135; }
 
 
 /* ---------- THE MIDDLE IN MEDITERRANEAN BLUE ----------
@@ -8324,14 +8334,14 @@ main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit,
 /* ---------- ALL THE TYPE IN WHITE ----------
    Every ink on the blue is white — titles, deks, body, courier, the
    rail, the bands' lines — and every hover trades it for charcoal. */
-main.has-mega{ --white: var(--g); --muted: var(--g); --faint: var(--g); --body-text: var(--g); --klein: #A6002F; }
-main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #A6002F; }
-main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #A6002F; }
-body.has-mega .site-nav--top .topbar-rail{ --white: var(--g); --klein: #A6002F; }
+main.has-mega{ --white: var(--g); --muted: var(--g); --faint: var(--g); --body-text: var(--g); --klein: #FFE135; }
+main.has-mega :is(.reprint, .page-banner, .dek-band--foot){ --klein: #FFE135; }
+main.has-mega :is(.card-title, .latest-title, .duo-panel .card-title){ --klein: #FFE135; }
+body.has-mega .site-nav--top .topbar-rail{ --white: var(--g); --klein: #FFE135; }
 body.has-mega .courier-clone{ --white: var(--g); }
 .dek-band--masthead,
 .dek-band.dek-band--masthead a{ color: var(--g); }
-.site-nav--top .topbar-wordmark{ --klein: #A6002F; }
+.site-nav--top .topbar-wordmark{ --klein: #FFE135; }
 
 
 /* ---------- THE SECTION BANDS, IN PLACE OF THE SIDEBAR ----------
@@ -8356,7 +8366,7 @@ body.has-mega .courier-clone{ --white: var(--g); }
   padding: 24px 48px;
   background: var(--k);
   color: var(--g);
-  --klein: #A6002F;
+  --klein: #FFE135;
 }
 .section-band .band-mark{
   font-family: var(--name-face);
@@ -8381,7 +8391,7 @@ body.has-mega .courier-clone{ --white: var(--g); }
 }
 .section-band .band-deks a{ color: var(--g); text-decoration: none; transition: color .15s ease; }
 .section-band .band-deks .nav-links-dead{ color: var(--g); }
-.section-band :is(.band-mark, .band-deks a):is(:focus-visible){ color: var(--klein); }
+.section-band :is(.band-mark, .band-deks a):is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 /* The first band sits flush under the wordmark: the page's top inset
    and the 1px spacer under the masthead both stand down. */
 .page-rows{ padding-top: 0; }
@@ -8495,10 +8505,10 @@ body.has-mega::after{ content: none; animation: none; }
 /* ---------- THE MASTHEAD HOLDS STILL ----------
    No hover on the name; the three lines under it stand centred as a
    group, 48 between them. */
-.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 .site-nav--top .topbar-name{ transition: none; }
 .dek-band--masthead{ justify-content: center; gap: 48px; }
-.dek-band--masthead a:is(:focus-visible){ color: #A6002F; }
+.dek-band--masthead a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The items keep their own widths — the band's base rule spread them
    into thirds — so the three read as one centred group, 48 apart. */
 .dek-band--masthead :is(a, span){ flex: 0 0 auto; width: auto; min-width: 0; text-align: center; }
@@ -8564,12 +8574,20 @@ main.has-mega{ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-posts
    them carries the charcoal down to the fold. */
 .site-nav--top .topbar-wordmark,
 .dek-band--masthead{ background: var(--k); }
-.site-nav--top .topbar-name, .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name, .dek-band--masthead, .dek-band.dek-band--masthead a, .dek-band--masthead :is(a, span), .dek-band--masthead a:is(:focus-visible){ color: #A6002F; }
+.site-nav--top .topbar-name,
+.dek-band--masthead,
+.dek-band.dek-band--masthead a,
+.dek-band--masthead :is(a, span){ color: #FFE135; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name,
+.dek-band--masthead a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 .head-rule{ background: var(--k); }
 /* The line sits in the charcoal under the white block: dark ground,
    white type. */
 .dek-band--masthead{ background: var(--k); }
-.dek-band--masthead, .dek-band.dek-band--masthead a, .dek-band--masthead :is(a, span), .dek-band--masthead a:is(:focus-visible){ color: #A6002F; }
+.dek-band--masthead,
+.dek-band.dek-band--masthead a,
+.dek-band--masthead :is(a, span){ color: #FFE135; }
+.dek-band--masthead a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* The date in the masthead line speaks courier — the meta voice — while
    the two taglines beside it keep their Garamond italic. */
@@ -8603,7 +8621,7 @@ main.has-mega{ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-posts
   color: var(--g);
 }
 .section-band .band-mid a{ color: var(--g); text-decoration: none; transition: color .15s ease; }
-.section-band .band-mid a:is(:focus-visible){ color: var(--klein); }
+.section-band .band-mid a:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 /* The date speaks courier in both places. */
 .section-band .band-mid > :nth-child(2){
   font-family: var(--byline-face);
@@ -8661,7 +8679,7 @@ body.masthead-picked .section-band .band-mid{ visibility: visible; }
 main.has-mega .latest-courier--cover,
 main.has-mega .latest-courier--cover :is(span, a),
 main.has-mega :is(.card-title, .latest-title),
-main.has-mega :is(.card-title, .latest-title) a{ color: var(--k); --klein: #A6002F; }
+main.has-mega :is(.card-title, .latest-title) a{ color: var(--k); --klein: #FFE135; }
 
 
 /* ---------- THE COURIER IN TWO CHIPS ON THE PICTURE ----------
@@ -8689,7 +8707,7 @@ main.has-mega :is(.card-title, .latest-title) a{ color: var(--k); --klein: #A600
 main.has-mega :is(.latest-courier--cover, .cover-under),
 main.has-mega :is(.latest-courier--cover, .cover-under) :is(span, a){
   color: var(--g);
-  --klein: #A6002F;
+  --klein: #FFE135;
 }
 /* The chips ride WITH the artwork when the card opens — they are the
    picture's furniture now, not the column's. */
@@ -8757,10 +8775,10 @@ main.has-mega .cover-meta,
 main.has-mega .cover-meta :is(span, a),
 main.has-mega .cover-meta a{
   color: var(--g);
-  --klein: #A6002F;
+  --klein: #FFE135;
 }
 .cover-meta a{ text-decoration: none; transition: color .15s ease; }
-.cover-meta a:is(:focus-visible){ color: var(--klein); }
+.cover-meta a:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 
 
 /* ---------- THE TITLE COLUMN READS CENTRED ----------
@@ -8938,11 +8956,12 @@ main.has-mega :is(.banner-name, .reprint-name){
   padding: 0;
   clip-path: none;
   color: var(--k);
-  --klein: #A6002F;
+  --klein: #FFE135;
   text-decoration: none;
   transition: none;
 }
-.banner-name:is(:focus-visible), .reprint-name:is(:focus-visible){ color: #A6002F; }
+.banner-name:is(:focus-visible),
+.reprint-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The banners' dek strips are stood down already (zero height); they
    take no part in the band's measure. */
 .dek-band--banner{ display: none; }
@@ -9068,8 +9087,8 @@ main.has-mega :is(.banner-name, .reprint-name){
    (the hero's title hover carries .duo-panel and won). Restated at
    the same weight, with the pointer: the title trades to its klein
    (white), the courier to its own (charcoal). */
-main.has-mega :is(.card-title, .latest-title) a:is(:focus-visible){ color: var(--klein); }
-main.has-mega .cover-meta a:is(:focus-visible){ color: var(--klein); }
+main.has-mega :is(.card-title, .latest-title) a:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
+main.has-mega .cover-meta a:is(:focus-visible){ color: var(--hl-ink); background-color: var(--klein); }
 
 /* ---------- THE BANNER OVERTAKES THE BAND BEFORE IT SETS ----------
    A section's band held until its empty foot band met it, then the
@@ -9199,14 +9218,14 @@ main.has-mega .reprint{
    the pointer lights. */
 .banner-name,
 .banner-name--pair a{ transition: color .15s ease; }
-.banner-name:is(:focus-visible){ color: #A6002F; }
-.banner-name--pair:is(:focus-visible){ color: #A6002F; }
-.banner-name--pair a:is(:focus-visible){ color: #A6002F; }
+.banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
+.banner-name--pair:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
+.banner-name--pair a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The word's charcoal is stated at main.has-mega weight, so
    the hover is said again at that weight to win it. */
-main.has-mega .banner-name:is(:focus-visible){ color: #A6002F; }
-main.has-mega .banner-name--pair:is(:focus-visible){ color: #A6002F; }
-main.has-mega .banner-name--pair a:is(:focus-visible){ color: #A6002F; }
+main.has-mega .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
+main.has-mega .banner-name--pair:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
+main.has-mega .banner-name--pair a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE PLATE OPENS ON ITS TITLE ----------
    Every body preview — the hero's plate and the latest cells' — opens
@@ -9241,9 +9260,9 @@ main.has-mega{
   --muted: var(--k);
   --faint: var(--k);
   --body-text: var(--k);
-  --klein: #A6002F;
+  --klein: #FFE135;
 }
-main.has-mega :is(.card-title, .latest-title) a{ --klein: #A6002F; }
+main.has-mega :is(.card-title, .latest-title) a{ --klein: #FFE135; }
 main.has-mega :is(.cover-kicker, .cover-cat) a,
 main.has-mega :is(.latest-courier, .cover-under, .ground-kicker, .ground-credit, .ground-foot, .ground-under) a,
 main.has-mega :is(.latest-courier--cover, .cover-under),
@@ -9252,20 +9271,24 @@ main.has-mega .cover-meta,
 main.has-mega .cover-meta :is(span, a),
 main.has-mega .cover-meta a{
   color: var(--k);
-  --klein: #A6002F;
+  --klein: #FFE135;
 }
 .plate-title{ color: var(--k); }
 /* The bands' hovers, on their charcoal. */
 .section-band,
-.section-band--colophon{ --klein: #A6002F; }
+.section-band--colophon{ --klein: #FFE135; }
 /* The banner words. */
-.banner-name:is(:focus-visible), .banner-name--pair a:is(:focus-visible), main.has-mega .banner-name:is(:focus-visible), main.has-mega .banner-name--pair a:is(:focus-visible){ color: #A6002F; }
+.banner-name:is(:focus-visible),
+.banner-name--pair a:is(:focus-visible),
+main.has-mega .banner-name:is(:focus-visible),
+main.has-mega .banner-name--pair a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The head and the foot: the two names trade the same way. */
 .site-nav--top .topbar-name{ transition: color .15s ease; }
-.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 .reprint-name,
 main.has-mega .reprint-name{ transition: color .15s ease; }
-.reprint-name:is(:focus-visible), main.has-mega .reprint-name:is(:focus-visible){ color: #A6002F; }
+.reprint-name:is(:focus-visible),
+main.has-mega .reprint-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE FIRST BAND CARRIES THE MAGAZINE'S NAME ----------
    THE LATEST stands down: the magazine's name takes the mark's seat
@@ -9314,7 +9337,7 @@ main.has-mega .reprint-name{ transition: color .15s ease; }
    under the pointer it trades the other way: white band, black name. */
 .site-nav--top .topbar-wordmark{ transition: background-color .15s ease; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: var(--g); }
-.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 .reprint,
 main.has-mega .reprint{
   background: var(--g);
@@ -9324,7 +9347,8 @@ main.has-mega .reprint{
 main.has-mega .reprint-name{ color: var(--g); }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: var(--k); }
-.reprint:is(:focus-within) .reprint-name, main.has-mega .reprint:is(:focus-within) .reprint-name{ color: #A6002F; }
+.reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint:is(:focus-within) .reprint-name{ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE TITLE COLUMN STANDS ON A BLACK BLOCK ----------
    Every title column stands white on a charcoal block: the block on
@@ -9464,16 +9488,17 @@ main.has-mega .stack-band--bw .banner-name,
 main.has-mega .stack-band--bp .banner-name{ color: var(--k); }
 main.has-mega .stack-band--pb .banner-name,
 main.has-mega .stack-band--pw .banner-name{ color: var(--g); }
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visible){ color: #A6002F; }
-main.has-mega :is(.stack-band--pb, .stack-band--bp) .banner-name:is(:focus-visible){ color: #A6002F; }
-main.has-mega :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:focus-visible){ color: #A6002F; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
+main.has-mega :is(.stack-band--pb, .stack-band--bp) .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
+main.has-mega :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE HEAD: WHITE ON BLACK, THE FIELD PINK ----------
    The wordmark stands white on the bands' black; the field under it,
    down to the fold, is hot pink. Under the pointer the band trades
    its black for the pink, the name staying white. */
 .site-nav--top .topbar-wordmark{ background: var(--k); }
-.site-nav--top .topbar-name, .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-name{ color: #FFE135; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: var(--g); }
 .head-rule{ background: var(--g); }
 
@@ -9484,13 +9509,17 @@ main.has-mega :is(.stack-band--pw, .stack-band--wp) .banner-name:is(:focus-visib
    its black for the pink with the word staying white. (The closing
    stack keeps its own five schemes.) */
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ background: var(--k); }
-main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name, main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible){ color: #A6002F; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: #FFE135; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band){ transition: background-color .15s ease; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: var(--g); }
 .banner-spacer{ background: var(--g); }
 .reprint,
 main.has-mega .reprint{ background: var(--k); }
-.reprint-name, main.has-mega .reprint-name, .reprint:is(:focus-within) .reprint-name, main.has-mega .reprint:is(:focus-within) .reprint-name{ color: #A6002F; }
+.reprint-name,
+main.has-mega .reprint-name{ color: #FFE135; }
+.reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint:is(:focus-within) .reprint-name{ color: var(--hl-ink); background-color: #FFE135; }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: var(--g); }
 .foot-field{ background: var(--g); }
@@ -9499,12 +9528,14 @@ main.has-mega .reprint:is(:hover, :focus-within){ background: var(--g); }
    The wordmark, ESSAYS, POSTSCRIPT, CONTRA and the closing name keep
    their black under the pointer; only the word trades to pink. */
 .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){ background: var(--k); }
-.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: var(--k); }
-main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible), main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible),
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 .reprint:is(:hover, :focus-within),
 main.has-mega .reprint:is(:hover, :focus-within){ background: var(--k); }
-.reprint:is(:focus-within) .reprint-name, main.has-mega .reprint:is(:focus-within) .reprint-name{ color: #A6002F; }
+.reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint:is(:focus-within) .reprint-name{ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE EMPTY BANDS ARE RETIRED ----------
    No empty charcoal band closes a section any more (build.js,
@@ -9537,13 +9568,15 @@ html{ background: var(--k); }
    on a fractional pixel where it meets its field — the body's ghost
    white showed as a hairline under ESSAYS — so each band paints one
    pixel of its own black under itself. */
-.site-nav--top .topbar-name{ color: #A6002F; }
-.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-name{ color: #FFE135; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: var(--g); }
-main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible), main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible),
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 .reprint-name,
 main.has-mega .reprint-name{ color: var(--g); }
-.reprint:is(:focus-within) .reprint-name, main.has-mega .reprint:is(:focus-within) .reprint-name{ color: #A6002F; }
+.reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint:is(:focus-within) .reprint-name{ color: var(--hl-ink); background-color: #FFE135; }
 .head-rule,
 .banner-spacer,
 .foot-field{ background: var(--k); }
@@ -9556,7 +9589,7 @@ main.has-mega :is(.subscribe-band, .events-band, .store-band){ box-shadow: none;
 .section-band .band-dek,
 .section-band .band-dek :is(a, span),
 .section-band--colophon .band-dek span{ color: var(--g); }
-.section-band .band-dek a:is(:focus-visible){ color: #A6002F; }
+.section-band .band-dek a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The fields' feet land on fractional pixels too (the foot field on
    the closing name, the head rule and the banner fields on their
    bands): one pixel of their own charcoal under each closes the seam. */
@@ -9569,10 +9602,11 @@ main.has-mega :is(.subscribe-band, .events-band, .store-band){ box-shadow: none;
    black again, and trade to pink under the pointer; the section
    banners keep their pink words. */
 .site-nav--top .topbar-name{ color: var(--g); }
-.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+.site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 .reprint-name,
 main.has-mega .reprint-name{ color: var(--g); }
-.reprint:is(:focus-within) .reprint-name, main.has-mega .reprint:is(:focus-within) .reprint-name{ color: #A6002F; }
+.reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint:is(:focus-within) .reprint-name{ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE GROUND OUTSIDE MAIN IS BLACK ----------
    The body carried the page's ghost white to its last fractional
@@ -9654,7 +9688,7 @@ main.has-mega :is(.card-title, .latest-title) :is(a, .title-line, span){
   transition: color .15s ease;
 }
 main.has-mega .plate-more{ color: var(--k); }
-main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
+main.has-mega a.plate-more:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- READ MORE IN PINK; THE COURIER OVER THE TITLE ----------
    READ MORE prints pink and trades to black under the pointer. The
@@ -9663,7 +9697,7 @@ main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
    three lines stands highest and lowest for the words' edges. */
 .plate-more,
 main.has-mega .plate-more{ color: var(--g); }
-main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
+main.has-mega a.plate-more:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 .latest-matter > .cover-meta:first-child,
 .duo-half--mega .panel-col--left > .cover-meta{ margin-bottom: 16px; }
 /* The review's words stack at the foot of its matter (the auto
@@ -9719,7 +9753,7 @@ main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
   font-size: 20px;
   line-height: 1.2;
 }
-.card-peek-open:is(:focus-visible){ color: #A6002F; }
+.card-peek-open:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* THE X STANDS IN THE CARD'S OWN CORNER on the Preview's side, ON the
    card's edges, not inset (the hero's card box hangs 24 past its
    visible edge, so its offset is that 24 — the fitter writes --x-x). */
@@ -9740,7 +9774,7 @@ main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
   transform: translate(-50%, -50%) rotate(45deg);
 }
 .card-peek-close::after{ transform: translate(-50%, -50%) rotate(-45deg); }
-.card-peek-close:is(:focus-visible){ color: #A6002F; }
+.card-peek-close:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* Open: the word stands down, the X takes its place one line below
    (the word's own row stays empty, so the X sits where "below the
    button" is). */
@@ -9759,10 +9793,11 @@ main.has-mega .plate-more{
   background: var(--k);
   color: var(--g);
 }
-main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
+main.has-mega a.plate-more:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The section banners' words: white at rest, pink under the pointer. */
 main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name{ color: var(--g); }
-main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible), main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega :is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible),
+main.has-mega :is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- PREVIEW ON ITS BLACK TAB, ON THE COVER'S FAR CORNER ----------
    The control stands on whichever top corner of the cover is
@@ -9796,10 +9831,11 @@ main.has-mega .plate-more{
   background: none;
   color: var(--g);
 }
-main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
+main.has-mega a.plate-more:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 .card-peek-open,
 .card-peek > .card-peek-open{ color: var(--g); }
-.card-peek-open:is(:focus-visible), .card-peek > .card-peek-open:is(:focus-visible){ color: #A6002F; }
+.card-peek-open:is(:focus-visible),
+.card-peek > .card-peek-open:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- PREVIEW ON A CHARCOAL TRIANGLE, ON THE COVER'S CORNER ----------
    The control is a right triangle standing on the picture's own
@@ -9835,9 +9871,9 @@ main.has-mega .duo-half--mega.is-lit .panel-col--left :is(p.cover-meta--author, 
    Both print black at rest and trade to pink under the pointer. */
 .plate-more,
 main.has-mega .plate-more{ color: var(--k); }
-main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
+main.has-mega a.plate-more:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 .card-peek > .card-peek-close{ color: var(--k); }
-.card-peek > .card-peek-close:is(:focus-visible){ color: #A6002F; }
+.card-peek > .card-peek-close:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE X, 30% SMALLER ----------
    The whole mark scaled to 0.7: the box 24 -> 16.8, the strokes
@@ -9852,7 +9888,7 @@ main.has-mega a.plate-more:is(:focus-visible){ color: #A6002F; }
    charcoal: ghost white, with the word black on it and pink under
    the pointer, like READ ON… and the X. */
 .card-peek > .card-peek-open{ background: var(--paper, var(--k)); color: var(--k); }
-.card-peek > .card-peek-open:is(:focus-visible){ color: #A6002F; }
+.card-peek > .card-peek-open:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* A card held still for a fit pass (fitAll shuts the open ones to
    measure the page at rest): nothing in it moves. */
 .fit-still, .fit-still *{ transition: none !important; animation: none !important; }
@@ -9916,7 +9952,7 @@ main.has-mega .plate-more{
 }
 .peek-left .card-peek-open,
 .peek-right .card-peek-open{ margin: 0; }
-.card-peek > .card-peek-open:is(:focus-visible){ color: #A6002F; }
+.card-peek > .card-peek-open:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE HERO'S COLUMN ON THE ROW'S OWN MEASURE ----------
    The essay hero split its 1296 as 448 of words and 848 of picture,
@@ -9980,7 +10016,7 @@ main.has-mega .plate-more{
 }
 .plate-close{ cursor: pointer; }
 main.has-mega .plate-more :is(.plate-read, .plate-close):is(:focus-visible){
-  color: #A6002F;
+  color: var(--hl-ink); background-color: #FFE135;
 }
 
 /* ---------- THE BLOCK STOPS TRADING; THE WORDS TRADE INSTEAD ----------
@@ -10004,8 +10040,9 @@ main.has-mega .duo-half--mega.is-lit .panel-col--left :is(p.cover-meta--author, 
    blanket white in this column is stated on * itself, so it paints the
    title's own inner spans directly — colouring their parent alone
    leaves the words white. */
-main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(.latest-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)), main.has-mega .duo-half--mega .panel-col--left :is(.card-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)){
-  color: #A6002F;
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(.latest-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)),
+main.has-mega .duo-half--mega .panel-col--left :is(.card-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)){
+  color: var(--hl-ink); background-color: #FFE135;
 }
 main.has-mega .cover-meta--author .cover-sep{ color: var(--g); }
 
@@ -10138,7 +10175,7 @@ main.has-mega .cover-meta--author .cover-sep{ color: var(--g); }
    alone trades pink under the pointer — in both. (The pink grounds
    and their three further trades are struck; the modifiers they used
    are no longer printed.) */
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visible){ color: #A6002F; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------- THE ACCENT IS A HIGHLIGHTER YELLOW ----------
    Every trade on the page — the words' own, the bands' left deks,
@@ -10184,7 +10221,7 @@ main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visib
 main.has-mega .stack-band--bw,
 main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: var(--g); }
 main.has-mega .stack-band--bw .banner-name{ color: var(--k); }
-main.has-mega .stack-band--bw .banner-name:is(:focus-visible){ color: #A6002F; }
+main.has-mega .stack-band--bw .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------------------------------------------------------------
    THE HOMEPAGE IS PRINTED ON GOLD.
@@ -10216,7 +10253,7 @@ main.has-mega .card .duo-half--mega .duo-panel .panel-col--right .ground-credit{
    ground it stands on — gold on gold, 1.00:1, a hover that does
    nothing at all. It takes the same trade the gold bands take: the
    words go from black to white. */
-main.has-mega .plate-more :is(.plate-read, .plate-close):is(:focus-visible){ color: #A6002F; }
+main.has-mega .plate-more :is(.plate-read, .plate-close):is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------------------------------------------------------------
    TRIAL: THE GROUND IS DEEP GREEN, SO THE INK ON IT TURNS BACK.
@@ -10236,7 +10273,7 @@ main.has-mega .card-preview-block *,
 main.has-mega .plate-more,
 main.has-mega .plate-more *{ color: var(--k); }
 main.has-mega .stack-band--bw .banner-name{ color: var(--k); }
-main.has-mega .stack-band--bw .banner-name:is(:focus-visible){ color: #A6002F; }
+main.has-mega .stack-band--bw .banner-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 .section-band .band-dek a,
 .section-band--colophon .band-dek span,
 main.has-mega .band-deks.band-dek a{ color: var(--k); }
@@ -10258,7 +10295,7 @@ main.has-mega .band-deks.band-dek a{ color: var(--k); }
    THE POINTER'S TRADE IS YVES KLEIN BLUE.
    Every text hover on the page — the titles, the couriers, the band
    names and deks, the two wordmarks, READ ON and the brackets — goes
-   to International Klein Blue (#A6002F, the --klein token the sheet
+   to International Klein Blue (#FFE135, the --klein token the sheet
    has carried since the blue era). On the white blocks it reads
    10:1; on the charcoal ground it reads 1.7:1, which is a shift of
    hue more than a lift of contrast — see the report.
@@ -10286,7 +10323,7 @@ main.has-mega .card-preview-block,
 main.has-mega .card-preview-block *,
 main.has-mega .plate-more,
 main.has-mega .plate-more *{ color: var(--g); }
-main.has-mega .plate-more :is(.plate-read, .plate-close):is(:focus-visible){ color: #A6002F; }
+main.has-mega .plate-more :is(.plate-read, .plate-close):is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega .latest-plate-p,
 main.has-mega .card-preview{
   text-align: justify;
@@ -10316,7 +10353,9 @@ main.has-mega .reprint:is(:hover, :focus-within){ background: var(--g); }
 body.has-mega .site-nav--top .topbar-name,
 body.has-mega .site-nav--top .topbar-rail .rail-mark,
 main.has-mega .reprint-name{ color: var(--k); }
-body.has-mega .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name, main.has-mega .reprint:is(:focus-within) .reprint-name, main.has-mega .reprint-name:is(:focus-visible){ color: #A6002F; }
+body.has-mega .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name,
+main.has-mega .reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* The curtain is the plate's inner box (absolute, inset 0) and it
    zeroes its own sides — so the 48 has to be stated on it, or the
    text runs the plate's full width and clips at the edge. */
@@ -10341,7 +10380,8 @@ main.has-mega .band-deks.band-dek a{ color: var(--g); }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band),
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: var(--g); }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name{ color: var(--k); }
-main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible), main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible),
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------------------------------------------------------------
    THE CONTROLS SAY WHERE, WITHOUT BRACKETS.
@@ -10396,7 +10436,8 @@ main.has-mega .stack-band--bw,
 main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: var(--k); }
 main.has-mega .stack-band--wb .banner-name{ color: var(--k); }
 main.has-mega .stack-band--bw .banner-name{ color: var(--g); }
-main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visible), main.has-mega :is(.stack-band--wb, .stack-band--bw):is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name:is(:focus-visible),
+main.has-mega :is(.stack-band--wb, .stack-band--bw):is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 /* (the stack's empty band is retired; Archive opens the stack) */
 
 /* ---------------------------------------------------------------
@@ -10630,7 +10671,8 @@ main.has-mega .section-band > .band-dek,
 main.has-mega .section-band > .band-dek :is(a, span),
 main.has-mega .section-band--colophon .band-dek span,
 main.has-mega .band-deks.band-dek a{ color: var(--k); }
-main.has-mega .section-band .band-deks a:is(:focus-visible), main.has-mega .section-band > .band-dek a:is(:focus-visible){ color: #A6002F; }
+main.has-mega .section-band .band-deks a:is(:focus-visible),
+main.has-mega .section-band > .band-dek a:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------------------------------------------------------------
    THE REVIEW'S PICTURE IS CROPPED, NOT RE-FITTED.
@@ -10739,7 +10781,8 @@ main.has-mega .movement + .movement{ margin-top: calc(-1 * (var(--band-h, 72px) 
    both, carrying :is(.is-lit, :not(.is-lit)) so it stands a class
    heavier than either in every state. */
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:focus-visible)), main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(*, .latest-title a:is(:focus-visible)), main.has-mega .duo-half--mega .panel-col--left :is(*, .card-title a:is(:focus-visible)), main.has-mega .duo-half--mega.is-lit .panel-col--left :is(*, .card-title a:is(:focus-visible)), main.has-mega .latest-cell.is-lit .cover-meta--author .cover-sep{ color: var(--k); }
-main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col :is(.latest-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)), main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(.card-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)){ color: #A6002F; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col :is(.latest-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)),
+main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(.card-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)){ color: var(--hl-ink); background-color: #FFE135; }
 /* The ring above everything in the cell (the hero carries a child at
    8) — it is one pixel on the edges and takes no pointer. */
 .latest-cell--ps::after,
@@ -10798,7 +10841,8 @@ main.has-mega .m--colophon > .stack-band{ box-shadow: inset 0 1px 0 0 var(--k); 
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega) > .title-halo,
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega).is-lit > .title-halo{ background: var(--k); }
 main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra) .latest-col :is(*, .latest-title a:is(:focus-visible)), main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra).is-lit .latest-col :is(*, .latest-title a:is(:focus-visible)), main.has-mega .duo-half--mega .panel-col--left :is(*, .card-title a:is(:focus-visible)), main.has-mega .duo-half--mega.is-lit .panel-col--left :is(*, .card-title a:is(:focus-visible)), main.has-mega .cover-meta--author .cover-sep, main.has-mega .latest-cell.is-lit .cover-meta--author .cover-sep{ color: var(--g); }
-main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col :is(.latest-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)), main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(.card-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)){ color: #A6002F; }
+main.has-mega .latest-cell:is(.latest-cell--ps, .latest-cell--contra):is(.is-lit, :not(.is-lit)) .latest-col :is(.latest-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)),
+main.has-mega .duo-half--mega:is(.is-lit, :not(.is-lit)) .panel-col--left :is(.card-title a:is(:focus-visible), .cover-author a:is(:focus-visible), .cover-date a:is(:focus-visible), .cover-date a:is(:focus-visible) *, .peek-open:is(:focus-visible)){ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------------------------------------------------------------
    THE REVIEW'S PICTURE CLOSES OVER ITS PREVIEW.
@@ -10929,7 +10973,8 @@ main.has-mega .stack-band--bw,
 main.has-mega .stack-band--bw:is(:hover, :focus-within){ background: var(--g); }
 main.has-mega :is(.stack-band--wb, .stack-band--bw) .banner-name{ color: var(--k); }
 main.has-mega .stack-band--wb .banner-name:is(:focus-visible), main.has-mega .stack-band--wb:is(:focus-within) .banner-name{ color: var(--g); }
-main.has-mega .stack-band--bw .banner-name:is(:focus-visible), main.has-mega .stack-band--bw:is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega .stack-band--bw .banner-name:is(:focus-visible),
+main.has-mega .stack-band--bw:is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 
 /* ---------------------------------------------------------------
    THE PREVIEW PRINTS IN YVES BLUE ON ITS WHITE.
@@ -10945,7 +10990,7 @@ main.has-mega .plate-more,
 main.has-mega .plate-more *,
 main.has-mega .card .duo-half .duo-panel .card-preview,
 main.has-mega .latest-plate-p,
-main.has-mega .plate-title{ color: #A6002F; }
+main.has-mega .plate-title{ color: #FFE135; }
 main.has-mega .plate-more .plate-close:is(:focus-visible){ color: var(--g); }
 
 
@@ -10981,7 +11026,7 @@ main.has-mega .m--colophon > .stack-band.is-at-top{ box-shadow: none; }
 main.has-mega .section-band,
 main.has-mega .section-band--colophon{
   background: var(--k);
-  color: #A6002F;
+  color: #FFE135;
   box-shadow: inset 0 1px 0 0 var(--k), inset 0 -1px 0 0 var(--k);
 }
 main.has-mega .section-band .band-deks,
@@ -10991,7 +11036,7 @@ main.has-mega .section-band .band-deks .nav-links-dead,
 main.has-mega .section-band > .band-dek,
 main.has-mega .section-band > .band-dek :is(a, span),
 main.has-mega .section-band--colophon .band-dek span,
-main.has-mega .band-deks.band-dek a{ color: #A6002F; }
+main.has-mega .band-deks.band-dek a{ color: #FFE135; }
 main.has-mega .section-band .band-deks a:is(:focus-visible), main.has-mega .section-band > .band-dek a:is(:focus-visible){ color: var(--g); }
 main.has-mega .section-band.is-at-top{ box-shadow: inset 0 -1px 0 0 var(--k); }
 main.has-mega .section-band.is-at-bottom{ box-shadow: inset 0 1px 0 0 var(--k); }
@@ -11020,14 +11065,15 @@ body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible){
   box-shadow: inset 0 -1px 0 0 var(--k);
 }
 body.has-mega .site-nav--top .topbar-name{ color: var(--k); }
-body.has-mega .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: #A6002F; }
+body.has-mega .site-nav--top .topbar-wordmark:is(:focus-visible) .topbar-name{ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega .reprint,
 main.has-mega .reprint:is(:hover, :focus-within){
   background: var(--g);
   box-shadow: inset 0 1px 0 0 var(--k);
 }
 main.has-mega .reprint-name{ color: var(--k); }
-main.has-mega .reprint:is(:focus-within) .reprint-name, main.has-mega .reprint-name:is(:focus-visible){ color: #A6002F; }
+main.has-mega .reprint:is(:focus-within) .reprint-name,
+main.has-mega .reprint-name:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 /* ---------------------------------------------------------------
    THE BANDS TURN YVES BLUE, WRITTEN IN WHITE.
    Every section band prints the page's light on the Klein now; the
@@ -11079,7 +11125,8 @@ main.has-mega .section-band.is-at-top.is-at-bottom{ box-shadow: none; }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band),
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:hover, :focus-within){ background: var(--g); }
 main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name{ color: var(--k); }
-main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible), main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band) .banner-name:is(:focus-visible),
+main.has-mega .page-banner:is(.subscribe-band, .events-band, .store-band):is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band){
   box-shadow: inset 0 1px 0 0 var(--k), inset 0 -1px 0 0 var(--k);
 }
@@ -11107,7 +11154,8 @@ main.has-mega .m--colophon > .stack-band--wb:is(:hover, :focus-within){ backgrou
 main.has-mega .m--colophon > .stack-band--bw,
 main.has-mega .m--colophon > .stack-band--bw:is(:hover, :focus-within){ background: var(--k); }
 main.has-mega .m--colophon > :is(.stack-band--wb, .stack-band--bw) .banner-name{ color: var(--k); }
-main.has-mega .m--colophon > .stack-band--wb .banner-name:is(:focus-visible), main.has-mega .m--colophon > .stack-band--wb:is(:focus-within) .banner-name{ color: #A6002F; }
+main.has-mega .m--colophon > .stack-band--wb .banner-name:is(:focus-visible),
+main.has-mega .m--colophon > .stack-band--wb:is(:focus-within) .banner-name{ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:focus-visible), main.has-mega .m--colophon > .stack-band--bw:is(:focus-within) .banner-name{ color: var(--g); }
 
 /* THE FOOTER'S BAND IS RULED ABOVE: a 1px white line along the
@@ -11380,7 +11428,7 @@ main.has-mega .card .duo-half .duo-panel .card-preview,
 main.has-mega .latest-plate-p{ color: var(--g); }
 main.has-mega .plate-more,
 main.has-mega .plate-more *,
-main.has-mega .plate-title{ color: #A6002F; }
+main.has-mega .plate-title{ color: #FFE135; }
 main.has-mega .plate-more .plate-close:is(:focus-visible){ color: var(--g); }
 main.has-mega .section-band > .band-dek,
 main.has-mega .section-band > .band-dek :is(a, span),
@@ -11428,7 +11476,7 @@ main.has-mega .m--colophon > .stack-band--bw .banner-name:is(:focus-visible), ma
 main.has-mega .plate-more,
 main.has-mega .plate-more *,
 main.has-mega .plate-title{ color: var(--g); }
-main.has-mega .plate-more .plate-close:is(:focus-visible){ color: #A6002F; }
+main.has-mega .plate-more .plate-close:is(:focus-visible){ color: var(--hl-ink); background-color: #FFE135; }
 main.has-mega .plate-title{ margin-bottom: 27.07px; }
 main.has-mega .plate-more{ margin-top: 25.54px; }
 
@@ -12038,7 +12086,8 @@ body.ledger-page .ledger-feature .title-halo{ background-color: var(--k) !import
 :is(.latest-cell--ps, .latest-cell--contra) .latest-col .latest-matter *,
 .duo-half--mega .panel-col--left,
 .duo-half--mega .panel-col--left *{ color: var(--g) !important; }
-:is(.latest-cell--ps, .latest-cell--contra) .latest-col .latest-matter :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible), .duo-half--mega .panel-col--left :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible){ color: #A6002F !important; }
+:is(.latest-cell--ps, .latest-cell--contra) .latest-col .latest-matter :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible),
+.duo-half--mega .panel-col--left :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible){ color: var(--hl-ink) !important; background-color: #FFE135 !important; }
 
 /* ---------------------------------------------------------------
    ABOUT IS A MOSAIC OF CARDS (renderAboutPage): seven white cards on
@@ -12108,7 +12157,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card-body ol{ margin: 0; padding-left: 1.4em; }
 .about-card-body li{ margin: 0; }
 .about-card-body a{ color: var(--g); text-decoration: underline; text-underline-offset: 3px; }
-.about-card-body a:focus-visible{ color: #A6002F; }
+.about-card-body a:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 .about-card-cols{ display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .about-card-cols p{ margin: 0; }
 .about-card-foot{ margin-top: auto; padding-top: 36px; }
@@ -12119,7 +12168,8 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
   font: inherit; letter-spacing: inherit; text-transform: inherit;
   transition: color .15s ease;
 }
-.about-card-foot a:focus-visible, .about-card-more:focus-visible{ color: #A6002F; outline: none; }
+.about-card-foot a:focus-visible,
+.about-card-more:focus-visible{ color: var(--hl-ink); background-color: #FFE135; outline: none; }
 /* THE MASTHEAD CARD: the roles in the courier, the names in the dek's
    Garamond, centred down the card. The hover portraits keep their own
    rules. */
@@ -12140,7 +12190,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
   text-transform: none; letter-spacing: normal;
   color: var(--g); text-decoration: none;
 }
-.about-card a.mh-name:focus-visible{ color: #A6002F; }
+.about-card a.mh-name:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 /* THE CLAMPED CARDS — the Letter and the Manifesto — open at a screen's
    worth of their text, fading out at the foot; READ ON lets them out. */
 .about-card--clamped .about-card-body{
@@ -12151,7 +12201,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card--clamped .about-card-body::after{
   content: '';
   position: absolute; left: 0; right: 0; bottom: 0; height: 96px;
-  background: linear-gradient(rgba(255,255,255,0), var(--k));
+  background: linear-gradient(rgba(248,248,255,0), var(--k));
   pointer-events: none;
 }
 .about-card--clamped.is-open .about-card-body{ max-height: none; overflow: visible; }
@@ -12195,7 +12245,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card--dark .about-card-body,
 .about-card--dark .mh-role,
 .about-card--dark .mh-name{ color: var(--k); }
-.about-card--dark a.mh-name:focus-visible{ color: #A6002F; }
+.about-card--dark a.mh-name:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 /* A card without a kicker opens on its title at the kicker's line. */
 .about-card > .about-card-title:first-child{ margin-top: 18.2px; }
 /* THE MOSAIC IN TWO COLUMNS: the short cards stacked in a thinner
@@ -12220,7 +12270,8 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card--dark .about-card-body li,
 .about-card--dark .about-card-body a,
 .about-card--dark .about-card-foot a{ color: var(--k); }
-.about-card--dark .about-card-body a:focus-visible, .about-card--dark .about-card-foot a:focus-visible{ color: #A6002F; }
+.about-card--dark .about-card-body a:focus-visible,
+.about-card--dark .about-card-foot a:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 /* MASTHEAD and CONTACT say their names in the dek's voice — the
    Garamond italic at 20 on 24 — at the kicker's line. */
 .about-card-title--dek{
@@ -12247,13 +12298,13 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 /* The Subscribe card: the linked word in the dek's voice at the head,
    the sign-up clause in the courier 18 under it, the body 24 under that. */
 .about-card-title--dek a{ color: inherit; text-decoration: none; }
-.about-card-title--dek a:focus-visible{ color: #A6002F; }
+.about-card-title--dek a:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 .about-card-line{ margin-top: 18px; }
 .about-card-line + .about-card-body{ margin-top: 24px; }
 /* The Subscribe card: the linked word in the dek's voice at the head,
    the sign-up clause in the courier 18 under it, the body 24 under that. */
 .about-card-title--dek a{ color: inherit; text-decoration: none; }
-.about-card-title--dek a:focus-visible{ color: #A6002F; }
+.about-card-title--dek a:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 .about-card-line{ margin-top: 18px; }
 .about-card-line + .about-card-body{ margin-top: 24px; }
 /* A dek under a dek-voiced title stands 18 under it. */
@@ -12312,12 +12363,12 @@ body.ledger-page .about-mosaic-block{ z-index: 1; }
    Instagram in crimson, white under the pointer; the two on their own
    lines. */
 #contact .about-card-body a{ text-decoration: none; }
-#contact .about-card-body a.about-social{ color: #A6002F; }
+#contact .about-card-body a.about-social{ color: #FFE135; }
 #contact .about-card-body a.about-social:focus-visible{ color: var(--k); }
 /* (The crimson on Substack and Instagram is taken back: white like the
    line, crimson only under the pointer, as every link in the column.) */
 #contact .about-card-body a.about-social{ color: var(--k); }
-#contact .about-card-body a.about-social:focus-visible{ color: #A6002F; }
+#contact .about-card-body a.about-social:focus-visible{ color: var(--hl-ink); background-color: #FFE135; }
 /* THE HERO BLOCK STANDS UNDER THE COLUMN, not over it: the last card's
    descenders reach into the block's top row, and the block was painting
    its charcoal over them. A level down (still over the stuck word,
@@ -12338,11 +12389,12 @@ body.ledger-page .ledger-feature .title-halo{ background-color: var(--g) !import
 :is(.latest-cell--ps, .latest-cell--contra) .latest-col .latest-matter *,
 .duo-half--mega .panel-col--left,
 .duo-half--mega .panel-col--left *{ color: var(--k) !important; }
-:is(.latest-cell--ps, .latest-cell--contra) .latest-col .latest-matter :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible), .duo-half--mega .panel-col--left :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible){ color: #A6002F !important; }
+:is(.latest-cell--ps, .latest-cell--contra) .latest-col .latest-matter :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible),
+.duo-half--mega .panel-col--left :is(a:focus-visible, a:focus-visible *, .peek-open:focus-visible){ color: var(--hl-ink) !important; background-color: #FFE135 !important; }
 .plate-curtain{ background-color: var(--g) !important; }
 .plate-curtain,
 .plate-curtain *{ color: var(--k) !important; }
-.plate-curtain :is(a:focus-visible, .plate-close:focus-visible){ color: #A6002F !important; }
+.plate-curtain :is(a:focus-visible, .plate-close:focus-visible){ color: var(--hl-ink) !important; background-color: #FFE135 !important; }
 /* THE TITLE COLUMNS AND THE PLATES ON CRIMSON, the words white; links
    go charcoal under the pointer (crimson would vanish). */
 :is(.latest-cell--ps, .latest-cell--contra, .duo-half--mega) > .title-halo,
@@ -12370,7 +12422,7 @@ body.ledger-page .m--latest.ledger-feature.about-hero .movement-body{ margin-bot
 
 /* ---------------------------------------------------------------
    EVERY WORD ON THE YELLOW PRINTS BLACK.
-   The navy gave way to the editor's yellow, #A6002F, and the white
+   The navy gave way to the editor's yellow, #FFE135, and the white
    that stood on the navy would not read on it: the bands' three slots
    at head and foot, the ledger's column head with its arrows, the
    yellow words of the closing decks, the cards' title columns and the
@@ -12978,8 +13030,8 @@ main.has-mega .page-rows > .reprint.is-at-top:is(*, .r.r.r.r.r.r.r.r.r.r){ box-s
    =================================================================== */
 /* LIGHT IS THE DEFAULT (2026-09-17, later): the bare page is white
    with charcoal ink; DARK is the stored choice. */
-html{ --g: #FFFFFF; --k: #121417; }
-html[data-theme="dark"]{ --g: #121417; --k: #FFFFFF; }
+html{ --g: #F8F8FF; --k: #121417; }
+html[data-theme="dark"]{ --g: #121417; --k: #F8F8FF; }
 /* ===================================================================
    2026-09-16, LATER: EVERY CHARCOAL AND WHITE BELOW THIS LINE IS SWAPPED
    — the ground, bands and cards are charcoal, the OPS words and every
@@ -13100,7 +13152,15 @@ main.has-mega :is(.duo-half--mega, .duo-half--wide, .latest-cell--ps, .latest-ce
    every focus colour stated as a literal turn together. The token
    names stay (--yves, --klein): they name the role, the highlight,
    and the hex ground still repaints it as the ink's opposite. */
-:root{ --yves: #A6002F; }
+:root{ --yves: #FFE135; }
+/* THE INK THAT STANDS ON THE BLOCK (2026-09-18). The highlight is a
+   BLOCK behind the word now, not the word's own colour, so the word
+   needs a colour that reads on it: the charcoal, which carries the
+   yellow on the light page, the dark one, and a chosen ground alike. */
+:root{ --hl-ink: #121417; }
+/* (A hex ground took the ghost white here while its highlight was
+   painted charcoal; the highlight is the yellow on every ground now,
+   so the ink on it is the charcoal on every ground too.) */
 /* Text only: a blanket rule on every descendant of a link or button
    had replaced the preview plate's own slide transition. */
 :is(a:not(.latest-cover, .latest-plate, .card-image-link, .ticker-cover-link, .duo-card-image, .card-image-frame),
@@ -13114,11 +13174,11 @@ button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more,
 :is(.topbar-name, .reprint-name, .banner-name, .banner-name--pair) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   transition: color .25s ease, background-color .25s ease, border-color .25s ease, opacity .25s ease, background-size .25s ease;
 }
-a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
-a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):not(.latest-cover):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
+a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):not(.latest-cover):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 :is(button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r),
 :is(button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
-  color: var(--yves) !important;
+  color: var(--hl-ink) !important; background-color: var(--yves) !important;
 }
 
 /* THE BAND'S RULE IS CHARCOAL (2026-09-16): the seam pixel under the
@@ -13554,7 +13614,7 @@ html.theme-instant *::after{ transition: none !important; }
    every link. */
 main.has-mega .card :is(.latest-plate, .card-preview-block):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ cursor: default; }
 main.has-mega .card :is(.latest-plate, .card-preview-block) :is(.plate-title, .plate-close):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){ cursor: pointer; }
-main.has-mega .card :is(.latest-plate, .card-preview-block) .plate-title:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+main.has-mega .card :is(.latest-plate, .card-preview-block) .plate-title:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--hl-ink) !important; background-color: var(--yves) !important; }
 
 /* THE LEDGER OPENS STRAIGHT UNDER ITS HEAD (2026-09-17): no 72 between
    the column head's foot and the first row. And the head pinned on
@@ -13811,7 +13871,7 @@ body.word-page .ledger-item > .ledger-row{
    it. The dashes take no hover. (Earlier the words were held in the
    ink under the pointer on purpose; that is undone.)
    --------------------------------------------------------------- */
-main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--hl-ink) !important; background-color: var(--yves) !important; }
 
 /* THE HEAD'S SYMBOLS HOVER AS THE WORDS DO (2026-09-17): the sort
    arrows, the shuffle and the glass go to the highlight under the
@@ -13822,7 +13882,7 @@ body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass){
   transition: color .25s ease, opacity .25s ease;
 }
 body.word-page .ledger-head :is(.arch-sort, .arch-shuffle, .arch-search-glass):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  color: var(--yves) !important; opacity: 1;
+  color: var(--hl-ink) !important; background-color: var(--yves) !important; opacity: 1;
 }
 
 /* THE CUT'S … HANGS PAST THE LAST WORD (2026-09-17): a mark of no
@@ -13921,7 +13981,7 @@ html[data-theme="hex"] main.has-mega :is(.card-title, .latest-title) a:is(:hover
 html[data-theme="hex"] main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html[data-theme="hex"] body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html[data-theme="hex"] body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  color: var(--yves) !important;
+  color: var(--hl-ink) !important; background-color: var(--yves) !important;
 }
 
 /* ---------- THE WORDMARK'S MINIATURE IN THE BAND (2026-09-17) ----------
@@ -13962,12 +14022,12 @@ main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
 main.has-mega .section-band > .band-mini :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: inherit !important; }
 main.has-mega .section-band > .band-mini.is-shown:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ visibility: visible; }
 main.has-mega .section-band > .band-mini.is-home:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: auto; }
-main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--hl-ink) !important; background-color: var(--yves) !important; }
 /* ON A HEX GROUND the miniature stands in the ink with the wordmark it
    stands in for, and takes the highlight — charcoal there — under the
    hand (turned over 2026-09-18 with the names above). */
 html[data-theme="hex"] main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
-html[data-theme="hex"] main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--hl-ink) !important; background-color: var(--yves) !important; }
 
 /* ---------- THE SUBSCRIBE BAND'S LINE (2026-09-17) ----------
    SUBSCRIBE carries the offer under it, one courier line in
@@ -14041,28 +14101,26 @@ main.has-mega .page-banner--apart .banner-line .banner-list:is(*, .r.r.r.r.r.r.r
    dressings): the section words, SUBSCRIBE, the deck's and the
    archive page's own, in the name's face at its bold, as written, at
    the titles' ceiling of 72 (fitSubscribeName).
-   THE TRACKING IS MEASURED AGAIN FOR THIS FACE, not carried over. In
-   THE NEW CRITIC, capitals at their 0.03em, the painted gap between
-   letters averages 0.100em — 0.178 of the average capital's ink width
-   (0.561em), a far tighter rhythm than the condensed Futura's 0.31,
-   because this face's capitals are two thirds again as wide. Set the
-   eight section words end to end and solve their lowercase for the
-   same gap-to-letter ratio and the answer is 0.044em; the sheet
-   rounds to 0.045, which lands the words at 0.178 against the
-   capitals' 0.178. (Futura's 0.05 left this face at 0.190 — loose by
-   a hair, which is how the swap first read.) The face's own kerning
-   pairs stay on under it. */
+   CAPITALS AGAIN (2026-09-18), as the name is set, and the tracking
+   goes back to the name's own 0.03em with them. The measuring that
+   gave the sentence case its 0.045 solved for ONE thing — that the gap
+   between letters read as the capitals' own — and capitals set at the
+   name's tracking ARE that rhythm rather than an answer to it. (For
+   the record of the hours in sentence case: Neue Haas's lowercase
+   wanted 0.044, rounded to 0.045; the condensed Futura before it
+   wanted 0.05 on a far looser rhythm.) The face's own kerning pairs
+   stay on under it. */
 .banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 .banner-name--pair a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 .ledger-word:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   font-family: var(--title-face);
   font-weight: 700;
   font-style: normal;
-  letter-spacing: 0.045em;
+  letter-spacing: 0.03em;
   font-kerning: normal;
   font-feature-settings: "kern" 1;
   text-rendering: optimizeLegibility;
-  text-transform: none;
+  text-transform: uppercase;
 }
 
 /* ---------- THE COLUMN STANDS 24 FROM THE PICTURE (2026-09-18) ----------
@@ -14113,17 +14171,27 @@ main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   font-weight: 700;
 }
 
-/* ---------- THE LATEST, STACKED ON THE RIGHT MARGIN (2026-09-18) ----------
-   The two words one letter to the line, in the name's condensed bold
-   (60 on the sheet; the fitter sizes it to run from the byline's cap
-   line to the card's middle, ~15 at this width), ranged right on the
-   margin's line (the seam's right end, 24 inside the card's box), a blank
-   line between the words. Inert: no pointer, and it scrolls with the
-   card. The fitter seats the first cap's ink on the card's top edge
-   and the column on the seam (fitLatestStack). */
-main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  position: absolute; right: 24px; top: 0;
-  z-index: 6;
+/* ---------- THE LABELS STAND IN THE LEFT MARGIN (2026-09-18) ----------
+   THE LATEST and EDITORS' PICKS, and ESSAYS, POSTSCRIPT and CONTRA
+   with them — one letter to the line in the name's own face, in the 72
+   the social marks kept until this morning, not on their card's margin
+   where they began. The fitter writes the seat (duo-panel-fit.js,
+   pinOneStack): each opens centred on the first cover of the block it
+   names, rises with the page until its ink is centred in the MARGIN,
+   holds there, and parks on the middle of that block's last review
+   cover, scrolling away with the page from there. FIXED only while it
+   holds the middle, where the top is a constant; ABSOLUTE in the
+   document at either rest, where the browser does the scrolling and
+   nothing is written per frame — a fixed seat rewritten from the
+   scroll position is a frame behind the page, and the letters swim.
+   The fitter lifts them out of their card into <main>: a fixed seat
+   inside a card is a seat inside whatever transform the card carries,
+   and a card carries one whenever a preview opens. Inert: no
+   pointer. */
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: fixed; left: 0; top: 0;
+  width: 72px;
+  z-index: 80;
   margin: 0; padding: 0;
   font-family: var(--title-face);
   font-weight: 700;
@@ -14132,24 +14200,26 @@ main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   line-height: 1;
   letter-spacing: 0;
   text-transform: uppercase;
-  /* CENTRED ON ONE AXIS (2026-09-18): the block is the widest letter's
-     width, on the seam; the narrower letters centre inside it. */
-  width: fit-content;
+  /* CENTRED IN THE MARGIN: the block is the margin's own 72 and every
+     letter centres in it, as the marks that stood here did. (It was
+     the widest letter's width on the seam while it lived on a card.) */
   text-align: center;
   white-space: nowrap;
   color: var(--k);
   pointer-events: none;
 }
-main.has-mega .card--mega > .latest-stack.latest-stack--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ right: auto; left: 24px; }
-main.has-mega .card--mega > .latest-stack > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: block; }
-main.has-mega .card--mega > .latest-stack > .latest-stack-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 1em; }
+/* (.latest-stack--left placed the archive's stack on its card's left
+   margin; every label stands in the page's one left margin now, so it
+   places nothing. The class stays: the apostrophe's mark reads it.) */
+main.has-mega .latest-stack > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: block; }
+main.has-mega .latest-stack > .latest-stack-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 1em; }
 /* A MARK HUNG OFF ITS LETTER (2026-09-18): the apostrophe of EDITORS'
    sits absolute on the S's own inline box, off its right, so the S
    centres on the column with the rest and the mark stands outside. */
-main.has-mega .card--mega > .latest-stack .latest-stack-glyph:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; display: inline-block; }
-main.has-mega .card--mega > .latest-stack .latest-stack-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: absolute; left: 100%; top: 0; }
+main.has-mega .latest-stack .latest-stack-glyph:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; display: inline-block; }
+main.has-mega .latest-stack .latest-stack-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: absolute; left: 100%; top: 0; }
 /* On a hex ground it turns with the name. */
-html[data-theme="hex"] main.has-mega .card--mega > .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
+html[data-theme="hex"] main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
 
 /* ---------- THE NAME IN THE BAND'S MIDDLE ON THE WORD PAGES (2026-09-18) ----------
    Archive and About carry no masthead, so the band's middle carries
@@ -14184,9 +14254,9 @@ main.has-mega .section-band .band-name-mid :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   display: inline !important;
   margin: 0 !important; padding: 0 !important;
 }
-main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--hl-ink) !important; background-color: var(--yves) !important; }
 html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
-html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--yves) !important; }
+html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--hl-ink) !important; background-color: var(--yves) !important; }
 
 /* ---------- ON A HEX GROUND EVERY HIGHLIGHT IS THE ONE (2026-09-18) ----------
    The sheet has two highlight tokens: --yves, which the hex paint
@@ -14198,11 +14268,16 @@ html[data-theme="hex"] main.has-mega .section-band .band-name-mid:is(:hover, :fo
 html[data-theme="hex"] :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ --klein: var(--yves) !important; }
 
 /* ---------- THE CARD TITLES TAKE THE SECTION WORDS' DRESS (2026-09-18) ----------
-   The Garamond roman wore them since the morning; they set now in the
-   same Neue Haas Grotesk Display Bold the section words wear (Futura's
-   condensed bold for the hour between), sentence case as written,
-   tracked with them to the capitals' rhythm at the measured 0.045em,
-   the face's own kerning pairs under it. Every
+   The Garamond roman wore them in the morning; they set now in the
+   same face the name and the section words wear, sentence case as
+   written, tracked to the capitals' rhythm — MEASURED FOR THE FACE IN
+   FORCE, not carried between them. Azo Sans's capitals at the name's
+   0.03em read at 0.217 of a letter's ink; its sentence case wants
+   0.019em to match. (Nimbus read 0.248 and wanted 0.018; Neue Haas
+   read 0.178 and wanted 0.045, which on either of these would have
+   been half again the rhythm. The first Azo reading, 0.125, was taken
+   off a FALLBACK — the browser still held a kit cached from before the
+   face was added to it.) The face's own kerning pairs stay on. Every
    title role together — the essays' and reviews' card titles, the
    latest rows' and the postscripts' — and their inner lines and links
    with them, so the hover lights one face. The fitter measures the
@@ -14217,7 +14292,7 @@ html[data-theme="hex"] :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ --klein
   font-family: var(--title-face);
   font-weight: 700;
   font-style: normal;
-  letter-spacing: 0.045em;
+  letter-spacing: 0.019em;
   font-kerning: normal;
   font-feature-settings: "kern" 1;
   text-rendering: optimizeLegibility;
@@ -14238,18 +14313,26 @@ html[data-theme="hex"] :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ --klein
    panel stacked on it, nothing else, and they keep the older rule's
    target — image and panel as one — restated here only to bring them
    to the same grey.
-   THE DIM IS 0.72, not the 0.5 the dark-paper hero was given: on a
-   white ground a half-brightness cover reads as switched off rather
-   than held, and the grey wants to stay a picture. Keyboard focus
-   takes it too. The transition is already on img.card-image (the
-   load-fade shorthand carries filter .3s for exactly this), and a
-   pointer that cannot hover -- a phone, where the dim would stick
-   after a tap -- never sees the rule. */
+   GREY, AND DIM ENOUGH TO CARRY WHITE WORDS ON IT (2026-09-18; 0.72
+   for an hour, the dark paper's 0.5 for a day, and no dim at all in
+   between). The dim is the ground READ NOW stands on: the words
+   replace the pointer over a cover (src/cover-cue.js, and .cover-cue
+   below) and they are white, so the palest cover on the page has to
+   come down far enough to read them. 0.55 left the white competing
+   with a drawing's own lines, 0.45 read clean, 0.30 is where it
+   settled.
+   THE CLASS SITS BESIDE THE :hover because a browser will not re-read
+   :hover while the page scrolls: a picture arriving under a still hand
+   would take its words on the frame and its grey only when the reader
+   stirred. src/cover-cue.js writes .is-cued off the same hit test that
+   seats the words — for a card's TITLE as well as its cover — so the
+   two answer together. Keyboard focus takes it too, and a pointer that
+   cannot hover -- a phone -- never sees the rule. */
 @media (hover: hover){
-  :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible) img.card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+  :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
   .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
   .duo-half:not(.duo-half--mega):is(:hover, :focus-within) .card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    filter: grayscale(1) brightness(0.72);
+    filter: grayscale(1) brightness(0.3);
   }
 }
 
@@ -14287,4 +14370,267 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega) :is(.card-title, .latest-ti
   background: var(--k);
   z-index: 20;
   pointer-events: none;
+}
+
+/* ---------- READ NOW, RIDING WITH THE POINTER (2026-09-18) ----------
+   One line for the whole page (src/cover-cue.js moves it between the
+   covers), fixed to the viewport and seated by transform: the courier
+   at its own 13, in white, standing where the arrow stood — the arrow
+   itself is taken away below. Inert to the pointer, which is standing
+   on it. It fades in where it will stand rather than travelling to it:
+   the script seats it before it shows it. */
+.cover-cue:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 90;
+  margin: 0;
+  padding: 0;
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: none;
+  white-space: nowrap;
+  color: #F8F8FF;
+  background: none;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+/* THE EASE IS ON THE WAY IN ALONE (2026-09-18). Stated on the line
+   itself it eased the way OUT as well — and the way out is where the
+   picture has left the pointer on a fast scroll, so for the fifth of a
+   second the fade took, a line still painted at a pointer that had not
+   moved stood clear of any picture at all. On the shown state instead:
+   the class goes, the ease goes with it. */
+.cover-cue.is-on:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ opacity: 1; transition: opacity .18s ease; }
+@media (prefers-reduced-motion: reduce){
+  .cover-cue.is-on:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ transition: none; }
+}
+/* AND THE ARROW GOES WITH IT, on a cover — hung on the class
+   src/cover-cue.js writes on the root, so a page whose script never
+   ran, or a pointer that cannot hover, keeps the pointer it had. */
+@media (hover: hover){
+  html.has-cover-cue :is(.card-image-link, .latest-cover, .ticker-cover-link):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+  html.has-cover-cue :is(.card-image-link, .latest-cover, .ticker-cover-link) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    cursor: none;
+  }
+}
+
+/* ---------- THE TWO MARKS MOVE AS ONE (2026-09-18) ----------
+   A title under the hand takes the highlight and its picture turns
+   grey, and the two were out of step twice over. THE TRIGGER: the
+   highlight hung on :hover, which a browser will not re-read while the
+   page scrolls, while the grey hung on the class the fitter's own hit
+   test writes — so a title arriving under a still hand greyed its
+   picture at once and marked itself only when the reader stirred. It
+   lights from that same class now (src/cover-cue.js, lightTitle),
+   with :hover left in place for everything the script never sees.
+   THE EASE: the words eased over .25s against the picture's .3s, so
+   even begun together they finished apart. Both are .3s now. */
+main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title) a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* NEITHER background-color NOR color: a title's block and its ink
+     land together, like every other box. (This rule twice re-added an
+     ease the snap rule had just taken away — first on the block, then
+     on the ink.) The PICTURE's grey still eases over its own .3s: it
+     is the one mark here that is not type. */
+  transition: none !important;
+}
+main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).is-cued a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--hl-ink) !important;
+  background-color: var(--yves) !important;
+}
+@media (prefers-reduced-motion: reduce){
+  main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+  main.has-mega :is(.card-title, .latest-title) a :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ transition: none !important; }
+}
+
+/* ---------- A NOTE ON TWO PASSES THAT WENT WRONG (2026-09-18) ----------
+   Both were whole-sheet rewrites, and both were undone and done again:
+   (1) THE GHOST WHITE pass rewrote the bare keyword `white` outside
+   comments — and --white is a TOKEN NAME with that word in it, so 113
+   definitions and reads became --#F8F8FF, which is not a valid custom
+   property name and was silently dropped. white-space was guarded from
+   the start; --white was not. It is guarded now.
+   (2) THE HIGHLIGHT-TO-BLOCK pass had to split selector lists, and
+   split them at every comma — including the commas inside :is() and
+   :has(), and the commas in the COMMENT standing before a rule. It
+   shredded 75 rules, and the repair pass that followed merged 861
+   selectors and 53KB of the sheet's tail into one rule. The sheet was
+   restored from the last commit and every edit of the day re-applied
+   over it; the splitter counts brackets now, and leaves a rule's
+   leading comment where it stands. */
+
+/* ---------- ONE BOX TO A NAME (2026-09-18) ----------
+   The highlight is a block behind the word, and the names are not one
+   word: THE NEW CRITIC carries NEW in a span of its own, the pair
+   banners carry a link inside the word, and the hover rules paint the
+   element AND everything under it. So the masthead lit as two blocks —
+   the name's, and a taller one behind NEW on its own line box, sticking
+   out above and below. The block is the OUTERMOST element's alone now;
+   every span inside a name or a section word gives its background up,
+   and the one box covers the whole name, spaces included, because that
+   is what an inline box does.
+   And where a name wraps, each line takes a full box rather than the
+   first line keeping the padding and the last the rest
+   (box-decoration-break), so two lines read as two clean bars. */
+/* AND THE LINK AROUND A NAME GIVES ITS BLOCK UP TOO. The masthead's
+   name sits inside a.topbar-wordmark, whose box stands 58 above the
+   letters and 61 below them — a second, far taller bar behind the
+   first. The NAME carries the one box, since the name is what the
+   block is for; the link keeps the hover it always had for its ink. */
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+/* .ops-hit is the wordmark's invisible hit patch — a box drawn on
+   nothing, so a block behind it is a block behind nothing. */
+.ops-hit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.ops-hit:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.banner-name, .banner-name--pair, .ledger-word, .reprint-name, .band-name-mid) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band > .band-mini :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .card--mega > .latest-stack :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.has-mega .site-nav--top .topbar-name :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-wordmark :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-mark :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+}
+main.has-mega :is(.banner-name, .banner-name--pair a, .ledger-word, .reprint-name, .band-name-mid):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.has-mega .site-nav--top .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ---------- THE BOX HUGS THE WORD, AND ITS AIR IS EVEN (2026-09-18) ----------
+   Two faults in the names' blocks, both from the same thing: the
+   masthead and the section words are display:block, so their boxes are
+   the MEASURE and not the word. The block stretched the width of the
+   site behind a word standing in the middle of it — and it was also
+   SHORTER than the word, since these are set at a line-height under 1
+   and the letters overhang their own box by about 0.14em top and
+   bottom, so the bar cut through them.
+   THE BOX IS THE WORD'S NOW: fit-content, centred where it was, under
+   the hand only — nothing is resized until the block is asked for.
+   ITS AIR IS EVEN ON FOUR SIDES: --hl-pad at the sides, and that plus
+   the 0.14em of overhang above and below, so what the eye reads as the
+   gap between the letters and the edge is the same all round. The
+   vertical padding is paid back as a negative margin, so a hovered
+   name moves nothing under it. */
+:root{ --hl-pad: 0.12em; }
+main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.banner-name, .ledger-word, .reprint-name, .band-name-mid).is-cued:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  width: fit-content;
+  margin-inline: auto;
+  /* THE AIR IS PAINTED, NOT SPACED (2026-09-18). It was padding with a
+     negative margin to pay it back — and these blocks carry margins
+     and tops the FITTER writes inline, which an ordinary rule cannot
+     outrank: the pay-back was lost, the padding was not, and every
+     name stepped down the moment it was pointed at. A box-shadow with
+     spread paints outside the border box and changes no layout at all,
+     so nothing can move. Three of them: one for the sides, two offset
+     up and down for the 0.14em the letters overhang their own box. */
+  box-shadow:
+    0 0 0 var(--hl-pad) var(--yves),
+    0 0.14em 0 var(--hl-pad) var(--yves),
+    0 -0.14em 0 var(--hl-pad) var(--yves);
+}
+/* And the ordinary boxes — a link in a line of text — take the same
+   side air. Their vertical air is their line box's already, which is
+   what the names are being matched TO; theirs is paid back as a
+   negative margin so no line re-wraps under the hand. */
+a:not(.latest-plate):not(.card-image-link):not(.ticker-cover-link):not(.latest-cover):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(button, [role="button"], .peek-open, .plate-close, .plate-read, .plate-more):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* The same air on an ordinary box, painted the same way — a padding
+     here would re-wrap the line under the hand. */
+  box-shadow: 0 0 0 var(--hl-pad) var(--yves);
+}
+
+/* ---------- THE BLOCK SNAPS, THE INK MAY EASE (2026-09-18) ----------
+   A block is a thing that is either there or not; easing it in fades a
+   pale yellow wash across the word for a quarter second on the way in
+   and again on the way out, which reads as a smudge rather than a
+   mark. Every transition on background-color is struck — on the
+   generic hover, on the names, on the card titles, everywhere the
+   highlight paints — and the block is simply on or off with the
+   pointer. (Stated over the sheet's own eases, which name
+   background-color among four or five properties in one shorthand;
+   the colour, the border and the rest keep theirs.) */
+:is(a, button, [role="button"], span, p, h1, h2, h3, h4, em, i, b, strong, .peek-open, .plate-close, .plate-read, .plate-more):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.banner-name, .banner-name--pair a, .ledger-word, .reprint-name, .band-name-mid, .band-mini, .topbar-name, .card-title, .latest-title):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* AND NOT color EITHER (2026-09-18). The block snapped and the ink
+     eased to meet it over a quarter second, so for that quarter second
+     the word sat in its old colour on a yellow ground it had not been
+     written for — a pale word on a pale block, which is the one thing
+     the block exists to prevent. The word and its ground are one mark
+     and arrive on one frame. (box-shadow is out for the same reason:
+     the painted air is part of the block.) */
+  transition-property: border-color, opacity, background-size, filter;
+}
+
+/* ---------- A CARD TITLE'S BOX IS ITS LINES' (2026-09-18) ----------
+   A card title is a link wrapping one block per line, and both were
+   painting: the link's own inline boxes under the lines' blocks, each
+   a different width, which made a ragged stepped shape rather than a
+   mark. The LINES carry it — one box to a line, each hugging its own
+   words with the same air as every other box — and the link gives its
+   background up. Ranged as the column is, so the bars stack on the
+   side the words do. */
+main.has-mega :is(.card-title, .latest-title).is-cued a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+main.has-mega :is(.card-title, .latest-title).is-cued :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title) a:is(:hover, :focus-visible) :is(.title-line, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  width: fit-content;
+  background-color: var(--yves) !important;
+  color: var(--hl-ink) !important;
+  box-shadow:
+    0 0 0 var(--hl-pad) var(--yves),
+    0 0.14em 0 var(--hl-pad) var(--yves),
+    0 -0.14em 0 var(--hl-pad) var(--yves);
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, .latest-title) :is(.title-line, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-left: auto;
+}
+
+/* ---------- WHAT A HOVERED NAME MUST NOT DRAG WITH IT (2026-09-18) ----------
+   THE LINK'S OWN RING. a.topbar-wordmark stands 1024 by 223 — the
+   whole head — and the ordinary-box rule was giving it the same
+   painted air every other link gets, so pointing at the name threw a
+   yellow ring around the entire masthead block. It gave up its
+   background when the name took the one box; it gives up the painted
+   air with it.
+   THE BAND'S RULE. The masthead's hover trades the rule under the band
+   to the highlight — written when the highlight was a colour for ink
+   and a line, and a yellow line running the width of the site reads as
+   the band's rule stretching out. The rule holds the ink. */
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link, .reprint, .has-hit):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-shadow: none !important;
+}
+:is(.dek-band, .dek-band--masthead, .head-rule, .head-seam):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.site-nav--top:is(:hover, :focus-within) :is(.dek-band, .dek-band--masthead, .head-rule, .head-seam):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  border-color: var(--k) !important;
+  background-color: var(--k) !important;
+}
+
+/* ---------- A PICTURE TAKES NO BLOCK (2026-09-18) ----------
+   a.latest-cover — the postscripts' and the latest rows' covers — was
+   never in the generic hover's exclusion list beside the other three
+   cover links, and no one noticed while the highlight was a colour for
+   INK: a picture has no ink to colour. As a BLOCK it showed at once,
+   a yellow ring thrown round the photograph. Every cover link is named
+   now, and the ring and the block are struck on all four: what a cover
+   does under the hand is go grey and say READ NOW. */
+:is(.card-image-link, .latest-cover, .ticker-cover-link, .latest-plate):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-image-link, .latest-cover, .ticker-cover-link, .latest-plate):is(:hover, :focus-visible) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  box-shadow: none !important;
 }

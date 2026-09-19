@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F8F8FF">
 <title>Postscript — The New Critic</title>
 <meta property="og:site_name" content="The New Critic">
 <meta property="og:type" content="website">
@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=caee5112">
+<link rel="stylesheet" href="style.css?v=311ef70c">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -26,7 +26,9 @@
   // 2026-09-17). Light and dark are the two token sets in style.css;
   // a hex colour is written straight onto the root as --g, with --k
   // white or charcoal, whichever reads better on it (WCAG contrast).
-  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  // GHOST WHITE (2026-09-18): the one white on the site — the light
+  // ground, the dark ink, and the ink a hex ground takes.
+  var WHITE = '#F8F8FF', CHARCOAL = '#121417';
   // THE GROUND HEX OPENS ON (2026-09-18): a slate blue-grey the white
   // ink reads well on, until the reader types a code of their own.
   // (#888899, a paler cast of the same, for the first hours.)
@@ -68,7 +70,13 @@
       root.setAttribute('data-theme', 'hex');
       root.style.setProperty('--g', hex);
       root.style.setProperty('--k', WHITE);
-      root.style.setProperty('--yves', CHARCOAL);
+      // THE HIGHLIGHT STAYS THE YELLOW HERE TOO (2026-09-18). It was
+      // painted CHARCOAL on a hex ground, from the hours when the
+      // highlight was the word's own INK and a black word read well on
+      // a colour. It is a BLOCK now, and a charcoal block on a slate
+      // ground is a black slab across the masthead. One highlight for
+      // the whole site: the yellow, with the charcoal on it.
+      root.style.removeProperty('--yves');
       setMeta(hex);
     } else {
       root.style.removeProperty('--g');
@@ -269,8 +277,8 @@
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px neue-haas-grotesk-display'),
-      f.load('400 100px neue-haas-grotesk-display'),
+      f.load('700 100px azo-sans-web'),
+      f.load('400 100px azo-sans-web'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
@@ -1258,9 +1266,9 @@
       "<defs>" +
       "<linearGradient id='g' x1='0' y1='0' x2='1' y2='" + gy2 + "'><stop offset='0' stop-color='#9a9792'/><stop offset='.16' stop-color='#eae7e1'/><stop offset='.34' stop-color='#aeaaa4'/><stop offset='.52' stop-color='#f6f4ee'/><stop offset='.7' stop-color='#a3a09a'/><stop offset='.86' stop-color='#e0dcd6'/><stop offset='1' stop-color='#94918c'/></linearGradient>" +
       "<linearGradient id='t' x1='0' y1='" + ty1 + "' x2='1' y2='" + ty2 + "'>" + stops + "</linearGradient>" +
-      "<filter id='f1' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feDiffuseLighting lighting-color='#ffffff' surfaceScale='1.6' diffuseConstant='1.3'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feDiffuseLighting></filter>" +
-      "<filter id='f2' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.002' numOctaves='2' seed='" + seed2 + "'/><feDiffuseLighting lighting-color='#ffffff' surfaceScale='1.5' diffuseConstant='1.25'><feDistantLight azimuth='" + az2 + "' elevation='" + el2 + "'/></feDiffuseLighting></filter>" +
-      "<filter id='sp' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feSpecularLighting lighting-color='#ffffff' surfaceScale='2' specularConstant='.9' specularExponent='18'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feSpecularLighting></filter>" +
+      "<filter id='f1' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feDiffuseLighting lighting-color='#F8F8FF' surfaceScale='1.6' diffuseConstant='1.3'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feDiffuseLighting></filter>" +
+      "<filter id='f2' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.002' numOctaves='2' seed='" + seed2 + "'/><feDiffuseLighting lighting-color='#F8F8FF' surfaceScale='1.5' diffuseConstant='1.25'><feDistantLight azimuth='" + az2 + "' elevation='" + el2 + "'/></feDiffuseLighting></filter>" +
+      "<filter id='sp' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feSpecularLighting lighting-color='#F8F8FF' surfaceScale='2' specularConstant='.9' specularExponent='18'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feSpecularLighting></filter>" +
       "<filter id='wv' x='-10%' y='-10%' width='120%' height='120%'><feTurbulence type='turbulence' baseFrequency='0.0022 0.009' numOctaves='1' seed='" + seed2 + "'/><feDisplacementMap in='SourceGraphic' scale='70' xChannelSelector='R' yChannelSelector='G'/></filter>" +
       "</defs>" +
       "<rect width='1400' height='300' fill='url(#g)'/>" +
@@ -1277,11 +1285,11 @@
     "<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='300' viewBox='0 0 1400 300' preserveAspectRatio='none'>" +
     "<defs>" +
     "<linearGradient id='s' x1='0' y1='0' x2='1' y2='0'>" +
-    "<stop offset='.28' stop-color='#ffffff' stop-opacity='0'/>" +
-    "<stop offset='.42' stop-color='#ffffff' stop-opacity='.35'/>" +
-    "<stop offset='.5' stop-color='#ffffff' stop-opacity='.12'/>" +
-    "<stop offset='.57' stop-color='#ffffff' stop-opacity='.28'/>" +
-    "<stop offset='.72' stop-color='#ffffff' stop-opacity='0'/>" +
+    "<stop offset='.28' stop-color='#F8F8FF' stop-opacity='0'/>" +
+    "<stop offset='.42' stop-color='#F8F8FF' stop-opacity='.35'/>" +
+    "<stop offset='.5' stop-color='#F8F8FF' stop-opacity='.12'/>" +
+    "<stop offset='.57' stop-color='#F8F8FF' stop-opacity='.28'/>" +
+    "<stop offset='.72' stop-color='#F8F8FF' stop-opacity='0'/>" +
     "</linearGradient>" +
     "<filter id='w' x='-15%' y='-15%' width='130%' height='130%'>" +
     "<feTurbulence type='fractalNoise' baseFrequency='0.015 0.003' numOctaves='2' seed='" + seed1 + "'/>" +
@@ -3104,6 +3112,7 @@
   window.addEventListener('scroll', function () {
     if (stopsQueued) return;
     stopsQueued = true;
+    pinStacks();
     requestAnimationFrame(function () { stopsQueued = false; markBandEdges(); fitPickup(); });
   }, { passive: true });
   function paintedSpan(el) {
@@ -4517,25 +4526,57 @@
     var r = inkReach(line);
     return r ? r.capTop - edge.getBoundingClientRect().top : 24;
   }
-  function fitLatestStack() {
-    [].forEach.call(document.querySelectorAll('.card--mega > .latest-stack'), fitOneStack);
+  function makeSectionStacks() {
+    var main = document.querySelector('main');
+    if (!main) return;
+    [].forEach.call(document.querySelectorAll('main.has-mega .movement'), function (mv) {
+      if (mv.__stacked) return;
+      mv.__stacked = true;
+      if (mv.querySelector('.latest-stack')) return;
+      var band = mv.querySelector('.page-banner');
+      var name = band && band.querySelector('.banner-name');
+      if (!name) return;
+      if (/\/subscribe/.test(name.getAttribute('href') || '')) return;
+      var card = mv.querySelector('.card--mega') || mv.querySelector('.card');
+      var word = (name.textContent || '').trim();
+      if (!card || !word) return;
+      var stack = document.createElement('p');
+      stack.className = 'latest-stack latest-stack--left';
+      stack.setAttribute('aria-hidden', 'true');
+      word.split('').forEach(function (ch) {
+        var sp = document.createElement('span');
+        if (ch === ' ') sp.className = 'latest-stack-gap';
+        else sp.textContent = ch;
+        stack.appendChild(sp);
+      });
+      stack.__card = card;
+      main.appendChild(stack);
+    });
   }
-  function fitOneStack(stack) {
-    var card = stack.parentElement;
-    var onLeft = stack.classList.contains('latest-stack--left');
+  function fitLatestStack() {
+    makeSectionStacks();
+    var all = [].slice.call(document.querySelectorAll('.latest-stack'));
+    all.forEach(function (st) { fitOneStack(st); });
+    var one = Infinity;
+    all.forEach(function (st) { var v = parseFloat(st.style.fontSize) || 0; if (v && v < one) one = v; });
+    if (isFinite(one)) all.forEach(function (st) { fitOneStack(st, one); });
+  }
+  function homeStack(stack) {
+    if (stack.__card) return stack.__card;
+    var card = stack.closest('.card--mega') || stack.parentElement;
+    stack.__card = card;
+    var main = document.querySelector('main');
+    if (main && stack.parentElement !== main) main.appendChild(stack);
+    return card;
+  }
+  function fitOneStack(stack, forced) {
+    var card = homeStack(stack);
+    if (!card) return;
     var half = card.querySelector('.duo-half') || card;
     var first = stack.querySelector(':scope > span:not(.latest-stack-gap)');
     if (!first) return;
-    stack.style.top = '0px'; stack.style.right = ''; stack.style.left = ''; stack.style.fontSize = '';
-    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
+    stack.style.top = '0px'; stack.style.fontSize = '';
     var cr = card.getBoundingClientRect();
-    if (seam) {
-      var sr = seam.getBoundingClientRect();
-      if (sr.width) {
-        if (onLeft) stack.style.left = (sr.left - cr.left).toFixed(2) + 'px';
-        else stack.style.right = (cr.right - sr.right).toFixed(2) + 'px';
-      }
-    }
     var letters = stack.querySelectorAll(':scope > span:not(.latest-stack-gap)');
     var last = letters[letters.length - 1];
     var r0 = inkReach(first), rl = inkReach(last);
@@ -4544,15 +4585,57 @@
     var lr = line ? inkReach(line) : null;
     var startY = lr ? lr.capTop : hr.top + 24;
     var endY = hr.top + hr.height * 0.5;
-    if (r0 && rl && rl.foot > r0.capTop && endY > startY) {
+    if (forced) stack.style.fontSize = forced.toFixed(2) + 'px';
+    else if (r0 && rl && rl.foot > r0.capTop && endY > startY) {
       var s0 = parseFloat(getComputedStyle(stack).fontSize) || 60;
       stack.style.fontSize = (s0 * (endY - startY) / (rl.foot - r0.capTop)).toFixed(2) + 'px';
     }
     var r = inkReach(first), rEnd = inkReach(last);
     if (!r) return;
     var inkH = rEnd ? rEnd.foot - r.capTop : 0;
-    var topY = inkH > 0 ? hr.top + (hr.height - inkH) / 2 : startY;
-    stack.style.top = (topY - r.capTop).toFixed(2) + 'px';
+    var openCover = (card.querySelector && card.querySelector('img.card-image')) || null;
+    var ob = openCover ? openCover.getBoundingClientRect() : null;
+    if (!ob || !ob.height) ob = hr;
+    var topY = inkH > 0 ? ob.top + (ob.height - inkH) / 2 : startY;
+    var box = stack.getBoundingClientRect();
+    stack.style.position = 'absolute';
+    var op = stack.offsetParent || document.documentElement;
+    var opr = op.getBoundingClientRect();
+    stack.__originY = opr.top + window.pageYOffset;
+    stack.__originX = opr.left;
+    stack.__fixed = null;
+    stack.__inkH = inkH;
+    stack.__capOff = r.capTop - box.top;   // the ink's cap inside its own box
+    stack.__homeY = topY + window.pageYOffset;
+    var mv = card.closest('.movement') || card;
+    var covers = mv.querySelectorAll('.latest-cell--contra img.card-image');
+    if (!covers.length) covers = mv.querySelectorAll('img.card-image');
+    var lastCover = covers.length ? covers[covers.length - 1] : null;
+    stack.__endY = null;
+    if (lastCover) {
+      var lr = lastCover.getBoundingClientRect();
+      if (lr.height) stack.__endY = lr.top + window.pageYOffset + (lr.height - inkH) / 2;
+    }
+    pinOneStack(stack);
+  }
+  function pinOneStack(stack) {
+    if (!stack.__inkH && stack.__inkH !== 0) return;
+    var mid = (window.innerHeight - stack.__inkH) / 2;
+    var want = window.pageYOffset + mid;
+    var docY, fixed;
+    if (want <= stack.__homeY) { docY = stack.__homeY; fixed = false; }
+    else if (stack.__endY !== null && want >= stack.__endY) { docY = stack.__endY; fixed = false; }
+    else { docY = want; fixed = true; }
+    if (fixed !== stack.__fixed) {
+      stack.__fixed = fixed;
+      stack.style.position = fixed ? 'fixed' : 'absolute';
+      stack.style.left = fixed ? '0px' : (-stack.__originX).toFixed(2) + 'px';
+    }
+    stack.style.top = (fixed ? mid - stack.__capOff
+                             : docY - stack.__originY - stack.__capOff).toFixed(2) + 'px';
+  }
+  function pinStacks() {
+    [].forEach.call(document.querySelectorAll('.latest-stack'), pinOneStack);
   }
   function fitBandNameMid() {
     var mid = document.querySelector('.section-band .band-name-mid');
@@ -4768,6 +4851,137 @@
   if (document.visibilityState === 'hidden') {
     document.addEventListener('visibilitychange', onVisible);
   }
+})();
+
+</script><script>
+(function () {
+  if (!window.matchMedia || !matchMedia('(hover: hover)').matches) return;
+  var COVERS = '.card-image-link, .latest-cover, .ticker-cover-link';
+  var TITLES = '.card-title, .latest-title';
+  var CELLS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
+  function resolveFrom(node) {
+    if (!node || !node.closest) return null;
+    var direct = node.closest(COVERS);
+    if (direct) return { cover: direct, say: true, mid: false, title: null };
+    var title = node.closest(TITLES);
+    if (!title) return null;
+    var cell = title.closest(CELLS);
+    var cover = cell ? cell.querySelector('.card-image-link, .latest-cover') : null;
+    return cover ? { cover: cover, say: true, mid: true, title: title } : null;
+  }
+  var cue = null, host = null, rafId = 0, px = 0, py = 0;
+  var mode = 'pointer', lit = null;
+  var originX = 0, originY = 0, seated = false;
+  function origin() {
+    if (seated || !cue) return;
+    seated = true;
+    var was = cue.style.cssText;
+    cue.style.position = 'absolute'; cue.style.left = '0px'; cue.style.top = '0px'; cue.style.transform = 'none';
+    var r = cue.getBoundingClientRect();
+    originX = r.left + window.pageXOffset;
+    originY = r.top + window.pageYOffset;
+    cue.style.cssText = was;
+  }
+  function schedule(fn) {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(function () { rafId = 0; fn(); });
+  }
+  document.documentElement.classList.add('has-cover-cue');
+  function make() {
+    cue = document.createElement('span');
+    cue.className = 'cover-cue';
+    cue.setAttribute('aria-hidden', 'true');
+    cue.textContent = 'Read Now';
+    document.body.appendChild(cue);
+    return cue;
+  }
+  function place() {
+    if (!host || !cue) return;
+    var f = host.getBoundingClientRect();
+    if (!f.width || !f.height) return hide();
+    var cb = cue.getBoundingClientRect();
+    var w = cb.width, h = cb.height;
+    if (mode === 'centre') {
+      origin();
+      if (cue.__abs !== true) {
+        cue.__abs = true;
+        cue.style.position = 'absolute';
+        cue.style.transform = 'none';
+        cue.style.clipPath = 'none';
+      }
+      cue.style.left = (f.left + window.pageXOffset - originX + (f.width - w) / 2).toFixed(2) + 'px';
+      cue.style.top = (f.top + window.pageYOffset - originY + (f.height - h) / 2).toFixed(2) + 'px';
+      return;
+    }
+    if (cue.__abs !== false) {
+      cue.__abs = false;
+      cue.style.position = 'fixed';
+      cue.style.left = '0px';
+      cue.style.top = '0px';
+    }
+    var x = px - w / 2, y = py - h / 2;
+    cue.style.transform = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0)';
+    var cut = function (v) { return v > 0 ? Math.ceil(v) + 1 : 0; };
+    var t = cut(f.top - y),
+        r = cut((x + w) - f.right),
+        b = cut((y + h) - f.bottom),
+        l = cut(f.left - x);
+    cue.style.clipPath = (t || r || b || l)
+      ? 'inset(' + t.toFixed(2) + 'px ' + r.toFixed(2) + 'px ' + b.toFixed(2) + 'px ' + l.toFixed(2) + 'px)'
+      : 'none';
+  }
+  function queue() { schedule(place); }
+  function follow() {
+    if (!cue) return;
+    var res = resolveFrom(document.elementFromPoint(px, py));
+    if (!res) return hide();
+    if (res.cover !== host) take(res.cover);
+    lightTitle(res.title);
+    mode = res.mid ? 'centre' : 'pointer';
+    place();
+    cue.classList.add('is-on');
+  }
+  function queueFollow() {
+    if (!cue) return;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    follow();
+  }
+  function take(el) {
+    if (host === el) return;
+    if (host) host.classList.remove('is-cued');
+    host = el;
+    if (host) host.classList.add('is-cued');
+  }
+  function lightTitle(el) {
+    if (lit === el) return;
+    if (lit) lit.classList.remove('is-cued');
+    lit = el;
+    if (lit) lit.classList.add('is-cued');
+  }
+  function hide() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    take(null);
+    lightTitle(null);
+    if (cue) cue.classList.remove('is-on');
+  }
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    px = e.clientX; py = e.clientY;
+    var res = resolveFrom(e.target);
+    if (!res) return hide();
+    if (!cue) make();
+    var shown = cue.classList.contains('is-on');
+    var was = mode;
+    mode = res.mid ? 'centre' : 'pointer';
+    take(res.cover);
+    lightTitle(res.title);
+    if (was !== mode || !shown) { place(); cue.classList.add('is-on'); return; }
+    if (mode === 'pointer') queue();
+  }, { passive: true });
+  window.addEventListener('scroll', queueFollow, { passive: true });
+  window.addEventListener('resize', queueFollow, { passive: true });
+  document.addEventListener('pointerdown', hide, { passive: true });
+  window.addEventListener('blur', hide);
 })();
 
 </script><script>

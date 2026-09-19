@@ -3261,6 +3261,10 @@
     // toggles the at-top / under-band classes and rewrites nothing
     // else. (Rewriting the three stops on the main element each frame
     // invalidated the whole page's style whenever a value moved.)
+    // THE STACKS ARE SEATED ON THE SCROLL'S OWN TICK, not the frame
+    // after it: the two thresholds they change state at have to land on
+    // the frame the page crosses them, or the change shows.
+    pinStacks();
     requestAnimationFrame(function () { stopsQueued = false; markBandEdges(); fitPickup(); });
   }, { passive: true });
   // THE PAINTED INK OF A LINE, top to bottom — not the cap-to-baseline
@@ -5646,25 +5650,80 @@
   // THE STACK'S SEAT: its first letter's cap ink on the card's top
   // edge (the hero half's top, where the rule stands), its right edge
   // on the seam's right end.
-  function fitLatestStack() {
-    [].forEach.call(document.querySelectorAll('.card--mega > .latest-stack'), fitOneStack);
+  // A LABEL IN THE MARGIN FOR EVERY SECTION (2026-09-18). THE LATEST and
+  // EDITORS' PICKS are written by the builder, on the block they name;
+  // ESSAYS, POSTSCRIPT and CONTRA are made here, one to a movement, off
+  // the word already standing in that movement's band. Written in the
+  // fitter rather than the markup because there is nothing to say in
+  // the HTML: the label IS the band's word, and a second copy in the
+  // source would be a second thing to keep in step. aria-hidden
+  // throughout — the band's own word is the one a reader hears.
+  function makeSectionStacks() {
+    var main = document.querySelector('main');
+    if (!main) return;
+    [].forEach.call(document.querySelectorAll('main.has-mega .movement'), function (mv) {
+      if (mv.__stacked) return;
+      mv.__stacked = true;
+      // The block that opens the page brings its own.
+      if (mv.querySelector('.latest-stack')) return;
+      var band = mv.querySelector('.page-banner');
+      var name = band && band.querySelector('.banner-name');
+      if (!name) return;
+      // The offer is not a section.
+      if (/\/subscribe/.test(name.getAttribute('href') || '')) return;
+      var card = mv.querySelector('.card--mega') || mv.querySelector('.card');
+      var word = (name.textContent || '').trim();
+      if (!card || !word) return;
+      var stack = document.createElement('p');
+      stack.className = 'latest-stack latest-stack--left';
+      stack.setAttribute('aria-hidden', 'true');
+      word.split('').forEach(function (ch) {
+        var sp = document.createElement('span');
+        if (ch === ' ') sp.className = 'latest-stack-gap';
+        else sp.textContent = ch;
+        stack.appendChild(sp);
+      });
+      stack.__card = card;
+      main.appendChild(stack);
+    });
   }
-  function fitOneStack(stack) {
-    var card = stack.parentElement;
-    var onLeft = stack.classList.contains('latest-stack--left');
+  function fitLatestStack() {
+    makeSectionStacks();
+    var all = [].slice.call(document.querySelectorAll('.latest-stack'));
+    all.forEach(function (st) { fitOneStack(st); });
+    // ONE SIZE FOR EVERY LABEL (2026-09-18). Each is fitted to its own
+    // block — the span from its first card's byline line to that card's
+    // middle — and a six-letter word takes a far larger size than a
+    // ten-letter one for the same span: ESSAYS came out at 26 against
+    // POSTSCRIPT's 15, which reads as two different marks rather than
+    // one set of labels. They all take the SMALLEST of those fits, so
+    // every label matches and none outgrows the block it names.
+    var one = Infinity;
+    all.forEach(function (st) { var v = parseFloat(st.style.fontSize) || 0; if (v && v < one) one = v; });
+    if (isFinite(one)) all.forEach(function (st) { fitOneStack(st, one); });
+  }
+  // THE STACKS STAND IN THE PAGE'S LEFT MARGIN (2026-09-18), where the
+  // social marks stood until this morning — not on their card's own
+  // margin, which is where THE LATEST and EDITORS' PICKS began. They
+  // are lifted out of the card into <main> for it: a fixed seat inside
+  // a card is a seat inside whatever transform the card is carrying,
+  // and the cards carry one every time a preview opens.
+  function homeStack(stack) {
+    if (stack.__card) return stack.__card;
+    var card = stack.closest('.card--mega') || stack.parentElement;
+    stack.__card = card;
+    var main = document.querySelector('main');
+    if (main && stack.parentElement !== main) main.appendChild(stack);
+    return card;
+  }
+  function fitOneStack(stack, forced) {
+    var card = homeStack(stack);
+    if (!card) return;
     var half = card.querySelector('.duo-half') || card;
     var first = stack.querySelector(':scope > span:not(.latest-stack-gap)');
     if (!first) return;
-    stack.style.top = '0px'; stack.style.right = ''; stack.style.left = ''; stack.style.fontSize = '';
-    var seam = document.querySelector('main.has-mega > .page-rows > .head-seam');
+    stack.style.top = '0px'; stack.style.fontSize = '';
     var cr = card.getBoundingClientRect();
-    if (seam) {
-      var sr = seam.getBoundingClientRect();
-      if (sr.width) {
-        if (onLeft) stack.style.left = (sr.left - cr.left).toFixed(2) + 'px';
-        else stack.style.right = (cr.right - sr.right).toFixed(2) + 'px';
-      }
-    }
     // SIZED TO THE CARD (2026-09-18): at the sheet's 60 the ten lines
     // ran 580 where the card stands 344, the tail over the next row's
     // cover; it fills the card's top half now. The span from the first
@@ -5683,19 +5742,106 @@
     var lr = line ? inkReach(line) : null;
     var startY = lr ? lr.capTop : hr.top + 24;
     var endY = hr.top + hr.height * 0.5;
-    if (r0 && rl && rl.foot > r0.capTop && endY > startY) {
+    if (forced) stack.style.fontSize = forced.toFixed(2) + 'px';
+    else if (r0 && rl && rl.foot > r0.capTop && endY > startY) {
       var s0 = parseFloat(getComputedStyle(stack).fontSize) || 60;
       stack.style.fontSize = (s0 * (endY - startY) / (rl.foot - r0.capTop)).toFixed(2) + 'px';
     }
-    // CENTRED ON THE CARD'S HEIGHT (2026-09-18): the size is still the
-    // one that spans the byline's cap line to the card's middle, but
-    // the stack no longer hangs from that line — its ink, first cap to
-    // last foot, stands centred between the card's two rules.
+    // WHERE IT STARTS, held in the document rather than the viewport:
+    // the size is still the one that spans the byline's cap line to the
+    // card's middle, and the ink — first cap to last foot — still opens
+    // centred on the card's height. The pin reads these two on every
+    // scroll and decides where the stack actually sits.
     var r = inkReach(first), rEnd = inkReach(last);
     if (!r) return;
     var inkH = rEnd ? rEnd.foot - r.capTop : 0;
-    var topY = inkH > 0 ? hr.top + (hr.height - inkH) / 2 : startY;
-    stack.style.top = (topY - r.capTop).toFixed(2) + 'px';
+    // ON THE PICTURE'S MIDDLE, NOT THE CARD'S (2026-09-18). A hero's
+    // card and its cover are the same box, so the two readings agreed
+    // and it made no difference — until CONTRA, whose block opens on a
+    // trio whose card is a row of three and stands taller and lower
+    // than any one of its pictures. The label opens on the middle of
+    // the FIRST COVER in its block now, which is the same seat as
+    // before wherever the card is its picture.
+    var openCover = (card.querySelector && card.querySelector('img.card-image')) || null;
+    var ob = openCover ? openCover.getBoundingClientRect() : null;
+    if (!ob || !ob.height) ob = hr;
+    var topY = inkH > 0 ? ob.top + (ob.height - inkH) / 2 : startY;
+    var box = stack.getBoundingClientRect();
+    // The box the stack is seated against while it is NOT pinned, in
+    // the document: <main>'s own padding box, which is what an absolute
+    // top and left are measured from.
+    stack.style.position = 'absolute';
+    var op = stack.offsetParent || document.documentElement;
+    var opr = op.getBoundingClientRect();
+    stack.__originY = opr.top + window.pageYOffset;
+    stack.__originX = opr.left;
+    stack.__fixed = null;
+    stack.__inkH = inkH;
+    stack.__capOff = r.capTop - box.top;   // the ink's cap inside its own box
+    stack.__homeY = topY + window.pageYOffset;
+    // WHERE IT COMES TO REST: the middle of the last cover in the
+    // stack's OWN movement — the block the card opens, which on the
+    // front page ends at the last review before SUBSCRIBE and ESSAYS,
+    // and on the archive at the last card of the feature block. Not
+    // the last cover on the page, which is four sections further down.
+    // The stack's whole travel is one clamp between two points in the
+    // DOCUMENT: it opens on its card's middle, holds the margin's
+    // middle for as long as that lies between the two, and parks on
+    // that cover's middle, scrolling away with the page from there.
+    // THE LAST REVIEW'S PICTURE, specifically — the closing contra of
+    // the block, not simply its last cover. The postscripts' cells are
+    // taller than the reviews' and one of them ends the row, so "the
+    // last picture" and "the last review's picture" are two different
+    // covers here; the stack rests on the review's. Where a block
+    // carries no review — the archive's feature block — its last cover
+    // serves.
+    var mv = card.closest('.movement') || card;
+    var covers = mv.querySelectorAll('.latest-cell--contra img.card-image');
+    if (!covers.length) covers = mv.querySelectorAll('img.card-image');
+    var lastCover = covers.length ? covers[covers.length - 1] : null;
+    stack.__endY = null;
+    if (lastCover) {
+      var lr = lastCover.getBoundingClientRect();
+      if (lr.height) stack.__endY = lr.top + window.pageYOffset + (lr.height - inkH) / 2;
+    }
+    pinOneStack(stack);
+  }
+
+  // THE PIN, read on every scroll. Three states and one line of
+  // arithmetic: the stack rises with the page from where it started,
+  // stops at the MIDDLE OF THE MARGIN and holds there, and is pushed
+  // out again by the section word coming up under it. The push is not
+  // a switch — the word's own top drives the stack up ahead of it, so
+  // it leaves at the page's speed rather than snapping away.
+  // RIGID, BY LETTING THE BROWSER DO THE SCROLLING (2026-09-18). A
+  // fixed stack whose top is rewritten from pageYOffset on every frame
+  // is a frame behind the page it is fixed against, and the letters
+  // swim — the wobble. So the stack is FIXED only while it is pinned,
+  // where its top is a constant and nothing is written at all; before
+  // and after, it is ABSOLUTE in the document at the two points it
+  // rests on, and the page carries it with everything else. Three
+  // states, two thresholds, and no per-frame arithmetic in any of
+  // them. The seats agree at each threshold — fixed at the margin's
+  // middle IS the document point the clamp holds — so the change of
+  // state is invisible.
+  function pinOneStack(stack) {
+    if (!stack.__inkH && stack.__inkH !== 0) return;
+    var mid = (window.innerHeight - stack.__inkH) / 2;
+    var want = window.pageYOffset + mid;
+    var docY, fixed;
+    if (want <= stack.__homeY) { docY = stack.__homeY; fixed = false; }
+    else if (stack.__endY !== null && want >= stack.__endY) { docY = stack.__endY; fixed = false; }
+    else { docY = want; fixed = true; }
+    if (fixed !== stack.__fixed) {
+      stack.__fixed = fixed;
+      stack.style.position = fixed ? 'fixed' : 'absolute';
+      stack.style.left = fixed ? '0px' : (-stack.__originX).toFixed(2) + 'px';
+    }
+    stack.style.top = (fixed ? mid - stack.__capOff
+                             : docY - stack.__originY - stack.__capOff).toFixed(2) + 'px';
+  }
+  function pinStacks() {
+    [].forEach.call(document.querySelectorAll('.latest-stack'), pinOneStack);
   }
   // THE NAME IN THE BAND'S MIDDLE on the word pages: sized off the
   // reprint's fit the way band-mark.js sizes the front page's

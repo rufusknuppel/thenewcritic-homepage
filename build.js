@@ -1247,10 +1247,13 @@ const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'A
 // The word pages (renderWordPage) take the masthead's band too, with
 // their own line in the middle slot in place of the date (mid) and
 // their own link among the right slot's marked current (currentKey).
-// THE SOCIAL STACK (2026-09-17; X added 2026-09-18): Substack,
-// Instagram, X and Email as marks in the LEFT margin, the toggle's
-// mirror — four 13px marks drawn in the ink, fixed at the viewport's
-// centre (style.css, .social-stack). The dashes that stood between them are struck
+// THE SOCIAL STACK IS STRUCK FROM THE MARGIN (2026-09-18). Substack,
+// Instagram, X and Email stood as four 13px marks in the LEFT margin,
+// the toggle's mirror, fixed at the viewport's centre. The margin is
+// bare now — the toggle keeps the right on its own — and the four
+// names read in words in the colophon at the foot instead, where the
+// X has joined them. renderSocialStack and its marks are kept below,
+// unused, against a return. The dashes that stood between them are struck
 // (later on 2026-09-17): the marks stand a dash's line apart, 13, on
 // the stack's own gap. Each mark is its own link and takes the
 // highlight under the pointer.
@@ -1265,7 +1268,6 @@ const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'A
 function renderMarginalia() {
   return `<div class="marginalia">
   <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
-  ${renderSocialStack()}
   </div>`;
 }
 function renderSocialStack() {
@@ -1327,7 +1329,7 @@ function renderColophonBand() {
   return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     ${bandName('<span>Est. May 2025</span>')}
     <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
-    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="https://x.com/thenewcritic" rel="noopener">X</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
   </nav>`;
 }
 function renderPageRail({ side, word, href, after, before, categories }) {
@@ -2354,7 +2356,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // And a third pair back in the base build — covers on the left.
   blocks.push(renderPostscriptPair(postscripts[6], postscripts[7], { stacked: true }));
   // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart', below: ['New Critics take on the works of our age.'] }));
+  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart', below: ['New Critics take on the works of our time.'] }));
   // THE CONTRA MOVEMENT: the section's own row formation, three
   // squares across, twice — reading from the reviews the rows above
   // haven't already spent.
@@ -2501,7 +2503,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F8F8FF">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -2576,6 +2578,7 @@ ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 ${renderRailFixScript()}
 ${renderBandMarkScript()}
+${renderCoverCueScript()}
 </body>
 </html>`;
 }
@@ -2605,7 +2608,9 @@ function renderFontGateScript() {
   // 2026-09-17). Light and dark are the two token sets in style.css;
   // a hex colour is written straight onto the root as --g, with --k
   // white or charcoal, whichever reads better on it (WCAG contrast).
-  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
+  // GHOST WHITE (2026-09-18): the one white on the site — the light
+  // ground, the dark ink, and the ink a hex ground takes.
+  var WHITE = '#F8F8FF', CHARCOAL = '#121417';
   // THE GROUND HEX OPENS ON (2026-09-18): a slate blue-grey the white
   // ink reads well on, until the reader types a code of their own.
   // (#888899, a paler cast of the same, for the first hours.)
@@ -2647,7 +2652,13 @@ function renderFontGateScript() {
       root.setAttribute('data-theme', 'hex');
       root.style.setProperty('--g', hex);
       root.style.setProperty('--k', WHITE);
-      root.style.setProperty('--yves', CHARCOAL);
+      // THE HIGHLIGHT STAYS THE YELLOW HERE TOO (2026-09-18). It was
+      // painted CHARCOAL on a hex ground, from the hours when the
+      // highlight was the word's own INK and a black word read well on
+      // a colour. It is a BLOCK now, and a charcoal block on a slate
+      // ground is a black slab across the masthead. One highlight for
+      // the whole site: the yellow, with the charcoal on it.
+      root.style.removeProperty('--yves');
       setMeta(hex);
     } else {
       root.style.removeProperty('--g');
@@ -2848,8 +2859,8 @@ function renderFontGateScript() {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
     Promise.all([
-      f.load('700 100px neue-haas-grotesk-display'),
-      f.load('400 100px neue-haas-grotesk-display'),
+      f.load('700 100px azo-sans-web'),
+      f.load('400 100px azo-sans-web'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
       f.load('400 100px courier-std'),
@@ -2920,6 +2931,17 @@ ${js}
 // centred when the feet have gone (src/band-mark.js).
 function renderBandMarkScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/band-mark.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
+// READ NOW RIDES WITH THE POINTER over a cover, inside the picture's
+// own outline, tucking under the hand where the frame's edge is close
+// (src/cover-cue.js). The grey the cover takes under the hand is the
+// stylesheet's; this is the errand said out loud beside it.
+function renderCoverCueScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/cover-cue.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -3090,7 +3112,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F8F8FF">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
@@ -3299,7 +3321,7 @@ function renderEssaysPage({ currentKey, label, posts }) {
     title: label,
     bodyHtml,
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript()
+    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderCoverCueScript()
       + renderPostscriptIndexScript(),
   });
 }
@@ -3403,7 +3425,7 @@ ${headHtml}${rows
     bodyHtml,
     // The section's newest cover becomes its share card.
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript()
+    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderCoverCueScript()
       + (headHtml ? renderContraFilterScript() : ''),
   });
 }
@@ -3485,7 +3507,7 @@ function renderPostscriptPage({ currentKey, label, posts }) {
     title: label,
     bodyHtml,
     ogImage: posts.find((p) => p.image)?.image,
-    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript()
+    extraScripts: renderDuoPanelFitScript() + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderCoverCueScript()
       + renderPostscriptIndexScript(),
   });
 }
@@ -3734,7 +3756,7 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
     // With the hero on the page, the front page's scripts ride along for
     // it (as on the archive's feature block).
     extraScripts: (heroHtml
-      ? renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript()
+      ? renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript() + renderCoverCueScript()
         + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderRailFixScript()
       : '') + renderAboutMosaicScript() + renderLedgerScript(),
   // The body carries the page's own mark for what About alone does
@@ -3922,14 +3944,17 @@ function renderArchivePage(posts, features) {
     // review row.)
     movements: [
       { word: 'Archive', href: 'archive.html', hook: 'subscribe-band', body: renderLedgerFeature(features) },
-      { word: 'Subscribe', href: `${SITE_URL}/subscribe`, hook: 'events-band', apart: true, above: SUBSCRIBE_ABOVE, below: SUBSCRIBE_BELOW },
+      // (SUBSCRIBE stood here between the feature block and the ledger
+      // head, 2026-09-18: struck. The offer is on the front page, in
+      // the nav's right slot and in the colophon; the archive is a
+      // place to look something up.)
       { raw: headHtml },
       { cls: 'm--ledger', body: ledgerHtml },
     ],
     // The homepage's own scripts for the feature block's cards — the
     // fitter, the click-to-open plates, the cover colours, share, the
     // drawn lines, the held heads — then the ledger's own.
-    extraScripts: renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript()
+    extraScripts: renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript() + renderCoverCueScript()
       + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderRailFixScript()
       + renderLedgerScript(),
   });
