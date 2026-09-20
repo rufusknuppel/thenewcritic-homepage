@@ -1118,7 +1118,11 @@ function railLinks(currentKey = 'home') {
 
 function renderNav(currentKey = 'home') {
   const links = railLinks(currentKey);
+  // (The masthead's wordmark no longer carries this: it is not a link
+   // any more, and aria-current on a thing that goes nowhere says
+   // nothing. Kept declared against its return.)
   const homeCurrent = currentKey === 'home' ? ' aria-current="page"' : '';
+  void homeCurrent;
   // The masthead IS the brand — the framed-bird mark that used to sit
   // above it is gone, so the name carries the home link itself. It sets
   // on ONE line in the rail's small courier now, which is why it's a
@@ -1147,7 +1151,7 @@ function renderNav(currentKey = 'home') {
   // on ONE line across the top, then the section list spread between
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
-  <a class="wordmark topbar-wordmark" href="./"${homeCurrent} aria-label="The New Critic — home">
+  <a class="wordmark topbar-wordmark" aria-label="The New Critic">
     <span class="topbar-name">The <span class="tn-new">New</span> Critic</span>
   </a>
   ${currentKey === 'home'
@@ -1195,15 +1199,25 @@ const SECTION_BANDS = {
   postscript: { word: 'Postscript', href: 'archive.html#section=postscript' },
   contra: { word: 'Contra', href: 'archive.html#section=contra' },
 };
+// THE COMMAS ARE ELEMENTS NOW (2026-09-19). A run of band links was
+// joined with a bare ', ', which makes every comma a TEXT NODE — and a
+// text node cannot be reached by a selector. It had to be, because a
+// link carrying a highlight block carries the comma beside it onto
+// that block (the block clears the word by --hl-pad either side, which
+// at this size is more than the space before the comma), and a
+// charcoal comma on a charcoal block reads as a nick out of the mark.
+// Each separator is its own span, so the ones beside a marked word can
+// take the block's own ink. The character and the space are unchanged.
+const BAND_SEP = '<span class="band-sep">, </span>';
 function bandDeks(m) {
   if (m === 'latest') {
     const by = (key) => SITE_LINKS.find((l) => l.key === key);
     const a = (l) => l ? `<a href="${escapeHtml(l.href)}"${l.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a>` : '';
     return [a(by('archive')), a(by('about')), '<span class="nav-links-dead">Store</span>', '<span class="nav-links-dead">Events</span>',
-      `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`].filter(Boolean).join(', ');
+      `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`].filter(Boolean).join(BAND_SEP);
   }
   const list = m === 'contra' ? CONTRA_CATEGORIES : RAIL_CATEGORIES;
-  return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(', ');
+  return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(BAND_SEP);
 }
 // THE MASTHEAD LINE RIDES IN THE BAND'S MIDDLE — the magazine line and
 // the date, centred between the mark and the list. The fixed line under
@@ -1234,7 +1248,18 @@ function mastheadLine() {
 function bandName(html) {
   return `<p class="band-deks band-name">${html}</p>`;
 }
-const TYAM_LINK = '<a href="./">The Young American Magazine</a>';
+// THE NAME IS NOT A WAY ANYWHERE, EXCEPT IN THE BAND (2026-09-19).
+// The masthead's wordmark and the reprint at the foot gave up both
+// their link and their answer to the hand: they are the magazine's
+// name over and under its pages, not an offer, and the reader holding
+// them is already here. They keep the <a> so every rule and every
+// measurement that names one still finds it — an anchor with no href
+// is not a link: no pointer, no click, and out of the tab order too,
+// which `pointer-events: none` alone would not have managed.
+// THE BAND'S NAMES DO LINK, and to the TOP of the front page (#top is
+// the id on .page-rows), since the band is the one place the name is
+// furniture a reader steers by rather than a masthead.
+const TYAM_LINK = '<a href="./#top">The Young American Magazine</a>';
 // The section's own line, in the courier at the right.
 const BAND_LINES = {
   essays: 'The Greatest Writing on Gen Z',
@@ -1294,7 +1319,7 @@ function renderSectionBand(m, { mid = '', currentKey = '', nameMid = false } = {
       : bandDeks(m);
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek">${nameMid ? `<a class="band-name-mid" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>` : mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
+    <p class="band-deks band-dek">${nameMid ? `<a class="band-name-mid" href="./#top" aria-label="The New Critic — top of the homepage">The <span class="tn-new">New</span> Critic</a>` : mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -1320,7 +1345,7 @@ function renderPageFoot() {
   return `
   <section class="reprint">
     <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="./" aria-label="The New Critic — home">The <span class="tn-new">New</span> Critic</a>
+    <a class="reprint-name" aria-label="The New Critic">The <span class="tn-new">New</span> Critic</a>
   </section>
   <div class="foot-field" aria-hidden="true"></div>
   ${renderColophonBand()}`;
@@ -1341,7 +1366,7 @@ function renderPageFoot() {
 // the markup.
 function renderColophonBand() {
   return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
-    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>, <a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>, <a href="https://x.com/thenewcritic" rel="noopener">X</a>, <a href="mailto:editors@thenewcritic.com">Email</a></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
     <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
     ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
@@ -1373,6 +1398,31 @@ function renderPageRail({ side, word, href, after, before, categories }) {
 // under it in Garamond for a spell; struck.)
 const SUBSCRIBE_ABOVE = [];
 const SUBSCRIBE_BELOW = ['Sign up for our free newsletter, or become a paid subscriber.'];
+// THE PITCH ITSELF, SAID ONCE (2026-09-19). The About page's Subscribe
+// card and the corner box (renderSubscribeBox) are the same offer in
+// two places, so the words are one constant and the markup around them
+// is each site's own.
+// THE PRICE CARRIES THE WEIGHT (2026-09-19), in the corner box and
+// there alone: the pitch is one sentence and the offer inside it is
+// three words, so they are set bold and the rest is not. The About
+// card keeps the sentence plain — the emphasis is the box's, where the
+// reader is being asked, not the page's, where they are already
+// reading. Hence two forms of one string, joined from the same parts
+// so the WORDS can never drift apart.
+const SUBSCRIBE_PITCH_PARTS = [
+  'Sign up for our free newsletter, or become a paid subscriber. For ',
+  '$30 a year',
+  ', hundreds of paid readers get access to:',
+];
+const SUBSCRIBE_PITCH = SUBSCRIBE_PITCH_PARTS.join('');
+const SUBSCRIBE_PITCH_HTML = SUBSCRIBE_PITCH_PARTS[0]
+  + `<strong class="sub-box-price">${SUBSCRIBE_PITCH_PARTS[1]}</strong>`
+  + SUBSCRIBE_PITCH_PARTS[2];
+const SUBSCRIBE_GETS = [
+  'Postscript, our interview series',
+  'Contra, our criticism section',
+  'Exclusive New Critic parties',
+];
 // A run of numbered lines (1. 2. 3.) is one LIST: set ragged-left
 // inside a block that is itself centred, so the numbers stand in a
 // column and the list stands on the page's axis (style.css,
@@ -2307,17 +2357,21 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   blocks.push(renderLatestRow(postscripts[0], contras[0]));
-  // SUBSCRIBE UNDER THE FIRST ROW: the word in the sections' own
-  // dress — white Placard on the charcoal, spanning the measure, in
-  // the flow — standing straight under the latest row inside the
-  // first movement, not opening one (the .ops-word class keeps it out
-  // of the movement loop's banner test; it stands in the body between
-  // the rows, no wrap and no divider around it, the next row opening
-  // 72 under its feet as under any section word).
-  // …AND CARRIES THE OFFER UNDER THE WORD (2026-09-17; the class
-  // names the band with the message — it wore a colour of its own
-  // for an afternoon, struck).
-  blocks.push(renderBanner({ word: 'Subscribe', href: `${SITE_URL}/subscribe`, modifier: 'subscribe-word page-banner--apart', above: SUBSCRIBE_ABOVE, below: SUBSCRIBE_BELOW }).replace('class="page-banner', 'class="ops-word page-banner'));
+  // (SUBSCRIBE IS OFF THE FRONT PAGE'S BODY, 2026-09-19. The word stood
+  // under the latest row in the sections' own dress, carrying the offer
+  // as a courier line beneath it — both are struck. The offer is made
+  // in the corner box now (renderSubscribeBox), which asks for the
+  // reader once rather than standing in the middle of the reading.
+  // SUBSCRIBE_ABOVE and SUBSCRIBE_BELOW stay declared against its
+  // return; the banner was:
+  //   blocks.push(renderBanner({ word: 'Subscribe', href: `${SITE_URL}/subscribe`,
+  //     modifier: 'subscribe-word page-banner--apart',
+  //     above: SUBSCRIBE_ABOVE, below: SUBSCRIBE_BELOW })
+  //     .replace('class="page-banner', 'class="ops-word page-banner'));
+  // — .ops-word kept it out of the movement loop's banner test so it
+  // stood in the body between the rows, the next row opening 72 under
+  // its feet as under any section word.)
+  void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;
   // The SECOND essay as a mirrored hero inside the first movement —
   // cover left, ground right — then the next postscript/contra pair
   // MIRRORED too: contra left, postscript right with its text in the
@@ -2581,10 +2635,13 @@ ${renderMarginalia()}
 </main>
 
 ${renderFooter()}
+${renderSubscribeBox()}
 
 ${renderCaterpillarScript()}
 ${renderFoilPourScript()}
+${renderSubscribeBoxScript()}
 ${renderDuoPanelFitScript()}
+${renderRectClickScript()}
 ${renderCardOpenScript()}
 ${renderChromeOpenScript()}
 ${renderCoverColorScript()}
@@ -2877,6 +2934,14 @@ function renderFontGateScript() {
       f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
       f.load('400 100px "Roboto Mono"'),
+      // The kit's own Roboto Mono BOLD — the self-hosted face is the
+      // 400 alone, so the corner box's price (.sub-box-price) is the
+      // one run on the site set in a 700 of this face. Gated with the
+      // rest: it is three words in a panel, but they are three words
+      // the reader is shown a price in, and a swap under them reads as
+      // a fault. One more face off an origin the head already
+      // preconnects and this promise already waits on nine of.
+      f.load('700 100px roboto-mono'),
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -3053,6 +3118,50 @@ ${js}
 </script>`;
 }
 
+// THE SUBSCRIBE BOX (2026-09-19): the yellow panel in the bottom right
+// corner of every page — the About page's own pitch, SUBSCRIBE in the
+// title face's capitals over it, and the archive ledger's X (the same
+// 20 viewBox and the same two strokes at 1.6 as .arch-clear-x) in the
+// corner opposite. Ships HIDDEN and is dealt by src/subscribe-box.js,
+// which also decides what shuts it: a reader with no JavaScript is
+// never handed a panel they could not shut.
+function renderSubscribeBox() {
+  return `
+<aside class="sub-box" aria-label="Subscribe to The New Critic" hidden>
+  <p class="sub-box-head">
+    <a class="sub-box-word" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>
+    <button class="sub-box-x" type="button" aria-label="Dismiss">
+      <svg viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </p>
+  <div class="sub-box-body">
+    <p>${SUBSCRIBE_PITCH_HTML}</p>
+    <ol class="sub-box-list">
+${SUBSCRIBE_GETS.map((g) => `      <li>${g}</li>`).join('\n')}
+    </ol>
+  </div>
+</aside>`;
+}
+
+function renderSubscribeBoxScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/subscribe-box.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
+// THE WHOLE TITLE-AND-DEK RECTANGLE OPENS THE POST (src/rect-click.js).
+// It reads the union the fitter writes (--tx-* on the title) and tests
+// a click against it, so the half of the mark that is the dek is a way
+// in like the half that is the title. Ships after the fitter, which is
+// what writes the offsets it reads.
+function renderRectClickScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/rect-click.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
 // Head-inlined, unlike the body scripts above: it must arm the .imgfade
 // gate and its capture-phase load listener before the first <img> is
 // parsed, or early covers could paint-then-hide (a flash) or load before
@@ -3150,9 +3259,15 @@ ${bodyHtml}
 </main>
 
 ${bare ? '' : renderFooter()}
+<!-- The corner box stands on EVERY page, bare or dressed: "bare" means
+     the page carries its own header and footer (the word pages do),
+     not that it does without the furniture. -->
+${renderSubscribeBox()}
 
 ${renderCaterpillarScript()}
-${renderFoilPourScript()}${extraScripts ? `\n${extraScripts}` : ''}
+${renderFoilPourScript()}
+${renderSubscribeBoxScript()}
+${renderRectClickScript()}${extraScripts ? `\n${extraScripts}` : ''}
 </body>
 </html>`;
 }
@@ -3696,11 +3811,9 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
       // body under it; the list; no foot line.
       key: 'subscribe', dark: true, titleDek: true,
       title: `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`,
-      body: `<p>Sign up for our free newsletter, or become a paid subscriber. For $30 a year, hundreds of paid readers get access to:</p>
+      body: `<p>${SUBSCRIBE_PITCH}</p>
       <ol class="mission-list">
-        <li>Postscript, our interview series</li>
-        <li>Contra, our criticism section</li>
-        <li>Exclusive New Critic parties</li>
+${SUBSCRIBE_GETS.map((g) => `        <li>${g}</li>`).join('\n')}
       </ol>`,
     }),
     card({
@@ -3870,8 +3983,17 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   //   .page-rows between movements (the archive's column head, which
   //   pins over the band like the reprint does) — or carry a body and
   //   no word: a movement with no banner (the ledger's rows).
+  //   The opening movement is the front page's m--latest and the rest
+  //   are m--essays — which is position speaking for dress, and right
+  //   until a page wants a movement's dress somewhere other than where
+  //   its position would put it. { mcls } says which outright. (The
+  //   archive's feature block asks for this: it stands BELOW the ledger
+  //   now and still wants the opening movement's ground, and taking
+  //   both classes would not do — .m--essays states --paper after
+  //   .m--latest in the sheet, so the later one would win and the
+  //   cards would come up on the essays' ground.)
   const movementHtml = movements.map((m, i) => m.raw ? `\n  ${m.raw}` : `
-  <div class="movement ${i === 0 ? 'm--latest' : 'm--essays'}${m.cls ? ` ${m.cls}` : ''}">
+  <div class="movement ${m.mcls || (i === 0 ? 'm--latest' : 'm--essays')}${m.cls ? ` ${m.cls}` : ''}">
   ${m.word ? banner(m) : ''}${m.body ? `
   <div class="movement-body">
   ${m.body}
@@ -3956,14 +4078,24 @@ function renderArchivePage(posts, features) {
     // struck, 2026-09-17: the page goes from the ledger's last row
     // straight to the reprint, as the front page goes from its last
     // review row.)
+    // EDITORS' PICKS FALLS BELOW THE LEDGER (2026-09-19). The feature
+    // block stood between the band and the column head, so the archive
+    // opened on four hand-picked cards and the reader had to travel
+    // past them to reach the thing the page is for. The ledger comes
+    // first now and the picks close the page under it.
+    // THE WORD STAYS AT THE TOP. It is the page's title, not the
+    // feature block's, so it keeps its own movement above the column
+    // head — which is why the first entry carries a word and no body
+    // and the last a body and no word.
     movements: [
-      { word: 'Archive', href: 'archive.html', hook: 'subscribe-band', body: renderLedgerFeature(features) },
+      { word: 'Archive', href: 'archive.html', hook: 'subscribe-band' },
       // (SUBSCRIBE stood here between the feature block and the ledger
       // head, 2026-09-18: struck. The offer is on the front page, in
       // the nav's right slot and in the colophon; the archive is a
       // place to look something up.)
       { raw: headHtml },
       { cls: 'm--ledger', body: ledgerHtml },
+      { mcls: 'm--latest', cls: 'm--picks', body: renderLedgerFeature(features) },
     ],
     // The homepage's own scripts for the feature block's cards — the
     // fitter, the click-to-open plates, the cover colours, share, the

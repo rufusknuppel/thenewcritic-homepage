@@ -47,19 +47,17 @@
   font-display: block;
   src: url(fonts/archivo-black.woff2) format('woff2');
 }
-/* TRIAL — OPS Placard Bold (Our Polite Society), the Antenne Books
-   wordmark face: the site's titles and masthead wear it on trial.
-   ⚠ UNLICENSED: this file was pulled from Antenne's CDN for the
-   try-on; a webfont licence from ourpolitesocietytype.com is needed
-   before this ships. One bold cut; the weight range maps every
-   declared weight onto it. */
-@font-face {
-  font-family: 'OPS Placard';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: block;
-  src: url(fonts/ops-placard-bold.woff2) format('woff2');
-}
+/* STRUCK 2026-09-19 — OPS Placard Bold (Our Polite Society), the
+   Antenne Books wordmark face, is gone from the tree. It came down
+   from Antenne's CDN for a try-on and was never licensed, and it held
+   the masthead, the sidebar's stacked name and the bands' marks for
+   the better part of a month; the prose below still keeps its
+   measurements because the seats that face taught us are the seats
+   the ones after it were cut against. Helvetica Neue LT Pro off the
+   kit takes the last of the roles it answered, and the face has
+   dropped out of every family chain — so the file goes with the
+   declaration: fonts/ops-placard-bold.woff2 is deleted, not merely
+   unreferenced. Nothing here asks for it any more. */
 /* Roboto Mono Regular (Apache 2.0), self-hosted (2026-09-18: the
    Light for an hour, a step under the Garamond dek italic's greyness
    — on a canvas the dek's ink density is 0.16, Roboto Mono's 300
@@ -15252,4 +15250,793 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
 }
 :is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
   display: block;
+}
+
+/* ---------- THE SUBSCRIBE BOX (2026-09-19) ----------
+   A yellow panel in the bottom right corner of every page, carrying
+   the About page's subscribe pitch. 36 off the side and 36 off the
+   foot — the ledger's own side inset at its widest, and the unit the
+   columns and the plates stand off the pictures by.
+   ITS AIR IS THE HIGHLIGHT'S. --hl-pad is min(0.32em, 32px): a
+   proportion up to 100px of type and then a flat 32, which is what
+   every large block on the site lands on — the hero titles', the
+   wordmark's, the section words'. The panel is a block of the same
+   yellow, so it takes the same 32 on all four sides, and the X and the
+   word stand in their own corners of it rather than in a padding of
+   their own invention.
+   THE GROUND IS THE HIGHLIGHT'S TOO: --klein, the banana, with the
+   charcoal --hl-ink on it, exactly as a hovered word is dressed.
+   Nothing here is new colour.
+   IT SHIPS hidden — see src/subscribe-box.js for when it is dealt and
+   what shuts it. A reader with no JavaScript never sees it, having no
+   way to shut it. */
+.sub-box{
+  --sub-pad: 32px;
+  /* One token for the word's size: the X is seated off it (below). */
+  --sub-word: 22px;
+  position: fixed;
+  /* ON THE LEFT, AND 72 FURTHER IN (2026-09-19). It opened in the
+     right corner; it opens in the left now, clear of the 72 the page
+     keeps down that side for the stacked section words and the social
+     marks — so the panel stands inside the text's own measure rather
+     than over the margin's letters. 36 off the foot as before. */
+  left: calc(36px + 72px);
+  right: auto;
+  bottom: 36px;
+  /* Over everything the page draws, and under the skip link (100),
+     which is the one thing a reader reaches before anything else. */
+  z-index: 95;
+  width: 380px;
+  /* Never wider than the window less its two 36s. */
+  max-width: calc(100vw - 72px);
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--sub-pad);
+  background: var(--klein);
+  color: var(--hl-ink);
+  /* Faded in where it stands, not travelled to (src/subscribe-box.js
+     seats it before it shows it) — the cover cue's manner. */
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--sub-in) ease, transform var(--sub-in) ease;
+}
+/* IN QUICK, OUT SLOW. Arriving, the panel should be simply THERE — a
+   corner box that takes a beat to appear is a corner box the eye
+   catches moving. Going, it is answering a hand: the X is pressed and
+   the panel takes 400ms to leave, long enough to read as dismissed
+   rather than as vanished, and short enough not to be waited on. */
+.sub-box{ --sub-in: .24s; --sub-out: .4s; }
+.sub-box.is-out{
+  transition-duration: var(--sub-out);
+  /* It goes straight out; it does not sink back down the 6 it rose. */
+  transform: none;
+}
+.sub-box.is-in{ opacity: 1; transform: none; }
+.sub-box[hidden]{ display: none; }
+
+/* A HOVERED MARK INSIDE IT INVERTS — WHITE ON THE CHARCOAL, and it is
+   the SITE'S OWN rule that paints it, not one of ours. Every hovered
+   link and button on the page is served by one declaration up this
+   sheet (search --hl-ink !important): `color: var(--hl-ink)
+   !important; background-color: var(--yves) !important`, carried on a
+   thirteen-deep .r chain. A rule of our own saying `color: white` on
+   hover simply lost to it, which is why the word and the X both came
+   up as solid charcoal blocks with nothing legible in them — the ink
+   was being painted the same charcoal as the ground behind it.
+   SO THE TOKENS ARE SWAPPED AND THE RULE IS LEFT ALONE. On these two
+   marks --yves is the charcoal and --hl-ink is the white, and the
+   site's own declaration then paints exactly what is wanted with no
+   !important of ours and no specificity to win.
+   STATED ON THE MARKS, NOT ON THE PANEL. The --yves swap was on
+   .sub-box for an hour and blacked the whole box out on a hex ground:
+   the hex rule is `--klein: var(--yves) !important` against the
+   UNIVERSAL selector, so it is re-evaluated on every element, and any
+   element inheriting a charcoal --yves got a charcoal --klein with it
+   — which is the token the panel's own ground reads. Root --yves is
+   the banana on every ground, hex included, so the box stays yellow
+   everywhere as long as the swap is kept BELOW the element whose
+   background reads --klein.
+   AND THE WHITE IS A LITERAL, NOT --white. --white is the page's
+   GROUND token (it resolves through --g) and it turns over with the
+   theme: on the dark ground --white computes to #121417, the
+   charcoal, which would have put charcoal back on charcoal on that
+   theme alone. This panel does not turn with the theme — it is the
+   banana with the charcoal on it on all three — so its light is the
+   one white the site has, stated once here. */
+.sub-box{
+  --sub-mark: var(--hl-ink);
+  --sub-lit: #F8F8FF;
+}
+.sub-box-word,
+.sub-box-x{
+  --yves: var(--sub-mark);
+  --hl-ink: var(--sub-lit);
+}
+
+/* SUBSCRIBE IN THE TOP LEFT: the title face's capitals, at the 0.03em
+   the section words are tracked to — measured for this Helvetica, not
+   carried to it. The head and the X share one line, the word ranged
+   left and the mark right. */
+/* --sub-lift and --sub-drop are the ink corrections the box's own
+   script measures (src/subscribe-box.js): what the caps stand below
+   the panel's padding at the top, and what the face's descender stands
+   above it at the foot, each paid back as a negative margin so the
+   INK — not the text's box — keeps the same 32 the sides do. They
+   default to 0, so the panel is square with or without JavaScript. */
+.sub-box-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: var(--sub-lift, 0px) 0 18px;
+}
+.sub-box-body{ margin-bottom: var(--sub-drop, 0px); }
+.sub-box-word{
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+  font-size: var(--sub-word);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: inherit;
+  text-decoration: none;
+}
+/* (NO color HERE. The word goes white on its charcoal block by the
+   token swap above — the site's own hovered-link rule does the
+   painting, and a declaration here would only lose to its
+   !important. Same for the X below.) */
+.sub-box-word:is(:hover, :focus-visible){ outline: none; }
+
+/* THE X: the archive ledger's own mark — the same 20 viewBox, the same
+   two strokes at 1.6, drawn 12 square (style.css, .arch-clear-x). The
+   BUTTON around it is larger than the mark so the hit is a hand's
+   width and not a glyph's; the margins pull the drawn X back out of
+   that hit and onto the panel's own 32, so what stands in the corner
+   is the mark and not a padding around it.
+   SEATED ON THE WORD'S INK, NOT ITS BOX. Helvetica at line-height 1
+   holds its caps down from the top of its own box — measured on the
+   page for this face at this size, the cap begins 0.1326em down and
+   the cap MIDDLE stands at 0.498em — so an X ranged on the box top
+   stood a full 3px high of the letters it answers. It takes the cap's
+   middle instead: 0.498 of the word's size down, less half the mark
+   and less the hit's own padding. One line of arithmetic off one
+   token, so the pair holds if the word is ever resized. */
+.sub-box-x{
+  --x-mark: 12px;
+  --x-hit: 10px;
+  flex: 0 0 auto;
+  display: block;
+  /* A frame for its own block, behind its own strokes and no further
+     (the word gets this from the fitter; the X has to ask). */
+  position: relative;
+  isolation: isolate;
+  margin: calc(var(--sub-word) * 0.498 - var(--x-mark) / 2 - var(--x-hit)) calc(var(--x-hit) * -1) 0 0;
+  padding: var(--x-hit);
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  line-height: 0;
+}
+.sub-box-x svg{ display: block; width: var(--x-mark); height: var(--x-mark); }
+
+/* THE X ANSWERS THE HAND AS THE WORD DOES: white on the charcoal.
+   A white mark on the yellow alone would read as the X going out
+   rather than lighting up, so it takes the same block the word takes
+   — drawn here rather than by the fitter, which passes the button by
+   (seatInkBlocks measures TEXT, and this button's text is an svg).
+   THE BLOCK CLEARS THE STROKES, NOT THE BOX. The ledger's mark is
+   drawn 4 to 16 inside a 20 viewBox, so its ink is inset a fifth of
+   the 12 it is scaled to — 2.4 — and its own air has to be measured
+   from there. It takes the highlight's 0.32 of the mark's size,
+   3.84, which lands the block 1.44 outside the svg box; the hit's
+   padding is 10, so the block is inset 8.56 in it. Both numbers fall
+   out of the two tokens, so the mark can be resized and the block
+   still hugs it. */
+.sub-box-x::after{
+  content: '';
+  position: absolute;
+  display: none;
+  inset: calc(var(--x-hit) - (var(--x-mark) * 0.32 - var(--x-mark) * 0.2));
+  /* --sub-mark, NOT --hl-ink. This said --hl-ink while that token
+     still meant the charcoal on this element; the swap above then
+     made --hl-ink the LIGHT here, which quietly turned the block
+     white — white strokes on a white square on the yellow. The block
+     is the mark's colour and the strokes are the light, and the two
+     have to name different tokens to stay opposite. */
+  background: var(--sub-mark);
+  z-index: -1;
+  pointer-events: none;
+}
+.sub-box-x:is(:hover, :focus-visible)::after{ display: block; }
+.sub-box-x:focus-visible{ outline: none; }
+/* AND THE HIT BOX DOES NOT PAINT ITSELF — TWICE. The site dresses a
+   hovered button in TWO places, and on this one both had to be put
+   down or the X came up inside two squares with a band of yellow
+   between them:
+   1. `background-color: var(--yves) !important` (the same declaration
+      that paints the ink), which on a 32-square hit patch is a
+      32-square tile — twice the mark, and nothing like the block the
+      word gets. It carries a thirteen-deep chain, so fifteen and an
+      !important of our own take it.
+   2. `box-shadow: 0 0 0 var(--hl-pad) var(--yves)` — the older way of
+      giving a highlight its air, PAINTED as a spread rather than
+      spaced as padding (see the note on --hl-pad up this sheet). With
+      --yves swapped to the charcoal here, that spread drew a charcoal
+      RING a pad wide outside the hit box, which is the outer square,
+      and the transparent background from (1) is the yellow band
+      showing between it and the ::after. It carries a twenty-six-deep
+      chain, longer than anything worth writing out — but it is not
+      !important, so ours wins on that alone whatever the chain.
+   What is left is the ::after above: one square, hugging the mark. */
+.sub-box-x:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* THE PITCH IN THE ROBOTO, at the courier voice's own 13 and the
+   tracking every credit line on the site carries. */
+.sub-box-body{
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: -0.26px;
+}
+.sub-box-body p{ margin: 0; }
+/* THE PRICE IS SET BOLD, IN A REAL ONE. The self-hosted Roboto Mono
+   (see the @font-face at the head of this sheet) is the 400 and the
+   400 ALONE, and a browser asked for 700 of a family it already has
+   does not move down the chain for it — it SYNTHESISES one by
+   smearing the regular, which on a monospace at 13 reads as a blur
+   rather than a weight. So the bold run names the KIT's roboto-mono
+   first, which carries a true 700 drawn for the face (the sheet's
+   own note on --byline-face says as much: "the kit serves the same
+   400 and a 700"). The chain behind it is the byline face's own,
+   less the self-hosted name that cannot answer. Monospace either
+   way, so the run sets on the same advance as the text around it. */
+.sub-box-price{
+  font-family: 'roboto-mono', 'courier-std', Courier, 'Courier New', monospace;
+  font-weight: 700;
+}
+.sub-box-list{
+  margin: 12px 0 0;
+  padding-left: 1.6em;
+}
+.sub-box-list li{ margin: 0; }
+.sub-box-body a{ color: inherit; }
+
+/* NARROW WINDOWS: the panel keeps its 36s and gives up its fixed
+   measure, and its air comes in with the page's own (the ledger's
+   --ledger-side takes the same two steps). */
+@media (max-width: 640px){
+  /* The margin's stack goes at this width, and the 72 goes with it:
+     the panel takes both gutters and the window's own measure. */
+  .sub-box{ --sub-pad: 24px; width: auto; left: 36px; right: 36px; }
+}
+@media (max-width: 480px){
+  .sub-box{ right: 24px; bottom: 24px; left: 24px; max-width: calc(100vw - 48px); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sub-box{ transition: none; transform: none; }
+}
+
+/* ---------- THE DEK ANSWERS THE HAND IT RAISES (2026-09-19) --------
+   A title and its dek light as ONE rectangle, and until now only the
+   title's half was a way in. The whole mark opens the post
+   (src/rect-click.js reads the union off --tx-* and tests the click
+   against it), so the dek has to say so: the pointer over a dek that
+   stands inside a squared rectangle, and not over one that does not.
+   The title needs nothing — it carries the link itself. */
+:is(.card-title, .latest-title).hl-rect + :is(.card-dek, .latest-dek){
+  cursor: pointer;
+}
+
+/* ---------- THE COURIER INVERTS THE PAGE (2026-09-19) ----------
+   The Roboto lines — a card's byline strip, READ PREVIEW and Close
+   Preview under it, the preview's own title, and the ledger's courier
+   controls — took the same mark as every other link: the charcoal on
+   the banana. They take the PAGE INVERTED instead: its ink for the
+   block and its ground for the letters.
+   WHICH IS THE INVERSE IN EVERY MODE WITHOUT SAYING SO TWICE. --k is
+   whatever the page is written in and --g whatever it is written on,
+   and the two turn over together with the theme — so this one pair
+   reads white on black on the light page, black on white on the dark
+   one, and the typed ground's own reversal on a hex. Naming the
+   colours instead would have meant three blocks of rules and three
+   chances for them to drift.
+   AND IT IS SAID IN TOKENS, NOT DECLARATIONS. The site paints every
+   hovered link and button from --hl-ink on --yves in one rule up this
+   sheet; swapping what those two mean on these elements lets that rule
+   do the work, with no !important and no specificity to win.
+   NOT THE THEME TOGGLE, and not the ledger's rows. Light / Dark / Hex
+   paint their ACTIVE word --yves by a rule of their own, so a --yves
+   moved here would change which colour marks the mode in force — a
+   thing that has nothing to do with hover. The ledger's rows carry
+   their own alternating grounds for the same reason. Both keep what
+   they have. */
+:is(.cover-author, .cover-date, .cover-meta, .plate-more) :is(a, button, [role="button"]),
+.peek-open,
+.plate-close,
+.plate-title,
+.arch-clear,
+.arch-sort,
+.arch-shuffle{
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+
+/* ---------- THE PLATE'S KICKER KEEPS ITS OWN MARK (2026-09-19) -----
+   The topic word at the head of an open preview (.plate-title —
+   "Journalistic Becoming") is a link like any other and asks for the
+   courier's mark, but two !important rules met on it and neither
+   meant to:
+   - the plate-title's own hover paints background-color: var(--yves);
+   - and EVERYTHING inside a hovered .latest-plate is put to
+     `background-color: transparent !important` on a twenty-seven-deep
+     chain (above in this sheet), so that a hand on the plate does not
+     light every box inside it.
+   The second won, so the block never painted — which went unnoticed
+   while the ink was the charcoal, because charcoal on the curtain is
+   legible with or without a block behind it. Inverted to the courier's
+   white it stopped being legible at all: white letters, no block, on a
+   white curtain, and the kicker simply vanished under the hand.
+   The kicker is not one of the boxes that rule is aimed at — it is the
+   mark itself — so it says so, at a chain long enough to be heard. */
+main.has-mega .card :is(.latest-plate, .card-preview-block) .plate-title:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: var(--yves) !important;
+}
+
+/* ---------- THE MODE WORDS TAKE THE COURIER'S MARK TOO -------------
+   (2026-09-19) Light / Dark / Hex in the right margin are Roboto like
+   the bylines, and were left on the banana when the courier turned to
+   the page's own inversion — because the word for the mode IN FORCE is
+   painted var(--yves) by a rule of its own, and moving that token on
+   the toggle would have changed which colour marks the live mode.
+   THE SWAP IS MADE IN THE HOVER STATE ALONE, so the two never meet: a
+   word under the hand resolves --yves to the ink and --hl-ink to the
+   ground, which is what the site's hovered-button rule then paints,
+   and a word merely sitting there — active or not — resolves them as
+   it always did and keeps its banana. */
+.theme-toggle > span:is(:hover, :focus-visible){
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+
+/* ---------- EDITORS' PICKS STANDS OFF THE LEDGER (2026-09-19) ------
+   The feature block opened the archive until today, butting straight
+   up under the head field — which is why its first wrap is held to a
+   1px top (above in this sheet, against the 72 every other opening
+   movement takes). Moved BELOW the ledger it meets the last row
+   instead, and 1px of air put the lead cover 9 ABOVE that row's foot:
+   the two overlapped.
+   It takes the page's own 72 there. Stated on .m--picks, which is the
+   class that movement carries now, so the rule above still holds for
+   every movement that really does open a page. */
+body.ledger-page .movement.m--picks > .movement-body > .wrap:first-child:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-top: 72px;
+}
+
+
+/* ---------- THE BANDS KEEP THE PAGE'S OWN GROUND (2026-09-19) ------
+   The head band, the colophon and the ledger's column head wore the
+   banana for an hour, with the charcoal on them — one piece of
+   furniture at three places, said in the highlight's own pair used as
+   a GROUND rather than as a mark. Struck: they are back on the page's
+   ground, and their ink turns over with the theme as it always did.
+   WHAT THE HOUR LEFT STANDING, because it was asked for on its own:
+   the MARKS inside them are the page inverted — white on black on the
+   light page — which is below, and the chosen option in the nav list
+   and in the margin keeps its mark standing, which is below that.
+   (The yellow was one declaration — `background: var(--klein)` against
+   the three selectors that follow — if it is ever wanted back.) */
+
+/* ---------- AND THE MARKS INSIDE THEM INVERT ----------
+   A mark in a band is the page turned over — white on black on the
+   light page, black on white on the dark one, the typed ground's own
+   reversal on a hex — which is the courier's treatment and the
+   margin's labels', and now the bands' too. --k and --g, so it follows
+   the theme: the bands stand on the page's own ground, and a fixed
+   charcoal block would have been charcoal on charcoal the moment the
+   reader chose the dark page. Said in TOKENS on the
+   marks themselves — never on the band — so the site's own hovered-link
+   rule does the painting, and so a charcoal --yves cannot reach the
+   `--klein: var(--yves)` the hex ground states against the universal
+   selector and turn the band's own ground black. (That is exactly how
+   the corner box was blacked out for an hour; the same trap is here.) */
+main.has-mega .page-rows > .section-band :is(a, button, [role="button"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head :is(a, button, [role="button"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --yves: var(--band-text);
+  --hl-ink: var(--band-ground);
+}
+
+/* ---------- THE MARK STAYS ON WHAT IS CHOSEN (2026-09-19) ----------
+   The nav list in the head band and the three mode words in the margin
+   are not links a reader merely passes over: one of each is IN FORCE,
+   and the page should say which without being asked. The chosen one
+   carries the block standing still.
+   AND THE MARK JUMPS RATHER THAN DOUBLING. With a hand anywhere in the
+   run, the chosen one gives the block up and the one under the hand
+   takes it — so there is one mark in the run at any moment, and it
+   moves to wherever the reader is looking. Let go and it returns.
+   (The give-up rules are stated DEEPER than the rules that light the
+   chosen one, and by a margin: those carry `html:not([data-theme=...])`
+   twice over for the mode words, which is specificity that does not
+   show in the chain and cost an hour when the two marks stood lit at
+   once. `:not(:hover)` is what keeps the chosen one lit when the hand is on
+   IT: without it the give-up rule would fight the hover rule on the
+   same element and the mark would drop out just as it was reached.) */
+main.has-mega .page-rows > .section-band .band-deks a[aria-current="page"].hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega .page-rows > .section-band .band-deks:hover a[aria-current="page"]:not(:hover).hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none;
+}
+
+/* The mode in force, the same way. Which word that is is already
+   written three times in this sheet as a colour; these are the same
+   three conditions, carrying the block instead. */
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega .marginalia .theme-toggle:hover > .hl-ink:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none;
+}
+/* A mode word carrying a block is dressed like any other mark — the
+   light on the charcoal — in place of the banana its own rule paints
+   it when it is standing bare. That rule is stated at a thirty-nine
+   deep chain, so this is stated deeper. */
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--g) !important;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light,
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark,
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex{
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+
+/* THE CHOSEN NAV WORD STANDS ON ITS BLOCK, IN THE LIGHT. The rule
+   above puts every word in a band in the charcoal so it reads on the
+   yellow — which is right for the four standing bare and wrong for the
+   one carrying a block, where charcoal on charcoal is nothing at all.
+   It takes the block's own ink while it holds the block, and hands
+   that back with the block when a sibling is reached. (The HOVERED one
+   needs nothing here: the site's own rule paints it from --hl-ink,
+   which is the light inside a band.) */
+/* !important, and deeper than fourteen. The sheet ALREADY marks the
+   current page in this list, TWICE over — `color: var(--yves)` on a
+   fourteen-deep chain and `color: var(--k)` on a thirty-nine-deep
+   one, both !important — which was the banana on the page's own
+   ground and is now the charcoal inside a band, i.e. the block's
+   own colour: the word disappeared into the mark meant to show it.
+   That rule is answered in its own terms rather than unpicked, so
+   the marking it does still holds everywhere a band is not. */
+main.has-mega .page-rows > .section-band .band-deks a[aria-current="page"]:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+main.has-mega .page-rows > .section-band .band-deks:hover a[aria-current="page"]:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+
+
+/* ---------- THE WORDMARK DOES NOT ANSWER THE HAND (2026-09-19) -----
+   THE ONES THAT GO NOWHERE, WHICH IS NOT THE BAND'S TWO. The
+   masthead and the reprint link to nothing at all now, so there is
+   nothing for them to answer with; the band's own names — The Young
+   American Magazine at the left and The New Critic in the middle of
+   a word page's band — DO link, to the top of the front page, and a
+   link that goes somewhere has to say so under the hand. They were
+   swept in here with the rest for an hour and came out as the one
+   thing worse than either: a pointer cursor over a word that answers
+   with nothing. They are out of this rule and take the band's own
+   mark, like every other word in the run beside them.
+   The name at the head of the page and the name at its foot are not
+   offers — they are the masthead, and the reader is already here. They
+   gave up their mark today: no block, no ground, no change of colour
+   under the pointer. They stay LINKS (a click still goes home); it is
+   only the answering that is struck.
+   WHAT HAD TO BE PUT DOWN. The mark on these reached them three ways —
+   the block the fitter seats (::after), the older element background
+   the sheet paints, and the spread box-shadow that gave a highlight
+   its air — and a fourth, the wrapper links (.topbar-wordmark and its
+   kin), which light the name INSIDE them rather than themselves. All
+   four, on both routes.
+   THE RESTING COLOUR IS --k, NOT `inherit`. This said `inherit` for an
+   hour, on a measurement taken from the band's two names and the
+   reprint — all three of which do compute to their parent's colour at
+   rest. The MASTHEAD does not: its chain resolves to the page's
+   ground, so inheriting painted it ghost white on white, and the only
+   thing left legible under the hand was the NEW inside it, which
+   carries a charcoal of its own. (Three elements measured, seven
+   written — the fault was in the generalising, not the arithmetic.)
+   --k is what every one of them computes to at rest, and it follows
+   the theme, which is what `inherit` was reached for in the first
+   place. */
+.reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.topbar-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.topbar-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.nav-wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none !important;
+}
+
+/* ---------- THE MARGIN'S STACKED LABELS INVERT THE PAGE ------------
+   (2026-09-19) THE LATEST, EDITORS' PICKS, ESSAYS, POSTSCRIPT and
+   CONTRA — the words standing one letter to the line down the margin —
+   answered the hand in the charcoal on the banana. They take the
+   page's own inversion instead, as the courier lines do: white on
+   black on the light page, black on white on the dark one, and the
+   typed ground's reversal on a hex, from the one pair of tokens.
+   (--k and --g rather than the fixed charcoal-and-white the BANDS use:
+   a band is yellow on every theme so its mark cannot turn, but these
+   stand on the page's own ground, which does — and a charcoal block on
+   the charcoal page would be no mark at all.)
+   Said in tokens, so the site's own hovered-link rule paints it. These
+   carry no ink block (the fitter does not seat them), so what is
+   painted is the element's own ground — and its spread is already
+   struck above, the margin being the air it has. */
+:is(.latest-stack, .rail-mark){
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+
+/* AND IT HANDS THE INK BACK WITH THE BLOCK. The rule above puts the
+   chosen mode word in the LIGHT, which is right only while it is
+   standing on its block: the moment a sibling is reached the block
+   goes and white letters are left on the white page — the word gone
+   rather than merely unmarked. (Exactly the fault the nav list had,
+   and the same shape of fix.) It returns to the page's own ink, which
+   is --k and not the bands' fixed charcoal: this stack sits on the
+   page's ground, so on the dark page the ink has to be the light one. */
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle:hover > .theme-toggle-light:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle:hover > .theme-toggle-dark:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle:hover > .theme-toggle-hex:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+
+
+/* ---------- AND THE NAME TAKES NO POINTER AT ALL (2026-09-19) ------
+   The masthead and the reprint stopped being links, and stopped
+   answering the hand — but the invisible patch that holds the pointer
+   for an oversized word (.ops-hit, above: the link gives up
+   pointer-events and the patch takes them) went on offering a POINTER
+   cursor over both. A hand cursor on a name that goes nowhere is the
+   page telling the reader to click something that cannot be clicked.
+   The patch is struck on these two: no pointer events, no cursor, so
+   the name is a name and the text under it selects like text.
+   NOT ON THE SECTION WORDS. The same patch sits inside .banner-name
+   and the section bands' marks, which ARE links and DO answer — they
+   are neither inside a .wordmark nor inside a .reprint-name, so this
+   does not reach them. */
+main.has-mega :is(.wordmark, .reprint-name) .ops-hit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: none;
+  cursor: default;
+}
+
+
+/* ---------- NO HALF-LIT WORDS (2026-09-19) ----------
+   The mode words in the margin and the live links in the band's list
+   were painted `color-mix(in srgb, var(--k) 45%, var(--g))` — the ink
+   at 45 per cent, a light grey — so that the one in force could stand
+   out from them. It reads as three words greyed out rather than one
+   word chosen, and on the word pages it came out backwards: the DEAD
+   entries (Store, Events) carried the full ink while the live links
+   beside them were the faint ones.
+   Every word in both runs is the full ink now. What marks the one in
+   force is its BLOCK, which is a mark and not an absence. */
+/* SPLIT, because the two runs no longer stand on the same ground: the
+   mode words are in the margin, on the page's own paper, and the
+   band's list is on the band's charcoal. Each takes the ink that
+   reads where it stands. */
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+main.has-mega .section-band .band-deks :is(a, .nav-links-dead):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+
+/* ---------- AND THE COMMAS GO WITH THE MARK ----------
+   A block clears its word by --hl-pad either side, which is wider than
+   the space before the comma — so the comma beside a marked word sits
+   ON the block. It takes the block's ink there, on both sides of the
+   word, in the band's list and in the colophon alike.
+   WHICH COMMAS: the ones touching the word under the hand, and the
+   ones touching the CHOSEN word while no hand is in the run — which is
+   exactly when each of those carries its block (see THE MARK STAYS ON
+   WHAT IS CHOSEN above). The run's own :hover is what hands the mark
+   over, so it is what hands the commas over too. */
+main.has-mega .section-band .band-deks a:hover + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks .band-sep:has(+ a:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) a[aria-current="page"] + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) .band-sep:has(+ a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+
+
+/* ---------- THE THREE BANDS ARE BLACK (2026-09-19) ----------
+   The head band, the colophon and the ledger's column head: charcoal
+   ground, ghost-white text. They wore the page's own ground this
+   morning and the banana for an hour before that; this is the third
+   dress and the one that holds.
+   FIXED, NOT THEME-FOLLOWING. Like the banana before it, this ground
+   does not turn over with the light and dark pages — so the text on it
+   cannot either, and both are stated as the two literals the site
+   owns rather than as --k and --g.
+   AND THE MARKS ON THEM INVERT IT: a white block with the charcoal on
+   it, which is the band turned over, stated in tokens on the marks
+   themselves (above) so the site's own hovered-link rule paints it. */
+:root{
+  --band-ground: #121417;
+  --band-text: #F8F8FF;
+}
+/* THE CHARCOAL, BACK (2026-09-19). Third dressing of these three
+   bands — the banana had an hour, the page's own ground had another,
+   and the charcoal is asked for twice now. Fixed, not theme-
+   following: the ground does not turn over with the light and dark
+   pages, so the text on it cannot either, and both are the two
+   literals above rather than --k and --g.
+   (The overscroll canvas is NOT part of this: it was charcoal for a
+   few minutes alongside and was taken back to the page's ground on
+   its own account, so it stays there.) */
+main.has-mega .page-rows > .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: var(--band-ground);
+  color: var(--band-text);
+}
+
+/* ---------- AND NO WORD IN THEM IS HALF LIT ----------
+   Everything a band carries reads in its own white — including the
+   two runs the sheet used to mute. The live links beside a chosen one
+   were painted `color-mix(in srgb, var(--k) 45%, var(--g))`, the ink
+   at 45 per cent, so the chosen one would stand out from them; on the
+   word pages that came out backwards, the DEAD entries (Store,
+   Events) carrying full ink while the live links went faint. What
+   marks the chosen one is its BLOCK, which is a mark rather than an
+   absence, so the muting is struck and every word is full strength.
+   Stated at forty-four: the muting is a thirty-eight-deep !important,
+   and the mode words' own is thirty-nine. */
+main.has-mega .page-rows > .section-band :is(a, span, p, button, time):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head :is(a, span, p, button, th, td):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+/* The margin's mode words are not in a band — they stand on the page's
+   own ground — so they take the page's own ink, not the band's white. */
+/* :not(:hover) — WITHOUT IT THE WORD UNDER THE HAND GOES OUT. This
+   rule is stated at forty-four to clear the muting's thirty-eight;
+   the rule that paints a HOVERED link its block's ink is the site's
+   own, at thirteen. So a blanket colour here beat the hover and put
+   the word back in the page's ink — on the charcoal block that had
+   just appeared behind it, which is the word vanishing at the moment
+   it is reached. It applies to the words NOT under the hand, which is
+   all it was ever for. (Same guard on the bands' own runs above.) */
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+/* …and the two that carry a mark keep the ink their block asks for,
+   stated deeper than the blanket white above: the chosen nav word on
+   its white block, and the commas that sit on that block with it. */
+main.has-mega .page-rows > .section-band .band-deks:not(:hover) a[aria-current="page"]:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band .band-deks a:hover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+main.has-mega .section-band .band-deks a:hover + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks .band-sep:has(+ a:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) a[aria-current="page"] + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) .band-sep:has(+ a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+
+
+/* ---------- THE MODE WORDS SIT 96 OFF THE FLOOR (2026-09-19) -------
+   They were pinned to the middle of the window — top: 50% with half
+   their own height taken back off in a transform — and rode there
+   whatever the page was doing. They stand 96 off the foot now, in the
+   same place across, so they keep company with the corner box rather
+   than floating in the middle of the reading.
+   The transform is put down with the top: it existed only to take the
+   stack back up by half itself, which a bottom does not need. */
+/* (STRUCK 2026-09-19: they stood 96 off the floor for a few minutes
+   and are back in the middle of the window, where the sheet's own
+   `top: 50%` and the transform that takes them up by half themselves
+   put them. It was `top: auto; bottom: 96px; transform: none`.) */
+
+/* AND THE WORD IN FORCE KEEPS THE INK ITS BLOCK ASKS FOR. The rule
+   that struck the muting paints every mode word the page's ink at
+   forty-four, which is deeper than the rule dressing the chosen one —
+   so the chosen word came back charcoal ON its charcoal block, which
+   is the invisibility the muting never caused. Stated deeper again,
+   and only for the three conditions that carry a block. */
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--g) !important;
+}
+/* …and hands it back with the block when a sibling is reached. */
+main.has-mega .marginalia .theme-toggle:hover > span:not(.theme-toggle-sep):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+
+/* THE FIELD AND ITS GLASS TOO. The rule above names the elements a
+   band carries — a, span, p, button, th, td — and the ledger's head
+   carries two it does not: the search INPUT and the SVG magnifier
+   beside it, both drawn in the ink. On the white band that was right
+   and invisible on the black one: a charcoal field on a charcoal
+   ground, with the placeholder and the glass gone with it.
+   (The placeholder's rule read `…::placeholder:is(*, .r…)` for a
+   minute, which is not a selector at all — a pseudo-ELEMENT has to be
+   the last thing in it — so the whole rule was dropped and the word
+   Search stayed invisible while the glass beside it came back. The
+   depth goes on the input, before the pseudo.) */
+body.word-page .ledger-head :is(input, svg):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::placeholder{
+  color: var(--band-text) !important;
+  opacity: .55;
+}
+
+
+/* ---------- THE OVERSCROLL IS CHARCOAL (2026-09-19) ----------
+   Pull past the head or the foot and what shows behind the page is
+   the ROOT's own background, which was the page's ground — so the
+   rubber band opened a band of ghost white above a charcoal head band
+   and below a charcoal colophon, and the page looked as though it had
+   come away from its own furniture. The canvas is the bands' charcoal
+   at both ends, so overscrolling reads as more of the band rather
+   than as a gap behind it.
+   FIXED, like the bands themselves: it is their ground it continues,
+   and theirs does not turn over with the theme — so on the dark page
+   the canvas and the paper are the same colour, and on the light one
+   the band simply carries on past the end of the page.
+   (Struck once, when the bands went back to the page's ground, and
+   restored with them.) */
+html.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: var(--band-ground);
+}
+
+
+/* ---------- THE TAG'S BLOCK CLOSES ON THE WORD'S AIR ---------------
+   (2026-09-19) A highlight clears its ink by --hl-pad, which is a
+   PROPORTION of the type — so in a mark made of a section word at 87
+   and its tag at 13, the top of the rectangle stood 28 clear of the
+   caps and the bottom 1.4 clear of the tag's descenders. The tag's
+   bottom edge reads --tag-reach instead, which the fitter writes as
+   the face's descender plus the WORD's pad (fitSubscribeLines), so
+   the rectangle closes under the tag by exactly what it opens above
+   the word — and the tag's ink then sits in the middle of the two by
+   construction.
+   THE BOTTOM EDGE ALONE. --hl-pad drives all four sides at once; had
+   the tag's pad been moved instead, its block would have grown some
+   thirty pixels to the left and right as well, and the union would
+   have taken that width. */
+.banner-line--below.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  bottom: calc(var(--hl-dn, 0px) - var(--tag-reach, max(var(--hl-pad), var(--hl-desc, 0px))));
 }

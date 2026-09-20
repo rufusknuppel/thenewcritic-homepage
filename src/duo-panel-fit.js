@@ -3305,7 +3305,7 @@
   // canvas H in the node's own font.
   function capSpan(el) {
     var top = Infinity, bot = -Infinity;
-    var g = document.createElement('canvas').getContext('2d');
+    var g = measureCtx;
     inkPieces(el).forEach(function (node) {
       var text = node.nodeValue;
       if (!text.trim()) return;
@@ -3777,9 +3777,11 @@
       var hcs = getComputedStyle(host);
       var ch = end.node.nodeValue.charAt(end.at);
       if (hcs.textTransform === 'uppercase') ch = ch.toUpperCase();
-      var g = document.createElement('canvas').getContext('2d');
-      g.font = hcs.fontWeight + ' ' + hcs.fontSize + ' ' + hcs.fontFamily;
-      var m2 = g.measureText(ch);
+      // The shared scratch context (it only ever measures, and every
+      // hand states its font first), not a canvas per end: this runs
+      // twice for every name and line the page seats.
+      measureCtx.font = hcs.fontWeight + ' ' + hcs.fontSize + ' ' + hcs.fontFamily;
+      var m2 = measureCtx.measureText(ch);
       return { ls: parseFloat(hcs.letterSpacing) || 0, left: m2.actualBoundingBoxLeft || 0,
                rightGap: m2.width - m2.actualBoundingBoxRight };
     }
@@ -4701,7 +4703,7 @@
       var band = dek.parentElement;
       var probe = dek.querySelector('a, span') || dek;
       var cs = getComputedStyle(probe);
-      var ctx = document.createElement('canvas').getContext('2d');
+      var ctx = measureCtx;
       ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       var caps = cs.textTransform === 'uppercase';
       var H = ctx.measureText('H').actualBoundingBoxAscent;
@@ -5577,6 +5579,20 @@
     // The slots are re-seated after the titles are cut: a review's band
     // is the slack its square leaves, and the square is sized by the row
     // cap, which the cut can still move.
+    // AND IT TAKES THE REVIEW'S WHOLE FIT WITH IT, which is the most
+    // expensive thing in the pass and was tried at exactly one look
+    // (2026-09-19). It cannot be: fitContra ACCUMULATES. It puts the
+    // title and dek back to their full text and the sheet's sizes at
+    // the head, but the margins it deals — the seams given back when a
+    // stack overruns, the slack shared out when it underruns — are read
+    // off whatever the last run left and written back changed, so the
+    // second run is not the first run's answer again but a second helping
+    // of it. Held against the shipped page: every review's author and dek
+    // margin came out 12 adrift with one run, and one cell's dek size,
+    // plate height and open picture with them. So the pair stands. If the
+    // cost is ever wanted back, the thing to make idempotent is the
+    // margin dealing — clear to the sheet first, as the sizes and the
+    // text already are — and NOT to drop the second look.
     step('fitSlideSlots#2', fitSlideSlots);
     step('cutPlates#2', cutPlates);
     step('fitCourierDots#2', fitCourierDots);
@@ -5596,22 +5612,45 @@
     step('fitBandDekInset', fitBandDekInset);
   }
 
+  // ONE PASS FOR THE WHOLE ARRIVAL (2026-09-19). Four separate hands
+  // asked for a fit on a cold load — this script's own first call, then
+  // fonts.ready, then every loadingdone, then window load — and each ran
+  // the full thirty-three steps end to end. Measured on the front page:
+  // four passes closing at 2.8, 5.4, 8.7 and 13.9 seconds, the gate
+  // lifting at 15.2, and the reader holding a blank screen for all of
+  // it, since the page stands at opacity 0 until the lift. Nothing
+  // between the late three changed what the next would measure: the
+  // faces land once and the covers with them, so passes two, three and
+  // four re-measured a page that had stopped moving. They are coalesced
+  // now — each hand ASKS, an ask restarts a short quiet timer, and one
+  // pass runs when the asks stop, which is the same debounce the resize
+  // has carried all along. The first pass keeps its synchronous place
+  // during parse: the gate cannot lift before it, so the page is fitted
+  // whole before it is ever seen, exactly as before.
+  var FIT_QUIET = 64;
+  var fitQuietTimer = null;
+  function requestFit() {
+    if (fitQuietTimer) clearTimeout(fitQuietTimer);
+    fitQuietTimer = setTimeout(function () { fitQuietTimer = null; fitAll(); }, FIT_QUIET);
+  }
   (function(){
     if (!heroLink) return;
     var img = heroLink.querySelector('img.card-image');
     // A hero image landing after first run changes the link box (and the
     // panel pinned to it) — refit everything once it arrives.
-    if (img && !img.complete) img.addEventListener('load', fitAll, { once: true });
+    if (img && !img.complete) img.addEventListener('load', requestFit, { once: true });
   })();
   fitAll();
   // Fonts landing after first paint change every line's height — refit.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(requestFit);
   // AND ON EVERY FONT THAT LANDS LATER: fonts.ready resolves once the
   // faces in use at that moment are in, and a face first used after it
-  // (the wordmark's Placard on a cold cache) arrives with no refit —
-  // every seat read off canvas metrics was then read off the fallback.
-  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', function () { fitAll(); });
-  window.addEventListener('load', fitAll);
+  // arrives with no refit — every seat read off canvas metrics was then
+  // read off the fallback. (The wordmark's Placard was the case that
+  // taught this; the face is struck now, but a kit face on a cold cache
+  // lands the same way.)
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', requestFit);
+  window.addEventListener('load', requestFit);
   // A CARD SHUTTING RE-SEATS ITS OWN CONTROL (card-open.js fires it).
   // Any seat left stale by a layout that moved after the last pass — a
   // picture landing late, a row turning over — is corrected the moment
@@ -5629,15 +5668,37 @@
   // baseline read off a zero probe at its head. Where the font's
   // metric model (inkOffsets) says where ink should be, this says
   // where it is — the courier's seats against rules read exact by it.
+  // ONE RASTER FOR EVERY SCAN (2026-09-19). inkReach and inkWidth each
+  // built a FRESH 3000×320 canvas per call and threw it away — eighty-
+  // five of them on a front-page pass, three and a half megabytes of
+  // pixels apiece, allocated to be drawn on once. The two scan at the
+  // same size and always have, so the raster is made once and wiped
+  // between scans. Wiped rather than resized: assigning width clears
+  // the pixels but resets the whole context with them, and the font,
+  // baseline and fill would all have to be restated — clearRect says
+  // what is meant and keeps the state that both functions set anyway.
+  // (This is NOT the inkCv above, which only ever measures text and is
+  // never drawn to; a raster wants its own.)
+  var SCAN_W = 3000, SCAN_H = 320, SCAN_PX = 200, SCAN_Y0 = 240;
+  var scanG = null;
+  function scanCtx() {
+    if (!scanG) {
+      var cv = document.createElement('canvas');
+      cv.width = SCAN_W; cv.height = SCAN_H;
+      scanG = cv.getContext('2d');
+    }
+    if (scanG) scanG.clearRect(0, 0, SCAN_W, SCAN_H);
+    return scanG;
+  }
   function inkReach(el) {
     var cs = getComputedStyle(el);
     var size = parseFloat(cs.fontSize) || 13;
     var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
-    var scanPx = 200, W = 3000, H = 320, y0 = 240;
-    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    var g = cv.getContext('2d');
-    if (!g || !text) return null;
+    if (!text) return null;
+    var scanPx = SCAN_PX, W = SCAN_W, H = SCAN_H, y0 = SCAN_Y0;
+    var g = scanCtx();
+    if (!g) return null;
     g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
     g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
     g.fillText(text, 20, y0);
@@ -5666,9 +5727,8 @@
     var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
     if (!text) return 0;
-    var scanPx = 200, W = 3000, H = 320, y0 = 240;
-    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    var g = cv.getContext('2d'); if (!g) return 0;
+    var scanPx = SCAN_PX, W = SCAN_W, H = SCAN_H, y0 = SCAN_Y0;
+    var g = scanCtx(); if (!g) return 0;
     g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
     g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
     g.fillText(text, 20, y0);
@@ -6549,6 +6609,7 @@
     fitLatestStack();
     fitBandNameMid();
     var gap = courierGap();
+    void gap;
     [].forEach.call(document.querySelectorAll('.page-banner--apart'), function (band) {
       var name = band.querySelector('.banner-name');
       var below = band.querySelector('.banner-line--below');
@@ -6556,7 +6617,73 @@
       below.style.top = '';
       var nr = inkReach(name), lr = inkReach(below);
       if (!nr || !lr) return;
-      below.style.top = (nr.foot + gap - lr.capTop).toFixed(2) + 'px';
+      // THE TAG IS TUCKED INTO THE MARK (2026-09-19). It stood the
+      // courier's own gap under the word's ink — a measure borrowed
+      // from the hero's line, which answers to a RULE and not to a
+      // block — so inside the rectangle the two of them square off
+      // into, the tag sat high and the mark carried a band of empty
+      // yellow under it. It is centred in that space now: between the
+      // bottom of the word's ink and the end of the highlight.
+      //
+      // WHICH LOOKS CIRCULAR AND IS NOT. The rectangle's foot is the
+      // TAG's own block (the tag is the lowest thing in the mark), and
+      // that block ends one pad below the tag's baseline — so moving
+      // the tag moves the very edge it is being centred against. Write
+      // it out and it solves: with W the word's ink foot, c the tag's
+      // cap height and p its block's reach below the baseline, the
+      // centre condition asks for the tag's baseline at W + c + p,
+      // which puts its CAP at W + p. One pad under the word's ink, and
+      // the arithmetic falls out of the line entirely.
+      //
+      // p IS THE BLOCK'S OWN REACH, read the way the sheet computes it
+      // (--hl-pad against --hl-desc, the deeper winning) rather than
+      // off --hl-desc itself: that property is written by
+      // seatInkBlocks, which runs AFTER this step, so on a first pass
+      // it is not there to read.
+      // CAP TO BASELINE, as everything else on this site is seated:
+      // the descenders of "writing" and "generation" hang below the
+      // tag's block exactly as a g hangs below its own mark, and the
+      // seat does not move because a tag happens to have one.
+      // THE AIR IS THE WORD'S, NOT THE TAG'S (2026-09-19). Seating the
+      // tag by its OWN block's pad centred it cap-to-baseline and left
+      // it sitting low and cramped: the rectangle kept 27.8 of air
+      // above the word's caps and 1.4 under the tag's feet, because
+      // the pad is 0.32 of a type size and the two of them are 87 and
+      // 13. One mark cannot clear its contents by 28 at one end and by
+      // one at the other.
+      // SO THE TAG TAKES THE WORD'S PAD. Its cap stands P under the
+      // word's ink, P being the air the word's own block already keeps
+      // over its caps — which is what gives the tag room. The foot of
+      // the rectangle then closes on half of that; see below.
+      // TO THE FACE'S DESCENDER, not the line's own. "New Critics take
+      // on the world" has nothing below its baseline and the other two
+      // tags do; measured to the ink that happens to be there, the
+      // three banners would close at three different distances. The
+      // block is drawn to the face's deepest descender (--hl-desc does
+      // the same), so the air is measured to it too and the three
+      // marks match.
+      var wcs = getComputedStyle(name);
+      var wfs = parseFloat(wcs.fontSize) || 16;
+      var P = Math.min(0.32 * wfs, 32);
+      var bcs = getComputedStyle(below);
+      var bfs = parseFloat(bcs.fontSize) || 13;
+      var d = descOf(bcs, bfs);
+      // How far the tag's block reaches under its baseline: its
+      // descender, and then the word's pad clear of that. The sheet
+      // reads this off --tag-reach for the BOTTOM edge alone —
+      // --hl-pad could not be moved instead, since that token drives
+      // all four sides and would have blown the rectangle out sideways
+      // by thirty a side.
+      // HALF THE PAD AT THE FOOT (2026-09-19). Equal airs made the
+      // rectangle symmetrical on paper and bottom-heavy to look at:
+      // the air above answers a word at 87 and the air below a tag at
+      // 13, and the eye weighs them against the ink beside them rather
+      // than against each other. The foot takes half of what the head
+      // does. The tag itself has not moved — it still stands the full
+      // P under the word's ink — so it is no longer at the arithmetic
+      // centre of the space, and is not meant to be.
+      below.style.setProperty('--tag-reach', (d + P / 2).toFixed(2) + 'px');
+      below.style.top = (nr.foot + P - lr.capTop).toFixed(2) + 'px';
     });
   }
   function refitAfterClose() { atRest(function () { step('fitTitleHalo#close', fitTitleHalo); }); }

@@ -38,6 +38,21 @@
   // as one (see resolveFrom).
   var WORDS = '.card-title, .latest-title, .card-dek, .latest-dek';
   var CELLS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
+  // THE CONTRAS DO NOT HOLD ACROSS THEIR SEAM (2026-09-19). The hold
+  // below was written for the cards whose picture stands BESIDE their
+  // words, where the gutter is 26 or 30 of the column's own padding and
+  // a hand crossing it would otherwise drop the whole mark and pick it
+  // straight back up — a flicker in the middle of one gesture.
+  // A contra is not built that way. Its picture stands OVER its words,
+  // and what separates them is a seam of seven or eight pixels: not a
+  // crossing that needs covering, just the line where the artwork ends
+  // and the title begins. Measured on the page, every contra's gap box
+  // came back between 7 and 8 high against the 26 and 30 the others
+  // carry. Holding a mark across it keeps the block up while the hand
+  // is on neither the words nor the picture, which is the thing the
+  // hold was meant to prevent, not to cause. So the contras are out of
+  // it: leave the rectangle or the picture and the mark ends there.
+  var NO_HOLD = '.latest-cell--contra';
   // THE MARK'S OWN BOX, not the element's: where a title has been
   // squared off the rectangle it draws IS the mark, and it is neither
   // the title's box (the column's whole width) nor the dek's. Read off
@@ -82,10 +97,14 @@
     }
     return null;
   }
-  function inMark(cell) {
+  // noGap: the mark's two pieces still hold — the rectangle's own air
+  // between its words, and the picture — but the seam BETWEEN them
+  // does not. See NO_HOLD above for which cards ask for that and why.
+  function inMark(cell, noGap) {
     var mark = markBox(cell.querySelector(TITLES));
     var cover = host && host.getBoundingClientRect ? host.getBoundingClientRect() : null;
     if (inBox(mark) || inBox(cover)) return true;
+    if (noGap) return false;
     return inBox(gapBox(mark, cover));
   }
   // What the point under the hand asks for: which picture is lit, and
@@ -131,8 +150,17 @@
       // It only ever HOLDS: nothing here lights a mark that was not lit,
       // so the pad around the words raises nothing until the hand
       // reaches them.
+      // (…EXCEPT ACROSS A CONTRA'S SEAM, which is no crossing to cover
+      // — see NO_HOLD above. The SEAM alone is struck there, not the
+      // hold: a contra's rectangle still keeps its own mark up while
+      // the hand crosses the air inside it, between the title and the
+      // dek, or the whole thing would flicker on the way down the
+      // words — which is the very fault the hold was written for.
+      // Refusing the cell outright was the first cut of this and did
+      // exactly that.)
       var within = node.closest(CELLS);
-      if (within && host && within.contains(host) && inMark(within)) {
+      var noGap = !!(within && within.matches && within.matches(NO_HOLD));
+      if (within && host && within.contains(host) && inMark(within, noGap)) {
         return { cover: host, say: true, mid: true, title: within.querySelector(TITLES) };
       }
       return null;
