@@ -28,13 +28,6 @@
   src: url(fonts/archivo-black.woff2) format('woff2');
 }
 @font-face {
-  font-family: 'OPS Placard';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: block;
-  src: url(fonts/ops-placard-bold.woff2) format('woff2');
-}
-@font-face {
   font-family: 'Roboto Mono';
   font-style: normal;
   font-weight: 400;
@@ -6797,4 +6790,276 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
 }
 :is(.page-banner, .subscribe-band, .events-band, .store-band).hl-rect:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
   display: block;
+}
+.sub-box{
+  --sub-pad: 32px;
+  --sub-word: 22px;
+  position: fixed;
+  left: calc(36px + 72px);
+  right: auto;
+  bottom: 36px;
+  z-index: 95;
+  width: 380px;
+  max-width: calc(100vw - 72px);
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--sub-pad);
+  background: var(--klein);
+  color: var(--hl-ink);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--sub-in) ease, transform var(--sub-in) ease;
+}
+.sub-box{ --sub-in: .24s; --sub-out: .4s; }
+.sub-box.is-out{
+  transition-duration: var(--sub-out);
+  transform: none;
+}
+.sub-box.is-in{ opacity: 1; transform: none; }
+.sub-box[hidden]{ display: none; }
+.sub-box{
+  --sub-mark: var(--hl-ink);
+  --sub-lit: #F8F8FF;
+}
+.sub-box-word,
+.sub-box-x{
+  --yves: var(--sub-mark);
+  --hl-ink: var(--sub-lit);
+}
+.sub-box-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: var(--sub-lift, 0px) 0 18px;
+}
+.sub-box-body{ margin-bottom: var(--sub-drop, 0px); }
+.sub-box-word{
+  font-family: var(--title-face);
+  font-weight: 700;
+  font-style: normal;
+  text-transform: uppercase;
+  font-size: var(--sub-word);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: inherit;
+  text-decoration: none;
+}
+.sub-box-word:is(:hover, :focus-visible){ outline: none; }
+.sub-box-x{
+  --x-mark: 12px;
+  --x-hit: 10px;
+  flex: 0 0 auto;
+  display: block;
+  position: relative;
+  isolation: isolate;
+  margin: calc(var(--sub-word) * 0.498 - var(--x-mark) / 2 - var(--x-hit)) calc(var(--x-hit) * -1) 0 0;
+  padding: var(--x-hit);
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  line-height: 0;
+}
+.sub-box-x svg{ display: block; width: var(--x-mark); height: var(--x-mark); }
+.sub-box-x::after{
+  content: '';
+  position: absolute;
+  display: none;
+  inset: calc(var(--x-hit) - (var(--x-mark) * 0.32 - var(--x-mark) * 0.2));
+  background: var(--sub-mark);
+  z-index: -1;
+  pointer-events: none;
+}
+.sub-box-x:is(:hover, :focus-visible)::after{ display: block; }
+.sub-box-x:focus-visible{ outline: none; }
+.sub-box-x:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.sub-box-body{
+  font-family: var(--byline-face);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: -0.26px;
+}
+.sub-box-body p{ margin: 0; }
+.sub-box-price{
+  font-family: 'roboto-mono', 'courier-std', Courier, 'Courier New', monospace;
+  font-weight: 700;
+}
+.sub-box-list{
+  margin: 12px 0 0;
+  padding-left: 1.6em;
+}
+.sub-box-list li{ margin: 0; }
+.sub-box-body a{ color: inherit; }
+@media (max-width: 640px){
+  .sub-box{ --sub-pad: 24px; width: auto; left: 36px; right: 36px; }
+}
+@media (max-width: 480px){
+  .sub-box{ right: 24px; bottom: 24px; left: 24px; max-width: calc(100vw - 48px); }
+}
+@media (prefers-reduced-motion: reduce){
+  .sub-box{ transition: none; transform: none; }
+}
+:is(.card-title, .latest-title).hl-rect + :is(.card-dek, .latest-dek){
+  cursor: pointer;
+}
+:is(.cover-author, .cover-date, .cover-meta, .plate-more) :is(a, button, [role="button"]),
+.peek-open,
+.plate-close,
+.plate-title,
+.arch-clear,
+.arch-sort,
+.arch-shuffle{
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+main.has-mega .card :is(.latest-plate, .card-preview-block) .plate-title:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: var(--yves) !important;
+}
+.theme-toggle > span:is(:hover, :focus-visible){
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+body.ledger-page .movement.m--picks > .movement-body > .wrap:first-child:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-top: 72px;
+}
+main.has-mega .page-rows > .section-band :is(a, button, [role="button"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head :is(a, button, [role="button"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --yves: var(--band-text);
+  --hl-ink: var(--band-ground);
+}
+main.has-mega .page-rows > .section-band .band-deks a[aria-current="page"].hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega .page-rows > .section-band .band-deks:hover a[aria-current="page"]:not(:hover).hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: block;
+}
+main.has-mega .marginalia .theme-toggle:hover > .hl-ink:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--g) !important;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light,
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark,
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex{
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+main.has-mega .page-rows > .section-band .band-deks a[aria-current="page"]:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+main.has-mega .page-rows > .section-band .band-deks:hover a[aria-current="page"]:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+.reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.topbar-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.nav-wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.topbar-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.nav-wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.wordmark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+.band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .nav-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+:is(.topbar-wordmark, .nav-wordmark-link, .reprint-link):is(:hover, :focus-visible) .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none !important;
+}
+:is(.latest-stack, .rail-mark){
+  --yves: var(--k);
+  --hl-ink: var(--g);
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle:hover > .theme-toggle-light:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle:hover > .theme-toggle-dark:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle:hover > .theme-toggle-hex:not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+main.has-mega :is(.wordmark, .reprint-name) .ops-hit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: none;
+  cursor: default;
+}
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+main.has-mega .section-band .band-deks :is(a, .nav-links-dead):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+main.has-mega .section-band .band-deks a:hover + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks .band-sep:has(+ a:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) a[aria-current="page"] + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) .band-sep:has(+ a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+:root{
+  --band-ground: #121417;
+  --band-text: #F8F8FF;
+}
+main.has-mega .page-rows > .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: var(--band-ground);
+  color: var(--band-text);
+}
+main.has-mega .page-rows > .section-band :is(a, span, p, button, time):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.word-page .ledger-head :is(a, span, p, button, th, td):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+main.has-mega .page-rows > .section-band .band-deks:not(:hover) a[aria-current="page"]:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band .band-deks a:hover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+main.has-mega .section-band .band-deks a:hover + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks .band-sep:has(+ a:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) a[aria-current="page"] + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks:not(:hover) .band-sep:has(+ a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-ground) !important;
+}
+html:not([data-theme="dark"]):not([data-theme="hex"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="hex"] main.has-mega .marginalia .theme-toggle > .theme-toggle-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--g) !important;
+}
+main.has-mega .marginalia .theme-toggle:hover > span:not(.theme-toggle-sep):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+body.word-page .ledger-head :is(input, svg):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text) !important;
+}
+body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::placeholder{
+  color: var(--band-text) !important;
+  opacity: .55;
+}
+html.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: var(--band-ground);
+}
+.banner-line--below.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  bottom: calc(var(--hl-dn, 0px) - var(--tag-reach, max(var(--hl-pad), var(--hl-desc, 0px))));
 }
