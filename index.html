@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=7c1a670f">
+<link rel="stylesheet" href="style.css?v=43281b93">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -239,7 +239,7 @@
   // or picture host: after eight seconds the page lifts with what it
   // has rather than never.
   var shown = false;
-  var gate = { fonts: 0, covers: 0, lifted: 0 };
+  var gate = { fonts: 0, covers: 0, fitted: 0, lifted: 0 };
   try { window.__ncGate = gate; } catch (err) {}
   // THE SAME FADE ON A CLICK AS ON A COLD LOAD (2026-09-17, later).
   // Chrome holds the OLD page's pixels on a same-site navigation until
@@ -335,7 +335,22 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
     else watch();
   }).then(function () { gate.covers = performance.now(); });
-  Promise.all([fontsDone, coversDone]).then(go, go);
+  // THE FIT: the page laid out whole before it is shown. This used to
+  // be free — the fitters' first pass ran synchronously during parse,
+  // so the parser could not reach the end of the body (and neither
+  // promise above could settle) until the page was fitted. That pass
+  // is struck (src/duo-panel-fit.js: it measured fallback metrics and
+  // was thrown away entire by the pass that followed the fonts), and
+  // the guarantee is held here instead: the fitter announces its first
+  // completed pass and the gate waits for it. The flag is checked
+  // before the listener because this runs in the HEAD, long before the
+  // fitter has parsed — but also long before it could have announced,
+  // so the listener is what actually answers on every real load.
+  var fitDone = new Promise(function (resolve) {
+    if (window.__ncFitDone) { resolve(); return; }
+    addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
+  }).then(function () { gate.fitted = performance.now(); });
+  Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
   setTimeout(go, 8000);
   // Pulled back by the reader (the back/forward cache restores the
   // page whole, with its class already lifted): nothing to do — but a
@@ -390,7 +405,7 @@
 
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Saturday, September 19, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Sunday, September 20, 2026</span></p>
     <p class="band-deks"><a href="archive.html">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
@@ -4514,6 +4529,14 @@
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
     }
     });
+    announceFirstFit();
+  }
+  var firstFitAnnounced = false;
+  function announceFirstFit() {
+    if (firstFitAnnounced) return;
+    firstFitAnnounced = true;
+    try { window.__ncFitDone = true; } catch (e) {}
+    try { window.dispatchEvent(new Event('newcritic:fitdone')); } catch (e) {}
   }
   function fitAllSteps() {
     var seatLast = true;
@@ -4567,7 +4590,7 @@
     var img = heroLink.querySelector('img.card-image');
     if (img && !img.complete) img.addEventListener('load', requestFit, { once: true });
   })();
-  fitAll();
+  requestFit();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(requestFit);
   if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', requestFit);
   window.addEventListener('load', requestFit);
@@ -4838,15 +4861,30 @@
     walk(el);
     return (ok && isFinite(lo) && isFinite(hi) && hi > lo) ? { left: lo, right: hi } : null;
   }
+  function csSnap(cs) {
+    return {
+      display: cs.display,
+      position: cs.position,
+      lineHeight: cs.lineHeight,
+      textAlign: cs.textAlign,
+      textTransform: cs.textTransform,
+      fontSize: cs.fontSize,
+      fontStyle: cs.fontStyle,
+      fontWeight: cs.fontWeight,
+      fontFamily: cs.fontFamily,
+      letterSpacing: cs.letterSpacing
+    };
+  }
   function seatInkBlocks() {
     var list;
     try { list = document.querySelectorAll(INK_SEL); } catch (e) { return; }
     var jobs = [];
+    var seen = [];
     [].forEach.call(list, function (el) {
-      var cs = getComputedStyle(el);
+      var cs = csSnap(getComputedStyle(el));
       if (cs.display === 'none') return;
       var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
-      if (!text) { el.classList.remove('hl-ink', 'hl-wrapped'); return; }
+      if (!text) { seen.push({ el: el, bare: true }); return; }
       var rects = el.getClientRects();
       var oneLine = true, uL = Infinity, uR = -Infinity, uT = Infinity, uB = -Infinity;
       for (var q = 0; q < rects.length; q++) {
@@ -4859,20 +4897,27 @@
       var lh0 = cs.lineHeight === 'normal' ? 0 : parseFloat(cs.lineHeight) || 0;
       var tall = lh0 && rects.length && (rects[0].height > lh0 * 1.5);
       var wrapped = tall || (cs.display === 'inline' && !oneLine);
-      el.classList.toggle('hl-wrapped', wrapped);
-      if (wrapped || !rects.length) {
-        el.classList.remove('hl-ink');
-        el.style.removeProperty('--hl-up'); el.style.removeProperty('--hl-dn');
-        return;
-      }
       if (cs.textTransform === 'uppercase') text = text.toUpperCase();
       else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
-      var probe = document.createElement('span');
-      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-      el.insertBefore(probe, el.firstChild);
       var span = (rects.length && oneLine)
         ? { left: uL, right: uR, top: uT, bottom: uB } : null;
-      jobs.push({ el: el, cs: cs, text: text, probe: probe, span: span });
+      seen.push({
+        el: el, cs: cs, text: text, span: span,
+        wrapped: wrapped, none: !rects.length
+      });
+    });
+    seen.forEach(function (s) {
+      if (s.bare) { s.el.classList.remove('hl-ink', 'hl-wrapped'); return; }
+      s.el.classList.toggle('hl-wrapped', s.wrapped);
+      if (s.wrapped || s.none) {
+        s.el.classList.remove('hl-ink');
+        s.el.style.removeProperty('--hl-up'); s.el.style.removeProperty('--hl-dn');
+        return;
+      }
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      s.el.insertBefore(probe, s.el.firstChild);
+      jobs.push({ el: s.el, cs: s.cs, text: s.text, probe: probe, span: s.span });
     });
     jobs.forEach(function (j) {
       j.rect = j.span || j.el.getClientRects()[0] || j.el.getBoundingClientRect();
@@ -4920,6 +4965,7 @@
       var p = j.el.parentNode, i = owners.indexOf(p);
       if (i < 0) { owners.push(p); lines.push([j]); } else lines[i].push(j);
     });
+    var ranged = [];
     lines.forEach(function (g) {
       if (g.length < 2) return;
       var al = g[0].cs.textAlign, side, prop;
@@ -4929,11 +4975,16 @@
       var edges = g.map(function (j) {
         return parseFloat(getComputedStyle(j.el, '::after')[side]) || 0;
       });
-      var out = Math.min.apply(Math, edges);
-      g.forEach(function (j, k) {
-        if (Math.abs(edges[k] - out) < 0.01) return;
-        var was = parseFloat(j.el.style.getPropertyValue(prop)) || 0;
-        j.el.style.setProperty(prop, (was + (out - edges[k])).toFixed(2) + 'px');
+      var wases = g.map(function (j) {
+        return parseFloat(j.el.style.getPropertyValue(prop)) || 0;
+      });
+      ranged.push({ g: g, prop: prop, edges: edges, wases: wases });
+    });
+    ranged.forEach(function (r) {
+      var out = Math.min.apply(Math, r.edges);
+      r.g.forEach(function (j, k) {
+        if (Math.abs(r.edges[k] - out) < 0.01) return;
+        j.el.style.setProperty(r.prop, (r.wases[k] + (out - r.edges[k])).toFixed(2) + 'px');
       });
     });
   }
