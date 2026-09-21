@@ -2348,7 +2348,29 @@
     // only a real extra line (a full line-height of overflow) should cut.
     if (title && getComputedStyle(title).display !== 'none') {
       var titleLh = parseFloat(getComputedStyle(title).lineHeight) || 24;
-      if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
+      // THE WORDS ARE ASKED, NOT THE BOX'S SCROLL (2026-09-21). This read
+      // scrollHeight against clientHeight, and scrollHeight counts every
+      // box the title owns — the mark included. Under the hand a title
+      // and its dek square off into one rectangle (.hl-rect::before),
+      // an absolute pseudo on the TITLE that reaches down over the dek:
+      // a hundred pixels of yellow past the title's foot, read here as a
+      // hundred pixels of overflowing text. So a pass that ran while the
+      // pointer rested on the card — 338 against 238 on the hero —
+      // called for a cut; truncateToWord, which judges each word by its
+      // own box, rightly found nothing to remove, and joined the
+      // ellipsis on regardless: MrBeast, Slop Auteur… with every word
+      // still there. It was always possible (a resize under the hand)
+      // and became likely the day the page began fitting its second
+      // stage half a second after it appears, which is when a hand
+      // arrives. A range over the contents is the words and their
+      // inline boxes and no pseudo of anyone's, so it answers the
+      // question this line was asking.
+      var trg = document.createRange();
+      trg.selectNodeContents(title);
+      var tbox = title.getBoundingClientRect();
+      var textFoot = trg.getBoundingClientRect().bottom;
+      var boxFoot = tbox.top + title.clientTop + title.clientHeight;
+      if (textFoot - boxFoot > titleLh / 2) truncateToWord(title);
       // The quad titles' line cap (max-height + overflow:hidden in CSS)
       // clips at the box's edge — and the LAST line's rule is drawn at
       // that line's foot, a hair past it, so the clip sheared the rule
@@ -3931,6 +3953,47 @@
   // measured on the FULL preview each pass, so a cut from the last
   // pass never shortens the next.
   var OPEN_PIC_MIN_SHARE = 1 / 3;
+  // ---------- THE SECOND LOOK ASKS BEFORE IT FITS (2026-09-21) ----------
+  // The review's fit runs twice a pass — once before the titles are cut
+  // and once after, because the cut can move the row cap and a review's
+  // words take whatever its square leaves — and it was the most
+  // expensive thing in the pass both times: some fifty-five words popped
+  // off eight reviews one at a time, a forced layout under every one,
+  // and then the same fifty-five popped again by the second look.
+  //   WHERE THE SECOND LOOK IS IDLE. At 1600 and at 1920 it changed
+  // NOTHING: every margin, size, cut and box on all eight reviews the
+  // same to the hundredth after the first run and after the second. A
+  // review with room to spare is at a fixed point after one run — the
+  // slack is dealt, the stack fills its room exactly, and a second run
+  // finds no overrun to give for and no slack to deal.
+  //   WHERE IT IS NOT. At 1280 every review OVERRUNS, and there the
+  // second run is a second helping and the page as shipped is the two
+  // of them: the first gives twelve off each seam and steps the type
+  // down to fit; the second puts the type back to the sheet, finds the
+  // seams already twelve shorter, gives twelve MORE and steps the type
+  // down less. Twenty-four off the seams and a 27px title, against
+  // twelve and a title at its 16 floor. That was tried the other way
+  // first — the dealing made idempotent, one helping and no more, as
+  // the note at the give has always described it — and held against
+  // the shipped page it moved 177 values at 1280 and nothing at the
+  // wider two, which is how it was caught: a change that reads as a
+  // tidy-up at the desk and ships small type to every thirteen-inch
+  // screen. The two helpings are the design, whatever the note says.
+  //   SO THE LOOK IS KEPT AND MADE TO ASK FIRST. A review is left
+  // standing on the second look only when BOTH are true: its run
+  // SETTLED — after the give the stack no longer overran, so no type
+  // was stepped down and a second run has provably nothing to add — and
+  // its box is what it was when that run finished. Anything else is
+  // fitted again exactly as before, accumulated margins and all. The
+  // key is the pass, the window and the box, read at the END of a fit
+  // (its own margins on) so it is the state the next look reads at its
+  // head; and never across passes — a new pass has new faces, new
+  // gaps, possibly new words.
+  var fitPassId = 0;
+  function contraKey(cell) {
+    var b = cell.getBoundingClientRect();
+    return fitPassId + '|' + window.innerWidth + '|' + b.width.toFixed(2) + '|' + b.height.toFixed(2);
+  }
   function fitContra() {
     [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
       var col = cell.querySelector('.latest-col');
@@ -3941,6 +4004,13 @@
       var date = cell.querySelector('.cover-meta--peek');
       var plate = cell.querySelector('.latest-plate');
       if (!col || !pic || !title) return;
+      // Settled this pass, on this box: nothing to answer.
+      if (cell.__contraKey && cell.__contraKey === contraKey(cell)) return;
+      cell.__contraKey = null;
+      // Settled until the stack is seen to overrun AFTER the give (the
+      // first of the three step-down loops asks; see overruns below).
+      var settled = true, asked = false;
+      var fitted = function () { cell.__contraKey = settled ? contraKey(cell) : null; };
       var rev = cell.classList.contains('latest-cell--contra-rev');
       ['--slide', '--sq-rest', '--sq-open'].forEach(function (v) { cell.style.removeProperty(v); });
       // From the sheet's own sizes every run: this runs twice a pass,
@@ -4051,8 +4121,17 @@
         el.style.fontSize = next.toFixed(2) + 'px';
         return true;
       };
+      // The loops' own question, asked through one door: its FIRST answer
+      // is taken straight after the give, and is the whole of whether
+      // this run settled. (No extra measure — the first loop asked this
+      // anyway.)
+      var overruns = function () {
+        var o = stackInk() > wordsRoom + 0.25;
+        if (!asked) { asked = true; settled = !o; }
+        return o;
+      };
       var guard = 12;
-      while (stackInk() > wordsRoom + 0.25 && guard-- > 0) {
+      while (overruns() && guard-- > 0) {
         var t0 = size(title);
         if (!t0 || t0 <= 24 + 0.05) break;
         var overNow = stackInk() - wordsRoom;
@@ -4066,10 +4145,10 @@
       }
       if (hasDek) {
         guard = 8;
-        while (stackInk() > wordsRoom + 0.25 && guard-- > 0 && shrink(dek, dek0 * CONTRA_DEK_FLOOR)) {}
+        while (overruns() && guard-- > 0 && shrink(dek, dek0 * CONTRA_DEK_FLOOR)) {}
       }
       guard = 12;
-      while (stackInk() > wordsRoom + 0.25 && guard-- > 0 && shrink(title, Math.max(CONTRA_TITLE_FLOOR, hasDek ? size(dek) : 0))) {}
+      while (overruns() && guard-- > 0 && shrink(title, Math.max(CONTRA_TITLE_FLOOR, hasDek ? size(dek) : 0))) {}
       var ink = stackInk();
       // (The square used to give up height here when the words still
       // overran; it holds now — see the floors above.)
@@ -4088,7 +4167,7 @@
       // the picture its third. Measured off the paragraphs themselves
       // (the curtain inside the plate is absolute, so the plate's own
       // auto height would say nothing), on the full text.
-      if (!plate) return;
+      if (!plate) { fitted(); return; }
       if (!plate.__fullHTML) plate.__fullHTML = plate.innerHTML;
       else plate.innerHTML = plate.__fullHTML;
       plate.style.paddingBottom = '';
@@ -4115,6 +4194,35 @@
         cell.style.setProperty('--pic-top-open', plateH.toFixed(2) + 'px');
         cell.style.setProperty('--plate-top', '0px');
       }
+      fitted();
+    });
+  }
+  // ---------- EVERY PASS BEGINS FROM THE SHEET (2026-09-21) ----------------
+  // fitContra puts a review's type back to the sheet's sizes and its
+  // words back to their full text at its own head — but it is not the
+  // first thing in a pass to read them. fitContraGap runs long before
+  // it, seating the three gaps off the RENDERED ink, and on any pass
+  // after the first that ink was the last pass's: a title already
+  // stepped down to 25 and a dek already cut, where the first pass of a
+  // load measures them at the sheet's 32 and 20. So the gaps came out
+  // different, so the room did, so the step-down did — and the answer
+  // was carried into the pass after that. Measured at 1280, where the
+  // reviews overrun: one title read 27.7, 25.7, 25.5, 25.2, 24.6 over
+  // five passes, a little smaller for every resize of the window, with
+  // no floor in sight but the type's own. A load that took two passes
+  // showed a different page from a load that took one.
+  //   The reset is the one fitContra already makes, made FIRST, so that
+  // every pass measures what the first pass of a load measures and a
+  // pass is a function of the page and nothing else. It is also what
+  // lets the page be fitted in two stages: the second stage passes over
+  // the first screen again, and must leave it exactly as the reader was
+  // shown it.
+  function resetContra() {
+    [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
+      var title = cell.querySelector('.latest-title');
+      var dek = cell.querySelector('.latest-dek');
+      if (title) { title.style.fontSize = ''; if (title.__fullHTML) title.innerHTML = title.__fullHTML; }
+      if (dek) { dek.style.fontSize = ''; if (dek.__fullHTML) dek.innerHTML = dek.__fullHTML; }
     });
   }
   function fitContraGap() {
@@ -5510,6 +5618,12 @@
   function fitAllNow() {
     fitErrors.length = 0;
     fitTimes.length = 0;
+    // A new pass: what the reviews remember of their last fit is void
+    // (fitContra keys its second look on this).
+    fitPassId++;
+    var veiled = stageBegin();
+    var world0 = worldSig();
+    freshMemos();
     atRest(function () {
     // NOTHING ANIMATES WHILE THE FIT MEASURES. The review's picture
     // column carries a .4s height transition for the open card, and
@@ -5527,8 +5641,127 @@
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
     }
     });
+    lastWorld = { start: world0, end: worldSig() };
+    stageEnd(veiled);
     announceFirstFit();
   }
+  // ---------- WHAT A PASS MEASURED, AND WHETHER IT HAS MOVED (2026-09-21) --
+  // A pass reads three things it does not itself write: the faces that
+  // have landed, and the window's two dimensions. (NOT the covers: their
+  // boxes are CSS-sized, and the page fitted with every cover blocked
+  // came out the same as the page with all of them in.) Their signature
+  // is taken at a pass's head and again at its foot. An ASK — the faces'
+  // own loadingdone, fonts.ready, the window's load, the hero arriving —
+  // is answered with a pass only if the world is not the one the last
+  // pass both began and ended in: a face that landed MID-pass leaves the
+  // two ends unequal and is owed its second look, and one that lands
+  // later changes the count. A resize does not ask; it fits.
+  //   What this is for: on a COLD load the window's load event and the
+  // kit's last loadingdone arrive while the first pass holds the thread,
+  // queue behind it, and asked for a second the moment it ended — 3.3s
+  // of pass, then 3.3s more re-measuring a page nothing had touched,
+  // with the reader held at opacity 0 for both. (A warm load never
+  // showed it: there every ask lands before the quiet timer fires.)
+  var lastWorld = null;
+  function worldSig() {
+    var n = 0;
+    try { document.fonts.forEach(function (face) { if (face.status === 'loaded') n++; }); } catch (e) {}
+    return n + '|' + window.innerWidth + '|' + window.innerHeight;
+  }
+  // ---------- THE PAGE IS FITTED IN TWO STAGES (2026-09-21) ---------------
+  // A pass over the whole front page costs about 2.9s and a pass over
+  // what the reader opens on about 0.65 — measured, with the rest of
+  // the page out of the layout — and until now the reader waited out
+  // the first to be shown the second. So a fresh visit is fitted in two
+  // stages. STAGE ONE takes everything past the first screen out of the
+  // layout (display: none, inline), fits what is left, and lets the gate
+  // lift on that. STAGE TWO runs once the fade is over (the gate says
+  // newcritic:shown): the rest comes back into the layout VEILED —
+  // visibility: hidden, so it is measured exactly as it will stand but
+  // no frame can show it half-fitted — the whole page is passed over as
+  // it always was, and the veil comes off.
+  //   WHAT IS KEPT for stage one: the first movement's rows down to the
+  // first one that ends a screen and a half below the head, and never
+  // fewer than two — the hero and the pair under it, which carry the
+  // three covers the gate holds for. Read off the unfitted layout, which
+  // is near enough: the rows' heights are the sheet's, not the fitter's.
+  //   WHAT STAGE TWO COSTS: the thread, for the length of a whole pass,
+  // a breath after the page appears — a hover in those seconds answers
+  // late. Scrolling is the compositor's and is not held. It is the same
+  // 2.9s the reader used to spend looking at nothing.
+  //   ONLY ON A FRESH VISIT AT THE HEAD OF THE PAGE. A reload or a
+  // back/forward is put back where the reader was, and a page with most
+  // of its length missing cannot be scrolled to where that is; a hash
+  // other than #top means the same. Those, the word pages, and any page
+  // already on show are fitted whole in one pass, as before.
+  //   Inline rather than in the sheet: `display: none !important` on the
+  // element outranks every chain in style.css without joining them, and
+  // it leaves with removeProperty, so a settled page carries no trace.
+  var stage = 0; // 0 nothing fitted · 1 the first screen, the rest out · 2 the whole page
+  var laterEls = [];
+  function canStage() {
+    if (window.__ncShown) return false;
+    if (document.body.classList.contains('word-page')) return false;
+    var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if (!nav || nav.type !== 'navigate') return false;
+    if (location.hash && location.hash !== '#top') return false;
+    if ((window.scrollY || window.pageYOffset || 0) > 0) return false;
+    return true;
+  }
+  function pickLater() {
+    var rows = document.querySelector('main.has-mega > .page-rows');
+    if (!rows) return [];
+    var movs = [].filter.call(rows.children, function (el) { return el.classList.contains('movement'); });
+    if (movs.length < 2) return [];
+    var out = movs.slice(1);
+    // the later movements go first, so the one measure below is taken
+    // on a short page
+    out.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
+    var body = movs[0].querySelector('.movement-body');
+    if (!body) return out;
+    var floor = window.innerHeight * 1.5, wraps = 0, cut = false;
+    [].forEach.call(body.children, function (el) {
+      if (cut) { out.push(el); return; }
+      if (!el.classList.contains('wrap')) return;
+      wraps++;
+      if (wraps >= 2 && el.getBoundingClientRect().bottom > floor) cut = true;
+    });
+    return out;
+  }
+  function stageBegin() {
+    if (stage === 0) {
+      if (!canStage()) { stage = 2; return false; }
+      laterEls = pickLater();
+      if (!laterEls.length) { stage = 2; return false; }
+      laterEls.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
+      stage = 1;
+      return false;
+    }
+    if (stage === 1 && window.__ncShown) {
+      stage = 2;
+      laterEls.forEach(function (el) {
+        el.style.removeProperty('display');
+        el.style.setProperty('visibility', 'hidden', 'important');
+      });
+      return true;
+    }
+    return false;
+  }
+  function stageEnd(veiled) {
+    if (!veiled) return;
+    laterEls.forEach(function (el) { el.style.removeProperty('visibility'); });
+    laterEls = [];
+  }
+  function afterShown() {
+    if (stage !== 1) return;
+    var go = function () { if (stage === 1) fitAll(); };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 400 });
+    else setTimeout(go, 60);
+  }
+  window.addEventListener('newcritic:shown', afterShown);
+  // Never left half-fitted: if the gate's word is lost, the rest of the
+  // page is fitted anyway.
+  setTimeout(function () { if (stage === 1) { try { window.__ncShown = true; } catch (e) {} fitAll(); } }, 15000);
   // THE GATE WAITS ON THE FIT, AND IS TOLD SO (2026-09-19). The first
   // pass used to run SYNCHRONOUSLY during parse, and the guarantee
   // that the page was never seen unfitted rested on that: the gate's
@@ -5567,6 +5800,7 @@
       });
     });
     step('resetMatterInk', resetMatterInk);
+    step('resetContra', resetContra);
     step('inkCenterBands', inkCenterBands);
     step('alignBands', alignBands);
     step('fitMastheadFill', fitMastheadFill);
@@ -5613,6 +5847,12 @@
     // cost is ever wanted back, the thing to make idempotent is the
     // margin dealing — clear to the sheet first, as the sizes and the
     // text already are — and NOT to drop the second look.
+    // (2026-09-21: most of the cost is back and the look stands. The
+    // dealing was NOT made idempotent — tried, and it moved 177 values
+    // at 1280, where the second helping is what keeps the type large —
+    // so the pair stands too, and the second look asks each review
+    // whether it settled and whether its box has moved before it fits
+    // it again. See THE SECOND LOOK ASKS BEFORE IT FITS.)
     step('fitSlideSlots#2', fitSlideSlots);
     step('cutPlates#2', cutPlates);
     step('fitCourierDots#2', fitCourierDots);
@@ -5649,9 +5889,35 @@
   // whole before it is ever seen, exactly as before.
   var FIT_QUIET = 64;
   var fitQuietTimer = null;
+  // THE FIRST PASS WAITS FOR THE FACES (2026-09-21). It began 64ms after
+  // the parser reached this script, faces or no faces, and on a cold
+  // load that is before they are in: measured on the live page, the
+  // first pass ended with seven of ten landed and 337 of its values
+  // were written again by the pass the rest then asked for. The gate in
+  // the head loads the faces by name and says when they are all in
+  // (newcritic:fontsin; a flag for this script, which parses later than
+  // it may be said). Until then an ask is held — but not for ever: past
+  // FONT_WAIT a dead kit degrades to what it always did, a pass on the
+  // fallback and another when a face does land.
+  var FONT_WAIT = 4000;
+  var fontsIn = !!window.__ncFontsIn;
+  var fontWaitTimer = null;
+  window.addEventListener('newcritic:fontsin', function () { fontsIn = true; requestFit(); });
+  function answerAsk() {
+    if (!fontsIn && performance.now() < FONT_WAIT) {
+      if (!fontWaitTimer) {
+        fontWaitTimer = setTimeout(function () { fontWaitTimer = null; requestFit(); },
+          Math.max(0, FONT_WAIT - performance.now()) + 5);
+      }
+      return;
+    }
+    var w = worldSig();
+    if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
+    fitAll();
+  }
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
-    fitQuietTimer = setTimeout(function () { fitQuietTimer = null; fitAll(); }, FIT_QUIET);
+    fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
   }
   (function(){
     if (!heroLink) return;
@@ -5910,6 +6176,15 @@
   function fitOneStack(stack, forced) {
     var card = homeStack(stack);
     if (!card) return;
+    // A NAME WITH NO CARD TO STAND BESIDE STANDS NOWHERE. The margin's
+    // stacked names hang off <main>, not off their sections, so taking a
+    // section out of the layout (stage one of the two-stage fit) leaves
+    // its name behind with nothing to be sized to: fitted to a card of
+    // no height it came out at 1.7px, fixed at the margin's middle — a
+    // speck on the first screen until the rest of the page was fitted.
+    // It goes out with its card and comes back with it.
+    if (!card.getClientRects().length) { stack.style.setProperty('display', 'none', 'important'); return; }
+    stack.style.removeProperty('display');
     var half = card.querySelector('.duo-half') || card;
     var first = stack.querySelector(':scope > span:not(.latest-stack-gap)');
     if (!first) return;
@@ -6085,6 +6360,24 @@
   // measureText, no raster — and the answer is cached on the dress and
   // the word together.
   var ascMemo = {}, descMemo = {};
+  // THE ANSWER IS CACHED ON THE DRESS — AND THE DRESS IS NOT THE FACE
+  // (2026-09-21). The key is the font's NAME, and a name measures
+  // differently before its face has landed: asked for garamond-premier-
+  // pro's descender while the kit was still in flight, the canvas
+  // answered with the fallback's, 5.58 where Garamond's is 4.34, and
+  // that was kept under Garamond's name for the life of the page. Every
+  // later pass, the faces long since in, read the wrong number back —
+  // so the band's italic stood on a pad a pixel and a quarter out on
+  // any load whose first pass beat the kit, and right on any that did
+  // not, which is what made two identical loads come out fifty-three
+  // values apart. The memo is good for as long as the set of landed
+  // faces is what it was filled under, and is emptied when it is not.
+  var memoFaces = -1;
+  function freshMemos() {
+    var n = 0;
+    try { document.fonts.forEach(function (face) { if (face.status === 'loaded') n++; }); } catch (e) {}
+    if (n !== memoFaces) { memoFaces = n; ascMemo = {}; descMemo = {}; }
+  }
   // THE FACE'S DESCENDER, not this word's. The pad is capped in pixels
   // now, so above a certain size it is shallower than a descender and
   // the bottom has to be given the descender's own depth instead. Read

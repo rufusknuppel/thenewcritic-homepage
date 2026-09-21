@@ -19,33 +19,27 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=43281b93">
+<link rel="stylesheet" href="style.css?v=bdb1db95">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   // LIGHT OR DARK, before first paint: the stored choice, else light.
-  // THE GROUND: light, dark, or a colour of the reader's own (HEX,
-  // 2026-09-17). Light and dark are the two token sets in style.css;
-  // a hex colour is written straight onto the root as --g, with --k
-  // white or charcoal, whichever reads better on it (WCAG contrast).
   // GHOST WHITE (2026-09-18): the one white on the site — the light
-  // ground, the dark ink, and the ink a hex ground takes.
+  // ground and the dark ink.
   var WHITE = '#F8F8FF', CHARCOAL = '#121417';
-  // THE GROUND HEX OPENS ON (2026-09-18): a slate blue-grey the white
-  // ink reads well on, until the reader types a code of their own.
-  // (#888899, a paler cast of the same, for the first hours.)
-  var DEFAULT_HEX = '#556677';
-  // THE DEFAULTS THAT CAME BEFORE (2026-09-18). A stored ground beats
-  // the default, so moving the default reached nobody who had ever
-  // opened hex — they kept the ground they were handed and had never
-  // chosen. The paint STAMPS the ground it hands out (nc-hex-auto);
-  // when the default moves, a stored ground still wearing its stamp is
-  // replaced, and a ground the reader TYPED is left alone. The readers
-  // who took #888899 in the hours before the stamp existed carry no
-  // mark, so it is named here by hand — the one cost being a reader
-  // who typed that exact code in those hours, who is moved with them.
-  var HEX_WAS = ['#888899'];
+  // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
+  // the margin used to paint the page's ground in a colour of the
+  // reader's own, with the ink turned white on it. It names the
+  // HIGHLIGHT now: every yellow on the site reads one token, --nc-mark
+  // (style.css, THE MARK'S COLOUR IS ONE TOKEN), and a code typed here
+  // is written onto the root in its place. The ground is light or dark
+  // and nothing else; the mark rides over both and is kept separately,
+  // so turning the page over does not lose it.
+  // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
+  // when this was written, the blue #1182c2 since the same evening.
+  // It must match --nc-mark in style.css.)
+  var YELLOW = '#1182c2';
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
     if (!m) return null;
@@ -53,89 +47,88 @@
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     return '#' + h;
   };
-  // (The contrast rule that chose the ink — luminance against white
-  // and charcoal — is struck with the choice: a hex ground is inked in
-  // white, always. 2026-09-18.)
+  // THE INK ON THE BLOCK IS CHOSEN BY CONTRAST. On the yellow it is the
+  // charcoal, stated in the sheet; on a reader's colour it is whichever
+  // of the charcoal and the white reads better (WCAG relative
+  // luminance), so a navy or a black does not swallow the word it was
+  // put behind. (A hex GROUND gave this rule up and inked everything
+  // white; a block is a few words wide, and those words are the ones
+  // the reader is pointing at.)
+  var lum = function (hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  var inkOn = function (hex) {
+    var l = lum(hex);
+    var onWhite = (lum(WHITE) + 0.05) / (l + 0.05);
+    var onCharcoal = (l + 0.05) / (lum(CHARCOAL) + 0.05);
+    return onWhite > onCharcoal ? WHITE : CHARCOAL;
+  };
   var setMeta = function (colour) {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
   };
-  // Paints the choice: the attribute for the stylesheet, the two
-  // tokens inline for a hex ground (and cleared for the others).
-  var paint = function (mode, hex) {
-    if (mode === 'hex' && hex) {
-      // ALL WHITE ON ANY GROUND (2026-09-18): the ink is white whatever
-      // code is chosen — text, rules, marks, names and titles together —
-      // and the highlight, the chosen word and every hover, is the
-      // charcoal. (The ink was picked by contrast before, white or
-      // charcoal, with the names in its opposite; a pale ground is the
-      // reader's own lookout now.)
-      root.setAttribute('data-theme', 'hex');
-      root.style.setProperty('--g', hex);
-      root.style.setProperty('--k', WHITE);
-      // THE HIGHLIGHT STAYS THE YELLOW HERE TOO (2026-09-18). It was
-      // painted CHARCOAL on a hex ground, from the hours when the
-      // highlight was the word's own INK and a black word read well on
-      // a colour. It is a BLOCK now, and a charcoal block on a slate
-      // ground is a black slab across the masthead. One highlight for
-      // the whole site: the yellow, with the charcoal on it.
-      root.style.removeProperty('--yves');
-      setMeta(hex);
+  // Paints the ground: light is the page's own, dark is written on the
+  // root. (The inline --g and --k a hex ground wrote are cleared for
+  // any page still carrying them from a view transition's old state.)
+  var paint = function (mode) {
+    root.style.removeProperty('--g');
+    root.style.removeProperty('--k');
+    root.style.removeProperty('--yves');
+    if (mode === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    setMeta(mode === 'dark' ? CHARCOAL : WHITE);
+  };
+  // Paints the mark: the reader's colour and the ink that stands on it,
+  // or — for no colour, or the yellow's own code — nothing at all, and
+  // the sheet's yellow and charcoal stand.
+  var mark = function (hex) {
+    if (hex && hex !== YELLOW) {
+      root.style.setProperty('--nc-mark', hex);
+      root.style.setProperty('--hl-ink', inkOn(hex));
     } else {
-      root.style.removeProperty('--g');
-      root.style.removeProperty('--k');
-      root.style.removeProperty('--yves');
-      // Light is the page's own; dark is written on the root.
-      if (mode === 'dark') root.setAttribute('data-theme', 'dark');
-      else root.removeAttribute('data-theme');
-      setMeta(mode === 'dark' ? CHARCOAL : WHITE);
+      root.style.removeProperty('--nc-mark');
+      root.style.removeProperty('--hl-ink');
     }
   };
-  var store = function (mode, hex) {
+  var store = function (mode) {
+    try { localStorage.setItem('nc-theme', mode); } catch (err) {}
+  };
+  var storeMark = function (hex) {
     try {
-      localStorage.setItem('nc-theme', mode);
-      if (hex) {
-        localStorage.setItem('nc-hex', hex);
-        // The stamp rides with a ground that IS the default — handed
-        // out, not chosen. typed() strikes it whatever was typed.
-        if (hex === DEFAULT_HEX) localStorage.setItem('nc-hex-auto', DEFAULT_HEX);
-        else localStorage.removeItem('nc-hex-auto');
-      }
+      if (hex && hex !== YELLOW) localStorage.setItem('nc-accent', hex);
+      else localStorage.removeItem('nc-accent');
     } catch (err) {}
   };
-  var storedHex = null;
+  var accent = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    storedHex = hexOf(localStorage.getItem('nc-hex'));
-    // THE DEFAULT MOVES THE READERS IT HANDED ITSELF TO, and only
-    // those: a stored ground wearing the stamp of an older default —
-    // or, for the unstamped hours, standing in HEX_WAS — is replaced
-    // by the one in force, and re-stamped. A ground that was typed
-    // carries no stamp and is never touched.
-    if (storedHex && storedHex !== DEFAULT_HEX) {
-      var stamp = hexOf(localStorage.getItem('nc-hex-auto'));
-      if (stamp ? stamp === storedHex : HEX_WAS.indexOf(storedHex) >= 0) {
-        storedHex = DEFAULT_HEX;
-        // Its own try: a browser that reads storage but refuses to
-        // write it (a private window) must still reach the paint
-        // below rather than fall out of this block into the light.
-        try {
-          localStorage.setItem('nc-hex', DEFAULT_HEX);
-          localStorage.setItem('nc-hex-auto', DEFAULT_HEX);
-        } catch (e2) {}
-      }
+    // THE READERS WHO STOOD ON A HEX GROUND come back to the light page,
+    // which is the default, and their stored ground is NOT carried over
+    // as a mark: it was chosen (or handed out — the slate #556677) to be
+    // stood on in white ink, and as a highlight it is a colour nobody
+    // picked. The old keys are struck so this runs once.
+    if (theme === 'hex') {
+      theme = 'light';
+      try {
+        localStorage.setItem('nc-theme', 'light');
+        localStorage.removeItem('nc-hex');
+        localStorage.removeItem('nc-hex-auto');
+      } catch (e2) {}
     }
-    if (theme === 'hex') paint('hex', storedHex || DEFAULT_HEX);
-    else if (theme === 'light' || theme === 'dark') paint(theme);
+    if (theme === 'light' || theme === 'dark') paint(theme);
+    accent = hexOf(localStorage.getItem('nc-accent'));
+    if (accent) mark(accent);
   } catch (e) {}
-  // HEX always has a ground to open on: the reader's last, or the default.
-  storedHex = storedHex || DEFAULT_HEX;
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
-  // paints that ground for this view only — nothing is stored, and the
+  // paints that mark for this view only — nothing is stored, and the
   // reader's own choice stands on the next plain visit.
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
-    if (qHex) paint('hex', qHex);
+    if (qHex) mark(qHex);
   } catch (e) {}
   // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
   // where the browser has view transitions the old page and the new
@@ -146,9 +139,9 @@
   // snapshot is the settled page). Elsewhere the per-element ease
   // above stands in.
   var flipTimer = null;
-  var flip = function (mode, hex) {
-    store(mode, hex);
-    var change = function () { paint(mode, hex); };
+  var flip = function (mode) {
+    store(mode);
+    var change = function () { paint(mode); };
     if (document.startViewTransition) {
       root.classList.add('theme-instant');
       var done = function () { root.classList.remove('theme-instant'); };
@@ -170,19 +163,19 @@
     change();
   };
   var current = function () {
-    var t = root.getAttribute('data-theme');
-    return t === 'dark' || t === 'hex' ? t : 'light';
+    return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   };
   // THE HEX FIELD: a courier line under the three words, shown on HEX
   // and hidden on Enter, Escape or leaving it. A valid code paints the
-  // page as it is typed (no dissolve keystroke by keystroke — the
-  // transitions are simply held off for the change); an invalid one
-  // paints nothing.
+  // mark as it is typed (the transitions are simply held off for the
+  // change); an invalid one paints nothing; and a field EMPTIED gives
+  // the yellow back, which is the only way home short of typing its
+  // code.
   var field = null;
   var openField = function () {
     field = field || document.querySelector('.theme-hex');
     if (!field) return;
-    field.value = storedHex || '';
+    field.value = accent || YELLOW;
     field.hidden = false;
     field.focus();
     // The caret at the end of the code, nothing highlighted: the
@@ -193,28 +186,25 @@
     if (field) field.hidden = true;
   };
   var typed = function () {
-    var hex = hexOf(field.value);
-    if (!hex) return;
-    storedHex = hex;
+    var bare = /^s*#?s*$/.test(field.value);
+    var hex = bare ? null : hexOf(field.value);
+    if (!hex && !bare) return;
+    accent = hex && hex !== YELLOW ? hex : null;
     root.classList.add('theme-instant');
-    paint('hex', hex);
-    store('hex', hex);
-    // TYPED IS CHOSEN, even where the code typed is the default's own:
-    // the stamp comes off, and no later default will move this reader.
-    try { localStorage.removeItem('nc-hex-auto'); } catch (err) {}
+    mark(accent);
+    storeMark(accent);
     setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
   };
+  // HEX IS NOT A THIRD GROUND: the word opens its field and changes
+  // nothing until a code is typed. Light and Dark turn the page over
+  // and leave the mark where it is.
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
     var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
-    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : t.classList.contains('theme-toggle-dark') ? 'dark' : 'hex')
+    if (t && t.classList.contains('theme-toggle-hex')) { openField(); return; }
+    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : 'dark')
       : (current() === 'light' ? 'dark' : 'light');
-    if (mode === 'hex') {
-      openField();
-      if (storedHex && current() !== 'hex') flip('hex', storedHex);
-      return;
-    }
     closeField();
     if (mode !== current()) flip(mode);
   });
@@ -266,7 +256,14 @@
       lifted = true;
       gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
-      setTimeout(function () { root.classList.add('page-shown'); }, 400);
+      setTimeout(function () {
+        root.classList.add('page-shown');
+        // The fade is over: the fitter may take the thread for the rest
+        // of the page (src/duo-panel-fit.js, THE PAGE IS FITTED IN TWO
+        // STAGES) without stalling the dissolve the reader is watching.
+        try { window.__ncShown = true; } catch (err) {}
+        try { window.dispatchEvent(new Event('newcritic:shown')); } catch (err) {}
+      }, 400);
     };
     // Two frames past ready, so the fitters (which run on fonts.ready)
     // have laid the page out before it is seen.
@@ -298,16 +295,28 @@
       f.load('400 100px trajan-pro-3'),
       f.load('700 100px trajan-pro-3')
     ]).then(function () { return f.ready; }).then(resolve, resolve);
-  }).then(function () { gate.fonts = performance.now(); });
-  // THE COVERS: every cover on the page, loaded (or failed) and then
-  // decoded, so the first paint has their pixels ready.
+  }).then(function () {
+    gate.fonts = performance.now();
+    // Said out loud for the fitter (src/duo-panel-fit.js), which holds
+    // its first pass for the faces and cannot ask this promise itself:
+    // a flag for a listener that arrives late, an event for one that
+    // is already waiting.
+    try { window.__ncFontsIn = true; } catch (err) {}
+    try { window.dispatchEvent(new Event('newcritic:fontsin')); } catch (err) {}
+  });
+  // THE COVERS: the ones the page HOLDS for, loaded (or failed) and then
+  // decoded, so the first paint has their pixels ready. That was every
+  // cover on the page and is the front page's first three now, marked
+  // at build time (build.js, holdFirstCovers); the rest are lazy and
+  // fade up as they land. A page that marks none holds for none.
+  var HOLD = 'img.card-image[data-hold]';
   var coversDone = new Promise(function (resolve) {
     var settle = function () {
       // The decode is asked for, not waited on past a beat: a hidden
       // tab decodes nothing until it is shown (its decode() promises
       // simply hang), and a page opened in the background should not
       // stand blank for the cap once it is brought forward.
-      var imgs = [].slice.call(document.querySelectorAll('img.card-image'));
+      var imgs = [].slice.call(document.querySelectorAll(HOLD));
       if (document.visibilityState === 'hidden') { resolve(); return; }
       var decodes = imgs.map(function (img) {
         return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
@@ -316,7 +325,7 @@
       Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
     };
     var pending = function () {
-      var imgs = document.querySelectorAll('img.card-image');
+      var imgs = document.querySelectorAll(HOLD);
       for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
       return false;
     };
@@ -405,7 +414,7 @@
 
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Sunday, September 20, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Monday, September 21, 2026</span></p>
     <p class="band-deks"><a href="archive.html">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <div class="head-seam" aria-hidden="true"></div>
@@ -413,7 +422,7 @@
   <div class="movement m--latest">
 <div class="site-header" id="site-header">
 <nav class="site-nav site-nav--top">
-  <a class="wordmark topbar-wordmark" aria-label="The New Critic">
+  <a class="wordmark topbar-wordmark" href="#top" aria-label="The New Critic — to the top of the front page">
     <span class="topbar-name">The <span class="tn-new">New</span> Critic</span>
   </a>
   
@@ -424,7 +433,7 @@
     <section class="card card--duo card--split card--mega card--mega-rev">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!uHkZ!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!uHkZ!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 480w, https://substackcdn.com/image/fetch/$s_!uHkZ!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 800w, https://substackcdn.com/image/fetch/$s_!uHkZ!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!uHkZ!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" data-hold src="https://substackcdn.com/image/fetch/$s_!uHkZ!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!uHkZ!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 480w, https://substackcdn.com/image/fetch/$s_!uHkZ!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 800w, https://substackcdn.com/image/fetch/$s_!uHkZ!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!uHkZ!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F888bfe1d-9fe2-4878-9bf0-2edadb3ee0a4_2586x1775.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="high" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -460,7 +469,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!cEjI!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp" srcset="https://substackcdn.com/image/fetch/$s_!cEjI!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 480w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 800w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 1200w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener"><img class="card-image" data-hold src="https://substackcdn.com/image/fetch/$s_!cEjI!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp" srcset="https://substackcdn.com/image/fetch/$s_!cEjI!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 480w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 800w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 1200w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="eager" fetchpriority="high" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -474,7 +483,7 @@
       </div>
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kfWq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener"><img class="card-image" data-hold src="https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kfWq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="eager" fetchpriority="high" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -493,7 +502,7 @@
     <section class="card card--duo card--split card--mega">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-striver-class" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!Ut84!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!Ut84!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 480w, https://substackcdn.com/image/fetch/$s_!Ut84!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 800w, https://substackcdn.com/image/fetch/$s_!Ut84!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!Ut84!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!Ut84!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!Ut84!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 480w, https://substackcdn.com/image/fetch/$s_!Ut84!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 800w, https://substackcdn.com/image/fetch/$s_!Ut84!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!Ut84!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc876f89c-f3fd-4d7a-86c0-e624a3f2f82c_5026x3348.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -526,7 +535,7 @@
     <section class="card card--latest card--latest-rev">
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!wGxB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 480w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 800w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/the-doctor-of-girlhood" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!wGxB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 480w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 800w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!wGxB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff9213880-23b9-4606-a3c9-212136b579a2_4079x3477.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -543,7 +552,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/present-at-the-creation" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!W56t!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp" srcset="https://substackcdn.com/image/fetch/$s_!W56t!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 480w, https://substackcdn.com/image/fetch/$s_!W56t!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 800w, https://substackcdn.com/image/fetch/$s_!W56t!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 1200w, https://substackcdn.com/image/fetch/$s_!W56t!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/present-at-the-creation" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!W56t!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp" srcset="https://substackcdn.com/image/fetch/$s_!W56t!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 480w, https://substackcdn.com/image/fetch/$s_!W56t!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 800w, https://substackcdn.com/image/fetch/$s_!W56t!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 1200w, https://substackcdn.com/image/fetch/$s_!W56t!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F451c45b9-e4f7-4c14-855e-f66225bfd8be_1456x1092.webp 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -570,7 +579,7 @@
     <section class="card card--duo card--split card--mega card--mega-rev card--m2">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/manifest-man" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png" srcset="https://substackcdn.com/image/fetch/$s_!vvaX!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 480w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 800w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1200w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png" srcset="https://substackcdn.com/image/fetch/$s_!vvaX!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 480w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 800w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1200w, https://substackcdn.com/image/fetch/$s_!vvaX!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F878cff15-8ca4-436a-895b-fe3fbea079cc_1394x1237.png 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -603,7 +612,7 @@
     <section class="card card--duo card--split card--mega card--m2">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/luddite-club" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!d4tT!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!d4tT!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 480w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 800w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!d4tT!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!d4tT!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 480w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 800w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!d4tT!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F79512e5a-adf3-48bb-84cf-ecc426c7ce5d_4042x3151.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -636,7 +645,7 @@
     <section class="card card--duo card--split card--mega card--mega-rev card--m2">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-blackpill" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa8ecc0c0-ef4c-48b3-ac95-aa78d1c1bade_1748x890.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -669,7 +678,7 @@
     <section class="card card--duo card--split card--mega card--m2">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/what-was-college-for-3ce" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vHKv!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!vHKv!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 480w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 800w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!vHKv!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!vHKv!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 480w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 800w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!vHKv!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F49fb045a-8ca5-4cb3-8c23-8f07462b08a3_4862x3647.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -702,7 +711,7 @@
     <section class="card card--duo card--split card--mega card--mega-rev card--m2">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/american-berserk" rel="noopener">
-          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AkQ6!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!AkQ6!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 480w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 800w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="eager" fetchpriority="low" decoding="async">
+          <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!AkQ6!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!AkQ6!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 480w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 800w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!AkQ6!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bbdd15d-7e48-41b8-ac14-8ca559e6096c_4954x3682.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
         </a></span>
         <div class="duo-panel">
           
@@ -746,7 +755,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/the-new-statesman" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!8JY3!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!8JY3!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 480w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 800w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/the-new-statesman" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!8JY3!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!8JY3!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 480w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 800w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!8JY3!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe85b85b4-2613-4bdc-870f-7d910a65fbee_2011x2681.jpeg 1600w" sizes="(max-width: 720px) 100vw, 23vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -763,7 +772,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/change-my-mind" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jXht!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!jXht!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 480w, https://substackcdn.com/image/fetch/$s_!jXht!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 800w, https://substackcdn.com/image/fetch/$s_!jXht!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!jXht!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/change-my-mind" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!jXht!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!jXht!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 480w, https://substackcdn.com/image/fetch/$s_!jXht!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 800w, https://substackcdn.com/image/fetch/$s_!jXht!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!jXht!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6c2fb26b-3f36-464b-aea6-f6a8529a14b2_3260x4714.jpeg 1600w" sizes="(max-width: 720px) 100vw, 23vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -785,7 +794,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/the-commodification-of-freya-india" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!VmgB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!VmgB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 480w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 800w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/the-commodification-of-freya-india" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!VmgB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!VmgB!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 480w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 800w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!VmgB!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffbe028ac-e056-4d6c-9f2b-46df78dd7ae7_5298x3710.jpeg 1600w" sizes="(max-width: 720px) 100vw, 23vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -802,7 +811,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/last-girl-at-the-beginning-of-history" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!SXxb!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!SXxb!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 480w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 800w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/last-girl-at-the-beginning-of-history" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!SXxb!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!SXxb!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 480w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 800w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!SXxb!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb0257103-dfcf-4d7f-b4e0-240732ea8005_2757x2206.jpeg 1600w" sizes="(max-width: 720px) 100vw, 23vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -824,7 +833,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/voluntary-oasis" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/voluntary-oasis" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ad82147-1812-4abb-9e49-b548ecc32eea_3839x2958.jpeg 1600w" sizes="(max-width: 720px) 100vw, 23vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -841,7 +850,7 @@
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!bK-K!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png" srcset="https://substackcdn.com/image/fetch/$s_!bK-K!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 480w, https://substackcdn.com/image/fetch/$s_!bK-K!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 800w, https://substackcdn.com/image/fetch/$s_!bK-K!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 1200w, https://substackcdn.com/image/fetch/$s_!bK-K!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--portrait" href="https://www.thenewcritic.com/p/worse-than-you-think" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!bK-K!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png" srcset="https://substackcdn.com/image/fetch/$s_!bK-K!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 480w, https://substackcdn.com/image/fetch/$s_!bK-K!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 800w, https://substackcdn.com/image/fetch/$s_!bK-K!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 1200w, https://substackcdn.com/image/fetch/$s_!bK-K!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9845d935-8cec-4809-9203-ecbe10d57a0e_2894x3218.png 1600w" sizes="(max-width: 720px) 100vw, 23vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -868,7 +877,7 @@
     <section class="card card--latest card--contra-trio">
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" srcset="https://substackcdn.com/image/fetch/$s_!7T76!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 480w, https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 800w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1200w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/behaving-badly" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png" srcset="https://substackcdn.com/image/fetch/$s_!7T76!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 480w, https://substackcdn.com/image/fetch/$s_!7T76!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 800w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1200w, https://substackcdn.com/image/fetch/$s_!7T76!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c1b62e2-1c70-48f3-9327-69518d9d6eb9_2822x2059.png 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -882,7 +891,7 @@
       </div>
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 480w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 800w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/you-seem-pretty-tame-for-a-girl-in" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!G4Ac!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 480w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 800w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!G4Ac!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F686a0df6-c240-411d-9c7f-42e6eb36eb62_4903x3330.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -896,7 +905,7 @@
       </div>
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!DRni!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 480w, https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 800w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/terms-of-service" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!DRni!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 480w, https://substackcdn.com/image/fetch/$s_!DRni!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 800w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!DRni!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5e32a951-8ca5-4c13-900a-7fd88d4ec710_4912x3684.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -915,7 +924,7 @@
     <section class="card card--latest card--contra-trio card--stacked">
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!WbnN!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 480w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 800w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/snug-as-a-gun" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!WbnN!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 480w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 800w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!WbnN!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc7762de2-6ebd-45d1-bfc8-ff06835d2481_5572x4179.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -929,7 +938,7 @@
       </div>
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/ugly-fleshy-flap" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg" srcset="https://substackcdn.com/image/fetch/w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 480w, https://substackcdn.com/image/fetch/w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 800w, https://substackcdn.com/image/fetch/w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 1200w, https://substackcdn.com/image/fetch/w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5f75086c-a443-44ab-81e6-f703afee249a_3385x2206.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -943,7 +952,7 @@
       </div>
         <div class="latest-cell latest-cell--contra">
         <div class="latest-cover-col latest-cover-col--square">
-          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kRyn!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 40vw" alt="" loading="eager" fetchpriority="low" decoding="async"></a>
+          <a class="latest-cover latest-cover--square" href="https://www.thenewcritic.com/p/now-the-story-please" rel="noopener"><img class="card-image" src="https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kRyn!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kRyn!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff698cc86-9b3b-42bc-82e6-49230b573370_3349x2263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 30vw" alt="" loading="lazy" decoding="async"></a>
         </div>
         <div class="latest-col">
           <div class="latest-matter">
@@ -961,7 +970,7 @@
   </div>
   <section class="reprint">
     <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" aria-label="The New Critic">The <span class="tn-new">New</span> Critic</a>
+    <a class="reprint-name" href="#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
   <div class="foot-field" aria-hidden="true"></div>
   <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
@@ -984,7 +993,7 @@
   <!-- (The colophon stands in the last section's foot band now —
        renderColophonBand.) -->
 <div class="marginalia">
-  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  <button type="button" class="theme-toggle" aria-label="Light or dark, and a highlight colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Highlight colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
   </div>
 </main>
 
@@ -2670,7 +2679,12 @@
     });
     if (title && getComputedStyle(title).display !== 'none') {
       var titleLh = parseFloat(getComputedStyle(title).lineHeight) || 24;
-      if (title.scrollHeight > title.clientHeight + titleLh / 2) truncateToWord(title);
+      var trg = document.createRange();
+      trg.selectNodeContents(title);
+      var tbox = title.getBoundingClientRect();
+      var textFoot = trg.getBoundingClientRect().bottom;
+      var boxFoot = tbox.top + title.clientTop + title.clientHeight;
+      if (textFoot - boxFoot > titleLh / 2) truncateToWord(title);
       if (!title.style.overflow && getComputedStyle(title).maxHeight !== 'none') {
         title.style.overflow = 'visible';
       }
@@ -3577,6 +3591,11 @@
     return measureCtx.measureText('H').actualBoundingBoxAscent || 0;
   }
   var OPEN_PIC_MIN_SHARE = 1 / 3;
+  var fitPassId = 0;
+  function contraKey(cell) {
+    var b = cell.getBoundingClientRect();
+    return fitPassId + '|' + window.innerWidth + '|' + b.width.toFixed(2) + '|' + b.height.toFixed(2);
+  }
   function fitContra() {
     [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
       var col = cell.querySelector('.latest-col');
@@ -3587,6 +3606,10 @@
       var date = cell.querySelector('.cover-meta--peek');
       var plate = cell.querySelector('.latest-plate');
       if (!col || !pic || !title) return;
+      if (cell.__contraKey && cell.__contraKey === contraKey(cell)) return;
+      cell.__contraKey = null;
+      var settled = true, asked = false;
+      var fitted = function () { cell.__contraKey = settled ? contraKey(cell) : null; };
       var rev = cell.classList.contains('latest-cell--contra-rev');
       ['--slide', '--sq-rest', '--sq-open'].forEach(function (v) { cell.style.removeProperty(v); });
       title.style.fontSize = '';
@@ -3661,8 +3684,13 @@
         el.style.fontSize = next.toFixed(2) + 'px';
         return true;
       };
+      var overruns = function () {
+        var o = stackInk() > wordsRoom + 0.25;
+        if (!asked) { asked = true; settled = !o; }
+        return o;
+      };
       var guard = 12;
-      while (stackInk() > wordsRoom + 0.25 && guard-- > 0) {
+      while (overruns() && guard-- > 0) {
         var t0 = size(title);
         if (!t0 || t0 <= 24 + 0.05) break;
         var overNow = stackInk() - wordsRoom;
@@ -3676,10 +3704,10 @@
       }
       if (hasDek) {
         guard = 8;
-        while (stackInk() > wordsRoom + 0.25 && guard-- > 0 && shrink(dek, dek0 * CONTRA_DEK_FLOOR)) {}
+        while (overruns() && guard-- > 0 && shrink(dek, dek0 * CONTRA_DEK_FLOOR)) {}
       }
       guard = 12;
-      while (stackInk() > wordsRoom + 0.25 && guard-- > 0 && shrink(title, Math.max(CONTRA_TITLE_FLOOR, hasDek ? size(dek) : 0))) {}
+      while (overruns() && guard-- > 0 && shrink(title, Math.max(CONTRA_TITLE_FLOOR, hasDek ? size(dek) : 0))) {}
       var ink = stackInk();
       var slack = wordsRoom - ink;
       if (slack > 0.5) {
@@ -3692,7 +3720,7 @@
       }
       cell.style.setProperty('--pic-top', Math.max(0, picTop).toFixed(2) + 'px');
       cell.style.setProperty('--pic-h', Math.max(0, picH).toFixed(2) + 'px');
-      if (!plate) return;
+      if (!plate) { fitted(); return; }
       if (!plate.__fullHTML) plate.__fullHTML = plate.innerHTML;
       else plate.innerHTML = plate.__fullHTML;
       plate.style.paddingBottom = '';
@@ -3713,6 +3741,15 @@
         cell.style.setProperty('--pic-top-open', plateH.toFixed(2) + 'px');
         cell.style.setProperty('--plate-top', '0px');
       }
+      fitted();
+    });
+  }
+  function resetContra() {
+    [].forEach.call(document.querySelectorAll('.latest-cell--contra'), function (cell) {
+      var title = cell.querySelector('.latest-title');
+      var dek = cell.querySelector('.latest-dek');
+      if (title) { title.style.fontSize = ''; if (title.__fullHTML) title.innerHTML = title.__fullHTML; }
+      if (dek) { dek.style.fontSize = ''; if (dek.__fullHTML) dek.innerHTML = dek.__fullHTML; }
     });
   }
   function fitContraGap() {
@@ -4520,6 +4557,10 @@
   function fitAllNow() {
     fitErrors.length = 0;
     fitTimes.length = 0;
+    fitPassId++;
+    var veiled = stageBegin();
+    var world0 = worldSig();
+    freshMemos();
     atRest(function () {
     var frozen = [].slice.call(document.querySelectorAll('.latest-cover-col--square'));
     frozen.forEach(function (el) { el.style.transition = 'none'; });
@@ -4529,8 +4570,77 @@
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
     }
     });
+    lastWorld = { start: world0, end: worldSig() };
+    stageEnd(veiled);
     announceFirstFit();
   }
+  var lastWorld = null;
+  function worldSig() {
+    var n = 0;
+    try { document.fonts.forEach(function (face) { if (face.status === 'loaded') n++; }); } catch (e) {}
+    return n + '|' + window.innerWidth + '|' + window.innerHeight;
+  }
+  var stage = 0; // 0 nothing fitted · 1 the first screen, the rest out · 2 the whole page
+  var laterEls = [];
+  function canStage() {
+    if (window.__ncShown) return false;
+    if (document.body.classList.contains('word-page')) return false;
+    var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if (!nav || nav.type !== 'navigate') return false;
+    if (location.hash && location.hash !== '#top') return false;
+    if ((window.scrollY || window.pageYOffset || 0) > 0) return false;
+    return true;
+  }
+  function pickLater() {
+    var rows = document.querySelector('main.has-mega > .page-rows');
+    if (!rows) return [];
+    var movs = [].filter.call(rows.children, function (el) { return el.classList.contains('movement'); });
+    if (movs.length < 2) return [];
+    var out = movs.slice(1);
+    out.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
+    var body = movs[0].querySelector('.movement-body');
+    if (!body) return out;
+    var floor = window.innerHeight * 1.5, wraps = 0, cut = false;
+    [].forEach.call(body.children, function (el) {
+      if (cut) { out.push(el); return; }
+      if (!el.classList.contains('wrap')) return;
+      wraps++;
+      if (wraps >= 2 && el.getBoundingClientRect().bottom > floor) cut = true;
+    });
+    return out;
+  }
+  function stageBegin() {
+    if (stage === 0) {
+      if (!canStage()) { stage = 2; return false; }
+      laterEls = pickLater();
+      if (!laterEls.length) { stage = 2; return false; }
+      laterEls.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
+      stage = 1;
+      return false;
+    }
+    if (stage === 1 && window.__ncShown) {
+      stage = 2;
+      laterEls.forEach(function (el) {
+        el.style.removeProperty('display');
+        el.style.setProperty('visibility', 'hidden', 'important');
+      });
+      return true;
+    }
+    return false;
+  }
+  function stageEnd(veiled) {
+    if (!veiled) return;
+    laterEls.forEach(function (el) { el.style.removeProperty('visibility'); });
+    laterEls = [];
+  }
+  function afterShown() {
+    if (stage !== 1) return;
+    var go = function () { if (stage === 1) fitAll(); };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 400 });
+    else setTimeout(go, 60);
+  }
+  window.addEventListener('newcritic:shown', afterShown);
+  setTimeout(function () { if (stage === 1) { try { window.__ncShown = true; } catch (e) {} fitAll(); } }, 15000);
   var firstFitAnnounced = false;
   function announceFirstFit() {
     if (firstFitAnnounced) return;
@@ -4546,6 +4656,7 @@
       });
     });
     step('resetMatterInk', resetMatterInk);
+    step('resetContra', resetContra);
     step('inkCenterBands', inkCenterBands);
     step('alignBands', alignBands);
     step('fitMastheadFill', fitMastheadFill);
@@ -4581,9 +4692,25 @@
   }
   var FIT_QUIET = 64;
   var fitQuietTimer = null;
+  var FONT_WAIT = 4000;
+  var fontsIn = !!window.__ncFontsIn;
+  var fontWaitTimer = null;
+  window.addEventListener('newcritic:fontsin', function () { fontsIn = true; requestFit(); });
+  function answerAsk() {
+    if (!fontsIn && performance.now() < FONT_WAIT) {
+      if (!fontWaitTimer) {
+        fontWaitTimer = setTimeout(function () { fontWaitTimer = null; requestFit(); },
+          Math.max(0, FONT_WAIT - performance.now()) + 5);
+      }
+      return;
+    }
+    var w = worldSig();
+    if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
+    fitAll();
+  }
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
-    fitQuietTimer = setTimeout(function () { fitQuietTimer = null; fitAll(); }, FIT_QUIET);
+    fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
   }
   (function(){
     if (!heroLink) return;
@@ -4723,6 +4850,8 @@
   function fitOneStack(stack, forced) {
     var card = homeStack(stack);
     if (!card) return;
+    if (!card.getClientRects().length) { stack.style.setProperty('display', 'none', 'important'); return; }
+    stack.style.removeProperty('display');
     var half = card.querySelector('.duo-half') || card;
     var first = stack.querySelector(':scope > span:not(.latest-stack-gap)');
     if (!first) return;
@@ -4808,6 +4937,12 @@
   }
   var inkCv = null;
   var ascMemo = {}, descMemo = {};
+  var memoFaces = -1;
+  function freshMemos() {
+    var n = 0;
+    try { document.fonts.forEach(function (face) { if (face.status === 'loaded') n++; }); } catch (e) {}
+    if (n !== memoFaces) { memoFaces = n; ascMemo = {}; descMemo = {}; }
+  }
   function descOf(cs, fs) {
     var key = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontFamily + '|' + fs;
     if (descMemo[key] != null) return descMemo[key];

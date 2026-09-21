@@ -530,6 +530,18 @@ const COVER_SIZES = {
   // beats threading exact row geometry down into renderDuoHalf.
   wide: '(max-width: 720px) 100vw, 60vw',
   cell: '(max-width: 720px) 100vw, 40vw',
+  // MEASURED, NOT ESTIMATED (2026-09-21). Every latest cell said 40vw
+  // and none of them is: read off the rendered page at 1280, 1440 and
+  // 1920, a postscript or review cell in a latest row stands at 27.1 to
+  // 29.8vw, a review in a trio at 25.8 to 28.3, and a postscript in a
+  // pair at 20.8 to 22.2. A browser believes what it is told, so on a
+  // retina laptop (1440 at 2x) 40vw asked for 1152 device pixels and
+  // took the 1200 candidate for a picture drawn 412 wide — where 30vw
+  // asks for 864 and the pair's 23vw for 662, which is the 800. Fourteen
+  // of the front page's twenty-three covers came down at 1200 for it.
+  // The wide cell's 60vw is right (56 to 59.6 measured) and stands.
+  third: '(max-width: 720px) 100vw, 30vw',
+  pair: '(max-width: 720px) 100vw, 23vw',
 };
 function coverSrcAttrs(url, sizes, { preload = false } = {}) {
   const variants = [480, 800, 1200, 1600].map((w) => ({ v: cdnVariant(url, w), w }));
@@ -1151,7 +1163,7 @@ function renderNav(currentKey = 'home') {
   // on ONE line across the top, then the section list spread between
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
-  <a class="wordmark topbar-wordmark" aria-label="The New Critic">
+  <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
     <span class="topbar-name">The <span class="tn-new">New</span> Critic</span>
   </a>
   ${currentKey === 'home'
@@ -1292,7 +1304,7 @@ const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'A
 // stand over every row of the page.
 function renderMarginalia() {
   return `<div class="marginalia">
-  <button type="button" class="theme-toggle" aria-label="Light, dark, or a colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Ground colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
+  <button type="button" class="theme-toggle" aria-label="Light or dark, and a highlight colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Highlight colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
   </div>`;
 }
 function renderSocialStack() {
@@ -1354,11 +1366,16 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
 // viewport less the name and the band; and the colophon band closes
 // the page on the screen's foot (style.css, THE FOOT IS THE HEAD
 // TURNED OVER). The front page and the word pages close alike.
-function renderPageFoot() {
+// THE NAME GOES HOME (2026-09-21). Both big wordmarks — the masthead's
+// and this one — had no href at all for two days: links in name only.
+// They go to the TOP OF THE FRONT PAGE: a bare #top where the reader is
+// already on it, so the page scrolls rather than reloads (the rows'
+// wrapper carries the id), and ./#top from a word page.
+function renderPageFoot(onHome = false) {
   return `
   <section class="reprint">
     <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" aria-label="The New Critic">The <span class="tn-new">New</span> Critic</a>
+    <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
   <div class="foot-field" aria-hidden="true"></div>
   ${renderColophonBand()}`;
@@ -2200,7 +2217,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   const courierHead = () => `<p class="latest-courier"></p>
         <div class="latest-rule"></div>`;
   const coverImg = (post) => post.image
-    ? `<img class="card-image" ${coverSrcAttrs(post.image, COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">`
+    ? `<img class="card-image" ${coverSrcAttrs(post.image, cellOnly === 'ps' ? COVER_SIZES.pair : COVER_SIZES.third)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">`
     : '';
   // THE PLATE, the card's covered body text: on hover the artwork
   // slides over the title/dek matter and this stands revealed where
@@ -2577,7 +2594,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // last review row straight to the reprint. STACK stays declared
   // against its return.)
   void STACK;
-  duoHtml += renderPageFoot();
+  duoHtml += renderPageFoot(true);
 
   return `<!doctype html>
 <html lang="en">
@@ -2688,27 +2705,21 @@ function renderFontGateScript() {
 (function () {
   var root = document.documentElement;
   // LIGHT OR DARK, before first paint: the stored choice, else light.
-  // THE GROUND: light, dark, or a colour of the reader's own (HEX,
-  // 2026-09-17). Light and dark are the two token sets in style.css;
-  // a hex colour is written straight onto the root as --g, with --k
-  // white or charcoal, whichever reads better on it (WCAG contrast).
   // GHOST WHITE (2026-09-18): the one white on the site — the light
-  // ground, the dark ink, and the ink a hex ground takes.
+  // ground and the dark ink.
   var WHITE = '#F8F8FF', CHARCOAL = '#121417';
-  // THE GROUND HEX OPENS ON (2026-09-18): a slate blue-grey the white
-  // ink reads well on, until the reader types a code of their own.
-  // (#888899, a paler cast of the same, for the first hours.)
-  var DEFAULT_HEX = '#556677';
-  // THE DEFAULTS THAT CAME BEFORE (2026-09-18). A stored ground beats
-  // the default, so moving the default reached nobody who had ever
-  // opened hex — they kept the ground they were handed and had never
-  // chosen. The paint STAMPS the ground it hands out (nc-hex-auto);
-  // when the default moves, a stored ground still wearing its stamp is
-  // replaced, and a ground the reader TYPED is left alone. The readers
-  // who took #888899 in the hours before the stamp existed carry no
-  // mark, so it is named here by hand — the one cost being a reader
-  // who typed that exact code in those hours, who is moved with them.
-  var HEX_WAS = ['#888899'];
+  // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
+  // the margin used to paint the page's ground in a colour of the
+  // reader's own, with the ink turned white on it. It names the
+  // HIGHLIGHT now: every yellow on the site reads one token, --nc-mark
+  // (style.css, THE MARK'S COLOUR IS ONE TOKEN), and a code typed here
+  // is written onto the root in its place. The ground is light or dark
+  // and nothing else; the mark rides over both and is kept separately,
+  // so turning the page over does not lose it.
+  // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
+  // when this was written, the blue #1182c2 since the same evening.
+  // It must match --nc-mark in style.css.)
+  var YELLOW = '#1182c2';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -2716,89 +2727,88 @@ function renderFontGateScript() {
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     return '#' + h;
   };
-  // (The contrast rule that chose the ink — luminance against white
-  // and charcoal — is struck with the choice: a hex ground is inked in
-  // white, always. 2026-09-18.)
+  // THE INK ON THE BLOCK IS CHOSEN BY CONTRAST. On the yellow it is the
+  // charcoal, stated in the sheet; on a reader's colour it is whichever
+  // of the charcoal and the white reads better (WCAG relative
+  // luminance), so a navy or a black does not swallow the word it was
+  // put behind. (A hex GROUND gave this rule up and inked everything
+  // white; a block is a few words wide, and those words are the ones
+  // the reader is pointing at.)
+  var lum = function (hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  var inkOn = function (hex) {
+    var l = lum(hex);
+    var onWhite = (lum(WHITE) + 0.05) / (l + 0.05);
+    var onCharcoal = (l + 0.05) / (lum(CHARCOAL) + 0.05);
+    return onWhite > onCharcoal ? WHITE : CHARCOAL;
+  };
   var setMeta = function (colour) {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
   };
-  // Paints the choice: the attribute for the stylesheet, the two
-  // tokens inline for a hex ground (and cleared for the others).
-  var paint = function (mode, hex) {
-    if (mode === 'hex' && hex) {
-      // ALL WHITE ON ANY GROUND (2026-09-18): the ink is white whatever
-      // code is chosen — text, rules, marks, names and titles together —
-      // and the highlight, the chosen word and every hover, is the
-      // charcoal. (The ink was picked by contrast before, white or
-      // charcoal, with the names in its opposite; a pale ground is the
-      // reader's own lookout now.)
-      root.setAttribute('data-theme', 'hex');
-      root.style.setProperty('--g', hex);
-      root.style.setProperty('--k', WHITE);
-      // THE HIGHLIGHT STAYS THE YELLOW HERE TOO (2026-09-18). It was
-      // painted CHARCOAL on a hex ground, from the hours when the
-      // highlight was the word's own INK and a black word read well on
-      // a colour. It is a BLOCK now, and a charcoal block on a slate
-      // ground is a black slab across the masthead. One highlight for
-      // the whole site: the yellow, with the charcoal on it.
-      root.style.removeProperty('--yves');
-      setMeta(hex);
+  // Paints the ground: light is the page's own, dark is written on the
+  // root. (The inline --g and --k a hex ground wrote are cleared for
+  // any page still carrying them from a view transition's old state.)
+  var paint = function (mode) {
+    root.style.removeProperty('--g');
+    root.style.removeProperty('--k');
+    root.style.removeProperty('--yves');
+    if (mode === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    setMeta(mode === 'dark' ? CHARCOAL : WHITE);
+  };
+  // Paints the mark: the reader's colour and the ink that stands on it,
+  // or — for no colour, or the yellow's own code — nothing at all, and
+  // the sheet's yellow and charcoal stand.
+  var mark = function (hex) {
+    if (hex && hex !== YELLOW) {
+      root.style.setProperty('--nc-mark', hex);
+      root.style.setProperty('--hl-ink', inkOn(hex));
     } else {
-      root.style.removeProperty('--g');
-      root.style.removeProperty('--k');
-      root.style.removeProperty('--yves');
-      // Light is the page's own; dark is written on the root.
-      if (mode === 'dark') root.setAttribute('data-theme', 'dark');
-      else root.removeAttribute('data-theme');
-      setMeta(mode === 'dark' ? CHARCOAL : WHITE);
+      root.style.removeProperty('--nc-mark');
+      root.style.removeProperty('--hl-ink');
     }
   };
-  var store = function (mode, hex) {
+  var store = function (mode) {
+    try { localStorage.setItem('nc-theme', mode); } catch (err) {}
+  };
+  var storeMark = function (hex) {
     try {
-      localStorage.setItem('nc-theme', mode);
-      if (hex) {
-        localStorage.setItem('nc-hex', hex);
-        // The stamp rides with a ground that IS the default — handed
-        // out, not chosen. typed() strikes it whatever was typed.
-        if (hex === DEFAULT_HEX) localStorage.setItem('nc-hex-auto', DEFAULT_HEX);
-        else localStorage.removeItem('nc-hex-auto');
-      }
+      if (hex && hex !== YELLOW) localStorage.setItem('nc-accent', hex);
+      else localStorage.removeItem('nc-accent');
     } catch (err) {}
   };
-  var storedHex = null;
+  var accent = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    storedHex = hexOf(localStorage.getItem('nc-hex'));
-    // THE DEFAULT MOVES THE READERS IT HANDED ITSELF TO, and only
-    // those: a stored ground wearing the stamp of an older default —
-    // or, for the unstamped hours, standing in HEX_WAS — is replaced
-    // by the one in force, and re-stamped. A ground that was typed
-    // carries no stamp and is never touched.
-    if (storedHex && storedHex !== DEFAULT_HEX) {
-      var stamp = hexOf(localStorage.getItem('nc-hex-auto'));
-      if (stamp ? stamp === storedHex : HEX_WAS.indexOf(storedHex) >= 0) {
-        storedHex = DEFAULT_HEX;
-        // Its own try: a browser that reads storage but refuses to
-        // write it (a private window) must still reach the paint
-        // below rather than fall out of this block into the light.
-        try {
-          localStorage.setItem('nc-hex', DEFAULT_HEX);
-          localStorage.setItem('nc-hex-auto', DEFAULT_HEX);
-        } catch (e2) {}
-      }
+    // THE READERS WHO STOOD ON A HEX GROUND come back to the light page,
+    // which is the default, and their stored ground is NOT carried over
+    // as a mark: it was chosen (or handed out — the slate #556677) to be
+    // stood on in white ink, and as a highlight it is a colour nobody
+    // picked. The old keys are struck so this runs once.
+    if (theme === 'hex') {
+      theme = 'light';
+      try {
+        localStorage.setItem('nc-theme', 'light');
+        localStorage.removeItem('nc-hex');
+        localStorage.removeItem('nc-hex-auto');
+      } catch (e2) {}
     }
-    if (theme === 'hex') paint('hex', storedHex || DEFAULT_HEX);
-    else if (theme === 'light' || theme === 'dark') paint(theme);
+    if (theme === 'light' || theme === 'dark') paint(theme);
+    accent = hexOf(localStorage.getItem('nc-accent'));
+    if (accent) mark(accent);
   } catch (e) {}
-  // HEX always has a ground to open on: the reader's last, or the default.
-  storedHex = storedHex || DEFAULT_HEX;
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
-  // paints that ground for this view only — nothing is stored, and the
+  // paints that mark for this view only — nothing is stored, and the
   // reader's own choice stands on the next plain visit.
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
-    if (qHex) paint('hex', qHex);
+    if (qHex) mark(qHex);
   } catch (e) {}
   // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
   // where the browser has view transitions the old page and the new
@@ -2809,9 +2819,9 @@ function renderFontGateScript() {
   // snapshot is the settled page). Elsewhere the per-element ease
   // above stands in.
   var flipTimer = null;
-  var flip = function (mode, hex) {
-    store(mode, hex);
-    var change = function () { paint(mode, hex); };
+  var flip = function (mode) {
+    store(mode);
+    var change = function () { paint(mode); };
     if (document.startViewTransition) {
       root.classList.add('theme-instant');
       var done = function () { root.classList.remove('theme-instant'); };
@@ -2833,19 +2843,19 @@ function renderFontGateScript() {
     change();
   };
   var current = function () {
-    var t = root.getAttribute('data-theme');
-    return t === 'dark' || t === 'hex' ? t : 'light';
+    return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   };
   // THE HEX FIELD: a courier line under the three words, shown on HEX
   // and hidden on Enter, Escape or leaving it. A valid code paints the
-  // page as it is typed (no dissolve keystroke by keystroke — the
-  // transitions are simply held off for the change); an invalid one
-  // paints nothing.
+  // mark as it is typed (the transitions are simply held off for the
+  // change); an invalid one paints nothing; and a field EMPTIED gives
+  // the yellow back, which is the only way home short of typing its
+  // code.
   var field = null;
   var openField = function () {
     field = field || document.querySelector('.theme-hex');
     if (!field) return;
-    field.value = storedHex || '';
+    field.value = accent || YELLOW;
     field.hidden = false;
     field.focus();
     // The caret at the end of the code, nothing highlighted: the
@@ -2856,28 +2866,25 @@ function renderFontGateScript() {
     if (field) field.hidden = true;
   };
   var typed = function () {
-    var hex = hexOf(field.value);
-    if (!hex) return;
-    storedHex = hex;
+    var bare = /^\s*#?\s*$/.test(field.value);
+    var hex = bare ? null : hexOf(field.value);
+    if (!hex && !bare) return;
+    accent = hex && hex !== YELLOW ? hex : null;
     root.classList.add('theme-instant');
-    paint('hex', hex);
-    store('hex', hex);
-    // TYPED IS CHOSEN, even where the code typed is the default's own:
-    // the stamp comes off, and no later default will move this reader.
-    try { localStorage.removeItem('nc-hex-auto'); } catch (err) {}
+    mark(accent);
+    storeMark(accent);
     setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
   };
+  // HEX IS NOT A THIRD GROUND: the word opens its field and changes
+  // nothing until a code is typed. Light and Dark turn the page over
+  // and leave the mark where it is.
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
     var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
-    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : t.classList.contains('theme-toggle-dark') ? 'dark' : 'hex')
+    if (t && t.classList.contains('theme-toggle-hex')) { openField(); return; }
+    var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : 'dark')
       : (current() === 'light' ? 'dark' : 'light');
-    if (mode === 'hex') {
-      openField();
-      if (storedHex && current() !== 'hex') flip('hex', storedHex);
-      return;
-    }
     closeField();
     if (mode !== current()) flip(mode);
   });
@@ -2929,7 +2936,14 @@ function renderFontGateScript() {
       lifted = true;
       gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
-      setTimeout(function () { root.classList.add('page-shown'); }, 400);
+      setTimeout(function () {
+        root.classList.add('page-shown');
+        // The fade is over: the fitter may take the thread for the rest
+        // of the page (src/duo-panel-fit.js, THE PAGE IS FITTED IN TWO
+        // STAGES) without stalling the dissolve the reader is watching.
+        try { window.__ncShown = true; } catch (err) {}
+        try { window.dispatchEvent(new Event('newcritic:shown')); } catch (err) {}
+      }, 400);
     };
     // Two frames past ready, so the fitters (which run on fonts.ready)
     // have laid the page out before it is seen.
@@ -2961,16 +2975,28 @@ function renderFontGateScript() {
       f.load('400 100px trajan-pro-3'),
       f.load('700 100px trajan-pro-3')
     ]).then(function () { return f.ready; }).then(resolve, resolve);
-  }).then(function () { gate.fonts = performance.now(); });
-  // THE COVERS: every cover on the page, loaded (or failed) and then
-  // decoded, so the first paint has their pixels ready.
+  }).then(function () {
+    gate.fonts = performance.now();
+    // Said out loud for the fitter (src/duo-panel-fit.js), which holds
+    // its first pass for the faces and cannot ask this promise itself:
+    // a flag for a listener that arrives late, an event for one that
+    // is already waiting.
+    try { window.__ncFontsIn = true; } catch (err) {}
+    try { window.dispatchEvent(new Event('newcritic:fontsin')); } catch (err) {}
+  });
+  // THE COVERS: the ones the page HOLDS for, loaded (or failed) and then
+  // decoded, so the first paint has their pixels ready. That was every
+  // cover on the page and is the front page's first three now, marked
+  // at build time (build.js, holdFirstCovers); the rest are lazy and
+  // fade up as they land. A page that marks none holds for none.
+  var HOLD = 'img.card-image[data-hold]';
   var coversDone = new Promise(function (resolve) {
     var settle = function () {
       // The decode is asked for, not waited on past a beat: a hidden
       // tab decodes nothing until it is shown (its decode() promises
       // simply hang), and a page opened in the background should not
       // stand blank for the cap once it is brought forward.
-      var imgs = [].slice.call(document.querySelectorAll('img.card-image'));
+      var imgs = [].slice.call(document.querySelectorAll(HOLD));
       if (document.visibilityState === 'hidden') { resolve(); return; }
       var decodes = imgs.map(function (img) {
         return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
@@ -2979,7 +3005,7 @@ function renderFontGateScript() {
       Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
     };
     var pending = function () {
-      var imgs = document.querySelectorAll('img.card-image');
+      var imgs = document.querySelectorAll(HOLD);
       for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
       return false;
     };
@@ -3255,6 +3281,45 @@ function markMega(html) {
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
     .replace('<main id="main">', '<main id="main" class="has-mega">');
+}
+
+// ---------- THREE COVERS HOLD THE PAGE, NOT TWENTY-THREE (2026-09-21) ----
+// Every cover was `loading="eager"` and the gate in the head held the
+// page at opacity 0 until ALL of them had loaded and decoded — the six
+// reviews five screens down included. Measured on a retina laptop that
+// is eight to twelve megabytes standing between the reader and the
+// masthead: invisible on a fast line, where the covers beat the fitter
+// home, and the whole of the wait on an ordinary one, up to the gate's
+// eight-second cap.
+//   The front page now holds for its FIRST THREE covers — the hero and
+// the pair under it, which is what a reader opens on — and marks them
+// (data-hold) for the gate to find; those three are asked for first
+// (fetchpriority high). Every other cover is `loading="lazy"`: the
+// browser fetches it as the reader comes near, and src/img-fade.js
+// already fades a late cover up on arrival, so it lands the way a cover
+// always has. It is safe for the fitter, which was the worry: the
+// covers' boxes are CSS-sized (not one <img> carries a width or height),
+// and the page was measured with every cover BLOCKED against the page
+// with them all loaded — seventeen values apart, inside the seventy-
+// three that two identical loads differed by. A cover arriving moves
+// nothing the fitter reads.
+//   Decided here, on the assembled page, because "the first three" is a
+// fact about document order and no card renderer knows where it stands.
+// The word pages hold for no cover at all: theirs sit below the ledger
+// and the mosaic, and holding the page for those was never the intent.
+// The ticker's covers are left as they are (see the note at the strip:
+// lazy cannot work inside one clipped 26,500px box).
+function holdFirstCovers(html, filename) {
+  let held = 0;
+  const hold = filename === 'index.html' ? 3 : 0;
+  return html.replace(/<img class="card-image"([^>]*)>/g, (tag, rest) => {
+    if (!/\sloading="eager" fetchpriority="(?:low|high)"/.test(rest)) return tag;
+    if (held < hold) {
+      held++;
+      return `<img class="card-image" data-hold${rest.replace(/\sloading="eager" fetchpriority="(?:low|high)"/, ' loading="eager" fetchpriority="high"')}>`;
+    }
+    return `<img class="card-image"${rest.replace(/\sloading="eager" fetchpriority="(?:low|high)"/, ' loading="lazy"')}>`;
+  });
 }
 
 function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage, bare = false }) {
@@ -4683,7 +4748,7 @@ async function main() {
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
   for (const [filename, content] of Object.entries(pages)) {
-    fs.writeFileSync(path.join(OUT_DIR, filename), markMega(content), 'utf8');
+    fs.writeFileSync(path.join(OUT_DIR, filename), markMega(holdFirstCovers(content, filename)), 'utf8');
     console.log(`Wrote ${path.join(OUT_DIR, filename)}`);
   }
   fs.writeFileSync(path.join(OUT_DIR, 'style.css'), slimCss(fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8')), 'utf8');
