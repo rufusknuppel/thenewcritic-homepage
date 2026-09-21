@@ -1308,7 +1308,20 @@ function renderSocialStack() {
   const sep = '';
   return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="https://x.com/thenewcritic" rel="noopener" aria-label="X">${x}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
 }
-function renderSectionBand(m, { mid = '', currentKey = '', nameMid = false } = {}) {
+// THE MIDDLE SLOT IS EMPTY ON THE WORD PAGES (2026-09-19). The
+// magazine's name stood a second time in the band's middle there —
+// THE NEW CRITIC in miniature between The Young American Magazine and
+// the list of links, sized off the reprint's fit — and it was never
+// optically centred in the band it stood in: 31.8 of air over its
+// caps against 15.4 under its baseline, the band's own box centred
+// rather than the ink inside it. It is struck rather than seated. The
+// name is already on the page in full at the head and again at the
+// foot; a third setting of it, in the one place it could not be made
+// to sit straight, was the one the page could spare. (bareMid: the
+// slot is rendered and left blank, so the three columns keep their
+// stations — the date does NOT come back in its place, which would be
+// a substitution rather than a removal.)
+function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {}) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
   if (m === 'latest') {
     // The masthead's band: the site's links, the magazine's name, the
@@ -1319,7 +1332,7 @@ function renderSectionBand(m, { mid = '', currentKey = '', nameMid = false } = {
       : bandDeks(m);
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek">${nameMid ? `<a class="band-name-mid" href="./#top" aria-label="The New Critic — top of the homepage">The <span class="tn-new">New</span> Critic</a>` : mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
+    <p class="band-deks band-dek">${bareMid ? '' : mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -2889,7 +2902,7 @@ function renderFontGateScript() {
   // or picture host: after eight seconds the page lifts with what it
   // has rather than never.
   var shown = false;
-  var gate = { fonts: 0, covers: 0, lifted: 0 };
+  var gate = { fonts: 0, covers: 0, fitted: 0, lifted: 0 };
   try { window.__ncGate = gate; } catch (err) {}
   // THE SAME FADE ON A CLICK AS ON A COLD LOAD (2026-09-17, later).
   // Chrome holds the OLD page's pixels on a same-site navigation until
@@ -2985,7 +2998,22 @@ function renderFontGateScript() {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
     else watch();
   }).then(function () { gate.covers = performance.now(); });
-  Promise.all([fontsDone, coversDone]).then(go, go);
+  // THE FIT: the page laid out whole before it is shown. This used to
+  // be free — the fitters' first pass ran synchronously during parse,
+  // so the parser could not reach the end of the body (and neither
+  // promise above could settle) until the page was fitted. That pass
+  // is struck (src/duo-panel-fit.js: it measured fallback metrics and
+  // was thrown away entire by the pass that followed the fonts), and
+  // the guarantee is held here instead: the fitter announces its first
+  // completed pass and the gate waits for it. The flag is checked
+  // before the listener because this runs in the HEAD, long before the
+  // fitter has parsed — but also long before it could have announced,
+  // so the listener is what actually answers on every real load.
+  var fitDone = new Promise(function (resolve) {
+    if (window.__ncFitDone) { resolve(); return; }
+    addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
+  }).then(function () { gate.fitted = performance.now(); });
+  Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
   setTimeout(go, 8000);
   // Pulled back by the reader (the back/forward cache restores the
   // page whole, with its class already lifted): nothing to do — but a
@@ -4001,7 +4029,7 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   </div>`).join('');
   const bodyHtml = `
   <div class="page-rows">
-  ${renderSectionBand('latest', { mid, currentKey, nameMid: true })}
+  ${renderSectionBand('latest', { mid, currentKey, bareMid: true })}
   <div class="head-seam" aria-hidden="true"></div>
   <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
   </div>

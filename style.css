@@ -16017,9 +16017,24 @@ body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
    the canvas and the paper are the same colour, and on the light one
    the band simply carries on past the end of the page.
    (Struck once, when the bands went back to the page's ground, and
-   restored with them.) */
+   restored with them.)
+
+   ---------- AND THE PAGE OPENS ON ITS OWN GROUND AGAIN (2026-09-19,
+   later) ----------
+   The canvas is not only the overscroll: it is THE LOADING COLOUR.
+   The font gate holds the body at opacity 0 until the faces land
+   (renderFontGateScript), so for those first frames the reader sees
+   the ROOT's background and nothing else — and with the bands'
+   charcoal written here, a light page opened on a full screen of
+   charcoal and then flashed white as the body faded up. The bands
+   keep their fixed charcoal; the canvas behind the page goes back to
+   the page's own ground, which is the light by default, so the site
+   loads light, opens light, and rubber-bands in the colour it is
+   actually set in. A dark page keeps a dark canvas and a hex ground
+   its own colour for the same reason: this token turns over with the
+   theme where --band-ground deliberately does not. */
 html.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  background: var(--band-ground);
+  background: var(--g);
 }
 
 

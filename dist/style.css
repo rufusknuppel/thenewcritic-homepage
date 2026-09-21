@@ -7058,7 +7058,7 @@ body.word-page .ledger-head .arch-search:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   opacity: .55;
 }
 html.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  background: var(--band-ground);
+  background: var(--g);
 }
 .banner-line--below.hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   bottom: calc(var(--hl-dn, 0px) - var(--tag-reach, max(var(--hl-pad), var(--hl-desc, 0px))));

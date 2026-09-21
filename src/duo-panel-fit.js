@@ -5527,6 +5527,26 @@
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
     }
     });
+    announceFirstFit();
+  }
+  // THE GATE WAITS ON THE FIT, AND IS TOLD SO (2026-09-19). The first
+  // pass used to run SYNCHRONOUSLY during parse, and the guarantee
+  // that the page was never seen unfitted rested on that: the gate's
+  // own promises could not resolve until the parser got past this
+  // script, so a fit had always happened by the time it lifted. That
+  // pass is gone (see the call site below) and the guarantee cannot
+  // rest on parse order any more, so it is STATED instead — the first
+  // completed pass says so, and the gate holds the page until it
+  // hears it (build.js, renderFontGateScript). A flag as well as an
+  // event, since the gate is in the HEAD and runs long before this
+  // script: it cannot listen for something already announced, so it
+  // checks the flag first and only then listens.
+  var firstFitAnnounced = false;
+  function announceFirstFit() {
+    if (firstFitAnnounced) return;
+    firstFitAnnounced = true;
+    try { window.__ncFitDone = true; } catch (e) {}
+    try { window.dispatchEvent(new Event('newcritic:fitdone')); } catch (e) {}
   }
   function fitAllSteps() {
     // THE BLOCKS ARE SEATED ON EVERY PAGE, and last. It hung off
@@ -5640,7 +5660,25 @@
     // panel pinned to it) — refit everything once it arrives.
     if (img && !img.complete) img.addEventListener('load', requestFit, { once: true });
   })();
-  fitAll();
+  // ONE PASS, NOT TWO (2026-09-19). The arrival was coalesced from four
+  // passes to two a day ago; it is one now. The pass that stood here
+  // ran SYNCHRONOUSLY during parse, before a face had landed — and
+  // measured against fallback metrics it was not merely early but
+  // WRONG, and known to be: seatInkBlocks, the most expensive step in
+  // the pass, does nothing at all before the fonts are in, so the
+  // parse-time pass laid out a page it could not finish and every
+  // number it did write was measured again by the pass that followed.
+  // Measured on the front page: 2546ms of blocking parse for a result
+  // thrown away entire, and the reader saw none of it — the gate holds
+  // the page at opacity 0 throughout, so there was never a frame in
+  // which the first pass's answer was on screen.
+  //   What it did buy was the guarantee that a fit had happened before
+  // the gate could lift. That is bought outright now (announceFirstFit
+  // above), so the ask can take its place here with the other three,
+  // and the faces, the covers and the parser all ask for the same
+  // single pass. Measured after: domInteractive 2256ms -> 145ms, and
+  // the page seen at 6.8s where it was seen at 8.8s.
+  requestFit();
   // Fonts landing after first paint change every line's height — refit.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(requestFit);
   // AND ON EVERY FONT THAT LANDS LATER: fonts.ready resolves once the
@@ -6138,15 +6176,58 @@
     walk(el);
     return (ok && isFinite(lo) && isFinite(hi) && hi > lo) ? { left: lo, right: hi } : null;
   }
+  // THE PASS HONOURS ITS OWN NOTE (2026-09-19). The note above says what
+  // this was always meant to be — every probe in, every rect out, every
+  // probe out, "three passes and three reflows for the whole page rather
+  // than one each" — and the writing had leaked back in among the reads
+  // in two places, so the page paid one reflow each after all.
+  //   THE FIRST LEAK was this opening loop: it read an element's
+  // computed style and its rects, then TOGGLED ITS CLASSES and dropped a
+  // probe into it, and then went round to the next element and read
+  // again. A read after a write is a forced style recalculation, and on
+  // this page — 2053 rules over a thousand nodes — one of those costs
+  // about 21ms. A hundred and sixty carriers, a hundred and sixty
+  // recalculations, and the step stood at 1244ms on the front page.
+  //   THE SECOND was subtler and cost more per call: getComputedStyle
+  // hands back a LIVE declaration, so every `j.cs.fontSize` read down in
+  // the writing phase was not a lookup but another forced recalculation,
+  // taken after that phase had already written. The style is SNAPSHOT
+  // here instead — the nine properties the later phases actually ask
+  // for, read once while the page is still clean and carried as plain
+  // strings. (descOf and inkAscent take a duck-typed object: they read
+  // fontStyle, fontWeight and fontFamily and nothing else.)
+  //   Nothing about the geometry changes, and it cannot: the writes this
+  // separates out do not move anything in flow. .hl-wrapped has no rule
+  // in the sheet at all — it is a marker this code reads back — .hl-ink
+  // adds `isolation: isolate` and an ABSOLUTE pseudo, and the position
+  // it states is `relative` with no offsets. The only mutation that
+  // touches layout is the probe, and that is zero-sized by design and
+  // already went in for every element before any rect was read.
+  function csSnap(cs) {
+    return {
+      display: cs.display,
+      position: cs.position,
+      lineHeight: cs.lineHeight,
+      textAlign: cs.textAlign,
+      textTransform: cs.textTransform,
+      fontSize: cs.fontSize,
+      fontStyle: cs.fontStyle,
+      fontWeight: cs.fontWeight,
+      fontFamily: cs.fontFamily,
+      letterSpacing: cs.letterSpacing
+    };
+  }
   function seatInkBlocks() {
     var list;
     try { list = document.querySelectorAll(INK_SEL); } catch (e) { return; }
     var jobs = [];
+    // ---- READ. Nothing is written in this loop. ----
+    var seen = [];
     [].forEach.call(list, function (el) {
-      var cs = getComputedStyle(el);
+      var cs = csSnap(getComputedStyle(el));
       if (cs.display === 'none') return;
       var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
-      if (!text) { el.classList.remove('hl-ink', 'hl-wrapped'); return; }
+      if (!text) { seen.push({ el: el, bare: true }); return; }
       // ONE LINE OR TWO, not one rect or three. getClientRects gives a
       // rect per BOX: an inline that holds a span of its own — The NEW
       // Critic in the band's middle — comes back as three on a single
@@ -6170,25 +6251,33 @@
       var lh0 = cs.lineHeight === 'normal' ? 0 : parseFloat(cs.lineHeight) || 0;
       var tall = lh0 && rects.length && (rects[0].height > lh0 * 1.5);
       var wrapped = tall || (cs.display === 'inline' && !oneLine);
-      el.classList.toggle('hl-wrapped', wrapped);
-      if (wrapped || !rects.length) {
-        el.classList.remove('hl-ink');
-        el.style.removeProperty('--hl-up'); el.style.removeProperty('--hl-dn');
-        return;
-      }
       if (cs.textTransform === 'uppercase') text = text.toUpperCase();
       else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
-      var probe = document.createElement('span');
-      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-      el.insertBefore(probe, el.firstChild);
-      // AFTER the probe: a range over the whole contents takes the
-      // zero-sized probe in with the text and comes back as two rects,
-      // which reads as wrapped and gives up the measurement.
       // the run's union, so an inline split over several boxes is
       // measured as the one line it is
       var span = (rects.length && oneLine)
         ? { left: uL, right: uR, top: uT, bottom: uB } : null;
-      jobs.push({ el: el, cs: cs, text: text, probe: probe, span: span });
+      seen.push({
+        el: el, cs: cs, text: text, span: span,
+        wrapped: wrapped, none: !rects.length
+      });
+    });
+    // ---- WRITE. Nothing is read in this loop. ----
+    seen.forEach(function (s) {
+      if (s.bare) { s.el.classList.remove('hl-ink', 'hl-wrapped'); return; }
+      s.el.classList.toggle('hl-wrapped', s.wrapped);
+      if (s.wrapped || s.none) {
+        s.el.classList.remove('hl-ink');
+        s.el.style.removeProperty('--hl-up'); s.el.style.removeProperty('--hl-dn');
+        return;
+      }
+      // AFTER the probe: a range over the whole contents takes the
+      // zero-sized probe in with the text and comes back as two rects,
+      // which reads as wrapped and gives up the measurement.
+      var probe = document.createElement('span');
+      probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      s.el.insertBefore(probe, s.el.firstChild);
+      jobs.push({ el: s.el, cs: s.cs, text: s.text, probe: probe, span: s.span });
     });
     jobs.forEach(function (j) {
       j.rect = j.span || j.el.getClientRects()[0] || j.el.getBoundingClientRect();
@@ -6271,6 +6360,9 @@
       var p = j.el.parentNode, i = owners.indexOf(p);
       if (i < 0) { owners.push(p); lines.push([j]); } else lines[i].push(j);
     });
+    // Read EVERY group's edges before any of them is moved: read, write,
+    // read, write down the list cost one forced recalculation per title.
+    var ranged = [];
     lines.forEach(function (g) {
       if (g.length < 2) return;
       var al = g[0].cs.textAlign, side, prop;
@@ -6282,11 +6374,18 @@
       var edges = g.map(function (j) {
         return parseFloat(getComputedStyle(j.el, '::after')[side]) || 0;
       });
-      var out = Math.min.apply(Math, edges);
-      g.forEach(function (j, k) {
-        if (Math.abs(edges[k] - out) < 0.01) return;
-        var was = parseFloat(j.el.style.getPropertyValue(prop)) || 0;
-        j.el.style.setProperty(prop, (was + (out - edges[k])).toFixed(2) + 'px');
+      // the pseudo's inset is read back, but the pad already written to
+      // the element is the fitter's own and needs no layout to recall
+      var wases = g.map(function (j) {
+        return parseFloat(j.el.style.getPropertyValue(prop)) || 0;
+      });
+      ranged.push({ g: g, prop: prop, edges: edges, wases: wases });
+    });
+    ranged.forEach(function (r) {
+      var out = Math.min.apply(Math, r.edges);
+      r.g.forEach(function (j, k) {
+        if (Math.abs(r.edges[k] - out) < 0.01) return;
+        j.el.style.setProperty(r.prop, (r.wases[k] + (out - r.edges[k])).toFixed(2) + 'px');
       });
     });
   }
