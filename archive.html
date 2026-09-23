@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=aa2fa871">
+<link rel="stylesheet" href="style.css?v=b0cd2655">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -33,8 +33,11 @@
   // so turning the page over does not lose it.
   // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
   // when this was written, the blue #1182c2 for a day, the banana
-  // again since the 22nd. It must match --nc-mark in style.css.)
-  var YELLOW = '#FFE135';
+  // again on the 22nd, and #1184C4 from later that day. It must match
+  // --nc-mark in style.css. Written in lower case, the form hexOf
+  // returns, so a reader typing the default's own code is sent home
+  // rather than stored — the banana's capitals never compared equal.)
+  var YELLOW = '#1184c4';
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
     if (!m) return null;
@@ -280,6 +283,7 @@
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
+      f.load('700 100px garamond-premier-pro'), // the corner box's price
       f.load('400 100px trajan-pro-3'),
       f.load('700 100px trajan-pro-3')
     ]).then(function () { return f.ready; }).then(resolve, resolve);
@@ -384,10 +388,9 @@
   <div class="page-rows">
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"></p>
+    <p class="band-deks band-dek"><span class="band-date">Wednesday, September 23, 2026</span></p>
     <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
-  <div class="head-seam"><span class="seam-date">Tuesday, September 22, 2026</span></div>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
   <section class="page-banner subscribe-band page-banner--bare">
@@ -1360,10 +1363,9 @@
     <a class="reprint-name" href="./#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
   <div class="foot-field" aria-hidden="true"></div>
-  <div class="foot-seam"><span class="seam-date">Copyright The New Critic, Inc.</span></div>
   <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a><span class="band-sep">, </span><a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a><span class="band-sep">, </span><a href="https://x.com/thenewcritic" rel="noopener">X</a><span class="band-sep">, </span><a href="mailto:editors@thenewcritic.com">Email</a></p>
-    <p class="band-deks band-dek"></p>
+    <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     <p class="band-deks band-name"><span>Est. May 2025</span></p>
   </nav>
   </div>
@@ -3605,8 +3607,118 @@
       b.classList.toggle('is-under-band', overBand);
     });
   }
+  var MARK_HOSTS = '.sub-box';
+  var MARK_WORDS = '.marginalia .theme-toggle > span:not(.theme-toggle-sep), .latest-stack,'
+    + ' .page-rows > .section-band--colophon a';
+  var markSpans = [];
+  var markSeats = [];
+  var sheetsRide = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll(root block)'));
+  function setIf(el, prop, v) { if (el.style.getPropertyValue(prop) !== v) el.style.setProperty(prop, v); }
+  var MARK_OVER = 72;
+  function inkTopLine(band, r) {
+    var t = parseFloat(band.style.getPropertyValue('--ink-top'));
+    return isNaN(t) ? r.top : r.top + t - MARK_OVER;
+  }
+  function seatMarkGutters() {
+    var g = document.querySelector('main > .mark-gutters');
+    var marked = document.querySelectorAll('.page-rows > .movement.on-mark');
+    if (!g || !marked.length) return;
+    var main = g.parentElement;
+    var mr = main.getBoundingClientRect();
+    var sy = window.scrollY;
+    var spans = [], lines = [];
+    for (var i = 0; i < marked.length; i++) {
+      var from = marked[i].querySelector(':scope > .page-banner');
+      if (!from) return;
+      var fr = from.getBoundingClientRect();
+      if (!fr.height) return;
+      var next = marked[i].nextElementSibling;
+      var to = next && next.classList.contains('movement') ? next.querySelector(':scope > .page-banner') : null;
+      var a = Math.round(inkTopLine(from, fr) + sy), b;
+      lines.push({ band: from, at: a - (fr.top + sy) });
+      if (to) {
+        var tr = to.getBoundingClientRect();
+        if (!tr.height) return;
+        b = Math.round(inkTopLine(to, tr) + sy);
+        lines.push({ band: to, at: b - (tr.top + sy) });
+      } else {
+        var seamEnd = main.querySelector('.page-rows > .foot-seam, .page-rows > .section-band--colophon');
+        b = seamEnd ? Math.round(seamEnd.getBoundingClientRect().top + sy) : Math.ceil(mr.bottom + sy);
+      }
+      spans.push({ a: a, b: b });
+    }
+    markSpans = spans;
+    var top = spans[0].a, foot = spans[spans.length - 1].b;
+    var stops = [];
+    spans.forEach(function (sp, k) {
+      var a = (sp.a - top).toFixed(2) + 'px', b = (sp.b - top).toFixed(2) + 'px';
+      if (k) stops.push('transparent ' + (spans[k - 1].b - top).toFixed(2) + 'px ' + a);
+      stops.push('#000 ' + a + ' ' + b);
+    });
+    var mask = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
+    var span = Math.max(0, foot - top).toFixed(2) + 'px';
+    var vh = document.documentElement.clientHeight;
+    markSeats = [].map.call(document.querySelectorAll(MARK_HOSTS), function (h) {
+      var cs = getComputedStyle(h);
+      var pin = cs.position === 'sticky' ? parseFloat(cs.top) : vh - parseFloat(cs.bottom) - h.getBoundingClientRect().height;
+      var dock = h.parentElement && h.parentElement.classList.contains('sub-dock') ? h.parentElement : null;
+      var line = dock && dock.nextElementSibling;
+      var run = line ? Math.max(1, line.getBoundingClientRect().top + sy - vh) : 100000;
+      return { h: h, at: top - (pin || 0), run: run };
+    });
+    markWords();
+    lines.forEach(function (l) { setIf(l.band, '--mk-line', l.at.toFixed(2) + 'px'); });
+    var mainTop = mr.top + sy;
+    setIf(g, 'top', (top - mainTop).toFixed(2) + 'px');
+    setIf(g, 'height', span);
+    setIf(g, '--mk-mask', mask);
+    markSeats.forEach(function (st) {
+      setIf(st.h, '--mk-at', st.at.toFixed(2) + 'px');
+      setIf(st.h, '--mk-run', st.run.toFixed(2) + 'px');
+      setIf(st.h, '--mk-h', span);
+      setIf(st.h, '--mk-mask', mask);
+    });
+    var de = document.documentElement;
+    if (!de.classList.contains('has-mark-span')) de.classList.add('has-mark-span');
+    if (!sheetsRide) rideSheets();
+  }
+  function rideSheets() {
+    var sy = window.scrollY;
+    markSeats.forEach(function (st) { setIf(st.h, '--mk-y', (st.at - Math.min(sy, st.run)).toFixed(2) + 'px'); });
+  }
+  function markWords() {
+    if (!markSpans.length) return;
+    var sy = window.scrollY;
+    var words = document.querySelectorAll(MARK_WORDS);
+    var on = [].map.call(words, function (w) {
+      var r = w.getBoundingClientRect();
+      if (!r.height) return false;
+      var mid = (r.top + r.bottom) / 2 + sy;
+      return markSpans.some(function (sp) { return mid >= sp.a && mid <= sp.b; });
+    });
+    [].forEach.call(words, function (w, i) {
+      if (w.classList.contains('over-mark') !== on[i]) w.classList.toggle('over-mark', on[i]);
+    });
+  }
+  function footGap() {
+    var col = document.querySelector('.page-rows > .section-band--colophon');
+    if (!col) return null;
+    var r = col.getBoundingClientRect();
+    if (!r.height) return null;
+    var bot = r.bottom + window.scrollY;
+    var f = Math.floor((Math.ceil(bot - 1 / 1024) - bot) * 1024) / 1024;
+    return { col: col, f: Math.max(0, f) };
+  }
+  function seatFootGap(g) { if (g) setIf(g.col, '--foot-f', g.f.toFixed(10) + 'px'); }
+  if (window.ResizeObserver && document.querySelector('main > .mark-gutters, .page-rows > .section-band--colophon')) {
+    var markRO = new ResizeObserver(function () { var foot = footGap(); seatMarkGutters(); seatFootGap(foot); });
+    markRO.observe(document.body);
+    var subBox = document.querySelector('.sub-box');
+    if (subBox) markRO.observe(subBox);
+  }
   function fitGroundStops() {
     markBandEdges();
+    seatMarkGutters();
     var ground = document.querySelector('main:has(.card--mega)');
     if (!ground) return;
     var top = ground.getBoundingClientRect().top;
@@ -3623,7 +3735,8 @@
     if (stopsQueued) return;
     stopsQueued = true;
     pinStacks();
-    requestAnimationFrame(function () { stopsQueued = false; markBandEdges(); fitPickup(); });
+    if (!sheetsRide) rideSheets();
+    requestAnimationFrame(function () { stopsQueued = false; markWords(); markBandEdges(); fitPickup(); });
   }, { passive: true });
   function paintedSpan(el) {
     var top = Infinity, bot = -Infinity;
@@ -3770,7 +3883,7 @@
       if (rh) document.documentElement.style.setProperty('--reprint-h', Math.round(rh) + 'px');
     });
   }
-  var WORDMARK_SIDE = 72; // (144 for an hour on the 22nd, on the content's line; back to the page's 72)
+  var WORDMARK_SIDE = 36; // (144 for an hour on the 22nd, on the content's line; the page's 72 after; 36 from the 23rd, halfway into the margins)
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
@@ -3844,6 +3957,8 @@
     var fr2 = rg2.getBoundingClientRect();
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
+    wm.style.setProperty('--ink-mid', ((baseline2 - inkAbove + inkBottom) / 2 - wb.top).toFixed(2) + 'px');
+    wm.style.setProperty('--ink-top', (baseline2 - inkAbove - wb.top).toFixed(2) + 'px');
     wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
     seatHit(name, wb.top + AIR, inkBottom);
     return { wb: wb, inkBottom: inkBottom };
@@ -5461,7 +5576,8 @@
         else if (B.b > pr.top && B.b < pr.bottom) { V.t = B.b + W; side = 't'; }
       } else if (B.l > pr.left && B.l < pr.right) { V.r = B.l - W; side = 'r'; }
       else if (B.r > pr.left && B.r < pr.right) { V.l = B.r + W; side = 'l'; }
-      var pd = function (k) { return k === side ? SWAP_PAD : SWAP_OPEN; };
+      var FAR = { l: 'r', r: 'l', t: 'b', b: 't' };
+      var pd = function (k) { return (k === side || k === FAR[side]) ? SWAP_PAD : SWAP_OPEN; };
       var across = null;
       if (side === 'r' || side === 'l') {
         jobs.forEach(function (k) {
