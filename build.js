@@ -543,7 +543,29 @@ const COVER_SIZES = {
   third: '(max-width: 720px) 100vw, 30vw',
   pair: '(max-width: 720px) 100vw, 23vw',
 };
+// THE COVER IS CROPPED TO ITS BOX, AND THE CROP NEEDS PIXELS (2026-09-22).
+// A postscript's box is tall — 412 by 577 at 1440, a pair's 306 by 577 —
+// and the artwork is object-fit: cover, so a landscape original is
+// scaled to the box's HEIGHT and most of its width is cut away. The
+// browser sizes its pick by the width `sizes` states, which was the
+// box's: a 1456x1092 original in a pair cell took the 800 candidate
+// (800x600) for a box 1154 device pixels tall, and came up soft. The
+// original's own proportions are in its file name (_WxH); where they
+// are wider than the box's, the width asked for grows by the ratio.
+const COVER_BOX_ASPECT = { wide: 1.43, cell: 1.0, third: 0.714, pair: 0.53 };
+function cropAwareSizes(url, sizes) {
+  const key = Object.keys(COVER_SIZES).find((k) => COVER_SIZES[k] === sizes);
+  const box = key && COVER_BOX_ASPECT[key];
+  const m = /_(\d+)x(\d+)\.[a-z]+/i.exec(url || '');
+  const vw = /,\s*(\d+)vw$/.exec(sizes);
+  if (!box || !m || !vw) return sizes;
+  const img = +m[1] / +m[2];
+  if (!(img > box)) return sizes;
+  const need = Math.min(100, Math.ceil(+vw[1] * (img / box)));
+  return sizes.replace(/,\s*\d+vw$/, `, ${need}vw`);
+}
 function coverSrcAttrs(url, sizes, { preload = false } = {}) {
+  sizes = cropAwareSizes(url, sizes);
   const variants = [480, 800, 1200, 1600].map((w) => ({ v: cdnVariant(url, w), w }));
   if (variants.some(({ v }) => !v)) {
     return preload ? `href="${escapeHtml(url)}"` : `src="${escapeHtml(url)}"`;
@@ -1239,6 +1261,13 @@ function bandDeks(m) {
 function bandDate() {
   return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
+// THE DATE STANDS IN THE SEAM (2026-09-22). The rule under the head
+// band is a 36 band of charcoal of its own now, and the day's date
+// stands centred in it, out of the band's middle, which is left blank
+// so the band's three columns keep their stations.
+function headSeam() {
+  return `<div class="head-seam"><span class="seam-date">${bandDate()}</span></div>`;
+}
 function mastheadLine() {
   return `<a href="./">The Young American Magazine</a>
       <span>${bandDate()}</span>`;
@@ -1344,7 +1373,7 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
       : bandDeks(m);
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek">${bareMid ? '' : mid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
+    <p class="band-deks band-dek">${bareMid || !mid ? '' : `<span>${escapeHtml(mid)}</span>`}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -1378,6 +1407,7 @@ function renderPageFoot(onHome = false) {
     <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
   <div class="foot-field" aria-hidden="true"></div>
+  <div class="foot-seam"><span class="seam-date">Copyright The New Critic, Inc.</span></div>
   ${renderColophonBand()}`;
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
@@ -1397,7 +1427,7 @@ function renderPageFoot(onHome = false) {
 function renderColophonBand() {
   return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
-    <p class="band-deks band-dek"><span>Copyright The New Critic, Inc.</span></p>
+    <p class="band-deks band-dek"></p>
     ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
 }
@@ -1566,9 +1596,32 @@ function coverUnderPair(post, { authorPrefix = '', cat = '' } = {}) {
 // every card's words — carries the control that opens the preview,
 // underlined, in the same courier voice as the line it replaced. The
 // fitters seat it exactly as they seated the date (.cover-meta--peek).
+// THE REVIEW'S AUTHOR AND DATE STAND UP THE FRAME'S SIDES (2026-09-22):
+// each a vertical stack of its capitals, one to the line — the author
+// in the frame's left column, the date in its right — linking where the
+// byline's two did. The fitter seats and sizes them (seatMatterMeta);
+// the byline row stands invisible in the flow for the review's fit.
+function sideStacksHtml(post, { lead = '' } = {}) {
+  const stack = (text, cls, href) => {
+    if (!text) return '';
+    const letters = String(text).match(/ |[^\s]/g).map((ch) => ch === ' '
+      ? '<span class="side-stack-gap" aria-hidden="true"></span>'
+      : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('');
+    return `<a class="side-stack side-stack--${cls}" href="${escapeHtml(href)}" aria-label="${escapeHtml(text)}">${letters}</a>`;
+  };
+  return stack(lead || authorDisplay(post, false), 'author', archiveHref(post, 'author'))
+    + stack(metaDateText(post), 'date', archiveHref(post, 'date'));
+}
+// A REVIEW'S KICKER stands alone in the frame's head band, centred
+// (seatMatterMeta seats it); its author and date stand up the sides.
+function kickLine(post) {
+  return post.kicker
+    ? `<p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></span></p>`
+    : '';
+}
 function peekLine() {
   return '<p class="cover-meta cover-meta--peek">' +
-    '<button type="button" class="peek-open">Read Preview</button></p>';
+    '<button type="button" class="peek-open">Preview</button></p>';
 }
 // THE POSTSCRIPT'S DEK NAMES ITS SUBJECT: "Declan Rexer on Deep Springs"
 // — the name the courier used to carry over the title (w/ ...), set
@@ -1584,7 +1637,7 @@ function psDek(post) {
   const rest = sub.replace(/^on\s+/i, '');
   return `<p class="latest-dek">${escapeHtml(`${name} on ${rest}`)}</p>`;
 }
-function coverMetaLine(post, { authorPrefix = '', only = '', cls = '', lead = '' } = {}) {
+function coverMetaLine(post, { authorPrefix = '', only = '', cls = '', lead = '', withKicker = false } = {}) {
   // A LEAD PIECE — the postscript's issue number ("No. 21") — stands
   // where the author used to, in the author's own span so the fitters
   // seat the pair as they seated AUTHOR · DATE.
@@ -1599,7 +1652,10 @@ function coverMetaLine(post, { authorPrefix = '', only = '', cls = '', lead = ''
     ? `<span class="cover-date"><a href="${escapeHtml(archiveHref(post, 'date'))}">${escapeHtml(dateText)}</a></span>`
     : '';
   // The kicker is retired from the line: AUTHOR · DATE alone.
-  const parts = (only === 'author' ? [author] : only === 'date' ? [leadPiece, date] : [author, date]).filter(Boolean);
+  // THE KICKER IS BACK ON THE LINE, IN THE FRAME (2026-09-22): out of
+  // the preview, where it opened the plate, and at the head of the
+  // frame's own line — withKicker, for the cards whose frame it is.
+  const parts = (withKicker ? [kicker] : []).concat(only === 'author' ? [author] : only === 'date' ? [leadPiece, date] : [author, date]).filter(Boolean);
   // THE DOT TRAVELS WITH WHAT FOLLOWS IT. Each part after the first
   // carries its own separator INSIDE its nowrap span, so when the line
   // breaks the dot opens the second line rather than dangling at the
@@ -2007,11 +2063,11 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             <div class="panel-col panel-col--left">
               ${kickerHtml}
               ${underKickerHtml}
-              ${isMega ? coverMetaLine(post, { cls: 'author' }) : ''}
+              ${isMega ? coverMetaLine(post, { only: 'author', cls: 'author' }) + kickLine(post) : ''}
               ${titleHtml}
               ${isMega ? '' : creditHtml}
               ${splitCredit ? dekHtml : ''}
-              ${isMega ? peekLine() : ''}
+              ${isMega ? peekLine() + sideStacksHtml(post) : ''}
               ${splitCredit && !isMega ? footHtml : ''}
             </div>
             <div class="panel-col-divider" role="separator"></div>
@@ -2131,7 +2187,10 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // brand; the hero opens straight on its courier band.)
   // The REV hero mirrors the composition — cover left, ground right
   // (see THE SECOND HERO in style.css).
-  return `<section class="card card--duo card--split card--mega${rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}">
+  // EVERY PICTURE TURNED OVER (2026-09-22): the heroes' sides are dealt
+  // the other way round from the alternation above — the first hero's
+  // picture on the left, its title column on the right
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2170,7 +2229,7 @@ function renderShelvesRow(psPost) {
 function renderContraCell(post, { rev = false } = {}) {
   if (!post) return '';
   const cell = renderLatestRow(null, post, { cellOnly: true, noLabel: true });
-  return rev ? cell.replace('class="latest-cell latest-cell--contra"', 'class="latest-cell latest-cell--contra latest-cell--contra-rev"') : cell;
+  return cell;
 }
 
 // TWO POSTSCRIPTS TO A LINE: each cell keeps its cover-and-text pair,
@@ -2281,7 +2340,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
           <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}</a>
         </div>
         <div class="latest-col">
-          ${matter(psPost, psDek(psPost), { before: coverMetaLine(psPost, { only: 'date', cls: 'author', lead: psPost.psNo ? `No. ${psPost.psNo}` : '' }), after: peekLine() })}
+          ${matter(psPost, psDek(psPost), { before: (psPost.psNo ? `<p class="cover-meta cover-meta--author"><span class="cover-author cover-no">${escapeHtml(`No. ${psPost.psNo}`)}</span></p>` : coverMetaLine(psPost, { only: 'author', cls: 'author' })) + kickLine(psPost), after: peekLine() + sideStacksHtml(psPost, { lead: psPost.psNo ? `No. ${psPost.psNo}` : '' }) })}
         </div>
         ${plate(psPost)}
       </div>` : '';
@@ -2292,12 +2351,14 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   // see THE REVIEW'S COURIER STANDS BETWEEN ITS WORDS in style.css).
   // The picture stands alone at the head of the cell, its top on the
   // postscript's.
-  const contra = contraPost ? `<div class="latest-cell latest-cell--contra">
+  // EVERY REVIEW TURNED OVER (2026-09-22): the picture's frame on top,
+  // the title column under it (.latest-cell--contra-rev on every cell)
+  const contra = contraPost ? `<div class="latest-cell latest-cell--contra latest-cell--contra-rev">
         <div class="latest-cover-col latest-cover-col--square">
           <a class="latest-cover latest-cover--square" href="${escapeHtml(contraPost.link)}" rel="noopener">${coverImg(contraPost)}</a>
         </div>
         <div class="latest-col">
-          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '', { before: coverMetaLine(contraPost, { cls: 'author' }), after: peekLine() })}
+          ${matter(contraPost, contraPost.subtitle ? `<p class="latest-dek">${contraWorkDek(contraPost.subtitle)}</p>` : '', { before: coverMetaLine(contraPost, { cls: 'author' }), after: peekLine() + sideStacksHtml(contraPost) + kickLine(contraPost) })}
         </div>
         ${plate(contraPost)}
       </div>` : '';
@@ -2506,7 +2567,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m)}\n  <div class="head-seam" aria-hidden="true"></div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m)}\n  ${headSeam()}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}">`;
     duoHtml += `${head}\n  <div class="movement-body">`; open = true;
   };
@@ -2601,7 +2662,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#F8F8FF">
+<meta name="theme-color" content="#FFFFFF">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -2615,7 +2676,6 @@ ${leadPreload}
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
@@ -2707,7 +2767,7 @@ function renderFontGateScript() {
   // LIGHT OR DARK, before first paint: the stored choice, else light.
   // GHOST WHITE (2026-09-18): the one white on the site — the light
   // ground and the dark ink.
-  var WHITE = '#F8F8FF', CHARCOAL = '#121417';
+  var WHITE = '#FFFFFF', CHARCOAL = '#121417';
   // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
   // the margin used to paint the page's ground in a colour of the
   // reader's own, with the ink turned white on it. It names the
@@ -2717,9 +2777,9 @@ function renderFontGateScript() {
   // and nothing else; the mark rides over both and is kept separately,
   // so turning the page over does not lose it.
   // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
-  // when this was written, the blue #1182c2 since the same evening.
-  // It must match --nc-mark in style.css.)
-  var YELLOW = '#1182c2';
+  // when this was written, the blue #1182c2 for a day, the banana
+  // again since the 22nd. It must match --nc-mark in style.css.)
+  var YELLOW = '#FFE135';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -2960,15 +3020,8 @@ function renderFontGateScript() {
       f.load('700 100px helvetica-neue-lt-pro'),
       f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
-      f.load('400 100px "Roboto Mono"'),
-      // The kit's own Roboto Mono BOLD — the self-hosted face is the
-      // 400 alone, so the corner box's price (.sub-box-price) is the
-      // one run on the site set in a 700 of this face. Gated with the
-      // rest: it is three words in a panel, but they are three words
-      // the reader is shown a price in, and a swap under them reads as
-      // a fault. One more face off an origin the head already
-      // preconnects and this promise already waits on nine of.
-      f.load('700 100px roboto-mono'),
+      // (The chips' face is the system's Courier since 2026-09-22 —
+      // nothing to wait on.)
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -3328,7 +3381,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#F8F8FF">
+<meta name="theme-color" content="#FFFFFF">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}
@@ -3336,7 +3389,6 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="preload" href="fonts/roboto-mono-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
@@ -4095,7 +4147,7 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   const bodyHtml = `
   <div class="page-rows">
   ${renderSectionBand('latest', { mid, currentKey, bareMid: true })}
-  <div class="head-seam" aria-hidden="true"></div>
+  ${headSeam()}
   <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
   </div>
   ${renderMarginalia()}`;

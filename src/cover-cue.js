@@ -36,7 +36,11 @@
   var TITLES = '.card-title, .latest-title';
   // The words of a card: its title and the dek under it, which answer
   // as one (see resolveFrom).
-  var WORDS = '.card-title, .latest-title, .card-dek, .latest-dek';
+  // AND THE PREVIEW'S OWN WORDS (2026-09-21): a hand on an open
+  // preview's paragraphs — which go to the post now, src/card-open.js
+  // — cues the picture beside them and says Read Now in it, as a hand
+  // on the title does.
+  var WORDS = '.card-title, .latest-title, .card-dek, .latest-dek, .latest-plate-p, .card-preview';
   var CELLS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
   // THE CONTRAS DO NOT HOLD ACROSS THEIR SEAM (2026-09-19). The hold
   // below was written for the cards whose picture stands BESIDE their
@@ -70,6 +74,25 @@
       left: r.left + (parseFloat(c.left) || 0),
       right: r.right - (parseFloat(c.right) || 0)
     };
+  }
+  // THE PICTURE SITS IN THE BOX (2026-09-22): at rest a card's picture
+  // is painted in its title's box and the picture's old seat is the
+  // title column (.swap-col, src/duo-panel-fit.js). There the cue
+  // stands in the box: a hand in the column centres it in the box, as
+  // a hand on the words did, and a hand in the box carries it, as a
+  // hand on the picture did. Open, the card is what it was.
+  function swapped(cover) {
+    if (!cover || !cover.querySelector) return null;
+    var cell = cover.closest(CELLS);
+    if (!cell) return null;
+    var col = cover.querySelector('.swap-col');
+    return col && col.classList.contains('is-set') ? cell : null;
+  }
+  function hostRect() {
+    var cell = swapped(host);
+    var b = cell ? markBox(cell.querySelector(TITLES)) : null;
+    if (!b) return host.getBoundingClientRect();
+    return { left: b.left, right: b.right, top: b.top, bottom: b.bottom, width: b.right - b.left, height: b.bottom - b.top };
   }
   function inBox(b) {
     return !!b && px >= b.left && px <= b.right && py >= b.top && py <= b.bottom;
@@ -107,10 +130,68 @@
     if (noGap) return false;
     return inBox(gapBox(mark, cover));
   }
+  // AN OPEN CARD SAYS READ NOW FOR A HAND IN ITS BOX (2026-09-22): the
+  // preview's box — the plate's own pseudo, read as the title's is —
+  // or the picture, and not the frame round the box. The cell carries
+  // .is-inbox while the hand is in either; the sheet paints the
+  // picture's Read Now from it (and from the three moves out and
+  // home, which need no hand).
+  var inboxCell = null;
+  function inbox(cell) {
+    var on = false;
+    if (cell) {
+      var cu = cell.querySelector('.plate-curtain');
+      var cover = cell.querySelector(COVERS);
+      var box = null;
+      if (cu) {
+        var c = getComputedStyle(cu, '::before');
+        var r = cu.getBoundingClientRect();
+        if (c.content !== 'none') {
+          // the pseudo spans the frame with the box painted --pb-i
+          // inside it on every side but the picture's, where it runs
+          // --pb-o onto the picture (style.css, THE PREVIEW IS THE
+          // RESTING BOX'S TWIN)
+          var i = parseFloat(c.getPropertyValue('--pb-i')) || 0;
+          box = { top: r.top + (parseFloat(c.top) || 0) + i, bottom: r.bottom - (parseFloat(c.bottom) || 0) - i, left: r.left + (parseFloat(c.left) || 0) + i, right: r.right - (parseFloat(c.right) || 0) - i };
+          var f = parseFloat(c.getPropertyValue('--pb-f')) || i;
+          if (cell.classList.contains('pic-left')) { box.right += i; box.left += f - i; }
+          else if (cell.classList.contains('pic-right')) { box.left += i; box.right -= f - i; }
+          else if (cell.classList.contains('latest-cell--contra-rev')) box.top -= i;
+          else if (cell.classList.contains('latest-cell--contra')) box.bottom += i;
+        }
+      }
+      on = inBox(box);
+    }
+    var next = on ? cell : null;
+    if (next === inboxCell) return;
+    if (inboxCell) inboxCell.classList.remove('is-inbox');
+    inboxCell = next;
+    if (inboxCell) inboxCell.classList.add('is-inbox');
+  }
   // What the point under the hand asks for: which picture is lit, and
   // whether the words are said over it.
   function resolveFrom(node) {
     if (!node || !node.closest) return null;
+    // AN OPEN CARD SAYS READ NOW ON ITS OWN (2026-09-21, late): its
+    // picture carries the words in the sheet while the preview is
+    // open, so this line stands down there rather than doubling them.
+    var openCell = node.closest(CELLS);
+    // (Through the moves out and home it said nothing for a day; it
+    // answers through them now — 2026-09-22, later — the picture
+    // passing under a still hand taking the line as it arrives: see
+    // THE PICTURE MOVES UNDER A STILL HAND, below.)
+    // (a card whose picture is in its box answers open as it does shut:
+    // the box travels with the frame, and the body column is words)
+    if (openCell && openCell.classList.contains('is-open') && !swapped(openCell.querySelector('.card-image-link, .latest-cover'))) {
+      // …BUT ON ITS PICTURE THE LINE RIDES THE POINTER AS EVER
+      // (2026-09-22, night): the box says Read Now from its centre
+      // (.is-inbox); a hand on the picture takes the words with it.
+      var onPic = node.closest(COVERS);
+      inbox(onPic ? null : openCell);
+      if (onPic) return { cover: onPic, say: true, mid: false, title: null };
+      return null;
+    }
+    inbox(null);
     var direct = node.closest(COVERS);
     if (direct) {
       // AND THE PICTURE LIGHTS ITS WORDS BACK (2026-09-19). The title
@@ -121,7 +202,7 @@
       // title finds its cover.
       var back = direct.closest(CELLS);
       return {
-        cover: direct, say: true, mid: false,
+        cover: direct, say: true, mid: !!swapped(direct),
         title: back ? back.querySelector(TITLES) : null
       };
     }
@@ -161,14 +242,16 @@
       var within = node.closest(CELLS);
       var noGap = !!(within && within.matches && within.matches(NO_HOLD));
       if (within && host && within.contains(host) && inMark(within, noGap)) {
-        return { cover: host, say: true, mid: true, title: within.querySelector(TITLES) };
+        var held = within.querySelector(TITLES);
+        return { cover: host, say: true, mid: !(swapped(host) && inBox(markBox(held))), title: held };
       }
       return null;
     }
     var cell = words.closest(CELLS);
     var title = words.closest(TITLES) || (cell ? cell.querySelector(TITLES) : null);
     var cover = cell ? cell.querySelector('.card-image-link, .latest-cover') : null;
-    return cover ? { cover: cover, say: true, mid: true, title: title } : null;
+    var boxed = !!swapped(cover) && !!words.closest('.card-title, .latest-title, .card-dek, .latest-dek');
+    return cover ? { cover: cover, say: true, mid: !boxed, title: title } : null;
   }
   var cue = null, host = null, rafId = 0, px = 0, py = 0;
   // WHERE THE WORDS SIT: on the pointer, or in the middle of the
@@ -206,6 +289,19 @@
 
   // The arrow goes only once there is something to put in its place.
   document.documentElement.classList.add('has-cover-cue');
+  // THE BIG NAMES TURN THE PAGE (2026-09-22): a hand on either
+  // full-width THE NEW CRITIC turns the page's ground to the mark's
+  // colour — a class on the root, set here, where an html:has() over
+  // the whole document made every style pass on the page a search.
+  // (listened for on the document, not bound to each name: the band's
+  // miniature is made by another script, after this one has run)
+  var WM = '.topbar-wordmark, .reprint-link, .topbar-name, .reprint-name, .section-band .band-mini, .section-band .band-name-mid';
+  var wmOf = function (n) { return n && n.closest ? n.closest(WM) : null; };
+  var wmSet = function (on) { document.documentElement.classList.toggle('nc-wm-lit', on); };
+  document.addEventListener('mouseover', function (e) { if (wmOf(e.target)) wmSet(true); }, true);
+  document.addEventListener('mouseout', function (e) { if (wmOf(e.target) && !wmOf(e.relatedTarget)) wmSet(false); }, true);
+  document.addEventListener('focusin', function (e) { if (wmOf(e.target)) wmSet(true); }, true);
+  document.addEventListener('focusout', function (e) { if (wmOf(e.target) && !wmOf(e.relatedTarget)) wmSet(false); }, true);
 
   function make() {
     cue = document.createElement('span');
@@ -214,14 +310,22 @@
     // link it stands on already says where it goes.
     cue.setAttribute('aria-hidden', 'true');
     cue.textContent = 'Read Now';
-    document.body.appendChild(cue);
+    // INSIDE MAIN, NOT ON BODY (2026-09-21). main.has-mega is a stacking
+    // context of its own (z-index 1), and the corner box is docked
+    // inside it now (src/subscribe-box.js) at 95 — a line on <body> at
+    // 90 stood over the whole of main, the box included, and Read Now
+    // printed across SUBSCRIBE. In main it stands at 90 among the
+    // covers' 5s, the band's 30 and the clones' 35, and under the
+    // box; fixed is still the window's, main carrying no transform.
+    (document.querySelector('main.has-mega') || document.body).appendChild(cue);
     return cue;
   }
 
   function place() {
     if (!host || !cue) return;
-    var f = host.getBoundingClientRect();
+    var f = hostRect();
     if (!f.width || !f.height) return hide();
+    cue.classList.toggle('is-boxed', !!swapped(host));
     // The PAINTED box, not offsetWidth/offsetHeight: those are whole
     // pixels, and a line 78.34 wide reported as 78 cuts a third of a
     // pixel off the wrong end of the clip.
@@ -331,8 +435,23 @@
   function take(el) {
     if (host === el) return;
     if (host) host.classList.remove('is-cued');
+    if (host && host.closest && host.closest(CELLS)) host.closest(CELLS).classList.remove('is-cue-host');
     host = el;
     if (host) host.classList.add('is-cued');
+    // (the card holding the cue says so itself — the box's grey reads
+    // it, where a :has() on every card cost every style pass a search)
+    if (host && host.closest && host.closest(CELLS)) host.closest(CELLS).classList.add('is-cue-host');
+    // UNDER THE BOX'S OVERHANG (2026-09-21, late). The resting box
+    // reaches 54 onto the picture, ranked 9 in the movement's body —
+    // a context of its own (z-index 1) that main's 90 could only stand
+    // OVER. So the line goes INTO the body the cover stands in, where
+    // the sheet ranks it 8: over the picture (8, and earlier in the
+    // body), under the box (9). Its absolute seat is measured again
+    // from the new body.
+    if (host && cue) {
+      var body = host.closest('.movement-body');
+      if (body && cue.parentNode !== body) { body.appendChild(cue); seated = false; }
+    }
   }
   // THE TITLE'S OWN MARK, off the SAME hit test as the picture's — so
   // the crimson on the words and the grey on the picture begin on one
@@ -383,9 +502,26 @@
     if (mode === 'pointer') queue();
   }, { passive: true });
 
+  // THE PICTURE MOVES UNDER A STILL HAND TOO (2026-09-22): while a card
+  // opens or shuts its picture travels for a second under a pointer
+  // that need not stir, so the point is asked again on every frame of
+  // the move (src/card-open.js says when one starts), as a scroll asks
+  // it — Read Now arriving with the picture and leaving with it.
+  var travelUntil = 0, travelRaf = 0;
+  var travelTick = function () {
+    travelRaf = 0;
+    if (px == null || py == null) return;
+    if (!cue) make();
+    follow();
+    if (performance.now() < travelUntil) travelRaf = requestAnimationFrame(travelTick);
+  };
+  window.addEventListener('newcritic:travel', function () {
+    travelUntil = performance.now() + 1100;
+    if (!travelRaf) travelRaf = requestAnimationFrame(travelTick);
+  });
   window.addEventListener('scroll', queueFollow, { passive: true });
   window.addEventListener('resize', queueFollow, { passive: true });
   // And on the press that takes the reader away.
   document.addEventListener('pointerdown', hide, { passive: true });
-  window.addEventListener('blur', hide);
+  window.addEventListener('blur', function () { hide(); inbox(null); });
 })();

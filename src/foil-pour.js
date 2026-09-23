@@ -87,11 +87,11 @@
       "<linearGradient id='t' x1='0' y1='" + ty1 + "' x2='1' y2='" + ty2 + "'>" + stops + "</linearGradient>" +
       // VERTICAL striations — variation runs across, the grain runs
       // down — brushed holo stock, not crumpled kitchen foil.
-      "<filter id='f1' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feDiffuseLighting lighting-color='#F8F8FF' surfaceScale='1.6' diffuseConstant='1.3'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feDiffuseLighting></filter>" +
-      "<filter id='f2' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.002' numOctaves='2' seed='" + seed2 + "'/><feDiffuseLighting lighting-color='#F8F8FF' surfaceScale='1.5' diffuseConstant='1.25'><feDistantLight azimuth='" + az2 + "' elevation='" + el2 + "'/></feDiffuseLighting></filter>" +
+      "<filter id='f1' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feDiffuseLighting lighting-color='#FFFFFF' surfaceScale='1.6' diffuseConstant='1.3'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feDiffuseLighting></filter>" +
+      "<filter id='f2' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.002' numOctaves='2' seed='" + seed2 + "'/><feDiffuseLighting lighting-color='#FFFFFF' surfaceScale='1.5' diffuseConstant='1.25'><feDistantLight azimuth='" + az2 + "' elevation='" + el2 + "'/></feDiffuseLighting></filter>" +
       // THE MIRROR PASS: specular glints down the same striations —
       // the hard vertical highlights that make it read as chrome.
-      "<filter id='sp' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feSpecularLighting lighting-color='#F8F8FF' surfaceScale='2' specularConstant='.9' specularExponent='18'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feSpecularLighting></filter>" +
+      "<filter id='sp' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.004' numOctaves='3' seed='" + seed1 + "'/><feSpecularLighting lighting-color='#FFFFFF' surfaceScale='2' specularConstant='.9' specularExponent='18'><feDistantLight azimuth='" + az1 + "' elevation='" + el1 + "'/></feSpecularLighting></filter>" +
       // THE SINE: the colour events undulate — a one-octave low-frequency
       // displacement bends each band into a slow wave, the reference
       // foil's wavering reflection rather than a ruled stripe.
@@ -118,11 +118,11 @@
     "<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='300' viewBox='0 0 1400 300' preserveAspectRatio='none'>" +
     "<defs>" +
     "<linearGradient id='s' x1='0' y1='0' x2='1' y2='0'>" +
-    "<stop offset='.28' stop-color='#F8F8FF' stop-opacity='0'/>" +
-    "<stop offset='.42' stop-color='#F8F8FF' stop-opacity='.35'/>" +
-    "<stop offset='.5' stop-color='#F8F8FF' stop-opacity='.12'/>" +
-    "<stop offset='.57' stop-color='#F8F8FF' stop-opacity='.28'/>" +
-    "<stop offset='.72' stop-color='#F8F8FF' stop-opacity='0'/>" +
+    "<stop offset='.28' stop-color='#FFFFFF' stop-opacity='0'/>" +
+    "<stop offset='.42' stop-color='#FFFFFF' stop-opacity='.35'/>" +
+    "<stop offset='.5' stop-color='#FFFFFF' stop-opacity='.12'/>" +
+    "<stop offset='.57' stop-color='#FFFFFF' stop-opacity='.28'/>" +
+    "<stop offset='.72' stop-color='#FFFFFF' stop-opacity='0'/>" +
     "</linearGradient>" +
     "<filter id='w' x='-15%' y='-15%' width='130%' height='130%'>" +
     "<feTurbulence type='fractalNoise' baseFrequency='0.015 0.003' numOctaves='2' seed='" + seed1 + "'/>" +

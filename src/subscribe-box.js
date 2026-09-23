@@ -207,83 +207,35 @@
     // in step. It is measured off the stylesheet with the inline value
     // cleared, and re-measured on a resize, which is the only thing
     // that can change it.
-    var foot = document.querySelector('.section-band--colophon');
-    var restBottom = 36;
-    function readRest() {
-      var had = box.style.bottom;
-      box.style.bottom = '';
-      var v = parseFloat(getComputedStyle(box).bottom);
-      restBottom = isFinite(v) ? v : 36;
-      box.style.bottom = had;
+    // IT STANDS ON THE COLOPHON BY LAYOUT, NOT BY SCRIPT (2026-09-21).
+    // The box was fixed to the window, and as the colophon came up into
+    // view this script lifted it out of the way: read the band's top,
+    // write the box's `bottom`, on the next frame or a 32ms timer,
+    // whichever came first. The scroll itself is the compositor's, and
+    // it does not wait — so the box was always where the band had been
+    // a frame or two earlier, and at the foot of the page it WOBBLED:
+    // dragged up late, overshot, settled, on every tick of the wheel.
+    // (A second script rode the rubber band the same way, through a
+    // transform the sheet also eases. Same fault, slower.)
+    // A box that must stay off the floor until something in the page
+    // pushes it up is what `position: sticky` IS. So the box is docked:
+    // a zero-height sticky line set in the flow directly above the
+    // colophon, stuck to the window's foot until the page brings that
+    // line up past it — and the box hangs off the line by the 36 it has
+    // always kept (its own CSS `bottom`, untouched, read against the
+    // dock instead of the window). The browser moves it in the same
+    // frame as the page, the rubber band included, because at the foot
+    // it simply IS in the page. Nothing here listens to a scroll any
+    // more. With no colophon to dock on, it stays fixed as it was.
+    // (docked over the colophon's seam where there is one, so the box
+    // keeps its 36 off the band of charcoal and not over it)
+    var foot = document.querySelector('.foot-seam') || document.querySelector('.section-band--colophon');
+    if (foot && foot.parentNode) {
+      var dock = document.createElement('div');
+      dock.className = 'sub-dock';
+      foot.parentNode.insertBefore(dock, foot);
+      dock.appendChild(box);
     }
-    // AND IT RIDES THE RUBBER BAND. A fixed panel is pinned to the
-    // WINDOW, so pulling past either end of the page slides the whole
-    // site under it and leaves the box hanging still against moving
-    // paper — which reads as the box being stuck to the glass rather
-    // than laid on the page. It travels with the overscroll instead.
-    // HOW THE OVERSHOOT IS FOUND. The root's own box gives it away:
-    // at rest its top sits at exactly -scrollY, so the two of them
-    // sum to nothing; while the page is pulled past an end the
-    // compositor shifts the document without the scroll offset
-    // following, and that sum IS the shift — positive at the head
-    // where the page has come down, negative at the foot where it has
-    // gone up. The panel takes the same shift and moves with it.
-    // (scrollY is clamped to the page's own range in some browsers
-    // and not in others; this reads the same either way, because it
-    // asks the DOCUMENT where it is rather than asking the scroller.)
-    // ONLY ONCE IT HAS ARRIVED: during the fade the sheet is driving
-    // the transform itself, and an inline one here would snatch it.
-    function overshoot() {
-      var r = document.documentElement.getBoundingClientRect();
-      return r.top + (window.scrollY || window.pageYOffset || 0);
-    }
-    function ride() {
-      if (!foot || box.hidden) return;
-      var top = foot.getBoundingClientRect().top;
-      // Where the box's foot would have to sit to clear the band by
-      // the same measure it clears the floor by.
-      var lifted = window.innerHeight - top + restBottom;
-      box.style.bottom = (lifted > restBottom ? lifted : restBottom).toFixed(2) + 'px';
-      if (!box.classList.contains('is-in')) return;
-      var shift = overshoot();
-      box.style.transform = Math.abs(shift) > 0.5 ? 'translateY(' + shift.toFixed(2) + 'px)' : '';
-    }
-    // A FRAME IF THERE IS ONE, AND A TIMER IF THERE IS NOT. The seat is
-    // taken on the next frame so a run of scroll events costs one
-    // measurement rather than forty — but requestAnimationFrame does
-    // not tick in a tab that is not being shown, and a throttle that
-    // waits on it alone simply never runs there. Whichever arrives
-    // first does the work and the other finds it done.
-    var riding = false;
-    function queueRide() {
-      if (riding) return;
-      riding = true;
-      var done = false;
-      var go = function () { if (done) return; done = true; riding = false; ride(); };
-      if (window.requestAnimationFrame) requestAnimationFrame(go);
-      setTimeout(go, 32);
-    }
-    // AND A TAIL, FOR THE SPRING BACK. A rubber band is run by the
-    // compositor: the document is moving while the scroller's offset
-    // has already stopped changing, so the scroll events stop coming
-    // before the movement does. Sampling on for a moment after the
-    // last of them carries the panel through the return, and costs
-    // nothing at rest — the tail is only ever armed by an input.
-    var tailUntil = 0, tailTimer = null;
-    function tail() {
-      if (tailTimer) return;
-      tailTimer = setInterval(function () {
-        ride();
-        if (Date.now() > tailUntil) { clearInterval(tailTimer); tailTimer = null; }
-      }, 32);
-    }
-    function stir() { tailUntil = Date.now() + 600; queueRide(); tail(); }
-    readRest();
-    ride();
-    window.addEventListener('scroll', stir, { passive: true });
-    window.addEventListener('wheel', stir, { passive: true });
-    window.addEventListener('touchmove', stir, { passive: true });
-    window.addEventListener('resize', function () { readRest(); ride(); }, { passive: true });
 
     var x = box.querySelector('.sub-box-x');
     if (x) x.addEventListener('click', function () { close(); });
