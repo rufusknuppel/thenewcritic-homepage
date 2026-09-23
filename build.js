@@ -1261,13 +1261,9 @@ function bandDeks(m) {
 function bandDate() {
   return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
-// THE DATE STANDS IN THE SEAM (2026-09-22). The rule under the head
-// band is a 36 band of charcoal of its own now, and the day's date
-// stands centred in it, out of the band's middle, which is left blank
-// so the band's three columns keep their stations.
-function headSeam() {
-  return `<div class="head-seam"><span class="seam-date">${bandDate()}</span></div>`;
-}
+// (THE DATE STOOD IN A SEAM for a day, 2026-09-22: a 36 band of
+// charcoal of its own under the head band. It is back in the band's
+// middle, 2026-09-23, and the seam is struck — renderSectionBand.)
 function mastheadLine() {
   return `<a href="./">The Young American Magazine</a>
       <span>${bandDate()}</span>`;
@@ -1371,9 +1367,13 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
     const links = currentKey
       ? bandDeks(m).replace(`<a href="${currentKey}.html">`, `<a href="${currentKey}.html" aria-current="page">`)
       : bandDeks(m);
+    // THE DATE IS BACK IN THE MIDDLE (2026-09-23), on the word pages
+    // too (bareMid still keeps their own line out of it): it gives its
+    // seat to the band's miniature THE NEW CRITIC as the big name goes
+    // under the band (src/band-mark.js).
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek">${bareMid || !mid ? '' : `<span>${escapeHtml(mid)}</span>`}</p>
+    <p class="band-deks band-dek">${mid && !bareMid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -1400,14 +1400,19 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
 // They go to the TOP OF THE FRONT PAGE: a bare #top where the reader is
 // already on it, so the page scrolls rather than reloads (the rows'
 // wrapper carries the id), and ./#top from a word page.
-function renderPageFoot(onHome = false) {
+// THE FOOT TAKES THE MARK when the movement over it does (onMark): the
+// reprint stands on the mark's colour; the colophon keeps its own
+// charcoal (2026-09-23: it took the mark for a night, then the page's
+// white for a morning), the copyright in its middle again where a 36
+// band of charcoal over it had carried it for a day.
+function renderPageFoot(onHome = false, onMark = false) {
+  const mk = onMark ? ' on-mark' : '';
   return `
-  <section class="reprint">
+  <section class="reprint${mk}">
     <div class="reprint-rule" aria-hidden="true"></div>
     <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
-  <div class="foot-field" aria-hidden="true"></div>
-  <div class="foot-seam"><span class="seam-date">Copyright The New Critic, Inc.</span></div>
+  <div class="foot-field${mk}" aria-hidden="true"></div>
   ${renderColophonBand()}`;
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
@@ -1424,10 +1429,10 @@ function renderPageFoot(onHome = false) {
 // — so the turn is made by emitting them the other way, not by
 // ordering them in CSS where the ranging would then be arguing with
 // the markup.
-function renderColophonBand() {
-  return `<nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
+function renderColophonBand(mk = '') {
+  return `<nav class="section-band section-band--colophon section-band--three${mk}" aria-label="Colophon">
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
-    <p class="band-deks band-dek"></p>
+    <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
 }
@@ -1510,9 +1515,15 @@ function renderBanner({ word, href, words, line, modifier, spacer = true, above,
   // closes the page): each its own link inside the one name box, so
   // the fitter sizes and tracks the pair to the measure as one word.
   const link = (w, h) => `<a href="${escapeHtml(h)}"${h.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(w)}</a>`;
+  // THE SECTION'S WORD IS A TITLE, NOT A LINK (2026-09-22): ESSAYS,
+  // POSTSCRIPT and CONTRA name what stands under them and go nowhere —
+  // the band's links and the margin's names still do. A heading, so it
+  // is still read as one; with no link fillNameBand seats no hit patch
+  // and the word does not answer the hand (style.css, THE ESSAYS STAND
+  // ON THE MARK).
   const name = words
     ? `<span class="banner-name banner-name--pair">${words.map((w) => link(w.word, w.href)).join(' ')}</span>`
-    : `<a class="banner-name" href="${escapeHtml(href)}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(word)}</a>`;
+    : `<span class="banner-name" role="heading" aria-level="2">${escapeHtml(word)}</span>`;
   // AN EMPTY WHITE BANNER STANDS ABOVE THE SECTION'S WORD — the same
   // box as the word's own banner, with nothing on it (the fitter
   // matches its height to the banner it opens for, fitBlankBanners) —
@@ -2538,6 +2549,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // paints the visible band as one gradient with hard stops, seated
   // off the banners themselves by rail-fix.js.
   const MOVEMENTS = ['latest', 'essays', 'postscript', 'contra'];
+  // THE ESSAYS STAND ON THE MARK (2026-09-22), AND THE REVIEWS: their
+  // movements carry .on-mark, and the sheet grounds each in the mark's
+  // colour from halfway up its own word's ink to halfway down the next
+  // word's — or, for the last movement, on to the page's foot, which
+  // takes the mark with it (renderPageFoot's onMark; style.css, THE
+  // ESSAYS STAND ON THE MARK). A class of its own rather than
+  // .m--essays, which the word pages give every movement after their
+  // first.
+  const ON_MARK = ['essays', 'contra'];
   let movement = 0;
   // EACH MOVEMENT IS A CONTAINER, opening on its SECTION BAND: the
   // band is sticky inside it, so it pins to the viewport's top while
@@ -2567,7 +2587,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m)}\n  ${headSeam()}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m)}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}">`;
     duoHtml += `${head}\n  <div class="movement-body">`; open = true;
   };
@@ -2614,7 +2634,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // (The word's field and the section's own band are struck: the
       // masthead's band holds through the whole site, and the word
       // scrolls under it in the flow, its rows 72 under its feet.)
-      duoHtml += `\n  <div class="movement m--${m}">\n  ${block}\n  <div class="movement-body">`;
+      duoHtml += `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n  ${block}\n  <div class="movement-body">`;
       open = true;
       return;
     }
@@ -2655,7 +2675,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // last review row straight to the reprint. STACK stays declared
   // against its return.)
   void STACK;
-  duoHtml += renderPageFoot(true);
+  duoHtml += renderPageFoot(true, ON_MARK.includes(MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)]));
 
   return `<!doctype html>
 <html lang="en">
@@ -2704,6 +2724,14 @@ ${renderImgFadeScript()}
 <nav class="dek-band dek-band--masthead" aria-label="Masthead line"></nav>
 
 <main id="main">
+
+  <!-- THE MARGINS TAKE THE ESSAYS' MARK: the two 72s painted in the
+       page from ESSAYS' ink middle to POSTSCRIPT's, over the window's
+       fixed margins (style.css, THE ESSAYS STAND ON THE MARK; seated
+       by seatMarkGutters). Ahead of the rows, never between two
+       movements, where it would part the pair .movement + .movement
+       pulls together. -->
+  <div class="mark-gutters" aria-hidden="true"></div>
 
   <div class="page-rows" id="top">
 ${duoHtml}
@@ -2778,8 +2806,11 @@ function renderFontGateScript() {
   // so turning the page over does not lose it.
   // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
   // when this was written, the blue #1182c2 for a day, the banana
-  // again since the 22nd. It must match --nc-mark in style.css.)
-  var YELLOW = '#FFE135';
+  // again on the 22nd, and #1184C4 from later that day. It must match
+  // --nc-mark in style.css. Written in lower case, the form hexOf
+  // returns, so a reader typing the default's own code is sent home
+  // rather than stored — the banana's capitals never compared equal.)
+  var YELLOW = '#1184c4';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -3025,6 +3056,7 @@ function renderFontGateScript() {
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
+      f.load('700 100px garamond-premier-pro'), // the corner box's price
       f.load('400 100px trajan-pro-3'),
       f.load('700 100px trajan-pro-3')
     ]).then(function () { return f.ready; }).then(resolve, resolve);
@@ -4147,7 +4179,6 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   const bodyHtml = `
   <div class="page-rows">
   ${renderSectionBand('latest', { mid, currentKey, bareMid: true })}
-  ${headSeam()}
   <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
   </div>
   ${renderMarginalia()}`;

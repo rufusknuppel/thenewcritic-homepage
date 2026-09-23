@@ -20,7 +20,11 @@
    sees no change.) */
 /* (…AND THE BANANA AGAIN, 2026-09-22: #FFE135 is the default once
    more; the blue stays a code the reader can type.) */
-:root{ --nc-mark: #FFE135; }
+/* (…AND A BLUE AGAIN THE SAME DAY: #1184C4, a shade off the first
+   blue. The charcoal still stands on it — 4.5 to 1 against the
+   white's 4.1 — which is what the head script's contrast rule picks
+   too.) */
+:root{ --nc-mark: #1184C4; }
 
 
 /* One carried face and one system one. Titles, display cuts and the
@@ -15331,8 +15335,10 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
      keeps down that side for the stacked section words and the social
      marks — so the panel stands inside the text's own measure rather
      than over the margin's letters. 36 off the foot as before. */
-  /* (and 72 further in again on the 22nd, with the content: 180) */
-  left: calc(36px + 72px + 72px + 36px);
+  /* (and 72 further in again on the 22nd, with the content: 180, then
+     36 more by hand: 216; the content back out to 72 the same night,
+     and the panel with it: 144, still 72 inside the content's edge) */
+  left: calc(36px + 72px + 36px);
   right: auto;
   bottom: 36px;
   /* Over everything the page draws, and under the skip link (100),
@@ -16511,6 +16517,27 @@ main.has-mega :is(.panel-col, .latest-matter) > .rb-in:is(*, .r.r.r.r.r.r.r.r.r.
 main.has-mega :is(.panel-col, .latest-matter) > :is(.card-title, .latest-title, .card-dek, .latest-dek).rb-x:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   transform: translateX(var(--rb-dx, 0px));
 }
+/* PREVIEW'S LINE IS AS WIDE AS PREVIEW (2026-09-22). The line under
+   the dek was a flex row the column's width with one button in it,
+   and the transform above carries the whole row to wherever the
+   fitter seats the button — so a Preview centred in a frame's foot
+   dragged six hundred pixels of empty row past the window's edge, the
+   document ran wider than the window, and anything that brought an
+   element into view (a focus, scrollIntoView) slid the page sideways
+   under the fixed margins. The row is its button's width now, and it
+   stands in the column where the button stood in the row — at the
+   start on a picture-left card, at the end on a picture-right one, in
+   the middle on a review (.cover-meta's own centring) — so the
+   button's seat before the transform, and every --rb-dx the fitter
+   writes against it, is what it was. */
+main.has-mega :is(.panel-col, .latest-matter) > .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-left :is(.latest-col, .panel-col--left) .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-left: 0; }
+main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, .panel-col--left) .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-right: 0; }
 
 
 main.has-mega :is(.panel-col, .latest-matter) > :is(.card-title, .latest-title).hl-rect:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
@@ -17713,8 +17740,9 @@ main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
    under the head band (60) and the names (40) and the mode words (80),
    over the page; their words turn white, and under the hand (or
    chosen) the mark's colour, taking no block, as the bands' words do.
-   And the content stands 72 in from them: every movement's .wrap
-   padded by 72 more each side. */
+   And the content stands on their inner edge: the gutter is the
+   strip's 72 and no more. (72 further in, each .wrap padded by 72
+   more a side, for an evening on the 22nd.) */
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   content: '';
@@ -17729,8 +17757,8 @@ main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ left: 0; }
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{ right: 0; }
 main.has-mega .wrap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  padding-left: 120px !important;
-  padding-right: 144px !important;
+  padding-left: 48px !important;
+  padding-right: 72px !important;
 }
 main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .latest-stack *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
@@ -17945,8 +17973,18 @@ main.has-mega .duo-half--mega.pic-right .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r
 main.has-mega .duo-half--mega .duo-panel .panel-col--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ flex: 0 0 calc(200% / 3 - 60px) !important; }
 main.has-mega .duo-half--mega.pic-left .duo-panel .card-preview-block:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: 24px !important; right: calc(100% / 3 + 68px) !important; }
 main.has-mega .duo-half--mega.pic-right .duo-panel .card-preview-block:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: calc(100% / 3 + 68px) !important; right: 24px !important; }
-main.has-mega .duo-half--mega.pic-left > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: calc(100% / 3 + 68px) !important; right: 24px !important; }
-main.has-mega .duo-half--mega.pic-right > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: 24px !important; right: calc(100% / 3 + 68px) !important; }
+main.has-mega .duo-half--mega.pic-left > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: calc(100% / 3 + 68px) !important; right: 24px !important; max-width: calc(200% / 3 - 68px) !important; }
+main.has-mega .duo-half--mega.pic-right > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: 24px !important; right: calc(100% / 3 + 68px) !important; max-width: calc(100% - 24px) !important; }
+/* (…and never past the card's own edge: the halo's base rule states
+   width: var(--hl-w), and a width beside a left wins over the right
+   stated here. fitTitleHalo run on its own after a preview shuts
+   (refitAfterClose) finds the title already carried over the
+   picture's edge, sees no gap beside it, and measures the block
+   across the whole card — 1296 at 1440 — which carried a picture-
+   left card's halo 420 past the window, and the document with it.
+   The cap is the room from the halo's own left to the card's right
+   edge; every width a full pass writes is well inside it, so no
+   seat at rest moves.) */
 
 /* ---------- THE TITLE COLUMN'S WORDS ARE BLACK IN EVERY MODE (2026-09-22) ---------- */
 main.has-mega .swap-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -18190,15 +18228,39 @@ main.has-mega .foot-seam > .seam-date:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
 main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ box-shadow: none !important; }
 main.has-mega .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ background: none !important; box-shadow: none !important; }
 
+/* ---------- THE COLOPHON CLOSES THE WINDOW (2026-09-22) ----------
+   The cards stand at fractional heights, so the page ends a fraction
+   of a pixel short of a whole one, the browser rounds the scroll
+   height up, and at the foot of the scroll that fraction of the
+   window's last row was the canvas — a white rule under the band.
+   The band's own ground, whatever colour it stands in, is hung down
+   over exactly that fraction (--foot-f, written by the fitter off the
+   band's measured foot: footGap, duo-panel-fit.js), so the page ends
+   on the window's last row. Below the band and nowhere else: its
+   words and their seats do not move. */
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: var(--foot-f, 0px);
+  background: inherit;
+  pointer-events: none;
+}
+
 
 /* ---------- THE MARGINS' WORDS STAND IN THE GUTTER'S MIDDLE (2026-09-22) ----------
    The strip and the 72 of air inside it read as one gutter now (white
    on the light page, charcoal on the dark, the page's own ground on
    both), and the section names and the mode words stand centred in
    it: 72 from the window's edge, where they stood centred in the
-   strip's 72. Carried, so no seat the fitter takes moves. */
-main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ translate: 36px 0; }
-main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ translate: -36px 0; }
+   strip's 72. Carried, so no seat the fitter takes moves.
+   (The air is gone again the same night — the gutter is the strip's
+   72 — so the words are carried nowhere: centred in the strip, 36
+   from the window's edge.) */
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ translate: none; }
+main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ translate: none; }
 
 
 /* ---------- PREVIEW'S ARROWS STAND AFTER THE WORD ON EVERY CARD (2026-09-22) ----------
@@ -18337,3 +18399,270 @@ main.has-mega .fit-still .swap-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 html.nc-wm-lit main.has-mega .marginalia .theme-toggle > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html.nc-wm-lit main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 html.nc-wm-lit main.has-mega .latest-stack *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ color: var(--k) !important; }
+
+
+/* ---------- THE ESSAYS STAND ON THE MARK (2026-09-22) ----------
+   The essays' movement is grounded in the mark's colour, from 72 over
+   ESSAYS' ink to 72 over POSTSCRIPT's (below), gutters and cards and
+   all; and the reviews' from halfway up CONTRA's to the page's foot,
+   the reprint and the colophon with them — the copyright's charcoal
+   band alone keeping its charcoal. A marked movement's body takes the
+   page's white AS the mark — --g and --nc-box, the two tokens a big
+   name turns for the whole page (THE BIG NAMES TURN THE PAGE) — so the
+   ground, the title columns and the body columns go together and the
+   frames keep their charcoal. The words' bands turn on the ink's
+   middle: ESSAYS and CONTRA the page's ground over it and the mark
+   under, POSTSCRIPT the other way about. The line is --ink-mid,
+   measured off the painted rows by fillNameBand (duo-panel-fit.js),
+   and set on the page's nearest whole pixel as --mk-line; 50% until a
+   pass has run, which is where the word's even 72s put it anyway. The side margins are fixed to the window and know nothing of
+   the page, so the mark is carried through them by .mark-gutters: two
+   72s painted in the page from the first line to the page's foot, cut
+   to the spans by a mask, over the margins (30) and under the section
+   names (40), the head band (60) and the mode words (80) — seated by
+   seatMarkGutters. (.on-mark is the front page's alone, build.js; the
+   word pages' movements are .m--essays too and keep their ground.) */
+main.has-mega .movement.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: var(--nc-mark) !important;
+}
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: var(--nc-mark);
+  --nc-box: var(--nc-mark);
+  background-color: var(--nc-mark) !important;
+}
+/* (a box, not a gradient: a box's edge rounds as the margins' and the
+   sheets' do, on the whole pixel the fitter puts the line on —
+   --mk-line, seatMarkGutters) */
+main.has-mega .movement.on-mark > .page-banner:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega .movement.on-mark + .movement > .page-banner:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--nc-mark);
+}
+/* THE MARK OPENS 72 OVER THE WORD (2026-09-23): a marked movement's
+   ground starts the page's 72 above its word's caps — the band's own
+   top, the word standing in its 72 of air — where it started on the
+   ink's middle; and the page's white comes back the same way, 72 above
+   the next word's caps (POSTSCRIPT's), where the mark had ended on its
+   middle. --mk-line is seated off the caps (--ink-top, MARK_OVER in
+   seatMarkGutters); the band's top until a pass has run. And the
+   movement at either turn stands 72 further down the page, so the
+   cards before it keep 72 of their own ground before the next one
+   opens — the page's white over ESSAYS and CONTRA, the mark over
+   POSTSCRIPT: the pull that draws every movement up onto the last
+   one's 72 of air (.movement + .movement, over the last one's
+   ::after) is 72 shorter here, and that air, the last movement's own
+   and in its own ground, is seen whole. */
+main.has-mega .movement.on-mark > .page-banner:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  top: var(--mk-line, 0px);
+  bottom: 0;
+}
+main.has-mega .movement + .movement.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .movement.on-mark + .movement:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-top: calc(72px - var(--band-h, 72px));
+}
+/* (and that air is the mark on a marked movement: its run-on paints
+   --g, which the movement turns in its body alone) */
+main.has-mega .movement.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  background-color: var(--nc-mark) !important;
+}
+/* (POSTSCRIPT's band paints no mark: the white opens on its own top,
+   where the marked movement over it ends, and the fraction of a pixel
+   the line stands off that edge painted a whole row, a step under the
+   margins' line) */
+main.has-mega .movement.on-mark + .movement > .page-banner:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: none;
+}
+/* the foot, under a marked last movement (renderPageFoot's onMark) —
+   the reprint and its field; the colophon keeps its band's white
+   (2026-09-23), the span ending on the copyright's charcoal over it */
+main.has-mega .page-rows > .on-mark:is(.reprint, .foot-field):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: var(--nc-mark);
+  --nc-box: var(--nc-mark);
+  background-color: var(--nc-mark) !important;
+}
+main.has-mega > .mark-gutters{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  z-index: 31;
+  pointer-events: none;
+  background-image: linear-gradient(var(--nc-mark), var(--nc-mark)), linear-gradient(var(--nc-mark), var(--nc-mark));
+  background-position: left top, right top;
+  background-size: 72px 100%, 72px 100%;
+  background-repeat: no-repeat;
+  -webkit-mask-image: var(--mk-mask, none);
+  mask-image: var(--mk-mask, none);
+}
+
+/* (The head band turned whole to the mark's colour while a span stood
+   under the date band, for a night: it keeps its white now, 2026-09-23,
+   whatever runs under it.) */
+
+/* THE MARK SHOWS THROUGH THE CORNER BOX. It stands still at the
+   window's foot while the page runs under it, and as a line comes up
+   under it the span's colour overtakes it from the line on and gives
+   it back at the line below — the box, which IS the mark, takes the
+   page's white. It carries a sheet the spans' height, cut to them by
+   the same mask as the margins and clipped to the box, under its
+   words; the scroll moves the sheet (seatMarkGutters says where:
+   --mk-at, --mk-h, --mk-mask), as a scroll timeline where there is
+   one — a transform on the compositor, so the sheet's edge cannot
+   trail the ground's on a fling — and on the scroll's own tick where
+   there is not (--mk-y). */
+html.has-mark-span .sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  overflow: clip;
+}
+html.has-mark-span .sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--mk-h, 0px);
+  background: var(--nc-mark);
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: var(--mk-mask, none);
+  mask-image: var(--mk-mask, none);
+  transform: translateY(var(--mk-y, -100000px));
+}
+html.has-mark-span .sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ background: #FFFFFF; }
+@supports (animation-timeline: scroll(root block)){
+  html.has-mark-span .sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+    animation: mark-sheet linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px var(--mk-run, 100000px);
+  }
+}
+/* A FIXED RUN, NOT THE PAGE'S. Over the page's own scroll length the
+   sheet would have to travel exactly that length, and the page's
+   length is fractional where scrollHeight is not: a third of a pixel
+   adrift by POSTSCRIPT. Over a stated 100000 of scroll it travels
+   100000, so it moves 1:1 with the scroll whatever the page measures,
+   and no page here runs that far.
+   (THE RUN ENDS WHERE THE BOX DOCKS, 2026-09-23: --mk-run is the scroll
+   at which the box's dock line reaches the window's floor and the box
+   starts up with the page — seatMarkGutters. The sheet travels the
+   same run over the same scroll, still 1:1, and holds after, going up
+   with the box; the 100000 stands where there is no dock.) */
+@keyframes mark-sheet{
+  from{ transform: translateY(var(--mk-at, -100000px)); }
+  to{ transform: translateY(calc(var(--mk-at, -100000px) - var(--mk-run, 100000px))); }
+}
+
+/* A WORD THE COLOUR OF ITS GROUND IS NO WORD. What wears the mark under
+   the hand — the margin's section names and mode words, the
+   colophon's links — and the chosen mode word, which wears it at
+   rest, take the page's white instead while a span stands under them
+   (.over-mark, set word by word off the scroll, markWords). --page-g
+   is the page's white read at the root, where the essays have not
+   turned it. */
+html{ --page-g: var(--g); }
+main.has-mega .over-mark:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .over-mark:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html:not([data-theme="dark"]) main.has-mega .marginalia .theme-toggle > .theme-toggle-light.over-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .marginalia .theme-toggle > .theme-toggle-dark.over-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--page-g) !important;
+}
+
+/* THE SECTION'S WORD DOES NOT ANSWER THE HAND. ESSAYS, POSTSCRIPT and
+   CONTRA are headings now, not links (renderBanner, build.js), and
+   keep their ink whatever is over them — the banner, the word, or a
+   cue. */
+main.has-mega .page-banner:is(:hover, :focus-within) span.banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-banner span.banner-name:is(:hover, :focus, :focus-within, .is-cued):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+
+/* ---------- THE CORNER BOX IS ALWAYS IN BLACK, ITS PRICE BOLD (2026-09-23) ----------
+   Every word in the box — SUBSCRIBE, the message, the list, the X —
+   stands in the charcoal ink whatever the box stands on, the mark or
+   the white, and under the hand as at rest (SUBSCRIBE no longer turns
+   white). And $30 a year is set in the Garamond's own bold, off the
+   kit (gated with the other faces, build.js). */
+.sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.sub-box *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.sub-box *:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #121417 !important;
+}
+.sub-box .sub-box-body .sub-box-price:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-weight: 700 !important;
+}
+.sub-box .sub-box-x:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none !important;
+}
+
+
+/* ---------- THE HEAD BAND AND THE COLOPHON ARE CHARCOAL, AND CARRY THE DATE AND THE COPYRIGHT (2026-09-23) ----------
+   The two 36s of charcoal — under the head band with the day's date,
+   over the colophon with the copyright — are struck (build.js), and
+   the date stands in the head band's middle again, the copyright in
+   the colophon's, each in the Letter Gothic caps the strips had. (The
+   .head-seam and .foot-seam rules above are the struck strips'; no
+   element answers them now.)
+   The two bands take the charcoal, in both modes, their words white:
+   the band tokens are restated on the two bands alone, so the margins
+   and the archive's column head, which read the same tokens, keep the
+   page's white. The canvas past the head and the foot follows the
+   bands, as it has. A hand on a big name turns the page but not the
+   two bands: they, and the canvas past them, keep the charcoal.
+   On the front page the date gives its seat to the band's miniature
+   THE NEW CRITIC as the big name goes under the band (src/band-mark.js,
+   which finds the date again): the date out over the first quarter of
+   the name's ink passing under the band, the miniature in over the
+   second, whole by the time half the name has gone. */
+main.has-mega .page-rows > .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --band-ground: #121417;
+  --band-text: #FFFFFF;
+}
+html.has-mega.page-shown:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ background: #121417; }
+main.has-mega .page-rows > .section-band > .band-dek > :is(.band-date, .band-copyright):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--byline-face) !important;
+  font-size: 13px !important;
+  font-weight: var(--byline-weight, 700) !important;
+  font-style: normal !important;
+  letter-spacing: -0.02em !important;
+  text-transform: var(--byline-case, uppercase) !important;
+  line-height: 1 !important;
+  color: var(--band-text) !important;
+  background: none !important;
+  white-space: nowrap;
+  pointer-events: none;
+}
+main.has-mega .page-rows > .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--band-text);
+}
+/* (…and the page's two side margins ride with the page, not the
+   window. Fixed, they stayed where they were when the rubber band
+   pulled the page past its head or its foot, and stood as two strips
+   of the page's white on either side of the charcoal it opened on.
+   Stated on <main>'s own height they cover every row they covered —
+   the same 72 each side, at the same rank — and go with the page.) */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+/* ---------- THE NAMES REACH 36 FROM THE SIDES (2026-09-23) ----------
+   Both THE NEW CRITICs are fitted 36 from the window's edges now
+   (WORDMARK_SIDE, duo-panel-fit.js), halfway into the margins, so they
+   stand over the margins' strips (30). The reprint is ranked over them
+   already (70); the masthead is in the first movement, whose own
+   stacking level is under them, so that movement is lifted — over the
+   strips and the mark's gutters (31), under the section names (40) and
+   the head band (60). */
+main.has-mega .page-rows > .movement.m--latest:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 35;
+}

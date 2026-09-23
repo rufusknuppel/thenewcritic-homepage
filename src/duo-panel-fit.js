@@ -3307,8 +3307,192 @@
       b.classList.toggle('is-under-band', overBand);
     });
   }
+  // THE MARGINS TAKE THE MARK (style.css, THE ESSAYS STAND ON THE MARK).
+  // The window's side margins are fixed and cannot know where the marked
+  // sections are, so the mark is carried through them by a box in the
+  // page. A SPAN runs from halfway up a marked movement's word to halfway
+  // down the next movement's — or, where no movement follows, to the
+  // page's foot, which takes the mark with it: the essays, ESSAYS to
+  // POSTSCRIPT, and the reviews, CONTRA to the colophon. The box runs
+  // from the first span's top to the last one's foot, cut to the spans
+  // by a mask (--mk-mask); every seat is the band's own top and the
+  // --ink-mid fillNameBand stated on it. A band out of layout (the
+  // first stage of a fresh visit) leaves everything where it was.
+  // Written only where it has moved.
+  // THE SAME SPANS SHOW THROUGH THE CORNER BOX. It stands still in the
+  // window while the page runs under it, so it carries a sheet of its
+  // own (style.css, THE MARK SHOWS THROUGH THE CORNER BOX), cut by the
+  // same mask, that the SCROLL moves — a scroll timeline, on the
+  // compositor, so the sheet's edge and the ground's cannot part on a
+  // fling. It is told where the first span stands against the place it
+  // is pinned (--mk-at) and how far the spans run (--mk-h); the sheet
+  // travels 1:1 with the scroll. (Where there is no scroll timeline the
+  // scroll's own tick moves it, rideSheets, below.)
+  var MARK_HOSTS = '.sub-box';
+  // (The head band turned whole to the mark's colour while a span stood
+  // under the date band, for a night; it keeps its white now, 2026-09-23.)
+  // AND THE WORDS THAT WEAR THE MARK UNDER THE HAND — the margin's
+  // section names and mode words, the colophon's links — take the
+  // page's white instead while a span is under them (.over-mark). The
+  // head band's links go with the band.
+  var MARK_WORDS = '.marginalia .theme-toggle > span:not(.theme-toggle-sep), .latest-stack,'
+    + ' .page-rows > .section-band--colophon a';
+  var markSpans = [];
+  var markSeats = [];
+  var sheetsRide = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll(root block)'));
+  function setIf(el, prop, v) { if (el.style.getPropertyValue(prop) !== v) el.style.setProperty(prop, v); }
+  // THE MARK OPENS 72 OVER THE WORD (2026-09-23): a marked movement's
+  // ground starts the page's 72 above its word's caps — the band's own
+  // top edge, the word standing in its 72 — rather than at the ink's
+  // middle; and the page's white comes back the same way, 72 above the
+  // next word's caps. (Each movement at a turn stands 72 further down
+  // the page for it: style.css, THE ESSAYS STAND ON THE MARK.)
+  var MARK_OVER = 72;
+  function inkTopLine(band, r) {
+    var t = parseFloat(band.style.getPropertyValue('--ink-top'));
+    return isNaN(t) ? r.top : r.top + t - MARK_OVER;
+  }
+  function seatMarkGutters() {
+    var g = document.querySelector('main > .mark-gutters');
+    var marked = document.querySelectorAll('.page-rows > .movement.on-mark');
+    if (!g || !marked.length) return;
+    var main = g.parentElement;
+    var mr = main.getBoundingClientRect();
+    var sy = window.scrollY;
+    // THE LINES STAND ON WHOLE PIXELS OF THE PAGE. Four painters draw
+    // each one — the word's band, the margins, the head band's sheet and
+    // the box's — and a line at a fraction was rounded four ways: at 1280
+    // the band's edge fell a row above the margins' and the box blended
+    // across a third. On a whole pixel every edge lands on the same row
+    // at any scroll, and the ink's middle moves by half a pixel at most.
+    // The band is told its own line again (--mk-line), since its box's
+    // top is wherever the page put it.
+    var spans = [], lines = [];
+    for (var i = 0; i < marked.length; i++) {
+      var from = marked[i].querySelector(':scope > .page-banner');
+      if (!from) return;
+      var fr = from.getBoundingClientRect();
+      if (!fr.height) return;
+      var next = marked[i].nextElementSibling;
+      var to = next && next.classList.contains('movement') ? next.querySelector(':scope > .page-banner') : null;
+      var a = Math.round(inkTopLine(from, fr) + sy), b;
+      lines.push({ band: from, at: a - (fr.top + sy) });
+      if (to) {
+        var tr = to.getBoundingClientRect();
+        if (!tr.height) return;
+        b = Math.round(inkTopLine(to, tr) + sy);
+        lines.push({ band: to, at: b - (tr.top + sy) });
+      } else {
+        // a marked last movement runs on through the reprint and ends
+        // on the copyright's charcoal band: the colophon under it keeps
+        // its own white (2026-09-23), so the margins beside it, the
+        // corner box over it and its links under the hand are off the
+        // mark there. Main's foot where the page has no seam.
+        var seamEnd = main.querySelector('.page-rows > .foot-seam, .page-rows > .section-band--colophon');
+        b = seamEnd ? Math.round(seamEnd.getBoundingClientRect().top + sy) : Math.ceil(mr.bottom + sy);
+      }
+      spans.push({ a: a, b: b });
+    }
+    markSpans = spans;
+    var top = spans[0].a, foot = spans[spans.length - 1].b;
+    // One mask, from the box's own top: shown over each span, clear
+    // between them.
+    var stops = [];
+    spans.forEach(function (sp, k) {
+      var a = (sp.a - top).toFixed(2) + 'px', b = (sp.b - top).toFixed(2) + 'px';
+      if (k) stops.push('transparent ' + (spans[k - 1].b - top).toFixed(2) + 'px ' + a);
+      stops.push('#000 ' + a + ' ' + b);
+    });
+    var mask = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
+    var span = Math.max(0, foot - top).toFixed(2) + 'px';
+    // Every read before any write: where each host is pinned — a sticky
+    // band by its top, the docked box by its foot off the window's floor.
+    var vh = document.documentElement.clientHeight;
+    // AND HOW FAR IT RIDES THE WINDOW (2026-09-23): the docked box is
+    // pinned only until its dock line — the sticky line set in the flow
+    // over the foot's seam (subscribe-box.js) — comes up to the window's
+    // floor; from there it goes up with the page, and a sheet still
+    // moving 1:1 with the scroll ran out of it by every pixel scrolled
+    // after, the white stopping partway down the box. So the sheet
+    // travels with the scroll for that run (--mk-run) and holds after.
+    markSeats = [].map.call(document.querySelectorAll(MARK_HOSTS), function (h) {
+      var cs = getComputedStyle(h);
+      var pin = cs.position === 'sticky' ? parseFloat(cs.top) : vh - parseFloat(cs.bottom) - h.getBoundingClientRect().height;
+      var dock = h.parentElement && h.parentElement.classList.contains('sub-dock') ? h.parentElement : null;
+      var line = dock && dock.nextElementSibling;
+      var run = line ? Math.max(1, line.getBoundingClientRect().top + sy - vh) : 100000;
+      return { h: h, at: top - (pin || 0), run: run };
+    });
+    markWords();
+    lines.forEach(function (l) { setIf(l.band, '--mk-line', l.at.toFixed(2) + 'px'); });
+    var mainTop = mr.top + sy;
+    setIf(g, 'top', (top - mainTop).toFixed(2) + 'px');
+    setIf(g, 'height', span);
+    setIf(g, '--mk-mask', mask);
+    markSeats.forEach(function (st) {
+      setIf(st.h, '--mk-at', st.at.toFixed(2) + 'px');
+      setIf(st.h, '--mk-run', st.run.toFixed(2) + 'px');
+      setIf(st.h, '--mk-h', span);
+      setIf(st.h, '--mk-mask', mask);
+    });
+    var de = document.documentElement;
+    if (!de.classList.contains('has-mark-span')) de.classList.add('has-mark-span');
+    if (!sheetsRide) rideSheets();
+  }
+  function rideSheets() {
+    var sy = window.scrollY;
+    markSeats.forEach(function (st) { setIf(st.h, '--mk-y', (st.at - Math.min(sy, st.run)).toFixed(2) + 'px'); });
+  }
+  // By each word's middle, in the page's coordinates: in a span or not.
+  // Reads first, and a class moved only where it changes.
+  function markWords() {
+    if (!markSpans.length) return;
+    var sy = window.scrollY;
+    var words = document.querySelectorAll(MARK_WORDS);
+    var on = [].map.call(words, function (w) {
+      var r = w.getBoundingClientRect();
+      if (!r.height) return false;
+      var mid = (r.top + r.bottom) / 2 + sy;
+      return markSpans.some(function (sp) { return mid >= sp.a && mid <= sp.b; });
+    });
+    [].forEach.call(words, function (w, i) {
+      if (w.classList.contains('over-mark') !== on[i]) w.classList.toggle('over-mark', on[i]);
+    });
+  }
+  // THE PAGE ENDS ON A WHOLE PIXEL (2026-09-22). The cards stand at
+  // fractional heights, so the page ended a fraction short of one —
+  // 0.45 at 1440, 0.87 at 1280 — the browser rounds the scroll height
+  // up, and at the foot of the scroll the window's last row was the
+  // canvas's white under the colophon. The colophon's own ground is
+  // hung down over the fraction (its ::after, style.css, THE COLOPHON
+  // CLOSES THE WINDOW), so the page ends on the row the window does and
+  // nothing in the band moves. Read with the gutters' reads, written
+  // after their writes: neither forces the other a style pass.
+  function footGap() {
+    var col = document.querySelector('.page-rows > .section-band--colophon');
+    if (!col) return null;
+    var r = col.getBoundingClientRect();
+    if (!r.height) return null;
+    var bot = r.bottom + window.scrollY;
+    // (in 1024ths, and never over: a hair past the whole pixel and the
+    //  scroll height rounds up to the next one, opening the rule again)
+    var f = Math.floor((Math.ceil(bot - 1 / 1024) - bot) * 1024) / 1024;
+    return { col: col, f: Math.max(0, f) };
+  }
+  function seatFootGap(g) { if (g) setIf(g.col, '--foot-f', g.f.toFixed(10) + 'px'); }
+  // And whenever the page's height moves between passes — a late face,
+  // the second stage bringing the rest of the page back — or the box's
+  // does, its lines re-wrapped or its faces landed. (The foot rides the
+  // same watch, on the word pages too, which have no gutters.)
+  if (window.ResizeObserver && document.querySelector('main > .mark-gutters, .page-rows > .section-band--colophon')) {
+    var markRO = new ResizeObserver(function () { var foot = footGap(); seatMarkGutters(); seatFootGap(foot); });
+    markRO.observe(document.body);
+    var subBox = document.querySelector('.sub-box');
+    if (subBox) markRO.observe(subBox);
+  }
   function fitGroundStops() {
     markBandEdges();
+    seatMarkGutters();
     var ground = document.querySelector('main:has(.card--mega)');
     if (!ground) return;
     var top = ground.getBoundingClientRect().top;
@@ -3346,7 +3530,8 @@
     // after it: the two thresholds they change state at have to land on
     // the frame the page crosses them, or the change shows.
     pinStacks();
-    requestAnimationFrame(function () { stopsQueued = false; markBandEdges(); fitPickup(); });
+    if (!sheetsRide) rideSheets();
+    requestAnimationFrame(function () { stopsQueued = false; markWords(); markBandEdges(); fitPickup(); });
   }, { passive: true });
   // THE PAINTED INK OF A LINE, top to bottom — not the cap-to-baseline
   // span every other seat on the page uses. Garamond's ascenders (the
@@ -3606,7 +3791,7 @@
   // THE WORDMARKS STAND ON THE CONTENT'S LINE (2026-09-22): the page's
   // 72 of charcoal margin and the 72 of air inside it — the masthead's
   // and the reprint's ink from 144 to 144.
-  var WORDMARK_SIDE = 72; // (144 for an hour on the 22nd, on the content's line; back to the page's 72)
+  var WORDMARK_SIDE = 36; // (144 for an hour on the 22nd, on the content's line; the page's 72 after; 36 from the 23rd, halfway into the margins)
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
@@ -3722,6 +3907,14 @@
     var fr2 = rg2.getBoundingClientRect();
     var baseline2 = fr2.top + (fr2.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent;
     var inkBottom = baseline2 + inkBelow;
+    // THE INK'S MIDDLE, from the band's top edge: the line the essays'
+    // ground turns on, in ESSAYS and again in POSTSCRIPT (style.css,
+    // THE ESSAYS STAND ON THE MARK). Off the same painted rows as the
+    // seat, so it is the ink's middle and not the line box's.
+    wm.style.setProperty('--ink-mid', ((baseline2 - inkAbove + inkBottom) / 2 - wb.top).toFixed(2) + 'px');
+    // AND ITS TOP, the caps' painted edge: a marked movement's ground
+    // opens MARK_OVER above it (seatMarkGutters).
+    wm.style.setProperty('--ink-top', (baseline2 - inkAbove - wb.top).toFixed(2) + 'px');
     // THE BAND CLOSES 48 UNDER THE FEET, as it opens 48 over the caps.
     wm.style.height = Math.round(Math.max(0, inkBottom - wb.top + AIR_B)) + 'px';
     seatHit(name, wb.top + AIR, inkBottom);
@@ -6488,7 +6681,15 @@
         else if (B.b > pr.top && B.b < pr.bottom) { V.t = B.b + W; side = 't'; }
       } else if (B.l > pr.left && B.l < pr.right) { V.r = B.l - W; side = 'r'; }
       else if (B.r > pr.left && B.r < pr.right) { V.l = B.r + W; side = 'l'; }
-      var pd = function (k) { return k === side ? SWAP_PAD : SWAP_OPEN; };
+      // THE INK STANDS AS FAR FROM THE FRAME AS FROM THE FAR EDGE
+      // (2026-09-22): the side across from the frame keeps SWAP_PAD too
+      // — the card's edge, on the page's content line — so the centred
+      // words have the same air on either side of their ink. (It was
+      // open: a hero's title stood 63 off its frame and 27 off the
+      // edge, a paired postscript's ran to the edge itself, and a
+      // review's words sat 32 nearer the cell's foot than its frame.)
+      var FAR = { l: 'r', r: 'l', t: 'b', b: 't' };
+      var pd = function (k) { return (k === side || k === FAR[side]) ? SWAP_PAD : SWAP_OPEN; };
       // THE COLUMN STANDS CENTRED BETWEEN TWO FRAMES (2026-09-22): where
       // another card's frame stands across the column's open side, in
       // the same band of the page (a postscript beside a review), the
