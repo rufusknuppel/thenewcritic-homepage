@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=2f95950a">
+<link rel="stylesheet" href="style.css?v=0461f9d0">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4794,7 +4794,7 @@
         body.className = 'swap-body';
         var bt = document.createElement('span');
         bt.className = 'swap-body-text';
-        bt.innerHTML = '<span class="swap-body-ink">' + paras.join('<br><br>') + '</span>';
+        bt.innerHTML = '<div class="swap-body-ink">' + paras.map(function (pp) { return '<p class="swap-p">' + pp + '</p>'; }).join('') + '</div>';
         body.appendChild(bt);
         card.appendChild(body);
       }
@@ -4804,6 +4804,96 @@
         img.addEventListener('load', function () { swapImg(card, img); });
       }
     });
+  }
+  function linesOf(el, box, cw, gap) {
+    var g = document.createRange(); g.selectNodeContents(el);
+    var seen = {}, out = [];
+    [].forEach.call(g.getClientRects(), function (r) {
+      if (!r.width) return;
+      var col = Math.floor((r.left - box.left + 1) / (cw + gap)), key = col + ':' + Math.round(r.top);
+      if (!seen[key]) { seen[key] = 1; out.push({ col: col, top: r.top }); }
+    });
+    return out;
+  }
+  function mendColumnBreak(bt) {
+    var box = bt.getBoundingClientRect(), cs = getComputedStyle(bt);
+    var gap = parseFloat(cs.columnGap) || 0, cw = (box.width - gap) / 2;
+    var ps = bt.querySelectorAll('.swap-p');
+    for (var i = 0; i < ps.length; i++) {
+      var ls = linesOf(ps[i], box, cw, gap);
+      var a = ls.filter(function (l) { return l.col === 0; }).length, b = ls.filter(function (l) { return l.col === 1; }).length;
+      if (!a || !b) continue;
+      if (a >= 2 && b >= 2) return;
+      if (b === 1 && a >= 3) {
+        var lastTop = Math.max.apply(null, ls.filter(function (l) { return l.col === 0; }).map(function (l) { return l.top; }));
+        var tw = document.createTreeWalker(ps[i], NodeFilter.SHOW_TEXT), g = document.createRange(), at = null;
+        for (var n = tw.nextNode(); n && !at; n = tw.nextNode()) {
+          var re = /\S+/g, m;
+          while ((m = re.exec(n.nodeValue))) {
+            g.setStart(n, m.index); g.setEnd(n, m.index + m[0].length);
+            var r0 = g.getClientRects()[0];
+            if (r0 && Math.abs(r0.top - lastTop) < 1 && Math.floor((r0.left - box.left + 1) / (cw + gap)) === 0) { at = { n: n, o: m.index }; break; }
+          }
+        }
+        if (at) {
+          g.setStart(at.n, at.o); g.setEnd(ps[i], ps[i].childNodes.length);
+          var rest = document.createElement('p');
+          rest.className = 'swap-p';
+          rest.appendChild(g.extractContents());
+          ps[i].classList.add('swap-p--cut');
+          ps[i].parentNode.insertBefore(rest, ps[i].nextSibling);
+          return;
+        }
+      }
+      ps[i].style.breakBefore = 'column';
+      return;
+    }
+  }
+  function sealPreview(bt, cap) {
+    var box = bt.getBoundingClientRect();
+    var maxB = cap != null ? box.top + cap + 0.5 : Infinity, maxR = box.right + 0.5;
+    var words = [];
+    var tw = document.createTreeWalker(bt, NodeFilter.SHOW_TEXT);
+    for (var n = tw.nextNode(); n; n = tw.nextNode()) {
+      var re = /\S+/g, m;
+      while ((m = re.exec(n.nodeValue))) words.push({ n: n, s: m.index, e: m.index + m[0].length });
+    }
+    if (!words.length) return;
+    var rg = document.createRange();
+    var shows = function (w, s, e) {
+      rg.setStart(w.n, s); rg.setEnd(w.n, e);
+      var rs = rg.getClientRects(), r = rs[rs.length - 1];
+      return !!r && r.bottom <= maxB && r.right <= maxR;
+    };
+    var k = words.length - 1;
+    if (!shows(words[k], words[k].s, words[k].e)) {
+      var lo = -1, hi = k;
+      while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (shows(words[mid], words[mid].s, words[mid].e)) lo = mid; else hi = mid; }
+      k = lo;
+    }
+    if (k < 0) return;
+    var pk = words[k].n.parentNode && words[k].n.parentNode.closest ? words[k].n.parentNode.closest('.swap-p') : null;
+    if (pk && pk.previousElementSibling && k < words.length - 1) {
+      var bx0 = bt.getBoundingClientRect(), cs0 = getComputedStyle(bt);
+      var n0 = cs0.columnCount === 'auto' ? 1 : (+cs0.columnCount || 1), gap0 = parseFloat(cs0.columnGap) || 0;
+      rg.setStart(pk, 0); rg.setEnd(words[k].n, words[k].e);
+      var tops = {};
+      [].forEach.call(rg.getClientRects(), function (r) { if (r.width) tops[Math.floor((r.left - bx0.left + 1) / ((bx0.width - gap0 * (n0 - 1)) / n0 + gap0)) + ':' + Math.round(r.top)] = 1; });
+      if (Object.keys(tops).length === 1) {
+        while (k >= 0 && pk.contains(words[k].n)) k--;
+      }
+    }
+    for (; k >= 0; k--) {
+      var w = words[k];
+      rg.setStart(w.n, w.e); rg.setEnd(bt, bt.childNodes.length);
+      rg.deleteContents();
+      var head = w.n.nodeValue.slice(0, w.e);
+      if (/\u2026\s*$/.test(head) && k === words.length - 1) { w.n.nodeValue = head; break; }
+      w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
+      var end = w.n.nodeValue.length;
+      if (end > 0 && shows(w, end - 1, end)) break;
+      w.n.nodeValue = head.slice(0, w.s);
+    }
   }
   function swapTokens(text) {
     var out = [];
@@ -4996,6 +5086,8 @@
             var rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - pdkH + 0.5) / j.blh));
             if (j.cols2) {
               bt.style.removeProperty('-webkit-line-clamp');
+              if (bt.__src == null) bt.__src = bt.innerHTML;
+              else if (bt.innerHTML !== bt.__src) bt.innerHTML = bt.__src;
               var one = j.ncol === 1;
               if (one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
               bt.style.columnGap = SWAP_PAD + 'px';
@@ -5010,6 +5102,8 @@
                 bt.style.height = cap.toFixed(2) + 'px';
                 bt.style.maxHeight = cap.toFixed(2) + 'px';
               }
+              if (!one) mendColumnBreak(bt);
+              sealPreview(bt, natural > cap + 0.5 ? cap : null);
               bt.style.transform = 'none';
               var bb = j.body.getBoundingClientRect(), tb = bt.getBoundingClientRect();
               var rgT = document.createRange(); rgT.selectNodeContents(bt);
@@ -6525,7 +6619,7 @@
     var el = document.createElement('div');
     el.className = 'essay-acts';
     el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">Read Now' + READ + '</a>'
-      + '<span class="essay-act-sep" aria-hidden="true">|</span>'
+      + '<span class="essay-act-sep" aria-hidden="true">\u00B7</span>'
       + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
     el.querySelector('.essay-act--peek').addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();

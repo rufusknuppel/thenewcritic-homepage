@@ -7131,7 +7131,11 @@
         body.className = 'swap-body';
         var bt = document.createElement('span');
         bt.className = 'swap-body-text';
-        bt.innerHTML = '<span class="swap-body-ink">' + paras.join('<br><br>') + '</span>';
+        // (each paragraph a block, a line's air after it, 2026-09-24: the
+        // air is dropped where a column breaks, so no column opens on an
+        // empty line, and a paragraph never leaves one line alone at a
+        // column's foot or head — style.css, THE PREVIEW'S COLUMNS)
+        bt.innerHTML = '<div class="swap-body-ink">' + paras.map(function (pp) { return '<p class="swap-p">' + pp + '</p>'; }).join('') + '</div>';
         body.appendChild(bt);
         card.appendChild(body);
       }
@@ -7149,6 +7153,117 @@
   // SWAP_LINES balanced lines (broken only between words, or after a
   // word's own hyphen), measured on the canvas so the search lays
   // nothing out. The dek keeps the face and the size the box gave it.
+  // THE PREVIEW ENDS ON ITS ELLIPSIS (2026-09-24). Its text ran on past
+  // the columns and was cut by the box, on whatever line fell last, with
+  // no … unless the excerpt happened to close on one. The last word the
+  // reader can see is found (its last line box inside the columns — the
+  // overflow runs on in columns off to the right, or under a single
+  // column's foot, so what shows is a prefix of the text), everything
+  // after it is struck, and the … is joined on; backed off a word at a
+  // time if the … itself would fall out of sight. A preview that fits
+  // whole ends on one too: it is an excerpt. (The paragraphs keep their
+  // orphans and widows, so what shows never ends on a paragraph's lone
+  // first line.)
+  // NO LONE LINE AT THE COLUMNS' BREAK (2026-09-24). The paragraphs ask
+  // for two lines either side of a break (orphans, widows), but a short
+  // one cannot give both — three lines, two and one — and the browser
+  // then lets its last line stand alone at the head of the second
+  // column. Read where the one paragraph that straddles the break
+  // stands: a lone line either side and it is carried over whole, or,
+  // long enough, cut where two of its lines go over with its end.
+  function linesOf(el, box, cw, gap) {
+    var g = document.createRange(); g.selectNodeContents(el);
+    var seen = {}, out = [];
+    [].forEach.call(g.getClientRects(), function (r) {
+      if (!r.width) return;
+      var col = Math.floor((r.left - box.left + 1) / (cw + gap)), key = col + ':' + Math.round(r.top);
+      if (!seen[key]) { seen[key] = 1; out.push({ col: col, top: r.top }); }
+    });
+    return out;
+  }
+  function mendColumnBreak(bt) {
+    var box = bt.getBoundingClientRect(), cs = getComputedStyle(bt);
+    var gap = parseFloat(cs.columnGap) || 0, cw = (box.width - gap) / 2;
+    var ps = bt.querySelectorAll('.swap-p');
+    for (var i = 0; i < ps.length; i++) {
+      var ls = linesOf(ps[i], box, cw, gap);
+      var a = ls.filter(function (l) { return l.col === 0; }).length, b = ls.filter(function (l) { return l.col === 1; }).length;
+      if (!a || !b) continue;
+      if (a >= 2 && b >= 2) return;
+      if (b === 1 && a >= 3) {
+        // cut before the first word that opens the column's last line
+        var lastTop = Math.max.apply(null, ls.filter(function (l) { return l.col === 0; }).map(function (l) { return l.top; }));
+        var tw = document.createTreeWalker(ps[i], NodeFilter.SHOW_TEXT), g = document.createRange(), at = null;
+        for (var n = tw.nextNode(); n && !at; n = tw.nextNode()) {
+          var re = /\S+/g, m;
+          while ((m = re.exec(n.nodeValue))) {
+            g.setStart(n, m.index); g.setEnd(n, m.index + m[0].length);
+            var r0 = g.getClientRects()[0];
+            if (r0 && Math.abs(r0.top - lastTop) < 1 && Math.floor((r0.left - box.left + 1) / (cw + gap)) === 0) { at = { n: n, o: m.index }; break; }
+          }
+        }
+        if (at) {
+          g.setStart(at.n, at.o); g.setEnd(ps[i], ps[i].childNodes.length);
+          var rest = document.createElement('p');
+          rest.className = 'swap-p';
+          rest.appendChild(g.extractContents());
+          ps[i].classList.add('swap-p--cut');
+          ps[i].parentNode.insertBefore(rest, ps[i].nextSibling);
+          return;
+        }
+      }
+      ps[i].style.breakBefore = 'column';
+      return;
+    }
+  }
+  function sealPreview(bt, cap) {
+    var box = bt.getBoundingClientRect();
+    var maxB = cap != null ? box.top + cap + 0.5 : Infinity, maxR = box.right + 0.5;
+    var words = [];
+    var tw = document.createTreeWalker(bt, NodeFilter.SHOW_TEXT);
+    for (var n = tw.nextNode(); n; n = tw.nextNode()) {
+      var re = /\S+/g, m;
+      while ((m = re.exec(n.nodeValue))) words.push({ n: n, s: m.index, e: m.index + m[0].length });
+    }
+    if (!words.length) return;
+    var rg = document.createRange();
+    var shows = function (w, s, e) {
+      rg.setStart(w.n, s); rg.setEnd(w.n, e);
+      var rs = rg.getClientRects(), r = rs[rs.length - 1];
+      return !!r && r.bottom <= maxB && r.right <= maxR;
+    };
+    var k = words.length - 1;
+    if (!shows(words[k], words[k].s, words[k].e)) {
+      var lo = -1, hi = k;
+      while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (shows(words[mid], words[mid].s, words[mid].e)) lo = mid; else hi = mid; }
+      k = lo;
+    }
+    if (k < 0) return;
+    // (and never on a paragraph's lone first line, while one stands
+    // before it: the … closes the paragraph before instead)
+    var pk = words[k].n.parentNode && words[k].n.parentNode.closest ? words[k].n.parentNode.closest('.swap-p') : null;
+    if (pk && pk.previousElementSibling && k < words.length - 1) {
+      var bx0 = bt.getBoundingClientRect(), cs0 = getComputedStyle(bt);
+      var n0 = cs0.columnCount === 'auto' ? 1 : (+cs0.columnCount || 1), gap0 = parseFloat(cs0.columnGap) || 0;
+      rg.setStart(pk, 0); rg.setEnd(words[k].n, words[k].e);
+      var tops = {};
+      [].forEach.call(rg.getClientRects(), function (r) { if (r.width) tops[Math.floor((r.left - bx0.left + 1) / ((bx0.width - gap0 * (n0 - 1)) / n0 + gap0)) + ':' + Math.round(r.top)] = 1; });
+      if (Object.keys(tops).length === 1) {
+        while (k >= 0 && pk.contains(words[k].n)) k--;
+      }
+    }
+    for (; k >= 0; k--) {
+      var w = words[k];
+      rg.setStart(w.n, w.e); rg.setEnd(bt, bt.childNodes.length);
+      rg.deleteContents();
+      var head = w.n.nodeValue.slice(0, w.e);
+      if (/\u2026\s*$/.test(head) && k === words.length - 1) { w.n.nodeValue = head; break; }
+      w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
+      var end = w.n.nodeValue.length;
+      if (end > 0 && shows(w, end - 1, end)) break;
+      w.n.nodeValue = head.slice(0, w.s);
+    }
+  }
   function swapTokens(text) {
     var out = [];
     text.split(/\s+/).forEach(function (w) {
@@ -7411,6 +7526,9 @@
               // its own height: either way the block stands centred in
               // the picture, top to bottom, the body's flex centring it)
               bt.style.removeProperty('-webkit-line-clamp');
+              // (the text as it was built, whatever the last pass cut)
+              if (bt.__src == null) bt.__src = bt.innerHTML;
+              else if (bt.innerHTML !== bt.__src) bt.innerHTML = bt.__src;
               var one = j.ncol === 1;
               // (one column is no multicol at all: a multicol of one cut
               // to a height runs its overflow on in columns to the side)
@@ -7427,6 +7545,8 @@
                 bt.style.height = cap.toFixed(2) + 'px';
                 bt.style.maxHeight = cap.toFixed(2) + 'px';
               }
+              if (!one) mendColumnBreak(bt);
+              sealPreview(bt, natural > cap + 0.5 ? cap : null);
               // (and centred by what it SHOWS: a paragraph that will not
               // break at a column's foot leaves that foot short, so the
               // lines standing in the box are read and the block carried
