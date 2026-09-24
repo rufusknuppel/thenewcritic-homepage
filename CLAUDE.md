@@ -81,6 +81,34 @@ reused, not reinvented:
   pages, style.css, fonts, images)
 - No test suite; no lint config. Keep it dependency-free if possible.
 
+## Working in parallel (sessions, worktrees, commits)
+Several Claude sessions work on this repo at once. The rules:
+- **`main` is the integration branch, owned by one session at a time.**
+  Design passes run in their own worktree on their own branch, cut from a
+  *committed* `main` (if `main` is dirty, checkpoint-commit it first).
+- **Commits are checkpoints; shipping is the push.** Any session may make
+  local commits on its own branch at sensible checkpoints without asking.
+  Only the integrator commits on `main` (merges, checkpoints). Nobody
+  pushes `main` or `gh-pages`, force-pushes, or rewrites a pushed commit
+  unless the user says "ship it".
+- **Never touch another session's worktree or write into `main`'s files
+  from a worktree.** To pick up another session's unmerged work without
+  disturbing it, snapshot it read-only into a new branch (a throwaway
+  `GIT_INDEX_FILE` + `write-tree` / `commit-tree`).
+- **Scope each branch to files or sections.** `src/*.js` modules split
+  cleanly. `style.css` doesn't: every pass appends a dated block at the
+  sheet's end, so two branches collide there. Resolve by keeping both
+  blocks, main's first, then check the sheet's braces balance.
+- **Never hand-merge `dist/`.** `.gitattributes` marks it `merge=ours`
+  (needs `git config merge.ours.driver true` once per clone); after any
+  merge run `node build.js` and commit the result.
+- **Merging back** (integrator, in `main`): `git merge --no-ff <branch>` →
+  `node build.js` (exit 0, `FETCH OK`) → check 1280 / 1440 / 1920 and a
+  phone width → commit. Then every open branch runs `git rebase main` so
+  drift stays small. Remove a worktree and delete its branch once merged.
+- Superseded work is kept as `archive/*` branches rather than stashes or
+  loose patches.
+
 ## Files
 - `build.js` — fetch + parse + render, all in one file
 - `content-overrides.js` — hand-edited per-post card text (kicker, title,
