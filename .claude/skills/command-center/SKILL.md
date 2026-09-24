@@ -21,27 +21,20 @@ Split a message into several tasks when it asks for unrelated things; keep it on
 ## Triage — the cheapest safe route
 - **Inline in main** (you do it now): copy/text in `content-overrides.js`, a single obvious value, a one-line CSS token — only when no in-flight branch touches that file region. Edit, `node build.js` (exit 0), glance-verify, commit on main. Done.
 - **Delegate** (default for design, layout, behaviour, anything needing measurement): one background agent per task in its own worktree —
-  `Agent({subagent_type: "general-purpose", isolation: "worktree", run_in_background: true, description: "T<n> <short>", prompt: <brief>})`.
+  `Agent({subagent_type: "worktree-worker", isolation: "worktree", run_in_background: true, description: "T<n> <short>", prompt: <brief>})`.
+  `worktree-worker` (`.claude/agents/worktree-worker.md`) runs on Opus 5.5 at high effort — the user's standing choice — and carries the standing rules (scope, CSS blocks, build, verify on :8920, commit style, report format). If that agent type isn't listed in this session yet (it loads at session start), use `subagent_type: "general-purpose", model: "opus"` and paste the rules from that file into the brief.
   Record the returned agent id in the ledger so revisions go through `SendMessage` to the same agent (its context intact), not a fresh one.
 - **Serialize, don't parallelize, overlapping work.** Two tasks that edit the same mechanism (the fitter in `src/duo-panel-fit.js`, the same card type's CSS, the head band) run one after the other: queue the second as "Waiting on T<n>" and launch it from the new main after the first merges. Unrelated tasks run in parallel — up to 3 agents at once.
 - **Ask the user** only when the request is genuinely ambiguous about the design outcome. Ask in one line and keep the other tasks moving.
 
 ## The delegation brief (fill every field)
 ```
-You are working on The New Critic's homepage, task T<n>, in your own git worktree (your cwd). Do not touch the main checkout or any other worktree, and never push.
-
+Task T<n>.
 THE REQUEST (the user's words, verbatim): "<...>"
-WHAT DONE LOOKS LIKE: <observable result, widths, modes (light/dark, marked), pages affected>
-SCOPE: <files / sections you expect it to touch>; stay inside it unless the request can't be met otherwise, and say so if you leave it.
-CONTEXT: read CLAUDE.md first, then these memory notes that apply: /Users/rufusknuppel/.claude/projects/-Users-rufusknuppel-projects-thenewcritic-homepage/memory/<files>. <anything from the conversation the agent needs>
-
-HOW:
-- New CSS goes in ONE dated block appended at the end of style.css: `/* ---------- <TITLE IN CAPS> (<date>) ---------- ... */` and a closing `/* (<TITLE> ends) */`.
-- Build: `node build.js` must exit 0 and print FETCH OK (retry on FETCH FAILED).
-- Verify in the in-app browser in YOUR OWN tab (tabs_create, then navigate): http://localhost:8920/<your worktree dir name>/dist/index.html — the worktree dir name is the last path component of `git rev-parse --show-toplevel`; if your worktree isn't under .claude/worktrees, say so and skip browser checks. Check 1280, 1440, 1920 and 375 (phone) as relevant; reset the viewport to desktop when done. The pane's quirks (hidden tab, no rAF, smooth scroll) are in chrome-verify-tips.md — read it before measuring.
-- Commit on your branch when it works: a short evocative subject in the house style (see `git log -5`), a body saying what changed and why, ending with the line `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Include the rebuilt dist/. Checkpoint commits along the way are fine.
-
-REPORT BACK (short): branch name and final commit hash; what changed, file by file; what you verified and at which widths; anything you were unsure of or left undone; anything the user should look at with their own eyes.
+WHAT DONE LOOKS LIKE: <observable result; widths; modes (light/dark, marked); pages affected; what must stay unchanged>
+SCOPE: <files / sections you expect it to touch>
+READ: <memory notes that apply, e.g. phone-layout.md, fit-pass-performance.md>
+CONTEXT: <anything from the conversation the worker needs — earlier decisions, related tasks in flight>
 ```
 
 ## When an agent reports
