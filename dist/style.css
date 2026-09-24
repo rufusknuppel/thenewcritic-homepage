@@ -9321,3 +9321,11 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   from { translate: 0 0; }
   to { translate: 0 calc(-1 * var(--band-h, 72px)); }
 }
+main.has-mega .duo-half--mega.is-acts > .essay-acts:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto !important;
+  cursor: default !important;
+}
+main.has-mega .duo-half--mega.is-acts > .essay-acts .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
