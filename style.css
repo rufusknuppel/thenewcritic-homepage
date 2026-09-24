@@ -19798,7 +19798,7 @@ main.has-mega .page-rows > .movement.m--latest > .movement-body:is(*, .r.r.r.r.r
    padding, outside the height fitReprint gives the name, which it
    measures with the padding struck, so --reprint-h stays the name's) */
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  --close-gap: max(0px, 100vh - var(--band-h, 72px) - var(--reprint-h, 100vh));
+  --close-gap: max(0px, 100vh - 36px - var(--band-h, 72px) - var(--reprint-h, 100vh));
 }
 main.has-mega .page-rows > .reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   box-sizing: content-box !important;
@@ -20105,4 +20105,36 @@ main.has-mega .page-rows > .sub-ticker--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.
    and the section's first charcoal row can still stand a row apart.) */
 main.has-mega > .mark-gutters:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background-size: 37px 100%, 37px 100% !important;
+}
+
+
+/* ---------- THE COLOPHON PUSHES THE TICKER UP (2026-09-24) ----------
+   At the page's end the colophon comes up under the pinned ticker and
+   carries it on up over the head band, so the page closes as it did
+   with two tickers: the ticker on the window's head, the colophon under
+   it, the reprint's name on the foot (--close-gap has its 36 again).
+   The push is a scroll-driven animation off the colophon's own place in
+   the window (a view timeline, scoped to the rows so the ticker can
+   read it): from the colophon's top touching the ticker's foot (108)
+   to its standing at 36 the ticker is carried the 72 up, on the
+   compositor, so it cannot trail the colophon on a fling. On the
+   individual translate, which composes with the ticker's own transform
+   (THE TICKER RIDES UNDER THE BAND). Where there are no scroll-driven
+   animations the ticker simply stays pinned over the colophon. */
+main.has-mega .page-rows:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  timeline-scope: --nc-colo;
+}
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  view-timeline: --nc-colo block;
+}
+@supports (animation-timeline: view()) {
+  main.has-mega .page-rows > .sub-ticker--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    animation: nc-ticker-pushed linear both;
+    animation-timeline: --nc-colo;
+    animation-range: cover calc(100% - var(--band-h, 72px) - 108px) cover calc(100% - var(--band-h, 72px) - 36px);
+  }
+}
+@keyframes nc-ticker-pushed {
+  from { translate: 0 0; }
+  to { translate: 0 calc(-1 * var(--band-h, 72px)); }
 }
