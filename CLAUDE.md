@@ -82,7 +82,12 @@ reused, not reinvented:
 - No test suite; no lint config. Keep it dependency-free if possible.
 
 ## Working in parallel (sessions, worktrees, commits)
-Several Claude sessions work on this repo at once. The rules:
+Several Claude sessions work on this repo at once. The user routes edits
+through ONE **command center** session (the `command-center` skill,
+`.claude/skills/command-center/SKILL.md`; ledger at
+`.claude/command-center/ledger.md`). It alone merges into and ships
+`main`. Any other session is a worker: it works in its own worktree
+branch, commits there, and leaves merging to the command center. The rules:
 - **`main` is the integration branch, owned by one session at a time.**
   Design passes run in their own worktree on their own branch, cut from a
   *committed* `main` (if `main` is dirty, checkpoint-commit it first).
