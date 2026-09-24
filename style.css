@@ -20361,3 +20361,31 @@ main.has-mega .swap-body > .swap-body-text .swap-p:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   line-height: 0;
 }
 /* (THE COLUMNS END LEVEL ends) */
+
+
+/* ---------- THE SECTIONS' TAGS ARE NOT CUT BY AN OPEN PREVIEW (2026-09-24) ----------
+   A section's first card stands drawn up into its banner, its top 7
+   over the foot of the tag's line, so the frame's head band (the
+   ground drawn across the top --fr-kt of the title column's ::after)
+   lies over the tag's descenders. THE SECTIONS' TAGS ARE NOT CUT BY
+   THE FIRST ROW cut that band at rest only: the moment a preview
+   opened, and all through its shut, the band came back and the g's of
+   "The great writing of our generation" were cut off flat on the
+   card's top edge (ground on ground, seen only where it lay over the
+   tag's ink; under Postscript and Contra, a pixel of the first words'
+   baseline). The band's top draws nothing a card needs in any state:
+   held frame by frame through the open and the shut, the only pixels
+   its cut changes are the tag's. So it is cut in every state.
+   And the four empty courier lines every card still carries over its
+   head (.ground-kicker, .ground-under, .ground-credit, .ground-foot;
+   no words in them on the front page since the frame took the meta)
+   stand 30 above the card's top, over the tag, and took the hand
+   there: a pointer on the tag lit the card under it. They take
+   none. */
+main.has-mega .duo-half--mega .duo-panel .panel-col--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  clip-path: inset(var(--fr-kt, 36px) 0 0 0);
+}
+main.has-mega .duo-half--mega .duo-panel :is(.ground-kicker, .ground-under, .ground-credit, .ground-foot):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: none;
+}
+/* (THE SECTIONS' TAGS ARE NOT CUT BY AN OPEN PREVIEW ends) */
