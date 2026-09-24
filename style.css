@@ -20138,3 +20138,21 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   from { translate: 0 0; }
   to { translate: 0 calc(-1 * var(--band-h, 72px)); }
 }
+
+
+/* ---------- ONLY READ NOW OPENS THE POST (2026-09-24) ----------
+   Under the hand a picture offers READ NOW | PREVIEW over its scrim
+   (src/essay-acts.js), and those two are the only ways in: the rest of
+   the picture is inert. The scrim let the pointer through, so a click
+   anywhere on it fell to the picture — the title's own box, whose
+   rectangle opens the post (src/rect-click.js). Shown, it takes the
+   pointer itself, with the plain arrow, and a click on it lands on
+   nothing that answers. */
+main.has-mega .duo-half--mega.is-acts > .essay-acts:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto !important;
+  cursor: default !important;
+}
+main.has-mega .duo-half--mega.is-acts > .essay-acts .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
