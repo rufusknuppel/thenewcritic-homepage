@@ -19817,7 +19817,8 @@ main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
    (2W + the gutter), the postscripts portrait (W by the essay's height)
    and the reviews square (W by W), each in the essay's card — courier
    line and title under the picture (build.js, renderMegaHero's kind).
-   A TENTH BIGGER (2026-09-23, later): every picture 1.1 of that, its
+   A TENTH BIGGER (2026-09-23, later; and a tenth again, 2026-09-24:
+   1.21): every picture 1.1 of that, its
    width --pic-w and its height the card's less the two 36 bands.
    The picture runs from the card's 24 to the old frame's left edge and
    the 108 the box reaches over it (seatMatterMeta), so a picture P wide
@@ -19825,18 +19826,18 @@ main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
    middle is the window's; the row clips what it carries past the page.
    TWO ACROSS (2026-09-23, later): the postscripts and the reviews stand
    in pairs (.card--pair-a, .card--pair-b), the two pictures 39.6 apart
-   (the 36 gutter, a tenth bigger) so a pair is exactly an essay's
+   (the 36 gutter, a tenth bigger; 43.56 at 1.21) so a pair is exactly an essay's
    width, the pair centred on the page; the second of a pair is drawn up
    beside the first, its picture centred on the first's top to bottom
    (seatRowGaps). */
 body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  --pic-w: calc(1.1 * (2 * var(--std-w) + 36px));
-  --pair-gap: 39.6px;
+  --pic-w: calc(1.21 * (2 * var(--std-w) + 36px));
+  --pair-gap: 43.56px;
   position: relative;
   left: calc((100vw - var(--pic-w)) / 2 - 36px);
 }
 body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > :is(.card--kind-postscript, .card--kind-contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  --pic-w: calc(1.1 * var(--std-w));
+  --pic-w: calc(1.21 * var(--std-w));
   width: calc(var(--pic-w) + 72px);
 }
 body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
@@ -19852,7 +19853,7 @@ body:not(.word-page) main.has-mega .card--mega .duo-half--mega .duo-panel .panel
   flex: 0 0 calc(var(--pic-w) - 76px) !important;
 }
 body:not(.word-page) main.has-mega .card .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  height: calc(1.1 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px) + 72px) !important;
+  height: calc(1.21 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px) + 72px) !important;
 }
 body:not(.word-page) main.has-mega .card--kind-contra .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   height: calc(var(--pic-w) + 72px) !important;
@@ -20027,10 +20028,11 @@ main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.
 }
 
 
-/* ---------- THE TITLES IN SENTENCE CASE (2026-09-24) ----------
-   A card's title under its picture is set as a sentence (build.js,
-   sentenceCase) in the body's Garamond at its book weight, as the
-   section names are, where it stood in the Helvetica's bold capitals;
+/* ---------- THE TITLES IN THE GARAMOND (2026-09-24) ----------
+   A card's title under its picture is set as the feed capitalises it
+   (in sentence case for an hour) in the body's Garamond at its book
+   weight, as the section names are, where it stood in the Helvetica's
+   bold capitals;
    the fitter sizes it so its capitals stand exactly as tall as the
    Helvetica's did (seatSwapCols). */
 main.has-mega .duo-half--mega .swap-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
@@ -20089,4 +20091,18 @@ main.has-mega .page-rows > .sub-ticker--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   /* (over the reprint too, which rises to 70 at the page's end so the
      hand can reach it, .is-bared — its top stands under the ticker) */
   z-index: 71 !important;
+}
+
+
+/* ---------- NO SEAM BESIDE THE MARGINS WHEN ZOOMED (2026-09-24) ----------
+   The side margins are 36 of white and the charcoal gutters (.mark-
+   gutters) 36 over them; at a zoom that is not a whole ratio (110% on a
+   Retina screen is 2.2) the 36th pixel is shared, both edges blend
+   across it, and the white showed through as a grey line down the
+   margin's inside edge. The gutters reach one pixel past the margins,
+   onto the section's own charcoal, so nothing of the white is left in
+   that pixel. (Where a span's line falls at such a zoom, the margin's
+   and the section's first charcoal row can still stand a row apart.) */
+main.has-mega > .mark-gutters:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-size: 37px 100%, 37px 100% !important;
 }
