@@ -2674,7 +2674,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pair reads the same way now.
   // And a third pair back in the base build — covers on the left.
   // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart page-banner--section', below: ['New Critics take on the works of our time.'] }));
+  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart page-banner--section', below: ['New Critics take on gen z’s best and worst.'] }));
   // THE CONTRA MOVEMENT: the section's own row formation, three
   // squares across, twice — reading from the reviews the rows above
   // haven't already spent.
