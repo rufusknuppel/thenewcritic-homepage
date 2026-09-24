@@ -20424,3 +20424,39 @@ main.has-mega .duo-half--mega .duo-panel :is(.ground-kicker, .ground-under, .gro
   pointer-events: none;
 }
 /* (THE SECTIONS' TAGS ARE NOT CUT BY AN OPEN PREVIEW ends) */
+
+
+/* ---------- THE ESSAYS STEP ACROSS (2026-09-24) ----------
+   The essays no longer stand one under the other on the page's middle
+   line. The first essay's picture stands 36 from the window's LEFT edge,
+   the next's 36 from its RIGHT, and so on down each movement, counted
+   from the lead: the side is the words' side (.card--align-r, THE WORDS
+   UNDER THE PICTURE TAKE A SIDE), so a left-hand essay's words range
+   left under it and a right-hand one's right. Two pictures in turn
+   overlap by 36 across, so each is half the window less 18:
+     W = (100vw - 36) / 2        (702 at 1440, 942 at 1920)
+     left-hand:  picture 36 .. 36 + W
+     right-hand: picture 100vw - 36 - W .. 100vw - 36
+   The picture is --pic-w (the card's first 24 and the frame's 36 stand
+   before it, so the card's left is the picture's less 36); the height
+   follows from it (THE ESSAY'S PICTURE STANDS AT ITS OWN HEIGHT). The
+   pairs step down the other way (seatRowGaps, PAIR_STEP): the right-hand
+   picture's top 36 over the left-hand's foot. Under 1024 every card
+   stands on the one line as before (ONE COLUMN ON A PHONE).
+   The picture meets the side margin. On the charcoal the margins and
+   the mark's gutters (30, 31) stand over the cards, so the picture's
+   pixel of blue on the window's side lies under the margin, and the
+   gutter's seam pixel (NO SEAM BESIDE THE MARGINS WHEN ZOOMED) over its
+   outermost column; THE LATEST's movement stands over the margins (35)
+   and there the pixel of blue shows, at 35. No word stands in the
+   margins beside the rows. */
+@media (min-width: 1024px){
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(.card--kind-postscript):not(.card--kind-contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pic-w: calc((100vw - 36px) / 2);
+    left: 0px;
+  }
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--align-r:not(.card--kind-postscript):not(.card--kind-contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    left: calc(100vw - 72px - var(--pic-w));
+  }
+}
+/* (THE ESSAYS STEP ACROSS ends) */
