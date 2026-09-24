@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b42ea227">
+<link rel="stylesheet" href="style.css?v=109c37be">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -92,7 +92,7 @@
         localStorage.removeItem('nc-hex-auto');
       } catch (e2) {}
     }
-    void theme;
+    paint(theme === 'light' ? 'light' : 'dark');
   } catch (e) {}
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
@@ -376,6 +376,7 @@
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
     <p class="band-deks band-dek"><span class="band-date">Thursday, September 24, 2026</span></p>
+    <button type="button" class="theme-toggle theme-toggle--wm" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">/</span><span class="theme-toggle-dark">Dark</span></button>
     <p class="band-deks"><a href="archive.html">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
   <a class="sub-ticker sub-ticker--head" href="https://www.thenewcritic.com/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true"><span class="sub-ticker-half"><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span></span><span class="sub-ticker-half"><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span></span></span></a>
@@ -8034,6 +8035,7 @@
     var dx = isFinite(il) ? (br.left + br.width / 2) - (il + ir) / 2 : 0;
     var nameSlot = band.querySelector(':scope > .band-name');
     if (isFinite(il) && nameSlot && !nameSlot.getClientRects().length) dx = (br.left + SIDE) - il;
+    if (isFinite(ir)) band.style.setProperty('--mini-r', (ir + dx - br.left).toFixed(2) + 'px');
     geo = { S: S, B: B, c: c, capInBox: capInBox, dx: dx };
     return geo;
   }
