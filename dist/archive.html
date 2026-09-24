@@ -5446,6 +5446,7 @@
     var r = h.getBoundingClientRect();
     return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36 } : null;
   }
+  var PAIR_STEP = 36;
   function seatRowGaps() {
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
@@ -5491,7 +5492,7 @@
         var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
         var pic = picBoxOf(row);
         if (isB && pic && prevPic) {
-          rowDelta = (prevPic.t + ((prevPic.b - prevPic.t) - (pic.b - pic.t)) / 2) - (pic.t + acc);
+          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
           hasJob = true;
         } else if (prev && cur && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
@@ -5501,7 +5502,7 @@
             var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
             if (nbPic) {
               var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
-              curT = Math.min(curT, pic.t + ((pic.b - pic.t) - (nbPic.b - nbPic.t)) / 2 + (nbTop - nbPic.t) + acc);
+              curT = Math.min(curT, pic.t + Math.round(pic.b - pic.t) - PAIR_STEP + (nbTop - nbPic.t) + acc);
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;

@@ -6860,6 +6860,7 @@
     var r = h.getBoundingClientRect();
     return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36 } : null;
   }
+  var PAIR_STEP = 36;
   function seatRowGaps() {
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
@@ -6929,10 +6930,17 @@
         var cur = rowCourier(row);
         // (the second of a pair beside the first, its picture centred on
         // the first's top to bottom: style.css, ONE LINE OF POSTS)
+        // THE PAIR STEPS DOWN (2026-09-24): the second's picture no
+        // longer centred on the first's but standing 36 over the first's
+        // FOOT — the right-hand picture's top 36 above the left-hand's
+        // bottom, the two overlapping by 36 top to bottom, a step down
+        // the page. (Whole: the first's height is taken to the pixel it
+        // is painted at, and the second's top on the first's fraction,
+        // so after snapPictures the two stand exactly 36 apart.)
         var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
         var pic = picBoxOf(row);
         if (isB && pic && prevPic) {
-          rowDelta = (prevPic.t + ((prevPic.b - prevPic.t) - (pic.b - pic.t)) / 2) - (pic.t + acc);
+          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
           hasJob = true;
         } else if (prev && cur && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
@@ -6946,12 +6954,15 @@
           // is the taller: centred on the first, the second rides up by
           // half the difference, and its ink, not the first's, is the
           // row's highest — a review leading a postscript, 2026-09-24)
+          // (since THE PAIR STEPS DOWN the second stands a picture lower
+          // and the first's ink is the row's highest; the second is still
+          // asked, where it sits, for any ink it carries over its picture)
           var nb = rows[ri + 1];
           if (!ONE_COL.matches && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
             var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
             if (nbPic) {
               var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
-              curT = Math.min(curT, pic.t + ((pic.b - pic.t) - (nbPic.b - nbPic.t)) / 2 + (nbTop - nbPic.t) + acc);
+              curT = Math.min(curT, pic.t + Math.round(pic.b - pic.t) - PAIR_STEP + (nbTop - nbPic.t) + acc);
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
