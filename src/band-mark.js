@@ -28,7 +28,7 @@
   var wm = mark && mark.closest('.topbar-wordmark');
   if (!band || !mark || !wm) return;
   var date = band.querySelector('.band-date');
-  var AIR = 72;
+  var AIR = 72, SIDE = 36;
 
   var mini = document.createElement('a');
   mini.className = 'band-mini';
@@ -103,6 +103,12 @@
     for (var i = 0; i < rects.length; i++) { if (rects[i].width > 0) { il = Math.min(il, rects[i].left); ir = Math.max(ir, rects[i].right); } }
     var br = band.getBoundingClientRect();
     var dx = isFinite(il) ? (br.left + br.width / 2) - (il + ir) / 2 : 0;
+    // ON A PHONE IT TAKES THE NAME'S SEAT (2026-09-24): where the band's
+    // name is not shown (style.css, ONE COLUMN ON A PHONE) the miniature
+    // stands at the band's left, its ink the page's 36 in, across from
+    // the list of links, which has the middle's room.
+    var nameSlot = band.querySelector(':scope > .band-name');
+    if (isFinite(il) && nameSlot && !nameSlot.getClientRects().length) dx = (br.left + SIDE) - il;
     geo = { S: S, B: B, c: c, capInBox: capInBox, dx: dx };
     return geo;
   }
