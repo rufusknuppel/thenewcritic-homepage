@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b0cd2655">
+<link rel="stylesheet" href="style.css?v=a1881171">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -117,9 +117,10 @@
         localStorage.removeItem('nc-hex-auto');
       } catch (e2) {}
     }
-    if (theme === 'light' || theme === 'dark') paint(theme);
-    accent = hexOf(localStorage.getItem('nc-accent'));
-    if (accent) mark(accent);
+    // THE MODE WORDS ARE STRUCK (2026-09-23): with no Light, Dark or Hex
+    // left in the margin a stored choice could not be taken back, so
+    // none is applied — every reader has the light page and the blue.
+    void theme;
   } catch (e) {}
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
   // paints that mark for this view only — nothing is stored, and the
@@ -388,9 +389,10 @@
   <div class="page-rows">
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Wednesday, September 23, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Thursday, September 24, 2026</span></p>
     <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
+  <a class="sub-ticker sub-ticker--head" href="https://www.thenewcritic.com/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true"><span class="sub-ticker-half"><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span></span><span class="sub-ticker-half"><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span><b>Subscribe</b><span>Sign up for our free newsletter, or become a paid subscriber.</span><b>Subscribe</b><span>For <strong class="sub-ticker-price">$30 a year</strong>, hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.</span></span></span></a>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
   <section class="page-banner subscribe-band page-banner--bare">
@@ -426,11 +428,11 @@
   
   <section class="ledger" aria-label="Every post">
     <div class="ledger-body">
-  <div class="ledger-item" data-title="mrbeast, slop auteur" data-author="will diana" data-date="1789583977861" data-kicker="youtube artistry" data-section="essays" data-slug="mrbeast-slop-auteur">
+  <div class="ledger-item" data-title="mrbeast, slop auteur" data-author="will diana" data-date="1789583977861" data-kicker="the art of youtube" data-section="essays" data-slug="mrbeast-slop-auteur">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/mrbeast-slop-auteur" rel="noopener">
       <span class="ledger-cell lc-title">MrBeast, Slop Auteur</span>
       <span class="ledger-cell lc-author">Will Diana</span>
-      <span class="ledger-cell lc-kicker">YouTube Artistry</span>
+      <span class="ledger-cell lc-kicker">The Art of YouTube</span>
       <span class="ledger-cell lc-section">Essays</span>
       <span class="ledger-cell lc-date">Sep 16, 2026</span>
     </a>
@@ -1264,11 +1266,11 @@
             <div class="panel-col panel-col--left">
               <p class="card-meta ground-kicker"><span class="ground-kicker-line"></span></p>
               <p class="card-meta ground-under ground-under--kicker"></p>
-              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=rufus%20knuppel">Rufus Knuppel</a></span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#topic=quantify%20everything">Quantify Everything</a></span></p>
+              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=rufus%20knuppel">Rufus Knuppel</a></span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#author=rufus%20knuppel">Rufus Knuppel</a></span></p>
               <h3 class="card-title"><a href="https://www.thenewcritic.com/p/pdoom" rel="noopener">p(doom)</a></h3>
               
               <p class="card-dek">“Can prediction markets shake the hedonistic monkey from their back?”</p>
-              <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><a class="side-stack side-stack--author" href="archive.html#author=rufus%20knuppel" aria-label="Rufus Knuppel"><span aria-hidden="true">R</span><span aria-hidden="true">u</span><span aria-hidden="true">f</span><span aria-hidden="true">u</span><span aria-hidden="true">s</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">K</span><span aria-hidden="true">n</span><span aria-hidden="true">u</span><span aria-hidden="true">p</span><span aria-hidden="true">p</span><span aria-hidden="true">e</span><span aria-hidden="true">l</span></a><a class="side-stack side-stack--date" href="archive.html#sort=date&amp;post=pdoom" aria-label="Feb 13"><span aria-hidden="true">F</span><span aria-hidden="true">e</span><span aria-hidden="true">b</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">1</span><span aria-hidden="true">3</span></a>
+              <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--cdate"><span class="cover-kicker"><a href="archive.html#sort=date&amp;post=pdoom">Feb 13</a></span></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--ckick"><span class="cover-kicker"><a href="archive.html#topic=quantify%20everything">Quantify Everything</a></span></p>
               
             </div>
             <div class="panel-col-divider" role="separator"></div>
@@ -1296,10 +1298,10 @@
         </div>
         <div class="latest-col">
           <div class="latest-matter">
-            <p class="cover-meta cover-meta--author"><span class="cover-author cover-no">No. 13</span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#topic=right%20rationalism">Right Rationalism</a></span></p>
+            <p class="cover-meta cover-meta--author"><span class="cover-author cover-no">No. 13</span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#author=steven%20miller">No. 13</a></span></p>
             <h3 class="latest-title"><a href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener">Curtis Yarvin Jr.</a></h3>
             <p class="latest-dek">Steven Miller on living in Mencius Moldbug’s basement</p>
-            <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><a class="side-stack side-stack--author" href="archive.html#author=steven%20miller" aria-label="No. 13"><span aria-hidden="true">N</span><span aria-hidden="true">o</span><span aria-hidden="true">.</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">1</span><span aria-hidden="true">3</span></a><a class="side-stack side-stack--date" href="archive.html#sort=date&amp;post=curtis-yarvin-jr" aria-label="Apr 15"><span aria-hidden="true">A</span><span aria-hidden="true">p</span><span aria-hidden="true">r</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">1</span><span aria-hidden="true">5</span></a>
+            <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--cdate"><span class="cover-kicker"><a href="archive.html#sort=date&amp;post=curtis-yarvin-jr">Apr 15</a></span></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--ckick"><span class="cover-kicker"><a href="archive.html#topic=right%20rationalism">Right Rationalism</a></span></p>
           </div>
         </div>
         <a class="latest-plate" href="https://www.thenewcritic.com/p/curtis-yarvin-jr" rel="noopener"><span class="plate-curtain"><span class="plate-title" data-href="archive.html#topic=right%20rationalism">Right Rationalism</span><span class="latest-plate-p">In 2023, Stevie Miller, then 19, took a leave of absence from Carnegie Mellon University to work for the neo-reactionary, right-wing blogger Curtis Yarvin and live in his Berkeley, California basement.</span><span class="latest-plate-p">Stevie had been a fanatical reader of Yarvin’s blog <em>Unqualified Reservations</em> since middle school, and Yarvin had taken Stevie on as an amanuensis. But when Stevie worked for “Mencius Moldbug” (Yarvin’s internet pseudonym), Yarvin was not nearly so infamous as now. In the years since, Yarvin has been cited by Vice President J.D. Vance, and a Subreddit with over 12k followers, “YarvinConspiracy,” tracks his allegedly deleterious effect on the American right. The mainstream media has caught on too, sleuthing out links between conservative political factions and Yarvin’s extremist, exuberant internet writing. His densely-hyperlinked and referential prose, recondite intellectual heroes (Thomas Carlyle, James Froude, and John Adams, among others), and status as outsider-dissident-genius strike an alluring figure, an allure which he uses to recruit young people — especially young men — to the conservative movement. In June 2025, Ava Kofman wrote an excellent profile of Yarvin for <em>The New Yorke</em> r (a portrait that Stevie told me forms a pretty accurate picture of Yarvin’s psychology):</span><span class="latest-plate-p">So who is this precocious intern? When researching for this interview, I asked a D.C. friend, “Do you know Stevie Miller?”</span><span class="latest-plate-p">“Everyone knows Stevie,” he replied.</span><span class="latest-plate-p">Stevie Miller is the most gregarious, internet-addled, and social science-oriented gen z right-winger I know.</span><span class="latest-plate-p">Now 21, Stevie, who hails from New York’s Upper East Side and the D.C. suburbs, is a fellow of Tyler Cowen’s Emergent Ventures grant. Having returned to CMU after a brief stint at the University of Austin in 2025, he studies “Statistics &amp; Machine Learning” in an honors program for “Quantitative Social Science Scholars.” He sometimes goes by the pseudonym Werner Zagrebbi, especially on Twitter, and he writes the Substack <em>Right Rationalism</em>.</span><span class="latest-plate-p">Much of the social science-driven, right-wing world that Stevie belongs to was born from an interlinked sphere of blogs and forums (4chan, Slate Star Codex, MarginalRevolution, LessWrong, Unqualified Reservations, Overcoming Bias, and others) — following along through some of the hyperlinks in this interview should replicate the feeling of what it is like to be a young right-winger in the burgeoning internet blogosphere. For a broad overview of Yarvin, Stevie’s influences, and many others in the rationalist sphere, Rufus Knuppel’s p(doom) is a great starting place. (Stevie called it “one of the best things we’ve read on the intellectual and cultural history of the contemporary prediction markets boom.”) For the more minute references, I have provided footnotes and links.</span><span class="latest-plate-p">Below, Stevie speaks about his time working for Yarvin, disappointment with various right-wing institutions like the University of Austin and the Hertog Foundation, failed attempts to land a job in the Trump administration, and much, much more.</span><span class="latest-plate-p">I mean, who’s the president? I think if you’re going to write an intellectual history of Trump, you’re not going to look at tariffs and Sam Francis or something. 2 You’ll look at Yarvin and Steve Sailer and these people. And AI is obviously going to become, like, more than half of the economy. Whether that’s in one decade or three, I don’t know, but it’s all a part of this intellectual history. These things are going to get more status.</span><span class="latest-plate-p">It’s really hard to reach your final form at 19. How would you get into a great college now? There are a lot of things you can exploit to do that, but it’s a very different world for us now. I knew the GMU people, but they were a lot less famous then. 3 It wasn’t really social-climbey in high school to be into internet writing. This has been the step-change in the status economics of this sphere. That’s the central fact of the past three years — these people have become a much bigger deal, and people process that in different ways.</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
@@ -1313,10 +1315,10 @@
         </div>
         <div class="latest-col">
           <div class="latest-matter">
-            <p class="cover-meta cover-meta--author"><span class="cover-author cover-no">No. 4</span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#topic=riding%20to%20the%20limit">Riding to the Limit</a></span></p>
+            <p class="cover-meta cover-meta--author"><span class="cover-author cover-no">No. 4</span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#author=elan%20kluger">No. 4</a></span></p>
             <h3 class="latest-title"><a href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener">Beyond Pain</a></h3>
             <p class="latest-dek">Bond Almand IV on cycling and the Pan-American world record</p>
-            <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><a class="side-stack side-stack--author" href="archive.html#author=elan%20kluger" aria-label="No. 4"><span aria-hidden="true">N</span><span aria-hidden="true">o</span><span aria-hidden="true">.</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">4</span></a><a class="side-stack side-stack--date" href="archive.html#sort=date&amp;post=beyond-pain-an-interview-with-the" aria-label="Oct 2025"><span aria-hidden="true">O</span><span aria-hidden="true">c</span><span aria-hidden="true">t</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">2</span><span aria-hidden="true">0</span><span aria-hidden="true">2</span><span aria-hidden="true">5</span></a>
+            <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--cdate"><span class="cover-kicker"><a href="archive.html#sort=date&amp;post=beyond-pain-an-interview-with-the">Oct 2025</a></span></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--ckick"><span class="cover-kicker"><a href="archive.html#topic=riding%20to%20the%20limit">Riding to the Limit</a></span></p>
           </div>
         </div>
         <a class="latest-plate" href="https://www.thenewcritic.com/p/beyond-pain-an-interview-with-the" rel="noopener"><span class="plate-curtain"><span class="plate-title" data-href="archive.html#topic=riding%20to%20the%20limit">Riding to the Limit</span><span class="latest-plate-p">I started following Bond Almand IV in the same way many other Dartmouth students did: via his thorough, vivid, and thrilling journal entries as he completed his record-breaking Pan-American route, a 14,000-mile cycling journey from Northwest Alaska to Southern Argentina, in 75 days. Almand broke the previous world record by almost nine days, a record that had been established by an athlete with a whole team to change his tires, cook him food, and provide other aid. Almand was self-supported.</span><span class="latest-plate-p">I spoke with Bond about his motivations, hallucinations, writing, and pain.</span><span class="latest-plate-p">Senior fall, I attempt it my first time and I get halfway 72 miles in, and am feeling alright, but it is the middle of the night, and I’ve never done an endurance event through the night. I turn around and start climbing back up the mountains, and I fall into really deep sleep deprivation and just can’t really understand what’s happening to my body and start having crazy hallucinations.</span><span class="latest-plate-p">And so I have these stress fractures in my tibia that are getting worse and worse with every step I take, but I don’t really register how bad it’s getting because I’m just completely out of it. And then around 4:30 a.m. as the sun is coming up, around mile 86 or so, I hear a snap in one of my tibias. The stress fracture had gotten so bad that it split, and I had a pretty clean stress fracture.</span><span class="latest-plate-p">I passed out on the side of the trail and woke up as the first rays of sun started hitting me about 45 minutes later. I couldn’t really walk at that time, since I’d passed out from the pain. Everything had gotten really tight, so on the downhills, I had to kind of crawl.</span><span class="latest-plate-p">I was 14 miles from the nearest trailhead. I kind of broke my leg in the worst possible spot. So since both legs were messed up, since I had a stress fracture in one and a fracture in the other, I couldn’t really walk that well. But yeah, I was obsessed with it. So I healed up and tried it again a couple of months later, and I got a stress fracture again and bailed again. Each time I made it 104 miles. It’s still elusive. The 144-mile Double SCAR is still to be conquered. Hopefully, the third time’s the charm.</span><span class="plate-more"><span class="plate-close" role="button" tabindex="0">Close Preview</span></span></span></a>
@@ -1336,11 +1338,11 @@
             <div class="panel-col panel-col--left">
               <p class="card-meta ground-kicker"><span class="ground-kicker-line"></span></p>
               <p class="card-meta ground-under ground-under--kicker"></p>
-              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=theodore%20gary">Theodore Gary</a></span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#topic=streaming%20hazard">Streaming Hazard</a></span></p>
-              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/freak-show" rel="noopener">Freak Show</a></h3>
+              <p class="cover-meta cover-meta--author"><span class="cover-author"><a href="archive.html#author=theodore%20gary">Theodore Gary</a></span></p><p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="archive.html#author=theodore%20gary">Theodore Gary</a></span></p>
+              <h3 class="card-title"><a href="https://www.thenewcritic.com/p/freak-show" rel="noopener">Freak show</a></h3>
               
               <p class="card-dek">“Algorithms reward attention, and if you can’t get the good kind, then the bad will do.”</p>
-              <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><a class="side-stack side-stack--author" href="archive.html#author=theodore%20gary" aria-label="Theodore Gary"><span aria-hidden="true">T</span><span aria-hidden="true">h</span><span aria-hidden="true">e</span><span aria-hidden="true">o</span><span aria-hidden="true">d</span><span aria-hidden="true">o</span><span aria-hidden="true">r</span><span aria-hidden="true">e</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">G</span><span aria-hidden="true">a</span><span aria-hidden="true">r</span><span aria-hidden="true">y</span></a><a class="side-stack side-stack--date" href="archive.html#sort=date&amp;post=freak-show" aria-label="Feb 25"><span aria-hidden="true">F</span><span aria-hidden="true">e</span><span aria-hidden="true">b</span><span class="side-stack-gap" aria-hidden="true"></span><span aria-hidden="true">2</span><span aria-hidden="true">5</span></a>
+              <p class="cover-meta cover-meta--peek"><button type="button" class="peek-open">Preview</button></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--cdate"><span class="cover-kicker"><a href="archive.html#sort=date&amp;post=freak-show">Feb 25</a></span></p><p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--ckick"><span class="cover-kicker"><a href="archive.html#topic=streaming%20hazard">Streaming Hazard</a></span></p>
               
             </div>
             <div class="panel-col-divider" role="separator"></div>
@@ -1358,16 +1360,16 @@
   </div>
   </div>
   </div>
-  <section class="reprint">
-    <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="./#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
-  </section>
-  <div class="foot-field" aria-hidden="true"></div>
   <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a><span class="band-sep">, </span><a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a><span class="band-sep">, </span><a href="https://x.com/thenewcritic" rel="noopener">X</a><span class="band-sep">, </span><a href="mailto:editors@thenewcritic.com">Email</a></p>
     <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     <p class="band-deks band-name"><span>Est. May 2025</span></p>
   </nav>
+  <section class="reprint">
+    <div class="reprint-rule" aria-hidden="true"></div>
+    <a class="reprint-name" href="./#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
+  </section>
+  <div class="foot-field" aria-hidden="true"></div>
   </div>
   <div class="marginalia">
   <button type="button" class="theme-toggle" aria-label="Light or dark, and a highlight colour of your own"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-sep" aria-hidden="true">·</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex" type="text" maxlength="7" placeholder="#" aria-label="Highlight colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden>
@@ -1375,26 +1377,6 @@
 </main>
 
 
-<!-- The corner box stands on EVERY page, bare or dressed: "bare" means
-     the page carries its own header and footer (the word pages do),
-     not that it does without the furniture. -->
-
-<aside class="sub-box" aria-label="Subscribe to The New Critic" hidden>
-  <p class="sub-box-head">
-    <a class="sub-box-word" href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a>
-    <button class="sub-box-x" type="button" aria-label="Dismiss">
-      <svg viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </button>
-  </p>
-  <div class="sub-box-body">
-    <p>Sign up for our free newsletter, or become a paid subscriber. For <strong class="sub-box-price">$30 a year</strong>, hundreds of paid readers get access to:</p>
-    <ol class="sub-box-list">
-      <li>Postscript, our interview series</li>
-      <li>Contra, our criticism section</li>
-      <li>Exclusive New Critic parties</li>
-    </ol>
-  </div>
-</aside>
 
 <script>
 (function(){
@@ -1611,127 +1593,6 @@
     "</defs>" +
     "<rect width='1400' height='300' fill='url(#s)' filter='url(#w)'/>" +
     "</svg>"));
-})();
-
-</script>
-<script>
-(function () {
-  var KEY = 'nc-sub-box-shut';
-  function ready(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, { once: true });
-    else fn();
-  }
-  function probeBaseline(el) {
-    var p = document.createElement('span');
-    p.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-    el.insertBefore(p, el.firstChild);
-    var b = p.getBoundingClientRect().bottom;
-    p.remove();
-    return b;
-  }
-  var measureCv = null;
-  function inkOf(cs, text) {
-    if (!measureCv) measureCv = document.createElement('canvas');
-    var g = measureCv.getContext('2d');
-    if (!g) return null;
-    var fs = parseFloat(cs.fontSize) || 0;
-    if (!fs) return null;
-    try { g.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing; } catch (e) {}
-    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
-    g.textBaseline = 'alphabetic';
-    g.textAlign = 'left';
-    return g.measureText(text);
-  }
-  function seatAir(box) {
-    var cs = getComputedStyle(box);
-    var pad = parseFloat(cs.paddingLeft);
-    if (!isFinite(pad)) return;
-    box.style.removeProperty('--sub-lift');
-    box.style.removeProperty('--sub-drop');
-    var word = box.querySelector('.sub-box-word');
-    var tail = box.querySelector('.sub-box-list li:last-child') || box.querySelector('.sub-box-body p');
-    if (!word || !tail) return;
-    var pr = box.getBoundingClientRect();
-    var wcs = getComputedStyle(word);
-    var wm = inkOf(wcs, (word.textContent || '').trim().toUpperCase());
-    var wbase = probeBaseline(word);
-    var tbase = probeBaseline(tail);
-    if (!wm) return;
-    var over = (wbase - wm.actualBoundingBoxAscent) - pr.top - pad;
-    var under = pr.bottom - tbase - pad;
-    if (isFinite(over)) box.style.setProperty('--sub-lift', (-over).toFixed(2) + 'px');
-    if (isFinite(under)) box.style.setProperty('--sub-drop', (-under).toFixed(2) + 'px');
-  }
-  ready(function () {
-    var box = document.querySelector('.sub-box');
-    if (!box) return;
-    var store = null;
-    try { store = window.sessionStorage; } catch (e) {}
-    function flag(on) {
-      try { if (on) store.setItem(KEY, '1'); else store.removeItem(KEY); } catch (e) {}
-    }
-    var how = '';
-    try {
-      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-      if (nav && nav.type) how = nav.type;
-      else if (performance.navigation) how = performance.navigation.type === 1 ? 'reload' : 'navigate';
-    } catch (e) {}
-    if (how === 'reload') flag(false);
-    var shut = false;
-    try { shut = !!(store && store.getItem(KEY)); } catch (e) {}
-    if (shut) return;
-    box.hidden = false;
-    seatAir(box);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { seatAir(box); });
-    }
-    var reseat = null;
-    window.addEventListener('resize', function () {
-      if (reseat) clearTimeout(reseat);
-      reseat = setTimeout(function () { reseat = null; if (!box.hidden) seatAir(box); }, 120);
-    });
-    var lift = function () { box.classList.add('is-in'); };
-    if (window.requestAnimationFrame) requestAnimationFrame(function () { requestAnimationFrame(lift); });
-    setTimeout(lift, 80);
-    function outMs() {
-      var v = getComputedStyle(box).getPropertyValue('--sub-out').trim();
-      var n = parseFloat(v);
-      if (!isFinite(n)) return 400;
-      return /ms$/.test(v) ? n : n * 1000;
-    }
-    function close(mark) {
-      if (box.hidden) return;
-      if (mark !== false) flag(true);
-      box.classList.remove('is-in');
-      box.classList.add('is-out');
-      box.style.pointerEvents = 'none';
-      var still = false;
-      try { still = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
-      if (still) box.hidden = true;
-      else setTimeout(function () { box.hidden = true; }, outMs() + 40);
-    }
-    var foot = document.querySelector('.foot-seam') || document.querySelector('.section-band--colophon');
-    if (foot && foot.parentNode) {
-      var dock = document.createElement('div');
-      dock.className = 'sub-dock';
-      foot.parentNode.insertBefore(dock, foot);
-      dock.appendChild(box);
-    }
-    var x = box.querySelector('.sub-box-x');
-    if (x) x.addEventListener('click', function () { close(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !box.hidden) close();
-    });
-    document.addEventListener('click', function (e) {
-      var a = e.target && e.target.closest && e.target.closest('a[href]');
-      if (!a) return;
-      var href = a.getAttribute('href') || '';
-      if (!href || href.charAt(0) === '#') return;
-      if (a.target && a.target !== '_self') return;
-      close();
-    }, true);
-    window.addEventListener('pagehide', function () { flag(true); });
-  });
 })();
 
 </script>
@@ -3629,13 +3490,19 @@
     var spans = [], lines = [];
     for (var i = 0; i < marked.length; i++) {
       var from = marked[i].querySelector(':scope > .page-banner');
-      if (!from) return;
-      var fr = from.getBoundingClientRect();
-      if (!fr.height) return;
       var next = marked[i].nextElementSibling;
       var to = next && next.classList.contains('movement') ? next.querySelector(':scope > .page-banner') : null;
-      var a = Math.round(inkTopLine(from, fr) + sy), b;
-      lines.push({ band: from, at: a - (fr.top + sy) });
+      var a, b;
+      if (from) {
+        var fr = from.getBoundingClientRect();
+        if (!fr.height) return;
+        a = Math.round(inkTopLine(from, fr) + sy);
+        lines.push({ band: from, at: a - (fr.top + sy) });
+      } else {
+        var mv0 = marked[i].getBoundingClientRect();
+        if (!mv0.height) return;
+        a = Math.round(mv0.top + sy);
+      }
       if (to) {
         var tr = to.getBoundingClientRect();
         if (!tr.height) return;
@@ -3643,7 +3510,7 @@
         lines.push({ band: to, at: b - (tr.top + sy) });
       } else {
         var seamEnd = main.querySelector('.page-rows > .foot-seam, .page-rows > .section-band--colophon');
-        b = seamEnd ? Math.round(seamEnd.getBoundingClientRect().top + sy) : Math.ceil(mr.bottom + sy);
+        b = seamEnd ? Math.ceil(seamEnd.getBoundingClientRect().top + sy) : Math.ceil(mr.bottom + sy);
       }
       spans.push({ a: a, b: b });
     }
@@ -3689,6 +3556,16 @@
   function markWords() {
     if (!markSpans.length) return;
     var sy = window.scrollY;
+    var hb = document.querySelector('.page-rows > .section-band:not(.section-band--colophon)');
+    if (hb) {
+      var hr = hb.getBoundingClientRect();
+      var hm = (hr.top + hr.bottom) / 2 + sy;
+      var over = hr.height > 0 && markSpans.some(function (sp) { return hm >= sp.a && hm < sp.b; });
+      var lat = over && document.querySelector('.page-rows > .m--latest.on-mark');
+      if (lat && hm < lat.getBoundingClientRect().bottom + sy) over = false;
+      over = false;
+      if (hb.classList.contains('is-over-mark') !== over) hb.classList.toggle('is-over-mark', over);
+    }
     var words = document.querySelectorAll(MARK_WORDS);
     var on = [].map.call(words, function (w) {
       var r = w.getBoundingClientRect();
@@ -3872,22 +3749,91 @@
           }
         }
       }
-      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var isSection = band.classList.contains('page-banner--section');
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: isSection ? SECTION_HEAD : wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      if (isSection) {
+        var sn = band.querySelector('.banner-name'), snb = sn && baselineOf(sn);
+        if (snb) {
+          var sd = band.getBoundingClientRect().top + airTop - snb.cap;
+          if (Math.abs(sd) > 0.05) sn.style.marginTop = ((parseFloat(sn.style.marginTop) || 0) + sd).toFixed(2) + 'px';
+        }
+      }
       var bb = band.getBoundingClientRect();
       if (above) { var ia2 = inkSpan(above); if (ia2) above.style.top = (airTop - (ia2.top - bb.top)).toFixed(2) + 'px'; }
       void fitted;
     });
+    fitReprint();
+  }
+  function fitReprint() {
+    var mast = document.querySelector('.site-nav--top .topbar-name');
+    var cap = mast ? (parseFloat(getComputedStyle(mast).fontSize) || 0) : 0;
+    var col = document.querySelector('.page-rows > .section-band--colophon');
     [].forEach.call(document.querySelectorAll('.reprint'), function (band) {
-      fillNameBand(band.querySelector('.reprint-name'), band, { maxSize: cap, air: BANNER_AIR, airBottom: BANNER_AIR, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
+      var stuck = band.style.getPropertyValue('position');
+      band.style.setProperty('position', 'relative', 'important');
+      band.style.setProperty('padding-top', '0px', 'important');
+      var name = band.querySelector('.reprint-name');
+      var over = 0;
+      var inset = bandGaramondInset(col, 'bottom');
+      var under = inset || 72;
+      var opts = function () { return { maxSize: cap, air: over, airBottom: under, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE }; };
+      fillNameBand(name, band, opts());
+      var ink = function () {
+        var rg = document.createRange(); rg.selectNodeContents(name);
+        var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+        if (!r) return null;
+        bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+        var cs = getComputedStyle(name);
+        bandInkCv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        var t = (name.textContent || '').trim();
+        var m = bandInkCv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
+        var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+        if (!(fa > 0)) return null;
+        var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+        return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+      };
+      var ni = inset && name && ink();
+      if (ni) {
+        var bb = band.getBoundingClientRect();
+        var want = inset + (ni.cap - bb.top), have = bb.bottom - ni.foot;
+        if (Math.abs(want - have) > 0.05) { under += want - have; fillNameBand(name, band, opts()); }
+      }
+      if (stuck) band.style.setProperty('position', stuck); else band.style.removeProperty('position');
       var rh = band.getBoundingClientRect().height;
       if (rh) document.documentElement.style.setProperty('--reprint-h', Math.round(rh) + 'px');
+      band.style.removeProperty('padding-top');
     });
   }
   var WORDMARK_SIDE = 36; // (144 for an hour on the 22nd, on the content's line; the page's 72 after; 36 from the 23rd, halfway into the margins)
+  var bandInkCv = null;
+  function bandGaramondInset(band, edge) {
+    if (!band) return 0;
+    var br = band.getBoundingClientRect();
+    if (!br.height) return 0;
+    bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+    var hi = Infinity, lo = -Infinity;
+    [].forEach.call(band.querySelectorAll('.band-deks:not(.band-dek) a, .band-deks:not(.band-dek) > span:not(.band-sep)'), function (el) {
+      var txt = (el.textContent || '').trim();
+      if (!txt) return;
+      var rg = document.createRange(); rg.selectNodeContents(el);
+      var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+      if (!r) return;
+      var cs = getComputedStyle(el);
+      bandInkCv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = bandInkCv.measureText(cs.textTransform === 'uppercase' ? txt.toUpperCase() : txt);
+      var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+      if (!(fa > 0)) return;
+      var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+      hi = Math.min(hi, base - m.actualBoundingBoxAscent);
+      lo = Math.max(lo, base);
+    });
+    if (edge === 'bottom') return isFinite(lo) ? br.bottom - lo : 0;
+    return isFinite(hi) ? hi - br.top : 0;
+  }
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
-    var AIR = (opts && opts.air) || 48;
+    var AIR = (opts && opts.air != null) ? opts.air : 48;
     var AIR_B = (opts && opts.airBottom != null) ? opts.airBottom : AIR;
     name.style.fontSize = '';
     name.style.transform = 'none';
@@ -3992,13 +3938,41 @@
     var name = document.querySelector('.site-nav--top .topbar-name');
     if (!name) return;
     var wm = name.closest('.topbar-wordmark') || name.parentElement;
-    var AIR = 72;
+    var INSET = bandGaramondInset(document.querySelector('.page-rows > .section-band'), 'top') || 72;
+    var AIR = INSET;
     var AIR_B = 72;
+    var nameInk = function () {
+      var rg = document.createRange(); rg.selectNodeContents(name);
+      var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+      if (!r) return null;
+      bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+      var cs = getComputedStyle(name);
+      bandInkCv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var t = (name.textContent || '').trim();
+      var m = bandInkCv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
+      var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+      if (!(fa > 0)) return null;
+      var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+    };
     var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
     if (!f) return;
+    var ni = nameInk();
+    if (ni) {
+      var e = ni.cap - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
+      var air2 = INSET - e + (Math.ceil(z) - z) / 2;
+      if (Math.abs(air2 - AIR) > 0.05) {
+        AIR = air2;
+        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE }) || f;
+      }
+    }
+    document.documentElement.style.setProperty('--masthead-air', AIR.toFixed(2) + 'px');
     var wb = f.wb, inkBottom = f.inkBottom;
     var band = document.querySelector('.dek-band--masthead');
-    var wmH = Math.max(0, inkBottom - wb.top + AIR_B);
+    var foot = inkBottom;
+    var ni2 = nameInk();
+    if (ni2) foot = ni2.foot;
+    var wmH = Math.max(0, Math.ceil(foot - wb.top));
     if (band) {
       var sect = document.querySelector('.section-band');
       var bandH = band.children.length ? (sect ? sect.getBoundingClientRect().height : 72) : 0;
@@ -4157,10 +4131,12 @@
       else col.style.marginBottom = (-rideOut).toFixed(2) + 'px';
       var cb = cell.getBoundingClientRect();
       if (!cb.height) return;
-      var side = cb.width;
-      var picTop = rev ? (cb.height - side) : 0;
-      var picH = side;
-      var wordsRoom = cb.height - side + REST_OVERLAP - REST_INSET - 2 * REST_PAD - 4; // (4 for the ink's own overhang past the measured cap and baseline: the frame must end inside the card, where the landed picture covers it)
+      var wrapW = parseFloat(getComputedStyle(cell).getPropertyValue('--wrap')) || 0;
+      var side = cb.width - 2 * REST_INSET + 2 * wrapW;
+      var boxSeat = side - REST_OVERLAP + REST_INSET;
+      var picH = Math.max(0, cb.height - boxSeat);
+      var picTop = rev ? (cb.height - picH) : 0;
+      var wordsRoom = cb.height - picH + REST_OVERLAP - REST_INSET - 2 * REST_PAD - 4; // (4 for the ink's own overhang past the measured cap and baseline: the frame must end inside the card, where the landed picture covers it)
       var stackInk = function () {
         return baselineOf(last, false) - (baselineOf(head, true) - capAscent(head));
       };
@@ -4899,7 +4875,10 @@
   }
   function inkSpan(el) {
     if (!el || getComputedStyle(el).display === 'none') return null;
-    var lines = el.querySelectorAll('.title-line');
+    var lines = [].filter.call(el.querySelectorAll('.title-line'), function (ln) {
+      var rg = document.createRange(); rg.selectNodeContents(ln);
+      return [].some.call(rg.getClientRects(), function (r) { return r.height; });
+    });
     var firstLn = lines.length ? lines[0] : el;
     var lastLn = lines.length ? lines[lines.length - 1] : el;
     var rF = document.createRange(); rF.selectNodeContents(firstLn);
@@ -5277,6 +5256,14 @@
     lastWorld = { start: world0, end: worldSig() };
     stageEnd(veiled);
     announceFirstFit();
+    if (stage === 2) announceSettled();
+  }
+  var settledAnnounced = false;
+  function announceSettled() {
+    if (settledAnnounced) return;
+    settledAnnounced = true;
+    try { window.__ncSettled = true; } catch (e) {}
+    try { window.dispatchEvent(new Event('newcritic:settled')); } catch (e) {}
   }
   var lastWorld = null;
   function worldSig() {
@@ -5355,6 +5342,7 @@
   function fitAllSteps() {
     var seatLast = true;
     step('resetPlateBody', resetPlateBody);
+    step('fitStdWidth', fitStdWidth);
     step('clearTitleStep', function () {
       [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra, .duo-half--mega'), function (h) {
         h.style.removeProperty('--hl-dx'); h.style.removeProperty('--hl-dy');
@@ -5398,10 +5386,209 @@
     step('seatDekBlocks', seatDekBlocks);
     step('seatMatterMeta', seatMatterMeta);
     step('fitBandDekInset', fitBandDekInset);
+    step('fitMastheadFill#2', fitMastheadFill);
+    step('fitReprint#2', fitReprint);
     step('centreMatter', centreMatter);
     step('seatPlateBody', seatPlateBody);
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
+    step('seatRowGaps', seatRowGaps);
+    step('seatRowGaps#2', seatRowGaps);
+    step('fitLatestStack#2', fitLatestStack);
+    step('snapPictures', snapPictures);
+  }
+  var ROW_GAP = 36;
+  function fitStdWidth() {
+    var main = document.querySelector('main');
+    if (!main) return;
+    var row = document.querySelector('.page-rows .movement-body .card--latest');
+    var w = row ? row.getBoundingClientRect().width : 0;
+    if (!w) {
+      var mega = document.querySelector('.card--mega .duo-half--mega');
+      w = mega ? mega.getBoundingClientRect().width - 48 : 0;
+    }
+    if (!w) { main.style.removeProperty('--std-w'); return; }
+    main.style.setProperty('--std-w', ((w - 2 * ROW_GAP) / 3).toFixed(2) + 'px');
+  }
+  function rowInk(row) {
+    var t = Infinity, b = -Infinity;
+    var add = function (el) {
+      var rg = document.createRange(); rg.selectNodeContents(el);
+      var rs = rg.getClientRects();
+      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > b) b = rs[i].bottom; }
+    };
+    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink'), add);
+    [].forEach.call(row.querySelectorAll('.card-title.hl-rect.rx, .latest-title.hl-rect.rx'), function (ttl) {
+      var r = ttl.getBoundingClientRect(), c = getComputedStyle(ttl, '::before');
+      if (c.content === 'none') return;
+      var pt = r.top + (parseFloat(c.top) || 0), pb = r.bottom - (parseFloat(c.bottom) || 0);
+      if (pb > pt) { if (pt < t) t = pt; if (pb > b) b = pb; }
+    });
+    return isFinite(t) ? { t: t, b: b } : null;
+  }
+  var COURIER_GAP = 54;
+  function rowCourier(row) {
+    var t = Infinity, b = -Infinity;
+    [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
+      if (getComputedStyle(m).visibility === 'hidden') return;
+      var rg = document.createRange(); rg.selectNodeContents(m);
+      [].forEach.call(rg.getClientRects(), function (r) {
+        if (!r.width || !r.height) return;
+        if (r.top < t) t = r.top; if (r.bottom > b) b = r.bottom;
+      });
+    });
+    return isFinite(t) ? { t: t, b: b } : null;
+  }
+  var PIC_RING = 1;
+  function snapPictures() {
+    var sx = window.scrollX || 0, sy = window.scrollY || 0;
+    var snap = function (v, s0) { return Math.round(v + s0) - s0; };
+    [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
+      if (card.matches('.is-open, .is-opening')) return;
+      var t = card.querySelector('.card-title.hl-rect.rx');
+      if (!t) return;
+      var c = getComputedStyle(t, '::before');
+      if (c.content === 'none') return;
+      var box = function () {
+        var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
+        var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+        return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
+      };
+      var nudge = function (prop, d) {
+        if (Math.abs(d) < 0.005) return;
+        t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
+      };
+      var tm = getComputedStyle(t).transform;
+      if (tm && tm !== 'none' && window.DOMMatrixReadOnly) {
+        var mm = new DOMMatrixReadOnly(tm);
+        var fx = Math.round(mm.e) - mm.e, fy = Math.round(mm.f) - mm.f;
+        if (Math.abs(fx) >= 0.005) { nudge('--rb-dx', fx); nudge('--rx-l', -fx); nudge('--rx-r', fx); }
+        if (Math.abs(fy) >= 0.005) { nudge('--rb-dy', fy); nudge('--rx-t', -fy); nudge('--rx-b', fy); }
+      }
+      var b0 = box();
+      if (!(b0.r > b0.l && b0.b > b0.t)) return;
+      var nl = snap(b0.l, sx), nt = snap(b0.t, sy);
+      var nr = nl + Math.round(b0.r - b0.l), nb = nt + Math.round(b0.b - b0.t);
+      var dl = nl - b0.l, dr = nr - b0.r, dt = nt - b0.t, db = nb - b0.b;
+      nudge('--rx-l', dl); nudge('--rx-r', -dr); nudge('--rx-t', dt); nudge('--rx-b', -db);
+      var p = box(), tr = t.getBoundingClientRect();
+      var W = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      t.style.setProperty('--ck-l', ((p.l - PIC_RING) - tr.left + W).toFixed(3) + 'px');
+      t.style.setProperty('--ck-r', (tr.right - (p.r + PIC_RING) + W).toFixed(3) + 'px');
+      t.style.setProperty('--ck-t', ((p.t - PIC_RING) - tr.top + W + 0.5).toFixed(3) + 'px');
+      t.style.setProperty('--ck-b', (tr.bottom - (p.b + PIC_RING) + W + 0.5).toFixed(3) + 'px');
+      var body = card.querySelector(':scope > .swap-body.is-set');
+      if (!body) return;
+      var br = body.getBoundingClientRect();
+      if (Math.abs(br.left - b0.l) > 2 || Math.abs(br.top - b0.t) > 2 || Math.abs(br.right - b0.r) > 2 || Math.abs(br.bottom - b0.b) > 2) return;
+      var bs = body.style;
+      bs.left = ((parseFloat(bs.left) || 0) + (p.l - br.left)).toFixed(3) + 'px';
+      bs.top = ((parseFloat(bs.top) || 0) + (p.t - br.top)).toFixed(3) + 'px';
+      bs.width = (p.r - p.l).toFixed(3) + 'px';
+      bs.height = (p.b - p.t).toFixed(3) + 'px';
+    });
+  }
+  function picBoxOf(row) {
+    var h = row.querySelector('.duo-half--mega');
+    if (!h) return null;
+    var r = h.getBoundingClientRect();
+    return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36 } : null;
+  }
+  function seatRowGaps() {
+    var jobs = [];
+    [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
+      var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
+      var prev = null, prevInk = null, prevCur = null;
+      var acc = 0, prevFoot = null, prevPic = null;
+      rows.forEach(function (row) {
+        var ink = rowInk(row);
+        var rowDelta = 0, hasJob = false;
+        var el = row;
+        if (!prev && ink && body.parentElement.classList.contains('m--latest')) {
+          var hb = document.querySelector('.page-rows > .section-band');
+          if (hb) {
+            var bandFoot = body.getBoundingClientRect().top + hb.offsetHeight;
+            var tk = document.body.classList.contains('word-page') ? null
+              : document.querySelector('.page-rows > .sub-ticker--head') || body.querySelector(':scope > .sub-ticker');
+            if (tk && tk.offsetHeight) bandFoot += tk.offsetHeight;
+            var firstAt = bandFoot + ROW_GAP;
+            var lh = body.querySelector(':scope > .latest-head');
+            if (lh) {
+              var lr = document.createRange(); lr.selectNodeContents(lh);
+              var lrr = [].filter.call(lr.getClientRects(), function (x) { return x.width > 0; })[0];
+              if (lrr) {
+                var lcs = getComputedStyle(lh);
+                measureCtx.font = lcs.fontStyle + ' ' + lcs.fontWeight + ' ' + lcs.fontSize + ' ' + lcs.fontFamily;
+                var lm = measureCtx.measureText((lh.textContent || '').trim());
+                var lb = lrr.top + (lrr.height - (lm.fontBoundingBoxAscent + lm.fontBoundingBoxDescent)) / 2 + lm.fontBoundingBoxAscent;
+                var lShift = (bandFoot + 72) - (lb - lm.actualBoundingBoxAscent);
+                lh.style.top = ((parseFloat(lh.style.top) || 0) + lShift).toFixed(2) + 'px';
+                firstAt = lb + lShift + ROW_GAP;
+              }
+            }
+            rowDelta = firstAt - ink.t; hasJob = true;
+          }
+        }
+        if (!prev && ink && !body.parentElement.classList.contains('m--latest')) {
+          var sb = body.parentElement.querySelector(':scope > .page-banner--section');
+          var sAnchor = sb && (sb.querySelector('.banner-line--below') || sb.querySelector('.banner-name'));
+          var sBase = sAnchor && baselineOf(sAnchor);
+          if (sBase) { rowDelta = sBase.base + SECTION_ROW_GAP - ink.t; hasJob = true; }
+        }
+        var cur = rowCourier(row);
+        var isB = !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
+        var pic = picBoxOf(row);
+        if (isB && pic && prevPic) {
+          rowDelta = (prevPic.t + ((prevPic.b - prevPic.t) - (pic.b - pic.t)) / 2) - (pic.t + acc);
+          hasJob = true;
+        } else if (prev && cur && prevFoot != null
+            && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
+          var curT = Math.min(cur.t, ink ? ink.t : Infinity) + acc;
+          rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
+        }
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0 });
+        var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
+        prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
+        prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
+        acc += rowDelta;
+        prev = row; prevInk = ink; prevCur = cur;
+      });
+    });
+    jobs.forEach(function (j) {
+      if (Math.abs(j.delta) < 0.25) return;
+      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(2) + 'px', 'important');
+    });
+    var edges = [];
+    [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
+      var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
+      var last = rows[rows.length - 1];
+      if (!last) return;
+      var a = rowCourier(last), b = rowInk(last);
+      var foot = Math.max(a ? a.b : -Infinity, b ? b.b : -Infinity);
+      var lastA = last.classList.contains('card--pair-b') && rows[rows.length - 2];
+      if (lastA) { var a2 = rowCourier(lastA), b2 = rowInk(lastA); foot = Math.max(foot, a2 ? a2.b : -Infinity, b2 ? b2.b : -Infinity); }
+      if (!isFinite(foot)) return;
+      var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
+      while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !next.classList.contains('sub-ticker--foot')) next = next.nextElementSibling;
+      if (!next) return;
+      if (next.classList.contains('movement')) {
+        var ban = next.querySelector(':scope > .page-banner');
+        if (!ban) return;
+        var ml = parseFloat(ban.style.getPropertyValue('--mk-line'));
+        if (isNaN(ml)) return;
+        line = ban.getBoundingClientRect().top + ml;
+      } else line = next.getBoundingClientRect().top;
+      var nm = 0;
+      if (next.classList.contains('movement')) {
+        nm = parseFloat(getComputedStyle(next).marginTop) || 0;
+        next.style.setProperty('margin-top', '0px', 'important');
+      }
+      edges.push({ el: body, prop: 'padding-bottom', delta: COURIER_GAP - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
+    });
+    edges.forEach(function (j) {
+      if (Math.abs(j.delta) < 0.25) return;
+      j.el.style.setProperty(j.prop, Math.max(0, j.m + j.delta).toFixed(2) + 'px', 'important');
+    });
   }
   var plateBodySet = [];
   function resetPlateBody() {
@@ -5467,6 +5654,8 @@
     });
   }
   var SWAP_PAD = 36, SWAP_OPEN = 0, SWAP_GAP = 36, SWAP_MAX = 40, SWAP_LINES = 6;
+  var ESSAY_TITLE_GAP = 18, ESSAY_TITLE_H = 400, ESSAY_PREVIEW_PAD = 54, ESSAY_COURIER_GAP = 18, ESSAY_DEK_APART = 72;
+  var SIDE_ALIGN_MQ = window.matchMedia('(min-width: 1024px)');
   var SWAP_CARDS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
   function swapImg(card, img) {
     var src = img && (img.currentSrc || img.src);
@@ -5598,6 +5787,34 @@
       else if (side === 'l') { j.T = pr.right - (B.r + W); j.sx = j.T; j.sy = 0; j.Bd = { l: B.l - W, r: B.l - W + j.T, t: pr.top, b: pr.bottom }; j.bp = { l: SWAP_OPEN, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD }; }
       else if (side === 'b') { j.T = (B.t - W) - pr.top; j.sx = 0; j.sy = -j.T; j.Bd = { l: pr.left, r: pr.right, t: B.b + W - j.T, b: B.b + W }; j.bp = { l: SWAP_OPEN, r: SWAP_OPEN, t: SWAP_PAD, b: SWAP_PAD }; }
       else if (side === 't') { j.T = pr.bottom - (B.b + W); j.sx = 0; j.sy = j.T; j.Bd = { l: pr.left, r: pr.right, t: B.t - W, b: B.t - W + j.T }; j.bp = { l: SWAP_OPEN, r: SWAP_OPEN, t: SWAP_PAD, b: SWAP_PAD }; }
+      var stdW = px(getComputedStyle(j.card).getPropertyValue('--std-w'));
+      if (j.card.closest('.card--ps-pair')) stdW = (cr0.width - ROW_GAP) / 2;
+      var onGrid = stdW > 0 && (side === 'l' || side === 'r')
+        && j.card.matches('.duo-half--mega, .latest-cell--ps');
+      if (onGrid) {
+        var G = ROW_GAP, Fl = B.l - W, Fr = B.r + W;
+        if (side === 'r') { V.r = Fl - G; V.l = V.r - stdW; }
+        else { V.l = Fr + G; V.r = V.l + stdW; }
+        pd = function (k) { return (k === 'l' || k === 'r') ? SWAP_PAD : SWAP_OPEN; };
+        if (j.card.matches('.duo-half--mega')) {
+          j.under = true;
+          V.l = Fl; V.r = Fr; V.t = B.b + ESSAY_TITLE_GAP; V.b = V.t + ESSAY_TITLE_H;
+          j.picW = Fr - Fl;
+          pd = function () { return 0; };
+        }
+        j.T = stdW + G;
+        j.sx = side === 'r' ? -j.T : j.T; j.sy = 0;
+        j.Bd = side === 'r' ? { l: Fr - stdW, r: Fr, t: pr.top, b: pr.bottom } : { l: Fl, r: Fl + stdW, t: pr.top, b: pr.bottom };
+        j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
+        if (j.under) {
+          j.sx = 0;
+          j.Bd = { l: Fl, r: Fr, t: B.t, b: B.b };
+          j.cols2 = true;
+          j.ncol = (Fr - Fl) >= 480 ? 2 : 1;
+        }
+      }
+      if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
+      if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
       if (j.body) {
@@ -5612,8 +5829,12 @@
       j.cx = 0;
       if (side === 'l') j.cx = -Math.max(0, (V.r - pd('r')) - pr.right);
       else if (side === 'r') j.cx = Math.max(0, pr.left - (V.l + pd('l')));
+      if (onGrid) j.cx = 0;
       var tcs = getComputedStyle(j.title);
       j.family = tcs.fontFamily; j.track = trackEm(tcs);
+      var scs = getComputedStyle(j.st);
+      j.caps = scs.textTransform === 'uppercase';
+      j.sface = j.caps ? '700 100px ' + j.family : scs.fontStyle + ' ' + scs.fontWeight + ' 100px ' + scs.fontFamily;
       if (j.sd && j.dek) {
         var dcs = getComputedStyle(j.dek);
         j.dfont = { fontFamily: dcs.fontFamily, fontSize: dcs.fontSize, fontStyle: dcs.fontStyle, fontWeight: dcs.fontWeight, lineHeight: dcs.lineHeight, letterSpacing: dcs.letterSpacing };
@@ -5637,35 +5858,108 @@
           bs.width = (j.Bd.r - j.Bd.l).toFixed(2) + 'px';
           bs.height = (j.Bd.b - j.Bd.t).toFixed(2) + 'px';
           bs.padding = j.bp.t + 'px ' + j.bp.r + 'px ' + j.bp.b + 'px ' + j.bp.l + 'px';
-          var bt = j.body.firstElementChild;
+          var bt = j.body.querySelector(':scope > .swap-body-text') || j.body.firstElementChild;
           if (bt && j.bfont) {
             for (var kf in j.bfont) if (j.bfont[kf]) bt.style[kf] = j.bfont[kf];
-            var rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b + 0.5) / j.blh));
-            bt.style.setProperty('-webkit-line-clamp', String(rows));
-            bt.style.maxHeight = (rows * j.blh).toFixed(2) + 'px';
+            var pdk = null, pdkH = 0;
+            if (j.cols2 && !j.body.querySelector(':scope > .swap-body-close')) {
+              var cx = document.createElement('button');
+              cx.type = 'button';
+              cx.className = 'swap-body-close';
+              cx.setAttribute('aria-label', 'Close preview');
+              cx.addEventListener('click', function (ev) {
+                ev.preventDefault(); ev.stopPropagation();
+                var b = this.closest('.card');
+                var po = b && b.querySelector('.peek-open');
+                if (po) po.click();
+              });
+              j.body.appendChild(cx);
+            }
+            if (j.cols2) {
+              pdk = j.body.querySelector(':scope > .swap-body-dek');
+              if (!pdk) { pdk = document.createElement('span'); pdk.className = 'swap-body-dek'; j.body.insertBefore(pdk, bt); }
+              var srcDek = j.dek;
+              pdk.innerHTML = srcDek ? srcDek.innerHTML : '';
+              if (j.dfont) for (var kd in j.dfont) if (j.dfont[kd]) pdk.style[kd] = j.dfont[kd];
+              pdk.style.transform = 'none';
+              pdk.style.marginBottom = SWAP_PAD + 'px';
+              pdkH = pdk.textContent.trim() ? pdk.getBoundingClientRect().height + SWAP_PAD : 0;
+              if (!pdkH) pdk.style.display = 'none'; else pdk.style.removeProperty('display');
+            }
+            var rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - pdkH + 0.5) / j.blh));
+            if (j.cols2) {
+              bt.style.removeProperty('-webkit-line-clamp');
+              var one = j.ncol === 1;
+              if (one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
+              bt.style.columnGap = SWAP_PAD + 'px';
+              bt.style.columnFill = 'balance';
+              bt.style.height = 'auto';
+              bt.style.maxHeight = 'none';
+              bt.style.overflow = one ? 'hidden' : '';
+              var natural = bt.getBoundingClientRect().height;
+              var cap = rows * j.blh;
+              if (natural > cap + 0.5) {
+                bt.style.columnFill = 'auto';
+                bt.style.height = cap.toFixed(2) + 'px';
+                bt.style.maxHeight = cap.toFixed(2) + 'px';
+              }
+              bt.style.transform = 'none';
+              var bb = j.body.getBoundingClientRect(), tb = bt.getBoundingClientRect();
+              var rgT = document.createRange(); rgT.selectNodeContents(bt);
+              var inT = Infinity, inB = -Infinity;
+              [].forEach.call(rgT.getClientRects(), function (x) {
+                if (!x.width || x.bottom > tb.bottom + 0.5 || x.top < tb.top - 0.5) return;
+                if (x.top < inT) inT = x.top; if (x.bottom > inB) inB = x.bottom;
+              });
+              if (pdk && pdkH) { var pr0 = pdk.getBoundingClientRect(); if (pr0.top < inT) inT = pr0.top; }
+              if (isFinite(inT)) {
+                var shY = 'translateY(' + (((bb.bottom - inB) - (inT - bb.top)) / 2).toFixed(2) + 'px)';
+                bt.style.transform = shY;
+                if (pdk) pdk.style.transform = shY;
+              }
+            } else {
+              bt.style.setProperty('-webkit-line-clamp', String(rows));
+              bt.style.maxHeight = (rows * j.blh).toFixed(2) + 'px';
+            }
           }
           j.body.classList.add('is-set');
         }
       } else if (j.body) j.body.classList.remove('is-set');
       if (j.sd && j.dfont) {
         for (var k in j.dfont) j.sd.style[k] = j.dfont[k];
-        j.sd.style.width = Math.max(0, j.I.w).toFixed(2) + 'px';
-        j.sd.style.marginTop = SWAP_GAP + 'px';
+        j.sd.style.width = Math.max(0, j.under && j.picW ? j.picW - j.I.w - ESSAY_DEK_APART : j.I.w).toFixed(2) + 'px';
+        j.sd.style.marginTop = j.under ? '0px' : SWAP_GAP + 'px';
+        if (j.under) j.sd.style.top = '0px'; else j.sd.style.removeProperty('top');
       }
     });
     jobs.forEach(function (j) { j.dh = j.sd ? j.sd.getBoundingClientRect().height + SWAP_GAP : 0; });
     jobs.forEach(function (j) {
-      var text = (j.st.getAttribute('data-text') || '').toUpperCase();
+      var text = j.st.getAttribute('data-text') || '';
+      if (j.caps) text = text.toUpperCase();
       var tok = swapTokens(text);
       if (!tok.length || j.I.w <= 0) return;
-      measureCtx.font = '700 100px ' + j.family;
+      var maxFs = SWAP_MAX;
+      if (!j.caps) {
+        measureCtx.font = '700 100px ' + j.family;
+        var capWas = measureCtx.measureText('H').actualBoundingBoxAscent;
+        measureCtx.font = j.sface;
+        var capIs = measureCtx.measureText('H').actualBoundingBoxAscent;
+        if (capWas > 0 && capIs > 0) maxFs = SWAP_MAX * capWas / capIs;
+        j.track = 0;
+      }
+      measureCtx.font = j.sface;
       var tr100 = j.track * 100;
       var w100 = function (str) { return measureCtx.measureText(str).width + tr100 * str.length; };
-      var best = null;
+      var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);
-        var fs = Math.min(j.I.w * 100 / p.w, (j.I.h - j.dh) / k, SWAP_MAX) * 0.99;
+        var fs = Math.min(j.I.w * 100 / p.w, (j.I.h - j.dh) / k, maxFs) * 0.99;
+        tries.push({ fs: fs, lines: p.lines });
         if (!best || fs > best.fs + 0.5) best = { fs: fs, lines: p.lines };
+      }
+      if (best && j.card.matches('.duo-half--mega') && !j.under) {
+        var top = best.fs;
+        tries.forEach(function (t) { if (t.fs >= top - 0.5 && t.lines.length > best.lines.length) best = t; });
       }
       if (!best || best.fs <= 0) return;
       j.st.textContent = '';
@@ -5679,6 +5973,58 @@
       j.st.style.letterSpacing = j.track ? j.track + 'em' : '';
       j.col.classList.add('is-set');
       j.card.classList.add('has-swap');
+    });
+    var unders = jobs.filter(function (j) { return j.under && j.col.classList.contains('is-set'); });
+    unders.forEach(function (j) {
+      var ln = j.st.querySelector('.swap-line');
+      var rg = document.createRange(); if (ln) rg.selectNodeContents(ln);
+      var r = ln ? [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0] : null;
+      if (!r) return;
+      var cs = getComputedStyle(ln);
+      measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = measureCtx.measureText(ln.textContent || '');
+      var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+      var inkTop = r.top + (r.height - (fa + fd)) / 2 + fa - m.actualBoundingBoxAscent;
+      var cFoot = -Infinity, cHead = Infinity;
+      [].forEach.call(j.card.querySelectorAll('.cover-meta'), function (cm) {
+        var t0 = (cm.textContent || '').trim();
+        if (!t0) return;
+        var rc = document.createRange(); rc.selectNodeContents(cm);
+        var rr = [].filter.call(rc.getClientRects(), function (x) { return x.width > 0; })[0];
+        if (!rr || rr.top < j.B.b - 1) return;
+        var ccs = getComputedStyle(cm);
+        measureCtx.font = ccs.fontStyle + ' ' + ccs.fontWeight + ' ' + ccs.fontSize + ' ' + ccs.fontFamily;
+        var cmm = measureCtx.measureText(ccs.textTransform === 'uppercase' ? t0.toUpperCase() : t0);
+        var cfa = cmm.fontBoundingBoxAscent, cfd = cmm.fontBoundingBoxDescent;
+        var cb0 = rr.top + (rr.height - (cfa + cfd)) / 2 + cfa;
+        cFoot = Math.max(cFoot, cb0 + cmm.actualBoundingBoxDescent);
+        cHead = Math.min(cHead, cb0 - cmm.actualBoundingBoxAscent);
+      });
+      var above = isFinite(cFoot) ? cFoot : j.B.b;
+      var tTop = above + ESSAY_TITLE_GAP;
+      j.inkShift = tTop - inkTop;
+      var lns = j.st.querySelectorAll('.swap-line'), last = lns[lns.length - 1];
+      var rl = document.createRange(); rl.selectNodeContents(last);
+      var r2 = [].filter.call(rl.getClientRects(), function (x) { return x.width > 0; })[0];
+      var dk = j.sd && j.sd.querySelector('.swap-dek-ink');
+      if (r2 && dk) {
+        var base = r2.top + (r2.height - (fa + fd)) / 2 + fa;
+        var dcs = getComputedStyle(dk);
+        measureCtx.font = dcs.fontStyle + ' ' + dcs.fontWeight + ' ' + dcs.fontSize + ' ' + dcs.fontFamily;
+        var dm = measureCtx.measureText((dk.textContent || '').trim());
+        var rd = document.createRange(); rd.selectNodeContents(dk);
+        var r3 = [].filter.call(rd.getClientRects(), function (x) { return x.width > 0; })[0];
+        if (r3) {
+          var dfa = dm.fontBoundingBoxAscent, dfd = dm.fontBoundingBoxDescent;
+          var dTop = r3.top + (r3.height - (dfa + dfd)) / 2 + dfa - dm.actualBoundingBoxAscent;
+          j.dekShift = tTop - (dTop + j.inkShift);
+        }
+      }
+    });
+    unders.forEach(function (j) {
+      if (j.inkShift == null) return;
+      j.col.style.top = ((parseFloat(j.col.style.top) || 0) + j.inkShift).toFixed(2) + 'px';
+      if (j.dekShift != null && j.sd) j.sd.style.top = ((parseFloat(j.sd.style.top) || 0) + j.dekShift).toFixed(2) + 'px';
     });
   }
   function seatWordClips() {
@@ -5846,6 +6192,21 @@
     }
     if (scanG) scanG.clearRect(0, 0, SCAN_W, SCAN_H);
     return scanG;
+  }
+  var SECTION_HEAD = 54, SECTION_DEK_GAP = 18, SECTION_ROW_GAP = 36;
+  function baselineOf(el) {
+    var t = (el.textContent || '').trim();
+    if (!t) return null;
+    var cs = getComputedStyle(el);
+    if (cs.textTransform === 'uppercase') t = t.toUpperCase();
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.insertBefore(probe, el.firstChild);
+    var base = probe.getBoundingClientRect().bottom;
+    probe.remove();
+    measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var m = measureCtx.measureText(t);
+    return { base: base, cap: base - m.actualBoundingBoxAscent };
   }
   function inkReach(el) {
     var cs = getComputedStyle(el);
@@ -6132,6 +6493,7 @@
     var jobs = [];
     var seen = [];
     [].forEach.call(list, function (el) {
+      if (el.closest('.essay-acts, .sub-ticker')) return;
       var cs = csSnap(getComputedStyle(el));
       if (cs.display === 'none') return;
       var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
@@ -6460,7 +6822,7 @@
           col0.classList.remove('fr', 'fr-l', 'fr-r', 'fr-d', 'fr-u');
           ['--fr-t', '--fr-b', '--fr-l', '--fr-r', '--fr-kt', '--fr-kb', '--fr-o', '--fr-e', '--rl-o'].forEach(function (v) { col0.style.removeProperty(v); });
         }
-        [by, pk, dek].forEach(function (el) {
+        [by, pk, dek].concat([].slice.call(card.querySelectorAll('.cover-meta--corner'))).forEach(function (el) {
           if (!el) return;
           el.classList.remove('rb-in', 'rb-x');
           el.style.removeProperty('--rb-dy');
@@ -6471,6 +6833,7 @@
       var tS = inkSpan(title), dS = inkSpan(dek);
       if (!tS || !dS) { out(); return; }
       var g = dS.top - tS.bot;
+      if (!(g > 0) && card.matches('.duo-half--mega')) g = 1;
       if (!(g > 0)) { out(); return; }
       var lines = title.querySelectorAll('.title-line');
       if (!lines.length) lines = title.querySelectorAll('.hl-ink');
@@ -6494,6 +6857,7 @@
       var cover = card.querySelector('.duo-card-image, .latest-cover-col, .latest-cover');
       var cr = cover ? restRect(cover) : null;
       var picLeft = cr ? (cr.left + cr.right) / 2 < (tL + tR) / 2 : true;
+      if (card.closest('.card--kind-postscript, .card--kind-contra')) picLeft = false;
       var aimL = tL, aimR = tR;
       var centred = !isContra && !!cr;
       var wide = Math.max(tR - tL, dR - dL);
@@ -6553,6 +6917,12 @@
         if (lf < l) l = lf;
         if (rg > r) r = rg;
       };
+      var corners = function (headY, footY, picL, picR, author) {
+        seat(author, headY, 'mid', { inkL: picL });
+        seat(card.querySelector('.cover-meta--cdate'), headY, 'mid', { inkR: picR });
+        seat(pk, footY, 'mid', { inkL: picL });
+        seat(card.querySelector('.cover-meta--ckick'), footY, 'mid', { inkR: picR });
+      };
       var hr = head && head.getBoundingClientRect(), mr = more && more.getBoundingClientRect();
       var ring = function (rT, rB, rL, rR, kt0, kb0, o, e, rl, sideCls, sIn) {
         var col = title.parentElement, cb = col.getBoundingClientRect();
@@ -6576,16 +6946,63 @@
         var cellM = card.getBoundingClientRect();
         var farX = picLeft ? cellM.right - (cr.left - cellM.left) : cellM.left + (cellM.right - cr.right);
         if (WRAP) {
-          var frL = Math.min(nearX, farX), frR = Math.max(nearX, farX), frMid = (frL + frR) / 2;
-          var kc = card.querySelector('.cover-meta--kick');
-          seat(kc, cr.top + REST_INSET / 2, 'mid', { mid: frMid });
-          var pkB = pk && (pk.querySelector('.peek-open') || pk), ePk2 = pk && inkEdges(pk);
-          if (pkB && ePk2) {
-            var hR2 = parseFloat(getComputedStyle(pkB).getPropertyValue('--hl-rgt')) || 0;
-            var symR2 = pkB.getBoundingClientRect().right - hR2 + 8 + 12 * 16 / 20 + 0.5;
-            seat(pk, cr.bottom - REST_INSET / 2, 'mid', { inkL: frMid - (symR2 - ePk2.l) / 2 });
+          var frL = Math.min(nearX, farX), frR = Math.max(nearX, farX);
+          var kc = card.querySelector('.cover-meta--kick:not(.cover-meta--corner)');
+          var hy = cr.top + REST_INSET / 2, fy = cr.bottom - REST_INSET / 2;
+          if (!card.matches('.duo-half--mega')) corners(hy, fy, frL, frR, kc);
+          else {
+          hy = cr.bottom - REST_INSET + ESSAY_COURIER_GAP;
+          var hEdge = 'top';
+          var kk3 = card.querySelector('.cover-meta--ckick');
+          if (kk3) seat(kk3, hy, hEdge, { inkL: frL });
+          var pkArrow = 0;
+          var pkb = pk && (pk.querySelector('.peek-open') || pk);
+          if (pkb) {
+            var pb4 = getComputedStyle(pkb, '::before');
+            var mp = pb4.webkitMaskPosition || pb4.maskPosition || '';
+            var ms = pb4.webkitMaskSize || pb4.maskSize || '';
+            pkArrow = Math.max(0, (parseFloat(mp.split(' ')[0]) || 0) + (parseFloat(ms.split(' ')[0]) || 0));
           }
-          seatSideStacks(title.parentElement, cr.top + REST_INSET, cr.bottom - REST_INSET, frL, frR - REST_INSET, pk);
+          void pkArrow;
+          if (pkb && pk) {
+            var pwx = parseFloat(pk.style.getPropertyValue('--rb-dx')) || 0, pwy = parseFloat(pk.style.getPropertyValue('--rb-dy')) || 0;
+            var pbr = pkb.getBoundingClientRect();
+            pk.style.setProperty('--rb-dx', (frR + 1 - (pbr.right - pwx)).toFixed(2) + 'px');
+            pk.style.setProperty('--rb-dy', ((cr.bottom - REST_INSET) + 1 - (pbr.bottom - pwy)).toFixed(2) + 'px');
+            pk.classList.add('rb-in');
+          }
+          var ke = kk3 && inkEdges(kk3);
+          if (kc && ke) seat(kc, hy, hEdge, { inkL: ke.r + 1.8 * (parseFloat(getComputedStyle(kc).fontSize) || 13) });
+          if (kk3 && ke) {
+            var cd3 = card.querySelector('.cover-meta--cdate');
+            var gap3 = 1.8 * (parseFloat(getComputedStyle(kk3).fontSize) || 13);
+            if (kc) kc.classList.remove('is-wrapped');
+            if (cd3 && (cd3.textContent || '').trim()) {
+              seat(cd3, hy, hEdge, { inkL: ke.r + gap3 });
+              var de3 = inkEdges(cd3);
+              if (kc && de3) seat(kc, hy, hEdge, { inkL: de3.r + gap3 });
+            } else cd3 = null;
+            var ae3 = kc && inkEdges(kc);
+            if (ae3 && ae3.r > frR + 0.5) {
+              kc.classList.add('is-wrapped');
+              seat(kc, hy + 1.6 * (parseFloat(getComputedStyle(kc).fontSize) || 13), hEdge, { inkL: frL });
+            }
+            if (card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
+              var carry = function (el, d) {
+                if (!el) return;
+                el.style.setProperty('--rb-dx', ((parseFloat(el.style.getPropertyValue('--rb-dx')) || 0) + d).toFixed(2) + 'px');
+              };
+              var wrapped3 = !!(kc && ae3 && kc.classList.contains('is-wrapped'));
+              var end3 = kc && ae3 && !wrapped3 ? ae3.r : cd3 && de3 ? de3.r : ke.r;
+              var d3 = frR - end3;
+              carry(kk3, d3);
+              if (cd3) carry(cd3, d3);
+              if (kc && ae3 && !wrapped3) carry(kc, d3);
+              if (wrapped3) carry(kc, frR - (frL + (ae3.r - ae3.l)));
+              if (frR > r) r = frR;
+            }
+          }
+          }
         } else {
           seat(by, cr.top + REST_INSET / 2, 'mid', picLeft ? { left: nearX + m } : { right: nearX - m });
           seat(pk, cr.bottom - REST_INSET / 2, 'mid', picLeft ? { left: nearX + m } : { right: nearX - m });
@@ -6600,7 +7017,7 @@
         title.__picLeft = picLeft; title.__inkL = inkL; title.__inkR = inkR;
         var O = REST_OVERLAP, I = REST_INSET, P = REST_PAD, E = REST_EDGE;
         var rxT = cr.top, rxB = cr.bottom;
-        var blueT = Math.min(cr.top + I, tS.top - P), blueB = Math.max(cr.bottom - I, dS.bot + P);
+        var blueT = cr.top + I, blueB = cr.bottom - I;
         var tInk = tS.bot - tS.top, dInk = dS.bot - dS.top;
         var groupH = tInk + P + dInk;
         var top0 = blueT + Math.max(P, (blueB - blueT - groupH) / 2);
@@ -6613,8 +7030,8 @@
         var cellr = card.getBoundingClientRect();
         var cardFar = picLeft ? cellr.right - (cr.left - cellr.left) : cellr.left + (cellr.right - cr.right);
         var boxFar;
-        if (picLeft) { boxFar = Math.max(cr.right - O + wide + 2 * REST_FAR, cardFar - REST_FAR); rxL = cr.right - O; rxR = boxFar + REST_FAR; E = REST_FAR; }
-        else { boxFar = Math.min(cr.left + O - wide - 2 * REST_FAR, cardFar + REST_FAR); rxR = cr.left + O; rxL = boxFar - REST_FAR; E = REST_FAR; }
+        if (picLeft) { boxFar = cardFar - REST_FAR; rxL = cr.right - O; rxR = boxFar + REST_FAR; E = REST_FAR; }
+        else { boxFar = cardFar + REST_FAR; rxR = cr.left + O; rxL = boxFar - REST_FAR; E = REST_FAR; }
         title.style.setProperty('--rx-kt', (blueT - rxT).toFixed(2) + 'px');
         title.style.setProperty('--rx-kb', (rxB - blueB).toFixed(2) + 'px');
         title.style.setProperty('--rx-o', O + 'px');
@@ -6677,16 +7094,11 @@
         title.style.setProperty('--rx-r', (hb.right - cxR + tdx).toFixed(2) + 'px');
         title.classList.add('rx');
         ring(cxT, cxB, cr.left, cr.right, ckt, ckb, Oc, 0, picAbove ? REST_RELEASE() : -REST_RELEASE(), picAbove ? 'fr-d' : 'fr-u', Ic);
-        var colS = title.parentElement, cbS = colS.getBoundingClientRect();
-        var regT = picAbove ? (WRAP ? cr.bottom - Oc - WRAP : cr.bottom) : cxT, regB = picAbove ? cxB : (WRAP ? cr.top + Oc + WRAP : cr.top);
-        seatSideStacks(colS, regT, regB, cr.left, cr.right - Ic, pk);
-        var kk = colS.querySelector(':scope > .cover-meta--kick');
-        if (kk && WRAP) {
-          if (picAbove) seat(kk, cr.bottom - Oc - WRAP / 2, 'mid', { mid: (cr.left + cr.right) / 2 });
-          else {
-            seat(kk, bandMid, 'mid', { mid: (cr.left + cr.right) / 2 });
-            if (pk && typeof inkL === 'number') seat(pk, cr.top + Oc + WRAP / 2, 'mid', { left: inkL - padC });
-          }
+        var colS = title.parentElement;
+        var kk = colS.querySelector(':scope > .cover-meta--kick:not(.cover-meta--corner)');
+        if (WRAP) {
+          if (picAbove) corners(cxT - WRAP / 2, bandMid, cxL - WRAP, cxR + WRAP, kk);
+          else corners(bandMid, cxB + WRAP / 2, cxL - WRAP, cxR + WRAP, kk);
         }
       } else {
         title.classList.remove('hl-col-r', 'hl-col-l', 'hl-col-d', 'hl-col-u', 'rx');
@@ -6755,13 +7167,12 @@
       ];
       pair.forEach(function (p) { p.el.style[p.side] = ''; });
       var box = band.getBoundingClientRect();
+      var SIDE_IN = 36;
       pair.forEach(function (p) {
         var ink = dekInk(p.el);
         if (!ink) return;
-        var air = ink.top - box.top;
-        if (!(air > 0)) return;
         var now = p.side === 'marginLeft' ? ink.left - box.left : box.right - ink.right;
-        p.el.style[p.side] = Math.max(0, air - now).toFixed(2) + 'px';
+        p.el.style[p.side] = (SIDE_IN - now).toFixed(2) + 'px';
       });
     });
   }
@@ -6775,6 +7186,16 @@
       var below = band.querySelector('.banner-line--below');
       if (!name || !below) return;
       below.style.top = '';
+      if (band.classList.contains('page-banner--section')) {
+        var nb = baselineOf(name), db = baselineOf(below);
+        if (!nb || !db) return;
+        var ncs2 = getComputedStyle(name);
+        measureCtx.font = ncs2.fontStyle + ' ' + ncs2.fontWeight + ' ' + ncs2.fontSize + ' ' + ncs2.fontFamily;
+        var nDesc = measureCtx.measureText('p').actualBoundingBoxDescent || 0;
+        var t0 = parseFloat(getComputedStyle(below).top) || 0;
+        below.style.top = (t0 + (nb.base + nDesc + SECTION_DEK_GAP) - db.cap).toFixed(2) + 'px';
+        return;
+      }
       var nr = inkReach(name), lr = inkReach(below);
       if (!nr || !lr) return;
       var wcs = getComputedStyle(name);
@@ -6933,7 +7354,7 @@
       if (ttl && !hit(e, 'a[href]')) {
         e.preventDefault(); e.stopPropagation();
         var tr = ttl.getBoundingClientRect(), bf = getComputedStyle(ttl, '::before');
-        var inBox = e.clientX >= tr.left + (parseFloat(bf.left) || 0) && e.clientX <= tr.right - (parseFloat(bf.right) || 0) &&
+        var inBox = e.clientX >= tr.left + (parseFloat(bf.left) || 0) + (parseFloat(bf.marginLeft) || 0) && e.clientX <= tr.right - (parseFloat(bf.right) || 0) - (parseFloat(bf.marginRight) || 0) &&
           e.clientY >= tr.top + (parseFloat(bf.top) || 0) && e.clientY <= tr.bottom - (parseFloat(bf.bottom) || 0);
         if (inBox) {
           var toP = card.querySelector('.card-image-link, .latest-cover');
@@ -6975,6 +7396,85 @@
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
   });
+})();
+
+(function () {
+  var ESSAYS = '.duo-half--mega';
+  var READ = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var PEEK = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 3h5v5M17 3L3 17M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function picBox(card) {
+    var t = card.querySelector('.card-title.hl-rect.rx');
+    if (!t) return null;
+    var r = t.getBoundingClientRect(), c = getComputedStyle(t, '::before');
+    if (c.content === 'none') return null;
+    var wrap = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+    var box = { l: r.left + (parseFloat(c.left) || 0) - wrap, r: r.right - (parseFloat(c.right) || 0) + wrap, t: r.top + (parseFloat(c.top) || 0), b: r.bottom - (parseFloat(c.bottom) || 0) };
+    return box.r > box.l && box.b > box.t ? box : null;
+  }
+  function inside(b, x, y) { return b && x >= b.l && x <= b.r && y >= b.t && y <= b.b; }
+  function acts(card) {
+    if (card.__acts) return card.__acts;
+    var link = card.querySelector('a.card-image-link') || card.querySelector('a[href]');
+    var el = document.createElement('div');
+    el.className = 'essay-acts';
+    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">Read Now' + READ + '</a>'
+      + '<span class="essay-act-sep" aria-hidden="true">|</span>'
+      + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
+    el.querySelector('.essay-act--peek').addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var po = card.querySelector('.peek-open');
+      if (po) po.click();
+      hide();
+    });
+    card.appendChild(el);
+    card.__acts = el;
+    return el;
+  }
+  var shown = null;
+  function hide() {
+    if (!shown) return;
+    shown.classList.remove('is-acts');
+    shown = null;
+  }
+  function show(card, box) {
+    var el = acts(card);
+    var op = el.offsetParent || card;
+    var o = op.getBoundingClientRect();
+    el.style.left = (box.l - o.left + op.clientLeft).toFixed(2) + 'px';
+    el.style.top = (box.t - o.top + op.clientTop).toFixed(2) + 'px';
+    el.style.width = (box.r - box.l).toFixed(2) + 'px';
+    el.style.height = (box.b - box.t).toFixed(2) + 'px';
+    if (shown !== card) hide();
+    card.classList.add('is-acts');
+    shown = card;
+  }
+  var lx = -1, ly = -1, pending = false;
+  function run() {
+    pending = false;
+    var hitCard = null, hitBox = null;
+    var cards = document.querySelectorAll(ESSAYS);
+    for (var i = 0; i < cards.length && !hitCard; i++) {
+      var card = cards[i];
+      if (card.matches('.is-open, .is-opening')) continue;
+      var cr = card.getBoundingClientRect();
+      if (ly < cr.top - 400 || ly > cr.bottom + 400) continue;
+      var box = picBox(card);
+      if (!box) continue;
+      var on = inside(box, lx, ly);
+      if (on) { hitCard = card; hitBox = box; }
+    }
+    if (hitCard) show(hitCard, hitBox); else hide();
+  }
+  function ask() {
+    if (pending) return;
+    pending = true;
+    if (window.requestAnimationFrame) requestAnimationFrame(run); else setTimeout(run, 16);
+  }
+  document.addEventListener('pointermove', function (e) { lx = e.clientX; ly = e.clientY; ask(); }, { passive: true });
+  document.addEventListener('pointerleave', function () { lx = ly = -1; ask(); });
+  addEventListener('scroll', ask, { passive: true });
+  addEventListener('newcritic:fit', ask);
+  addEventListener('newcritic:closed', ask);
 })();
 
 </script><script>
@@ -7248,8 +7748,8 @@
     return {
       top: r.top + (parseFloat(c.top) || 0),
       bottom: r.bottom - (parseFloat(c.bottom) || 0),
-      left: r.left + (parseFloat(c.left) || 0),
-      right: r.right - (parseFloat(c.right) || 0)
+      left: r.left + (parseFloat(c.left) || 0) + (parseFloat(c.marginLeft) || 0),
+      right: r.right - (parseFloat(c.right) || 0) - (parseFloat(c.marginRight) || 0)
     };
   }
   function swapped(cover) {
@@ -7286,6 +7786,7 @@
   }
   function inMark(cell, noGap) {
     var mark = markBox(cell.querySelector(TITLES));
+    if (swapped(host)) return inBox(mark);
     var cover = host && host.getBoundingClientRect ? host.getBoundingClientRect() : null;
     if (inBox(mark) || inBox(cover)) return true;
     if (noGap) return false;
@@ -7321,6 +7822,10 @@
   }
   function resolveFrom(node) {
     if (!node || !node.closest) return null;
+    if (node.closest('.peek-open, .swap-body-close')) return null;
+    if (node.closest('.duo-half--mega')) return null;
+    var openEssay = node.closest('.duo-half--mega');
+    if (openEssay && openEssay.matches('.is-open, .is-opening') && openEssay.querySelector(':scope > .swap-body.is-set')) return null;
     var openCell = node.closest(CELLS);
     if (openCell && openCell.classList.contains('is-open') && !swapped(openCell.querySelector('.card-image-link, .latest-cover'))) {
       var onPic = node.closest(COVERS);
@@ -7373,10 +7878,29 @@
   document.documentElement.classList.add('has-cover-cue');
   var WM = '.topbar-wordmark, .reprint-link, .topbar-name, .reprint-name, .section-band .band-mini, .section-band .band-name-mid';
   var wmOf = function (n) { return n && n.closest ? n.closest(WM) : null; };
-  var wmSet = function (on) { document.documentElement.classList.toggle('nc-wm-lit', on); };
-  document.addEventListener('mouseover', function (e) { if (wmOf(e.target)) wmSet(true); }, true);
+  var repEl = document.querySelector('.page-rows > .reprint');
+  var coloEl = document.querySelector('.page-rows > .section-band--colophon');
+  var repUp = function () {
+    if (!repEl || !coloEl) return;
+    var up = coloEl.getBoundingClientRect().bottom <= repEl.getBoundingClientRect().top + 0.5;
+    if (repEl.classList.contains('is-bared') !== up) repEl.classList.toggle('is-bared', up);
+  };
+  addEventListener('scroll', repUp, { passive: true });
+  addEventListener('resize', repUp);
+  addEventListener('load', repUp);
+  repUp();
+  var WM_BLOCK = '.topbar-wordmark, .reprint, .section-band';
+  var litBlock = null;
+  var wmSet = function (on, n) {
+    var b = on && n && n.closest ? n.closest(WM_BLOCK) : null;
+    if (b === litBlock) return;
+    if (litBlock) litBlock.classList.remove('is-wm-lit');
+    litBlock = b;
+    if (b) b.classList.add('is-wm-lit');
+  };
+  document.addEventListener('mouseover', function (e) { var w = wmOf(e.target); if (w) wmSet(true, w); }, true);
   document.addEventListener('mouseout', function (e) { if (wmOf(e.target) && !wmOf(e.relatedTarget)) wmSet(false); }, true);
-  document.addEventListener('focusin', function (e) { if (wmOf(e.target)) wmSet(true); }, true);
+  document.addEventListener('focusin', function (e) { var w = wmOf(e.target); if (w) wmSet(true, w); }, true);
   document.addEventListener('focusout', function (e) { if (wmOf(e.target) && !wmOf(e.relatedTarget)) wmSet(false); }, true);
   function make() {
     cue = document.createElement('span');
