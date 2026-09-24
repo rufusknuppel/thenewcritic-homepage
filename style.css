@@ -3325,6 +3325,11 @@ a.likes:hover::after,
 .latest-rule{ height: 1px; background: var(--white); }
 .latest-cover{ display: block; position: relative; overflow: hidden; }
 .latest-cover img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+/* A postscript whose sitter's head stands high or low in the drawing is
+   zoomed until the head is in the frame's middle (build.js, headCrop):
+   the scale pivots on the point that carries the head to the middle,
+   and the picture clips what it pushes out of the frame. */
+.latest-cover img[style*="--cover-zoom"]{ transform: scale(var(--cover-zoom)); transform-origin: var(--cover-zoom-o, 50% 50%); clip-path: var(--cover-zoom-clip, none); }
 /* The postscript's cover stands PORTRAIT in its left column — its
    top edge ON the meta line's cap ink (the row's 6 pad + Courier's
    6.07 cap offset), the hero's own courier-to-cover seat. */
@@ -8737,8 +8742,14 @@ body.masthead-picked .section-band .band-mid{ visibility: visible; }
    The hero's height is the page's own unit — the row cap gives every
    row the hero's height and the portrait covers take it outright — so
    the one calc raises every card on the page. (46.6667vw - 191.55px)
-   times 1.2. */
-.card .duo-half--mega{ height: calc(56vw - 229.86px); }
+   times 1.2.
+   AND TALL ENOUGH FOR A SQUARE REVIEW (2026-09-23): a review's picture
+   stands square in its frame (fitContra), and every card grows by what
+   that asks, so the review's words keep the room they had. The widest
+   review is the Latest row's, a third of the row less its gaps,
+   (100vw - 240px) / 3; its square and its words need twice that less
+   the frame's 108. Everything else rides this height as before. */
+.card .duo-half--mega{ height: max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)); }
 
 /* ---------- THE TOP LINE AND THE TITLE IN BLACK ----------
    The head pair on every cover — kicker, dot and date — and the title
@@ -8914,7 +8925,7 @@ main.has-mega .cover-meta a{
   /* The hero's own height (see .card .duo-half--mega), so the cell
      stands its full measure before the fitter has run — with the
      picture out of the flow, the words alone would not hold it up. */
-  min-height: calc(56vw - 229.86px);
+  min-height: max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px));
 }
 .latest-cell--contra > .latest-cover-col--square{
   position: absolute;
@@ -15982,7 +15993,7 @@ body.word-page .ledger-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
    absence, so the muting is struck and every word is full strength.
    Stated at forty-four: the muting is a thirty-eight-deep !important,
    and the mode words' own is thirty-nine. */
-main.has-mega .page-rows > .section-band :is(a, span, p, button, time):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band :is(a, span, p, button, time):not(:hover, .sub-ticker, .sub-ticker *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 body.word-page .ledger-head :is(a, span, p, button, th, td):not(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--band-text) !important;
 }
@@ -17370,59 +17381,59 @@ main.has-mega{ --seam: var(--nc-mark); }
 main.has-mega :is(.panel-col, .latest-matter).fr.fr-r:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left var(--fr-o, 0px) top 0 / calc(100% - var(--fr-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left var(--fr-o, 0px) bottom 0 / calc(100% - var(--fr-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top 0 / 1px 100% no-repeat,
     linear-gradient(var(--seam), var(--seam)) left calc(var(--fr-o, 0px) - 1px) top 0 / 1px var(--fr-kt, 0px) no-repeat, linear-gradient(var(--seam), var(--seam)) left calc(var(--fr-o, 0px) - 1px) bottom 0 / 1px var(--fr-kb, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left var(--fr-o, 0px) top 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kt, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left var(--fr-o, 0px) bottom 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kb, 0px) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top var(--fr-kt, 0px) / var(--fr-e, 0px) calc(100% - var(--fr-kt, 0px) - var(--fr-kb, 0px)) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left var(--fr-o, 0px) top 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kt, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left var(--fr-o, 0px) bottom 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kb, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top var(--fr-kt, 0px) / var(--fr-e, 0px) calc(100% - var(--fr-kt, 0px) - var(--fr-kb, 0px)) no-repeat;
 }
 main.has-mega :is(.panel-col, .latest-matter).fr.fr-l:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right var(--fr-o, 0px) top 0 / calc(100% - var(--fr-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right var(--fr-o, 0px) bottom 0 / calc(100% - var(--fr-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / 1px 100% no-repeat,
     linear-gradient(var(--seam), var(--seam)) right calc(var(--fr-o, 0px) - 1px) top 0 / 1px var(--fr-kt, 0px) no-repeat, linear-gradient(var(--seam), var(--seam)) right calc(var(--fr-o, 0px) - 1px) bottom 0 / 1px var(--fr-kb, 0px) no-repeat,
-    linear-gradient(#121417, #121417) right var(--fr-o, 0px) top 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kt, 0px) no-repeat,
-    linear-gradient(#121417, #121417) right var(--fr-o, 0px) bottom 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kb, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left 0 top var(--fr-kt, 0px) / var(--fr-e, 0px) calc(100% - var(--fr-kt, 0px) - var(--fr-kb, 0px)) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right var(--fr-o, 0px) top 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kt, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right var(--fr-o, 0px) bottom 0 / calc(100% - var(--fr-o, 0px)) var(--fr-kb, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top var(--fr-kt, 0px) / var(--fr-e, 0px) calc(100% - var(--fr-kt, 0px) - var(--fr-kb, 0px)) no-repeat;
 }
 main.has-mega :is(.panel-col, .latest-matter).fr.fr-d:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top var(--fr-o, 0px) / 1px calc(100% - var(--fr-o, 0px)) no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top var(--fr-o, 0px) / 1px calc(100% - var(--fr-o, 0px)) no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 bottom 0 / 100% 1px no-repeat,
     linear-gradient(var(--seam), var(--seam)) left 0 top calc(var(--fr-o, 0px) - 1px) / var(--fr-s, 0px) 1px no-repeat, linear-gradient(var(--seam), var(--seam)) right 0 top calc(var(--fr-o, 0px) - 1px) / var(--fr-s, 0px) 1px no-repeat,
-    linear-gradient(#121417, #121417) left 0 top var(--fr-o, 0px) / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top var(--fr-o, 0px) / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
-    linear-gradient(#121417, #121417) left 0 bottom 0 / 100% var(--fr-kb, 0px) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top var(--fr-o, 0px) / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top var(--fr-o, 0px) / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 bottom 0 / 100% var(--fr-kb, 0px) no-repeat;
 }
 main.has-mega :is(.panel-col, .latest-matter).fr.fr-u:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / 1px calc(100% - var(--fr-o, 0px)) no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top 0 / 1px calc(100% - var(--fr-o, 0px)) no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / 100% 1px no-repeat,
     linear-gradient(var(--seam), var(--seam)) left 0 bottom calc(var(--fr-o, 0px) - 1px) / var(--fr-s, 0px) 1px no-repeat, linear-gradient(var(--seam), var(--seam)) right 0 bottom calc(var(--fr-o, 0px) - 1px) / var(--fr-s, 0px) 1px no-repeat,
-    linear-gradient(#121417, #121417) left 0 top 0 / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top 0 / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
-    linear-gradient(#121417, #121417) left 0 top 0 / 100% var(--fr-kt, 0px) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top 0 / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top 0 / var(--fr-s, 0px) calc(100% - var(--fr-o, 0px)) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top 0 / 100% var(--fr-kt, 0px) no-repeat;
 }
 /* the preview's frame, in its plate's margins, on the plate's ring */
 main.has-mega :is(.duo-half--mega, .latest-cell--ps).pic-left .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / calc(100% - var(--pb-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 bottom 0 / calc(100% - var(--pb-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / 1px 100% no-repeat,
     linear-gradient(var(--seam), var(--seam)) right calc(var(--pb-o, 0px) - 1px) top 0 / 1px var(--pb-i, 0px) no-repeat, linear-gradient(var(--seam), var(--seam)) right calc(var(--pb-o, 0px) - 1px) bottom 0 / 1px var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left 0 top 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left 0 bottom 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left 0 top var(--pb-i, 0px) / var(--rest, 36px) calc(100% - 2 * var(--pb-i, 0px)) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 bottom 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top var(--pb-i, 0px) / var(--rest, 36px) calc(100% - 2 * var(--pb-i, 0px)) no-repeat;
 }
 main.has-mega :is(.duo-half--mega, .latest-cell--ps).pic-right .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top 0 / calc(100% - var(--pb-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 bottom 0 / calc(100% - var(--pb-o, 0px)) 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top 0 / 1px 100% no-repeat,
     linear-gradient(var(--seam), var(--seam)) left calc(var(--pb-o, 0px) - 1px) top 0 / 1px var(--pb-i, 0px) no-repeat, linear-gradient(var(--seam), var(--seam)) left calc(var(--pb-o, 0px) - 1px) bottom 0 / 1px var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) right 0 bottom 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top var(--pb-i, 0px) / var(--rest, 36px) calc(100% - 2 * var(--pb-i, 0px)) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 bottom 0 / calc(100% - var(--pb-o, 0px)) var(--pb-i, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top var(--pb-i, 0px) / var(--rest, 36px) calc(100% - 2 * var(--pb-i, 0px)) no-repeat;
 }
 main.has-mega .latest-cell--contra:not(.latest-cell--contra-rev) .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / 100% 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top 0 / 1px calc(100% - var(--pb-o, 0px)) no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top 0 / 1px calc(100% - var(--pb-o, 0px)) no-repeat,
     linear-gradient(var(--seam), var(--seam)) left 0 bottom calc(var(--pb-o, 0px) - 1px) / var(--pb-i, 0px) 1px no-repeat, linear-gradient(var(--seam), var(--seam)) right 0 bottom calc(var(--pb-o, 0px) - 1px) / var(--pb-i, 0px) 1px no-repeat,
-    linear-gradient(#121417, #121417) left 0 top 0 / 100% var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left 0 top var(--pb-i, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top var(--pb-i, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top 0 / 100% var(--pb-i, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top var(--pb-i, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top var(--pb-i, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat;
 }
 main.has-mega .latest-cell--contra.latest-cell--contra-rev .plate-curtain:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   background: linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 bottom 0 / 100% 1px no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) left 0 top var(--pb-o, 0px) / 1px calc(100% - var(--pb-o, 0px)) no-repeat, linear-gradient(var(--nc-edge, var(--nc-mark)), var(--nc-edge, var(--nc-mark))) right 0 top var(--pb-o, 0px) / 1px calc(100% - var(--pb-o, 0px)) no-repeat,
     linear-gradient(var(--seam), var(--seam)) left 0 top calc(var(--pb-o, 0px) - 1px) / var(--pb-i, 0px) 1px no-repeat, linear-gradient(var(--seam), var(--seam)) right 0 top calc(var(--pb-o, 0px) - 1px) / var(--pb-i, 0px) 1px no-repeat,
-    linear-gradient(#121417, #121417) left 0 bottom 0 / 100% var(--pb-i, 0px) no-repeat,
-    linear-gradient(#121417, #121417) left 0 top var(--pb-o, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat,
-    linear-gradient(#121417, #121417) right 0 top var(--pb-o, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat;
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 bottom 0 / 100% var(--pb-i, 0px) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) left 0 top var(--pb-o, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat,
+    linear-gradient(var(--nc-frame, #121417), var(--nc-frame, #121417)) right 0 top var(--pb-o, 0px) / var(--pb-i, 0px) calc(100% - var(--pb-i, 0px) - var(--pb-o, 0px)) no-repeat;
 }
 /* the chips: white on the frame's charcoal, the mark's colour under the hand, no block (2026-09-22) */
 main.has-mega :is(.panel-col, .latest-matter) > .rb-in .hl-ink:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -17883,8 +17894,8 @@ main.has-mega :is(.duo-half--mega .duo-card-image, .latest-cell--ps .latest-cove
 }
 /* the box paints the picture, at rest and under the hand */
 main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.card-title, .latest-title).hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
-  background: var(--swap-img, none) var(--swap-pos, 50% 50%) / cover no-repeat, #121417 !important;
-  box-shadow: 0 0.5px 0 var(--wrap, 0px) #121417, 0 -0.5px 0 var(--wrap, 0px) #121417 !important;
+  background: var(--swap-img, none) var(--swap-pos, 50% 50%) / var(--swap-size, cover) no-repeat, var(--swap-mat, #121417) !important;
+  box-shadow: 0 0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417), 0 -0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417) !important;
 }
 /* the words in the box are kept and not printed */
 main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.card-title, .latest-title).hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
@@ -17948,9 +17959,9 @@ main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.
     /* the grey and the dim as layers over the picture — a saturation
        blend takes its colour out, a multiply takes it to 0.3 — rather
        than a filter, which would take the outline down with it */
-    background: linear-gradient(#4d4d4d, #4d4d4d), linear-gradient(#808080, #808080), var(--swap-img, none) var(--swap-pos, 50% 50%) / cover no-repeat, #121417 !important;
+    background: linear-gradient(#4d4d4d, #4d4d4d), linear-gradient(#808080, #808080), var(--swap-img, none) var(--swap-pos, 50% 50%) / var(--swap-size, cover) no-repeat, var(--swap-mat, #121417) !important;
     background-blend-mode: multiply, saturation, normal, normal !important;
-    box-shadow: 0 0.5px 0 var(--wrap, 0px) #121417, 0 -0.5px 0 var(--wrap, 0px) #121417 !important;
+    box-shadow: 0 0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417), 0 -0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417) !important;
   }
 }
 /* and READ NOW stands over the box, which stands a step over the
@@ -18601,6 +18612,15 @@ main.has-mega .page-banner span.banner-name:is(:hover, :focus, :focus-within, .i
 .sub-box .sub-box-x:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   display: none !important;
 }
+/* (…and the X's own svg takes no block either: the site's hover rule
+   for links and buttons reaches every element inside one and paints
+   it --yves, which is the charcoal inside the box — so the svg's own
+   12 came up a black square with the black strokes lost in it. The X
+   is a black X under the hand, as at rest.) */
+.sub-box .sub-box-x:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
 
 
 /* ---------- THE HEAD BAND AND THE COLOPHON ARE CHARCOAL, AND CARRY THE DATE AND THE COPYRIGHT (2026-09-23) ----------
@@ -18635,7 +18655,8 @@ main.has-mega .page-rows > .section-band > .band-dek > :is(.band-date, .band-cop
   text-transform: var(--byline-case, uppercase) !important;
   line-height: 1 !important;
   color: var(--band-text) !important;
-  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -18665,4 +18686,1407 @@ main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
    the head band (60). */
 main.has-mega .page-rows > .movement.m--latest:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   z-index: 35;
+}
+
+
+/* ---------- THE BAND OPENS UNDER THE NAME (2026-09-23) ----------
+   THE HEAD. The page opens on THE NEW CRITIC with the band under it;
+   the name holds at the window's head (sticky, within the first
+   movement, whose nav gives up its box so the name's containing block
+   is the whole movement) and the band comes up over it with the page
+   behind it — the rows ride over the name — until the band pins at the
+   top, as it did. The band stands the name's height down the flow
+   (--masthead-h, fitMastheadFill) and the first movement is drawn up
+   by that and the band's own 72, its body standing the band's 72
+   under the name, so every row keeps its place on the page. The
+   band's miniature comes in as the band's top edge rises over the
+   name (src/band-mark.js).
+   THE FOOT, turned over: the colophon closes the rows and the reprint
+   stands under it (build.js, renderPageFoot), pinned to the window's
+   foot a level under the page (as THE PAGE LIFTS OFF THE REPRINT once
+   had it) until the colophon lifts off it at the page's end. The
+   page's two margins stop at the colophon's foot so they do not cut
+   the name's letters, which run 36 from the edges; the reprint paints
+   its own margins. */
+main.has-mega .page-rows > .section-band:not(.section-band--colophon):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-top: var(--masthead-h, 0px) !important;
+}
+main.has-mega .page-rows > .movement.m--latest:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--band-h, 72px))) !important;
+}
+main.has-mega .page-rows > .movement.m--latest > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+  z-index: 1 !important;
+  /* the band's 72, and 72 of air under it before the first row's
+     courier line (2026-09-23, with the frames struck) — as PADDING,
+     painted in the body's ground: a margin is clear, and the name held
+     under the rows showed through it once the band had gone by */
+  margin-top: 0 !important;
+  padding-top: calc(var(--band-h, 72px) + 72px) !important;
+}
+main.has-mega .page-rows > .movement.m--latest .site-nav--top:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: contents !important;
+}
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 0 !important;
+}
+main.has-mega .page-rows > .reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: sticky !important;
+  top: auto !important;
+  bottom: 0 !important;
+  z-index: -1 !important;
+}
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  bottom: var(--reprint-h, 0px) !important;
+}
+
+
+/* ---------- WHITE FRAMES, THE WORDS IN THE CORNERS (2026-09-23) ----------
+   The frame round every picture is white (--nc-frame: the box's --wrap
+   shadow and the ring's and the plate's bands all read it), and the four
+   words it carries stand in its corners in the charcoal, ranged on the
+   picture's edges (seatMatterMeta, corners): the author at the head's
+   left, the date at its right, Preview at the foot's left and the kicker
+   at its right. */
+main.has-mega{ --nc-frame: #FFFFFF; }
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) .cover-meta--kick:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) .cover-meta--kick :is(.cover-kicker, .cover-kicker a):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k, #121417) !important;
+}
+
+
+/* ---------- THE CORNER BOX'S X TURNS WHITE UNDER THE HAND (2026-09-23) ----------
+   (Everything else in the box keeps its black, above.) */
+.sub-box .sub-box-x:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.sub-box .sub-box-x:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+
+/* ---------- A PIXEL OF THE MARK ROUND EVERY PICTURE; THE FRAMES TAKE THE MARK ON IT (2026-09-23) ----------
+   The picture in its box is ringed in one pixel of the mark's colour,
+   drawn on the box that paints it, so it travels with the picture when
+   a preview opens. And where the page is the mark's colour — the
+   marked movements, and the whole page while a hand is on a big name —
+   the white frames are that colour too (--nc-frame). */
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.card-title, .latest-title).hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  outline: 1px solid var(--pic-ring, var(--nc-mark)) !important;
+  /* inside the picture's own edge, so no clip on the column trims it
+     at the sides (2026-09-23) */
+  outline-offset: -1px !important;
+}
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html.nc-wm-lit main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --nc-frame: var(--nc-mark);
+}
+
+
+/* ---------- NO FRAMES (2026-09-23) ----------
+   The frame round every picture is struck — white, charcoal or the
+   mark — and the page's own ground stands where it stood (painted in
+   the ground, --g, not left clear: the body's column waits under it
+   until a preview opens, and showed through the clear); the courier
+   words it carried keep their seats exactly (seatMatterMeta measures
+   the frame's --wrap, which stands). The pixel of the mark round the
+   picture stays. */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html.nc-wm-lit main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --nc-frame: var(--g) !important;
+}
+
+
+/* ---------- THE PICTURE TAKES THE FRAME'S SIDES (2026-09-23) ----------
+   With the frame struck, the picture widens into the two side bands it
+   left — a --wrap each side — and the head and foot bands keep the
+   courier words where they stand. Widened by negative side margins on
+   the box that paints it, not by its insets: the fitter reads the box
+   by its left and right (seatSwapCols, seatMatterMeta, seatWordClips),
+   so every seat it takes off the box — the column, the corners, the
+   slide — stands exactly as it did. The pixel round it goes with it:
+   the mark's colour on the page's white, the charcoal where the page
+   is the mark's colour (--pic-ring). */
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.card-title, .latest-title).hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  margin-left: calc(-1 * var(--wrap, 0px)) !important;
+  margin-right: calc(-1 * var(--wrap, 0px)) !important;
+}
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html.nc-wm-lit main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --pic-ring: #121417;
+}
+
+
+/* ---------- THE TITLE COLUMNS STAND ON THE PAGE (2026-09-23) ----------
+   The card under the title and the dek — and under the body's column a
+   preview opens — is struck: the column is the page's own ground, in
+   every mode and in the marked movements, and the words stand exactly
+   where they stood. With no white card under them they take the
+   page's ink, not the charcoal kept for the card in the dark. */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html.nc-wm-lit main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --nc-box: transparent !important;
+}
+main.has-mega .swap-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .swap-col *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .swap-body *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--k) !important;
+}
+
+
+/* ---------- THE NAME TURNS ITS OWN BLOCK (2026-09-23) ----------
+   A hand on a THE NEW CRITIC flips the ground of the block it stands
+   in and nothing else (.is-wm-lit, src/cover-cue.js): the masthead's
+   white to the mark's colour; the reprint's the other way — the mark's
+   colour to the page's white where it stands on the mark, the white to
+   the mark where it does not; the head band's charcoal to the mark
+   under its miniature. (html.nc-wm-lit, which turned the whole page,
+   is no longer set.) */
+main.has-mega .topbar-wordmark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: var(--nc-mark);
+  background-color: var(--nc-mark) !important;
+}
+main.has-mega .page-rows > .reprint.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: var(--nc-mark);
+  background-color: var(--nc-mark) !important;
+}
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: var(--page-g);
+  background-color: var(--page-g) !important;
+}
+main.has-mega .page-rows > .section-band.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --band-ground: var(--nc-mark);
+  background-color: var(--nc-mark) !important;
+}
+/* (raised over the page once the colophon has lifted clear of it,
+   so the hand reaches it: .is-bared, src/cover-cue.js) */
+main.has-mega .page-rows > .reprint.is-bared:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 70 !important;
+}
+
+
+/* ---------- THE REPRINT'S NAME IS WHITE ON THE MARK (2026-09-23) ----------
+   Where the reprint stands on the mark's colour its THE NEW CRITIC is
+   white, and when the hand flips the block to the page's white
+   (.is-wm-lit, THE NAME TURNS ITS OWN BLOCK) the name turns the mark's
+   colour — the two trading places. */
+main.has-mega .page-rows > .reprint.on-mark .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark .reprint-name *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit .reprint-name *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+
+
+
+/* ---------- THE NAMES ARE BLUE, AND WHITE UNDER THE HAND (2026-09-23) ----------
+   The masthead's THE NEW CRITIC and the head band's miniature are set
+   in the mark's colour; under the hand they turn white — the masthead
+   on its block turned to the mark (THE NAME TURNS ITS OWN BLOCK), the
+   miniature on the band's charcoal, which no longer turns. (The
+   reprint, where it stands on the mark, keeps its white; off the mark
+   it takes the blue too.) */
+main.has-mega .topbar-wordmark :is(.topbar-name, .topbar-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band > .band-mini *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark) :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+main.has-mega :is(.topbar-wordmark:is(:hover, :focus-visible, .is-wm-lit)) :is(.topbar-name, .topbar-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band > .band-mini:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.is-wm-lit > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.is-wm-lit > .band-mini *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark).is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark) .reprint-name:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark) .reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .section-band.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --band-ground: #121417;
+  background-color: #121417 !important;
+}
+
+
+/* ---------- THE NAMES STAND ON THE MARK (2026-09-23) ----------
+   The masthead's block and the reprint's are the mark's colour at rest
+   and under the hand alike; their THE NEW CRITIC is charcoal, and turns
+   white under the hand. (Supersedes the flips in THE NAME TURNS ITS
+   OWN BLOCK and THE REPRINT'S NAME IS WHITE ON THE MARK.) */
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: var(--nc-mark);
+  background-color: var(--nc-mark) !important;
+}
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark :is(.topbar-name, .topbar-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #121417 !important;
+}
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark:is(:hover, :focus-visible, .is-wm-lit) :is(.topbar-name, .topbar-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark .reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark .reprint-name:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+
+/* ---------- THE BAND'S MINIATURE IS WHITE (2026-09-23) ----------
+   The head band's THE NEW CRITIC is white on the charcoal, like the
+   band's other words, and turns the mark's colour under the hand. */
+main.has-mega .page-rows > .section-band > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band > .band-mini *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .section-band > .band-mini:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band > .band-mini:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.is-wm-lit > .band-mini:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.is-wm-lit > .band-mini *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+
+/* ---------- THE REPRINT STANDS ON THE WHITE (2026-09-23) ----------
+   The reprint's block is the page's white, at rest and under the hand;
+   its THE NEW CRITIC is charcoal and turns the mark's colour under the
+   hand. (Supersedes the reprint's part of THE NAMES STAND ON THE MARK.) */
+main.has-mega .page-rows > .reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: #FFFFFF;
+  background-color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .reprint :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #121417 !important;
+}
+main.has-mega .page-rows > .reprint.is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint .reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint .reprint-name:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+
+/* ---------- THE CARDS ARE A TENTH SHORTER (2026-09-23) ----------
+   The lead's height, which every row takes (fitRowHeights), is nine
+   tenths of what it was (the rule under THE HERO'S HEIGHT, 8752). */
+.card .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: calc(0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px))) !important; }
+.latest-cell--contra:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ min-height: calc(0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px))) !important; }
+
+/* ---------- ESSAYS TWICE A REVIEW'S WIDTH, POSTSCRIPTS ONE (2026-09-23) ----------
+   One standard width, the review's square (a third of the row less its
+   two 72 gutters, W = (row - 144) / 3): the essay's picture is 2W, a
+   landscape; the postscript's is W, a portrait; every card the one
+   height. The essay's picture is two columns and the gutter between
+   (2W + the gutter), its title column the third (seatSwapCols). */
+main.has-mega .duo-half--mega.pic-left .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: 24px !important; right: calc(2 * var(--std-w) - 48px) !important; }
+main.has-mega .duo-half--mega.pic-right .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: calc(2 * var(--std-w) - 48px) !important; right: 24px !important; }
+main.has-mega .duo-half--mega .duo-panel .panel-col--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ flex: 0 0 calc(2 * var(--std-w) - 40px) !important; }
+main.has-mega .duo-half--mega.pic-left > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ left: calc(100% - 2 * var(--std-w) + 48px) !important; max-width: calc(2 * var(--std-w) - 48px) !important; }
+main.has-mega .duo-half--mega.pic-right > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ right: calc(100% - 2 * var(--std-w) + 48px) !important; }
+/* (a postscript's picture is the cell less its title column, plus the
+   108 the box reaches over it: the column is the cell, less W, plus 108) */
+main.has-mega .latest-cell--ps > .latest-cover-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ flex: 0 0 calc(100% + 108px - var(--std-w)) !important; }
+/* (a review is W wide wherever it stands, the latest row's included) */
+main.has-mega .latest-cell--contra:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ flex: 0 0 var(--std-w, calc(33.3333% - 32px)) !important; }
+/* (in the postscripts' own pairs a column is half the cell less half the
+   gutter, W4 = 50% - 36: the title column is the cell less W4, plus 108) */
+main.has-mega .card--ps-pair .latest-cell--ps > .latest-cover-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ flex: 0 0 calc(50% + 126px) !important; }
+
+
+/* ---------- NO MODE WORDS, NO SIDE LABELS (2026-09-23) ----------
+   Light, Dark and Hex are struck from the margin (and a stored choice
+   is no longer applied, build.js), and so are the margin's stacked
+   section names — THE LATEST, ESSAYS, POSTSCRIPT, CONTRA. */
+main.has-mega .marginalia :is(.theme-toggle, .theme-hex):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .latest-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+
+
+/* ---------- THE SECTIONS ARE CHARCOAL, THEIR WORDS WHITE (2026-09-23) ----------
+   The spans that stood on the mark's blue — ESSAYS to POSTSCRIPT, and
+   CONTRA to the page's foot — stand on the charcoal, gutters and all
+   (.mark-gutters), and every word in them is white: the page's ink
+   (--k) is turned there, and the courier's charcoal (WHITE FRAMES, THE
+   WORDS IN THE CORNERS) with it. The pixel round a picture is the blue here
+   too, as everywhere on the site. (The reprint keeps its own white block.) */
+main.has-mega .movement.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .movement.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .foot-field.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: #121417 !important;
+}
+main.has-mega .movement.on-mark > .page-banner:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  background: #121417 !important;
+}
+main.has-mega > .mark-gutters:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-image: linear-gradient(#121417, #121417), linear-gradient(#121417, #121417) !important;
+}
+main.has-mega .movement.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: #121417;
+  --k: #FFFFFF;
+  --pic-ring: var(--nc-mark);
+  color: #FFFFFF;
+}
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: #121417 !important;
+  --k: #FFFFFF !important;
+  --pic-ring: var(--nc-mark) !important;
+  --nc-frame: #121417 !important;
+}
+main.has-mega .page-rows > .foot-field.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ --g: #121417; }
+main.has-mega .movement.on-mark :is(.cover-meta, .cover-meta *, .cover-kicker, .cover-kicker *, .peek-open, .peek-open *, .swap-col, .swap-col *, .swap-body, .swap-body *, .page-banner, .page-banner *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+main.has-mega .movement.on-mark .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: #121417 !important;
+}
+
+
+/* ---------- THE NAMES STAND ON THE CHARCOAL (2026-09-23) ----------
+   The masthead's THE NEW CRITIC and the reprint's stand on the
+   charcoal, at rest and under the hand, and the reprint's field with
+   it; the name is white and turns the mark's colour under the hand.
+   (Supersedes THE NAMES STAND ON THE MARK and THE REPRINT STANDS ON THE
+   WHITE.) */
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .foot-field:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: #121417;
+  background-color: #121417 !important;
+}
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark :is(.topbar-name, .topbar-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark) :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark:is(:hover, :focus-visible, .is-wm-lit) :is(.topbar-name, .topbar-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark).is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark) .reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:not(.on-mark) .reprint-name:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.on-mark.is-wm-lit :is(.reprint-name, .reprint-name *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint .reprint-name:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint .reprint-name:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+
+
+/* ---------- THE COLOPHON AND THE FOOT ARE WHITE (2026-09-23) ----------
+   Under the charcoal sections the colophon's band, the reprint and the
+   field under it stand on the white, their words the charcoal, which
+   turn the mark's colour under the hand. (Supersedes the colophon's
+   part of THE HEAD BAND AND THE COLOPHON ARE CHARCOAL and the reprint's
+   of THE NAMES STAND ON THE CHARCOAL.) */
+main.has-mega .page-rows > .section-band.section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.section-band--colophon.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --band-ground: #FFFFFF;
+  --band-text: #121417;
+  background-color: #FFFFFF !important;
+  color: #121417 !important;
+}
+main.has-mega .page-rows > .section-band.section-band--colophon :is(a, span, p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #121417 !important;
+}
+main.has-mega .page-rows > .section-band.section-band--colophon a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.section-band--colophon a:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+main.has-mega .page-rows > .reprint.reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.reprint.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.reprint.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint.reprint.on-mark.is-wm-lit:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .foot-field.foot-field:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .foot-field.foot-field.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: #FFFFFF;
+  background-color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .reprint.reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) :is(.reprint-name, .reprint-name *),
+main.has-mega .page-rows > .reprint.reprint:not(.on-mark):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) :is(.reprint-name, .reprint-name *),
+main.has-mega .page-rows > .reprint.reprint.on-mark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) :is(.reprint-name, .reprint-name *){
+  color: #121417 !important;
+}
+main.has-mega .page-rows > .reprint.reprint:is(.is-wm-lit, :hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) :is(.reprint-name, .reprint-name *),
+main.has-mega .page-rows > .reprint.reprint:not(.on-mark):is(.is-wm-lit, :hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) :is(.reprint-name, .reprint-name *),
+main.has-mega .page-rows > .reprint.reprint.on-mark:is(.is-wm-lit, :hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) :is(.reprint-name, .reprint-name *){
+  color: var(--nc-mark) !important;
+}
+
+
+/* ---------- THE SUBSCRIBE BOX IS ALWAYS BLUE (2026-09-23) ----------
+   The sheet that turned the box white over a marked span (THE MARK
+   SHOWS THROUGH THE CORNER BOX) is struck: on the charcoal the blue
+   stands out as it is. */
+html.has-mark-span .sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: none !important;
+}
+
+
+/* ---------- EVERY CLICKABLE WORD TURNS BLUE UNDER THE HAND (2026-09-23) ----------
+   Any link or button with words in it takes the mark's colour while the
+   hand is on it: the courier labels, Preview, the bands' links, the two
+   names, the preview's body — and a card's title and dek together, the
+   two standing in the one link (the picture's old seat) whose ink alone
+   takes the hand, so a hand on either lights both. (The corner box is
+   the blue itself: its SUBSCRIBE keeps turning white.) */
+main.has-mega :is(a, button):not(.sub-box *, .page-rows > .section-band *, .sub-ticker, .sub-ticker *):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(a, button):not(.sub-box *, .page-rows > .section-band *, .sub-ticker, .sub-ticker *):is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+  -webkit-text-fill-color: var(--nc-mark);
+}
+
+
+/* ---------- THE WORDS TAKE THE HAND AS ONE BLOCK (2026-09-23) ----------
+   Read Now (and the title and the dek's blue) answers across the whole
+   of the words' block — the title's and the dek's boxes, the column's
+   width, and the 36 between them — not the letters alone (ONLY THE INK
+   TAKES THE HAND): one rectangle from the title's top to the dek's foot. */
+main.has-mega .swap-col > :is(.swap-title, .swap-dek):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+main.has-mega .swap-col > .swap-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ position: relative; }
+main.has-mega .swap-col > .swap-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ align-self: stretch; }
+main.has-mega .swap-col > .swap-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 36px;
+}
+
+
+/* ---------- SUBSCRIBE IN THE BOTTOM RIGHT CORNER (2026-09-23) ----------
+   36 from the window's right edge and 36 off its foot (the foot it
+   already kept). */
+main.has-mega .sub-dock > .sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.sub-box:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: auto !important;
+  right: 36px !important;
+}
+
+
+/* ---------- THE COLOPHON HANGS NOTHING UNDER ITSELF (2026-09-23) ----------
+   Its ground was hung a fraction of a pixel under its foot to close the
+   page on a whole row (THE COLOPHON CLOSES THE WINDOW, --foot-f); the
+   reprint stands under it now and ends the page, and the fraction drew
+   a hairline of the white across the reprint's letters as the colophon
+   passed over them. */
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: none !important;
+}
+
+
+/* ---------- THE HEAD BAND TURNS AT ITS MIDDLE (2026-09-23) ----------
+   While a charcoal section stands under the band's middle the band is
+   white and its words charcoal — the date, the links, the miniature —
+   turning at once as the section's line passes halfway up the band, and
+   back at the next white section's (.is-over-mark, markWords). Under
+   the hand a word is blue, as ever. */
+main.has-mega .page-rows > .section-band.is-over-mark:not(.section-band--colophon):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --band-ground: #FFFFFF;
+  --band-text: #121417;
+  background-color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .section-band.is-over-mark:not(.section-band--colophon) :is(.band-deks > a, .band-deks > span, .band-dek > span, .band-mini, .band-mini *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #121417 !important;
+  -webkit-text-fill-color: #121417;
+}
+main.has-mega .page-rows > .section-band:not(.section-band--colophon) :is(.band-deks > a, .band-mini):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band:not(.section-band--colophon) :is(.band-deks > a, .band-mini):is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band.is-wm-lit:not(.section-band--colophon) :is(.band-mini, .band-mini *):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+  -webkit-text-fill-color: var(--nc-mark);
+}
+
+
+/* ---------- THE ESSAY'S TITLE STANDS UNDER ITS PICTURE (2026-09-23) ----------
+   An essay's courier is one line under its picture — AUTHOR · DATE at
+   its left… KICKER after it since, PREVIEW alone at its right
+   (seatMatterMeta) — and under
+   that, 18 under the courier's ink, the title stands in the picture's
+   first grid column, set left, and the dek in its second, set right,
+   the 72 of the gutter between them, their tops level (seatSwapCols). */
+main.has-mega .duo-half--mega .swap-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  overflow: visible !important;
+}
+main.has-mega .duo-half--mega .swap-title > .swap-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+/* (the dek in the picture's second grid column, across the 72 from the
+   title's, set to its right edge; its top the fitter's) */
+main.has-mega .duo-half--mega .swap-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute !important;
+  left: calc(100% + 72px) !important;
+  margin: 0 !important;
+}
+main.has-mega .duo-half--mega .swap-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega .swap-dek *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  text-align: right !important;
+}
+main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+}
+main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '\00B7';
+  position: absolute;
+  right: 100%;
+  width: 1.8em;
+  text-align: center;
+  pointer-events: none;
+}
+/* (the title column stands inside the picture's old seat, which hid
+   its overflow and cut itself to its box; under the picture is outside
+   it — the seat's own picture is not shown, so it cuts nothing now) */
+main.has-mega .duo-half--mega.has-swap .card-image-frame:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  overflow: visible !important;
+  clip-path: none !important;
+}
+/* (and over the picture's frame band, 36 of the ground under the
+   picture, where its first line stands: the seat is its own stacking
+   level, under the frame's 9 — raised over it; nothing in it is opaque
+   but the words, and it takes no hand but theirs: raised, its box stood
+   over PREVIEW and took the press) */
+main.has-mega .duo-half--mega.has-swap .card-image-frame:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 10 !important;
+  pointer-events: none !important;
+}
+/* (the author's bar, after the kicker: KICKER | AUTHOR) */
+main.has-mega .duo-half--mega .cover-meta--kick:not(.cover-meta--corner) .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+}
+main.has-mega .duo-half--mega .cover-meta--kick:not(.cover-meta--corner) .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '|';
+  position: absolute;
+  right: 100%;
+  width: 1.8em;
+  text-align: center;
+  pointer-events: none;
+}
+
+
+/* ---------- THE ESSAY'S PREVIEW OPENS IN ITS PICTURE (2026-09-23) ----------
+   Pressed, an essay's picture holds its place under the charcoal at 90%, as under READ NOW | PREVIEW —
+   and the preview's body stands in it in white,
+   in two columns, 54 round them and 36 between (seatSwapCols: the body
+   is the picture's box, its text two columns filled in turn and cut on
+   a whole line). */
+main.has-mega .duo-half--mega > .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 11 !important;
+  background: rgba(18, 20, 23, 0.9) !important;
+  opacity: 0;
+  pointer-events: none !important;
+  transition: opacity .4s ease !important;
+}
+main.has-mega .duo-half--mega.is-open > .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  opacity: 1;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-text:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: block !important;
+  overflow: hidden !important;
+}
+main.has-mega .duo-half--mega > .swap-body *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF;
+}
+
+
+/* ---------- READ NOW IS BLUE (2026-09-23) ----------
+   The words on the pointer and the words in an open card's picture,
+   and their arrows, in the mark's colour. */
+.cover-cue:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+main.has-mega :is(.duo-half--mega.is-inbox .duo-card-image, .latest-cell--ps.is-inbox .latest-cover, .latest-cell--contra.is-inbox .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  color: var(--nc-mark) !important;
+  content: 'Read Now\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%231184C4' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+
+/* ---------- THE GUTTERS ARE 36 (2026-09-23) ----------
+   The side margins and the gutters between the grid's columns are 36,
+   where they were 72, and the first row stands 36 under the head band
+   (ROW_GAP, duo-panel-fit.js). The strips, the rows' wrap and the mark's
+   gutters narrow with them; the essays' and the pairs' seats are
+   restated for the 36 (above). */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  width: 36px !important;
+}
+main.has-mega .wrap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 12px !important;
+  padding-right: 36px !important;
+}
+main.has-mega .card.card--latest:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  gap: 36px !important;
+}
+main.has-mega > .mark-gutters:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-size: 36px 100%, 36px 100% !important;
+}
+
+
+/* ---------- THE PICTURES' OUTLINES ARE THE INK (2026-09-23) ----------
+   The pixel round every picture is the section's own ink — the charcoal
+   on the white, the white on the charcoal. */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .movement.on-mark > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --pic-ring: var(--k) !important;
+}
+
+
+/* ---------- THE GRID A QUARTER SMALLER (2026-09-23) ----------
+   The grid's columns and its pictures three quarters of what they were —
+   432 to 324 at 1440 — the 36 gutters kept, the content centred in the
+   window's left edge by 36 (the wrap's 12 and the cards' 24), the room
+   left over standing at the right: the content is 0.75 of (100vw - 144)
+   and the two 36s, so the right margin is 25vw. The cards' height is taken down so the pictures in them
+   are three quarters as tall: 0.75 of what the card less its two 36
+   bands was, plus the bands. (--std-w follows the row's width,
+   fitStdWidth.) */
+main.has-mega .wrap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding-left: 12px !important;
+  padding-right: 25vw !important;
+}
+.card .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  height: calc(0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px) + 72px) !important;
+}
+.latest-cell--contra:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  min-height: calc(0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px) + 72px) !important;
+}
+
+
+/* ---------- READ NOW OVER THE OPEN PREVIEW (2026-09-23) ----------
+   The pointer's words stand over an essay's opened preview (the body in
+   its picture, 11), where they stood at 8, under it. */
+.movement-body > .cover-cue:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 12 !important;
+}
+
+
+/* ---------- THE ESSAY'S DEK STANDS IN ITS PREVIEW (2026-09-23) ----------
+   An essay's dek leaves the line under its picture and stands in the
+   opened preview, centred over the two columns, 36 above them
+   (seatSwapCols); the title keeps the line to itself. */
+main.has-mega .duo-half--mega .swap-col > .swap-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: block;
+  align-self: center;
+  max-width: 75%;
+  text-align: center !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF;
+}
+
+/* (no date on an essay's line) */
+main.has-mega .duo-half--mega .cover-meta--cdate:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .card--mega .cover-meta--cdate:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+
+
+/* ---------- THE ESSAY'S PREVIEW IS A CORNER TAB (2026-09-23) ----------
+   No word on the line: a 36 square in the picture's bottom-right corner,
+   in the page's ground, carrying an expand glyph in its ink (seated by
+   seatMatterMeta); opened, the preview in the picture carries a × in the
+   same corner that shuts it (.swap-body-close, seatSwapCols). */
+main.has-mega .duo-half--mega .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .card--mega .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 10;
+}
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-size: 0 !important;
+  letter-spacing: 0 !important;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  display: block !important;
+  position: relative !important;
+  background: var(--g) !important;
+  color: var(--k) !important;
+  cursor: pointer;
+}
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  display: none !important;
+}
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  display: block !important;
+  background: currentColor !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M12 3h5v5M17 3L3 17M8 17H3v-5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px 16px no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M12 3h5v5M17 3L3 17M8 17H3v-5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px 16px no-repeat !important;
+}
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: var(--g) !important;
+  color: var(--k) !important;
+  -webkit-text-fill-color: currentColor;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 5l10 10M15 5L5 15' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 5l10 10M15 5L5 15' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+/* (the × takes the hand only while the preview is open) */
+main.has-mega .duo-half--mega:not(.is-open) > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: none !important;
+}
+
+
+/* ---------- THE PREVIEW TAB IS A DOG-EAR (2026-09-23) ----------
+   The corner tab is a right triangle turned down into the picture's
+   bottom-right corner, 48 on its legs, in the page's ground: the
+   picture's outline runs along its hypotenuse (a pixel of --pic-ring
+   inside the diagonal) and the triangle alone takes the hand (clipped
+   to it). The glyph is a quarter smaller, 12 (the × 10.5), standing on
+   the triangle's incentre — 14 in from each leg. The open preview's ×
+   is the same ear. */
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  width: 48px !important;
+  height: 48px !important;
+  background: linear-gradient(to bottom right, transparent 50%, var(--pic-ring, var(--k)) 50%, var(--pic-ring, var(--k)) calc(50% + 1px), var(--g) calc(50% + 1px)) !important;
+  -webkit-clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  -webkit-mask-position: right 8px bottom 8px !important;
+  mask-position: right 8px bottom 8px !important;
+  -webkit-mask-size: 12px 12px !important;
+  mask-size: 12px 12px !important;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  -webkit-mask-position: right 8.75px bottom 8.75px !important;
+  mask-position: right 8.75px bottom 8.75px !important;
+  -webkit-mask-size: 10.5px 10.5px !important;
+  mask-size: 10.5px 10.5px !important;
+}
+
+/* (the ear's line takes no hand past the ear itself) */
+main.has-mega .card--mega .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: none !important;
+}
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: auto !important;
+}
+/* (and the open preview's ear, the same pixel past the corner) */
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  right: -1px !important;
+  bottom: -1px !important;
+}
+main.has-mega .duo-half--mega > .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  overflow: visible !important;
+}
+/* (the ear stands a pixel past the picture's corner, so its hypotenuse is
+   drawn a pixel in — the band x + y = 45.6 to 47 in its 48 box, 1px
+   across, its outer edge on the picture's two edges: 32.24 to 33.23
+   along a corner-to-corner gradient — its two ends meeting the picture's
+   own outline rather than running on past it; the clip keeps that line) */
+main.has-mega .card--mega .cover-meta--peek .peek-open:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: linear-gradient(to bottom right, transparent 32.24px, var(--pic-ring, var(--k)) 32.24px, var(--pic-ring, var(--k)) 33.23px, var(--g) 33.23px) !important;
+  -webkit-clip-path: polygon(calc(100% - 3px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(100% - 3px));
+  clip-path: polygon(calc(100% - 3px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(100% - 3px));
+}
+
+
+/* ---------- THE LATEST (2026-09-23) ----------
+   The section's name over its first row, in the body's Garamond at 54,
+   set on the grid's left edge; its ink 72 under the head band and the
+   first row 36 under its baseline (seatRowGaps). Over the first card's
+   own boxes (its picture's column at 9, its old ground lines), which
+   reach up over it and painted the page's ground across its letters. */
+main.has-mega .m--latest > .movement-body > .latest-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute;
+  left: 36px;
+  top: 0;
+  margin: 0;
+  font-family: var(--excerpt, garamond-premier-pro, Georgia, serif);
+  font-size: 54px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--k);
+  z-index: 15;
+  pointer-events: none;
+}
+
+
+/* ---------- THE LATEST STANDS CENTRED (2026-09-23) ----------
+   THE LATEST on the page's middle; the first post's card, its courier
+   and its title on the grid's left edge. */
+main.has-mega .m--latest > .movement-body > .latest-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+/* ---------- THE SUBSCRIBE TICKER (2026-09-23) ----------
+   36 of the mark's blue under the head band's foot at the page's head,
+   passing up under the band as the page goes up once the band pins,
+   and again over the colophon at the foot: SUBSCRIBE in the Helvetica's bold capitals, a line of the pitch in
+   the body's Garamond, round and round, sliding left by one half of its
+   run (the run is two equal halves). The whole strip is one link; under
+   the hand it holds still and its ink turns white. */
+main.has-mega .sub-ticker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: relative;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--nc-mark, #1184C4);
+  color: #000 !important;
+  text-decoration: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+main:not(.has-mega) .sub-ticker{ display: none !important; }
+/* (at the head: in the first movement's body, which opens at the band's
+   own top, drawn up under it — so the ticker stands a band's height
+   down, and goes up under the band with the page) */
+main.has-mega .m--latest > .movement-body > .sub-ticker--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 72px;
+  z-index: 16;
+}
+/* (at the foot: in the rows' flow, the colophon's own row over it) */
+main.has-mega .page-rows > .sub-ticker--foot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 31;
+}
+main.has-mega .sub-ticker > .sub-ticker-run:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: flex;
+  flex: none;
+  animation: sub-ticker 188s linear infinite;
+  will-change: transform;
+}
+main.has-mega .sub-ticker .sub-ticker-half:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: flex;
+  flex: none;
+  align-items: baseline;
+}
+main.has-mega .sub-ticker .sub-ticker-half > b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: helvetica-neue-lt-pro, nimbus-sans, neue-haas-grotesk-display, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0 36px;
+  color: inherit !important;
+}
+main.has-mega .sub-ticker .sub-ticker-half > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--excerpt, garamond-premier-pro, Georgia, serif);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 17px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: inherit !important;
+}
+main.has-mega .sub-ticker:hover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .sub-ticker:hover :is(b, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  background-color: var(--nc-mark, #1184C4) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+main.has-mega .sub-ticker:hover > .sub-ticker-run:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ animation-play-state: paused; }
+@keyframes sub-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  main.has-mega .sub-ticker > .sub-ticker-run:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ animation: none; }
+}
+
+/* (the lead post's courier stands under its title, KICKER | DATE |
+   AUTHOR — its date back: seatSwapCols, seatMatterMeta) */
+main.has-mega .m--latest > .movement-body > .latest-head + .wrap > .card .duo-half--mega .cover-meta--cdate:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: block !important;
+}
+main.has-mega .m--latest > .movement-body > .latest-head + .wrap > .card .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '|';
+}
+
+
+/* ---------- THE ESSAY OFFERS TWO THINGS (2026-09-23) ----------
+   No dog-ear and no Read Now on the pointer: a hand on an essay's
+   picture or its title sets READ NOW ↗ | PREVIEW ⤢ in the picture's
+   middle over a scrim (src/essay-acts.js); open, a blue × in the
+   picture's top right corner shuts the preview. */
+main.has-mega .duo-half--mega .cover-meta--peek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+main.has-mega .duo-half--mega.is-inbox .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  content: none !important;
+}
+main.has-mega .duo-half--mega > .essay-acts:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute;
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: rgba(18, 20, 23, .9);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  font-family: var(--byline-face);
+  font-size: 13px;
+  line-height: 13px;
+  letter-spacing: -0.26px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+main.has-mega .duo-half--mega.is-acts > .essay-acts:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  opacity: 1;
+  visibility: visible;
+}
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: none;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: currentColor !important;
+  cursor: pointer;
+  pointer-events: auto;
+}
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+  -webkit-text-fill-color: var(--nc-mark) !important;
+}
+main.has-mega .duo-half--mega > .essay-acts .essay-act svg:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: block;
+  flex: none;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  top: 12px !important;
+  right: 12px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 24px !important;
+  height: 24px !important;
+  background: none !important;
+  -webkit-clip-path: none !important;
+  clip-path: none !important;
+  border: 0 !important;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background: var(--nc-mark) !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5L19 19M19 5L5 19' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / 12px 12px no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5L19 19M19 5L5 19' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / 12px 12px no-repeat !important;
+}
+main.has-mega .duo-half--mega > .essay-acts *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+  -webkit-text-fill-color: var(--nc-mark) !important;
+}
+main.has-mega .duo-half--mega > .essay-acts svg path:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  stroke: currentColor !important;
+}
+/* (the hand is seen on an essay's picture and title: no Read Now
+   rides it there any more) */
+@media (hover: hover){
+  html.has-cover-cue main.has-mega .duo-half--mega *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+  html.has-cover-cue main.has-mega .duo-half--mega *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+    cursor: pointer !important;
+  }
+}
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega .duo-half--mega > .essay-acts .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  background: none !important;
+  box-shadow: none !important;
+  outline: none;
+}
+main.has-mega .duo-half--mega > .essay-acts *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  box-shadow: none !important;
+}
+
+
+/* ---------- NO OUTLINE ROUND THE PICTURES (2026-09-23) ---------- */
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.card-title, .latest-title).hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  outline: none !important;
+}
+
+
+/* ---------- THE PAGE OPENS ON THE NAME ALONE (2026-09-23) ----------
+   A spacer under THE NEW CRITIC, in the first movement's charcoal, so
+   the page opens with the head band and the subscribe ticker standing
+   on the window's foot; the band then rises over the held name and pins
+   as before. The band is set down by it, the first movement drawn up
+   by it, and the first movement's body (which opens at the band's top)
+   set down by it as a clear margin, so the name shows until the band's
+   own edge reaches it. */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --open-gap: max(0px, 100vh - var(--masthead-h, 0px) - var(--band-h, 72px) - 36px);
+}
+main.has-mega .page-rows > .section-band:not(.section-band--colophon):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-top: calc(var(--masthead-h, 0px) + var(--open-gap)) !important;
+}
+main.has-mega .page-rows > .movement.m--latest:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--open-gap) + var(--band-h, 72px))) !important;
+}
+main.has-mega .page-rows > .movement.m--latest > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-top: var(--open-gap) !important;
+}
+
+/* (and the page closes the same way, turned over: at its end the foot
+   ticker and the colophon stand on the window's head and the reprint's
+   name on its foot, the reprint's own white between them — its top
+   padding, outside the height fitReprint gives the name, which it
+   measures with the padding struck, so --reprint-h stays the name's) */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --close-gap: max(0px, 100vh - var(--band-h, 72px) - var(--reprint-h, 100vh));
+}
+main.has-mega .page-rows > .reprint:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  box-sizing: content-box !important;
+  padding-top: var(--close-gap) !important;
+}
+/* (the page's side margins stop at the colophon's foot, which is the
+   reprint's name and the spacer over it) */
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  bottom: calc(var(--reprint-h, 0px) + var(--close-gap, 0px)) !important;
+}
+
+
+/* ---------- ONE LINE OF POSTS (2026-09-23) ----------
+   The posts in one line down the page's middle: the essays landscape
+   (2W + the gutter), the postscripts portrait (W by the essay's height)
+   and the reviews square (W by W), each in the essay's card — courier
+   line and title under the picture (build.js, renderMegaHero's kind).
+   A TENTH BIGGER (2026-09-23, later): every picture 1.1 of that, its
+   width --pic-w and its height the card's less the two 36 bands.
+   The picture runs from the card's 24 to the old frame's left edge and
+   the 108 the box reaches over it (seatMatterMeta), so a picture P wide
+   stands that frame at P - 84. A card is carried over so its picture's
+   middle is the window's; the row clips what it carries past the page.
+   TWO ACROSS (2026-09-23, later): the postscripts and the reviews stand
+   in pairs (.card--pair-a, .card--pair-b), the two pictures 39.6 apart
+   (the 36 gutter, a tenth bigger) so a pair is exactly an essay's
+   width, the pair centred on the page; the second of a pair is drawn up
+   beside the first, its picture centred on the first's top to bottom
+   (seatRowGaps). */
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --pic-w: calc(1.1 * (2 * var(--std-w) + 36px));
+  --pair-gap: 39.6px;
+  position: relative;
+  left: calc((100vw - var(--pic-w)) / 2 - 36px);
+}
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > :is(.card--kind-postscript, .card--kind-contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --pic-w: calc(1.1 * var(--std-w));
+  width: calc(var(--pic-w) + 72px);
+}
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 - 36px);
+}
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 + var(--pic-w) + var(--pair-gap) - 36px);
+}
+body:not(.word-page) main.has-mega .card--mega .duo-half--mega.pic-right .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc(var(--pic-w) - 84px) !important;
+}
+body:not(.word-page) main.has-mega .card--mega .duo-half--mega .duo-panel .panel-col--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  flex: 0 0 calc(var(--pic-w) - 76px) !important;
+}
+body:not(.word-page) main.has-mega .card .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  height: calc(1.1 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px) + 72px) !important;
+}
+body:not(.word-page) main.has-mega .card--kind-contra .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  height: calc(var(--pic-w) + 72px) !important;
+}
+/* (no :has() here: it multiplies every style pass — fit-pass notes) */
+body:not(.word-page) main.has-mega .page-rows > .movement > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  overflow-x: clip;
+}
+
+/* (every post's line carries the date: KICKER | DATE | AUTHOR, seated
+   by seatMatterMeta — the lead's first, then the postscripts' and the
+   reviews', then every essay's) */
+main.has-mega .card--mega .duo-half--mega .cover-meta--cdate:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: block !important;
+}
+main.has-mega .card--mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: '|';
+}
+
+
+/* ---------- THE SECTIONS' NAMES MATCH THE LATEST (2026-09-23) ----------
+   ESSAYS, POSTSCRIPT and CONTRA as THE LATEST stands: the body's Garamond
+   at 54, set as written, centred, in the section's ink; each tag under
+   its name in the deks' Garamond italic (20 on 24), 18 under the name's
+   descender line, and the first row 36 under the tag's baseline
+   (fitSubscribeName, fitSubscribeLines, seatRowGaps). */
+main.has-mega .page-banner--section > .banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--excerpt, garamond-premier-pro, Georgia, serif) !important;
+  font-size: 54px;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  color: var(--k) !important;
+  -webkit-text-fill-color: var(--k) !important;
+  background: none !important;
+  white-space: nowrap;
+}
+main.has-mega .page-banner--section > .banner-line--below:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  margin: 0 !important;
+  text-align: center !important;
+  font-family: var(--excerpt, garamond-premier-pro, Georgia, serif) !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  font-style: italic !important;
+  line-height: 24px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  color: var(--k) !important;
+  -webkit-text-fill-color: var(--k) !important;
+  background: none !important;
+  transform: none !important;
+}
+
+/* (a movement's body over its own foot spacer, the ::after: a title
+   hanging under the last picture was painted over by the spacer's
+   ground, which stood at the body's level and came later) */
+main.has-mega .page-rows > .movement > .movement-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 2 !important;
+}
+
+/* (an author on a line of its own carries no bar before it) */
+main.has-mega .duo-half--mega .cover-meta--kick.is-wrapped:not(.cover-meta--corner) .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r, .r)::before{
+  content: none !important;
+}
+
+/* (a picture's ground under its image is its section's, not the
+   charcoal: at an edge the image's filtering reaches past its own pixels
+   and drew a line of that ground round a picture on the white —
+   snapPictures seats the edges on whole pixels) */
+main.has-mega .duo-half--mega .card-title.hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  background-color: var(--g) !important;
+}
+
+
+/* ---------- THE LATEST STANDS ON THE WHITE (2026-09-23) ----------
+   The first movement is no longer marked (build.js, ON_MARK): THE
+   LATEST and its rows stand on the page's white, their words the
+   charcoal, as the postscripts do, and ESSAYS' charcoal opens 72 over
+   its word as it did before the latest was marked. The name's opening
+   screen keeps its charcoal (THE PAGE OPENS ON THE NAME ALONE): that is
+   the movement's own ground, seen in the clear margin over its body,
+   so the movement is painted charcoal while its body and its 72 of air
+   (the ::after, in --g) keep the white. */
+main.has-mega .page-rows > .movement.m--latest:not(.on-mark):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background-color: #121417 !important;
+}
+/* (and at the end they come up OVER the pinned head band, overtaking
+   it, where they had pushed it out ahead of them) */
+main.has-mega .page-rows > .sub-ticker--foot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 61 !important;
+}
+
+
+/* ---------- THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24) ----------
+   The courier line and the title under a picture alternate: the essays
+   left, right, left down the page, counted from the lead, and a pair's
+   left-hand card set left, its right-hand card set right (build.js,
+   .card--align-r). The title's lines range on the picture's right edge;
+   the courier's lines end on it (seatMatterMeta). Only where the pairs
+   stand two across: under 1024 every card is set left. */
+@media (min-width: 1024px){
+  main.has-mega .card--align-r .duo-half--mega .swap-col:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    text-align: right !important;
+  }
+  main.has-mega .card--align-r .duo-half--mega .swap-title > .swap-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    margin-left: auto !important;
+    margin-right: 0 !important;
+  }
+}
+
+
+/* ---------- THE TICKER'S PRICE IS BOLD (2026-09-24) ----------
+   $30 a year in the ticker's pitch is set in the Garamond's own bold,
+   as it is in the corner box (the kit's 700, gated with the other
+   faces); the rest of the line stays at 400. */
+main.has-mega .sub-ticker .sub-ticker-half > span > .sub-ticker-price:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: inherit;
+  font-weight: 700;
+  font-style: normal;
+  color: inherit !important;
+}
+
+
+/* ---------- EACH CARD ARRIVES WHOLE (2026-09-24) ----------
+   A front-page card — picture, courier line and title — stands unseen
+   until the reader scrolls it into the window, then fades in as one
+   (src/card-reveal.js, which runs the arrival itself: a keyframe
+   animation here would be restarted by every fit pass's .fit-still).
+   Unseen, it takes no hand either, so nothing invisible lights under
+   the pointer; near the window it is given its own layer, rastered
+   before it is shown. Only with .nc-reveal on <html>, which the script
+   sets: no script, or a reader who asks for less motion, and every
+   card simply stands. */
+html.nc-reveal main.has-mega .page-rows .duo-half--mega:not(.is-in):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  opacity: 0 !important;
+}
+/* (the card and the pieces in it that take the hand back of their own
+   accord — not every element in it: a rule on all of them restyled the
+   whole card as it was shown, some 130ms over a scroll down the page) */
+html.nc-reveal main.has-mega .page-rows .duo-half--mega:not(.is-in):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html.nc-reveal main.has-mega .page-rows .duo-half--mega:not(.is-in) :is(.swap-title, .swap-line, .swap-dek, .swap-dek-ink, .panel-col, .title-line, .peek-open, .card-meta):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  pointer-events: none !important;
+}
+html.nc-reveal main.has-mega .page-rows .duo-half--mega.is-near:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  will-change: opacity, filter, transform;
+}
+@media print{
+  html.nc-reveal main.has-mega .page-rows .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    opacity: 1 !important;
+  }
+}
+
+
+/* ---------- A PIXEL OF THE BLUE ROUND EVERY PICTURE (2026-09-24) ----------
+   Every picture on the front page — the essays', the postscripts', the
+   reviews' — is ringed in one pixel of the mark's blue, just outside
+   its box, so no seat the fitter took for the box moves and the courier
+   lines and titles still range on the picture's own edge. The ring is
+   the box's outline (its shadow is the frame's ground), drawn on the
+   whole pixels snapPictures stands the box on, and a hand's scrim,
+   which covers the box exactly, leaves it showing. (Supersedes NO
+   OUTLINE ROUND THE PICTURES.) */
+main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.card-title, .latest-title).hl-rect.rx:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  outline: 1px solid var(--nc-mark, #1184C4) !important;
+  outline-offset: 0 !important;
+}
+
+
+/* ---------- THE TITLES IN SENTENCE CASE (2026-09-24) ----------
+   A card's title under its picture is set as a sentence (build.js,
+   sentenceCase) in the body's Garamond at its book weight, as the
+   section names are, where it stood in the Helvetica's bold capitals;
+   the fitter sizes it so its capitals stand exactly as tall as the
+   Helvetica's did (seatSwapCols). */
+main.has-mega .duo-half--mega .swap-title:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: var(--excerpt, garamond-premier-pro, Georgia, serif) !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+
+/* ---------- THE SECTIONS' TAGS ARE NOT CUT BY THE FIRST ROW (2026-09-24) ----------
+   A card's title halo (fitTitleHalo) is a block in the section's ground
+   the card's whole height, the frame's 36 over the picture included; a
+   section's first card stands drawn up into its banner, and that band
+   of ground was painted over the foot of the tag under the section's
+   name — the g's and y's of "The great writing of our generation" cut
+   off once the card was shown. The banner is its own stacking level
+   (isolation), so the tag cannot be raised out of it, and the banner
+   itself cannot come up either: the first pictures stand 4 or 5 into
+   it. So the halo keeps to the picture's frame and below: its top 36
+   is cut. (An open card's halo is cut by --hl-cut, as it was.) */
+main.has-mega .duo-half--mega:not(.is-open) > .title-halo:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  clip-path: inset(36px 0 0 0);
+}
+/* (and two more of the old frame's layers reached up the same way: the
+   frame's head band, drawn in the ground on the column's ::after —
+   cut here, at rest — and the frame's shadow round the picture, which
+   the title's clip now stops at the blue ring, snapPictures) */
+main.has-mega .duo-half--mega:not(.is-open):not(.is-opening):not(.is-shutting) .duo-panel .panel-col--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
+  clip-path: inset(var(--fr-kt, 36px) 0 0 0);
+}
+
+
+/* ---------- THE TICKER RIDES UNDER THE BAND (2026-09-24) ----------
+   One subscribe ticker, on every page, always in view: it stands in
+   the rows straight after the head band (build.js) and sticks at the
+   band's foot for the page's whole length — at the window's foot under
+   the band as the page opens, riding up with the band, and pinned under
+   it from then on. It takes no room in the flow (its 36 given back
+   over it), so every seat under the band stands where it stood; the
+   first row is spaced from its foot (seatRowGaps). The ticker over the
+   colophon is struck: at the page's end the colophon comes up over the
+   band and stands on the window's head, and the ticker rides under it
+   (over it, a level up, as it passes). --close-gap loses its 36. */
+main.has-mega .page-rows > .sub-ticker--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  /* (its 36 given back OVER it, against the band: under it, the -36
+     collapsed into the first movement's own far larger negative margin
+     and was lost, and every row stood 36 lower; so the box stands on
+     the band's last 36, drawn down by them, and pins 36 higher) */
+  position: sticky !important;
+  top: calc(var(--band-h, 72px) - 36px) !important;
+  margin-top: -36px !important;
+  margin-bottom: 0 !important;
+  transform: translateY(36px);
+  /* (over the reprint too, which rises to 70 at the page's end so the
+     hand can reach it, .is-bared — its top stands under the ticker) */
+  z-index: 71 !important;
 }

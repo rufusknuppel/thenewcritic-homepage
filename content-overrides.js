@@ -16,6 +16,14 @@
 //   date    — meta-line date text, e.g. 'Jun 30' (the like count stays automatic)
 //   preview — paragraph preview (string, or array for the hero's multiple paragraphs)
 //   focal   — CSS object-position for the cover crop, e.g. 'center 20%'
+//   head    — [x, y], where the sitter's head is centred in the cover, as
+//             fractions of its width and height; a postscript's frame is
+//             cropped (and zoomed if need be) to put it in the middle
+//             (see headCrop in build.js). `focal` wins if both are set.
+//   zoom    — with `head`: the postscript's zoom, overriding the one that
+//             centres the head; under 1 stands the drawing back from the
+//             frame's edges to give the head air, on
+//   mat     — the colour of the frame's ground round a zoomed-out drawing
 
 module.exports = {
   'manifest-man': {
@@ -23,6 +31,8 @@ module.exports = {
   },
   'change-my-mind': {
     kicker: 'Political Betrayal',
+    head: [0.47, 0.43],
+    zoom: 1,
     author: 'Shabbos Kestenbaum',
   },
   'behaving-badly': {
@@ -31,6 +41,7 @@ module.exports = {
   },
   'the-commodification-of-freya-india': {
     kicker: 'Girlhood',
+    head: [0.49, 0.42],
     author: 'Freya India',
     preview: [
       'Maybe you have heard of Freya India. She is a frequent guest on podcasts hosted by middle-aged men, her interviews are clipped into Reels and TikToks and reposted all over the internet, and she has over 54,000 subscribers on Substack.',
@@ -82,6 +93,7 @@ module.exports = {
   'last-girl-at-the-beginning-of-history': {
     kicker: 'New Right Whisperer',
     author: 'Mana Afsari',
+    head: [0.55, 0.49],
   },
   'what-was-college-for-3ce': {
     kicker: 'Dark Academia',
@@ -90,6 +102,7 @@ module.exports = {
   'voluntary-oasis': {
     kicker: 'Ranch University',
     author: 'Declan Rexer',
+    head: [0.60, 0.45],
   },
   'american-berserk': {
     kicker: 'An Englishman Goes South',
@@ -363,13 +376,17 @@ module.exports = {
     kicker: 'Law School Elites',
   },
   'mrbeast-slop-auteur': {
-    kicker: 'YouTube Artistry',
+    kicker: 'The Art of YouTube',
   },
   'present-at-the-creation': {
     kicker: 'Monitoring the Situation',
+    head: [0.485, 0.385],
+    zoom: 1.05,
   },
   'jasmine-suns-project-of-self-transformation': {
     kicker: 'Journalistic Becoming',
+    head: [0.38, 0.44],
+    zoom: 1,
   },
   'the-doctor-of-girlhood': {
     kicker: 'Books',
@@ -379,5 +396,6 @@ module.exports = {
   },
   'the-new-statesman': {
     kicker: 'Stylish Literature',
+    head: [0.53, 0.50],
   },
 };

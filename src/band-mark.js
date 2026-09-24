@@ -113,11 +113,26 @@
     if (!g) return;
     var wb = wm.getBoundingClientRect();
     var br = band.getBoundingClientRect();
-    var rule = br.bottom;
-    var capTop = wb.top + AIR;
-    var feet = wb.bottom - AIR;
+    // THE BAND COMES UP OVER THE NAME (2026-09-23): it opens UNDER the
+    // wordmark and rises over it as the page goes up, the name held at
+    // the window's head (style.css, THE BAND OPENS UNDER THE NAME) — so
+    // the name goes under the band's TOP edge, feet first, where it once
+    // went under its foot caps first. p is how much of it is covered.
+    // What is still seen of it stands between the window's head and
+    // the band's top edge (the page follows the band over it); gone
+    // off the top with its movement, it counts covered.
+    var edge = br.top;
+    // (the air over the caps is the band's own now, stated by the
+    // fitter: 2026-09-23; the miniature keeps the 72's proportion)
+    var air = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-air')) || AIR;
+    var capTop = wb.top + air;
+    // (the feet off the letters, not the block: the air under them is the
+    // 72 less the band's own inset to its Garamond since the two were set
+    // 72 apart ink to ink, 2026-09-23 — fitMastheadFill)
+    var feet = scanned ? capTop + g.S * (scanned.above + scanned.below) : wb.bottom - AIR;
     var span = feet - capTop;
-    var p = span > 0 ? (rule - capTop) / span : 0;
+    var seen = Math.max(0, Math.min(feet, edge) - Math.max(capTop, 0));
+    var p = span > 0 ? 1 - seen / span : 1;
     if (p < 0) p = 0; if (p > 1) p = 1;
     if (p === lastP) return;
     lastP = p;
@@ -129,8 +144,12 @@
     // strength by the time HALF the name has gone under — it stands
     // whole for the second half of the passage rather than still
     // arriving as the feet disappear. The same way back.
-    var DATE_OUT = 0.25, MINI_FULL = 0.5;
-    if (date) date.style.opacity = Math.max(0, 1 - p / DATE_OUT).toFixed(3);
+    // IN THE TOP HALF OF THE NAME (2026-09-23): the swap waits for the
+    // band's edge to reach the letters' top half —
+    // the date out over the third quarter of the passage, the
+    // miniature in over the last, whole as the band clears the caps.
+    var DATE_FROM = 0.5, DATE_OUT = 0.75, MINI_FULL = 1;
+    if (date) date.style.opacity = Math.max(0, Math.min(1, 1 - (p - DATE_FROM) / (DATE_OUT - DATE_FROM))).toFixed(3);
     var q = Math.max(0, Math.min(1, (p - DATE_OUT) / (MINI_FULL - DATE_OUT)));
     mini.style.opacity = q.toFixed(3);
     // Seated centred in the band by its ink, whatever its opacity.
@@ -140,11 +159,30 @@
     mini.classList.toggle('is-home', p >= 1);
   }
 
+  // THE CANVAS PAST EITHER END IS THAT END'S NAME'S GROUND (2026-09-23):
+  // pulled past the head the page shows the masthead's ground, past the
+  // foot the reprint's (the mark's colour under a marked last movement),
+  // and both the mark's while a hand on a big name turns the page —
+  // whichever end the reader is nearer. Stated on the root, where the
+  // browser reads the overscroll's colour.
+  var rep = document.querySelector('.page-rows > .reprint');
+  var root = document.documentElement;
+  var lastCanvas = '';
+  function canvas() {
+    var de = root, nearFoot = window.scrollY > (de.scrollHeight - de.clientHeight) / 2;
+    var src = nearFoot && rep ? rep : wm;
+    var c = getComputedStyle(src).backgroundColor;
+    if (!c || c === 'rgba(0, 0, 0, 0)' || c === 'transparent' || c === lastCanvas) return;
+    lastCanvas = c;
+    root.style.setProperty('background-color', c, 'important');
+  }
+  if (window.MutationObserver) new MutationObserver(function () { lastCanvas = ''; canvas(); }).observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+
   var pending = false;
   function schedule() {
     if (pending) return;
     pending = true;
-    var go = function () { pending = false; run(); };
+    var go = function () { pending = false; run(); canvas(); };
     if (window.requestAnimationFrame) requestAnimationFrame(go); else setTimeout(go, 16);
   }
   addEventListener('scroll', schedule, { passive: true });
@@ -154,4 +192,5 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { scanned = null; geo = null; lastP = -1; schedule(); }, function () {});
   window.__ncBandMark = function () { geo = null; lastP = -1; run(); };
   run();
+  canvas();
 })();

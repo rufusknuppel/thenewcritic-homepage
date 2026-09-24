@@ -128,7 +128,9 @@
       if (ttl && !hit(e, 'a[href]')) {
         e.preventDefault(); e.stopPropagation();
         var tr = ttl.getBoundingClientRect(), bf = getComputedStyle(ttl, '::before');
-        var inBox = e.clientX >= tr.left + (parseFloat(bf.left) || 0) && e.clientX <= tr.right - (parseFloat(bf.right) || 0) &&
+        // (the picture's box less its insets, and wider by its side
+        // margins: it takes the frame's old sides, 2026-09-23)
+        var inBox = e.clientX >= tr.left + (parseFloat(bf.left) || 0) + (parseFloat(bf.marginLeft) || 0) && e.clientX <= tr.right - (parseFloat(bf.right) || 0) - (parseFloat(bf.marginRight) || 0) &&
           e.clientY >= tr.top + (parseFloat(bf.top) || 0) && e.clientY <= tr.bottom - (parseFloat(bf.bottom) || 0);
         if (inBox) {
           var toP = card.querySelector('.card-image-link, .latest-cover');

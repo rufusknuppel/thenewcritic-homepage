@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8901", "-d", "dist"],
       "port": 8901
+    },
+    {
+      "name": "placard-trial",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8911", "-d", "/private/tmp/claude-501/-Users-rufusknuppel-projects-thenewcritic-homepage/858e7023-2f12-4be3-8bbc-5c9f0b8886da/scratchpad/placard-trial"],
+      "port": 8911
     }
   ]
 }

@@ -102,6 +102,9 @@ function applyContentOverrides(posts) {
     if (o.date) p.metaDate = o.date;
     if (o.kicker) p.kicker = o.kicker;
     if (o.focal) p.focal = o.focal;
+    if (o.head) p.head = o.head;
+    if (o.zoom) p.zoom = o.zoom;
+    if (o.mat) p.mat = o.mat;
     // The interview subject's display name — locked, so the dek
     // parser (applyDekBylines, which runs after) can't overwrite it
     // with whatever alias the feed's dek used.
@@ -490,8 +493,85 @@ function escapeHtml(str) {
 // off-center (common in tall 1:2 portrait crops). A post's `focal` override
 // (see content-overrides.js) sets object-position directly, e.g. 'center 20%'
 // to keep a face nearer the top of the frame.
-function focalStyle(post) {
-  return post.focal ? ` style="object-position: ${escapeHtml(post.focal)}"` : '';
+function focalStyle(post, frame) {
+  if (post.focal) return ` style="object-position: ${escapeHtml(post.focal)}"`;
+  if (!post.head) return '';
+  const c = headCrop(post, frame, { transform: true });
+  if (!c) return ` style="object-position: ${(post.head[0] * 100).toFixed(1)}% ${(post.head[1] * 100).toFixed(1)}%"`;
+  // The zoom is a transform, pivoting on the point that lands the head
+  // in the middle. The cover lets its overflow show (the title column
+  // reaches past it), so the picture clips itself: the clip is drawn
+  // before the transform and scaled with it, so it is cut short by the
+  // zoom and grows back to exactly the frame's edges.
+  if (c.zoom === 1) return ` style="object-position: ${c.x}% 50%"`;
+  const k = (1 - 1 / c.zoom) * 100;
+  const cut = (v) => +v.toFixed(2) + '%';
+  const clip = `inset(${cut(c.y / 100 * k)} ${cut((1 - c.ox / 100) * k)} ${cut((1 - c.y / 100) * k)} ${cut(c.ox / 100 * k)})`;
+  return ` style="object-position: ${c.x}% 50%; --cover-zoom: ${c.zoom}; --cover-zoom-o: ${c.ox}% ${c.y}%; --cover-zoom-clip: ${clip}"`;
+}
+
+// THE HEAD IN THE MIDDLE (2026-09-23): a postscript cover's `head`
+// override is where the sitter's head is centred in the drawing, as
+// fractions of its width and height ([x, y]; see content-overrides.js).
+// A postscript frame is always narrower than its drawing, so the
+// drawing fills the frame's height and only slides sideways; a head
+// that stands high or low is brought to the middle by zooming in just
+// far enough that the drawing's top (or bottom) edge can meet the
+// frame's. The sideways slide is worked out for the frame's shape —
+// width over height, measured at 1440 (it ranges about ±0.06 from 1280
+// to 1920, which moves a head by a few pixels at most):
+//   the box at rest (the title's ::before, painted with --swap-img) —
+//     0.70 in the latest row, a column (384) on the card's height
+//     (551), and 0.49 in a pair, a column of the pairs' four (270),
+//     since the postscripts turned portrait (2026-09-23);
+//   the <img> shown when a preview opens — 0.71 and 0.53.
+const PS_FRAMES = {
+  latest: { box: 0.70, img: 0.71 },
+  pair: { box: 0.49, img: 0.53 },
+};
+// The box at rest zooms by sizing its background, so its slide is taken
+// on the zoomed drawing; the <img> zooms by a transform AFTER
+// object-fit has cropped it (`transform`), so its slide is taken on the
+// drawing as fitted and the transform pivots (ox, as a fraction of the
+// frame's width) on the point that carries the head to the middle.
+function headCrop(post, frame, { transform = false } = {}) {
+  const m = frame && post.head && /_(\d+)x(\d+)\.\w+$/.exec(decodeURIComponent(post.image || ''));
+  if (!m) return null;
+  const aspect = m[1] / m[2];
+  const [hx, hy] = post.head;
+  // A post's own `zoom` overrides the one that just brings the head to
+  // the middle: over 1 it crops in, under 1 it stands the drawing back
+  // from the frame's edges on a mat (`mat`, the box's ground) to give
+  // the head air — the <img> stops at 1 (it would show the cover behind
+  // it), which costs nothing: it stays hidden while the box is shown.
+  let zoom = post.zoom || (hy < 0.5 ? 0.5 / hy : 0.5 / (1 - hy));
+  if (!post.zoom && zoom < 1.05) zoom = 1;
+  if (transform) zoom = Math.max(1, zoom);
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  // where along its slack the drawing stands for the head to sit in the
+  // middle, the slack being overhang (drawing bigger) or mat (smaller)
+  const slide = (size, box, at) => (size === box ? 0.5 : clamp((size * at - box / 2) / (size - box)));
+  const w = transform ? aspect : aspect * zoom; // the drawing's width, in frame heights
+  const x = slide(w, frame, hx);
+  const y = transform || zoom === 1 ? 0.5 : slide(zoom, 1, hy);
+  const f = w > frame ? (w * hx - x * (w - frame)) / frame : 0.5; // the head across the frame, before the transform
+  const ox = zoom === 1 ? 0.5 : clamp((zoom * f - 0.5) / (zoom - 1));
+  return {
+    x: +(x * 100).toFixed(1),
+    y: transform && zoom > 1 ? (hy < 0.5 ? 0 : 100) : +(y * 100).toFixed(1),
+    ox: +(ox * 100).toFixed(1),
+    zoom: +zoom.toFixed(3),
+  };
+}
+// The box at rest reads its crop off the title (the ::before inherits
+// it), which beats the --swap-pos the fitter copies onto the card from
+// the <img>, whose frame is a different shape.
+function headBoxStyle(post, frame) {
+  const c = headCrop(post, frame);
+  if (!c) return '';
+  const size = c.zoom !== 1 ? `; --swap-size: auto ${+(c.zoom * 100).toFixed(1)}%` : '';
+  const mat = c.zoom < 1 && post.mat ? `; --swap-mat: ${escapeHtml(post.mat)}` : '';
+  return ` style="--swap-pos: ${c.x}% ${c.y}%${size}${mat}"`;
 }
 
 // Every feed cover routes through substackcdn.com/image/fetch/<params>/<src>,
@@ -1358,6 +1438,26 @@ function renderSocialStack() {
 // slot is rendered and left blank, so the three columns keep their
 // stations — the date does NOT come back in its place, which would be
 // a substitution rather than a removal.)
+// THE SUBSCRIBE TICKER (2026-09-23): a 36 strip of the mark's blue under
+// the head band at the page's head — scrolling up under the band once
+// it pins — and again over the colophon at the foot, running SUBSCRIBE and a
+// line of the pitch, SUBSCRIBE and the other line, round and round —
+// the whole strip one link to the subscribe page. The run is two equal
+// halves so it can loop by sliding one half's width (style.css, THE
+// SUBSCRIBE TICKER). Neither first nor last in the band: the sheet
+// seats the band's slots by :first-child and :last-child.
+// (as HTML: the price is set bold in the ticker as in the corner box —
+// style.css, THE TICKER'S PRICE IS BOLD, 2026-09-24)
+function tickerLines() { return [
+  escapeHtml('Sign up for our free newsletter, or become a paid subscriber.'),
+  `For <strong class="sub-ticker-price">${escapeHtml(SUBSCRIBE_PITCH_PARTS[1])}</strong>${escapeHtml(', hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.')}`,
+]; }
+function subTicker(where = 'head') {
+  const unit = tickerLines().map((l) => `<b>Subscribe</b><span>${l}</span>`).join('');
+  const half = `<span class="sub-ticker-half">${unit}${unit}</span>`;
+  return `<a class="sub-ticker sub-ticker--${where}" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true">${half}${half}</span></a>`;
+}
+
 function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {}) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
   if (m === 'latest') {
@@ -1405,15 +1505,23 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
 // charcoal (2026-09-23: it took the mark for a night, then the page's
 // white for a morning), the copyright in its middle again where a 36
 // band of charcoal over it had carried it for a day.
+// THE BAND OVER THE NAME (2026-09-23): the head turned over, as the
+// head now opens on the name with its band under it — the colophon
+// closes the rows and the reprint stands UNDER it, the page's last
+// thing, pinned to the window's foot a level under the page until the
+// colophon lifts off it (style.css, THE BAND OPENS UNDER THE NAME).
 function renderPageFoot(onHome = false, onMark = false) {
   const mk = onMark ? ' on-mark' : '';
+  // (the foot's own ticker is struck, 2026-09-24: the head's rides
+  // under the band the whole page, style.css, THE TICKER RIDES UNDER THE
+  // BAND)
   return `
+  ${renderColophonBand()}
   <section class="reprint${mk}">
     <div class="reprint-rule" aria-hidden="true"></div>
     <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
-  <div class="foot-field${mk}" aria-hidden="true"></div>
-  ${renderColophonBand()}`;
+  <div class="foot-field${mk}" aria-hidden="true"></div>`;
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
 // band opens on its NAME at the left and closes on its links at the
@@ -1612,22 +1720,32 @@ function coverUnderPair(post, { authorPrefix = '', cat = '' } = {}) {
 // in the frame's left column, the date in its right — linking where the
 // byline's two did. The fitter seats and sizes them (seatMatterMeta);
 // the byline row stands invisible in the flow for the review's fit.
-function sideStacksHtml(post, { lead = '' } = {}) {
-  const stack = (text, cls, href) => {
-    if (!text) return '';
-    const letters = String(text).match(/ |[^\s]/g).map((ch) => ch === ' '
-      ? '<span class="side-stack-gap" aria-hidden="true"></span>'
-      : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('');
-    return `<a class="side-stack side-stack--${cls}" href="${escapeHtml(href)}" aria-label="${escapeHtml(text)}">${letters}</a>`;
-  };
-  return stack(lead || authorDisplay(post, false), 'author', archiveHref(post, 'author'))
-    + stack(metaDateText(post), 'date', archiveHref(post, 'date'));
+// THE BYLINE AND THE KICKER TRADE SEATS (2026-09-23): the author
+// stands across the frame's head band now and the kicker up its left
+// side, the date up the right as before; a postscript's issue number
+// (lead) stands where its author would. The SEATS keep the classes the
+// fitter and the sheet know them by — .cover-meta--kick with its
+// .cover-kicker for the head band, .side-stack--author for the left
+// column — so every seat, size and ink is as it was; what stands in
+// each is chosen here.
+// THE WORDS IN THE FRAME'S CORNERS (2026-09-23): the date at the head's
+// right and the kicker at the foot's right, lines of the frame's own kind
+// (the byline's head line, kickLine, at the head's left and Preview at
+// the foot's left) — seatMatterMeta ranges all four on the picture's
+// edges. They stood up the frame's sides as stacks of capitals before.
+function sideStacksHtml(post) {
+  const line = (text, cls, href) => text
+    ? `<p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--${cls}"><span class="cover-kicker"><a href="${escapeHtml(href)}">${escapeHtml(text)}</a></span></p>`
+    : '';
+  return line(metaDateText(post), 'cdate', archiveHref(post, 'date'))
+    + line(post.kicker, 'ckick', archiveHref(post, 'kicker'));
 }
-// A REVIEW'S KICKER stands alone in the frame's head band, centred
-// (seatMatterMeta seats it); its author and date stand up the sides.
-function kickLine(post) {
-  return post.kicker
-    ? `<p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="${escapeHtml(archiveHref(post, 'kicker'))}">${escapeHtml(post.kicker)}</a></span></p>`
+// THE FRAME'S HEAD BAND carries the byline at its left (seatMatterMeta
+// seats it); the date, the kicker and Preview take the other corners.
+function kickLine(post, { lead = '' } = {}) {
+  const text = lead || authorDisplay(post, false);
+  return text
+    ? `<p class="cover-meta cover-meta--kick"><span class="cover-kicker"><a href="${escapeHtml(archiveHref(post, 'author'))}">${escapeHtml(text)}</a></span></p>`
     : '';
 }
 function peekLine() {
@@ -1823,7 +1941,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
 // modifier (e.g. card--trio for the 1:2 portrait postscript row).
 // halfClass carries a placement modifier for the mosaic's shaped cells
 // (archive-tall / archive-wide).
-function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showArtInBand = true, showDek = true, restChipArt = false, megaLabel = 'The Latest', megaSwapMeta = false }, halfClass = '') {
+function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showArtInBand = true, showDek = true, restChipArt = false, megaLabel = 'The Latest', megaSwapMeta = false, megaKind = '' }, halfClass = '') {
   // Section accent: essays pink, postscript purple, contra green, carried
   // as a --accent custom property on the cell (see .duo-half--essay etc.
   // in style.css) so every hover effect inside the card — title, glows,
@@ -1840,7 +1958,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // .meta-dek, displacing the date down to the band) — with the work's
   // title in italics (see contraWorkDek).
   const dekHtml = showDek && post.subtitle
-    ? `<p class="card-dek">${section === 'contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
+    ? `<p class="card-dek">${section === 'contra' || megaKind === 'contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
     : '';
   // Full, untruncated paragraphs (several of them where the row-posts
   // fetch in main() ran) — duo-panel-fit.js decides at render time how
@@ -1870,7 +1988,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   const isPostscript = section === 'postscript';
   // Postscript names its subject with "w/"; essays and contra reviews print
   // the author's name plain (the "by" is dropped from the hover byline).
-  const authorPrefix = isPostscript ? 'w/ ' : '';
+  const authorPrefix = isPostscript || megaKind === 'postscript' ? 'w/ ' : '';
   // sectionBtn is true only on the homepage rows (renderListPage and the
   // heroes pass false) — the "this is a homepage cell" signal. On the
   // homepage the copy-link lives in the footer band (left of the likes),
@@ -1888,7 +2006,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // "by"/"w/" prefix) takes the top-RIGHT beside it. Essay/postscript chips
   // deep-link into the archive by topic; contra's carries the filtered
   // contra-page link (it used to ride the footer, now dropped from there).
-  const kickerHref = section === 'contra'
+  const kickerHref = section === 'contra' || megaKind === 'contra'
     ? `archive.html#section=contra&topic=${escapeHtml(post.kicker ? post.kicker.toLowerCase() : '')}`
     : escapeHtml(archiveHref(post, 'kicker'));
   const bylineKickerBox = post.kicker
@@ -2046,7 +2164,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // reads as the panel materialising AROUND a label that never moves
   // (see .rest-kicker in style.css). aria-hidden: it duplicates the panel
   // band's kicker link, which is the one assistive tech should meet.
-  const titleHtml = `<h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>`;
+  const titleHtml = `<h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(sentenceCase(post.title))}</a></h3>`;
   // THE STACK: title then dek in the left column, with the byline as the
   // panel's full-width header strip above .duo-panel-top (see THE STACK
   // in style.css) — every section, postscript included. Postscript's own
@@ -2191,9 +2309,43 @@ function renderArchiveMosaic(posts, opts) {
 // stands outside it, absolute on the letter's own box — style.css,
 // .latest-stack-mark.)
 const stackHtml = (text, side = 'right', href = 'archive.html') => `<a class="latest-stack latest-stack--${side}" href="${escapeHtml(href)}" aria-label="${escapeHtml(text)}">${text.match(/ |[^\s'’]['’]?/g).map((ch) => ch === ' ' ? '<span class="latest-stack-gap" aria-hidden="true"></span>' : ch.length > 1 ? `<span aria-hidden="true"><span class="latest-stack-glyph">${escapeHtml(ch[0])}<span class="latest-stack-mark">${escapeHtml(ch.slice(1))}</span></span></span>` : `<span aria-hidden="true">${escapeHtml(ch)}</span>`).join('')}</a>`;
-function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html' } = {}) {
+// ONE LINE OF POSTS (2026-09-23): the postscripts and the reviews wear
+// the essay's card too — picture, courier line and title under it, the
+// preview a dog-ear in its corner — each keeping its own picture
+// (a postscript's portrait, a review's square: style.css, ONE LINE OF
+// POSTS). `kind` names which; the card is the essay's in every other
+// respect, the fitter's essay paths and all.
+// THE TITLES IN SENTENCE CASE (2026-09-24): a card's title under its
+// picture is set as a sentence, in the body's Garamond (style.css, THE
+// TITLES IN SENTENCE CASE; seatSwapCols sizes it). The feed's titles
+// come in title case, so every word after the first is lowered — save
+// a word that is its own capitals (MrBeast, TNC), the first after a
+// colon or a question, and the proper names below, put back as the
+// feed spells them. A name a new title brings goes in TITLE_PROPER (or
+// the post's own title in content-overrides.js).
+const TITLE_PROPER = ['MrBeast', 'Jasmine Sun', 'Freya India', 'Luddite Club', 'New Statesman', 'American', 'Manifest'];
+function sentenceCase(title) {
+  const src = String(title || '');
+  let first = true, opens = false;
+  let out = src.split(/(\s+)/).map((w) => {
+    if (!w || /^\s+$/.test(w)) return w;
+    const keep = first || opens
+      || w.split('-').some((seg) => /[a-z][A-Z]/.test(seg) || /^[^a-z]*[A-Z]{2,}[^a-z]*$/.test(seg));
+    first = false;
+    opens = /[:?!.]$/.test(w);
+    return keep ? w : w.toLowerCase();
+  }).join('');
+  TITLE_PROPER.forEach((name) => {
+    for (let at = src.indexOf(name); at !== -1; at = src.indexOf(name, at + name.length)) {
+      out = out.slice(0, at) + name + out.slice(at + name.length);
+    }
+  });
+  return out;
+}
+
+function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '' } = {}) {
   if (!post) return '';
-  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev }, 'duo-half--wide duo-half--mega');
+  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev, megaKind: kind }, `duo-half--wide duo-half--mega${kind ? ` duo-half--kind-${kind}` : ''}`);
   // (The hero's masthead row is retired — the top header carries the
   // brand; the hero opens straight on its courier band.)
   // The REV hero mirrors the composition — cover left, ground right
@@ -2201,7 +2353,12 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // EVERY PICTURE TURNED OVER (2026-09-22): the heroes' sides are dealt
   // the other way round from the alternation above — the first hero's
   // picture on the left, its title column on the right
-  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}">
+  // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): the courier
+  // line and the title set right on every other essay (align 'r') and
+  // on the right-hand card of a pair, left on the rest (style.css and
+  // seatMatterMeta, THE WORDS UNDER THE PICTURE TAKE A SIDE)
+  const alignR = align === 'r' || pair === 'b';
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${alignR ? ' card--align-r' : ''}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2286,8 +2443,12 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   // dead height the contra columns never carried.)
   const courierHead = () => `<p class="latest-courier"></p>
         <div class="latest-rule"></div>`;
-  const coverImg = (post) => post.image
-    ? `<img class="card-image" ${coverSrcAttrs(post.image, cellOnly === 'ps' ? COVER_SIZES.pair : COVER_SIZES.third)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">`
+  // The postscript's frame shapes, for its head crop (see headCrop):
+  // a pair's when the cell stands in the Postscript section, the
+  // latest row's otherwise.
+  const psFrame = PS_FRAMES[cellOnly === 'ps' ? 'pair' : 'latest'];
+  const coverImg = (post, frame) => post.image
+    ? `<img class="card-image" ${coverSrcAttrs(post.image, cellOnly === 'ps' ? COVER_SIZES.pair : COVER_SIZES.third)} alt=""${focalStyle(post, frame)} loading="eager" fetchpriority="low" decoding="async">`
     : '';
   // THE PLATE, the card's covered body text: on hover the artwork
   // slides over the title/dek matter and this stands revealed where
@@ -2318,9 +2479,9 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
   // in style.css).
   // THE COURIER STANDS OVER THE TITLE (the `before` slot): author and
   // date, then the title, then the dek.
-  const matter = (post, dekHtml, { before = '', after = '' } = {}) => `<div class="latest-matter">
+  const matter = (post, dekHtml, { before = '', after = '', titleStyle = '' } = {}) => `<div class="latest-matter">
             ${before}
-            <h3 class="latest-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
+            <h3 class="latest-title"${titleStyle}><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>
             ${dekHtml}
             ${after}
           </div>`;
@@ -2348,10 +2509,10 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
              hangs off its edges: the courier reads once, on one line
              under the dek in the column beside it. -->
         <div class="latest-cover-col latest-cover-col--portrait">
-          <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost)}</a>
+          <a class="latest-cover latest-cover--portrait" href="${escapeHtml(psPost.link)}" rel="noopener">${coverImg(psPost, psFrame.img)}</a>
         </div>
         <div class="latest-col">
-          ${matter(psPost, psDek(psPost), { before: (psPost.psNo ? `<p class="cover-meta cover-meta--author"><span class="cover-author cover-no">${escapeHtml(`No. ${psPost.psNo}`)}</span></p>` : coverMetaLine(psPost, { only: 'author', cls: 'author' })) + kickLine(psPost), after: peekLine() + sideStacksHtml(psPost, { lead: psPost.psNo ? `No. ${psPost.psNo}` : '' }) })}
+          ${matter(psPost, psDek(psPost), { titleStyle: headBoxStyle(psPost, psFrame.box), before: (psPost.psNo ? `<p class="cover-meta cover-meta--author"><span class="cover-author cover-no">${escapeHtml(`No. ${psPost.psNo}`)}</span></p>` : coverMetaLine(psPost, { only: 'author', cls: 'author' })) + kickLine(psPost, { lead: psPost.psNo ? `No. ${psPost.psNo}` : '' }), after: peekLine() + sideStacksHtml(psPost) })}
         </div>
         ${plate(psPost)}
       </div>` : '';
@@ -2458,7 +2619,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html' }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
-  blocks.push(renderLatestRow(postscripts[0], contras[0]));
+  // (ONE LINE OF POSTS, 2026-09-23: every essay the one way round now —
+  // picture over its words, nothing beside it to face — and the latest
+  // postscript and review
+  // follow it one to a row, in the essay's card)
+  // (TWO ACROSS, 2026-09-23, later: the postscript and the review side by
+  // side, the review's square centred on the portrait — style.css, ONE
+  // LINE OF POSTS; seatRowGaps)
+  blocks.push(renderMegaHero(postscripts[0], { rev: true, label: 'Postscript', kind: 'postscript', pair: contras[0] ? 'a' : '' }));
+  blocks.push(renderMegaHero(contras[0], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[0] ? 'b' : '' }));
   // (SUBSCRIBE IS OFF THE FRONT PAGE'S BODY, 2026-09-19. The word stood
   // under the latest row in the sections' own dress, carrying the offer
   // as a courier line beneath it — both are struck. The offer is made
@@ -2479,8 +2648,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // MIRRORED too: contra left, postscript right with its text in the
   // middle and its cover closing the row's right end. Both keep the
   // lead seat (the rail is on the right up here, so no m2).
-  blocks.push(renderMegaHero(essays[1], { label: 'Essays' }));
-  blocks.push(renderLatestRow(postscripts[1], contras[1], { rev: true }));
+  blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays', align: 'r' }));
+  blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', pair: contras[1] ? 'a' : '' }));
+  blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'b' : '' }));
   // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
   // block full-bleed, SUBSCRIBE in the masthead voice centred where
   // the name stands above, and one courier line whose ink opens on
@@ -2494,7 +2664,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // EACH SECTION'S WORD CARRIES ITS LINE (2026-09-18): one courier
   // sentence under the word, inside the 72 under its feet, seated the
   // way SUBSCRIBE's offer is (fitSubscribeLines, .page-banner--apart).
-  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart', below: ['The great writing of our generation.'] }));
+  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart page-banner--section', below: ['The great writing of our generation.'] }));
   // THE SECOND MOVEMENT, under the band: the next essay as a
   // MIRRORED hero (cover left, ground right, labelled Essay), then
   // the next contra/postscript pair mirrored the same way.
@@ -2503,13 +2673,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // mirrored, base, mirrored, base. essays[0] and [1] are spent in the
   // first movement, so this movement reads from [2] and repeats
   // nothing.
+  // (the essays' words alternate sides down the page, left then right,
+  // counted from the lead: [0] left, [1] right, [2] left… — 2026-09-24)
   blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[3], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, align: 'r' }));
   blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[5], { label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r' }));
   blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true }));
   // EVENTS closes the essays — the word alone, like STORE.
-  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart', below: ['TNC editors interview extraordinary gen zers.'] }));
+  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section', below: ['TNC editors interview extraordinary gen zers.'] }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
   // build, then the pair MIRRORED, then the base again. All three
   // keep the base SEAT (the strip is back on the right down here), so
@@ -2518,15 +2690,18 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // alone, each row's two columns splitting the whole measure. In
   // every pair the LEFT cell reads turned over (renderPostscriptPair),
   // so the two pictures stand together at the row's centre.
-  blocks.push(renderPostscriptPair(postscripts[2], postscripts[3]));
+  // (one to a row since ONE LINE OF POSTS, 2026-09-23 — the pairs are
+  // retired; renderPostscriptPair stands for the word pages)
+  // (two across since 2026-09-23, later)
+  // (a post with no partner stands alone, centred)
+  const pairOf = (list, i) => (i % 2 ? 'b' : (list[i + 1] ? 'a' : ''));
+  postscripts.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Postscript', kind: 'postscript', pair: pairOf(l, i) })));
   // The middle pair reads REVERSED — cover right, text left.
   // The middle pair used to mirror (picture on the other side); every
   // pair reads the same way now.
-  blocks.push(renderPostscriptPair(postscripts[4], postscripts[5], { stacked: true }));
   // And a third pair back in the base build — covers on the left.
-  blocks.push(renderPostscriptPair(postscripts[6], postscripts[7], { stacked: true }));
   // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart', below: ['New Critics take on the works of our time.'] }));
+  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart page-banner--section', below: ['New Critics take on the works of our time.'] }));
   // THE CONTRA MOVEMENT: the section's own row formation, three
   // squares across, twice — reading from the reviews the rows above
   // haven't already spent.
@@ -2537,8 +2712,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // repeated; the section runs [2] onward, three to a row — TWO rows,
   // six reviews. (A third ran to [11] and is retired: the movement
   // closes on the second row now.)
-  blocks.push(renderContraTrio(contras.slice(2, 5)));
-  blocks.push(renderContraTrio(contras.slice(5, 8), { stacked: true }));
+  // (one to a row since ONE LINE OF POSTS, 2026-09-23)
+  // (two across since 2026-09-23, later)
+  contras.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Contra', kind: 'contra', pair: pairOf(l, i) })));
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
   // it heralds, so the ground changes on its own top edge, under the
@@ -2557,6 +2733,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // ESSAYS STAND ON THE MARK). A class of its own rather than
   // .m--essays, which the word pages give every movement after their
   // first.
+  // (…ON THE CHARCOAL since THE SECTIONS ARE CHARCOAL, 2026-09-23; the
+  // latest and the postscripts stand on the white, and the colophon and
+  // the reprint under the reviews are white too.)
+  // (THE LATEST STANDS ON THE WHITE again, 2026-09-23: it was marked for
+  // an evening; the name's opening screen keeps its charcoal — style.css,
+  // THE LATEST STANDS ON THE WHITE.)
   const ON_MARK = ['essays', 'contra'];
   let movement = 0;
   // EACH MOVEMENT IS A CONTAINER, opening on its SECTION BAND: the
@@ -2587,9 +2769,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m)}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}">\n${renderHeader()}`
-      : `\n  <div class="movement m--${m}">`;
-    duoHtml += `${head}\n  <div class="movement-body">`; open = true;
+      ? `\n  ${renderSectionBand(m)}\n  ${subTicker('head')}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
+    // THE LATEST, over the first row (2026-09-23): the section's name in
+    // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
+    // head band, the first row 36 under it
+    // (the ticker stands in the rows now, under the band — 2026-09-24)
+    const lead = m === 'latest' ? `\n  <h2 class="latest-head">The Latest</h2>` : '';
+    duoHtml += `${head}\n  <div class="movement-body">${lead}`; open = true;
   };
   // EVERY MOVEMENT CLOSES ON AN EMPTY BAND — the section band's own
   // charcoal block, 80 tall, full bleed, with nothing in it: 48 under
@@ -2753,11 +2940,9 @@ ${renderMarginalia()}
 </main>
 
 ${renderFooter()}
-${renderSubscribeBox()}
 
 ${renderCaterpillarScript()}
 ${renderFoilPourScript()}
-${renderSubscribeBoxScript()}
 ${renderDuoPanelFitScript()}
 ${renderRectClickScript()}
 ${renderCardOpenScript()}
@@ -2768,6 +2953,7 @@ ${renderLineDrawScript()}
 ${renderRailFixScript()}
 ${renderBandMarkScript()}
 ${renderCoverCueScript()}
+${renderCardRevealScript()}
 </body>
 </html>`;
 }
@@ -2890,9 +3076,10 @@ function renderFontGateScript() {
         localStorage.removeItem('nc-hex-auto');
       } catch (e2) {}
     }
-    if (theme === 'light' || theme === 'dark') paint(theme);
-    accent = hexOf(localStorage.getItem('nc-accent'));
-    if (accent) mark(accent);
+    // THE MODE WORDS ARE STRUCK (2026-09-23): with no Light, Dark or Hex
+    // left in the margin a stored choice could not be taken back, so
+    // none is applied — every reader has the light page and the blue.
+    void theme;
   } catch (e) {}
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
   // paints that mark for this view only — nothing is stored, and the
@@ -3165,11 +3352,23 @@ ${js}
 </script>`;
 }
 
+// EACH CARD ARRIVES WHOLE: a front-page card fades in as one — picture,
+// courier and title — as the reader scrolls it into the window, its
+// picture fetched and decoded before it is shown (src/card-reveal.js;
+// style.css, EACH CARD ARRIVES WHOLE).
+function renderCardRevealScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/card-reveal.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
 // A post card opens on its COVER and closes only when the pointer leaves
 // the card entirely (src/card-open.js) — a state :has() cannot express,
 // having no memory of how it began.
 function renderCardOpenScript() {
-  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/card-open.js'), 'utf8'));
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/card-open.js'), 'utf8'))
+    + '\n' + slimJs(fs.readFileSync(path.join(__dirname, 'src/essay-acts.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
@@ -3264,6 +3463,8 @@ ${js}
 // corner opposite. Ships HIDDEN and is dealt by src/subscribe-box.js,
 // which also decides what shuts it: a reader with no JavaScript is
 // never handed a panel they could not shut.
+// (STRUCK FROM THE PAGES, 2026-09-23: the subscribe ticker under the
+// head band asks instead — subTicker. Kept for its markup and script.)
 function renderSubscribeBox() {
   return `
 <aside class="sub-box" aria-label="Subscribe to The New Critic" hidden>
@@ -3436,14 +3637,9 @@ ${bodyHtml}
 </main>
 
 ${bare ? '' : renderFooter()}
-<!-- The corner box stands on EVERY page, bare or dressed: "bare" means
-     the page carries its own header and footer (the word pages do),
-     not that it does without the furniture. -->
-${renderSubscribeBox()}
 
 ${renderCaterpillarScript()}
 ${renderFoilPourScript()}
-${renderSubscribeBoxScript()}
 ${renderRectClickScript()}${extraScripts ? `\n${extraScripts}` : ''}
 </body>
 </html>`;
@@ -4179,6 +4375,7 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   const bodyHtml = `
   <div class="page-rows">
   ${renderSectionBand('latest', { mid, currentKey, bareMid: true })}
+  ${subTicker('head')}
   <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
   </div>
   ${renderMarginalia()}`;

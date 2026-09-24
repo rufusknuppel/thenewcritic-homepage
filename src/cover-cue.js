@@ -68,11 +68,14 @@
     if (!title.classList.contains('hl-rect')) return r;
     var c = getComputedStyle(title, '::before');
     if (c.content === 'none') return r;
+    // (its side margins too: the picture reaches past the box's insets
+    // into the frame's old sides by negative margins, 2026-09-23 —
+    // style.css, THE PICTURE TAKES THE FRAME'S SIDES)
     return {
       top: r.top + (parseFloat(c.top) || 0),
       bottom: r.bottom - (parseFloat(c.bottom) || 0),
-      left: r.left + (parseFloat(c.left) || 0),
-      right: r.right - (parseFloat(c.right) || 0)
+      left: r.left + (parseFloat(c.left) || 0) + (parseFloat(c.marginLeft) || 0),
+      right: r.right - (parseFloat(c.right) || 0) - (parseFloat(c.marginRight) || 0)
     };
   }
   // THE PICTURE SITS IN THE BOX (2026-09-22): at rest a card's picture
@@ -125,6 +128,10 @@
   // does not. See NO_HOLD above for which cards ask for that and why.
   function inMark(cell, noGap) {
     var mark = markBox(cell.querySelector(TITLES));
+    // (where the picture is in the box, the cover's old seat is the
+    // title column: its words take the hand by their ink alone, and a
+    // hand off the ink in the column holds nothing — only the box does)
+    if (swapped(host)) return inBox(mark);
     var cover = host && host.getBoundingClientRect ? host.getBoundingClientRect() : null;
     if (inBox(mark) || inBox(cover)) return true;
     if (noGap) return false;
@@ -172,6 +179,16 @@
   // whether the words are said over it.
   function resolveFrom(node) {
     if (!node || !node.closest) return null;
+    // (the essay's preview tabs are controls, not the way to the post:
+    // no Read Now over them — 2026-09-23)
+    if (node.closest('.peek-open, .swap-body-close')) return null;
+    // (nor on an essay at all: its picture and its title offer READ NOW
+    // and PREVIEW in the picture's middle instead — src/essay-acts.js)
+    if (node.closest('.duo-half--mega')) return null;
+    // (and nothing at all on an essay whose preview is open: its picture
+    // is the preview then, not the way to the post — 2026-09-23)
+    var openEssay = node.closest('.duo-half--mega');
+    if (openEssay && openEssay.matches('.is-open, .is-opening') && openEssay.querySelector(':scope > .swap-body.is-set')) return null;
     // AN OPEN CARD SAYS READ NOW ON ITS OWN (2026-09-21, late): its
     // picture carries the words in the sheet while the preview is
     // open, so this line stands down there rather than doubling them.
@@ -297,10 +314,42 @@
   // miniature is made by another script, after this one has run)
   var WM = '.topbar-wordmark, .reprint-link, .topbar-name, .reprint-name, .section-band .band-mini, .section-band .band-name-mid';
   var wmOf = function (n) { return n && n.closest ? n.closest(WM) : null; };
-  var wmSet = function (on) { document.documentElement.classList.toggle('nc-wm-lit', on); };
-  document.addEventListener('mouseover', function (e) { if (wmOf(e.target)) wmSet(true); }, true);
+  // THE NAME TURNS ITS OWN BLOCK, NOT THE PAGE (2026-09-23): a hand on a
+  // THE NEW CRITIC flips the colour of the block it stands in — the
+  // masthead's, the reprint's, or the head band the miniature rides —
+  // and nothing else (.is-wm-lit on that block; style.css, THE NAME
+  // TURNS ITS OWN BLOCK). It turned the whole page, bands and columns,
+  // before.
+  // THE REPRINT IS BARED AT THE PAGE'S END (2026-09-23): it stands a
+  // level under the page, pinned to the window's foot (style.css, THE
+  // BAND OPENS UNDER THE NAME), so the rows over it took the hand even
+  // where it showed — neither its hover nor its link answered. Once the
+  // colophon has lifted clear of it, it is raised over the page
+  // (.is-bared) and answers; while anything still stands over it, it
+  // stays under.
+  var repEl = document.querySelector('.page-rows > .reprint');
+  var coloEl = document.querySelector('.page-rows > .section-band--colophon');
+  var repUp = function () {
+    if (!repEl || !coloEl) return;
+    var up = coloEl.getBoundingClientRect().bottom <= repEl.getBoundingClientRect().top + 0.5;
+    if (repEl.classList.contains('is-bared') !== up) repEl.classList.toggle('is-bared', up);
+  };
+  addEventListener('scroll', repUp, { passive: true });
+  addEventListener('resize', repUp);
+  addEventListener('load', repUp);
+  repUp();
+  var WM_BLOCK = '.topbar-wordmark, .reprint, .section-band';
+  var litBlock = null;
+  var wmSet = function (on, n) {
+    var b = on && n && n.closest ? n.closest(WM_BLOCK) : null;
+    if (b === litBlock) return;
+    if (litBlock) litBlock.classList.remove('is-wm-lit');
+    litBlock = b;
+    if (b) b.classList.add('is-wm-lit');
+  };
+  document.addEventListener('mouseover', function (e) { var w = wmOf(e.target); if (w) wmSet(true, w); }, true);
   document.addEventListener('mouseout', function (e) { if (wmOf(e.target) && !wmOf(e.relatedTarget)) wmSet(false); }, true);
-  document.addEventListener('focusin', function (e) { if (wmOf(e.target)) wmSet(true); }, true);
+  document.addEventListener('focusin', function (e) { var w = wmOf(e.target); if (w) wmSet(true, w); }, true);
   document.addEventListener('focusout', function (e) { if (wmOf(e.target) && !wmOf(e.relatedTarget)) wmSet(false); }, true);
 
   function make() {
