@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4b50efe6">
+<link rel="stylesheet" href="style.css?v=0a061410">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5272,6 +5272,7 @@
     var r = h.getBoundingClientRect();
     return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36 } : null;
   }
+  var PAIR_STEP = 36;
   function seatRowGaps() {
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
@@ -5317,7 +5318,7 @@
         var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
         var pic = picBoxOf(row);
         if (isB && pic && prevPic) {
-          rowDelta = (prevPic.t + ((prevPic.b - prevPic.t) - (pic.b - pic.t)) / 2) - (pic.t + acc);
+          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
           hasJob = true;
         } else if (prev && cur && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
@@ -5327,12 +5328,12 @@
             var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
             if (nbPic) {
               var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
-              curT = Math.min(curT, pic.t + ((pic.b - pic.t) - (nbPic.b - nbPic.t)) / 2 + (nbTop - nbPic.t) + acc);
+              curT = Math.min(curT, pic.t + Math.round(pic.b - pic.t) - PAIR_STEP + (nbTop - nbPic.t) + acc);
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0 });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
         prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
@@ -5341,8 +5342,8 @@
       });
     });
     jobs.forEach(function (j) {
-      if (Math.abs(j.delta) < 0.25) return;
-      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(2) + 'px', 'important');
+      if (j.exact ? Math.abs(j.delta) < 0.0005 : Math.abs(j.delta) < 0.25) return;
+      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(j.exact ? 3 : 2) + 'px', 'important');
     });
     var edges = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
