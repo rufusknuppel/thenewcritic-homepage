@@ -5452,7 +5452,7 @@
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
       var acc = 0, prevFoot = null, prevPic = null;
-      rows.forEach(function (row) {
+      rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
         var el = row;
@@ -5496,6 +5496,14 @@
         } else if (prev && cur && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
           var curT = Math.min(cur.t, ink ? ink.t : Infinity) + acc;
+          var nb = rows[ri + 1];
+          if (!ONE_COL.matches && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
+            var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
+            if (nbPic) {
+              var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
+              curT = Math.min(curT, pic.t + ((pic.b - pic.t) - (nbPic.b - nbPic.t)) / 2 + (nbTop - nbPic.t) + acc);
+            }
+          }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
         }
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0 });

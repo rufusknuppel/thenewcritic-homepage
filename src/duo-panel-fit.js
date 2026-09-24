@@ -6870,7 +6870,7 @@
       // second card can be drawn up beside the first and the row under
       // the pair spaced from the lower of the two, all in one pass)
       var acc = 0, prevFoot = null, prevPic = null;
-      rows.forEach(function (row) {
+      rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
         // (the card's own margin, over the margins it already has: a
@@ -6942,6 +6942,18 @@
           // (to the row under's highest ink: its courier line, or an
           // essay's picture, whose courier stands under it)
           var curT = Math.min(cur.t, ink ? ink.t : Infinity) + acc;
+          // (a pair's first card standing for its second where the second
+          // is the taller: centred on the first, the second rides up by
+          // half the difference, and its ink, not the first's, is the
+          // row's highest — a review leading a postscript, 2026-09-24)
+          var nb = rows[ri + 1];
+          if (!ONE_COL.matches && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
+            var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
+            if (nbPic) {
+              var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
+              curT = Math.min(curT, pic.t + ((pic.b - pic.t) - (nbPic.b - nbPic.t)) / 2 + (nbTop - nbPic.t) + acc);
+            }
+          }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
         }
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0 });

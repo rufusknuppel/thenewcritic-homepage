@@ -2636,8 +2636,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // middle and its cover closing the row's right end. Both keep the
   // lead seat (the rail is on the right up here, so no m2).
   blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays', align: 'r', trueHeight: true }));
-  blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', pair: contras[1] ? 'a' : '' }));
-  blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'b' : '' }));
+  // (2026-09-24: this pair reads review first — the contra takes the
+  // left seat and the postscript the right, at the user's word.)
+  blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'a' : '' }));
+  blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', pair: contras[1] ? 'b' : '' }));
   // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
   // block full-bleed, SUBSCRIBE in the masthead voice centred where
   // the name stands above, and one courier line whose ink opens on
