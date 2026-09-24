@@ -6858,7 +6858,7 @@
     var h = row.querySelector('.duo-half--mega');
     if (!h) return null;
     var r = h.getBoundingClientRect();
-    return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36 } : null;
+    return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36, l: r.left + 36, r: r.right - 36 } : null;
   }
   var PAIR_STEP = 36;
   function seatRowGaps() {
@@ -6870,7 +6870,7 @@
       // the moves of the rows over it — acc, the flow's — so a pair's
       // second card can be drawn up beside the first and the row under
       // the pair spaced from the lower of the two, all in one pass)
-      var acc = 0, prevFoot = null, prevPic = null, prevAFoot = null;
+      var acc = 0, prevFoot = null, prevPic = null, cols = [];
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
@@ -6937,10 +6937,27 @@
         // the page. (Whole: the first's height is taken to the pixel it
         // is painted at, and the second's top on the first's fraction,
         // so after snapPictures the two stand exactly 36 apart.)
-        var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
+        // EVERY CARD STEPS DOWN (2026-09-24, at the user's word): each
+        // card's picture stands 36 over the foot of the picture before it,
+        // the two on opposite sides (their pictures meeting across no more
+        // than 36), one diagonal down each section — essays, pairs and
+        // the rest alike. A card keeps 54 under the ink of every card
+        // before it in its own column, and never rises over it. A card
+        // on the same side as the last (nothing to step past) stands off
+        // it by the courier gap, as before.
         var pic = picBoxOf(row);
-        if (isB && pic && prevPic) {
+        // (a card's side is its words' side, .card--align-r — essays,
+        // pairs and flipped pairs alike; the picture stands on it)
+        var side = row.classList.contains('card--align-r') ? 'r' : 'l';
+        var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
+          && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
+          && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l');
+        if (stepped) {
           rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
+          var topNow = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
+          cols.forEach(function (c) {
+            if (c.side === side) rowDelta = Math.max(rowDelta, COURIER_GAP - (topNow - c.foot));
+          });
           hasJob = true;
         } else if (prev && cur && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
@@ -6966,24 +6983,12 @@
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
-          // THE PAIRS STEP ON (2026-09-24, at the user's word): where a
-          // pair follows a pair, its first picture stands 36 over the
-          // foot of the last one's second, as the second stands 36 over
-          // the first's — one diagonal down the section. It keeps 54
-          // from the ink of the card over it in its own column (the last
-          // pair's first), and never rises above that.
-          var chainA = !ONE_COL.matches && pic && prevPic && prev && prevAFoot != null
-            && row.classList.contains('card--pair-a') && prev.classList.contains('card--pair-b');
-          if (chainA) {
-            var stepTo = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
-            rowDelta = Math.max(stepTo, COURIER_GAP - (curT - prevAFoot));
-          }
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB || !!chainA });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
-        prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
-        if (row.classList.contains('card--pair-a')) prevAFoot = isFinite(foot) ? foot : null;
-        prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
+        prevFoot = stepped && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
+        if (pic && isFinite(foot)) cols.push({ side: side, foot: foot });
+        prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta, l: pic.l, r: pic.r } : null;
         acc += rowDelta;
         prev = row; prevInk = ink; prevCur = cur;
       });

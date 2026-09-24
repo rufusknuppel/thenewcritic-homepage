@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=70572f94">
+<link rel="stylesheet" href="style.css?v=79c4d881">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -425,7 +425,7 @@
   </div>
   <div class="row-divider m--latest"></div>
   <div class="wrap m--latest">
-    <section class="card card--duo card--split card--mega card--kind-postscript card--pair-a">
+    <section class="card card--duo card--split card--mega card--kind-postscript card--pair-a card--pair-flip card--align-r">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--kind-postscript duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/jasmine-suns-project-of-self-transformation" rel="noopener">
           <img class="card-image" data-hold src="https://substackcdn.com/image/fetch/$s_!cEjI!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp" srcset="https://substackcdn.com/image/fetch/$s_!cEjI!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 480w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 800w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 1200w, https://substackcdn.com/image/fetch/$s_!cEjI!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F184ad5af-becf-4078-a621-2786279ae670_1456x1576.webp 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" style="object-position: 38.0% 44.0%" loading="lazy" fetchpriority="high" decoding="async">
@@ -458,7 +458,7 @@
   </div>
   <div class="row-divider m--latest"></div>
   <div class="wrap m--latest">
-    <section class="card card--duo card--split card--mega card--kind-contra card--pair-b card--align-r">
+    <section class="card card--duo card--split card--mega card--kind-contra card--pair-b card--pair-flip">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--kind-contra duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/the-unstageable" rel="noopener">
           <img class="card-image" data-hold src="https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!kfWq!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 480w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 800w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!kfWq!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3c02e5b1-3e2f-444d-9675-dcc70775732a_4579x3263.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" fetchpriority="high" decoding="async">
@@ -5276,7 +5276,7 @@
     var h = row.querySelector('.duo-half--mega');
     if (!h) return null;
     var r = h.getBoundingClientRect();
-    return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36 } : null;
+    return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36, l: r.left + 36, r: r.right - 36 } : null;
   }
   var PAIR_STEP = 36;
   function seatRowGaps() {
@@ -5284,7 +5284,7 @@
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
-      var acc = 0, prevFoot = null, prevPic = null, prevAFoot = null;
+      var acc = 0, prevFoot = null, prevPic = null, cols = [];
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
@@ -5321,10 +5321,17 @@
           if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - ink.t; hasJob = true; }
         }
         var cur = rowCourier(row);
-        var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
         var pic = picBoxOf(row);
-        if (isB && pic && prevPic) {
+        var side = row.classList.contains('card--align-r') ? 'r' : 'l';
+        var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
+          && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
+          && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l');
+        if (stepped) {
           rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
+          var topNow = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
+          cols.forEach(function (c) {
+            if (c.side === side) rowDelta = Math.max(rowDelta, COURIER_GAP - (topNow - c.foot));
+          });
           hasJob = true;
         } else if (prev && cur && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
@@ -5338,18 +5345,12 @@
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
-          var chainA = !ONE_COL.matches && pic && prevPic && prev && prevAFoot != null
-            && row.classList.contains('card--pair-a') && prev.classList.contains('card--pair-b');
-          if (chainA) {
-            var stepTo = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
-            rowDelta = Math.max(stepTo, COURIER_GAP - (curT - prevAFoot));
-          }
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB || !!chainA });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
-        prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
-        if (row.classList.contains('card--pair-a')) prevAFoot = isFinite(foot) ? foot : null;
-        prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
+        prevFoot = stepped && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
+        if (pic && isFinite(foot)) cols.push({ side: side, foot: foot });
+        prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta, l: pic.l, r: pic.r } : null;
         acc += rowDelta;
         prev = row; prevInk = ink; prevCur = cur;
       });

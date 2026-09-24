@@ -20597,3 +20597,19 @@ main.has-mega :is(.duo-half--mega .duo-card-image, .latest-cell--ps .latest-cove
   box-shadow: none !important;
 }
 /* (THE WHOLE PAGE STANDS ON ONE LIGHT GRAY ends) */
+
+
+
+/* ---------- EVERY CARD STEPS DOWN (2026-09-24) ----------
+   Every card's picture stands 36 over the foot of the picture before
+   it, on the other side, one diagonal down each section (seatRowGaps).
+   The Latest's first pair follows its lead essay, which stands on the
+   left, so it is FLIPPED (.card--pair-flip, build.js): its first card
+   takes the right-hand seat and its second the left. */
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-a.card--pair-flip:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 + var(--pic-w) + var(--pair-gap) - 36px);
+}
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-b.card--pair-flip:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 - 36px);
+}
+/* (EVERY CARD STEPS DOWN ends) */
