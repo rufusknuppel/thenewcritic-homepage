@@ -1475,6 +1475,7 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
     <p class="band-deks band-dek">${mid && !bareMid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
+    <button type="button" class="theme-toggle theme-toggle--wm" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">/</span><span class="theme-toggle-dark">Dark</span></button>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -3081,10 +3082,12 @@ function renderFontGateScript() {
         localStorage.removeItem('nc-hex-auto');
       } catch (e2) {}
     }
-    // THE MODE WORDS ARE STRUCK (2026-09-23): with no Light, Dark or Hex
-    // left in the margin a stored choice could not be taken back, so
-    // none is applied — every reader has the light page and the blue.
-    void theme;
+    // (THE MODE WORDS ARE STRUCK, 2026-09-23: with no toggle left a
+    // stored choice was not applied.) DARK IS THE DEFAULT (2026-09-24,
+    // at the user's word): the page stands on the charcoal, the words
+    // white; the Light · Dark toggle beside the wordmark turns it over,
+    // and a reader's stored Light is kept.
+    paint(theme === 'light' ? 'light' : 'dark');
   } catch (e) {}
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
   // paints that mark for this view only — nothing is stored, and the

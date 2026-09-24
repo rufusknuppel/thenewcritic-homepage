@@ -20631,3 +20631,43 @@ body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--me
   }
 }
 /* (36 BETWEEN ends) */
+
+/* ---------- LIGHT / DARK BESIDE THE NAME (2026-09-24) ----------
+   Dark is the page's default now (the font gate paints it unless the
+   reader chose Light), and the choice is a small courier toggle in the
+   head band, 24 right of the miniature THE NEW CRITIC's ink
+   (--mini-r, stated by band-mark.js), centred on the band's height —
+   LIGHT / DARK, the mode in force in the full ink, the other faint,
+   either blue under the hand. Absolutely placed, it takes no cell of
+   the band's three. */
+main.has-mega .page-rows > .section-band > .theme-toggle--wm:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute !important;
+  left: calc(var(--mini-r, 70%) + 24px) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important; padding: 4px 0 !important;
+  border: 0 !important; background: none !important;
+  font-family: Courier, "Courier New", monospace !important;
+  font-size: 13px !important; line-height: 1 !important;
+  letter-spacing: -0.02em !important; text-transform: uppercase !important;
+  color: var(--band-text, var(--k)) !important;
+  white-space: nowrap !important; cursor: pointer !important;
+  z-index: 3 !important;
+}
+main.has-mega .page-rows > .section-band > .theme-toggle--wm > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: inherit !important; background: none !important; opacity: .45;
+  transition: opacity .2s ease, color .2s ease;
+}
+main.has-mega .page-rows > .section-band > .theme-toggle--wm > .theme-toggle-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding: 0 .4em; }
+html:not([data-theme="dark"]) main.has-mega .page-rows > .section-band > .theme-toggle--wm > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .page-rows > .section-band > .theme-toggle--wm > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ opacity: 1; }
+main.has-mega .page-rows > .section-band > .theme-toggle--wm > :is(.theme-toggle-light, .theme-toggle-dark):is(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ opacity: 1; color: var(--nc-mark) !important; }
+/* On a phone the band's middle is the links' (ONE COLUMN ON A PHONE):
+   the toggle stands under the miniature, on its left ink. */
+@media (max-width: 1023.98px){
+  main.has-mega .page-rows > .section-band > .theme-toggle--wm:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    left: 36px !important; top: calc(50% + 12px) !important;
+    transform: none !important; font-size: 10px !important; padding: 2px 0 !important;
+  }
+}
+/* (LIGHT / DARK BESIDE THE NAME ends) */

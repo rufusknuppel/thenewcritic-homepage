@@ -9568,3 +9568,31 @@ body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--me
     --pair-gap: 36px;
   }
 }
+main.has-mega .page-rows > .section-band > .theme-toggle--wm:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute !important;
+  left: calc(var(--mini-r, 70%) + 24px) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important; padding: 4px 0 !important;
+  border: 0 !important; background: none !important;
+  font-family: Courier, "Courier New", monospace !important;
+  font-size: 13px !important; line-height: 1 !important;
+  letter-spacing: -0.02em !important; text-transform: uppercase !important;
+  color: var(--band-text, var(--k)) !important;
+  white-space: nowrap !important; cursor: pointer !important;
+  z-index: 3 !important;
+}
+main.has-mega .page-rows > .section-band > .theme-toggle--wm > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: inherit !important; background: none !important; opacity: .45;
+  transition: opacity .2s ease, color .2s ease;
+}
+main.has-mega .page-rows > .section-band > .theme-toggle--wm > .theme-toggle-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ padding: 0 .4em; }
+html:not([data-theme="dark"]) main.has-mega .page-rows > .section-band > .theme-toggle--wm > .theme-toggle-light:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+html[data-theme="dark"] main.has-mega .page-rows > .section-band > .theme-toggle--wm > .theme-toggle-dark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ opacity: 1; }
+main.has-mega .page-rows > .section-band > .theme-toggle--wm > :is(.theme-toggle-light, .theme-toggle-dark):is(:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ opacity: 1; color: var(--nc-mark) !important; }
+@media (max-width: 1023.98px){
+  main.has-mega .page-rows > .section-band > .theme-toggle--wm:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    left: 36px !important; top: calc(50% + 12px) !important;
+    transform: none !important; font-size: 10px !important; padding: 2px 0 !important;
+  }
+}

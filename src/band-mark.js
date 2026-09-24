@@ -109,6 +109,9 @@
     // the list of links, which has the middle's room.
     var nameSlot = band.querySelector(':scope > .band-name');
     if (isFinite(il) && nameSlot && !nameSlot.getClientRects().length) dx = (br.left + SIDE) - il;
+    // THE LIGHT / DARK TOGGLE stands beside the miniature (2026-09-24):
+    // the band is told where the name's ink ends, seated.
+    if (isFinite(ir)) band.style.setProperty('--mini-r', (ir + dx - br.left).toFixed(2) + 'px');
     geo = { S: S, B: B, c: c, capInBox: capInBox, dx: dx };
     return geo;
   }
