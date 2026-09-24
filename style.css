@@ -20321,3 +20321,27 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   }
 }
 /* (ONE COLUMN ON A PHONE ends) */
+
+
+/* ---------- THE COLUMNS END LEVEL (2026-09-24) ----------
+   Both of a preview's columns open and close on a line of text, level
+   top and foot (seatSwapCols, BOTH COLUMNS OPEN AND CLOSE ON A LINE):
+   the paragraphs run on across the break wherever it falls, so a
+   paragraph may leave one line at a column's foot or head — orphans
+   and widows are one here, where THE PREVIEW'S COLUMNS asked for two
+   (the fitter still prefers a break that leaves none, where it costs
+   the columns no more than a line). */
+main.has-mega .swap-body > .swap-body-text .swap-p:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  orphans: 1;
+  widows: 1;
+}
+/* (and every line one leading tall: an italic run's face stands its
+   leading a little higher on the baseline than the roman's, and with
+   the leading its own the line grew by half a pixel for every <em> on
+   it, so a column with a few of them ran its last line out of the box.
+   Its words keep their place on the baseline and simply give the line
+   no height of their own.) */
+main.has-mega .swap-body > .swap-body-text .swap-p:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r) *{
+  line-height: 0;
+}
+/* (THE COLUMNS END LEVEL ends) */
