@@ -7110,8 +7110,21 @@
   // UNDER THE PICTURE TAKE A SIDE)
   var SIDE_ALIGN_MQ = window.matchMedia('(min-width: 1024px)');
   var SWAP_CARDS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
+  // ONLY A PICTURE THAT HAS ARRIVED IS PAINTED IN THE BOX (2026-09-24).
+  // This fell back to the <img>'s bare src when it had not loaded, and a
+  // lazy cover has not: every pass handed each of the twenty covers
+  // below the first screen to the sheet as a background — the 800 the
+  // src names, not the width the srcset picks — so the browser fetched
+  // all twenty the moment the second stage brought them back, two to
+  // three megabytes nobody had scrolled to, and fetched each AGAIN at
+  // its real width when the <img> itself came near. And the write sat
+  // in seatSwapCols' reading loop, so each one forced a restyle of the
+  // whole sheet for the next card's read (~20ms apiece). A cover that
+  // has not arrived leaves the box on its mat; the <img>'s own load
+  // (buildSwapCols) paints it the moment it lands, with the very source
+  // it loaded — which is all the box ever showed once a cover was in.
   function swapImg(card, img) {
-    var src = img && (img.currentSrc || img.src);
+    var src = img && img.complete && img.naturalWidth ? (img.currentSrc || img.src) : '';
     if (src) card.style.setProperty('--swap-img', 'url("' + src.replace(/"/g, '%22') + '")');
   }
   function buildSwapCols() {
@@ -8087,25 +8100,64 @@
     probe.remove();
     return base;
   }
+  // EACH LINE IS RASTERISED ONCE (2026-09-24). The scan is a pure
+  // function of the face and the words — drawn at SCAN_PX, whatever
+  // size the line is set at, and scaled after — yet it was drawn and
+  // read back afresh on every call: a 3000×320 readback for every
+  // letter of every margin stack, in both stages of a cold load, the
+  // same letters over and over (the costliest thing in the pass after
+  // the restyles, ~0.75s of a 1440 load). Its four edges are kept here
+  // under the face and the words, and the memo is emptied whenever the
+  // set of landed faces changes (freshMemos, and the check below), so
+  // a scan taken on a fallback is never read back once the face is in.
+  // The edges are the ones the two scans always found: the first and
+  // last rows with ink (inkReach), the first and last columns (inkWidth).
+  var scanMemo = {}, scanFaces = -1;
+  function scanEdges(cs, text) {
+    var n = 0;
+    try { document.fonts.forEach(function (face) { if (face.status === 'loaded') n++; }); } catch (e) {}
+    if (n !== scanFaces) { scanFaces = n; scanMemo = {}; }
+    var face = cs.fontStyle + ' ' + cs.fontWeight + ' ' + SCAN_PX + 'px ' + cs.fontFamily;
+    var key = face + '|' + text;
+    if (Object.prototype.hasOwnProperty.call(scanMemo, key)) return scanMemo[key];
+    var W = SCAN_W, H = SCAN_H;
+    var g = scanCtx();
+    if (!g) return undefined;
+    g.font = face;
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+    g.fillText(text, 20, SCAN_Y0);
+    var data;
+    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return undefined; }
+    var top = -1, bot = -1, lo = -1, hi = -1;
+    for (var y = 0; y < H; y++) {
+      var row = y * W;
+      for (var x = 0; x < W; x++) {
+        if (data[(row + x) * 4 + 3] > 40) {
+          if (top < 0) top = y;
+          bot = y;
+          if (lo < 0 || x < lo) lo = x;
+          // the row's last ink, found from its far end
+          for (var x2 = W - 1; x2 >= x; x2--) {
+            if (data[(row + x2) * 4 + 3] > 40) { if (x2 > hi) hi = x2; break; }
+          }
+          break;
+        }
+      }
+    }
+    var out = top < 0 ? null : { top: top, bot: bot, lo: lo, hi: hi };
+    scanMemo[key] = out;
+    return out;
+  }
   function inkReach(el) {
     var cs = getComputedStyle(el);
     var size = parseFloat(cs.fontSize) || 13;
     var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
     if (!text) return null;
-    var scanPx = SCAN_PX, W = SCAN_W, H = SCAN_H, y0 = SCAN_Y0;
-    var g = scanCtx();
-    if (!g) return null;
-    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
-    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
-    g.fillText(text, 20, y0);
-    var data;
-    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return null; }
-    var top = -1, bot = -1;
-    for (var y = 0; y < H; y++) {
-      for (var x = 0; x < W; x++) { if (data[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; bot = y; break; } }
-    }
-    if (top < 0) return null;
+    var scanPx = SCAN_PX, y0 = SCAN_Y0;
+    var e = scanEdges(cs, text);
+    if (!e) return null;
+    var top = e.top, bot = e.bot;
     var probe = document.createElement('span');
     probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
     el.insertBefore(probe, el.firstChild);
@@ -8124,21 +8176,10 @@
     var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
     if (!text) return 0;
-    var scanPx = SCAN_PX, W = SCAN_W, H = SCAN_H, y0 = SCAN_Y0;
-    var g = scanCtx(); if (!g) return 0;
-    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
-    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
-    g.fillText(text, 20, y0);
-    var data;
-    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return 0; }
-    var lo = -1, hi = -1;
-    for (var x = 0; x < W; x++) {
-      for (var y = 0; y < H; y++) {
-        if (data[(y * W + x) * 4 + 3] > 40) { if (lo < 0) lo = x; hi = x; break; }
-      }
-    }
-    if (lo < 0) return 0;
-    return (hi + 1 - lo) / scanPx * size;
+    var scanPx = SCAN_PX;
+    var e = scanEdges(cs, text);
+    if (!e) return 0;
+    return (e.hi + 1 - e.lo) / scanPx * size;
   }
   // THE MARGIN LABEL'S BLOCK FORMS TO ITS INK (2026-09-19). The stack's
   // box is the margin's whole 72 with the letters centred in it, so a
@@ -8858,14 +8899,22 @@
     var list;
     try { list = document.querySelectorAll(DEK_SEL); } catch (e) { return; }
     var jobs = [];
-    [].forEach.call(list, function (el) {
-      var cs = getComputedStyle(el);
-      var text = (el.textContent || '').trim();
-      if (cs.display === 'none' || !text) { el.classList.remove('hl-blk'); return; }
+    // READ EVERY STYLE, THEN WRITE (2026-09-24): the probe went in
+    // between one dek's style read and the next, and the style is a live
+    // declaration read again in the writing phase below, so every dek
+    // cost two restyles of the whole sheet. Read once, clean, and
+    // carried as strings (csSnap, as seatInkBlocks does); the probes and
+    // the class go in after. Nothing read here is moved by those writes.
+    var reads = [].map.call(list, function (el) {
+      return { el: el, cs: csSnap(getComputedStyle(el)), text: (el.textContent || '').trim() };
+    });
+    reads.forEach(function (r) {
+      var el = r.el;
+      if (r.cs.display === 'none' || !r.text) { el.classList.remove('hl-blk'); return; }
       var head = document.createElement('span');
       head.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
       el.insertBefore(head, el.firstChild);
-      jobs.push({ el: el, cs: cs, head: head });
+      jobs.push({ el: el, cs: r.cs, head: head });
     });
     jobs.forEach(function (j) {
       j.box = j.el.getBoundingClientRect();
@@ -8913,6 +8962,13 @@
     // these are asked for, so the two edges that answer to the title
     // are MOVED to it rather than solved again from measures this
     // function would have to keep in step with the sheet.
+    // (In four sweeps rather than one per dek, 2026-09-24: the titles'
+    // marks read, every pad written, every dek's own block read, every
+    // join written. A dek's pad and its join touch its own pseudo and
+    // nothing else's, so each dek is solved exactly as before — against
+    // its own pad — without a restyle of the sheet between one dek and
+    // the next.)
+    var joins = [];
     jobs.forEach(function (j) {
       if (!j.el.classList.contains('hl-blk')) return;
       var title = j.el.previousElementSibling;
@@ -8939,20 +8995,27 @@
       var lead = marks[0];
       var up = parseFloat(lead.style.getPropertyValue('--hl-up'));
       var pad = isFinite(up) ? up - (parseFloat(getComputedStyle(lead, '::after').top) || 0) : NaN;
-      if (isFinite(pad) && pad > 0) j.el.style.setProperty('--dk-pad', pad.toFixed(2) + 'px');
-      var box = j.el.getBoundingClientRect();
-      var own = getComputedStyle(j.el, '::after');
-      var myTop = box.top + (parseFloat(own.top) || 0);
-      var myLeft = box.left + (parseFloat(own.left) || 0);
-      var myRight = box.right - (parseFloat(own.right) || 0);
+      joins.push({ el: j.el, title: title, foot: foot, lft: lft, rgt: rgt, pad: pad, al: getComputedStyle(title).textAlign });
+    });
+    joins.forEach(function (o) {
+      if (isFinite(o.pad) && o.pad > 0) o.el.style.setProperty('--dk-pad', o.pad.toFixed(2) + 'px');
+    });
+    joins.forEach(function (o) {
+      var box = o.el.getBoundingClientRect();
+      var own = getComputedStyle(o.el, '::after');
+      o.myTop = box.top + (parseFloat(own.top) || 0);
+      o.myLeft = box.left + (parseFloat(own.left) || 0);
+      o.myRight = box.right - (parseFloat(own.right) || 0);
+    });
+    joins.forEach(function (o) {
       var bump = function (name, by) {
-        var was = parseFloat(j.el.style.getPropertyValue(name)) || 0;
-        j.el.style.setProperty(name, (was + by).toFixed(2) + 'px');
+        var was = parseFloat(o.el.style.getPropertyValue(name)) || 0;
+        o.el.style.setProperty(name, (was + by).toFixed(2) + 'px');
       };
-      if (isFinite(foot)) bump('--dk-t', foot - myTop);
-      var al = getComputedStyle(title).textAlign;
-      if (al === 'left' || al === 'start') { if (isFinite(lft)) bump('--dk-l', lft - myLeft); }
-      else if (al === 'right' || al === 'end') { if (isFinite(rgt)) bump('--dk-r', myRight - rgt); }
+      if (isFinite(o.foot)) bump('--dk-t', o.foot - o.myTop);
+      var al = o.al;
+      if (al === 'left' || al === 'start') { if (isFinite(o.lft)) bump('--dk-l', o.lft - o.myLeft); }
+      else if (al === 'right' || al === 'end') { if (isFinite(o.rgt)) bump('--dk-r', o.myRight - o.rgt); }
     });
     // ---------- AND THE WHOLE MARK IS ONE RECTANGLE ----------
     // The pieces are measured first and squared off last. Every line

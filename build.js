@@ -2532,10 +2532,12 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
 function renderHomepage({ essays = [], postscripts = [], contras = [], archives = [] }) {
   // The lead essay (top-left, two thirds wide) is the first cover the
   // visitor sees — preloaded the way the old hero was.
+  // (NOT PRELOADED since 2026-09-24: the page opens on the masthead a
+  // window tall, and the first covers wait for the faces — see the gate,
+  // THE FIRST COVERS WAIT FOR THE FACES. A preload would fetch the lead
+  // at the head of the load, which is exactly what that undoes.)
   const lead = essays[0];
-  const leadPreload = lead?.image
-    ? `<link rel="preload" as="image" ${coverSrcAttrs(lead.image, COVER_SIZES.wide, { preload: true })}>`
-    : '';
+  const leadPreload = '';
 
   // The homepage grid, top to bottom — no separate hero card. Every
   // essay/postscript cover prints at the 1:1 duo squares' height, and
@@ -2946,8 +2948,10 @@ ${renderCardRevealScript()}
 // the body up over the charcoal ground. The cap holds the wait at
 // 1000ms — a slow or dead font host degrades to the old behaviour, a
 // fallback paint and one refit, rather than a blank page.
+// (Its commentary comes out at build time like the body scripts' —
+// slimJs — since 2026-09-24: half of the head's weight was the notes.)
 function renderFontGateScript() {
-  return `<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
+  return slimJs(`<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
@@ -3235,13 +3239,84 @@ function renderFontGateScript() {
   // at build time (build.js, holdFirstCovers); the rest are lazy and
   // fade up as they land. A page that marks none holds for none.
   var HOLD = 'img.card-image[data-hold]';
+  // ONLY A COVER THE FIRST SCREEN SHOWS HOLDS IT (2026-09-24). The page
+  // opens on the masthead standing a whole window tall (src/chrome-
+  // open.js), so the three first covers are all below the fold when the
+  // page is shown — and their cards stand unseen until the whole page is
+  // fitted and each has its picture decoded (src/card-reveal.js). The
+  // lift waited out a megabyte and a half of pictures no reader could
+  // see yet, sharing the line with the faces the masthead is set in.
+  // The three are still asked for first; the gate holds only for those
+  // whose box meets the window when it looks (none, on a fresh visit).
+  var held = function () {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    return [].filter.call(document.querySelectorAll(HOLD), function (img) {
+      var r = img.getBoundingClientRect();
+      return r.bottom > 0 && r.top < vh && r.width > 0;
+    });
+  };
+  // AND THE FIRST COVERS WAIT FOR THE FACES (2026-09-24). Asked for at
+  // the head of the load, the three came down beside the faces and took
+  // the larger part of the line from them — a megabyte and a half
+  // against half a megabyte of type — so on an ordinary phone line the
+  // masthead's faces landed a third of a second later than they would
+  // alone, and the page with them (measured at 1440 on a 9 Mbps line:
+  // faces 1.47s with the covers, 1.14s without). The faces are what the
+  // first screen is set in; the covers are not seen until the page is
+  // fitted whole, seconds later. So the three are printed lazy (the
+  // browser's look-ahead leaves a lazy picture alone), their sources are
+  // lifted off here as the parser lays them down — before any layout
+  // could ask for them — and handed back the moment the faces are in,
+  // asked for at once. Without script they are ordinary lazy pictures.
+  var parked = [];
+  var park = function (img) {
+    if (img.__ncParked || unparked) return;
+    img.__ncParked = true;
+    ['srcset', 'src'].forEach(function (a) {
+      var v = img.getAttribute(a);
+      if (v != null) { img.setAttribute('data-nc-' + a, v); img.removeAttribute(a); }
+    });
+    parked.push(img);
+  };
+  var unparked = false;
+  var unpark = function () {
+    if (unparked) return;
+    unparked = true;
+    if (mo) mo.disconnect();
+    parked.forEach(function (img) {
+      img.loading = 'eager';
+      ['srcset', 'src'].forEach(function (a) {
+        var v = img.getAttribute('data-nc-' + a);
+        if (v != null) { img.setAttribute(a, v); img.removeAttribute('data-nc-' + a); }
+      });
+      img.__ncParked = false;
+    });
+    parked = [];
+  };
+  var mo = window.MutationObserver ? new MutationObserver(function (recs) {
+    for (var i = 0; i < recs.length; i++) {
+      var added = recs[i].addedNodes;
+      for (var k = 0; k < added.length; k++) {
+        var n = added[k];
+        if (n.nodeType !== 1) continue;
+        if (n.matches(HOLD)) park(n);
+        else if (n.firstElementChild) [].forEach.call(n.querySelectorAll(HOLD), park);
+      }
+    }
+  }) : null;
+  if (mo) {
+    mo.observe(root, { childList: true, subtree: true });
+    fontsDone.then(unpark, unpark);
+    // never parked for long, whatever the faces do
+    setTimeout(unpark, 2500);
+  }
   var coversDone = new Promise(function (resolve) {
     var settle = function () {
       // The decode is asked for, not waited on past a beat: a hidden
       // tab decodes nothing until it is shown (its decode() promises
       // simply hang), and a page opened in the background should not
       // stand blank for the cap once it is brought forward.
-      var imgs = [].slice.call(document.querySelectorAll(HOLD));
+      var imgs = held();
       if (document.visibilityState === 'hidden') { resolve(); return; }
       var decodes = imgs.map(function (img) {
         return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
@@ -3250,8 +3325,8 @@ function renderFontGateScript() {
       Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
     };
     var pending = function () {
-      var imgs = document.querySelectorAll(HOLD);
-      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
+      var imgs = held();
+      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete || imgs[i].__ncParked) return true;
       return false;
     };
     var watch = function () {
@@ -3291,7 +3366,7 @@ function renderFontGateScript() {
   // page restored still held is let go at once.
   addEventListener('pageshow', function (e) { if (e.persisted) { shown = true; reveal(); } });
 })();
-</script>`;
+</script>`);
 }
 
 // The held head — the mini-rail and the hero's courier line hold at 48
@@ -3575,7 +3650,10 @@ function holdFirstCovers(html, filename) {
     if (!/\sloading="eager" fetchpriority="(?:low|high)"/.test(rest)) return tag;
     if (held < hold) {
       held++;
-      return `<img class="card-image" data-hold${rest.replace(/\sloading="eager" fetchpriority="(?:low|high)"/, ' loading="eager" fetchpriority="high"')}>`;
+      // (lazy in the markup since 2026-09-24, so the browser's look-
+      // ahead leaves them for the gate to ask for once the faces are in:
+      // renderFontGateScript, THE FIRST COVERS WAIT FOR THE FACES)
+      return `<img class="card-image" data-hold${rest.replace(/\sloading="eager" fetchpriority="(?:low|high)"/, ' loading="lazy" fetchpriority="high"')}>`;
     }
     return `<img class="card-image"${rest.replace(/\sloading="eager" fetchpriority="(?:low|high)"/, ' loading="lazy"')}>`;
   });
