@@ -6953,11 +6953,10 @@
           && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
           && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l');
         if (stepped) {
-          // (THE ESSAYS STAND APART, 2026-09-24, at the user's word: in the
-          // Essays section the next picture stands 36 UNDER the last's
-          // foot, not 36 over it — the diagonal kept, the overlap gone)
-          var apart = body.parentElement.classList.contains('m--essays');
-          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) + (apart ? PAIR_STEP : -PAIR_STEP)) - (pic.t + acc);
+          // (the Essays section stepped 36 apart for a while; with the
+          // essays narrowed to the 36 gutter they overlap 36 like the rest,
+          // at the user's word, 2026-09-24)
+          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
           var topNow = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
           cols.forEach(function (c) {
             if (c.side === side) rowDelta = Math.max(rowDelta, COURIER_GAP - (topNow - c.foot));
