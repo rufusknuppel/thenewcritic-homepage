@@ -5915,7 +5915,15 @@
                   date: half.querySelector('.panel-col--left .cover-meta--peek'),
                   pic: half.querySelector('.duo-card-image'),
                   title: half.querySelector('.card-title'),
-                  dek: half.querySelector('.panel-col--left .card-dek') });
+                  dek: half.querySelector('.panel-col--left .card-dek'),
+                  // ONE COLUMN ON A PHONE (2026-09-24): this title and dek
+                  // are kept for their measures and never printed. On a
+                  // phone an essay's pull quote runs a dozen lines in the
+                  // narrow old column, the title yielded to half a pixel,
+                  // and seatMatterMeta found no title to hang the picture
+                  // on; there the title keeps its size and the words run
+                  // on past the frame, where nobody sees them.
+                  keep: ONE_COL.matches });
     });
     jobs.forEach(function (j) {
       if (!j.title) return;
@@ -5943,7 +5951,7 @@
       // step down together by the share of their ink the block is
       // over, until it fits. The panel fitter re-fills the title every
       // pass, so the step-down is paid fresh rather than compounding.
-      if (total > span) {
+      if (total > span && !j.keep) {
         var lns = j.title.querySelectorAll('.title-line');
         var targets = lns.length ? [].slice.call(lns) : [j.title];
         var guard = 12;
@@ -5984,7 +5992,7 @@
       var room = bandBot - bandTop;
       var midH = mid();
       if (midH === null) return;
-      if (midH > room) {
+      if (midH > room && !j.keep) {
         var lns2 = j.title.querySelectorAll('.title-line');
         var targets2 = lns2.length ? [].slice.call(lns2) : [j.title];
         var guard2 = 12;
@@ -6696,6 +6704,10 @@
   // since 2026-09-23 — the side margins with them, style.css, THE
   // GUTTERS ARE 36)
   var ROW_GAP = 36;
+  // ONE COLUMN ON A PHONE (2026-09-24): under 1024 every card stands
+  // under the one before it (style.css, ONE COLUMN ON A PHONE), a pair's
+  // second card with them, so nothing is drawn up beside anything.
+  var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
   // ONE STANDARD WIDTH (2026-09-23): a review's square — a third of a
   // row less its two 72 gutters. The essay's picture is two of it and a
   // postscript's one (style.css, ESSAYS TWICE A REVIEW'S WIDTH), the
@@ -6907,7 +6919,9 @@
           var sb = body.parentElement.querySelector(':scope > .page-banner--section');
           var sAnchor = sb && (sb.querySelector('.banner-line--below') || sb.querySelector('.banner-name'));
           var sBase = sAnchor && baselineOf(sAnchor);
-          if (sBase) { rowDelta = sBase.base + SECTION_ROW_GAP - ink.t; hasJob = true; }
+          // (under its LAST line: on a phone the tag runs to two, and the
+          // row stood over the second — ONE COLUMN ON A PHONE, 2026-09-24)
+          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - ink.t; hasJob = true; }
         }
         // 54 BETWEEN THE COURIER LINES (2026-09-23): the rows stand off
         // one another by their courier labels' ink — the foot line of the
@@ -6915,7 +6929,7 @@
         var cur = rowCourier(row);
         // (the second of a pair beside the first, its picture centred on
         // the first's top to bottom: style.css, ONE LINE OF POSTS)
-        var isB = !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
+        var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
         var pic = picBoxOf(row);
         if (isB && pic && prevPic) {
           rowDelta = (prevPic.t + ((prevPic.b - prevPic.t) - (pic.b - pic.t)) / 2) - (pic.t + acc);
@@ -7987,6 +8001,15 @@
     measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
     var m = measureCtx.measureText(t);
     return { base: base, cap: base - m.actualBoundingBoxAscent };
+  }
+  // (and its last line's baseline, off a probe at its end)
+  function lastBaseline(el) {
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.appendChild(probe);
+    var base = probe.getBoundingClientRect().bottom;
+    probe.remove();
+    return base;
   }
   function inkReach(el) {
     var cs = getComputedStyle(el);
