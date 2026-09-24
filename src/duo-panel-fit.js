@@ -7175,64 +7175,142 @@
   // column's foot, so what shows is a prefix of the text), everything
   // after it is struck, and the … is joined on; backed off a word at a
   // time if the … itself would fall out of sight. A preview that fits
-  // whole ends on one too: it is an excerpt. (The paragraphs keep their
-  // orphans and widows, so what shows never ends on a paragraph's lone
-  // first line.)
-  // NO LONE LINE AT THE COLUMNS' BREAK (2026-09-24). The paragraphs ask
-  // for two lines either side of a break (orphans, widows), but a short
-  // one cannot give both — three lines, two and one — and the browser
-  // then lets its last line stand alone at the head of the second
-  // column. Read where the one paragraph that straddles the break
-  // stands: a lone line either side and it is carried over whole, or,
-  // long enough, cut where two of its lines go over with its end.
-  function linesOf(el, box, cw, gap) {
-    var g = document.createRange(); g.selectNodeContents(el);
-    var seen = {}, out = [];
-    [].forEach.call(g.getClientRects(), function (r) {
-      if (!r.width) return;
-      var col = Math.floor((r.left - box.left + 1) / (cw + gap)), key = col + ':' + Math.round(r.top);
-      if (!seen[key]) { seen[key] = 1; out.push({ col: col, top: r.top }); }
-    });
-    return out;
-  }
-  function mendColumnBreak(bt) {
-    var box = bt.getBoundingClientRect(), cs = getComputedStyle(bt);
-    var gap = parseFloat(cs.columnGap) || 0, cw = (box.width - gap) / 2;
-    var ps = bt.querySelectorAll('.swap-p');
-    for (var i = 0; i < ps.length; i++) {
-      var ls = linesOf(ps[i], box, cw, gap);
-      var a = ls.filter(function (l) { return l.col === 0; }).length, b = ls.filter(function (l) { return l.col === 1; }).length;
-      if (!a || !b) continue;
-      if (a >= 2 && b >= 2) return;
-      if (b === 1 && a >= 3) {
-        // cut before the first word that opens the column's last line
-        var lastTop = Math.max.apply(null, ls.filter(function (l) { return l.col === 0; }).map(function (l) { return l.top; }));
-        var tw = document.createTreeWalker(ps[i], NodeFilter.SHOW_TEXT), g = document.createRange(), at = null;
-        for (var n = tw.nextNode(); n && !at; n = tw.nextNode()) {
-          var re = /\S+/g, m;
-          while ((m = re.exec(n.nodeValue))) {
-            g.setStart(n, m.index); g.setEnd(n, m.index + m[0].length);
-            var r0 = g.getClientRects()[0];
-            if (r0 && Math.abs(r0.top - lastTop) < 1 && Math.floor((r0.left - box.left + 1) / (cw + gap)) === 0) { at = { n: n, o: m.index }; break; }
-          }
-        }
-        if (at) {
-          g.setStart(at.n, at.o); g.setEnd(ps[i], ps[i].childNodes.length);
-          var rest = document.createElement('p');
-          rest.className = 'swap-p';
-          rest.appendChild(g.extractContents());
-          ps[i].classList.add('swap-p--cut');
-          ps[i].parentNode.insertBefore(rest, ps[i].nextSibling);
-          return;
-        }
-      }
-      ps[i].style.breakBefore = 'column';
-      return;
-    }
-  }
-  function sealPreview(bt, cap) {
+  // whole ends on one too: it is an excerpt. (…and, since the columns
+  // came level, the same afternoon, it may end on a paragraph's first
+  // line: the … says the paragraph runs on.)
+  // BOTH COLUMNS OPEN AND CLOSE ON A LINE (2026-09-24, later; it was
+  // NO LONE LINE AT THE COLUMNS' BREAK, which carried a short paragraph
+  // over whole and left the first column's foot three lines short). The
+  // columns are one height, a whole number of lines, and each opens
+  // and closes on a line of text: never on the line's air after a
+  // paragraph, never on nothing. The text is read as rows — each
+  // paragraph's lines at the column's measure (both columns share it),
+  // a row of air between paragraphs, the air dropped where it would
+  // open a column — and the columns are made the tallest height the box
+  // holds at which the first column's last row, and the last column's,
+  // are both lines; the text runs on from the one column's foot to the
+  // next one's head, a paragraph split wherever the break falls, and is
+  // cut after the last column's last line (sealPreview). Orphans and
+  // widows are one (style.css, THE COLUMNS END LEVEL): a paragraph may
+  // leave a single line at a column's foot or head, which is taken only
+  // where a line shorter would not avoid it.
+  function paraLines(bt, ncol, gap, lh) {
     var box = bt.getBoundingClientRect();
-    var maxB = cap != null ? box.top + cap + 0.5 : Infinity, maxR = box.right + 0.5;
+    var cw = (box.width - gap * (ncol - 1)) / ncol;
+    var g = document.createRange();
+    return [].map.call(bt.querySelectorAll('.swap-p'), function (p) {
+      g.selectNodeContents(p);
+      var by = {};
+      [].forEach.call(g.getClientRects(), function (r) {
+        if (!r.width || !r.height) return;
+        var c = Math.floor((r.left - box.left + 1) / (cw + gap));
+        (by[c] || (by[c] = [])).push(r.top);
+      });
+      var count = 0;
+      Object.keys(by).forEach(function (c) {
+        var last = -Infinity;
+        by[c].sort(function (a, b) { return a - b; }).forEach(function (t) { if (t - last > lh * 0.5) { count++; last = t; } });
+      });
+      return count;
+    });
+  }
+  function levelRows(counts, ncol, most) {
+    var seq = [];
+    counts.forEach(function (n) {
+      if (!n) return;
+      if (seq.length) seq.push(null);
+      for (var i = 0; i < n; i++) seq.push({ i: i, n: n });
+    });
+    // (null where a column would open or close on air, or run short;
+    // else how many single lines the breaks leave)
+    var fit = function (H) {
+      var at = 0, lone = 0;
+      for (var c = 0; c < ncol; c++) {
+        if (c && seq[at] === null) at++;
+        var a = seq[at], z = seq[at + H - 1];
+        if (!a || !z) return null;
+        if (c && a.n > 1 && a.i === a.n - 1) lone++;
+        if (z.n > 1 && z.i === 0) lone++;
+        at += H;
+      }
+      return lone;
+    };
+    for (var H = most; H >= 1; H--) {
+      var l = fit(H);
+      if (l == null) continue;
+      if (l && H > 1 && fit(H - 1) === 0) return H - 1;
+      return H;
+    }
+    return 0;
+  }
+  // WHERE THE INK STANDS ON A LINE (2026-09-24): a text box runs from
+  // its face's ascent over the baseline to its descent under it, as the
+  // engine rounds them; read once a face off a zero probe beside the
+  // text itself, and kept while the landed faces stay what they were.
+  var faceBoxMemo = {}, faceBoxFaces = -1;
+  function faceBox(node) {
+    var el = node.parentNode, cs = getComputedStyle(el);
+    if (faceBoxFaces !== memoFaces) { faceBoxFaces = memoFaces; faceBoxMemo = {}; }
+    var key = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontSize + '|' + cs.fontFamily + '|' + cs.lineHeight;
+    if (!faceBoxMemo[key]) {
+      // (on a line of its own, out of the flow, so nothing reflows)
+      var w = document.createElement('span');
+      w.style.cssText = 'position:absolute;left:0;top:0;white-space:nowrap;visibility:hidden';
+      w.innerHTML = '<span style="display:inline-block;width:0;height:0;vertical-align:baseline"></span>H';
+      el.appendChild(w);
+      var base = w.firstChild.getBoundingClientRect().bottom;
+      var rg = document.createRange(); rg.selectNodeContents(w.lastChild);
+      var r0 = rg.getClientRects()[0];
+      w.remove();
+      faceBoxMemo[key] = r0 ? { a: base - r0.top, d: r0.bottom - base } : { a: 0, d: 0 };
+    }
+    return { a: faceBoxMemo[key].a, d: faceBoxMemo[key].d, cs: cs };
+  }
+  // The first line's painted top (its own letters' ascent: the tallest
+  // of capital, ascender and quote mark), and the baseline of the last
+  // line that stands inside `clip`.
+  function firstInkTop(el) {
+    var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), rg = document.createRange();
+    var top = null, node = null, line = '';
+    for (var n = tw.nextNode(); n; n = tw.nextNode()) {
+      var re = /\S+/g, m;
+      while ((m = re.exec(n.nodeValue))) {
+        rg.setStart(n, m.index); rg.setEnd(n, m.index + m[0].length);
+        var r = rg.getClientRects()[0];
+        if (!r || !r.height) continue;
+        if (top == null) { top = r.top; node = n; }
+        else if (Math.abs(r.top - top) > 2) { n = null; break; }
+        line += (line ? ' ' : '') + m[0];
+      }
+      if (!n) break;
+    }
+    if (top == null) return null;
+    var fb = faceBox(node), cs = fb.cs;
+    if (cs.textTransform === 'uppercase') line = line.toUpperCase();
+    measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    return top + fb.a - (measureCtx.measureText(line).actualBoundingBoxAscent || 0);
+  }
+  function lastBaselineIn(el, clip, lh) {
+    var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), rg = document.createRange();
+    var best = null, node = null;
+    // (half a line's grace under the clip: an italic's text box stands a
+    // pixel past its line's foot, and the next line is a whole line on)
+    var foot = clip.bottom + (lh ? lh / 2 : 0.5);
+    for (var n = tw.nextNode(); n; n = tw.nextNode()) {
+      var e = n.nodeValue.replace(/\s+$/, '').length;
+      if (!e) continue;
+      rg.setStart(n, e - 1); rg.setEnd(n, e);
+      var rs = rg.getClientRects(), r = rs[rs.length - 1];
+      if (!r || !r.height || r.bottom > foot || r.right > clip.right + 0.5) continue;
+      if (!best || r.bottom > best.bottom + 0.5) { best = r; node = n; }
+    }
+    return best ? best.bottom - faceBox(node).d : null;
+  }
+  function sealPreview(bt, cap, lh) {
+    var box = bt.getBoundingClientRect();
+    // (a line shows if its box ends inside the cap, give or take half a
+    // line: a face's text box can stand a hair past its line's)
+    var maxB = cap != null ? box.top + cap + (lh ? lh / 2 : 0.5) : Infinity, maxR = box.right + 0.5;
     var words = [];
     var tw = document.createTreeWalker(bt, NodeFilter.SHOW_TEXT);
     for (var n = tw.nextNode(); n; n = tw.nextNode()) {
@@ -7253,19 +7331,6 @@
       k = lo;
     }
     if (k < 0) return;
-    // (and never on a paragraph's lone first line, while one stands
-    // before it: the … closes the paragraph before instead)
-    var pk = words[k].n.parentNode && words[k].n.parentNode.closest ? words[k].n.parentNode.closest('.swap-p') : null;
-    if (pk && pk.previousElementSibling && k < words.length - 1) {
-      var bx0 = bt.getBoundingClientRect(), cs0 = getComputedStyle(bt);
-      var n0 = cs0.columnCount === 'auto' ? 1 : (+cs0.columnCount || 1), gap0 = parseFloat(cs0.columnGap) || 0;
-      rg.setStart(pk, 0); rg.setEnd(words[k].n, words[k].e);
-      var tops = {};
-      [].forEach.call(rg.getClientRects(), function (r) { if (r.width) tops[Math.floor((r.left - bx0.left + 1) / ((bx0.width - gap0 * (n0 - 1)) / n0 + gap0)) + ':' + Math.round(r.top)] = 1; });
-      if (Object.keys(tops).length === 1) {
-        while (k >= 0 && pk.contains(words[k].n)) k--;
-      }
-    }
     for (; k >= 0; k--) {
       var w = words[k];
       rg.setStart(w.n, w.e); rg.setEnd(bt, bt.childNodes.length);
@@ -7554,26 +7619,37 @@
               bt.style.overflow = one ? 'hidden' : '';
               var natural = bt.getBoundingClientRect().height;
               var cap = rows * j.blh;
-              if (natural > cap + 0.5) {
+              // (the columns level, each opening and closing on a line:
+              // BOTH COLUMNS OPEN AND CLOSE ON A LINE, above; the height
+              // is given a pixel over its lines so the last one is not
+              // pushed on by the engine's rounding of the leading, and
+              // the body's flex may not take that pixel back; and the
+              // measure is fixed here, where the lines are counted and
+              // cut: snapPictures later lays the box on whole pixels, a
+              // hair narrower, and a line cut full to the hair ran its
+              // last word, …, out into a third column)
+              bt.style.flexShrink = '0';
+              bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+              var ncol = one ? 1 : 2;
+              var H = levelRows(paraLines(bt, ncol, SWAP_PAD, j.blh), ncol, rows);
+              var shut = H ? H * j.blh : (natural > cap + 0.5 ? cap : null);
+              if (shut != null) {
                 bt.style.columnFill = 'auto';
-                bt.style.height = cap.toFixed(2) + 'px';
-                bt.style.maxHeight = cap.toFixed(2) + 'px';
+                bt.style.height = (shut + 1).toFixed(2) + 'px';
+                bt.style.maxHeight = (shut + 1).toFixed(2) + 'px';
               }
-              if (!one) mendColumnBreak(bt);
-              sealPreview(bt, natural > cap + 0.5 ? cap : null);
-              // (and centred by what it SHOWS: a paragraph that will not
-              // break at a column's foot leaves that foot short, so the
-              // lines standing in the box are read and the block carried
-              // by half the difference between the air over and under them)
+              sealPreview(bt, shut, j.blh);
+              // (and centred by what it SHOWS, by its ink: as much air
+              // from the box's top to the painted top of the dek's first
+              // line as from the columns' last baseline to the box's
+              // foot — PADDING EVEN OVER AND UNDER, 2026-09-24; it was
+              // the dek's box and the last line's box)
               bt.style.transform = 'none';
               var bb = j.body.getBoundingClientRect(), tb = bt.getBoundingClientRect();
-              var rgT = document.createRange(); rgT.selectNodeContents(bt);
-              var inT = Infinity, inB = -Infinity;
-              [].forEach.call(rgT.getClientRects(), function (x) {
-                if (!x.width || x.bottom > tb.bottom + 0.5 || x.top < tb.top - 0.5) return;
-                if (x.top < inT) inT = x.top; if (x.bottom > inB) inB = x.bottom;
-              });
-              if (pdk && pdkH) { var pr0 = pdk.getBoundingClientRect(); if (pr0.top < inT) inT = pr0.top; }
+              var inT = (pdk && pdkH) ? firstInkTop(pdk) : null;
+              if (inT == null) inT = firstInkTop(bt);
+              var inB = lastBaselineIn(bt, tb, j.blh);
+              if (inT == null || inB == null) inT = Infinity;
               if (isFinite(inT)) {
                 var shY = 'translateY(' + (((bb.bottom - inB) - (inT - bb.top)) / 2).toFixed(2) + 'px)';
                 bt.style.transform = shY;
