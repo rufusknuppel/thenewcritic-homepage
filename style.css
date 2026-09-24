@@ -9554,3 +9554,9 @@ main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra) :is(.
 main.has-mega :is(.duo-half--mega .duo-card-image, .latest-cell--ps .latest-cover, .latest-cell--contra .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   box-shadow: none !important;
 }
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-a.card--pair-flip:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 + var(--pic-w) + var(--pair-gap) - 36px);
+}
+body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-b.card--pair-flip:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 - 36px);
+}
