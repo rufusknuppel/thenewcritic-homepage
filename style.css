@@ -20321,3 +20321,20 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   }
 }
 /* (ONE COLUMN ON A PHONE ends) */
+
+
+
+/* ---------- THE PREVIEW OPENS AS IT SHUTS (2026-09-24) ----------
+   Shut, the preview's text fades out (.45s), the charcoal stands bare
+   until the shut is over (.is-shutting, 1s, src/card-open.js), and
+   READ NOW · PREVIEW fade back in (.25s): out, then in, 1.25s in all.
+   Pressed, it was a crossfade: the two words going (.25s) while the
+   text came (.45s), one over the other. Now the open is the shut played
+   backwards: the words fade out (.25s, as they did), the charcoal
+   stands bare, and the text fades in over the last .45s of the same
+   1.25s, held .8s (1s + .25s - .45s). The delay rides the open state
+   alone, so the shut, which runs to the resting rule, is untouched. */
+main.has-mega .duo-half--mega.is-open > .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  transition: opacity .45s ease .8s !important;
+}
+/* (THE PREVIEW OPENS AS IT SHUTS ends) */
