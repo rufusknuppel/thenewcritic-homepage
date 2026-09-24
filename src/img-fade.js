@@ -25,4 +25,32 @@
       if (document.images[i].complete) document.images[i].classList.add('is-loaded');
     }
   });
+  // A LAZY COVER IS ASKED FOR TWO SCREENS AHEAD (2026-09-24). The covers
+  // below the first screen are lazy, and the browser's own reach for a
+  // lazy picture is a fixed distance that a quick scroll on a slow line
+  // outruns. Each is asked for once it comes within two windows of the
+  // view, as the front page's cards already are (card-reveal.js) — but
+  // on every page, and only once the faces are in, so no cover takes the
+  // line from the type the first screen is set in.
+  var ahead = function () {
+    if (ahead.done || !window.IntersectionObserver) return;
+    ahead.done = true;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        if (en.target.loading === 'lazy') en.target.loading = 'eager';
+      });
+    }, { rootMargin: '0px 0px 200% 0px' });
+    [].forEach.call(document.querySelectorAll('img.card-image[loading="lazy"]'), function (img) { io.observe(img); });
+  };
+  var whenReady = function () {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ahead);
+    else ahead();
+  };
+  if (window.__ncFontsIn) whenReady();
+  else {
+    addEventListener('newcritic:fontsin', whenReady);
+    setTimeout(whenReady, 4000);
+  }
 })();
