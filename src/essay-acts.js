@@ -28,7 +28,7 @@
     var el = document.createElement('div');
     el.className = 'essay-acts';
     el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">Read Now' + READ + '</a>'
-      + '<span class="essay-act-sep" aria-hidden="true">|</span>'
+      + '<span class="essay-act-sep" aria-hidden="true">\u00B7</span>'
       + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
     el.querySelector('.essay-act--peek').addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();

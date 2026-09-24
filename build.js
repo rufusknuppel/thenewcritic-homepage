@@ -221,14 +221,15 @@ function applyDekBylines(posts) {
       continue;
     }
 
-    // "<Reviewer> contra <Work>" → "contra <Work>". Gated on the prefix
+    // "<Reviewer> contra <Work>" → "Contra <Work>" (with its capital
+    // since 2026-09-24; lowered before). Gated on the prefix
     // reading as a NAME rather than on the word "contra" alone, so an
     // essay dek that happens to use it in a sentence is left be. Matching
     // the prefix against post.author is too strict on its own — one
     // review's author field is "Nadav" where its dek says "Nadav Asal".
     const con = p.subtitle.match(/^(.+?)\s+contra\s+(.+)$/i);
     if (con && looksLikeName(con[1])) {
-      p.subtitle = `contra ${con[2]}`;
+      p.subtitle = `Contra ${con[2]}`;
       continue;
     }
 
@@ -237,7 +238,7 @@ function applyDekBylines(posts) {
     // in front of it for the branch above to strip.
     p.subtitle = p.subtitle
       .replace(POSTSCRIPT_DEK_PREFIX, '')
-      .replace(/^Contra\s+/, 'contra ');
+      .replace(/^contra\s+/i, 'Contra ');
   }
 }
 
