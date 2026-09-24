@@ -2707,7 +2707,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // closes on the second row now.)
   // (one to a row since ONE LINE OF POSTS, 2026-09-23)
   // (two across since 2026-09-23, later)
-  contras.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Contra', kind: 'contra', pair: pairOf(l, i) })));
+  // (CONTRA STARTS ON THE RIGHT, 2026-09-24, at the user's word: each
+  // pair flipped, the first on the right, the next stepping down left)
+  contras.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Contra', kind: 'contra', pair: pairOf(l, i), flip: true })));
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
   // it heralds, so the ground changes on its own top edge, under the
