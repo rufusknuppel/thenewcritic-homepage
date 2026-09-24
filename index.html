@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=0461f9d0">
+<link rel="stylesheet" href="style.css?v=8d8d3fc4">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4769,7 +4769,8 @@
                   date: half.querySelector('.panel-col--left .cover-meta--peek'),
                   pic: half.querySelector('.duo-card-image'),
                   title: half.querySelector('.card-title'),
-                  dek: half.querySelector('.panel-col--left .card-dek') });
+                  dek: half.querySelector('.panel-col--left .card-dek'),
+                  keep: ONE_COL.matches });
     });
     jobs.forEach(function (j) {
       if (!j.title) return;
@@ -4791,7 +4792,7 @@
       var span = pb.height;
       var total = block();
       if (total === null) return;
-      if (total > span) {
+      if (total > span && !j.keep) {
         var lns = j.title.querySelectorAll('.title-line');
         var targets = lns.length ? [].slice.call(lns) : [j.title];
         var guard = 12;
@@ -4822,7 +4823,7 @@
       var room = bandBot - bandTop;
       var midH = mid();
       if (midH === null) return;
-      if (midH > room) {
+      if (midH > room && !j.keep) {
         var lns2 = j.title.querySelectorAll('.title-line');
         var targets2 = lns2.length ? [].slice.call(lns2) : [j.title];
         var guard2 = 12;
@@ -5224,6 +5225,7 @@
     step('snapPictures', snapPictures);
   }
   var ROW_GAP = 36;
+  var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
   function fitStdWidth() {
     var main = document.querySelector('main');
     if (!main) return;
@@ -5359,10 +5361,10 @@
           var sb = body.parentElement.querySelector(':scope > .page-banner--section');
           var sAnchor = sb && (sb.querySelector('.banner-line--below') || sb.querySelector('.banner-name'));
           var sBase = sAnchor && baselineOf(sAnchor);
-          if (sBase) { rowDelta = sBase.base + SECTION_ROW_GAP - ink.t; hasJob = true; }
+          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - ink.t; hasJob = true; }
         }
         var cur = rowCourier(row);
-        var isB = !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
+        var isB = !ONE_COL.matches && !!prev && row.classList.contains('card--pair-b') && prev.classList.contains('card--pair-a');
         var pic = picBoxOf(row);
         if (isB && pic && prevPic) {
           rowDelta = (prevPic.t + ((prevPic.b - prevPic.t) - (pic.b - pic.t)) / 2) - (pic.t + acc);
@@ -6127,6 +6129,14 @@
     measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
     var m = measureCtx.measureText(t);
     return { base: base, cap: base - m.actualBoundingBoxAscent };
+  }
+  function lastBaseline(el) {
+    var probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.appendChild(probe);
+    var base = probe.getBoundingClientRect().bottom;
+    probe.remove();
+    return base;
   }
   function inkReach(el) {
     var cs = getComputedStyle(el);
@@ -7920,7 +7930,7 @@
   var wm = mark && mark.closest('.topbar-wordmark');
   if (!band || !mark || !wm) return;
   var date = band.querySelector('.band-date');
-  var AIR = 72;
+  var AIR = 72, SIDE = 36;
   var mini = document.createElement('a');
   mini.className = 'band-mini';
   mini.href = './';
@@ -7978,6 +7988,8 @@
     for (var i = 0; i < rects.length; i++) { if (rects[i].width > 0) { il = Math.min(il, rects[i].left); ir = Math.max(ir, rects[i].right); } }
     var br = band.getBoundingClientRect();
     var dx = isFinite(il) ? (br.left + br.width / 2) - (il + ir) / 2 : 0;
+    var nameSlot = band.querySelector(':scope > .band-name');
+    if (isFinite(il) && nameSlot && !nameSlot.getClientRects().length) dx = (br.left + SIDE) - il;
     geo = { S: S, B: B, c: c, capInBox: capInBox, dx: dx };
     return geo;
   }
