@@ -9467,7 +9467,7 @@ main.has-mega .duo-half--mega .duo-panel :is(.ground-kicker, .ground-under, .gro
     left: calc(100vw - 72px - var(--pic-w));
   }
 }
-:root{ --nc-ground: #EFEFEF; }
+:root{ --nc-ground: #FFFFFF; } 
 html:where(:not([data-theme="dark"])){ --g: var(--nc-ground); }
 html:not([data-theme="dark"]):is(*, .r){
   --band-ground: var(--nc-ground);
@@ -9559,4 +9559,12 @@ body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--me
 }
 body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--pair-b.card--pair-flip:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 - 36px);
+}
+@media (min-width: 1024px){
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(.card--kind-postscript):not(.card--kind-contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pic-w: calc(50vw - 54px);
+  }
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pair-gap: 36px;
+  }
 }

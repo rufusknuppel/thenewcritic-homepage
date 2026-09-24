@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=79c4d881">
+<link rel="stylesheet" href="style.css?v=b42ea227">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5327,7 +5327,8 @@
           && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
           && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l');
         if (stepped) {
-          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
+          var apart = body.parentElement.classList.contains('m--essays');
+          rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) + (apart ? PAIR_STEP : -PAIR_STEP)) - (pic.t + acc);
           var topNow = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
           cols.forEach(function (c) {
             if (c.side === side) rowDelta = Math.max(rowDelta, COURIER_GAP - (topNow - c.foot));

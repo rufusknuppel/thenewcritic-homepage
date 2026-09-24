@@ -20494,7 +20494,7 @@ main.has-mega .duo-half--mega .duo-panel :is(.ground-kicker, .ground-under, .gro
    and the root's canvas. band-mark.js paints the overscroll from the
    name's box and the reprint, both gray now; the font gate hands the
    browser's own chrome (theme-color) the same token. */
-:root{ --nc-ground: #EFEFEF; }
+:root{ --nc-ground: #FFFFFF; } /* (pure white, at the user's word, 2026-09-24 — was #EFEFEF) */
 html:where(:not([data-theme="dark"])){ --g: var(--nc-ground); }
 html:not([data-theme="dark"]):is(*, .r){
   --band-ground: var(--nc-ground);
@@ -20613,3 +20613,21 @@ body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--me
   left: calc((100vw - 2 * var(--pic-w) - var(--pair-gap)) / 2 - 36px);
 }
 /* (EVERY CARD STEPS DOWN ends) */
+
+
+/* ---------- 36 BETWEEN (2026-09-24) ----------
+   One 36 gutter down the page's middle: every left-hand picture ends
+   18 short of the centre and every right-hand one starts 18 past it,
+   so a card and the next, stepping down on the other side, stand 36
+   apart across as well as 36 over each other. The essays keep 36 from
+   the window's edges and are half the window less 54 (666 at 1440);
+   the pairs close their 43.56 to 36 about the same line. */
+@media (min-width: 1024px){
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(.card--kind-postscript):not(.card--kind-contra):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pic-w: calc(50vw - 54px);
+  }
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pair-gap: 36px;
+  }
+}
+/* (36 BETWEEN ends) */
