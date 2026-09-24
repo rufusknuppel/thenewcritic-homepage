@@ -5507,7 +5507,7 @@
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0 });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
         prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
@@ -5516,8 +5516,8 @@
       });
     });
     jobs.forEach(function (j) {
-      if (Math.abs(j.delta) < 0.25) return;
-      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(2) + 'px', 'important');
+      if (j.exact ? Math.abs(j.delta) < 0.0005 : Math.abs(j.delta) < 0.25) return;
+      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(j.exact ? 3 : 2) + 'px', 'important');
     });
     var edges = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {

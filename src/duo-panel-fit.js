@@ -6967,7 +6967,7 @@
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0 });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
         prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
@@ -6976,8 +6976,12 @@
       });
     });
     jobs.forEach(function (j) {
-      if (Math.abs(j.delta) < 0.25) return;
-      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(2) + 'px', 'important');
+      // (a pair's second is seated to the thousandth, however small the
+      // move: its top must keep the first's fraction, or the two round
+      // to different pixels and the step reads 35 or 37 — THE PAIR
+      // STEPS DOWN)
+      if (j.exact ? Math.abs(j.delta) < 0.0005 : Math.abs(j.delta) < 0.25) return;
+      j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(j.exact ? 3 : 2) + 'px', 'important');
     });
     // 54 FROM THE LAST ROW TO THE SECTION'S EDGE (2026-09-23): where the
     // ground turns — the charcoal's line 72 over the next word's caps
