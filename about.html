@@ -21,24 +21,7 @@
 <script>
 (function () {
   var root = document.documentElement;
-  // LIGHT OR DARK, before first paint: the stored choice, else light.
-  // GHOST WHITE (2026-09-18): the one white on the site — the light
-  // ground and the dark ink.
   var WHITE = '#FFFFFF', CHARCOAL = '#121417';
-  // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
-  // the margin used to paint the page's ground in a colour of the
-  // reader's own, with the ink turned white on it. It names the
-  // HIGHLIGHT now: every yellow on the site reads one token, --nc-mark
-  // (style.css, THE MARK'S COLOUR IS ONE TOKEN), and a code typed here
-  // is written onto the root in its place. The ground is light or dark
-  // and nothing else; the mark rides over both and is kept separately,
-  // so turning the page over does not lose it.
-  // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
-  // when this was written, the blue #1182c2 for a day, the banana
-  // again on the 22nd, and #1184C4 from later that day. It must match
-  // --nc-mark in style.css. Written in lower case, the form hexOf
-  // returns, so a reader typing the default's own code is sent home
-  // rather than stored — the banana's capitals never compared equal.)
   var YELLOW = '#1184c4';
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
@@ -47,13 +30,6 @@
     if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     return '#' + h;
   };
-  // THE INK ON THE BLOCK IS CHOSEN BY CONTRAST. On the yellow it is the
-  // charcoal, stated in the sheet; on a reader's colour it is whichever
-  // of the charcoal and the white reads better (WCAG relative
-  // luminance), so a navy or a black does not swallow the word it was
-  // put behind. (A hex GROUND gave this rule up and inked everything
-  // white; a block is a few words wide, and those words are the ones
-  // the reader is pointing at.)
   var lum = function (hex) {
     var c = [1, 3, 5].map(function (i) {
       var v = parseInt(hex.substr(i, 2), 16) / 255;
@@ -71,9 +47,6 @@
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
   };
-  // Paints the ground: light is the page's own, dark is written on the
-  // root. (The inline --g and --k a hex ground wrote are cleared for
-  // any page still carrying them from a view transition's old state.)
   var paint = function (mode) {
     root.style.removeProperty('--g');
     root.style.removeProperty('--k');
@@ -82,9 +55,6 @@
     else root.removeAttribute('data-theme');
     setMeta(mode === 'dark' ? CHARCOAL : WHITE);
   };
-  // Paints the mark: the reader's colour and the ink that stands on it,
-  // or — for no colour, or the yellow's own code — nothing at all, and
-  // the sheet's yellow and charcoal stand.
   var mark = function (hex) {
     if (hex && hex !== YELLOW) {
       root.style.setProperty('--nc-mark', hex);
@@ -106,11 +76,6 @@
   var accent = null;
   try {
     var theme = localStorage.getItem('nc-theme');
-    // THE READERS WHO STOOD ON A HEX GROUND come back to the light page,
-    // which is the default, and their stored ground is NOT carried over
-    // as a mark: it was chosen (or handed out — the slate #556677) to be
-    // stood on in white ink, and as a highlight it is a colour nobody
-    // picked. The old keys are struck so this runs once.
     if (theme === 'hex') {
       theme = 'light';
       try {
@@ -119,26 +84,12 @@
         localStorage.removeItem('nc-hex-auto');
       } catch (e2) {}
     }
-    // THE MODE WORDS ARE STRUCK (2026-09-23): with no Light, Dark or Hex
-    // left in the margin a stored choice could not be taken back, so
-    // none is applied — every reader has the light page and the blue.
     void theme;
   } catch (e) {}
-  // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
-  // paints that mark for this view only — nothing is stored, and the
-  // reader's own choice stands on the next plain visit.
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
     if (qHex) mark(qHex);
   } catch (e) {}
-  // THE FLIP IS ONE CROSSFADE OF THE WHOLE PAGE (2026-09-17, later):
-  // where the browser has view transitions the old page and the new
-  // are snapshotted whole and dissolved one into the other over .3s —
-  // every colour, ground, rule, picture and the canvas together, with
-  // no per-element transition running underneath (html.theme-instant
-  // holds every transition off for the change's frame, so the new
-  // snapshot is the settled page). Elsewhere the per-element ease
-  // above stands in.
   var flipTimer = null;
   var flip = function (mode) {
     store(mode);
@@ -149,12 +100,9 @@
       var vt;
       try { vt = document.startViewTransition(change); } catch (err) { change(); done(); return; }
       if (vt && vt.finished && vt.finished.then) vt.finished.then(done, done);
-      // A skipped transition (a hidden tab, a second flip mid-dissolve)
-      // rejects every one of its promises; none is an error here.
       var quiet = function () {};
       if (vt && vt.ready && vt.ready.then) vt.ready.then(quiet, quiet);
       if (vt && vt.updateCallbackDone && vt.updateCallbackDone.then) vt.updateCallbackDone.then(quiet, quiet);
-      // A hidden tab may never run the animation; let go regardless.
       setTimeout(done, 800);
       return;
     }
@@ -166,12 +114,6 @@
   var current = function () {
     return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   };
-  // THE HEX FIELD: a courier line under the three words, shown on HEX
-  // and hidden on Enter, Escape or leaving it. A valid code paints the
-  // mark as it is typed (the transitions are simply held off for the
-  // change); an invalid one paints nothing; and a field EMPTIED gives
-  // the yellow back, which is the only way home short of typing its
-  // code.
   var field = null;
   var openField = function () {
     field = field || document.querySelector('.theme-hex');
@@ -179,8 +121,6 @@
     field.value = accent || YELLOW;
     field.hidden = false;
     field.focus();
-    // The caret at the end of the code, nothing highlighted: the
-    // field opens to be typed into, not swept.
     try { var n = field.value.length; field.setSelectionRange(n, n); } catch (err) {}
   };
   var closeField = function () {
@@ -196,9 +136,6 @@
     storeMark(accent);
     setTimeout(function () { root.classList.remove('theme-instant'); }, 50);
   };
-  // HEX IS NOT A THIRD GROUND: the word opens its field and changes
-  // nothing until a code is typed. Light and Dark turn the page over
-  // and leave the mark where it is.
   document.addEventListener('click', function (e) {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
@@ -221,28 +158,9 @@
     if (e.target && e.target.classList && e.target.classList.contains('theme-hex')) closeField();
   });
   root.classList.add('fonts-loading');
-  // THE PAGE ARRIVES WHOLE (2026-09-17). Every page is held at opacity
-  // 0 until its fonts are in AND every cover on it is loaded and
-  // decoded, then fades up once, as one — the words in their faces
-  // and the pictures beside them together, on a hard refresh as on
-  // a warm one. No cover arrives after the words next to it and no
-  // fallback face is ever painted. The one exception is a dead font
-  // or picture host: after eight seconds the page lifts with what it
-  // has rather than never.
   var shown = false;
   var gate = { fonts: 0, covers: 0, fitted: 0, lifted: 0 };
   try { window.__ncGate = gate; } catch (err) {}
-  // THE SAME FADE ON A CLICK AS ON A COLD LOAD (2026-09-17, later).
-  // Chrome holds the OLD page's pixels on a same-site navigation until
-  // the new page's first contentful frame, or half a second. A word
-  // page reached by a click has its faces and covers cached and is
-  // ready in a fraction of that, so its fade ran under the held
-  // homepage and was mostly swallowed: the reader saw a cut where the
-  // front page, whose fitters take longer, shows its ground and then
-  // fades up. So no page lifts before the hold has expired: the lift
-  // waits out the floor (measured from the navigation itself, so a
-  // slow load pays nothing), the ground is seen, and the fade is the
-  // same everywhere.
   var FLOOR = 600;
   var go = function () {
     if (shown) return;
@@ -259,21 +177,13 @@
       root.classList.remove('fonts-loading');
       setTimeout(function () {
         root.classList.add('page-shown');
-        // The fade is over: the fitter may take the thread for the rest
-        // of the page (src/duo-panel-fit.js, THE PAGE IS FITTED IN TWO
-        // STAGES) without stalling the dissolve the reader is watching.
         try { window.__ncShown = true; } catch (err) {}
         try { window.dispatchEvent(new Event('newcritic:shown')); } catch (err) {}
       }, 400);
     };
-    // Two frames past ready, so the fitters (which run on fonts.ready)
-    // have laid the page out before it is seen.
     requestAnimationFrame(function () { requestAnimationFrame(lift); });
-    // A hidden tab runs no frames; lift on a timer there so the page
-    // is never left held when the tab is shown.
     setTimeout(lift, 250);
   };
-  // THE FONTS: the five faces the page sets in, then the whole set.
   var fontsDone = new Promise(function (resolve) {
     var f = document.fonts;
     if (!f || !f.load) { resolve(); return; }
@@ -281,8 +191,6 @@
       f.load('700 100px helvetica-neue-lt-pro'),
       f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
-      // (The chips' face is the system's Courier since 2026-09-22 —
-      // nothing to wait on.)
       f.load('400 100px courier-std'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
@@ -292,26 +200,61 @@
     ]).then(function () { return f.ready; }).then(resolve, resolve);
   }).then(function () {
     gate.fonts = performance.now();
-    // Said out loud for the fitter (src/duo-panel-fit.js), which holds
-    // its first pass for the faces and cannot ask this promise itself:
-    // a flag for a listener that arrives late, an event for one that
-    // is already waiting.
     try { window.__ncFontsIn = true; } catch (err) {}
     try { window.dispatchEvent(new Event('newcritic:fontsin')); } catch (err) {}
   });
-  // THE COVERS: the ones the page HOLDS for, loaded (or failed) and then
-  // decoded, so the first paint has their pixels ready. That was every
-  // cover on the page and is the front page's first three now, marked
-  // at build time (build.js, holdFirstCovers); the rest are lazy and
-  // fade up as they land. A page that marks none holds for none.
   var HOLD = 'img.card-image[data-hold]';
+  var held = function () {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    return [].filter.call(document.querySelectorAll(HOLD), function (img) {
+      var r = img.getBoundingClientRect();
+      return r.bottom > 0 && r.top < vh && r.width > 0;
+    });
+  };
+  var parked = [];
+  var park = function (img) {
+    if (img.__ncParked || unparked) return;
+    img.__ncParked = true;
+    ['srcset', 'src'].forEach(function (a) {
+      var v = img.getAttribute(a);
+      if (v != null) { img.setAttribute('data-nc-' + a, v); img.removeAttribute(a); }
+    });
+    parked.push(img);
+  };
+  var unparked = false;
+  var unpark = function () {
+    if (unparked) return;
+    unparked = true;
+    if (mo) mo.disconnect();
+    parked.forEach(function (img) {
+      img.loading = 'eager';
+      ['srcset', 'src'].forEach(function (a) {
+        var v = img.getAttribute('data-nc-' + a);
+        if (v != null) { img.setAttribute(a, v); img.removeAttribute('data-nc-' + a); }
+      });
+      img.__ncParked = false;
+    });
+    parked = [];
+  };
+  var mo = window.MutationObserver ? new MutationObserver(function (recs) {
+    for (var i = 0; i < recs.length; i++) {
+      var added = recs[i].addedNodes;
+      for (var k = 0; k < added.length; k++) {
+        var n = added[k];
+        if (n.nodeType !== 1) continue;
+        if (n.matches(HOLD)) park(n);
+        else if (n.firstElementChild) [].forEach.call(n.querySelectorAll(HOLD), park);
+      }
+    }
+  }) : null;
+  if (mo) {
+    mo.observe(root, { childList: true, subtree: true });
+    fontsDone.then(unpark, unpark);
+    setTimeout(unpark, 2500);
+  }
   var coversDone = new Promise(function (resolve) {
     var settle = function () {
-      // The decode is asked for, not waited on past a beat: a hidden
-      // tab decodes nothing until it is shown (its decode() promises
-      // simply hang), and a page opened in the background should not
-      // stand blank for the cap once it is brought forward.
-      var imgs = [].slice.call(document.querySelectorAll(HOLD));
+      var imgs = held();
       if (document.visibilityState === 'hidden') { resolve(); return; }
       var decodes = imgs.map(function (img) {
         return img.decode ? img.decode().catch(function () {}) : Promise.resolve();
@@ -320,8 +263,8 @@
       Promise.race([Promise.all(decodes), beat]).then(resolve, resolve);
     };
     var pending = function () {
-      var imgs = document.querySelectorAll(HOLD);
-      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete) return true;
+      var imgs = held();
+      for (var i = 0; i < imgs.length; i++) if (!imgs[i].complete || imgs[i].__ncParked) return true;
       return false;
     };
     var watch = function () {
@@ -339,26 +282,12 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
     else watch();
   }).then(function () { gate.covers = performance.now(); });
-  // THE FIT: the page laid out whole before it is shown. This used to
-  // be free — the fitters' first pass ran synchronously during parse,
-  // so the parser could not reach the end of the body (and neither
-  // promise above could settle) until the page was fitted. That pass
-  // is struck (src/duo-panel-fit.js: it measured fallback metrics and
-  // was thrown away entire by the pass that followed the fonts), and
-  // the guarantee is held here instead: the fitter announces its first
-  // completed pass and the gate waits for it. The flag is checked
-  // before the listener because this runs in the HEAD, long before the
-  // fitter has parsed — but also long before it could have announced,
-  // so the listener is what actually answers on every real load.
   var fitDone = new Promise(function (resolve) {
     if (window.__ncFitDone) { resolve(); return; }
     addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
   }).then(function () { gate.fitted = performance.now(); });
   Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
   setTimeout(go, 8000);
-  // Pulled back by the reader (the back/forward cache restores the
-  // page whole, with its class already lifted): nothing to do — but a
-  // page restored still held is let go at once.
   addEventListener('pageshow', function (e) { if (e.persisted) { shown = true; reveal(); } });
 })();
 </script>
@@ -376,6 +305,27 @@
       if (document.images[i].complete) document.images[i].classList.add('is-loaded');
     }
   });
+  var ahead = function () {
+    if (ahead.done || !window.IntersectionObserver) return;
+    ahead.done = true;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        if (en.target.loading === 'lazy') en.target.loading = 'eager';
+      });
+    }, { rootMargin: '0px 0px 200% 0px' });
+    [].forEach.call(document.querySelectorAll('img.card-image[loading="lazy"]'), function (img) { io.observe(img); });
+  };
+  var whenReady = function () {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ahead);
+    else ahead();
+  };
+  if (window.__ncFontsIn) whenReady();
+  else {
+    addEventListener('newcritic:fontsin', whenReady);
+    setTimeout(whenReady, 4000);
+  }
 })();
 
 </script>
@@ -4767,7 +4717,7 @@
   var SIDE_ALIGN_MQ = window.matchMedia('(min-width: 1024px)');
   var SWAP_CARDS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
   function swapImg(card, img) {
-    var src = img && (img.currentSrc || img.src);
+    var src = img && img.complete && img.naturalWidth ? (img.currentSrc || img.src) : '';
     if (src) card.style.setProperty('--swap-img', 'url("' + src.replace(/"/g, '%22') + '")');
   }
   function buildSwapCols() {
@@ -5465,25 +5415,51 @@
     probe.remove();
     return base;
   }
+  var scanMemo = {}, scanFaces = -1;
+  function scanEdges(cs, text) {
+    var n = 0;
+    try { document.fonts.forEach(function (face) { if (face.status === 'loaded') n++; }); } catch (e) {}
+    if (n !== scanFaces) { scanFaces = n; scanMemo = {}; }
+    var face = cs.fontStyle + ' ' + cs.fontWeight + ' ' + SCAN_PX + 'px ' + cs.fontFamily;
+    var key = face + '|' + text;
+    if (Object.prototype.hasOwnProperty.call(scanMemo, key)) return scanMemo[key];
+    var W = SCAN_W, H = SCAN_H;
+    var g = scanCtx();
+    if (!g) return undefined;
+    g.font = face;
+    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
+    g.fillText(text, 20, SCAN_Y0);
+    var data;
+    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return undefined; }
+    var top = -1, bot = -1, lo = -1, hi = -1;
+    for (var y = 0; y < H; y++) {
+      var row = y * W;
+      for (var x = 0; x < W; x++) {
+        if (data[(row + x) * 4 + 3] > 40) {
+          if (top < 0) top = y;
+          bot = y;
+          if (lo < 0 || x < lo) lo = x;
+          for (var x2 = W - 1; x2 >= x; x2--) {
+            if (data[(row + x2) * 4 + 3] > 40) { if (x2 > hi) hi = x2; break; }
+          }
+          break;
+        }
+      }
+    }
+    var out = top < 0 ? null : { top: top, bot: bot, lo: lo, hi: hi };
+    scanMemo[key] = out;
+    return out;
+  }
   function inkReach(el) {
     var cs = getComputedStyle(el);
     var size = parseFloat(cs.fontSize) || 13;
     var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
     if (!text) return null;
-    var scanPx = SCAN_PX, W = SCAN_W, H = SCAN_H, y0 = SCAN_Y0;
-    var g = scanCtx();
-    if (!g) return null;
-    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
-    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
-    g.fillText(text, 20, y0);
-    var data;
-    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return null; }
-    var top = -1, bot = -1;
-    for (var y = 0; y < H; y++) {
-      for (var x = 0; x < W; x++) { if (data[(y * W + x) * 4 + 3] > 40) { if (top < 0) top = y; bot = y; break; } }
-    }
-    if (top < 0) return null;
+    var scanPx = SCAN_PX, y0 = SCAN_Y0;
+    var e = scanEdges(cs, text);
+    if (!e) return null;
+    var top = e.top, bot = e.bot;
     var probe = document.createElement('span');
     probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
     el.insertBefore(probe, el.firstChild);
@@ -5497,21 +5473,10 @@
     var text = (el.textContent || '').trim().replace(/\s+/g, ' ');
     if (cs.textTransform === 'uppercase') text = text.toUpperCase();
     if (!text) return 0;
-    var scanPx = SCAN_PX, W = SCAN_W, H = SCAN_H, y0 = SCAN_Y0;
-    var g = scanCtx(); if (!g) return 0;
-    g.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + scanPx + 'px ' + cs.fontFamily;
-    g.textBaseline = 'alphabetic'; g.fillStyle = '#000';
-    g.fillText(text, 20, y0);
-    var data;
-    try { data = g.getImageData(0, 0, W, H).data; } catch (e) { return 0; }
-    var lo = -1, hi = -1;
-    for (var x = 0; x < W; x++) {
-      for (var y = 0; y < H; y++) {
-        if (data[(y * W + x) * 4 + 3] > 40) { if (lo < 0) lo = x; hi = x; break; }
-      }
-    }
-    if (lo < 0) return 0;
-    return (hi + 1 - lo) / scanPx * size;
+    var scanPx = SCAN_PX;
+    var e = scanEdges(cs, text);
+    if (!e) return 0;
+    return (e.hi + 1 - e.lo) / scanPx * size;
   }
   function seatStackBlock(stack) {
     var letters = stack.querySelectorAll(':scope > span:not(.latest-stack-gap)');
@@ -5890,14 +5855,16 @@
     var list;
     try { list = document.querySelectorAll(DEK_SEL); } catch (e) { return; }
     var jobs = [];
-    [].forEach.call(list, function (el) {
-      var cs = getComputedStyle(el);
-      var text = (el.textContent || '').trim();
-      if (cs.display === 'none' || !text) { el.classList.remove('hl-blk'); return; }
+    var reads = [].map.call(list, function (el) {
+      return { el: el, cs: csSnap(getComputedStyle(el)), text: (el.textContent || '').trim() };
+    });
+    reads.forEach(function (r) {
+      var el = r.el;
+      if (r.cs.display === 'none' || !r.text) { el.classList.remove('hl-blk'); return; }
       var head = document.createElement('span');
       head.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
       el.insertBefore(head, el.firstChild);
-      jobs.push({ el: el, cs: cs, head: head });
+      jobs.push({ el: el, cs: r.cs, head: head });
     });
     jobs.forEach(function (j) {
       j.box = j.el.getBoundingClientRect();
@@ -5936,6 +5903,7 @@
       if (j.cs.position === 'static') j.el.style.position = 'relative';
       j.el.classList.add('hl-blk');
     });
+    var joins = [];
     jobs.forEach(function (j) {
       if (!j.el.classList.contains('hl-blk')) return;
       var title = j.el.previousElementSibling;
@@ -5956,20 +5924,27 @@
       var lead = marks[0];
       var up = parseFloat(lead.style.getPropertyValue('--hl-up'));
       var pad = isFinite(up) ? up - (parseFloat(getComputedStyle(lead, '::after').top) || 0) : NaN;
-      if (isFinite(pad) && pad > 0) j.el.style.setProperty('--dk-pad', pad.toFixed(2) + 'px');
-      var box = j.el.getBoundingClientRect();
-      var own = getComputedStyle(j.el, '::after');
-      var myTop = box.top + (parseFloat(own.top) || 0);
-      var myLeft = box.left + (parseFloat(own.left) || 0);
-      var myRight = box.right - (parseFloat(own.right) || 0);
+      joins.push({ el: j.el, title: title, foot: foot, lft: lft, rgt: rgt, pad: pad, al: getComputedStyle(title).textAlign });
+    });
+    joins.forEach(function (o) {
+      if (isFinite(o.pad) && o.pad > 0) o.el.style.setProperty('--dk-pad', o.pad.toFixed(2) + 'px');
+    });
+    joins.forEach(function (o) {
+      var box = o.el.getBoundingClientRect();
+      var own = getComputedStyle(o.el, '::after');
+      o.myTop = box.top + (parseFloat(own.top) || 0);
+      o.myLeft = box.left + (parseFloat(own.left) || 0);
+      o.myRight = box.right - (parseFloat(own.right) || 0);
+    });
+    joins.forEach(function (o) {
       var bump = function (name, by) {
-        var was = parseFloat(j.el.style.getPropertyValue(name)) || 0;
-        j.el.style.setProperty(name, (was + by).toFixed(2) + 'px');
+        var was = parseFloat(o.el.style.getPropertyValue(name)) || 0;
+        o.el.style.setProperty(name, (was + by).toFixed(2) + 'px');
       };
-      if (isFinite(foot)) bump('--dk-t', foot - myTop);
-      var al = getComputedStyle(title).textAlign;
-      if (al === 'left' || al === 'start') { if (isFinite(lft)) bump('--dk-l', lft - myLeft); }
-      else if (al === 'right' || al === 'end') { if (isFinite(rgt)) bump('--dk-r', myRight - rgt); }
+      if (isFinite(o.foot)) bump('--dk-t', o.foot - o.myTop);
+      var al = o.al;
+      if (al === 'left' || al === 'start') { if (isFinite(o.lft)) bump('--dk-l', o.lft - o.myLeft); }
+      else if (al === 'right' || al === 'end') { if (isFinite(o.rgt)) bump('--dk-r', o.myRight - o.rgt); }
     });
     [].forEach.call(document.querySelectorAll('.card-title, .latest-title'), function (title) {
       var parts = [].slice.call(title.querySelectorAll('.hl-ink'));
