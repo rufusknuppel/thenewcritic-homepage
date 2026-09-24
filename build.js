@@ -2316,7 +2316,7 @@ const stackHtml = (text, side = 'right', href = 'archive.html') => `<a class="la
 // (a postscript's portrait, a review's square: style.css, ONE LINE OF
 // POSTS). `kind` names which; the card is the essay's in every other
 // respect, the fitter's essay paths and all.
-function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '' } = {}) {
+function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '', trueHeight = false } = {}) {
   if (!post) return '';
   const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev, megaKind: kind }, `duo-half--wide duo-half--mega${kind ? ` duo-half--kind-${kind}` : ''}`);
   // (The hero's masthead row is retired — the top header carries the
@@ -2331,7 +2331,19 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // on the right-hand card of a pair, left on the rest (style.css and
   // seatMatterMeta, THE WORDS UNDER THE PICTURE TAKE A SIDE)
   const alignR = align === 'r' || pair === 'b';
-  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${alignR ? ' card--align-r' : ''}">
+  // THE ESSAY'S PICTURE STANDS AT ITS OWN HEIGHT (2026-09-24): an
+  // essay's cover keeps its width and takes its original's proportions
+  // down the page, read off the _WxH Substack writes into the file name,
+  // so the card is its true height from the first paint, with no
+  // waiting on the picture and nothing moving when it lands. Handed to
+  // the sheet as --pic-r (height over width), which floors it at the old
+  // box and caps it (style.css, THE ESSAY'S PICTURE STANDS AT ITS OWN
+  // HEIGHT). Postscripts and reviews keep their shapes; the front page
+  // asks for it (trueHeight), the word pages' heroes are left as they were.
+  const dims = trueHeight && !kind && /_(\d+)x(\d+)\.[a-z]+$/i.exec(decodeURIComponent(post.image || ''));
+  const picR = dims && +dims[1] > 0 && +dims[2] > 0 ? +dims[2] / +dims[1] : 0;
+  const trueH = picR ? ` card--true-h" style="--pic-r: ${picR.toFixed(4)}` : '';
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${alignR ? ' card--align-r' : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2591,7 +2603,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // below with the latest row.
   // EVERY ESSAY TURNED (2026-09-18): picture LEFT on the lead, then
   // alternating — each card the mirror of what it was.
-  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html' }));
+  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html', trueHeight: true }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   // (ONE LINE OF POSTS, 2026-09-23: every essay the one way round now —
@@ -2623,7 +2635,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // MIRRORED too: contra left, postscript right with its text in the
   // middle and its cover closing the row's right end. Both keep the
   // lead seat (the rail is on the right up here, so no m2).
-  blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays', align: 'r' }));
+  blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays', align: 'r', trueHeight: true }));
   blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', pair: contras[1] ? 'a' : '' }));
   blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'b' : '' }));
   // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
@@ -2650,11 +2662,11 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // nothing.
   // (the essays' words alternate sides down the page, left then right,
   // counted from the lead: [0] left, [1] right, [2] left… — 2026-09-24)
-  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, align: 'r' }));
-  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true }));
-  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r' }));
-  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true }));
+  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
+  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
+  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
+  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
+  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
   // EVENTS closes the essays — the word alone, like STORE.
   blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section', below: ['TNC editors interview extraordinary gen zers.'] }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
