@@ -2164,7 +2164,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // reads as the panel materialising AROUND a label that never moves
   // (see .rest-kicker in style.css). aria-hidden: it duplicates the panel
   // band's kicker link, which is the one assistive tech should meet.
-  const titleHtml = `<h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(sentenceCase(post.title))}</a></h3>`;
+  const titleHtml = `<h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>`;
   // THE STACK: title then dek in the left column, with the byline as the
   // panel's full-width header strip above .duo-panel-top (see THE STACK
   // in style.css) — every section, postscript included. Postscript's own
@@ -2315,34 +2315,6 @@ const stackHtml = (text, side = 'right', href = 'archive.html') => `<a class="la
 // (a postscript's portrait, a review's square: style.css, ONE LINE OF
 // POSTS). `kind` names which; the card is the essay's in every other
 // respect, the fitter's essay paths and all.
-// THE TITLES IN SENTENCE CASE (2026-09-24): a card's title under its
-// picture is set as a sentence, in the body's Garamond (style.css, THE
-// TITLES IN SENTENCE CASE; seatSwapCols sizes it). The feed's titles
-// come in title case, so every word after the first is lowered — save
-// a word that is its own capitals (MrBeast, TNC), the first after a
-// colon or a question, and the proper names below, put back as the
-// feed spells them. A name a new title brings goes in TITLE_PROPER (or
-// the post's own title in content-overrides.js).
-const TITLE_PROPER = ['MrBeast', 'Jasmine Sun', 'Freya India', 'Luddite Club', 'New Statesman', 'American', 'Manifest'];
-function sentenceCase(title) {
-  const src = String(title || '');
-  let first = true, opens = false;
-  let out = src.split(/(\s+)/).map((w) => {
-    if (!w || /^\s+$/.test(w)) return w;
-    const keep = first || opens
-      || w.split('-').some((seg) => /[a-z][A-Z]/.test(seg) || /^[^a-z]*[A-Z]{2,}[^a-z]*$/.test(seg));
-    first = false;
-    opens = /[:?!.]$/.test(w);
-    return keep ? w : w.toLowerCase();
-  }).join('');
-  TITLE_PROPER.forEach((name) => {
-    for (let at = src.indexOf(name); at !== -1; at = src.indexOf(name, at + name.length)) {
-      out = out.slice(0, at) + name + out.slice(at + name.length);
-    }
-  });
-  return out;
-}
-
 function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '' } = {}) {
   if (!post) return '';
   const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev, megaKind: kind }, `duo-half--wide duo-half--mega${kind ? ` duo-half--kind-${kind}` : ''}`);
