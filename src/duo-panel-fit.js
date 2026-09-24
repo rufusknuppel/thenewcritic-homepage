@@ -3969,7 +3969,13 @@
     // block is struck, and SIDE only names the measure now.)
     var ink1 = i1.right - i1.left;
     void vw;
-    name.style.transform = 'translateX(' + (wb.left + (wb.width - ink1) / 2 - i1.left).toFixed(2) + 'px)';
+    // THE SECTIONS' HEADS STAND OVER THEIR FIRST PICTURE (2026-09-24):
+    // a band that states --head-l (style.css, from 1024 up) has its
+    // word's ink begin that far in — the left edge of the first picture
+    // under it — instead of centred.
+    var headL = headLeftOf(wm);
+    var inkAt = headL != null ? wb.left + headL : wb.left + (wb.width - ink1) / 2;
+    name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
     // sit lower than the canvas 'H' model says (the model put them 25
     // above where they print). The string is drawn on a canvas at a
@@ -6603,6 +6609,7 @@
     step('inkCenterDeks', inkCenterDeks);
     step('seatBandMid', seatBandMid);
     step('fitGroundStops', fitGroundStops);
+    step('seatSectionHeads', seatSectionHeads);
     step('fitSubscribeName', fitSubscribeName);
     step('fitWordSpacers', fitWordSpacers);
     // Before the cap: the gap changes how tall a review's words stand,
@@ -9932,6 +9939,69 @@
       });
     });
   }
+  // THE SECTIONS' HEADS STAND OVER THEIR FIRST PICTURE (2026-09-24).
+  // From 1024 up a section's name and tag range left, their ink on the
+  // left edge of the picture nearest under them: the section's first
+  // card's, on whichever side build.js dealt it. The picture runs from
+  // the card's first 24 (ONE LINE OF POSTS), and the card's left is the
+  // sheet's own (THE ESSAYS STEP ACROSS, EVERY CARD STEPS DOWN, 36
+  // BETWEEN), so the edge is read off the card before anything else in
+  // the pass seats a word, on the whole pixel as snapPictures seats the
+  // picture, and stated on the band: --head-l (px, from the band's own
+  // left) and .has-head-l (style.css). All reads, then all writes. A
+  // card out of layout (the first stage of a fresh visit) keeps what
+  // its band has; under 1024 the edge is struck and both stay centred.
+  var PIC_IN = 24;
+  function seatSectionHeads() {
+    var bands = [].slice.call(document.querySelectorAll('main.has-mega .movement > .page-banner--section'));
+    var sx = window.scrollX || 0;
+    var seats = bands.map(function (band) {
+      if (ONE_COL.matches) return null;
+      var card = band.parentElement && band.parentElement.querySelector('.card--mega');
+      if (!card) return null;
+      var r = card.getBoundingClientRect();
+      if (!r.width) return undefined;
+      return Math.round(r.left + PIC_IN + sx) - sx - band.getBoundingClientRect().left;
+    });
+    bands.forEach(function (band, i) {
+      var v = seats[i];
+      if (v === undefined) return;
+      if (v === null) { band.classList.remove('has-head-l'); band.style.removeProperty('--head-l'); return; }
+      band.style.setProperty('--head-l', v.toFixed(2) + 'px');
+      band.classList.add('has-head-l');
+    });
+  }
+  function headLeftOf(band) {
+    if (!band || !band.classList || !band.classList.contains('has-head-l')) return null;
+    var v = parseFloat(band.style.getPropertyValue('--head-l'));
+    return isFinite(v) ? v : null;
+  }
+  // The tag ranges left from --head-l, and its first letter's ink, not
+  // its advance box, is put on that edge — the italic's own bearing,
+  // read in the italic (inkSpanOf's bearing reads the roman). Returns
+  // the --tag-in that does it, or null where no edge is stated. Every
+  // read is taken before fitSubscribeLines writes the band's top.
+  function tagInkIn(band, below) {
+    var hl = headLeftOf(band);
+    if (hl == null) return null;
+    var walker = document.createTreeWalker(below, NodeFilter.SHOW_TEXT);
+    var node, at = -1;
+    while ((node = walker.nextNode())) {
+      var tx = node.nodeValue;
+      for (var i = 0; i < tx.length; i++) if (tx.charAt(i).trim()) { at = i; break; }
+      if (at >= 0) break;
+    }
+    if (!node || at < 0) return null;
+    var rg = document.createRange(); rg.setStart(node, at); rg.setEnd(node, at + 1);
+    var a = rg.getBoundingClientRect();
+    var cs = getComputedStyle(node.parentElement || below);
+    measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var ch = node.nodeValue.charAt(at);
+    if (cs.textTransform === 'uppercase') ch = ch.toUpperCase();
+    var inkLeft = a.left - (measureCtx.measureText(ch).actualBoundingBoxLeft || 0);
+    var now = parseFloat(below.style.getPropertyValue('--tag-in')) || 0;
+    return now + (band.getBoundingClientRect().left + hl - inkLeft);
+  }
   function fitSubscribeLines() {
     fitLatestStack();
     fitBandNameMid();
@@ -9952,7 +10022,10 @@
         measureCtx.font = ncs2.fontStyle + ' ' + ncs2.fontWeight + ' ' + ncs2.fontSize + ' ' + ncs2.fontFamily;
         var nDesc = measureCtx.measureText('p').actualBoundingBoxDescent || 0;
         var t0 = parseFloat(getComputedStyle(below).top) || 0;
+        var tagIn = tagInkIn(band, below);
         below.style.top = (t0 + (nb.base + nDesc + SECTION_DEK_GAP) - db.cap).toFixed(2) + 'px';
+        if (tagIn == null) below.style.removeProperty('--tag-in');
+        else below.style.setProperty('--tag-in', tagIn.toFixed(2) + 'px');
         return;
       }
       var nr = inkReach(name), lr = inkReach(below);
