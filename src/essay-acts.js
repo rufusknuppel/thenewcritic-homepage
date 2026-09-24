@@ -34,6 +34,7 @@
       e.preventDefault(); e.stopPropagation();
       var po = card.querySelector('.peek-open');
       if (po) po.click();
+      hold(card);
       hide();
     });
     card.appendChild(el);
@@ -47,7 +48,7 @@
     shown.classList.remove('is-acts');
     shown = null;
   }
-  function show(card, box) {
+  function place(card, box) {
     var el = acts(card);
     var op = el.offsetParent || card;
     var o = op.getBoundingClientRect();
@@ -55,6 +56,33 @@
     el.style.top = (box.t - o.top + op.clientTop).toFixed(2) + 'px';
     el.style.width = (box.r - box.l).toFixed(2) + 'px';
     el.style.height = (box.b - box.t).toFixed(2) + 'px';
+  }
+  // THE SCRIM IS HELD THROUGH A PREVIEW (2026-09-24). It was the hover's
+  // alone, and a preview brought a charcoal of its own that faded in
+  // with its text: pressed, the scrim went at once and the picture showed
+  // bright for a frame before the preview's charcoal came up; shut, the
+  // scrim came back at once OVER the text, cutting it off mid-fade. Now
+  // the scrim stays the one charcoal from the hand to the preview and
+  // home again — held while the card opens, stands open and shuts
+  // (.is-acts-held), its two acts faded out — and the preview is its
+  // text alone, fading in and out over it (style.css, THE PREVIEW FADES
+  // OVER THE SCRIM). Watched on the card's own classes, so the hold
+  // starts and ends in the same breath as the preview.
+  function hold(card) {
+    var held = card.matches('.is-open, .is-opening, .is-shutting');
+    if (held) { var box = picBox(card); if (box) place(card, box); }
+    if (card.classList.contains('is-acts-held') !== held) card.classList.toggle('is-acts-held', held);
+  }
+  if (window.MutationObserver) {
+    var watch = new MutationObserver(function (ms) {
+      ms.forEach(function (m) { if (m.target.matches && m.target.matches(ESSAYS)) hold(m.target); });
+    });
+    [].forEach.call(document.querySelectorAll(ESSAYS), function (c) {
+      watch.observe(c, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+  function show(card, box) {
+    place(card, box);
     if (shown !== card) hide();
     card.classList.add('is-acts');
     shown = card;
