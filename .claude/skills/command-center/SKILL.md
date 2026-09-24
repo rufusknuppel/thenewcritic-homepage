@@ -18,14 +18,20 @@ Every message from the user that asks for a change becomes one or more ledger ta
 
 Split a message into several tasks when it asks for unrelated things; keep it one task when the parts touch the same rules.
 
-## Triage — the cheapest safe route
-- **Inline in main** (you do it now): copy/text in `content-overrides.js`, a single obvious value, a one-line CSS token — only when no in-flight branch touches that file region. Edit, `node build.js` (exit 0), glance-verify, commit on main. Done.
-- **Delegate** (default for design, layout, behaviour, anything needing measurement): one background agent per task in its own worktree —
+## Triage — fastest route that's safe
+Speed matters: the user waits on every task. Delegation buys PARALLELISM, not per-task speed. A worker starts cold (CLAUDE.md, memory, code) and costs minutes before it touches anything, so don't delegate what you can do faster yourself.
+- **Inline in main** (you, now, a few minutes): copy/text, a single CSS value or timing, a small self-contained CSS block, a one-function fix whose cause is already known. Do it only when no in-flight branch touches that region. Edit, `node build.js` (4s), check at 1440 (+375 if layout), commit on main.
+- **Delegate** (layout or behaviour across many cards, anything needing investigation, anything over ~15 minutes of work):
   `Agent({subagent_type: "worktree-worker", isolation: "worktree", run_in_background: true, description: "T<n> <short>", prompt: <brief>})`.
-  `worktree-worker` (`.claude/agents/worktree-worker.md`) runs on Opus 5.5 at high effort — the user's standing choice — and carries the standing rules (scope, CSS blocks, build, verify on :8920, commit style, report format). If that agent type isn't listed in this session yet (it loads at session start), use `subagent_type: "general-purpose", model: "opus"` and paste the rules from that file into the brief.
-  Record the returned agent id in the ledger so revisions go through `SendMessage` to the same agent (its context intact), not a fresh one.
-- **Serialize, don't parallelize, overlapping work.** Two tasks that edit the same mechanism (the fitter in `src/duo-panel-fit.js`, the same card type's CSS, the head band) run one after the other: queue the second as "Waiting on T<n>" and launch it from the new main after the first merges. Unrelated tasks run in parallel — up to 3 agents at once.
-- **Ask the user** only when the request is genuinely ambiguous about the design outcome. Ask in one line and keep the other tasks moving.
+  `worktree-worker` (`.claude/agents/worktree-worker.md`) runs on Opus 5.5 at high effort (the user's standing choice) and carries the standing rules. If that agent type isn't listed in this session yet (it loads at session start), use `subagent_type: "general-purpose", model: "opus"` and tell it to read that file first.
+  Record the returned agent id in the ledger so revisions go through `SendMessage` to the same agent.
+- **Serialize overlapping work.** Two tasks on the same mechanism run one after the other. Unrelated tasks run in parallel, up to 3.
+- **Ask the user** only when the request is genuinely ambiguous about the outcome, in one line, and keep everything else moving.
+
+## Verification tiers (put the tier in every brief)
+- **Light** (default): the case the user named, at 1440 and 375, plus no fitErrors and no sideways scroll. One headless screenshot if the change is visual.
+- **Full** (only for changes that can move things they aren't meant to: page load, the fitter's shared passes, card sizing across the page): the widths that matter, plus a before/after element-box diff.
+- Never both a worker's full proof AND your own re-run. At merge, one quick look at the merged page on :8901; dig deeper only if something looks off.
 
 ## The delegation brief (fill every field)
 ```
@@ -35,6 +41,7 @@ WHAT DONE LOOKS LIKE: <observable result; widths; modes (light/dark, marked); pa
 SCOPE: <files / sections you expect it to touch>
 READ: <memory notes that apply, e.g. phone-layout.md, fit-pass-performance.md>
 CONTEXT: <anything from the conversation the worker needs — earlier decisions, related tasks in flight>
+VERIFY: <Light | Full> — <the specific cases>
 ```
 
 ## When an agent reports
@@ -44,7 +51,7 @@ CONTEXT: <anything from the conversation the worker needs — earlier decisions,
    - style.css end-of-sheet conflict: keep both blocks, main's first; then check braces balance (strip comments, depth ends at 0, never below 0).
    - dist/ is `merge=ours`: after the merge run `node build.js` (exit 0) and commit the rebuilt dist as part of the merge (`git commit --amend --no-edit` on the unpushed merge commit is fine).
    - Any other conflict in source: resolve if the intent of both sides is clear; otherwise send it back to the agent to rebase onto main.
-4. Verify the MERGED result yourself on the `dist` server (:8901) at the widths the task names — merged states are where parallel work breaks.
+4. One quick look at the MERGED result on the `dist` server (:8901), at 1440 (+375 if layout). Go deeper only if something looks off.
 5. Clean up: `git worktree remove <path>` and `git branch -d <branch>` (only after the merge; `-d` refuses unmerged branches, which is the point).
 6. Tell every other in-flight agent whose work might overlap to `git rebase main` in its worktree (SendMessage).
 7. Update the ledger: task → "Merged (unshipped)" with the merge hash and one line of what changed. Tell the user in one or two lines.
