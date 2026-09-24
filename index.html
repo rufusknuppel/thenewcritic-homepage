@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=0a061410">
+<link rel="stylesheet" href="style.css?v=70572f94">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -49,13 +49,19 @@
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
   };
+  var ground = function () {
+    var g = '';
+    try { g = getComputedStyle(root).getPropertyValue('--nc-ground').trim(); } catch (err) {}
+    return g || WHITE;
+  };
+  if (root.getAttribute('data-theme') !== 'dark') setMeta(ground());
   var paint = function (mode) {
     root.style.removeProperty('--g');
     root.style.removeProperty('--k');
     root.style.removeProperty('--yves');
     if (mode === 'dark') root.setAttribute('data-theme', 'dark');
     else root.removeAttribute('data-theme');
-    setMeta(mode === 'dark' ? CHARCOAL : WHITE);
+    setMeta(mode === 'dark' ? CHARCOAL : ground());
   };
   var mark = function (hex) {
     if (hex && hex !== YELLOW) {
