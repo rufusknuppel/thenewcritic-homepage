@@ -3019,6 +3019,17 @@ function renderFontGateScript() {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = colour;
   };
+  // THE LIGHT PAGE STANDS ON ONE GRAY (2026-09-24): its ground is one
+  // token in the sheet, --nc-ground (style.css, THE WHOLE PAGE STANDS ON
+  // ONE LIGHT GRAY), read here rather than restated, so the browser's
+  // own chrome takes the colour the page loads and rubber-bands in. (The
+  // sheet is linked above this script, which waits for it.)
+  var ground = function () {
+    var g = '';
+    try { g = getComputedStyle(root).getPropertyValue('--nc-ground').trim(); } catch (err) {}
+    return g || WHITE;
+  };
+  if (root.getAttribute('data-theme') !== 'dark') setMeta(ground());
   // Paints the ground: light is the page's own, dark is written on the
   // root. (The inline --g and --k a hex ground wrote are cleared for
   // any page still carrying them from a view transition's old state.)
@@ -3028,7 +3039,7 @@ function renderFontGateScript() {
     root.style.removeProperty('--yves');
     if (mode === 'dark') root.setAttribute('data-theme', 'dark');
     else root.removeAttribute('data-theme');
-    setMeta(mode === 'dark' ? CHARCOAL : WHITE);
+    setMeta(mode === 'dark' ? CHARCOAL : ground());
   };
   // Paints the mark: the reader's colour and the ink that stands on it,
   // or — for no colour, or the yellow's own code — nothing at all, and
