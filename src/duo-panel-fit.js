@@ -6870,7 +6870,7 @@
       // the moves of the rows over it — acc, the flow's — so a pair's
       // second card can be drawn up beside the first and the row under
       // the pair spaced from the lower of the two, all in one pass)
-      var acc = 0, prevFoot = null, prevPic = null;
+      var acc = 0, prevFoot = null, prevPic = null, prevAFoot = null;
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
@@ -6966,10 +6966,23 @@
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
+          // THE PAIRS STEP ON (2026-09-24, at the user's word): where a
+          // pair follows a pair, its first picture stands 36 over the
+          // foot of the last one's second, as the second stands 36 over
+          // the first's — one diagonal down the section. It keeps 54
+          // from the ink of the card over it in its own column (the last
+          // pair's first), and never rises above that.
+          var chainA = !ONE_COL.matches && pic && prevPic && prev && prevAFoot != null
+            && row.classList.contains('card--pair-a') && prev.classList.contains('card--pair-b');
+          if (chainA) {
+            var stepTo = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
+            rowDelta = Math.max(stepTo, COURIER_GAP - (curT - prevAFoot));
+          }
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB || !!chainA });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
+        if (row.classList.contains('card--pair-a')) prevAFoot = isFinite(foot) ? foot : null;
         prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
         acc += rowDelta;
         prev = row; prevInk = ink; prevCur = cur;

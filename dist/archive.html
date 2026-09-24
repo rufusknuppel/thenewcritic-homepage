@@ -5452,7 +5452,7 @@
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
-      var acc = 0, prevFoot = null, prevPic = null;
+      var acc = 0, prevFoot = null, prevPic = null, prevAFoot = null;
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
@@ -5506,10 +5506,17 @@
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
+          var chainA = !ONE_COL.matches && pic && prevPic && prev && prevAFoot != null
+            && row.classList.contains('card--pair-a') && prev.classList.contains('card--pair-b');
+          if (chainA) {
+            var stepTo = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
+            rowDelta = Math.max(stepTo, COURIER_GAP - (curT - prevAFoot));
+          }
         }
-        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB });
+        if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: isB || !!chainA });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = isB && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
+        if (row.classList.contains('card--pair-a')) prevAFoot = isFinite(foot) ? foot : null;
         prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta } : null;
         acc += rowDelta;
         prev = row; prevInk = ink; prevCur = cur;
