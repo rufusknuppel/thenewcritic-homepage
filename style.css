@@ -20333,9 +20333,12 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
    backwards: the words fade out (.25s, as they did), the charcoal
    stands bare, and the text fades in over the last .45s of the same
    1.25s, held .8s (1s + .25s - .45s). The delay rides the open state
-   alone, so the shut, which runs to the resting rule, is untouched. */
+   alone, so the shut, which runs to the resting rule, is untouched.
+   (Later the same day, at the user's word: held .25s, not .8s. The text
+   comes up as the words finish going, whole by .7s, not after a bare
+   charcoal pause.) */
 main.has-mega .duo-half--mega.is-open > .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  transition: opacity .45s ease .8s !important;
+  transition: opacity .45s ease .25s !important;
 }
 /* (THE PREVIEW OPENS AS IT SHUTS ends) */
 
@@ -20370,22 +20373,23 @@ main.has-mega .swap-body > .swap-body-text .swap-p:is(*, .r.r.r.r.r.r.r.r.r.r.r.
    whole where the old box cut its top and foot away. The card is the
    picture and its two 36 bands, as before; everything under and round
    the picture is seated off the box by the fitter, which measures it.
-   - The old box is the FLOOR: the ask was to increase heights, so a
-     picture wider than the box (The Blackpill's 1.96:1) is not made
-     shorter; it stands at today's height and is cropped at its sides
-     as it was.
+   - The FLOOR is 2:1 (half its width), not the old box: at the user's
+     word (2026-09-24, later) a wide picture stands at its own height too,
+     shorter than the old box, and shows whole (The Blackpill's 1.96:1);
+     only a picture wider than 2:1 is cropped at its sides.
    - The CAP, for a picture taller than wide: never taller than 4:5
      (1.25 of its width), and never so tall that the picture and its two
      36s could not stand whole in the window under the head band and
-     the ticker pinned beneath it (--band-h + 36), so a card can always
-     be seen at once. What stands past the cap is cropped (the box's
+     the ticker pinned beneath it (--band-h + 36) with 90 to spare, so
+     the card's title stands in the window with its picture (Manifest
+     Man at 1440×900 had filled the window and put it under the fold). What stands past the cap is cropped (the box's
      background is cover, on the post's own crop focus, --swap-pos).
    Postscripts and reviews keep their shapes (.card--true-h is on the
    essays alone). Phone: the same rule on the 3:2 floor. */
 body:not(.word-page) main.has-mega .card--mega.card--true-h .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   --pic-h0: calc(1.21 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px));
-  --pic-cap: min(calc(1.25 * var(--pic-w)), calc(100svh - var(--band-h, 72px) - 36px - 72px));
-  height: calc(clamp(var(--pic-h0), var(--pic-w) * var(--pic-r), var(--pic-cap)) + 72px) !important;
+  --pic-cap: min(calc(1.25 * var(--pic-w)), calc(100svh - var(--band-h, 72px) - 36px - 72px - 90px));
+  height: calc(clamp(calc(var(--pic-w) / 2), var(--pic-w) * var(--pic-r), var(--pic-cap)) + 72px) !important;
 }
 @media (max-width: 1023.98px) {
   body:not(.word-page) main.has-mega .card--mega.card--true-h .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){

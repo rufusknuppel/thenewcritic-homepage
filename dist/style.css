@@ -9433,7 +9433,7 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   }
 }
 main.has-mega .duo-half--mega.is-open > .swap-body:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  transition: opacity .45s ease .8s !important;
+  transition: opacity .45s ease .25s !important;
 }
 main.has-mega .swap-body > .swap-body-text .swap-p:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   orphans: 1;
@@ -9444,8 +9444,8 @@ main.has-mega .swap-body > .swap-body-text .swap-p:is(*, .r.r.r.r.r.r.r.r.r.r.r.
 }
 body:not(.word-page) main.has-mega .card--mega.card--true-h .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   --pic-h0: calc(1.21 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px));
-  --pic-cap: min(calc(1.25 * var(--pic-w)), calc(100svh - var(--band-h, 72px) - 36px - 72px));
-  height: calc(clamp(var(--pic-h0), var(--pic-w) * var(--pic-r), var(--pic-cap)) + 72px) !important;
+  --pic-cap: min(calc(1.25 * var(--pic-w)), calc(100svh - var(--band-h, 72px) - 36px - 72px - 90px));
+  height: calc(clamp(calc(var(--pic-w) / 2), var(--pic-w) * var(--pic-r), var(--pic-cap)) + 72px) !important;
 }
 @media (max-width: 1023.98px) {
   body:not(.word-page) main.has-mega .card--mega.card--true-h .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
