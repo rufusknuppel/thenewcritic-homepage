@@ -9621,9 +9621,10 @@ main.has-mega .m--latest > .movement-body > .latest-head:is(*, .r.r.r.r.r.r.r.r.
 }
 @media (min-width: 1024px){
   main.has-mega .m--latest > .movement-body > .latest-head.has-head-l:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    left: var(--head-l, 36px) !important;
+    left: auto !important;
+    right: var(--head-l, 36px) !important; 
     transform: none !important;
-    text-align: left !important;
+    text-align: right !important;
   }
 }
 @media (max-width: 1023.98px){

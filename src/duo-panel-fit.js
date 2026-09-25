@@ -10059,8 +10059,14 @@
             var crg = document.createRange(); crg.setStart(lastNode, lastAt); crg.setEnd(lastNode, lastAt + 1);
             var cb = crg.getBoundingClientRect();
             var inkR = cb.left + (measureCtx.measureText(txt.charAt(txt.length - 1)).actualBoundingBoxRight || 0);
-            var nowL = parseFloat(lcs.left) || 0;
-            lSeat = nowL + (document.documentElement.clientWidth - 36 - inkR);
+            // (seated by its RIGHT edge — style.css ranges it right on
+            // --head-l — so the word's width, which changes as its face
+            // loads, cannot carry it off the page; what is stated is the
+            // 36 less the air its box keeps past the last letter's ink:
+            // the tracking laid after it and the letter's own bearing, and
+            // the window's edge off the body's)
+            var boxR = lBox.getBoundingClientRect().right - (lBox.clientLeft || 0);
+            lSeat = 36 - (cb.right - inkR) - (boxR - document.documentElement.clientWidth);
           }
         }
       }

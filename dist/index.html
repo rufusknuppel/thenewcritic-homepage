@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b29f855c">
+<link rel="stylesheet" href="style.css?v=7680bfdd">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7232,8 +7232,8 @@
             var crg = document.createRange(); crg.setStart(lastNode, lastAt); crg.setEnd(lastNode, lastAt + 1);
             var cb = crg.getBoundingClientRect();
             var inkR = cb.left + (measureCtx.measureText(txt.charAt(txt.length - 1)).actualBoundingBoxRight || 0);
-            var nowL = parseFloat(lcs.left) || 0;
-            lSeat = nowL + (document.documentElement.clientWidth - 36 - inkR);
+            var boxR = lBox.getBoundingClientRect().right - (lBox.clientLeft || 0);
+            lSeat = 36 - (cb.right - inkR) - (boxR - document.documentElement.clientWidth);
           }
         }
       }
