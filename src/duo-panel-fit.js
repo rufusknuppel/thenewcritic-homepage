@@ -6753,7 +6753,9 @@
     });
     return isFinite(t) ? { t: t, b: b } : null;
   }
-  var COURIER_GAP = 54;
+  // (36, not 54, since 2026-09-24, at the user's word: every gap on the
+  // page is 36, across or down, and 36 is what a card keeps from any ink)
+  var COURIER_GAP = 36;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -6889,6 +6891,32 @@
     var sa = picSpanOf(a), sb = picSpanOf(b);
     return !!(sa && sb && sa.l < sb.r + PAIR_STEP - 0.5 && sb.l < sa.r + PAIR_STEP - 0.5);
   }
+  // (the words' span across — courier and title lines — and a card's ink
+  // as blocks: its picture and its words, each with its span and foot;
+  // 36 AROUND THE INK, 2026-09-24: a card clears by 36 only the ink that
+  // stands over it, sharing width within 36)
+  function wordsSpanOf(row) {
+    var l = Infinity, r = -Infinity, b = -Infinity;
+    [].forEach.call(row.querySelectorAll('.cover-meta, .swap-line, .swap-dek-ink'), function (m) {
+      if (getComputedStyle(m).visibility === 'hidden') return;
+      var rg = document.createRange(); rg.selectNodeContents(m);
+      [].forEach.call(rg.getClientRects(), function (x) {
+        if (!x.width || !x.height) return;
+        l = Math.min(l, x.left); r = Math.max(r, x.right); b = Math.max(b, x.bottom);
+      });
+    });
+    return isFinite(l) ? { l: l, r: r, b: b } : null;
+  }
+  function across(a, b) { return !!(a && b && a.l < b.r + PAIR_STEP - 0.5 && b.l < a.r + PAIR_STEP - 0.5); }
+  function footOver(rows, span) {
+    var f = -Infinity;
+    rows.forEach(function (r) {
+      var ps = picSpanOf(r), pb = picBoxOf(r), ws = wordsSpanOf(r);
+      if (ps && pb && across(ps, span)) f = Math.max(f, pb.b);
+      if (ws && across(ws, span)) f = Math.max(f, ws.b);
+    });
+    return f;
+  }
   function seatRowGaps() {
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
@@ -7021,6 +7049,17 @@
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
+          // (a picture sharing width with the last one's clears only the
+          // ink over it: the last picture by 36, and its words by 36 only
+          // where they stand over it — 36 AROUND THE INK)
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row)) {
+            var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
+            var tgt = prevPic.t + Math.round(prevPic.b - prevPic.t) + PAIR_STEP;
+            if (pw && across(pw, mySpan)) tgt = Math.max(tgt, prevFoot + COURIER_GAP);
+            var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
+            cols.forEach(function (c) { if (c.side === side) tgt = Math.max(tgt, c.foot + COURIER_GAP - (myTop - (pic.t + acc))); });
+            rowDelta = tgt - (pic.t + acc);
+          }
         }
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
@@ -7090,10 +7129,11 @@
         };
         if (sBan && first && lastPic && firstPic && sideOf(first) !== sideOf(last) && !sharesWidth(last, first)) {
           var d = (lastPic.t + Math.round(lastPic.b - lastPic.t) - PAIR_STEP) - firstPic.t;
+          // (the head's INK: its name's cap top — 2026-09-24)
           var headTop = Infinity;
           [].forEach.call(sBan.querySelectorAll('.banner-name, .banner-line--below'), function (k) {
-            var rg = document.createRange(); rg.selectNodeContents(k);
-            [].forEach.call(rg.getClientRects(), function (x) { if (x.width > 0) headTop = Math.min(headTop, x.top); });
+            var bl = baselineOf(k);
+            if (bl) headTop = Math.min(headTop, bl.cap);
           });
           var headFoot = footOn(sideOf(first));
           if (isFinite(headFoot) && isFinite(headTop)) d = Math.max(d, headFoot + COURIER_GAP - headTop);
@@ -7115,9 +7155,42 @@
       if (next.classList.contains('movement')) {
         var ban = next.querySelector(':scope > .page-banner');
         if (!ban) return;
-        var ml = parseFloat(ban.style.getPropertyValue('--mk-line'));
-        if (isNaN(ml)) return;
-        line = ban.getBoundingClientRect().top + ml;
+        // (to the next section's name's INK, its cap top, since 2026-09-24:
+        // the last row's ink stands 36 over it — every gap 36 — where it
+        // stood 54 over the ground's line, 72 over the caps)
+        var bName = ban.querySelector('.banner-name');
+        var bBase = bName && baselineOf(bName);
+        if (bBase) line = bBase.cap;
+        // (from 1024 up the name and the first picture each clear by 36
+        // only the ink that stands over them — 36 AROUND THE INK: the
+        // section rises until one of them meets it)
+        if (bBase && !ONE_COL.matches) {
+          var nb0 = next.querySelector(':scope > .movement-body');
+          var nr0 = nb0 && [].filter.call(nb0.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); })[0];
+          var nmv = 0;
+          var hrg = document.createRange(); hrg.selectNodeContents(bName);
+          var hrs = [].filter.call(hrg.getClientRects(), function (x) { return x.width > 0; });
+          var hSpan = hrs.length ? { l: Math.min.apply(null, hrs.map(function (x) { return x.left; })), r: Math.max.apply(null, hrs.map(function (x) { return x.right; })) } : null;
+          var need = -Infinity;
+          var fH = hSpan ? footOver(rows, hSpan) : -Infinity;
+          if (isFinite(fH)) need = Math.max(need, fH + COURIER_GAP - (bBase.cap - nmv));
+          var fs = nr0 && picSpanOf(nr0), fb = nr0 && picBoxOf(nr0);
+          var fP = fs ? footOver(rows, fs) : -Infinity;
+          if (fb && isFinite(fP)) need = Math.max(need, fP + COURIER_GAP - (fb.t - nmv));
+          if (isFinite(need)) {
+            // (the section rises by a margin, as a stepped one does, over
+            // the strip it rises into — THE STEP RUNS ON THROUGH THE
+            // SECTIONS; padding could not take it past its own foot)
+            var over2 = mv.getBoundingClientRect().bottom - (next.getBoundingClientRect().top + need) - 1;
+            edges.push({ el: next, prop: 'margin-top', delta: need, m: parseFloat(getComputedStyle(next).marginTop) || 0, exact: true, over: over2 });
+            return;
+          }
+        }
+        else {
+          var ml = parseFloat(ban.style.getPropertyValue('--mk-line'));
+          if (isNaN(ml)) return;
+          line = ban.getBoundingClientRect().top + ml;
+        }
       } else line = next.getBoundingClientRect().top;
       // (the colophon is not moved but the last movement's foot grown
       // or taken in: a margin on the colophon opened a gap between the
