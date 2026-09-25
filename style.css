@@ -20805,3 +20805,22 @@ main.has-mega .sub-ticker .sub-ticker-half > b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
   padding: 0 !important;
 }
 /* (ONE SUBSCRIBE IN THE MIDDLE ends) */
+
+/* ---------- THE POSTSCRIPTS STAND AT THEIR OWN WIDTHS (2026-09-24) ----------
+   From 1024 up a postscript's picture keeps its height (the card's,
+   ONE LINE OF POSTS, less its two 36 bands: --ps-h) and takes its
+   original's proportions across: its width is that height over --pic-r
+   (height over width, off the file's _WxH — build.js), no narrower than
+   half its height and no wider than an essay (half the window less 54).
+   The pair seats read the card's own --pic-w, so a left-hand picture
+   still ends 18 short of the page's middle and a right-hand one starts
+   18 past it, whatever their widths. Under 1024 they keep the phone's
+   shape. */
+@media (min-width: 1024px){
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--kind-postscript.card--true-w:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --ps-h: calc(1.21 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px));
+    --pic-w: clamp(calc(var(--ps-h) / 2), calc(var(--ps-h) / var(--pic-r)), calc(50vw - 54px)) !important;
+    width: calc(var(--pic-w) + 72px) !important;
+  }
+}
+/* (THE POSTSCRIPTS STAND AT THEIR OWN WIDTHS ends) */
