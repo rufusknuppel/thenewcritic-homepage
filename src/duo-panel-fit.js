@@ -6912,9 +6912,15 @@
                 measureCtx.font = lcs.fontStyle + ' ' + lcs.fontWeight + ' ' + lcs.fontSize + ' ' + lcs.fontFamily;
                 var lm = measureCtx.measureText((lh.textContent || '').trim());
                 var lb = lrr.top + (lrr.height - (lm.fontBoundingBoxAscent + lm.fontBoundingBoxDescent)) / 2 + lm.fontBoundingBoxAscent;
-                var lShift = (bandFoot + 72) - (lb - lm.actualBoundingBoxAscent);
+                // THE LATEST IN THE TOP RIGHT (2026-09-24, at the user's
+                // word): from 1024 up the name stands beside the lead card,
+                // not over it — its caps 36 under the subscribe strip, as
+                // the lead card's picture is (seatSectionHeads puts its ink
+                // 36 from the window's right edge).
+                var lWide = !ONE_COL.matches;
+                var lShift = (bandFoot + (lWide ? ROW_GAP : 72)) - (lb - lm.actualBoundingBoxAscent);
                 lh.style.top = ((parseFloat(lh.style.top) || 0) + lShift).toFixed(2) + 'px';
-                firstAt = lb + lShift + ROW_GAP;
+                firstAt = lWide ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
               }
             }
             rowDelta = firstAt - ink.t; hasJob = true;
@@ -10041,8 +10047,21 @@
           measureCtx.font = lcs.fontStyle + ' ' + lcs.fontWeight + ' ' + lcs.fontSize + ' ' + lcs.fontFamily;
           var ch0 = (lh.textContent || '').trim().charAt(0);
           if (lcs.textTransform === 'uppercase') ch0 = ch0.toUpperCase();
-          var bear = measureCtx.measureText(ch0).actualBoundingBoxLeft || 0;
-          lSeat = Math.round(lr.left + PIC_IN + sx) - sx - lBox.getBoundingClientRect().left + bear;
+          // (THE LATEST IN THE TOP RIGHT, 2026-09-24: its LAST letter's
+          // ink 36 from the window's right edge — the tracking laid after
+          // it and its own right bearing taken off; the lead card stands
+          // on the left beside it)
+          var txt = (lh.textContent || '').trim();
+          if (lcs.textTransform === 'uppercase') txt = txt.toUpperCase();
+          var tn = document.createTreeWalker(lh, NodeFilter.SHOW_TEXT), nd, lastNode = null, lastAt = -1;
+          while ((nd = tn.nextNode())) for (var ci = 0; ci < nd.nodeValue.length; ci++) if (nd.nodeValue.charAt(ci).trim()) { lastNode = nd; lastAt = ci; }
+          if (lastNode) {
+            var crg = document.createRange(); crg.setStart(lastNode, lastAt); crg.setEnd(lastNode, lastAt + 1);
+            var cb = crg.getBoundingClientRect();
+            var inkR = cb.left + (measureCtx.measureText(txt.charAt(txt.length - 1)).actualBoundingBoxRight || 0);
+            var nowL = parseFloat(lcs.left) || 0;
+            lSeat = nowL + (document.documentElement.clientWidth - 36 - inkR);
+          }
         }
       }
     }
