@@ -1454,9 +1454,12 @@ function tickerLines() { return [
   `For <strong class="sub-ticker-price">${escapeHtml(SUBSCRIBE_PITCH_PARTS[1])}</strong>${escapeHtml(', hundreds of paid readers get access to Postscript, our interview series; Contra, our criticism section; and exclusive New Critic parties.')}`,
 ]; }
 function subTicker(where = 'head') {
-  const unit = tickerLines().map((l) => `<b>Subscribe</b><span>${l}</span>`).join('');
-  const half = `<span class="sub-ticker-half">${unit}${unit}</span>`;
-  return `<a class="sub-ticker sub-ticker--${where}" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true">${half}${half}</span></a>`;
+  // ONE SUBSCRIBE, STILL (2026-09-24, at the user's word): the pitch
+  // lines are off the strip and it no longer runs — the one word
+  // stands at its centre (style.css, ONE SUBSCRIBE IN THE MIDDLE).
+  // (tickerLines is left, unused, should the pitch come back.)
+  const half = '<span class="sub-ticker-half"><b>Subscribe</b></span>';
+  return `<a class="sub-ticker sub-ticker--${where}" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true">${half}</span></a>`;
 }
 
 function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {}) {

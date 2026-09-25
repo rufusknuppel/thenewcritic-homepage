@@ -20791,3 +20791,17 @@ main.has-mega .m--latest > .movement-body > .latest-head:is(*, .r.r.r.r.r.r.r.r.
   }
 }
 /* (THE STEP RUNS ON THROUGH THE SECTIONS ends) */
+
+/* ---------- ONE SUBSCRIBE IN THE MIDDLE (2026-09-24) ----------
+   The subscribe strips are still: no pitch, no run — SUBSCRIBE alone,
+   centred on the window (build.js, subTicker, gives the run one word). */
+main.has-mega .sub-ticker > .sub-ticker-run:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  animation: none !important;
+  transform: none !important;
+  width: 100% !important;
+  justify-content: center !important;
+}
+main.has-mega .sub-ticker .sub-ticker-half > b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  padding: 0 !important;
+}
+/* (ONE SUBSCRIBE IN THE MIDDLE ends) */
