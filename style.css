@@ -20807,21 +20807,47 @@ main.has-mega .sub-ticker .sub-ticker-half > b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
 }
 /* (ONE SUBSCRIBE IN THE MIDDLE ends) */
 
-/* ---------- THE POSTSCRIPTS STAND AT THEIR OWN WIDTHS (2026-09-24) ----------
-   From 1024 up a postscript's picture keeps its height (the card's,
-   ONE LINE OF POSTS, less its two 36 bands: --ps-h) and takes its
-   original's proportions across: its width is that height over --pic-r
-   (height over width, off the file's _WxH — build.js), no narrower than
-   half its height and no wider than an essay (half the window less 54).
-   The pair seats read the card's own --pic-w, so a left-hand picture
-   still ends 18 short of the page's middle and a right-hand one starts
-   18 past it, whatever their widths. Under 1024 they keep the phone's
-   shape. */
+
+/* ---------- EVERY PICTURE FILLS THE SCREEN IN ITS SHAPE (2026-09-24) ----------
+   From 1024 up every picture is as big as its shape allows inside one
+   standard screen: no wider than its half of the page (half the window
+   less 54 — 666 at 1440), and no taller than the window under the
+   head band and the subscribe strip, less 36 over and under it
+   (--fit-h: 720 at 1440 by 900). Each keeps its kind's shape:
+   - an essay LANDSCAPE: the half's full width, its own proportions
+     down the page between 2:1 and 4:3 (the cap was 4:5 portrait, THE
+     ESSAY'S PICTURE STANDS AT ITS OWN HEIGHT);
+   - a postscript PORTRAIT: as tall as the screen allows, its own
+     proportions held between 4:5 and 2:3 (--pic-r, off the file's
+     _WxH; 4:5 where none is known), so a landscape original is cropped
+     to 4:5 rather than laid on its side (THE POSTSCRIPTS STAND AT THEIR
+     OWN WIDTHS, an hour old, is folded in here: the pair seats read the
+     card's own --pic-w, so a left-hand picture still ends 18 short of
+     the page's middle and a right-hand one starts 18 past it);
+   - a review SQUARE: the half's width or the screen's height, whichever
+     is less.
+   The steps (36 over, 36 across) are the fitter's, off the pictures as
+   they stand. Under 1024 the phone's shapes stand. */
 @media (min-width: 1024px){
-  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--kind-postscript.card--true-w:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    --ps-h: calc(1.21 * 0.75 * (0.9 * max(calc(56vw - 229.86px), calc((100vw - 240px) * 2 / 3 - 108px)) - 72px));
-    --pic-w: clamp(calc(var(--ps-h) / 2), calc(var(--ps-h) / var(--pic-r)), calc(50vw - 54px)) !important;
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --fit-w: calc(50vw - 54px);
+    --fit-h: calc(100svh - var(--band-h, 72px) - 36px - 72px);
+  }
+  body:not(.word-page) main.has-mega .card--mega.card--true-h .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pic-cap: min(calc(var(--pic-w) * 3 / 4), var(--fit-h)) !important;
+  }
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--kind-postscript.card--kind-postscript:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --ps-r: clamp(1.25, var(--pic-r, 1.25), 1.5);
+    --ps-h: min(var(--fit-h), calc(var(--fit-w) * var(--ps-r)));
+    --pic-w: calc(var(--ps-h) / var(--ps-r)) !important;
+    width: calc(var(--pic-w) + 72px) !important;
+  }
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--kind-postscript.card--kind-postscript .duo-half--mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    height: calc(var(--ps-h) + 72px) !important;
+  }
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega.card--kind-contra.card--kind-contra:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pic-w: min(var(--fit-w), var(--fit-h)) !important;
     width: calc(var(--pic-w) + 72px) !important;
   }
 }
-/* (THE POSTSCRIPTS STAND AT THEIR OWN WIDTHS ends) */
+/* (EVERY PICTURE FILLS THE SCREEN IN ITS SHAPE ends) */
