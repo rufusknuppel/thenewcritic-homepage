@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=109c37be">
+<link rel="stylesheet" href="style.css?v=deadae94">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -2924,7 +2924,9 @@
     var wb = wm.getBoundingClientRect();
     var ink1 = i1.right - i1.left;
     void vw;
-    name.style.transform = 'translateX(' + (wb.left + (wb.width - ink1) / 2 - i1.left).toFixed(2) + 'px)';
+    var headL = headLeftOf(wm);
+    var inkAt = headL != null ? wb.left + headL : wb.left + (wb.width - ink1) / 2;
+    name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
     var size = parseFloat(ncs.fontSize) || 0;
     var text = (name.textContent || '').trim();
@@ -4424,6 +4426,7 @@
     step('inkCenterDeks', inkCenterDeks);
     step('seatBandMid', seatBandMid);
     step('fitGroundStops', fitGroundStops);
+    step('seatSectionHeads', seatSectionHeads);
     step('fitSubscribeName', fitSubscribeName);
     step('fitWordSpacers', fitWordSpacers);
     step('fitContraGap', fitContraGap);
@@ -6432,6 +6435,52 @@
       });
     });
   }
+  var PIC_IN = 24;
+  function seatSectionHeads() {
+    var bands = [].slice.call(document.querySelectorAll('main.has-mega .movement > .page-banner--section'));
+    var sx = window.scrollX || 0;
+    var seats = bands.map(function (band) {
+      if (ONE_COL.matches) return null;
+      var card = band.parentElement && band.parentElement.querySelector('.card--mega');
+      if (!card) return null;
+      var r = card.getBoundingClientRect();
+      if (!r.width) return undefined;
+      return Math.round(r.left + PIC_IN + sx) - sx - band.getBoundingClientRect().left;
+    });
+    bands.forEach(function (band, i) {
+      var v = seats[i];
+      if (v === undefined) return;
+      if (v === null) { band.classList.remove('has-head-l'); band.style.removeProperty('--head-l'); return; }
+      band.style.setProperty('--head-l', v.toFixed(2) + 'px');
+      band.classList.add('has-head-l');
+    });
+  }
+  function headLeftOf(band) {
+    if (!band || !band.classList || !band.classList.contains('has-head-l')) return null;
+    var v = parseFloat(band.style.getPropertyValue('--head-l'));
+    return isFinite(v) ? v : null;
+  }
+  function tagInkIn(band, below) {
+    var hl = headLeftOf(band);
+    if (hl == null) return null;
+    var walker = document.createTreeWalker(below, NodeFilter.SHOW_TEXT);
+    var node, at = -1;
+    while ((node = walker.nextNode())) {
+      var tx = node.nodeValue;
+      for (var i = 0; i < tx.length; i++) if (tx.charAt(i).trim()) { at = i; break; }
+      if (at >= 0) break;
+    }
+    if (!node || at < 0) return null;
+    var rg = document.createRange(); rg.setStart(node, at); rg.setEnd(node, at + 1);
+    var a = rg.getBoundingClientRect();
+    var cs = getComputedStyle(node.parentElement || below);
+    measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var ch = node.nodeValue.charAt(at);
+    if (cs.textTransform === 'uppercase') ch = ch.toUpperCase();
+    var inkLeft = a.left - (measureCtx.measureText(ch).actualBoundingBoxLeft || 0);
+    var now = parseFloat(below.style.getPropertyValue('--tag-in')) || 0;
+    return now + (band.getBoundingClientRect().left + hl - inkLeft);
+  }
   function fitSubscribeLines() {
     fitLatestStack();
     fitBandNameMid();
@@ -6449,7 +6498,10 @@
         measureCtx.font = ncs2.fontStyle + ' ' + ncs2.fontWeight + ' ' + ncs2.fontSize + ' ' + ncs2.fontFamily;
         var nDesc = measureCtx.measureText('p').actualBoundingBoxDescent || 0;
         var t0 = parseFloat(getComputedStyle(below).top) || 0;
+        var tagIn = tagInkIn(band, below);
         below.style.top = (t0 + (nb.base + nDesc + SECTION_DEK_GAP) - db.cap).toFixed(2) + 'px';
+        if (tagIn == null) below.style.removeProperty('--tag-in');
+        else below.style.setProperty('--tag-in', tagIn.toFixed(2) + 'px');
         return;
       }
       var nr = inkReach(name), lr = inkReach(below);

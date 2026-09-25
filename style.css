@@ -20671,3 +20671,39 @@ main.has-mega .page-rows > .section-band > .theme-toggle--wm > :is(.theme-toggle
   }
 }
 /* (LIGHT / DARK BESIDE THE NAME ends) */
+
+
+/* ---------- THE SECTIONS' HEADS STAND OVER THEIR FIRST PICTURE (2026-09-24) ----------
+   ESSAYS, POSTSCRIPT and CONTRA are set as the name at the head of the
+   page is: the Helvetica, bold, in capitals, tracked 0.03em (the
+   wordmark's own voice; the size stays the fitter's 54, SECTION_HEAD).
+   The tag under each keeps its Garamond italic.
+   And the name and its tag no longer stand on the page's middle: from
+   1024 up both range LEFT, their ink's left edge on the left edge of
+   the picture nearest under them — the section's first card's, on
+   whichever side of the gutter it stands (build.js deals the sides).
+   seatSectionHeads (src/duo-panel-fit.js) reads that edge off the card
+   (its left and the card's first 24) on the whole pixel, as
+   snapPictures seats the picture, and states it on the band as
+   --head-l with .has-head-l; fillNameBand then seats the name's ink on
+   it, and fitSubscribeLines the tag's first letter's ink, through
+   --tag-in. Under 1024 (ONE COLUMN ON A PHONE) no edge is stated and
+   both stay centred, as before. */
+main.has-mega .page-banner--section > .banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  font-family: helvetica-neue-lt-pro, nimbus-sans, neue-haas-grotesk-display, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+@media (min-width: 1024px){
+  main.has-mega .page-banner--section.has-head-l > .banner-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    text-align: left !important;
+    padding-left: var(--head-l, 0px) !important;
+  }
+  main.has-mega .page-banner--section.has-head-l > .banner-line--below:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    text-align: left !important;
+    padding-left: calc(var(--head-l, 0px) + var(--tag-in, 0px)) !important;
+    padding-right: 36px !important;
+  }
+}
+/* (THE SECTIONS' HEADS STAND OVER THEIR FIRST PICTURE ends) */
