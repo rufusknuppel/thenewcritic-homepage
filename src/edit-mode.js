@@ -6,7 +6,9 @@
 // itself on letting go (the fitter's 36s hold, so where a picture
 // starts DOWN the page is still the rules', and a picture made taller
 // from the top grows downward once let go). Double-click a handle to
-// give that picture back its kind's size and seat. SAVE sends every
+// give that picture back its kind's size and seat. Press anywhere else
+// on a picture and drag to move it whole: across, and down or up by an
+// offset from where the rules would seat it (the cards under it follow). SAVE sends every
 // size to the dev server (serve.js, PUT /__layout), which writes
 // layout-overrides.json and rebuilds; the page reloads on the new
 // build, still in edit mode. A size is kept as x, the picture's left
@@ -47,7 +49,8 @@
     'font:12px/1 Courier,monospace;text-transform:uppercase;color:#fff;background:#121417;border:1px solid #1184C4;padding:8px 10px}' +
     '.nc-edit-bar button{font:inherit;text-transform:inherit;color:#121417;background:#fff;border:0;padding:6px 8px;cursor:pointer}' +
     '.nc-edit-bar button.is-go{background:#1184C4;color:#fff}' +
-    '.nc-edit-dirty .nc-edit-bar{border-color:#fff}';
+    '.nc-edit-dirty .nc-edit-bar{border-color:#fff}' +
+    '.nc-edit-on main.has-mega .card--mega .card-title.hl-rect.rx::before,.nc-edit-on main.has-mega .card--mega .latest-title.hl-rect.rx::before{cursor:move}';
   document.head.appendChild(style);
 
   var bar = document.createElement('div');
@@ -72,7 +75,7 @@
       h.el.hidden = false;
       var x = h.c.charAt(1) === 'l' ? p.l : p.l + p.w;
       var y = h.c.charAt(0) === 't' ? p.t : p.t + p.h;
-      h.el.style.left = (x + scrollX - HANDLE / 2) + 'px';
+      h.el.style.left = (Math.max(0, Math.min(document.documentElement.clientWidth - HANDLE, x - HANDLE / 2)) + scrollX) + 'px';
       h.el.style.top = (y + scrollY - HANDLE / 2) + 'px';
     });
   }
@@ -93,6 +96,7 @@
     card.classList.add('card--ov', 'card--ovx');
   }
   function clearSize(card) {
+    card.style.removeProperty('--ov-dy');
     card.style.removeProperty('--ov-x');
     card.style.removeProperty('--ov-w');
     card.style.removeProperty('--ov-r');
@@ -168,6 +172,8 @@
       if (w > 0 && r > 0) {
         var o = { w: +w.toFixed(5), r: +r.toFixed(5) };
         if (x >= 0) o.x = +x.toFixed(5);
+        var dy = parseFloat(card.style.getPropertyValue('--ov-dy'));
+        if (dy) o.dy = +dy.toFixed(5);
         out[card.getAttribute('data-slug')] = o;
       }
     });
@@ -198,6 +204,74 @@
         });
     }
   });
+
+  var own = function (t) { return t && t.closest && t.closest('.nc-edit-handle, .nc-edit-bar'); };
+  // THE WHOLE PICTURE MOVES (2026-09-24): pressed anywhere on a picture
+  // (not a handle), it follows the hand — across, its left edge (x);
+  // down or up, an offset from the seat the rules give it (dy, a share
+  // of the window's width), which the fitter adds to its seat, so the
+  // cards under it re-seat round it (seatRowGaps). While it is carried
+  // it rides on a translate; on letting go the offset is stated and the
+  // page re-seats.
+  root.classList.add('nc-edit-on');
+  window.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0 || !wide() || own(e.target)) return;
+    var hit = null, p = null;
+    cards().some(function (card) {
+      var q = picOf(card);
+      if (q && e.clientX >= q.l && e.clientX <= q.l + q.w && e.clientY >= q.t && e.clientY <= q.t + q.h) { hit = card; p = q; return true; }
+      return false;
+    });
+    if (!hit) return;
+    e.preventDefault(); e.stopPropagation();
+    var card = hit, x0 = e.clientX, y0 = e.clientY, W = window.innerWidth;
+    var dy0 = parseFloat(card.style.getPropertyValue('--ov-dy')) || 0;
+    var moved = false;
+    var move = function (ev) {
+      var dx = ev.clientX - x0, dy = ev.clientY - y0;
+      if (!moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+      moved = true;
+      var l = Math.max(0, Math.min(W - p.w, p.l + dx));
+      setSize(card, l, p.w, p.h);
+      card.style.translate = '0 ' + dy + 'px';
+      label.hidden = false;
+      label.textContent = 'x ' + Math.round(l) + ' · ' + (dy >= 0 ? '+' : '') + Math.round(dy);
+      label.style.left = (ev.clientX + scrollX + 14) + 'px';
+      label.style.top = (ev.clientY + scrollY + 14) + 'px';
+      queue();
+    };
+    var up = function (ev) {
+      window.removeEventListener('pointermove', move, true);
+      window.removeEventListener('pointerup', up, true);
+      label.hidden = true;
+      card.style.translate = '';
+      if (!moved) return;
+      var dy = ev.clientY - y0;
+      card.style.setProperty('--ov-dy', (dy0 + dy / W).toFixed(5));
+      dirty();
+      refit();
+    };
+    window.addEventListener('pointermove', move, true);
+    window.addEventListener('pointerup', up, true);
+  }, true);
+
+  // THE PAGE HOLDS STILL WHILE IT IS EDITED: a click anywhere but on a
+  // handle or the bar opens nothing — no post, no preview — so a missed
+  // handle cannot take the reader out of the edit mode. (Caught on the
+  // way down, before any of the page's own listeners.)
+  ['click', 'auxclick', 'dblclick', 'mousedown', 'mouseup', 'pointerup'].forEach(function (type) {
+    window.addEventListener(type, function (e) {
+      if (own(e.target)) return;
+      if (type === 'click' || type === 'auxclick' || e.target.closest && e.target.closest('a, button, [role=button], .card')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  });
+  // (and a link that would open another way — Enter on a focused one)
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target && e.target.closest && e.target.closest('a') && !own(e.target)) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();

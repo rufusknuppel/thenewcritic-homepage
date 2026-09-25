@@ -5571,6 +5571,8 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
+        var ovDy = ONE_COL.matches ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
+        if (ovDy && hasJob) rowDelta += ovDy * window.innerWidth;
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = stepped && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);

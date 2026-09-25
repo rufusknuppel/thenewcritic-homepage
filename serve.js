@@ -56,6 +56,10 @@ function saveLayout(req, res) {
         if (!(+v.x >= 0 && +v.x <= 1)) return reply(400, { ok: false, error: 'bad x ' + slug });
         clean[slug].x = +(+v.x).toFixed(5);
       }
+      if (v.dy != null) {
+        if (!(Math.abs(+v.dy) < 5)) return reply(400, { ok: false, error: 'bad dy ' + slug });
+        clean[slug].dy = +(+v.dy).toFixed(5);
+      }
     }
     fs.writeFileSync(path.join(__dirname, 'layout-overrides.json'), JSON.stringify(clean, null, 2) + '\n');
     execFile(process.execPath, [path.join(__dirname, 'build.js')], { cwd: __dirname, timeout: 120000 }, (err, stdout, stderr) => {

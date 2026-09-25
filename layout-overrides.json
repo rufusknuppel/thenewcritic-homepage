@@ -1,6 +1,17 @@
 {
   "mrbeast-slop-auteur": {
-    "w": 0.56928,
-    "r": 0.76093
+    "w": 0.63555,
+    "r": 0.63024,
+    "x": 0.025
+  },
+  "jasmine-suns-project-of-self-transformation": {
+    "w": 0.28212,
+    "r": 1.56926,
+    "x": 0.69011
+  },
+  "the-unstageable": {
+    "w": 0.30325,
+    "r": 1.08032,
+    "x": 0.35994
   }
 }

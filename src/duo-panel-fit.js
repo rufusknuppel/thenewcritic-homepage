@@ -7064,6 +7064,11 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
+        // (A PICTURE MOVED BY HAND, 2026-09-24: the edit mode's offset,
+        // --ov-dy, a share of the window's width, is added to the seat the
+        // rules give it, and the cards under it seat from where it stands)
+        var ovDy = ONE_COL.matches ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
+        if (ovDy && hasJob) rowDelta += ovDy * window.innerWidth;
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = stepped && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
