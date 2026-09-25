@@ -73,7 +73,7 @@
     }
   };
   var store = function (mode) {
-    try { localStorage.setItem('nc-theme', mode); } catch (err) {}
+    try { localStorage.setItem('nc-mode', mode); } catch (err) {}
   };
   var storeMark = function (hex) {
     try {
@@ -92,7 +92,9 @@
         localStorage.removeItem('nc-hex-auto');
       } catch (e2) {}
     }
-    paint(theme === 'light' ? 'light' : 'dark');
+    var chosen = null;
+    try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
+    paint(chosen === 'light' ? 'light' : 'dark');
   } catch (e) {}
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));

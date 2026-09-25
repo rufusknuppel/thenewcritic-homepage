@@ -3062,7 +3062,7 @@ function renderFontGateScript() {
     }
   };
   var store = function (mode) {
-    try { localStorage.setItem('nc-theme', mode); } catch (err) {}
+    try { localStorage.setItem('nc-mode', mode); } catch (err) {}
   };
   var storeMark = function (hex) {
     try {
@@ -3091,7 +3091,12 @@ function renderFontGateScript() {
     // at the user's word): the page stands on the charcoal, the words
     // white; the Light · Dark toggle beside the wordmark turns it over,
     // and a reader's stored Light is kept.
-    paint(theme === 'light' ? 'light' : 'dark');
+    // (A NEW KEY, nc-mode: a Light stored under nc-theme by the old
+    // margin words — or written by the hex readers' move home above —
+    // predates the dark default and is not a choice made against it.)
+    var chosen = null;
+    try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
+    paint(chosen === 'light' ? 'light' : 'dark');
   } catch (e) {}
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
   // paints that mark for this view only — nothing is stored, and the
