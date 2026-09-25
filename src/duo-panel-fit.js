@@ -9963,6 +9963,29 @@
       if (!r.width) return undefined;
       return Math.round(r.left + PIC_IN + sx) - sx - band.getBoundingClientRect().left;
     });
+    // THE LATEST TOO (2026-09-24, at the user's word): its name (no tag
+    // under it) stands over the lead card's picture the same way — its
+    // first letter's ink on that picture's left edge. It is placed
+    // absolutely in the movement's body, so the edge is stated from
+    // that box, less the glyph's own bearing, read in the Helvetica.
+    var lh = document.querySelector('main.has-mega .m--latest > .movement-body > .latest-head');
+    var lSeat;
+    if (lh) {
+      var lCard = lh.parentElement.querySelector('.card--mega');
+      var lBox = lh.offsetParent;
+      if (ONE_COL.matches || !lCard || !lBox) lSeat = null;
+      else {
+        var lr = lCard.getBoundingClientRect();
+        if (lr.width) {
+          var lcs = getComputedStyle(lh);
+          measureCtx.font = lcs.fontStyle + ' ' + lcs.fontWeight + ' ' + lcs.fontSize + ' ' + lcs.fontFamily;
+          var ch0 = (lh.textContent || '').trim().charAt(0);
+          if (lcs.textTransform === 'uppercase') ch0 = ch0.toUpperCase();
+          var bear = measureCtx.measureText(ch0).actualBoundingBoxLeft || 0;
+          lSeat = Math.round(lr.left + PIC_IN + sx) - sx - lBox.getBoundingClientRect().left + bear;
+        }
+      }
+    }
     bands.forEach(function (band, i) {
       var v = seats[i];
       if (v === undefined) return;
@@ -9970,6 +9993,10 @@
       band.style.setProperty('--head-l', v.toFixed(2) + 'px');
       band.classList.add('has-head-l');
     });
+    if (lh && lSeat !== undefined) {
+      if (lSeat === null) { lh.classList.remove('has-head-l'); lh.style.removeProperty('--head-l'); }
+      else { lh.style.setProperty('--head-l', lSeat.toFixed(2) + 'px'); lh.classList.add('has-head-l'); }
+    }
   }
   function headLeftOf(band) {
     if (!band || !band.classList || !band.classList.contains('has-head-l')) return null;
