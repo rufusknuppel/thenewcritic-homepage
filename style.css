@@ -20859,3 +20859,16 @@ main.has-mega .sub-ticker .sub-ticker-half > b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
   }
 }
 /* (EVERY PICTURE FILLS THE SCREEN IN ITS SHAPE ends) */
+
+
+/* ---------- THE HEADS AT THE NAME'S SIZE (2026-09-24) ----------
+   From 1024 up ESSAYS, POSTSCRIPT, CONTRA and THE LATEST stand at the
+   size of the Helvetica in the header's THE NEW CRITIC (the band's
+   miniature: --wm-size, stated by band-mark.js; the fitter caps the
+   sections' names at it, sectionHeadSize). Under 1024 they keep theirs. */
+@media (min-width: 1024px){
+  main.has-mega .m--latest > .movement-body > .latest-head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    font-size: var(--wm-size, 54px) !important;
+  }
+}
+/* (THE HEADS AT THE NAME'S SIZE ends) */

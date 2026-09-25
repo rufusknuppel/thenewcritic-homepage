@@ -85,6 +85,14 @@
     var c = B / (2 * r + 1);            // the miniature's caps, same ratio in the band
     var s = c / scanned.above;          // and the size that prints them
     mini.style.fontSize = s.toFixed(3) + 'px';
+    // (the sections' heads stand at this size from 1024 up — THE HEADS
+    // AT THE NAME'S SIZE, duo-panel-fit.js and style.css — so it is
+    // stated on the root, and a change asks the fitter for a pass)
+    var was = parseFloat(document.documentElement.style.getPropertyValue('--wm-size')) || 0;
+    if (Math.abs(was - s) > 0.01) {
+      document.documentElement.style.setProperty('--wm-size', s.toFixed(3) + 'px');
+      if (window.__ncRequestFit) window.__ncRequestFit();
+    }
     mini.style.transform = 'none';
     // The cap top's seat inside the miniature's own box: the baseline
     // off a zero probe, the caps' reach above it from the scan.

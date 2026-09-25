@@ -3788,7 +3788,7 @@
       // ticker; the tag under each a dek (fitSubscribeLines), the first
       // row 36 under that (seatRowGaps). style.css, THE SECTIONS' NAMES.
       var isSection = band.classList.contains('page-banner--section');
-      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: isSection ? SECTION_HEAD : wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: isSection ? sectionHeadSize() : wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
       // (its caps to the pixel by the face's own bounds, as THE LATEST's
       // are: the fill seats them by its scan, a hair off)
       if (isSection) {
@@ -8116,6 +8116,9 @@
     if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
     fitAll();
   }
+  // (band-mark.js asks for a pass when the header's name changes size:
+  // the sections' heads are set to it — THE HEADS AT THE NAME'S SIZE)
+  window.__ncRequestFit = function () { requestFit(); };
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
@@ -8198,6 +8201,15 @@
   // A LINE'S BASELINE AND CAP (2026-09-23): the first line's baseline
   // off a zero probe, its caps' painted top off the face's own bounds.
   var SECTION_HEAD = 54, SECTION_DEK_GAP = 18, SECTION_ROW_GAP = 36;
+  // THE HEADS AT THE NAME'S SIZE (2026-09-24, at the user's word): from
+  // 1024 up the sections' names stand at the size of the Helvetica in
+  // the header's THE NEW CRITIC — the band's miniature, whose size
+  // band-mark.js states on the root as --wm-size; 54 until it has.
+  function sectionHeadSize() {
+    if (ONE_COL.matches) return SECTION_HEAD;
+    var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-size'));
+    return v > 0 ? v : SECTION_HEAD;
+  }
   function baselineOf(el) {
     var t = (el.textContent || '').trim();
     if (!t) return null;
