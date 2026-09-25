@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e11b00ab">
+<link rel="stylesheet" href="style.css?v=5ab7329f">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -3535,7 +3535,7 @@
         }
       }
       var isSection = band.classList.contains('page-banner--section');
-      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: isSection ? SECTION_HEAD : wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
+      var fitted = fillNameBand(band.querySelector('.banner-name'), band, { maxSize: isSection ? sectionHeadSize() : wordCap, air: airTop + extraTop, airBottom: airBot + extraBot, side: BANNER_SIDE });
       if (isSection) {
         var sn = band.querySelector('.banner-name'), snb = sn && baselineOf(sn);
         if (snb) {
@@ -6159,6 +6159,7 @@
     if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
     fitAll();
   }
+  window.__ncRequestFit = function () { requestFit(); };
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
@@ -6184,6 +6185,11 @@
     return scanG;
   }
   var SECTION_HEAD = 54, SECTION_DEK_GAP = 18, SECTION_ROW_GAP = 36;
+  function sectionHeadSize() {
+    if (ONE_COL.matches) return SECTION_HEAD;
+    var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-size'));
+    return v > 0 ? v : SECTION_HEAD;
+  }
   function baselineOf(el) {
     var t = (el.textContent || '').trim();
     if (!t) return null;
@@ -8147,6 +8153,11 @@
     var c = B / (2 * r + 1);            // the miniature's caps, same ratio in the band
     var s = c / scanned.above;          // and the size that prints them
     mini.style.fontSize = s.toFixed(3) + 'px';
+    var was = parseFloat(document.documentElement.style.getPropertyValue('--wm-size')) || 0;
+    if (Math.abs(was - s) > 0.01) {
+      document.documentElement.style.setProperty('--wm-size', s.toFixed(3) + 'px');
+      if (window.__ncRequestFit) window.__ncRequestFit();
+    }
     mini.style.transform = 'none';
     var probe = document.createElement('span');
     probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
