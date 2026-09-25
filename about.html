@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5ab7329f">
+<link rel="stylesheet" href="style.css?v=dd252844">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4566,6 +4566,18 @@
     return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36, l: r.left + 36, r: r.right - 36 } : null;
   }
   var PAIR_STEP = 36;
+  function picSpanOf(row) {
+    var t = row.querySelector('.card-title.hl-rect.rx, .latest-title.hl-rect.rx');
+    if (!t) return null;
+    var c = getComputedStyle(t, '::before');
+    if (c.content === 'none') return null;
+    var r = t.getBoundingClientRect(), l = r.left + (parseFloat(c.left) || 0), w = parseFloat(c.width) || 0;
+    return w > 0 ? { l: l, r: l + w } : null;
+  }
+  function sharesWidth(a, b) {
+    var sa = picSpanOf(a), sb = picSpanOf(b);
+    return !!(sa && sb && sa.l < sb.r + PAIR_STEP - 0.5 && sb.l < sa.r + PAIR_STEP - 0.5);
+  }
   function seatRowGaps() {
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
@@ -4613,7 +4625,8 @@
         var side = row.classList.contains('card--align-r') ? 'r' : 'l';
         var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
           && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
-          && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l');
+          && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l')
+          && !sharesWidth(prev, row);
         if (stepped) {
           rowDelta = (prevPic.t + Math.round(prevPic.b - prevPic.t) - PAIR_STEP) - (pic.t + acc);
           var topNow = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
@@ -4675,7 +4688,7 @@
           });
           return f;
         };
-        if (sBan && first && lastPic && firstPic && sideOf(first) !== sideOf(last)) {
+        if (sBan && first && lastPic && firstPic && sideOf(first) !== sideOf(last) && !sharesWidth(last, first)) {
           var d = (lastPic.t + Math.round(lastPic.b - lastPic.t) - PAIR_STEP) - firstPic.t;
           var headTop = Infinity;
           [].forEach.call(sBan.querySelectorAll('.banner-name, .banner-line--below'), function (k) {
