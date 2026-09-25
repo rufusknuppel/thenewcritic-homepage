@@ -24,7 +24,10 @@
    blue. The charcoal still stands on it — 4.5 to 1 against the
    white's 4.1 — which is what the head script's contrast rule picks
    too.) */
-:root{ --nc-mark: #1184C4; }
+/* (…AND THE BANANA FOR GOOD, 2026-09-25, at the user's word: every
+   blue on the site is the banana yellow — the mark, the ticker's strip,
+   the hovers, the stamp's — one token still.) */
+:root{ --nc-mark: #FFE135; }
 
 
 /* One carried face and one system one. Titles, display cuts and the
@@ -19317,7 +19320,7 @@ main.has-mega .duo-half--mega > .swap-body *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 }
 main.has-mega :is(.duo-half--mega.is-inbox .duo-card-image, .latest-cell--ps.is-inbox .latest-cover, .latest-cell--contra.is-inbox .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   color: var(--nc-mark) !important;
-  content: 'Read Now\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%231184C4' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  content: 'Read Now\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%23FFE135' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 
 
@@ -19627,9 +19630,12 @@ main.has-mega .sub-ticker .sub-ticker-half > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r
 }
 main.has-mega .sub-ticker:hover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .sub-ticker:hover :is(b, span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
-  background-color: var(--nc-mark, #1184C4) !important;
+  /* (turned over on the banana, 2026-09-25, at the user's word: the
+     word in the mark's yellow on WHITE — white on the yellow would not
+     read) */
+  color: var(--nc-mark, #FFE135) !important;
+  -webkit-text-fill-color: var(--nc-mark, #FFE135) !important;
+  background-color: #FFFFFF !important;
   box-shadow: none !important;
   outline: none !important;
 }
