@@ -11,6 +11,29 @@ const path = require('path');
 // Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
+// THE STAMP (2026-09-25, at the user's word): the hand-cut bird in its
+// frame, traced to one path from the print (assets/stamp.svg) and
+// stated once a page as a <symbol>; every stamp on the page is a <use>
+// of it, printed in the ink round it (fill: currentColor, so it turns
+// over with the theme). It is the band's own (src/band-mark.js): big in
+// the middle of the air under the name when the page opens, it comes
+// down into the band as the band rises over the name, and stands there
+// in the name's miniature's place; and it stands in the middle of the
+// reprint's ground over the name at the foot (renderPageFoot). THE
+// DATE AND THE LIGHT / DARK TOGGLE ARE STRUCK from the band (2026-09-25,
+// at the user's word): the middle is the stamp's.
+const STAMP = (() => {
+  const svg = fs.readFileSync(path.join(__dirname, 'assets', 'stamp.svg'), 'utf8');
+  const viewBox = (svg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 1 1';
+  const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
+  return { viewBox, inner };
+})();
+function renderStampDefs() {
+  return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
+}
+function stampHtml(cls) {
+  return `<svg class="nc-stamp ${cls}" viewBox="${STAMP.viewBox}" aria-hidden="true" focusable="false"><use href="#nc-stamp"/></svg>`;
+}
 // PICTURE SIZES SET BY HAND (2026-09-24): the edit mode (?edit on the
 // front page, src/edit-mode.js) drags a picture's corner and saves the
 // size here through the dev server (serve.js, PUT /__layout), keyed by
@@ -1338,8 +1361,9 @@ function bandDeks(m) {
   if (m === 'latest') {
     const by = (key) => SITE_LINKS.find((l) => l.key === key);
     const a = (l) => l ? `<a href="${escapeHtml(l.href)}"${l.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a>` : '';
-    return [a(by('archive')), a(by('about')), '<span class="nav-links-dead">Store</span>', '<span class="nav-links-dead">Events</span>',
-      `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`].filter(Boolean).join(BAND_SEP);
+    // (SUBSCRIBE is struck from the band, 2026-09-25, at the user's
+    // word: the ticker under the band carries it)
+    return [a(by('archive')), a(by('about')), '<span class="nav-links-dead">Store</span>', '<span class="nav-links-dead">Events</span>'].filter(Boolean).join(BAND_SEP);
   }
   const list = m === 'contra' ? CONTRA_CATEGORIES : RAIL_CATEGORIES;
   return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(BAND_SEP);
@@ -1487,8 +1511,7 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
     // under the band (src/band-mark.js).
     return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
     ${bandName(TYAM_LINK)}
-    <p class="band-deks band-dek">${mid && !bareMid ? `<span>${escapeHtml(mid)}</span>` : `<span class="band-date">${bandDate()}</span>`}</p>
-    <button type="button" class="theme-toggle theme-toggle--wm" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">/</span><span class="theme-toggle-dark">Dark</span></button>
+    <p class="band-deks band-dek">${mid && !bareMid ? `<span>${escapeHtml(mid)}</span>` : ''}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
   }
@@ -1533,6 +1556,7 @@ function renderPageFoot(onHome = false, onMark = false) {
   return `
   ${renderColophonBand()}
   <section class="reprint${mk}">
+    <a class="reprint-stamp-link" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">${stampHtml('reprint-stamp')}</a>
     <div class="reprint-rule" aria-hidden="true"></div>
     <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
   </section>
@@ -2914,7 +2938,7 @@ ${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
 <body>
-
+${renderStampDefs()}
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- (The site header — the wordmark — stands INSIDE the first
@@ -3758,7 +3782,7 @@ ${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
-
+${renderStampDefs()}
 <a class="skip-link" href="#main">Skip to content</a>
 
 ${bare ? '' : renderHeader(currentKey)}

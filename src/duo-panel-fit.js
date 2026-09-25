@@ -10110,6 +10110,16 @@
       if (k.left < l) l = k.left;
       if (k.right > r) r = k.right;
     }
+    // NOT EVERY WORD IN THE LIST IS A LINK EITHER (2026-09-25): STORE and
+    // EVENTS stand dead in the head band's list and carry no block to
+    // read ink from, and with SUBSCRIBE struck from the band's end the
+    // last link was no longer the last word — the list was seated on
+    // ABOUT and ran off the page. The run's own reach takes the dead
+    // words in, so the list's last word ends at the margin.
+    if (dek.querySelector('.nav-links-dead') && isFinite(l)) {
+      var rr = inFlowRun(dek);
+      if (rr) { if (rr.left < l) l = rr.left; if (rr.right > r) r = rr.right; }
+    }
     if (isFinite(t) && isFinite(l) && isFinite(r)) return { top: t, left: l, right: r };
     // NOT EVERY NAME IS A LINK (2026-09-19). The head band's name is
     // one and carries a block; the colophon's — EST. MAY 2025 — is a

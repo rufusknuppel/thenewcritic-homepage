@@ -20927,3 +20927,85 @@ main.has-mega .sub-ticker .sub-ticker-half > b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
   }
 }
 /* (SIZES SET BY HAND ends) */
+
+/* ---------- THE STAMP (2026-09-25) ----------
+   The hand-cut bird in its frame (assets/stamp.svg, traced from the
+   print; build.js, renderStampDefs) stands in the ink round it, and
+   turns over with the theme like every other mark. It is the band's
+   own (src/band-mark.js): big in the middle of the air between the
+   name and the band when the page opens, it comes down into the band
+   as the band rises over the name and stands in the name's
+   miniature's place — the band grown to 96 from 1024 up so the stamp's
+   cuts can be read. The date and the LIGHT / DARK toggle are struck
+   from the band; the middle is the stamp's. And it stands in the middle
+   of the reprint's ground over the name at the foot, in the name's own
+   charcoal: the reprint is white in either theme (THE CANVAS PAST EITHER
+   END), so it does not turn over there. */
+.nc-stamp-defs{ position: absolute; width: 0; height: 0; overflow: hidden; }
+svg.nc-stamp{ display: block; fill: currentColor; }
+main.has-mega .page-rows > .reprint > .reprint-stamp-link:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute; left: 50%;
+  top: calc(var(--close-gap, 0px) / 2);
+  transform: translate(-50%, -50%);
+  height: min(216px, calc(var(--close-gap, 0px) / 2));
+  width: auto;
+  display: block; line-height: 0;
+  color: #121417 !important;
+  background: none !important;
+}
+main.has-mega .page-rows > .reprint > .reprint-stamp-link > .reprint-stamp:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 100%; width: auto; }
+@media (min-width: 1024px){
+  main.has-mega .page-rows > .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 96px; }
+}
+main.has-mega .section-band > .band-mini--stamp:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ line-height: 0; letter-spacing: 0; transform-origin: 50% 50%; }
+main.has-mega .section-band > .band-mini--stamp > svg:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: block; width: 100%; height: 100%; }
+/* (the stamp is a link home, at rest and landed alike; under the hand,
+   or with the hand on the name it stands for, it turns BANANA YELLOW
+   (2026-09-25, at the user's word — it was the mark's blue for an
+   hour), and the name with it — the foot's pair the same) */
+main.has-mega{ --nc-banana: #FFE135; }
+main.has-mega .section-band > .band-mini--stamp:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: auto; cursor: pointer; }
+main.has-mega .section-band > .band-mini--stamp:is(:hover, :focus-visible, .is-cued):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint > .reprint-stamp-link:is(:hover, :focus-visible, .is-cued):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-banana, #FFE135) !important;
+  background: none !important;
+}
+body.has-mega .site-nav--top .topbar-wordmark.is-cued .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint > .reprint-name.is-cued:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-banana, #FFE135) !important;
+}
+/* THE GLIDE IS THE COMPOSITOR'S (2026-09-25): two animations on the
+   root's scroll, their numbers stated by src/band-mark.js on the stamp.
+   Over the first move (the scroll from the band's rest until the line
+   on the band where the stamp's foot will land reaches its foot) a
+   linear translate holds the stamp to the window while the band comes
+   up under it; over the second (to the band's top on the name's ink)
+   an eased transform carries it from its place and size to its seat
+   and the band's size, its foot riding the landing line. Past that
+   both hold, and the stamp is the band's. */
+@keyframes nc-stamp-lin{
+  from{ translate: 0 var(--st-t0, 0px); }
+  to{ translate: 0 var(--st-t1, 0px); }
+}
+@keyframes nc-stamp-ease{
+  from{ transform: translate(var(--st-x0, 0px), 0px) scale(var(--st-k0, 1)); }
+  to{ transform: translate(var(--st-x1, 0px), var(--st-e1, 0px)) scale(1); }
+}
+main.has-mega .section-band > .band-mini--stamp.is-gliding:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  animation-name: nc-stamp-lin, nc-stamp-ease;
+  animation-duration: auto, auto;
+  animation-timing-function: linear, ease-in-out;
+  animation-fill-mode: both, both;
+  animation-timeline: scroll(root block), scroll(root block);
+  animation-range: 0px var(--st-a, 0px), var(--st-a, 0px) var(--st-d, 0px);
+  transition: none !important;
+}
+/* (the name under the hand — its own hover, or its stamp's — is the
+   banana too, at the head and at the foot) */
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus-within, .is-cued) .topbar-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+body.has-mega .site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus-within, .is-cued) .topbar-name *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint > .reprint-name:is(:hover, :focus-visible, .is-cued):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .page-rows > .reprint:is(:focus-within) .reprint-name:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-banana, #FFE135) !important;
+  background: none !important;
+}
