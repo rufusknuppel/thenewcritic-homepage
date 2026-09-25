@@ -7033,6 +7033,57 @@
       // where it stands: 2026-09-23)
       while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !next.classList.contains('sub-ticker--foot')) next = next.nextElementSibling;
       if (!next) return;
+      // THE STEP RUNS ON THROUGH THE SECTIONS (2026-09-24, at the user's
+      // word): from 1024 up a section no longer stands 54 under the last
+      // one's ink — its first picture stands 36 over the foot of the last
+      // one's last picture, on the other side (build.js deals the sides so
+      // they alternate through the page), and its name and tag rise with
+      // it into the empty column beside that card. The section rises no
+      // higher than keeps its head 54 under every card over it in its own
+      // column, and its second card 54 under the last one's words. The
+      // whole movement moves (a margin on it, to the thousandth, as the
+      // pairs' steps are seated); the grounds are clear from 1024 up and
+      // each section stands under the one over it (style.css, THE STEP
+      // RUNS ON THROUGH THE SECTIONS).
+      if (next.classList.contains('movement') && !ONE_COL.matches) {
+        var sBan = next.querySelector(':scope > .page-banner');
+        var nBody = next.querySelector(':scope > .movement-body');
+        var nRows = nBody ? [].filter.call(nBody.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); }) : [];
+        var first = nRows[0], lastPic = picBoxOf(last), firstPic = first && picBoxOf(first);
+        var sideOf = function (r) { return r.classList.contains('card--align-r') ? 'r' : 'l'; };
+        var footOn = function (side) {
+          var f = -Infinity;
+          rows.forEach(function (r) {
+            if (sideOf(r) !== side) return;
+            var a3 = rowCourier(r), b3 = rowInk(r);
+            f = Math.max(f, a3 ? a3.b : -Infinity, b3 ? b3.b : -Infinity);
+          });
+          return f;
+        };
+        if (sBan && first && lastPic && firstPic && sideOf(first) !== sideOf(last)) {
+          var d = (lastPic.t + Math.round(lastPic.b - lastPic.t) - PAIR_STEP) - firstPic.t;
+          var headTop = Infinity;
+          [].forEach.call(sBan.querySelectorAll('.banner-name, .banner-line--below'), function (k) {
+            var rg = document.createRange(); rg.selectNodeContents(k);
+            [].forEach.call(rg.getClientRects(), function (x) { if (x.width > 0) headTop = Math.min(headTop, x.top); });
+          });
+          var headFoot = footOn(sideOf(first));
+          if (isFinite(headFoot) && isFinite(headTop)) d = Math.max(d, headFoot + COURIER_GAP - headTop);
+          var second = nRows[1];
+          if (second && sideOf(second) === sideOf(last)) {
+            var lastFoot = footOn(sideOf(last));
+            var sp = picBoxOf(second), sc = rowCourier(second), si = rowInk(second);
+            var sTop = Math.min(sp ? sp.t : Infinity, sc ? sc.t : Infinity, si ? si.t : Infinity);
+            if (isFinite(lastFoot) && isFinite(sTop)) d = Math.max(d, lastFoot + COURIER_GAP - sTop);
+          }
+          // (the strip it rises into: from its top, once moved, to the foot
+          // of the section above — less a pixel, so the two grounds meet
+          // over one and no seam of the page under them shows)
+          var over = mv.getBoundingClientRect().bottom - (next.getBoundingClientRect().top + d) - 1;
+          edges.push({ el: next, prop: 'margin-top', delta: d, m: parseFloat(getComputedStyle(next).marginTop) || 0, exact: true, over: over });
+          return;
+        }
+      }
       if (next.classList.contains('movement')) {
         var ban = next.querySelector(':scope > .page-banner');
         if (!ban) return;
@@ -7052,10 +7103,19 @@
       if (next.classList.contains('movement')) {
         nm = parseFloat(getComputedStyle(next).marginTop) || 0;
         next.style.setProperty('margin-top', '0px', 'important');
+        next.style.removeProperty('--step-over');
       }
       edges.push({ el: body, prop: 'padding-bottom', delta: COURIER_GAP - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
+      if (j.exact) {
+        if (Math.abs(j.delta) >= 0.0005) j.el.style.setProperty(j.prop, (j.m + j.delta).toFixed(3) + 'px', 'important');
+        // (how far the section rose over the one above: the strip of it
+        // that paints no ground — style.css, THE STEP RUNS ON THROUGH THE
+        // SECTIONS)
+        j.el.style.setProperty('--step-over', Math.max(0, j.over).toFixed(3) + 'px');
+        return;
+      }
       if (Math.abs(j.delta) < 0.25) return;
       j.el.style.setProperty(j.prop, Math.max(0, j.m + j.delta).toFixed(2) + 'px', 'important');
     });

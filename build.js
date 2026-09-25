@@ -2668,13 +2668,16 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // nothing.
   // (the essays' words alternate sides down the page, left then right,
   // counted from the lead: [0] left, [1] right, [2] left… — 2026-09-24)
-  // (THE ESSAYS START ON THE RIGHT, 2026-09-24, at the user's word:
-  // [2], [4], [6] on the right, [3] and [5] stepping down on the left)
-  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
-  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
-  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
-  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
-  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
+  // (THE ESSAYS START ON THE RIGHT, 2026-09-24, for an hour; then THE
+  // STEP RUNS ON THROUGH THE SECTIONS, at the user's word: every
+  // section's first card on the other side from the last card of the
+  // section over it — The Latest closes on the right, so the essays
+  // open on the left, [2], [4], [6], and [3], [5] step right)
+  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
+  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
+  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
+  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
+  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
   // EVENTS closes the essays — the word alone, like STORE.
   blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section', below: ['TNC editors interview extraordinary gen zers.'] }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
@@ -2690,7 +2693,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // (two across since 2026-09-23, later)
   // (a post with no partner stands alone, centred)
   const pairOf = (list, i) => (i % 2 ? 'b' : (list[i + 1] ? 'a' : ''));
-  postscripts.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Postscript', kind: 'postscript', pair: pairOf(l, i) })));
+  // (THE STEP RUNS ON THROUGH THE SECTIONS, 2026-09-24: the essays
+  // close on the left, so the postscripts open on the right — flipped)
+  postscripts.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Postscript', kind: 'postscript', pair: pairOf(l, i), flip: true })));
   // The middle pair reads REVERSED — cover right, text left.
   // The middle pair used to mirror (picture on the other side); every
   // pair reads the same way now.
