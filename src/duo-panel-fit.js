@@ -6884,8 +6884,11 @@
     if (!t) return null;
     var c = getComputedStyle(t, '::before');
     if (c.content === 'none') return null;
-    var r = t.getBoundingClientRect(), l = r.left + (parseFloat(c.left) || 0), w = parseFloat(c.width) || 0;
-    return w > 0 ? { l: l, r: l + w } : null;
+    // (as snapPictures reads it: the pseudo's insets, and the frame's
+    // --wrap each side)
+    var r = t.getBoundingClientRect(), wr = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+    var l = r.left + (parseFloat(c.left) || 0) - wr, rr = r.right - (parseFloat(c.right) || 0) + wr;
+    return rr > l ? { l: l, r: rr } : null;
   }
   function sharesWidth(a, b) {
     var sa = picSpanOf(a), sb = picSpanOf(b);
@@ -8211,9 +8214,11 @@
     if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
     fitAll();
   }
-  // (band-mark.js asks for a pass when the header's name changes size:
-  // the sections' heads are set to it — THE HEADS AT THE NAME'S SIZE)
-  window.__ncRequestFit = function () { requestFit(); };
+  // (band-mark.js asks for a pass when the header's name changes size —
+  // THE HEADS AT THE NAME'S SIZE — and the edit mode when a picture is
+  // sized by hand: neither changes what worldSig reads, so the ask
+  // forgets the last world and the pass runs)
+  window.__ncRequestFit = function () { lastWorld = null; requestFit(); };
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);

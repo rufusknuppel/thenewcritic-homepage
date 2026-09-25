@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dd252844">
+<link rel="stylesheet" href="style.css?v=f7a9b74d">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4571,8 +4571,9 @@
     if (!t) return null;
     var c = getComputedStyle(t, '::before');
     if (c.content === 'none') return null;
-    var r = t.getBoundingClientRect(), l = r.left + (parseFloat(c.left) || 0), w = parseFloat(c.width) || 0;
-    return w > 0 ? { l: l, r: l + w } : null;
+    var r = t.getBoundingClientRect(), wr = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+    var l = r.left + (parseFloat(c.left) || 0) - wr, rr = r.right - (parseFloat(c.right) || 0) + wr;
+    return rr > l ? { l: l, r: rr } : null;
   }
   function sharesWidth(a, b) {
     var sa = picSpanOf(a), sb = picSpanOf(b);
@@ -5507,7 +5508,7 @@
     if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
     fitAll();
   }
-  window.__ncRequestFit = function () { requestFit(); };
+  window.__ncRequestFit = function () { lastWorld = null; requestFit(); };
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);

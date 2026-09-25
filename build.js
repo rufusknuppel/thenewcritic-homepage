@@ -11,6 +11,14 @@ const path = require('path');
 // Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
+// PICTURE SIZES SET BY HAND (2026-09-24): the edit mode (?edit on the
+// front page, src/edit-mode.js) drags a picture's corner and saves the
+// size here through the dev server (serve.js, PUT /__layout), keyed by
+// post slug: w, the picture's width as a share of the window's, and r,
+// its height over its width. From 1024 up they override the kinds'
+// sizes (style.css, SIZES SET BY HAND); the phone keeps its own.
+let LAYOUT_OVERRIDES = {};
+try { LAYOUT_OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, 'layout-overrides.json'), 'utf8')) || {}; } catch (e) {}
 
 // Stamped into the stylesheet link — browsers cache the un-versioned
 // style.css hard, and every design pass was needing a manual hard
@@ -2353,7 +2361,11 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // .card--true-w (style.css, THE POSTSCRIPTS STAND AT THEIR OWN WIDTHS).
   const dims = ((trueHeight && !kind) || (trueWidth && kind === 'postscript')) && /_(\d+)x(\d+)\.[a-z]+$/i.exec(decodeURIComponent(post.image || ''));
   const picR = dims && +dims[1] > 0 && +dims[2] > 0 ? +dims[2] / +dims[1] : 0;
-  const trueH = picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}" style="--pic-r: ${picR.toFixed(4)}` : '';
+  const slug = slugOf(post.link);
+  const ov = LAYOUT_OVERRIDES[slug];
+  const hasOv = ov && +ov.w > 0 && +ov.r > 0;
+  const styles = [picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : ''].filter(Boolean).join('; ');
+  const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}"${styles ? ` style="${styles}"` : ''} data-slug="${escapeHtml(slug)}`;
   return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
@@ -2963,6 +2975,7 @@ ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 ${renderRailFixScript()}
 ${renderBandMarkScript()}
+${renderEditModeScript()}
 ${renderCoverCueScript()}
 ${renderCardRevealScript()}
 </body>
@@ -3438,6 +3451,16 @@ ${js}
 // centred when the feet have gone (src/band-mark.js).
 function renderBandMarkScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/band-mark.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
+// THE EDIT MODE (?edit): drag a picture's corner to size it, and save
+// the sizes into layout-overrides.json through the dev server
+// (src/edit-mode.js; inert without ?edit).
+function renderEditModeScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/edit-mode.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;

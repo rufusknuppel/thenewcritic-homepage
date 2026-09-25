@@ -36,8 +36,35 @@ const TYPES = {
   '.xml': 'application/xml; charset=utf-8',
 };
 
+// THE EDIT MODE'S SAVE (2026-09-24): PUT /__layout with the picture
+// sizes set by hand ({ slug: { w, r } }, src/edit-mode.js) writes them
+// to layout-overrides.json and rebuilds, answering once dist/ is new.
+// Loopback only, like the rest of this server.
+const { execFile } = require('child_process');
+function saveLayout(req, res) {
+  let body = '';
+  req.on('data', (c) => { body += c; if (body.length > 1e6) req.destroy(); });
+  req.on('end', () => {
+    const reply = (code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
+    let data;
+    try { data = JSON.parse(body); } catch (e) { return reply(400, { ok: false, error: 'bad JSON' }); }
+    const clean = {};
+    for (const [slug, v] of Object.entries(data || {})) {
+      if (!/^[a-z0-9-]+$/i.test(slug) || !v || !(+v.w > 0 && +v.w <= 1) || !(+v.r > 0 && +v.r < 10)) return reply(400, { ok: false, error: 'bad entry ' + slug });
+      clean[slug] = { w: +(+v.w).toFixed(5), r: +(+v.r).toFixed(5) };
+    }
+    fs.writeFileSync(path.join(__dirname, 'layout-overrides.json'), JSON.stringify(clean, null, 2) + '\n');
+    execFile(process.execPath, [path.join(__dirname, 'build.js')], { cwd: __dirname, timeout: 120000 }, (err, stdout, stderr) => {
+      const out = String(stdout || '') + String(stderr || '');
+      if (err) return reply(500, { ok: false, error: 'build failed', log: out.slice(-2000) });
+      reply(200, { ok: true, count: Object.keys(clean).length, log: out.slice(-400) });
+    });
+  });
+}
+
 http
   .createServer((req, res) => {
+    if (req.method === 'PUT' && req.url.split('?')[0] === '/__layout') return saveLayout(req, res);
     // Query strings are cache-busters here, not routes.
     let rel = decodeURIComponent(req.url.split('?')[0]);
     if (rel.endsWith('/')) rel += 'index.html';

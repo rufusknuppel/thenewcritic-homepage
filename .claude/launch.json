@@ -36,6 +36,15 @@
         "/Users/rufusknuppel/projects/thenewcritic-homepage/.claude/worktrees"
       ],
       "port": 8920
+    },
+    {
+      "name": "edit",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "serve.js",
+        "8766"
+      ],
+      "port": 8766
     }
   ]
 }
