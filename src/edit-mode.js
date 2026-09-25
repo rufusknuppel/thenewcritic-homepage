@@ -1,13 +1,17 @@
 // THE EDIT MODE (2026-09-24). With ?edit in the front page's address
-// (and a window 1024 or wider), every picture takes a handle on its free
-// bottom corner: drag it to size the picture — across and down, or
-// across alone with Shift held to keep its proportions — and the page
-// re-seats itself on letting go (the fitter's 36s hold). Double-click a
-// handle to give that picture back its kind's size. SAVE sends every
+// (and a window 1024 or wider), every picture takes a handle on each of
+// its four corners: drag one to move that corner — a left one moves the
+// picture's left edge, a right one its right edge; a top or bottom one
+// its height (Shift keeps its proportions) — and the page re-seats
+// itself on letting go (the fitter's 36s hold, so where a picture
+// starts DOWN the page is still the rules', and a picture made taller
+// from the top grows downward once let go). Double-click a handle to
+// give that picture back its kind's size and seat. SAVE sends every
 // size to the dev server (serve.js, PUT /__layout), which writes
 // layout-overrides.json and rebuilds; the page reloads on the new
-// build, still in edit mode. A size is kept as w, the picture's width
-// over the window's, and r, its height over its width (build.js,
+// build, still in edit mode. A size is kept as x, the picture's left
+// edge over the window's width, w, its width over the window's, and r,
+// its height over its width (build.js,
 // LAYOUT_OVERRIDES; style.css, SIZES SET BY HAND). Inert without ?edit.
 (function () {
   if (!/[?&]edit\b/.test(location.search)) return;
@@ -33,17 +37,11 @@
   // The edge a picture stands on: an essay on its words' side of the
   // window; a postscript or review on the page's middle, so its free
   // edge is the outer one.
-  function anchoredRight(card) {
-    var r = card.classList.contains('card--align-r');
-    var pair = card.classList.contains('card--kind-postscript') || card.classList.contains('card--kind-contra');
-    return pair ? !r : r;
-  }
-
   var style = document.createElement('style');
   style.textContent =
     '.nc-edit-handle{position:absolute;width:' + HANDLE + 'px;height:' + HANDLE + 'px;z-index:2147483000;' +
     'background:#1184C4;border:2px solid #fff;box-sizing:border-box;border-radius:50%;cursor:nwse-resize;touch-action:none}' +
-    '.nc-edit-handle.is-left{cursor:nesw-resize}' +
+    '.nc-edit-handle.c-tr,.nc-edit-handle.c-bl{cursor:nesw-resize}' +
     '.nc-edit-size{position:absolute;z-index:2147483000;font:12px/1 Courier,monospace;color:#fff;background:#1184C4;padding:4px 6px;pointer-events:none;white-space:nowrap}' +
     '.nc-edit-bar{position:fixed;left:16px;bottom:16px;z-index:2147483001;display:flex;gap:8px;align-items:center;' +
     'font:12px/1 Courier,monospace;text-transform:uppercase;color:#fff;background:#121417;border:1px solid #1184C4;padding:8px 10px}' +
@@ -54,7 +52,7 @@
 
   var bar = document.createElement('div');
   bar.className = 'nc-edit-bar';
-  bar.innerHTML = '<span class="nc-edit-msg">Edit · drag a corner (Shift keeps shape) · double-click resets</span>' +
+  bar.innerHTML = '<span class="nc-edit-msg">Edit · drag any corner (Shift keeps shape) · double-click resets</span>' +
     '<button type="button" class="is-go" data-act="save">Save</button>' +
     '<button type="button" data-act="reset">Reset all</button>' +
     '<button type="button" data-act="exit">Exit</button>';
@@ -72,10 +70,10 @@
       var p = wide() && picOf(h.card);
       if (!p) { h.el.hidden = true; return; }
       h.el.hidden = false;
-      var x = h.right ? p.l : p.l + p.w;
+      var x = h.c.charAt(1) === 'l' ? p.l : p.l + p.w;
+      var y = h.c.charAt(0) === 't' ? p.t : p.t + p.h;
       h.el.style.left = (x + scrollX - HANDLE / 2) + 'px';
-      h.el.style.top = (p.t + p.h + scrollY - HANDLE / 2) + 'px';
-      h.el.classList.toggle('is-left', h.right);
+      h.el.style.top = (y + scrollY - HANDLE / 2) + 'px';
     });
   }
   var queued = false;
@@ -87,16 +85,18 @@
     if (document.hidden || !window.requestAnimationFrame) setTimeout(go, 16); else requestAnimationFrame(go);
   }
 
-  function setSize(card, wPx, hPx) {
+  function setSize(card, xPx, wPx, hPx) {
     var W = window.innerWidth;
+    card.style.setProperty('--ov-x', (xPx / W).toFixed(5));
     card.style.setProperty('--ov-w', (wPx / W).toFixed(5));
     card.style.setProperty('--ov-r', (hPx / wPx).toFixed(5));
-    card.classList.add('card--ov');
+    card.classList.add('card--ov', 'card--ovx');
   }
   function clearSize(card) {
+    card.style.removeProperty('--ov-x');
     card.style.removeProperty('--ov-w');
     card.style.removeProperty('--ov-r');
-    card.classList.remove('card--ov');
+    card.classList.remove('card--ov', 'card--ovx');
   }
   function refit() {
     if (window.__ncRequestFit) window.__ncRequestFit();
@@ -108,42 +108,48 @@
     document.body.appendChild(bar);
     document.body.appendChild(label);
     cards().forEach(function (card) {
-      var el = document.createElement('div');
-      el.className = 'nc-edit-handle';
-      el.title = 'Drag to size · Shift keeps shape · double-click resets';
-      document.body.appendChild(el);
-      var h = { card: card, el: el, right: anchoredRight(card) };
-      handles.push(h);
-      el.addEventListener('pointerdown', function (e) {
-        var p = picOf(card);
-        if (!p) return;
-        e.preventDefault();
-        el.setPointerCapture(e.pointerId);
-        var x0 = e.clientX, y0 = e.clientY, w0 = p.w, h0 = p.h, ratio = p.h / p.w;
-        var move = function (ev) {
-          var dx = (ev.clientX - x0) * (h.right ? -1 : 1);
-          var w = Math.max(120, Math.min(window.innerWidth - 72, w0 + dx));
-          var hh = ev.shiftKey ? w * ratio : Math.max(90, h0 + (ev.clientY - y0));
-          setSize(card, w, hh);
-          label.hidden = false;
-          label.textContent = Math.round(w) + ' × ' + Math.round(hh);
-          label.style.left = (ev.clientX + scrollX + 14) + 'px';
-          label.style.top = (ev.clientY + scrollY + 14) + 'px';
-          queue();
-        };
-        var up = function () {
-          el.removeEventListener('pointermove', move);
-          el.removeEventListener('pointerup', up);
-          el.removeEventListener('pointercancel', up);
-          label.hidden = true;
-          dirty();
-          refit();
-        };
-        el.addEventListener('pointermove', move);
-        el.addEventListener('pointerup', up);
-        el.addEventListener('pointercancel', up);
+      ['tl', 'tr', 'bl', 'br'].forEach(function (c) {
+        var el = document.createElement('div');
+        el.className = 'nc-edit-handle c-' + c;
+        el.title = 'Drag to move this corner · Shift keeps shape · double-click resets';
+        document.body.appendChild(el);
+        var h = { card: card, el: el, c: c };
+        handles.push(h);
+        el.addEventListener('pointerdown', function (e) {
+          var p = picOf(card);
+          if (!p) return;
+          e.preventDefault();
+          el.setPointerCapture(e.pointerId);
+          var x0 = e.clientX, y0 = e.clientY, ratio = p.h / p.w, W = window.innerWidth;
+          var left = c.charAt(1) === 'l', top = c.charAt(0) === 't';
+          var move = function (ev) {
+            var dx = ev.clientX - x0, dy = ev.clientY - y0;
+            var l = p.l, r = p.l + p.w;
+            if (left) l = Math.max(0, Math.min(r - 120, p.l + dx));
+            else r = Math.min(W, Math.max(l + 120, p.l + p.w + dx));
+            var w = r - l;
+            var hh = ev.shiftKey ? w * ratio : Math.max(90, p.h + (top ? -dy : dy));
+            setSize(card, l, w, hh);
+            label.hidden = false;
+            label.textContent = Math.round(w) + ' × ' + Math.round(hh);
+            label.style.left = (ev.clientX + scrollX + 14) + 'px';
+            label.style.top = (ev.clientY + scrollY + 14) + 'px';
+            queue();
+          };
+          var up = function () {
+            el.removeEventListener('pointermove', move);
+            el.removeEventListener('pointerup', up);
+            el.removeEventListener('pointercancel', up);
+            label.hidden = true;
+            dirty();
+            refit();
+          };
+          el.addEventListener('pointermove', move);
+          el.addEventListener('pointerup', up);
+          el.addEventListener('pointercancel', up);
+        });
+        el.addEventListener('dblclick', function () { clearSize(card); dirty(); refit(); });
       });
-      el.addEventListener('dblclick', function () { clearSize(card); dirty(); refit(); });
     });
     place();
     addEventListener('scroll', queue, { passive: true });
@@ -158,7 +164,12 @@
     cards().forEach(function (card) {
       if (!card.classList.contains('card--ov')) return;
       var w = parseFloat(card.style.getPropertyValue('--ov-w')), r = parseFloat(card.style.getPropertyValue('--ov-r'));
-      if (w > 0 && r > 0) out[card.getAttribute('data-slug')] = { w: +w.toFixed(5), r: +r.toFixed(5) };
+      var x = parseFloat(card.style.getPropertyValue('--ov-x'));
+      if (w > 0 && r > 0) {
+        var o = { w: +w.toFixed(5), r: +r.toFixed(5) };
+        if (x >= 0) o.x = +x.toFixed(5);
+        out[card.getAttribute('data-slug')] = o;
+      }
     });
     return out;
   }

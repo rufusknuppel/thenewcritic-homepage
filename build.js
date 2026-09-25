@@ -14,8 +14,9 @@ const CONTENT_OVERRIDES = require('./content-overrides.js');
 // PICTURE SIZES SET BY HAND (2026-09-24): the edit mode (?edit on the
 // front page, src/edit-mode.js) drags a picture's corner and saves the
 // size here through the dev server (serve.js, PUT /__layout), keyed by
-// post slug: w, the picture's width as a share of the window's, and r,
-// its height over its width. From 1024 up they override the kinds'
+// post slug: w, the picture's width as a share of the window's, r, its
+// height over its width, and x (when a left corner was moved), its left
+// edge as a share of the window's width. From 1024 up they override the kinds'
 // sizes (style.css, SIZES SET BY HAND); the phone keeps its own.
 let LAYOUT_OVERRIDES = {};
 try { LAYOUT_OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, 'layout-overrides.json'), 'utf8')) || {}; } catch (e) {}
@@ -2364,8 +2365,9 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   const slug = slugOf(post.link);
   const ov = LAYOUT_OVERRIDES[slug];
   const hasOv = ov && +ov.w > 0 && +ov.r > 0;
-  const styles = [picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : ''].filter(Boolean).join('; ');
-  const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}"${styles ? ` style="${styles}"` : ''} data-slug="${escapeHtml(slug)}`;
+  const hasX = hasOv && ov.x != null && +ov.x >= 0 && +ov.x <= 1;
+  const styles = [picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : ''].filter(Boolean).join('; ');
+  const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}${hasX ? ' card--ovx' : ''}"${styles ? ` style="${styles}"` : ''} data-slug="${escapeHtml(slug)}`;
   return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
