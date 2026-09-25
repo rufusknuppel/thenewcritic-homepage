@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dd252844">
+<link rel="stylesheet" href="style.css?v=f7a9b74d">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -1214,7 +1214,7 @@
   
   <div class="movement-body">
   <div class="wrap m--latest">
-    <section class="card card--duo card--split card--mega card--mega-rev">
+    <section class="card card--duo card--split card--mega card--mega-rev" data-slug="pdoom">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/pdoom" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!uRkh!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 480w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 800w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!uRkh!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6f7806af-9ee5-4df8-ac95-99a60b19d9c6_1686x1287.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
@@ -1286,7 +1286,7 @@
   </div>
   <div class="row-divider m--latest"></div>
   <div class="wrap m--latest">
-    <section class="card card--duo card--split card--mega">
+    <section class="card card--duo card--split card--mega" data-slug="freak-show">
         <div class="duo-half duo-half--wide duo-half--mega duo-half--essay">
         <span class="card-image-frame duo-card-image"><a class="card-image-link" href="https://www.thenewcritic.com/p/freak-show" rel="noopener">
           <img class="card-image" src="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg" srcset="https://substackcdn.com/image/fetch/$s_!1Pzd!,w_480,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 480w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_800,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 800w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1200,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1200w, https://substackcdn.com/image/fetch/$s_!1Pzd!,w_1600,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6974247a-2094-40b1-93ae-9d916f0b261e_3024x4032.jpeg 1600w" sizes="(max-width: 720px) 100vw, 60vw" alt="" loading="lazy" decoding="async">
@@ -5464,8 +5464,9 @@
     if (!t) return null;
     var c = getComputedStyle(t, '::before');
     if (c.content === 'none') return null;
-    var r = t.getBoundingClientRect(), l = r.left + (parseFloat(c.left) || 0), w = parseFloat(c.width) || 0;
-    return w > 0 ? { l: l, r: l + w } : null;
+    var r = t.getBoundingClientRect(), wr = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+    var l = r.left + (parseFloat(c.left) || 0) - wr, rr = r.right - (parseFloat(c.right) || 0) + wr;
+    return rr > l ? { l: l, r: rr } : null;
   }
   function sharesWidth(a, b) {
     var sa = picSpanOf(a), sb = picSpanOf(b);
@@ -6400,7 +6401,7 @@
     if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
     fitAll();
   }
-  window.__ncRequestFit = function () { requestFit(); };
+  window.__ncRequestFit = function () { lastWorld = null; requestFit(); };
   function requestFit() {
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
