@@ -6868,6 +6868,27 @@
     return r.height > 72 ? { t: r.top + 36, b: r.bottom - 36, l: r.left + 36, r: r.right - 36 } : null;
   }
   var PAIR_STEP = 36;
+  // THE ESSAYS OVERLAP ACROSS (2026-09-24, at the user's word): an essay
+  // in the Essays section is as wide as its picture's proportions make
+  // it at one height (style.css), so two in turn may meet ACROSS the
+  // page's middle — and two pictures that share any of the page's width
+  // cannot also step over each other. A card whose picture shares width
+  // with the last one's (or stands within the 36 gutter of it) is not
+  // stepped: it stands off the last card's words by the courier gap, as
+  // a card on the same side does. The picture's span across is its
+  // title's box (::before), which is where every kind's picture is.
+  function picSpanOf(row) {
+    var t = row.querySelector('.card-title.hl-rect.rx, .latest-title.hl-rect.rx');
+    if (!t) return null;
+    var c = getComputedStyle(t, '::before');
+    if (c.content === 'none') return null;
+    var r = t.getBoundingClientRect(), l = r.left + (parseFloat(c.left) || 0), w = parseFloat(c.width) || 0;
+    return w > 0 ? { l: l, r: l + w } : null;
+  }
+  function sharesWidth(a, b) {
+    var sa = picSpanOf(a), sb = picSpanOf(b);
+    return !!(sa && sb && sa.l < sb.r + PAIR_STEP - 0.5 && sb.l < sa.r + PAIR_STEP - 0.5);
+  }
   function seatRowGaps() {
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
@@ -6964,7 +6985,8 @@
         var side = row.classList.contains('card--align-r') ? 'r' : 'l';
         var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
           && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
-          && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l');
+          && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l')
+          && !sharesWidth(prev, row);
         if (stepped) {
           // (the Essays section stepped 36 apart for a while; with the
           // essays narrowed to the 36 gutter they overlap 36 like the rest,
@@ -7066,7 +7088,7 @@
           });
           return f;
         };
-        if (sBan && first && lastPic && firstPic && sideOf(first) !== sideOf(last)) {
+        if (sBan && first && lastPic && firstPic && sideOf(first) !== sideOf(last) && !sharesWidth(last, first)) {
           var d = (lastPic.t + Math.round(lastPic.b - lastPic.t) - PAIR_STEP) - firstPic.t;
           var headTop = Infinity;
           [].forEach.call(sBan.querySelectorAll('.banner-name, .banner-line--below'), function (k) {

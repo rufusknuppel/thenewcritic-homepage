@@ -2664,7 +2664,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // EACH SECTION'S WORD CARRIES ITS LINE (2026-09-18): one courier
   // sentence under the word, inside the 72 under its feet, seated the
   // way SUBSCRIBE's offer is (fitSubscribeLines, .page-banner--apart).
-  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart page-banner--section', below: ['The great writing of our generation.'] }));
+  // (THE TAGS ARE STRUCK, 2026-09-24, at the user's word: the sections'
+  // names stand alone, no italic line under them)
+  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart page-banner--section' }));
   // THE SECOND MOVEMENT, under the band: the next essay as a
   // MIRRORED hero (cover left, ground right, labelled Essay), then
   // the next contra/postscript pair mirrored the same way.
@@ -2686,7 +2688,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true }));
   blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true, trueHeight: true }));
   // EVENTS closes the essays — the word alone, like STORE.
-  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section', below: ['TNC editors interview extraordinary gen zers.'] }));
+  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section' }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
   // build, then the pair MIRRORED, then the base again. All three
   // keep the base SEAT (the strip is back on the right down here), so
@@ -2708,7 +2710,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pair reads the same way now.
   // And a third pair back in the base build — covers on the left.
   // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart page-banner--section', below: ['New Critics take on gen z’s best and worst.'] }));
+  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart page-banner--section' }));
   // THE CONTRA MOVEMENT: the section's own row formation, three
   // squares across, twice — reading from the reviews the rows above
   // haven't already spent.
