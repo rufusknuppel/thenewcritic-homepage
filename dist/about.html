@@ -349,7 +349,7 @@
   <div class="page-rows">
   <nav class="section-band section-band--three" aria-label="The Young American Magazine">
     <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
-    <p class="band-deks band-dek"><span class="band-date">Thursday, September 24, 2026</span></p>
+    <p class="band-deks band-dek"><span class="band-date">Friday, September 25, 2026</span></p>
     <button type="button" class="theme-toggle theme-toggle--wm" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-sep" aria-hidden="true">/</span><span class="theme-toggle-dark">Dark</span></button>
     <p class="band-deks"><a href="archive.html">Archive</a><span class="band-sep">, </span><a href="about.html" aria-current="page">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><a href="https://www.thenewcritic.com/subscribe" rel="noopener">Subscribe</a></p>
   </nav>
@@ -4601,8 +4601,13 @@
     });
     return f;
   }
+  function pinAnchor() {
+    var b = document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+    return b ? b.getBoundingClientRect().top : null;
+  }
+  var seatingAgain = false;
   function seatRowGaps() {
-    var jobs = [];
+    var jobs = [], anchorTop = pinAnchor(), anyPin = false, moved = 0;
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
@@ -4678,7 +4683,13 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
-        var ovDy = ONE_COL.matches ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
+        var ovY = ONE_COL.matches ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
+        if (isFinite(ovY) && pic && anchorTop != null) {
+          anyPin = true;
+          rowDelta = (anchorTop + ovY * window.innerWidth) - (pic.t + acc);
+          hasJob = true; stepped = true;
+        }
+        var ovDy = ONE_COL.matches || isFinite(ovY) ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
         if (ovDy && hasJob) rowDelta += ovDy * window.innerWidth;
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
@@ -4691,6 +4702,7 @@
     });
     jobs.forEach(function (j) {
       if (j.exact ? Math.abs(j.delta) < 0.0005 : Math.abs(j.delta) < 0.25) return;
+      moved = Math.max(moved, Math.abs(j.delta));
       j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(j.exact ? 3 : 2) + 'px', 'important');
     });
     var edges = [];
@@ -4788,8 +4800,14 @@
         return;
       }
       if (Math.abs(j.delta) < 0.25) return;
+      moved = Math.max(moved, Math.abs(j.delta));
       j.el.style.setProperty(j.prop, Math.max(0, j.m + j.delta).toFixed(2) + 'px', 'important');
     });
+    if (anyPin && !seatingAgain) {
+      seatingAgain = true;
+      try { for (var k = 0; k < 4 && seatRowGaps(); k++) {} } finally { seatingAgain = false; }
+    }
+    return moved > 0.5;
   }
   var plateBodySet = [];
   function resetPlateBody() {

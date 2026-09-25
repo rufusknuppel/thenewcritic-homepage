@@ -19,7 +19,15 @@
 // build, still in edit mode. A size is kept as x, the picture's left
 // edge over the window's width, w, its width over the window's, and r,
 // its height over its width (build.js,
-// LAYOUT_OVERRIDES; style.css, SIZES SET BY HAND). Inert without ?edit.
+// LAYOUT_OVERRIDES; style.css, SIZES SET BY HAND), and y, its top below
+// the top of THE LATEST's body over the window's width.
+// EVERY PICTURE PINNED (2026-09-24, at the user's word): the first touch
+// pins every picture where it stands (x, w, r and y), so a picture moved
+// or sized moves nothing else — the fitter seats each pinned picture at
+// its y (duo-panel-fit.js, PINNED BY HAND). A dragged edge draws a line
+// the height (or width) of the window where it will land, and the
+// nearest 36 line beside it; the line turns white on a 36.
+// Inert without ?edit.
 (function () {
   if (!/[?&]edit\b/.test(location.search)) return;
   var root = document.documentElement;
@@ -60,7 +68,16 @@
     '.nc-edit-adjust{position:absolute;z-index:2147483000;font:12px/1 Courier,monospace;text-transform:uppercase;color:#fff;background:#1184C4;border:2px solid #fff;padding:6px 8px;cursor:pointer}' +
     '.nc-edit-on main.has-mega .page-rows .card{pointer-events:none!important}' +
     '.nc-edit-on body{cursor:default}' +
-    '.nc-edit-handle[hidden],.nc-edit-adjust[hidden]{display:none!important}';
+    '.nc-edit-guide{position:fixed;z-index:2147482999;pointer-events:none;border:0 dashed #1184C4}' +
+    '.nc-edit-guide.is-v{top:0;bottom:0;width:0;border-left-width:1px}' +
+    '.nc-edit-guide.is-h{left:0;right:0;height:0;border-top-width:1px}' +
+    '.nc-edit-guide.is-on{border-style:solid;border-color:#fff}' +
+    '.nc-edit-guide.is-to{opacity:.55;border-color:#1184C4}' +
+    '.nc-edit-guide>span{position:absolute;font:11px/1 Courier,monospace;color:#fff;background:#1184C4;padding:3px 5px;white-space:nowrap}' +
+    '.nc-edit-guide.is-on>span{background:#fff;color:#121417}' +
+    '.nc-edit-guide.is-v>span{top:50%;left:6px}.nc-edit-guide.is-h>span{left:50%;top:6px}' +
+    '.nc-edit-guide.is-v.is-far>span{left:auto;right:6px}' +
+    '.nc-edit-handle[hidden],.nc-edit-adjust[hidden],.nc-edit-guide[hidden]{display:none!important}';
   document.head.appendChild(style);
 
   var bar = document.createElement('div');
@@ -122,7 +139,90 @@
     card.style.setProperty('--ov-r', (hPx / wPx).toFixed(5));
     card.classList.add('card--ov', 'card--ovx');
   }
+  // (the pins' ground: the top of THE LATEST's body, which nothing the
+  // fitter does moves)
+  function anchorTop() {
+    var b = document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+    return b ? b.getBoundingClientRect().top : 0;
+  }
+  function setY(card, topPx) {
+    card.style.setProperty('--ov-y', ((topPx - anchorTop()) / window.innerWidth).toFixed(5));
+    card.style.removeProperty('--ov-dy');
+  }
+  // (every picture not yet pinned is pinned where it stands — read all,
+  // then write all)
+  function pinAll() {
+    var list = cards().filter(function (c) { return !c.style.getPropertyValue('--ov-y'); })
+      .map(function (c) { return { c: c, p: picOf(c) }; }).filter(function (o) { return o.p; });
+    list.forEach(function (o) { setSize(o.c, o.p.l, o.p.w, o.p.h); setY(o.c, o.p.t); });
+  }
+
+  // THE EDGE'S LINE (2026-09-24, at the user's word): while an edge is
+  // dragged a line runs the window's height (a side) or width (a top or
+  // bottom) where it will land, with the nearest 36 line within 120
+  // drawn faint beside it; on a 36 (to the pixel) the line turns white.
+  var guides = [];
+  function guide(i) {
+    if (!guides[i]) {
+      var g = document.createElement('div');
+      g.className = 'nc-edit-guide';
+      g.appendChild(document.createElement('span'));
+      g.hidden = true;
+      document.body.appendChild(g);
+      guides[i] = g;
+    }
+    return guides[i];
+  }
+  function hideGuides() { guides.forEach(function (g) { g.hidden = true; }); }
+  // (the 36 lines an edge may land on: the window's margins and middle,
+  // and the pictures beside it — 36 off them, or flush with them)
+  function targets(card, which, box) {
+    var W = document.documentElement.clientWidth, out = [];
+    if (which === 'l') out.push([36, '36 from the edge'], [W / 2 + 18, '18 past the middle']);
+    if (which === 'r') out.push([W - 36, '36 from the edge'], [W / 2 - 18, '18 short of the middle']);
+    cards().forEach(function (o) {
+      if (o === card) return;
+      var q = picOf(o);
+      if (!q) return;
+      var nearY = q.t < box.b + 72 && box.t < q.t + q.h + 72, nearX = q.l < box.r && box.l < q.l + q.w;
+      if (which === 'l' && nearY) out.push([q.l + q.w + 36, '36 off the picture'], [q.l, 'flush']);
+      if (which === 'r' && nearY) out.push([q.l - 36, '36 off the picture'], [q.l + q.w, 'flush']);
+      if (which === 't' && nearX && q.t < box.t) out.push([q.t + q.h + 36, '36 under the picture'], [q.t, 'flush']);
+      if (which === 'b' && nearX && q.t > box.t) out.push([q.t - 36, '36 over the picture'], [q.t + q.h, 'flush']);
+    });
+    return out;
+  }
+  function showGuides(card, box, edges) {
+    hideGuides();
+    var i = 0;
+    edges.forEach(function (which) {
+      var v = which === 'l' ? box.l : which === 'r' ? box.r : which === 't' ? box.t : box.b;
+      var vert = which === 'l' || which === 'r';
+      var best = null, d = SNAP;
+      targets(card, which, box).forEach(function (tg) { var dd = Math.abs(tg[0] - v); if (dd < d) { d = dd; best = tg; } });
+      var on = best && d < 0.75;
+      var g = guide(i++);
+      g.className = 'nc-edit-guide ' + (vert ? 'is-v' : 'is-h') + (on ? ' is-on' : '') + (vert && v > document.documentElement.clientWidth / 2 ? ' is-far' : '');
+      // (kept on the screen: an edge at the window's side draws inside it)
+      var cw = document.documentElement.clientWidth;
+      g.style.left = vert ? Math.max(0, Math.min(cw - 1, v)) + 'px' : ''; g.style.top = vert ? '' : v + 'px';
+      var off = best ? Math.round(Math.abs(best[0] - v)) + ' to ' + best[1] : '';
+      var from = which === 'l' ? Math.round(v) + ' from left' : which === 'r' ? Math.round(document.documentElement.clientWidth - v) + ' from right' : '';
+      g.firstChild.textContent = on ? best[1] : [from, off].filter(Boolean).join(' · ');
+      g.firstChild.hidden = !g.firstChild.textContent;
+      g.hidden = false;
+      if (best && !on) {
+        var t = guide(i++);
+        t.className = 'nc-edit-guide is-to ' + (vert ? 'is-v' : 'is-h');
+        t.style.left = vert ? best[0] + 'px' : ''; t.style.top = vert ? '' : best[0] + 'px';
+        t.firstChild.hidden = true;
+        t.hidden = false;
+      }
+    });
+  }
+
   function clearSize(card) {
+    card.style.removeProperty('--ov-y');
     card.style.removeProperty('--ov-dy');
     card.style.removeProperty('--ov-x');
     card.style.removeProperty('--ov-w');
@@ -169,7 +269,13 @@
     var nl = near(l, lefts), nr = near(r, rights);
     if (nr - nl < 120) { nl = l; nr = r; }
     setSize(card, nl, nr - nl, p.h);
-    card.style.removeProperty('--ov-dy');
+    // (and down the page: its top 36 under the picture over it, or its
+    // foot 36 over the picture under it, whichever is nearer, within 120)
+    var box = { l: nl, r: nr, t: p.t, b: p.t + p.h }, bestT = p.t, dT = SNAP;
+    targets(card, 't', box).forEach(function (tg) { if (/^36/.test(tg[1]) && Math.abs(tg[0] - p.t) < dT) { dT = Math.abs(tg[0] - p.t); bestT = tg[0]; } });
+    targets(card, 'b', box).forEach(function (tg) { if (/^36/.test(tg[1]) && Math.abs(tg[0] - box.b) < dT) { dT = Math.abs(tg[0] - box.b); bestT = tg[0] - p.h; } });
+    pinAll();
+    setY(card, bestT);
     say('Adjusted to the 36s · Save to keep it');
     root.classList.add('nc-edit-dirty');
     refit();
@@ -194,10 +300,12 @@
         var h = { card: card, el: el, c: c };
         handles.push(h);
         el.addEventListener('pointerdown', function (e) {
+          pinAll();
           var p = picOf(card);
           if (!p) return;
           e.preventDefault();
           el.setPointerCapture(e.pointerId);
+          var grew = 0;
           var x0 = e.clientX, y0 = e.clientY, ratio = p.h / p.w, W = window.innerWidth;
           var hx = /l/.test(c) ? 'l' : /r/.test(c) ? 'r' : '', vy = /t/.test(c) ? 't' : /b/.test(c) ? 'b' : '';
           var move = function (ev) {
@@ -208,6 +316,14 @@
             var w = r - l;
             var hh = ev.shiftKey && hx ? w * ratio : vy ? Math.max(90, p.h + (vy === 't' ? -dy : dy)) : p.h;
             setSize(card, l, w, hh);
+            // (a top edge dragged moves the top: the picture, which grows
+            // downward, is lifted by what it gained)
+            grew = vy === 't' ? hh - p.h : 0;
+            card.style.translate = grew ? '0 ' + (-grew) + 'px' : '';
+            var edges = [];
+            if (hx) edges.push(hx);
+            if (vy) edges.push(vy); else if (ev.shiftKey && hx) edges.push('b');
+            showGuides(card, { l: l, r: r, t: p.t - grew, b: p.t - grew + hh }, edges);
             label.hidden = false;
             label.textContent = Math.round(w) + ' × ' + Math.round(hh);
             label.style.left = (ev.clientX + scrollX + 14) + 'px';
@@ -219,6 +335,9 @@
             el.removeEventListener('pointerup', up);
             el.removeEventListener('pointercancel', up);
             label.hidden = true;
+            hideGuides();
+            card.style.translate = '';
+            if (grew) setY(card, p.t - grew);
             choose(card);
             dirty();
             refit();
@@ -247,8 +366,12 @@
       if (w > 0 && r > 0) {
         var o = { w: +w.toFixed(5), r: +r.toFixed(5) };
         if (x >= 0) o.x = +x.toFixed(5);
-        var dy = parseFloat(card.style.getPropertyValue('--ov-dy'));
-        if (dy) o.dy = +dy.toFixed(5);
+        var y = parseFloat(card.style.getPropertyValue('--ov-y'));
+        if (isFinite(y)) o.y = +y.toFixed(5);
+        else {
+          var dy = parseFloat(card.style.getPropertyValue('--ov-dy'));
+          if (dy) o.dy = +dy.toFixed(5);
+        }
         out[card.getAttribute('data-slug')] = o;
       }
     });
@@ -314,8 +437,9 @@
     });
     if (!hit) return;
     e.preventDefault(); e.stopPropagation();
+    pinAll();
+    p = picOf(hit) || p;
     var card = hit, x0 = e.clientX, y0 = e.clientY, W = window.innerWidth;
-    var dy0 = parseFloat(card.style.getPropertyValue('--ov-dy')) || 0;
     var moved = false;
     var axis = null;
     var move = function (ev) {
@@ -330,6 +454,7 @@
       var l = Math.max(0, Math.min(W - p.w, p.l + dx));
       setSize(card, l, p.w, p.h);
       card.style.translate = '0 ' + dy + 'px';
+      showGuides(card, { l: l, r: l + p.w, t: p.t + dy, b: p.t + dy + p.h }, axis === 'y' ? ['t', 'b'] : axis === 'x' ? ['l', 'r'] : ['l', 'r', 't', 'b']);
       label.hidden = false;
       label.textContent = 'x ' + Math.round(l) + ' · ' + (dy >= 0 ? '+' : '') + Math.round(dy);
       label.style.left = (ev.clientX + scrollX + 14) + 'px';
@@ -340,12 +465,13 @@
       window.removeEventListener('pointermove', move, true);
       window.removeEventListener('pointerup', up, true);
       label.hidden = true;
+      hideGuides();
       card.style.translate = '';
       choose(card);
       if (!moved) return;
       var dy = ev.clientY - y0;
       if (axis === 'x' && !ev.altKey) dy = 0;
-      card.style.setProperty('--ov-dy', (dy0 + dy / W).toFixed(5));
+      setY(card, p.t + dy);
       dirty();
       refit();
     };

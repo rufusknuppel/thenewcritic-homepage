@@ -6920,8 +6920,20 @@
     });
     return f;
   }
+  // PINNED BY HAND (2026-09-24, at the user's word): a picture pinned in
+  // the edit mode (--ov-y: its top below the top of THE LATEST's body,
+  // a share of the window's width) is seated there whatever the cards
+  // over it do — its row's move is taken from the pin, not the rules —
+  // so every pinned picture stands where it was put, and moves only when
+  // it is moved. (The cards' margins take up the flow; a section moved
+  // by the edges pass is answered by a second run, below.)
+  function pinAnchor() {
+    var b = document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+    return b ? b.getBoundingClientRect().top : null;
+  }
+  var seatingAgain = false;
   function seatRowGaps() {
-    var jobs = [];
+    var jobs = [], anchorTop = pinAnchor(), anyPin = false, moved = 0;
     [].forEach.call(document.querySelectorAll('.page-rows > .movement > .movement-body'), function (body) {
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
@@ -7064,10 +7076,16 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
+        var ovY = ONE_COL.matches ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
+        if (isFinite(ovY) && pic && anchorTop != null) {
+          anyPin = true;
+          rowDelta = (anchorTop + ovY * window.innerWidth) - (pic.t + acc);
+          hasJob = true; stepped = true;
+        }
         // (A PICTURE MOVED BY HAND, 2026-09-24: the edit mode's offset,
         // --ov-dy, a share of the window's width, is added to the seat the
         // rules give it, and the cards under it seat from where it stands)
-        var ovDy = ONE_COL.matches ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
+        var ovDy = ONE_COL.matches || isFinite(ovY) ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
         if (ovDy && hasJob) rowDelta += ovDy * window.innerWidth;
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
@@ -7084,6 +7102,7 @@
       // to different pixels and the step reads 35 or 37 — THE PAIR
       // STEPS DOWN)
       if (j.exact ? Math.abs(j.delta) < 0.0005 : Math.abs(j.delta) < 0.25) return;
+      moved = Math.max(moved, Math.abs(j.delta));
       j.el.style.setProperty('margin-top', (j.m + j.delta).toFixed(j.exact ? 3 : 2) + 'px', 'important');
     });
     // 54 FROM THE LAST ROW TO THE SECTION'S EDGE (2026-09-23): where the
@@ -7226,8 +7245,17 @@
         return;
       }
       if (Math.abs(j.delta) < 0.25) return;
+      moved = Math.max(moved, Math.abs(j.delta));
       j.el.style.setProperty(j.prop, Math.max(0, j.m + j.delta).toFixed(2) + 'px', 'important');
     });
+    // (pinned pictures in a section the edges pass has just moved are put
+    // back on their pins — a run for each section, the one under it
+    // moving with it, until nothing moves)
+    if (anyPin && !seatingAgain) {
+      seatingAgain = true;
+      try { for (var k = 0; k < 4 && seatRowGaps(); k++) {} } finally { seatingAgain = false; }
+    }
+    return moved > 0.5;
   }
   // THE WORDS KEEP TO THEIR BOXES THROUGH THE SLIDE (2026-09-22): while
   // the picture travels, the title and the dek move half its distance
