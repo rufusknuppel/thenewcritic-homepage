@@ -1,8 +1,10 @@
 // THE EDIT MODE (2026-09-24). With ?edit in the front page's address
 // (and a window 1024 or wider), every picture takes a handle on each of
-// its four corners: drag one to move that corner — a left one moves the
+// its four corners and a bar on each side: drag a corner to move that corner — a left one moves the
 // picture's left edge, a right one its right edge; a top or bottom one
-// its height (Shift keeps its proportions) — and the page re-seats
+// its height (Shift keeps its proportions); a side bar moves that one
+// edge alone — the left and right bars the width, the top and bottom
+// bars the height — and the page re-seats
 // itself on letting go (the fitter's 36s hold, so where a picture
 // starts DOWN the page is still the rules', and a picture made taller
 // from the top grows downward once let go). Double-click a handle to
@@ -47,6 +49,8 @@
     '.nc-edit-handle{position:absolute;width:' + HANDLE + 'px;height:' + HANDLE + 'px;z-index:2147483000;' +
     'background:#1184C4;border:2px solid #fff;box-sizing:border-box;border-radius:50%;cursor:nwse-resize;touch-action:none}' +
     '.nc-edit-handle.c-tr,.nc-edit-handle.c-bl{cursor:nesw-resize}' +
+    '.nc-edit-handle.c-l,.nc-edit-handle.c-r{border-radius:3px;width:10px;height:36px;cursor:ew-resize}' +
+    '.nc-edit-handle.c-t,.nc-edit-handle.c-b{border-radius:3px;width:36px;height:10px;cursor:ns-resize}' +
     '.nc-edit-size{position:absolute;z-index:2147483000;font:12px/1 Courier,monospace;color:#fff;background:#1184C4;padding:4px 6px;pointer-events:none;white-space:nowrap}' +
     '.nc-edit-bar{position:fixed;left:16px;bottom:16px;z-index:2147483001;display:flex;gap:8px;align-items:center;' +
     'font:12px/1 Courier,monospace;text-transform:uppercase;color:#fff;background:#121417;border:1px solid #1184C4;padding:8px 10px}' +
@@ -61,7 +65,7 @@
 
   var bar = document.createElement('div');
   bar.className = 'nc-edit-bar';
-  bar.innerHTML = '<span class="nc-edit-msg">Edit · drag any corner (Shift keeps shape) · double-click resets</span>' +
+  bar.innerHTML = '<span class="nc-edit-msg">Edit · drag a picture (one way at a time; Option frees it), a corner, or a side bar (one edge) · double-click resets</span>' +
     '<button type="button" class="is-go" data-act="save">Save</button>' +
     '<button type="button" data-act="reset">Reset all</button>' +
     '<button type="button" data-act="exit">Exit</button>';
@@ -93,11 +97,13 @@
       var p = wide() && picOf(h.card);
       if (!p) { h.el.hidden = true; return; }
       h.el.hidden = false;
-      var x = h.c.charAt(1) === 'l' ? p.l : p.l + p.w;
-      var y = h.c.charAt(0) === 't' ? p.t : p.t + p.h;
-      if (y - HANDLE / 2 < hf) { h.el.hidden = true; return; }
-      h.el.style.left = (Math.max(0, Math.min(document.documentElement.clientWidth - HANDLE, x - HANDLE / 2)) + scrollX) + 'px';
-      h.el.style.top = (y + scrollY - HANDLE / 2) + 'px';
+      var hx = /l/.test(h.c) ? 'l' : /r/.test(h.c) ? 'r' : '', vy = /t/.test(h.c) ? 't' : /b/.test(h.c) ? 'b' : '';
+      var x = hx === 'l' ? p.l : hx === 'r' ? p.l + p.w : p.l + p.w / 2;
+      var y = vy === 't' ? p.t : vy === 'b' ? p.t + p.h : p.t + p.h / 2;
+      var hw = h.el.offsetWidth || HANDLE, hh = h.el.offsetHeight || HANDLE;
+      if (y - hh / 2 < hf) { h.el.hidden = true; return; }
+      h.el.style.left = (Math.max(0, Math.min(document.documentElement.clientWidth - hw, x - hw / 2)) + scrollX) + 'px';
+      h.el.style.top = (y + scrollY - hh / 2) + 'px';
     });
   }
   var queued = false;
@@ -178,7 +184,9 @@
     document.body.appendChild(label);
     document.body.appendChild(adjustBtn);
     cards().forEach(function (card) {
-      ['tl', 'tr', 'bl', 'br'].forEach(function (c) {
+      // (the corners move two edges; the sides one — the left and right
+      // bars its width, the top and bottom bars its height)
+      ['tl', 'tr', 'bl', 'br', 'l', 'r', 't', 'b'].forEach(function (c) {
         var el = document.createElement('div');
         el.className = 'nc-edit-handle c-' + c;
         el.title = 'Drag to move this corner · Shift keeps shape · double-click resets';
@@ -191,14 +199,14 @@
           e.preventDefault();
           el.setPointerCapture(e.pointerId);
           var x0 = e.clientX, y0 = e.clientY, ratio = p.h / p.w, W = window.innerWidth;
-          var left = c.charAt(1) === 'l', top = c.charAt(0) === 't';
+          var hx = /l/.test(c) ? 'l' : /r/.test(c) ? 'r' : '', vy = /t/.test(c) ? 't' : /b/.test(c) ? 'b' : '';
           var move = function (ev) {
             var dx = ev.clientX - x0, dy = ev.clientY - y0;
             var l = p.l, r = p.l + p.w;
-            if (left) l = Math.max(0, Math.min(r - 120, p.l + dx));
-            else r = Math.min(W, Math.max(l + 120, p.l + p.w + dx));
+            if (hx === 'l') l = Math.max(0, Math.min(r - 120, p.l + dx));
+            else if (hx === 'r') r = Math.min(W, Math.max(l + 120, p.l + p.w + dx));
             var w = r - l;
-            var hh = ev.shiftKey ? w * ratio : Math.max(90, p.h + (top ? -dy : dy));
+            var hh = ev.shiftKey && hx ? w * ratio : vy ? Math.max(90, p.h + (vy === 't' ? -dy : dy)) : p.h;
             setSize(card, l, w, hh);
             label.hidden = false;
             label.textContent = Math.round(w) + ' × ' + Math.round(hh);
@@ -309,10 +317,16 @@
     var card = hit, x0 = e.clientX, y0 = e.clientY, W = window.innerWidth;
     var dy0 = parseFloat(card.style.getPropertyValue('--ov-dy')) || 0;
     var moved = false;
+    var axis = null;
     var move = function (ev) {
       var dx = ev.clientX - x0, dy = ev.clientY - y0;
       if (!moved && Math.abs(dx) + Math.abs(dy) < 3) return;
       moved = true;
+      // (ONE WAY AT A TIME, 2026-09-24: the carry keeps to the way it
+      // set out in — across or down — once the hand has gone 8; Option
+      // held frees it)
+      if (!axis && Math.max(Math.abs(dx), Math.abs(dy)) >= 8) axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
+      if (!ev.altKey) { if (axis === 'x') dy = 0; else if (axis === 'y') dx = 0; }
       var l = Math.max(0, Math.min(W - p.w, p.l + dx));
       setSize(card, l, p.w, p.h);
       card.style.translate = '0 ' + dy + 'px';
@@ -330,6 +344,7 @@
       choose(card);
       if (!moved) return;
       var dy = ev.clientY - y0;
+      if (axis === 'x' && !ev.altKey) dy = 0;
       card.style.setProperty('--ov-dy', (dy0 + dy / W).toFixed(5));
       dirty();
       refit();
