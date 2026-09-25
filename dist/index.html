@@ -8332,7 +8332,10 @@
     '.nc-edit-bar button{font:inherit;text-transform:inherit;color:#121417;background:#fff;border:0;padding:6px 8px;cursor:pointer}' +
     '.nc-edit-bar button.is-go{background:#1184C4;color:#fff}' +
     '.nc-edit-dirty .nc-edit-bar{border-color:#fff}' +
-    '.nc-edit-on main.has-mega .card--mega .card-title.hl-rect.rx::before,.nc-edit-on main.has-mega .card--mega .latest-title.hl-rect.rx::before{cursor:move}';
+    '.nc-edit-adjust{position:absolute;z-index:2147483000;font:12px/1 Courier,monospace;text-transform:uppercase;color:#fff;background:#1184C4;border:2px solid #fff;padding:6px 8px;cursor:pointer}' +
+    '.nc-edit-on main.has-mega .page-rows .card{pointer-events:none!important}' +
+    '.nc-edit-on body{cursor:default}' +
+    '.nc-edit-handle[hidden],.nc-edit-adjust[hidden]{display:none!important}';
   document.head.appendChild(style);
   var bar = document.createElement('div');
   bar.className = 'nc-edit-bar';
@@ -8347,13 +8350,26 @@
   label.className = 'nc-edit-size';
   label.hidden = true;
   function wide() { return window.innerWidth >= 1024; }
+  function headFoot() {
+    var el = document.querySelector('.page-rows > .sub-ticker--head') || document.querySelector('.page-rows > .section-band');
+    return el ? el.getBoundingClientRect().bottom : 0;
+  }
   function place() {
+    var hf = headFoot();
+    var cp = current && wide() && picOf(current);
+    if (cp && cp.t + 12 < hf) cp = null;
+    adjustBtn.hidden = !cp;
+    if (cp) {
+      adjustBtn.style.left = (cp.l + scrollX + 12) + 'px';
+      adjustBtn.style.top = (cp.t + scrollY + 12) + 'px';
+    }
     handles.forEach(function (h) {
       var p = wide() && picOf(h.card);
       if (!p) { h.el.hidden = true; return; }
       h.el.hidden = false;
       var x = h.c.charAt(1) === 'l' ? p.l : p.l + p.w;
       var y = h.c.charAt(0) === 't' ? p.t : p.t + p.h;
+      if (y - HANDLE / 2 < hf) { h.el.hidden = true; return; }
       h.el.style.left = (Math.max(0, Math.min(document.documentElement.clientWidth - HANDLE, x - HANDLE / 2)) + scrollX) + 'px';
       h.el.style.top = (y + scrollY - HANDLE / 2) + 'px';
     });
@@ -8384,9 +8400,45 @@
     setTimeout(queue, 300); setTimeout(queue, 1200);
   }
   function dirty() { root.classList.add('nc-edit-dirty'); say('Unsaved sizes · Save to keep them'); }
+  var SNAP = 120, current = null;
+  var adjustBtn = document.createElement('button');
+  adjustBtn.type = 'button';
+  adjustBtn.className = 'nc-edit-adjust';
+  adjustBtn.textContent = 'Adjust';
+  adjustBtn.hidden = true;
+  function choose(card) { current = card; queue(); }
+  function adjust(card) {
+    var p = picOf(card);
+    if (!p) return;
+    var W = window.innerWidth, l = p.l, r = p.l + p.w;
+    var lefts = [36, W / 2 + 18], rights = [W - 36, W / 2 - 18];
+    cards().forEach(function (o) {
+      if (o === card) return;
+      var q = picOf(o);
+      if (!q || !(q.t < p.t + p.h + 72 && p.t < q.t + q.h + 72)) return;
+      if (q.l + q.w / 2 < p.l + p.w / 2) lefts.push(q.l + q.w + 36); else rights.push(q.l - 36);
+    });
+    var near = function (v, list) {
+      var best = v, d = SNAP;
+      list.forEach(function (c) { if (Math.abs(c - v) < d) { d = Math.abs(c - v); best = c; } });
+      return best;
+    };
+    var nl = near(l, lefts), nr = near(r, rights);
+    if (nr - nl < 120) { nl = l; nr = r; }
+    setSize(card, nl, nr - nl, p.h);
+    card.style.removeProperty('--ov-dy');
+    say('Adjusted to the 36s · Save to keep it');
+    root.classList.add('nc-edit-dirty');
+    refit();
+  }
+  adjustBtn.addEventListener('click', function () { if (current) adjust(current); });
+  window.addEventListener('keydown', function (e) {
+    if ((e.key === 'a' || e.key === 'A') && current && !e.metaKey && !e.ctrlKey && !(e.target && /input|textarea/i.test(e.target.tagName))) adjust(current);
+  });
   function start() {
     document.body.appendChild(bar);
     document.body.appendChild(label);
+    document.body.appendChild(adjustBtn);
     cards().forEach(function (card) {
       ['tl', 'tr', 'bl', 'br'].forEach(function (c) {
         var el = document.createElement('div');
@@ -8421,6 +8473,7 @@
             el.removeEventListener('pointerup', up);
             el.removeEventListener('pointercancel', up);
             label.hidden = true;
+            choose(card);
             dirty();
             refit();
           };
@@ -8459,7 +8512,7 @@
     if (!b) return;
     var act = b.getAttribute('data-act');
     if (act === 'exit') { location.search = location.search.replace(/[?&]edit\b[^&]*/, '').replace(/^&/, '?'); return; }
-    if (act === 'reset') { cards().forEach(clearSize); dirty(); refit(); return; }
+    if (act === 'reset') { cards().forEach(clearSize); current = null; dirty(); refit(); return; }
     if (act === 'save') {
       var data = collect();
       say('Saving and rebuilding…');
@@ -8477,8 +8530,19 @@
         });
     }
   });
-  var own = function (t) { return t && t.closest && t.closest('.nc-edit-handle, .nc-edit-bar'); };
+  var own = function (t) { return t && t.closest && t.closest('.nc-edit-handle, .nc-edit-bar, .nc-edit-adjust'); };
   root.classList.add('nc-edit-on');
+  window.addEventListener('pointermove', function (e) {
+    if (e.buttons) return;
+    var over = wide() && !own(e.target) && cards().some(function (card) {
+      var q = picOf(card);
+      return q && e.clientX >= q.l && e.clientX <= q.l + q.w && e.clientY >= q.t && e.clientY <= q.t + q.h;
+    });
+    document.body.style.cursor = over ? 'move' : '';
+  }, true);
+  ['pointermove', 'mousemove', 'pointerover', 'mouseover', 'pointerenter', 'mouseenter'].forEach(function (type) {
+    window.addEventListener(type, function (e) { if (!own(e.target)) e.stopPropagation(); }, true);
+  });
   window.addEventListener('pointerdown', function (e) {
     if (e.button !== 0 || !wide() || own(e.target)) return;
     var hit = null, p = null;
@@ -8510,6 +8574,7 @@
       window.removeEventListener('pointerup', up, true);
       label.hidden = true;
       card.style.translate = '';
+      choose(card);
       if (!moved) return;
       var dy = ev.clientY - y0;
       card.style.setProperty('--ov-dy', (dy0 + dy / W).toFixed(5));
