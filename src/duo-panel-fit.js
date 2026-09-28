@@ -6942,6 +6942,11 @@
       // second card can be drawn up beside the first and the row under
       // the pair spaced from the lower of the two, all in one pass)
       var acc = 0, prevFoot = null, prevPic = null, cols = [];
+      // (THE LATEST IN ONE STACK, 2026-09-28: style.css says so on the
+      // movement from 1024 up; the hand-set offsets down the page are
+      // not read there)
+      var stacked = !ONE_COL.matches && body.parentElement.classList.contains('m--latest')
+        && getComputedStyle(body.parentElement).getPropertyValue('--latest-stack').trim() === '1';
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
@@ -6984,7 +6989,10 @@
                 var lWide = !ONE_COL.matches;
                 var lShift = (bandFoot + (lWide ? ROW_GAP : 72)) - (lb - lm.actualBoundingBoxAscent);
                 lh.style.top = ((parseFloat(lh.style.top) || 0) + lShift).toFixed(2) + 'px';
-                firstAt = lWide ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
+                // (THE LATEST IN ONE STACK, 2026-09-28: the pictures down
+                // the middle begin 36 under the name's baseline, not beside
+                // it — the name keeps the top right)
+                firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
               }
             }
             rowDelta = firstAt - ink.t; hasJob = true;
@@ -7076,7 +7084,7 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
-        var ovY = ONE_COL.matches ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
+        var ovY = ONE_COL.matches || stacked ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
         if (isFinite(ovY) && pic && anchorTop != null) {
           anyPin = true;
           rowDelta = (anchorTop + ovY * window.innerWidth) - (pic.t + acc);
@@ -7085,7 +7093,7 @@
         // (A PICTURE MOVED BY HAND, 2026-09-24: the edit mode's offset,
         // --ov-dy, a share of the window's width, is added to the seat the
         // rules give it, and the cards under it seat from where it stands)
-        var ovDy = ONE_COL.matches || isFinite(ovY) ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
+        var ovDy = ONE_COL.matches || stacked || isFinite(ovY) ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
         if (ovDy && hasJob) rowDelta += ovDy * window.innerWidth;
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
