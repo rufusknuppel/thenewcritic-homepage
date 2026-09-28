@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=bd1f51ea">
+<link rel="stylesheet" href="style.css?v=68e09f2c">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6374,6 +6374,7 @@
           var cd3 = card.querySelector('.cover-meta--cdate');
           if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
           var line3 = [kk3, cd3, kc].filter(Boolean);
+          [kk3, cd3, kc].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
           var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
           var gap3 = 1.8 * fs3;
           var x3 = frL;

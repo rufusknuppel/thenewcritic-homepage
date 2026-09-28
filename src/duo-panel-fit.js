@@ -9774,6 +9774,10 @@
           var cd3 = card.querySelector('.cover-meta--cdate');
           if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
           var line3 = [kk3, cd3, kc].filter(Boolean);
+          // (the line's first word carries no dot before it: style.css,
+          // THE LINE IS WHATEVER IT HAS — stated before the seats are
+          // read, since the dot is part of the word's box)
+          [kk3, cd3, kc].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
           var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
           var gap3 = 1.8 * fs3;
           var x3 = frL;
