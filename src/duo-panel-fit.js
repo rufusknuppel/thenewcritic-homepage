@@ -9765,55 +9765,54 @@
           // courier's characters on, the dot in the middle one)
           // (the date is struck from the essay's line, 2026-09-23: KICKER |
           // AUTHOR)
-          var ke = kk3 && inkEdges(kk3);
-          if (kc && ke) seat(kc, hy, hEdge, { inkL: ke.r + 1.8 * (parseFloat(getComputedStyle(kc).fontSize) || 13) });
-          // (the lead post's line carries its date, KICKER | DATE |
-          // AUTHOR: 2026-09-23)
-          // (and every post's since, 2026-09-23: the postscripts', the
-          // reviews' and the essays')
-          if (kk3 && ke) {
-            // (and its date back, between the kicker and the author)
-            var cd3 = card.querySelector('.cover-meta--cdate');
-            var gap3 = 1.8 * (parseFloat(getComputedStyle(kk3).fontSize) || 13);
-            if (kc) kc.classList.remove('is-wrapped');
-            if (cd3 && (cd3.textContent || '').trim()) {
-              seat(cd3, hy, hEdge, { inkL: ke.r + gap3 });
-              var de3 = inkEdges(cd3);
-              if (kc && de3) seat(kc, hy, hEdge, { inkL: de3.r + gap3 });
-            } else cd3 = null;
-            // (THE AUTHOR TAKES A LINE OF ITS OWN where the one line would
-            // run past the picture — a postscript's portrait is one column
-            // wide — under the first, from the picture's left edge and
-            // without its bar: 2026-09-23. The title follows the lower
-            // line, seatSwapCols reading the courier's lowest ink.)
-            var ae3 = kc && inkEdges(kc);
-            if (ae3 && ae3.r > frR + 0.5) {
-              kc.classList.add('is-wrapped');
-              seat(kc, hy + 1.6 * (parseFloat(getComputedStyle(kc).fontSize) || 13), hEdge, { inkL: frL });
-            }
-            // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): on a
-            // card set right (.card--align-r, build.js — every other essay,
-            // the right-hand card of a pair) each line of the courier ends
-            // on the picture's right edge instead of opening on its left.
-            // Seated from the left as above, then carried across whole —
-            // written on the transforms alone, so no read follows: the
-            // inks' widths do not change with the carry.
-            if (card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
-              var carry = function (el, d) {
-                if (!el) return;
-                el.style.setProperty('--rb-dx', ((parseFloat(el.style.getPropertyValue('--rb-dx')) || 0) + d).toFixed(2) + 'px');
-              };
-              var wrapped3 = !!(kc && ae3 && kc.classList.contains('is-wrapped'));
-              var end3 = kc && ae3 && !wrapped3 ? ae3.r : cd3 && de3 ? de3.r : ke.r;
-              var d3 = frR - end3;
-              carry(kk3, d3);
-              if (cd3) carry(cd3, d3);
-              if (kc && ae3 && !wrapped3) carry(kc, d3);
-              // (the author on its own line: from the left edge, its ink as
-              // wide as it was)
-              if (wrapped3) carry(kc, frR - (frL + (ae3.r - ae3.l)));
-              if (frR > r) r = frR;
-            }
+          // THE LINE IS WHATEVER IT HAS (2026-09-28): KICKER | DATE |
+          // AUTHOR, each after the last, from the picture's left edge —
+          // and a post with no kicker (the newest two, not yet in
+          // content-overrides.js) still has its date and its author
+          // seated. (They were seated only after a kicker, and without
+          // one stood unseated on one another at the card's corner.)
+          var cd3 = card.querySelector('.cover-meta--cdate');
+          if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
+          var line3 = [kk3, cd3, kc].filter(Boolean);
+          var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
+          var gap3 = 1.8 * fs3;
+          var x3 = frL;
+          line3.forEach(function (el) {
+            seat(el, hy, hEdge, { inkL: x3 });
+            var e3 = inkEdges(el);
+            if (e3) x3 = e3.r + gap3;
+          });
+          // (THE AUTHOR TAKES A LINE OF ITS OWN where the one line would
+          // run past the picture — a postscript's portrait is one column
+          // wide — under the first, from the picture's left edge and
+          // without its bar: 2026-09-23. The title follows the lower
+          // line, seatSwapCols reading the courier's lowest ink.)
+          if (kc) kc.classList.remove('is-wrapped');
+          var ae3 = kc && inkEdges(kc);
+          if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
+            kc.classList.add('is-wrapped');
+            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
+          }
+          // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): on a
+          // card set right (.card--align-r, build.js — every other essay,
+          // the right-hand card of a pair) each line of the courier ends
+          // on the picture's right edge instead of opening on its left.
+          // Seated from the left as above, then carried across whole —
+          // written on the transforms alone, so no read follows: the
+          // inks' widths do not change with the carry.
+          if (line3.length && card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
+            var carry = function (el, d) {
+              if (!el) return;
+              el.style.setProperty('--rb-dx', ((parseFloat(el.style.getPropertyValue('--rb-dx')) || 0) + d).toFixed(2) + 'px');
+            };
+            var wrapped3 = !!(kc && kc.classList.contains('is-wrapped'));
+            var first3 = line3.filter(function (el) { return !(el === kc && wrapped3); });
+            var last3 = first3[first3.length - 1], le3 = last3 && inkEdges(last3);
+            if (le3) { var d3 = frR - le3.r; first3.forEach(function (el) { carry(el, d3); }); }
+            // (the author on its own line: from the left edge, its ink as
+            // wide as it was)
+            if (wrapped3 && ae3) carry(kc, frR - (frL + (ae3.r - ae3.l)));
+            if (frR > r) r = frR;
           }
           }
         } else {
