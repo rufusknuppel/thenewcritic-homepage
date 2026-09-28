@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=1a9eed11">
+<link rel="stylesheet" href="style.css?v=b38882de">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4612,6 +4612,8 @@
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
       var acc = 0, prevFoot = null, prevPic = null, cols = [];
+      var stacked = !ONE_COL.matches && body.parentElement.classList.contains('m--latest')
+        && getComputedStyle(body.parentElement).getPropertyValue('--latest-stack').trim() === '1';
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var rowDelta = 0, hasJob = false;
@@ -4636,7 +4638,7 @@
                 var lWide = !ONE_COL.matches;
                 var lShift = (bandFoot + (lWide ? ROW_GAP : 72)) - (lb - lm.actualBoundingBoxAscent);
                 lh.style.top = ((parseFloat(lh.style.top) || 0) + lShift).toFixed(2) + 'px';
-                firstAt = lWide ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
+                firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
               }
             }
             rowDelta = firstAt - ink.t; hasJob = true;
@@ -4683,13 +4685,13 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
-        var ovY = ONE_COL.matches ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
+        var ovY = ONE_COL.matches || stacked ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
         if (isFinite(ovY) && pic && anchorTop != null) {
           anyPin = true;
           rowDelta = (anchorTop + ovY * window.innerWidth) - (pic.t + acc);
           hasJob = true; stepped = true;
         }
-        var ovDy = ONE_COL.matches || isFinite(ovY) ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
+        var ovDy = ONE_COL.matches || stacked || isFinite(ovY) ? 0 : parseFloat(row.style.getPropertyValue('--ov-dy')) || 0;
         if (ovDy && hasJob) rowDelta += ovDy * window.innerWidth;
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
