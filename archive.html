@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b38882de">
+<link rel="stylesheet" href="style.css?v=eb3a0b23">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7282,36 +7282,34 @@
             pk.style.setProperty('--rb-dy', ((cr.bottom - REST_INSET) + 1 - (pbr.bottom - pwy)).toFixed(2) + 'px');
             pk.classList.add('rb-in');
           }
-          var ke = kk3 && inkEdges(kk3);
-          if (kc && ke) seat(kc, hy, hEdge, { inkL: ke.r + 1.8 * (parseFloat(getComputedStyle(kc).fontSize) || 13) });
-          if (kk3 && ke) {
-            var cd3 = card.querySelector('.cover-meta--cdate');
-            var gap3 = 1.8 * (parseFloat(getComputedStyle(kk3).fontSize) || 13);
-            if (kc) kc.classList.remove('is-wrapped');
-            if (cd3 && (cd3.textContent || '').trim()) {
-              seat(cd3, hy, hEdge, { inkL: ke.r + gap3 });
-              var de3 = inkEdges(cd3);
-              if (kc && de3) seat(kc, hy, hEdge, { inkL: de3.r + gap3 });
-            } else cd3 = null;
-            var ae3 = kc && inkEdges(kc);
-            if (ae3 && ae3.r > frR + 0.5) {
-              kc.classList.add('is-wrapped');
-              seat(kc, hy + 1.6 * (parseFloat(getComputedStyle(kc).fontSize) || 13), hEdge, { inkL: frL });
-            }
-            if (card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
-              var carry = function (el, d) {
-                if (!el) return;
-                el.style.setProperty('--rb-dx', ((parseFloat(el.style.getPropertyValue('--rb-dx')) || 0) + d).toFixed(2) + 'px');
-              };
-              var wrapped3 = !!(kc && ae3 && kc.classList.contains('is-wrapped'));
-              var end3 = kc && ae3 && !wrapped3 ? ae3.r : cd3 && de3 ? de3.r : ke.r;
-              var d3 = frR - end3;
-              carry(kk3, d3);
-              if (cd3) carry(cd3, d3);
-              if (kc && ae3 && !wrapped3) carry(kc, d3);
-              if (wrapped3) carry(kc, frR - (frL + (ae3.r - ae3.l)));
-              if (frR > r) r = frR;
-            }
+          var cd3 = card.querySelector('.cover-meta--cdate');
+          if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
+          var line3 = [kk3, cd3, kc].filter(Boolean);
+          var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
+          var gap3 = 1.8 * fs3;
+          var x3 = frL;
+          line3.forEach(function (el) {
+            seat(el, hy, hEdge, { inkL: x3 });
+            var e3 = inkEdges(el);
+            if (e3) x3 = e3.r + gap3;
+          });
+          if (kc) kc.classList.remove('is-wrapped');
+          var ae3 = kc && inkEdges(kc);
+          if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
+            kc.classList.add('is-wrapped');
+            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
+          }
+          if (line3.length && card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
+            var carry = function (el, d) {
+              if (!el) return;
+              el.style.setProperty('--rb-dx', ((parseFloat(el.style.getPropertyValue('--rb-dx')) || 0) + d).toFixed(2) + 'px');
+            };
+            var wrapped3 = !!(kc && kc.classList.contains('is-wrapped'));
+            var first3 = line3.filter(function (el) { return !(el === kc && wrapped3); });
+            var last3 = first3[first3.length - 1], le3 = last3 && inkEdges(last3);
+            if (le3) { var d3 = frR - le3.r; first3.forEach(function (el) { carry(el, d3); }); }
+            if (wrapped3 && ae3) carry(kc, frR - (frL + (ae3.r - ae3.l)));
+            if (frR > r) r = frR;
           }
           }
         } else {
