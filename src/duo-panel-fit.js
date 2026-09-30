@@ -7038,7 +7038,9 @@
         // (a card's side is its words' side, .card--align-r — essays,
         // pairs and flipped pairs alike; the picture stands on it)
         var side = row.classList.contains('card--align-r') ? 'r' : 'l';
-        var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
+        // (never in THE LATEST's stack: every card there stands under the
+        // one before it, or beside it — THE LEAD AND THE FIRST POSTSCRIPT)
+        var stepped = !ONE_COL.matches && !stacked && !!prev && !!pic && !!prevPic
           && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
           && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l')
           && !sharesWidth(prev, row);
@@ -7079,7 +7081,9 @@
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row)) {
+          // (after the pair, from the lower of the two: prevFoot is already
+          // the lower, and the last picture alone would not say it)
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--duo-beside'))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: the 36 is
@@ -7091,6 +7095,13 @@
             cols.forEach(function (c) { if (c.side === side) tgt = Math.max(tgt, c.foot + COURIER_GAP - (myTop - (pic.t + acc))); });
             rowDelta = tgt - (pic.t + acc);
           }
+        }
+        // THE LEAD AND THE FIRST POSTSCRIPT SIDE BY SIDE (2026-09-30): in
+        // the stack the postscript's picture stands level with the lead
+        // essay's, beside it (style.css sets their sizes and sides); the
+        // row under stands 36 under the lower of the two (prevFoot).
+        if (stacked && pic && prevPic && row.classList.contains('card--duo-beside') && prev.classList.contains('card--duo-lead')) {
+          rowDelta = prevPic.t - (pic.t + acc); hasJob = true; stepped = true;
         }
         var ovY = ONE_COL.matches || stacked ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
         if (isFinite(ovY) && pic && anchorTop != null) {

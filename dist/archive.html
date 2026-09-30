@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=0743a973">
+<link rel="stylesheet" href="style.css?v=27368f5d">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -345,8 +345,8 @@
 <main id="main" class="has-mega">
 
   <div class="page-rows">
-  <nav class="section-band section-band--three" aria-label="The Young American Magazine">
-    <p class="band-deks band-name"><a href="./#top">The Young American Magazine</a></p>
+  <nav class="section-band section-band--three" aria-label="The Last Magazine">
+    <p class="band-deks band-name"><a href="./#top">The Last Magazine</a></p>
     <p class="band-deks band-dek"></p>
     <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span></p>
   </nav>
@@ -5565,7 +5565,7 @@
         }
         var pic = picBoxOf(row);
         var side = row.classList.contains('card--align-r') ? 'r' : 'l';
-        var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
+        var stepped = !ONE_COL.matches && !stacked && !!prev && !!pic && !!prevPic
           && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')
           && side !== (prev.classList.contains('card--align-r') ? 'r' : 'l')
           && !sharesWidth(prev, row);
@@ -5588,7 +5588,7 @@
             }
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row)) {
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--duo-beside'))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             var over = (pic.t + acc) - myTop;
@@ -5597,6 +5597,9 @@
             cols.forEach(function (c) { if (c.side === side) tgt = Math.max(tgt, c.foot + COURIER_GAP - (myTop - (pic.t + acc))); });
             rowDelta = tgt - (pic.t + acc);
           }
+        }
+        if (stacked && pic && prevPic && row.classList.contains('card--duo-beside') && prev.classList.contains('card--duo-lead')) {
+          rowDelta = prevPic.t - (pic.t + acc); hasJob = true; stepped = true;
         }
         var ovY = ONE_COL.matches || stacked ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
         if (isFinite(ovY) && pic && anchorTop != null) {

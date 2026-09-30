@@ -57,7 +57,7 @@ const BUILD_STAMP = crypto.createHash('sha1')
   .digest('hex').slice(0, 8);
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
-const SITE_TAGLINE = 'The Young American Magazine';
+const SITE_TAGLINE = 'The Last Magazine';
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
 // deploy by cloudflare/worker.js. Social cards need absolute URLs, and
@@ -1380,7 +1380,7 @@ function bandDate() {
 // charcoal of its own under the head band. It is back in the band's
 // middle, 2026-09-23, and the seam is struck — renderSectionBand.)
 function mastheadLine() {
-  return `<a href="./">The Young American Magazine</a>
+  return `<a href="./">The Last Magazine</a>
       <span>${bandDate()}</span>`;
 }
 // EVERY BAND READS IN THREE SLOTS, and the same three everywhere:
@@ -1411,7 +1411,7 @@ function bandName(html) {
 // THE BAND'S NAMES DO LINK, and to the TOP of the front page (#top is
 // the id on .page-rows), since the band is the one place the name is
 // furniture a reader steers by rather than a masthead.
-const TYAM_LINK = '<a href="./#top">The Young American Magazine</a>';
+const TYAM_LINK = '<a href="./#top">The Last Magazine</a>';
 // The section's own line, in the courier at the right.
 const BAND_LINES = {
   essays: 'The Greatest Writing on Gen Z',
@@ -1462,7 +1462,7 @@ function renderSocialStack() {
 }
 // THE MIDDLE SLOT IS EMPTY ON THE WORD PAGES (2026-09-19). The
 // magazine's name stood a second time in the band's middle there —
-// THE NEW CRITIC in miniature between The Young American Magazine and
+// THE NEW CRITIC in miniature between The Last Magazine (the Young American Magazine till 2026-09-30) and
 // the list of links, sized off the reprint's fit — and it was never
 // optically centred in the band it stood in: 31.8 of air over its
 // caps against 15.4 under its baseline, the band's own box centred
@@ -1509,7 +1509,7 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
     // too (bareMid still keeps their own line out of it): it gives its
     // seat to the band's miniature THE NEW CRITIC as the big name goes
     // under the band (src/band-mark.js).
-    return `<nav class="section-band section-band--three" aria-label="The Young American Magazine">
+    return `<nav class="section-band section-band--three" aria-label="The Last Magazine">
     ${bandName(TYAM_LINK)}
     <p class="band-deks band-dek">${mid && !bareMid ? `<span>${escapeHtml(mid)}</span>` : ''}</p>
     <p class="band-deks">${links}</p>
@@ -2354,7 +2354,7 @@ const stackHtml = (text, side = 'right', href = 'archive.html') => `<a class="la
 // (a postscript's portrait, a review's square: style.css, ONE LINE OF
 // POSTS). `kind` names which; the card is the essay's in every other
 // respect, the fitter's essay paths and all.
-function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '', flip = false, trueHeight = false, trueWidth = false } = {}) {
+function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '', flip = false, trueHeight = false, trueWidth = false, duo = '', duoR = 0 } = {}) {
   if (!post) return '';
   const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev, megaKind: kind }, `duo-half--wide duo-half--mega${kind ? ` duo-half--kind-${kind}` : ''}`);
   // (The hero's masthead row is retired — the top header carries the
@@ -2391,9 +2391,13 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   const ov = LAYOUT_OVERRIDES[slug];
   const hasOv = ov && +ov.w > 0 && +ov.r > 0;
   const hasX = hasOv && ov.x != null && +ov.x >= 0 && +ov.x <= 1;
-  const styles = [picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
+  // THE LEAD AND THE FIRST POSTSCRIPT SIDE BY SIDE (2026-09-30): both
+  // cards carry the lead essay's proportions (--duo-r), so the sheet can
+  // solve one picture height that fits the two across the window
+  // (style.css, THE LEAD AND THE FIRST POSTSCRIPT SIDE BY SIDE).
+  const styles = [duo && duoR > 0 ? `--duo-r: ${duoR.toFixed(4)}` : '', picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
   const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}${hasX ? ' card--ovx' : ''}"${styles ? ` style="${styles}"` : ''} data-slug="${escapeHtml(slug)}`;
-  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${trueH}">
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${duo ? ` card--duo-${duo}` : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2653,7 +2657,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // below with the latest row.
   // EVERY ESSAY TURNED (2026-09-18): picture LEFT on the lead, then
   // alternating — each card the mirror of what it was.
-  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html', trueHeight: true }));
+  // (the lead essay's proportions, off the _WxH in its cover's file
+  // name, for the pair beside it: THE LEAD AND THE FIRST POSTSCRIPT)
+  const leadDims = essays[0] && /_(\d+)x(\d+)\.[a-z]+$/i.exec(decodeURIComponent(essays[0].image || ''));
+  const leadR = leadDims && +leadDims[1] > 0 ? +leadDims[2] / +leadDims[1] : 0.75;
+  const duoOn = !!(essays[0] && postscripts[0]);
+  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html', trueHeight: true, duo: duoOn ? 'lead' : '', duoR: leadR }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
   // (ONE LINE OF POSTS, 2026-09-23: every essay the one way round now —
@@ -2663,7 +2672,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // (TWO ACROSS, 2026-09-23, later: the postscript and the review side by
   // side, the review's square centred on the portrait — style.css, ONE
   // LINE OF POSTS; seatRowGaps)
-  blocks.push(renderMegaHero(postscripts[0], { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: contras[0] ? 'a' : '', flip: true }));
+  blocks.push(renderMegaHero(postscripts[0], { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: contras[0] ? 'a' : '', flip: true, duo: duoOn ? 'beside' : '', duoR: leadR }));
   blocks.push(renderMegaHero(contras[0], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[0] ? 'b' : '', flip: true }));
   // (SUBSCRIBE IS OFF THE FRONT PAGE'S BODY, 2026-09-19. The word stood
   // under the latest row in the sections' own dress, carrying the offer
