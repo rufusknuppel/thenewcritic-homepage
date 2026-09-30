@@ -134,8 +134,12 @@
 
   function setSize(card, xPx, wPx, hPx) {
     var W = window.innerWidth;
+    // (EVERY PICTURE A TENTH SMALLER, style.css: the sheet multiplies
+    // the share by --pic-scale, so the share is written undone by it,
+    // and the dragged width comes back as dragged)
+    var S = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pic-scale')) || 1;
     card.style.setProperty('--ov-x', (xPx / W).toFixed(5));
-    card.style.setProperty('--ov-w', (wPx / W).toFixed(5));
+    card.style.setProperty('--ov-w', (wPx / (W * S)).toFixed(5));
     card.style.setProperty('--ov-r', (hPx / wPx).toFixed(5));
     card.classList.add('card--ov', 'card--ovx');
   }

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5b7ad7d8">
+<link rel="stylesheet" href="style.css?v=0743a973">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -8476,8 +8476,9 @@
   }
   function setSize(card, xPx, wPx, hPx) {
     var W = window.innerWidth;
+    var S = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pic-scale')) || 1;
     card.style.setProperty('--ov-x', (xPx / W).toFixed(5));
-    card.style.setProperty('--ov-w', (wPx / W).toFixed(5));
+    card.style.setProperty('--ov-w', (wPx / (W * S)).toFixed(5));
     card.style.setProperty('--ov-r', (hPx / wPx).toFixed(5));
     card.classList.add('card--ov', 'card--ovx');
   }
