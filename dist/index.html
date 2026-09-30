@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=68e09f2c">
+<link rel="stylesheet" href="style.css?v=5b7ad7d8">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5335,6 +5335,8 @@
         && getComputedStyle(body.parentElement).getPropertyValue('--latest-stack').trim() === '1';
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
+        var cur = rowCourier(row);
+        var topInk = function () { return Math.min(ink ? ink.t : Infinity, cur ? cur.t : Infinity); };
         var rowDelta = 0, hasJob = false;
         var el = row;
         if (!prev && ink && body.parentElement.classList.contains('m--latest')) {
@@ -5360,16 +5362,15 @@
                 firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
               }
             }
-            rowDelta = firstAt - ink.t; hasJob = true;
+            rowDelta = firstAt - topInk(); hasJob = true;
           }
         }
         if (!prev && ink && !body.parentElement.classList.contains('m--latest')) {
           var sb = body.parentElement.querySelector(':scope > .page-banner--section');
           var sAnchor = sb && (sb.querySelector('.banner-line--below') || sb.querySelector('.banner-name'));
           var sBase = sAnchor && baselineOf(sAnchor);
-          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - ink.t; hasJob = true; }
+          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - topInk(); hasJob = true; }
         }
-        var cur = rowCourier(row);
         var pic = picBoxOf(row);
         var side = row.classList.contains('card--align-r') ? 'r' : 'l';
         var stepped = !ONE_COL.matches && !!prev && !!pic && !!prevPic
@@ -5397,9 +5398,10 @@
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
           if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row)) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
-            var tgt = prevPic.t + Math.round(prevPic.b - prevPic.t) + PAIR_STEP;
-            if (pw && across(pw, mySpan)) tgt = Math.max(tgt, prevFoot + COURIER_GAP);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
+            var over = (pic.t + acc) - myTop;
+            var tgt = prevPic.t + Math.round(prevPic.b - prevPic.t) + PAIR_STEP + over;
+            if (pw && across(pw, mySpan)) tgt = Math.max(tgt, prevFoot + COURIER_GAP + over);
             cols.forEach(function (c) { if (c.side === side) tgt = Math.max(tgt, c.foot + COURIER_GAP - (myTop - (pic.t + acc))); });
             rowDelta = tgt - (pic.t + acc);
           }
@@ -7070,8 +7072,8 @@
           var hy = cr.top + REST_INSET / 2, fy = cr.bottom - REST_INSET / 2;
           if (!card.matches('.duo-half--mega')) corners(hy, fy, frL, frR, kc);
           else {
-          hy = cr.bottom - REST_INSET + ESSAY_COURIER_GAP;
-          var hEdge = 'top';
+          hy = cr.top + REST_INSET - ESSAY_COURIER_GAP;
+          var hEdge = 'bot';
           var kk3 = card.querySelector('.cover-meta--ckick');
           if (kk3) seat(kk3, hy, hEdge, { inkL: frL });
           var pkArrow = 0;
@@ -7106,7 +7108,14 @@
           var ae3 = kc && inkEdges(kc);
           if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
             kc.classList.add('is-wrapped');
-            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
+            var x3b = frL;
+            line3.forEach(function (el) {
+              if (el === kc) return;
+              seat(el, hy - 1.6 * fs3, hEdge, { inkL: x3b });
+              var e3b = inkEdges(el);
+              if (e3b) x3b = e3b.r + gap3;
+            });
+            seat(kc, hy, hEdge, { inkL: frL });
           }
           if (line3.length && card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
             var carry = function (el, d) {

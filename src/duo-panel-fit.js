@@ -6949,6 +6949,10 @@
         && getComputedStyle(body.parentElement).getPropertyValue('--latest-stack').trim() === '1';
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
+        // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: a row's first
+        // ink is its courier line, read here so the first rows seat by it)
+        var cur = rowCourier(row);
+        var topInk = function () { return Math.min(ink ? ink.t : Infinity, cur ? cur.t : Infinity); };
         var rowDelta = 0, hasJob = false;
         // (the card's own margin, over the margins it already has: a
         // wrap's collapses into the card's negative one and moves nothing)
@@ -6995,7 +6999,7 @@
                 firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
               }
             }
-            rowDelta = firstAt - ink.t; hasJob = true;
+            rowDelta = firstAt - topInk(); hasJob = true;
           }
         }
         // (a section's first row 36 under its dek's baseline — or its
@@ -7007,12 +7011,12 @@
           var sBase = sAnchor && baselineOf(sAnchor);
           // (under its LAST line: on a phone the tag runs to two, and the
           // row stood over the second — ONE COLUMN ON A PHONE, 2026-09-24)
-          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - ink.t; hasJob = true; }
+          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - topInk(); hasJob = true; }
         }
         // 54 BETWEEN THE COURIER LINES (2026-09-23): the rows stand off
         // one another by their courier labels' ink — the foot line of the
         // row over, the head line of the row under — 54 apart.
-        var cur = rowCourier(row);
+        // (cur, the row's courier ink, is read above)
         // (the second of a pair beside the first, its picture centred on
         // the first's top to bottom: style.css, ONE LINE OF POSTS)
         // THE PAIR STEPS DOWN (2026-09-24): the second's picture no
@@ -7077,9 +7081,13 @@
           // where they stand over it — 36 AROUND THE INK)
           if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row)) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
-            var tgt = prevPic.t + Math.round(prevPic.b - prevPic.t) + PAIR_STEP;
-            if (pw && across(pw, mySpan)) tgt = Math.max(tgt, prevFoot + COURIER_GAP);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
+            // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: the 36 is
+            // kept from the card's highest ink — its courier line, `over`
+            // above its picture — not from the picture's own top)
+            var over = (pic.t + acc) - myTop;
+            var tgt = prevPic.t + Math.round(prevPic.b - prevPic.t) + PAIR_STEP + over;
+            if (pw && across(pw, mySpan)) tgt = Math.max(tgt, prevFoot + COURIER_GAP + over);
             cols.forEach(function (c) { if (c.side === side) tgt = Math.max(tgt, c.foot + COURIER_GAP - (myTop - (pic.t + acc))); });
             rowDelta = tgt - (pic.t + acc);
           }
@@ -9726,8 +9734,15 @@
           // line, the title and the dek under that)
           // (its caps' tops 18 under the picture's foot — the picture's foot
           // is the frame's less its REST_INSET: 2026-09-23)
-          hy = cr.bottom - REST_INSET + ESSAY_COURIER_GAP;
-          var hEdge = 'top';
+          // THE COURIER STANDS OVER THE PICTURE (2026-09-30, at the user's
+          // word): the line's ink foot 18 over the picture's top — the
+          // picture's top is the frame's plus its REST_INSET — and the
+          // title stands 18 under the picture's foot as before
+          // (seatSwapCols reads no courier under the picture and seats the
+          // title from the foot itself); a row's highest ink is its
+          // courier now (seatRowGaps).
+          hy = cr.top + REST_INSET - ESSAY_COURIER_GAP;
+          var hEdge = 'bot';
           // (KICKER · DATE · AUTHOR from the picture's left edge, 2026-09-23)
           var kk3 = card.querySelector('.cover-meta--ckick');
           if (kk3) seat(kk3, hy, hEdge, { inkL: frL });
@@ -9795,7 +9810,17 @@
           var ae3 = kc && inkEdges(kc);
           if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
             kc.classList.add('is-wrapped');
-            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
+            // (over the picture the author keeps the line nearest it, its
+            // foot 18 over the picture, and the first line stands a line
+            // over that — re-seated from the picture's left: 2026-09-30)
+            var x3b = frL;
+            line3.forEach(function (el) {
+              if (el === kc) return;
+              seat(el, hy - 1.6 * fs3, hEdge, { inkL: x3b });
+              var e3b = inkEdges(el);
+              if (e3b) x3b = e3b.r + gap3;
+            });
+            seat(kc, hy, hEdge, { inkL: frL });
           }
           // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): on a
           // card set right (.card--align-r, build.js — every other essay,
