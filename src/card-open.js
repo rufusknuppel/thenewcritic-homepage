@@ -65,7 +65,7 @@
         [].forEach.call(r != null ? document.querySelectorAll('section.card[data-row="' + r + '"]') : [], function (s) {
           if (s === sec || s.getAttribute('data-group') !== g) return;
           var m = s.querySelector('.duo-half--mega.is-open');
-          var po = m && m.querySelector('.peek-open');
+          var po = m && m.querySelector('.peek-open, .peek-corner');
           if (po) po.click();
           // (and the mate's own Preview stands down while this is out)
           var u = s.querySelector('.duo-half--mega');
@@ -126,11 +126,10 @@
       // (and Preview in the courier's other corner, 2026-10-01)
       if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
-        // (INERT, NOT GONE, 2026-10-01, at the user's word: while the mate's
-        // picture is out over this card its Preview stands as it is and
-        // answers nothing — the hand cannot reach it (style.css, THE
-        // PREVIEW SLIDES) and a key's press on it ends here)
-        if (card.classList.contains('is-under')) return;
+        // (and a press on the mate's Preview while this card's picture is
+        // out over it sends this one home and opens the mate's — ONE OUT
+        // TO A ROW, in open(); 2026-10-01, "should disengage one preview,
+        // and start other")
         if (card.classList.contains('is-open')) {
           shut();
           try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}

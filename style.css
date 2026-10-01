@@ -22415,14 +22415,11 @@ main.has-mega .duo-half--mega.is-open > .peek-corner > .pk-shut:is(*, .r.r.r.r.r
   main.has-mega .duo-half--mega.is-slide:is(.is-open, .is-opening, .is-shutting) .panel-col--left:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
     display: none !important;
   }
-  /* (the mate's Preview stands INERT while the picture beside it is out
-     — "don't remove preview from other, just make it inert", 2026-10-01:
-     it stays in its place and its ink, the hand cannot reach it, and
-     card-open.js answers no press on it; it was hidden) */
-  main.has-mega .duo-half--mega.is-under > .peek-corner:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    pointer-events: none !important;
-    cursor: default !important;
-  }
+  /* (the mate's Preview stays LIVE while the picture beside it is out —
+     "When other preview is clicked, should disengage one preview, and
+     start other", 2026-10-01: pressed, it sends the open one home and
+     opens its own (card-open.js, ONE OUT TO A ROW). It was hidden, then
+     inert for an hour; .is-under is a marker alone now.) */
 }
 /* (THE PREVIEW SLIDES ends) */
 /* ---------- THE HAND ON A PICTURE TURNS THE WORD ALONE (2026-10-01) ----------
@@ -22470,10 +22467,17 @@ main.has-mega .duo-half--mega > .peek-corner:is(:hover, :focus-visible) *:is(*, 
    At the user's word ("left align deks too"): the dek over a sliding
    preview's column stood centred on it (an essay's dek was centred over
    two columns, THE PREVIEW IN TWO COLUMNS); the column's text is ranged
-   left, and the dek ranges left with it, on the column's left edge. */
-main.has-mega .duo-half--mega.is-slide > .swap-body > .swap-body-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+   left, and the dek ranges left with it, on the column's left edge.
+   (TOTALLY, 2026-10-01, "deks should be totally left-aligned": the first
+   statement, at .r×40, lost to THE ESSAY'S DEK STANDS IN ITS PREVIEW's
+   text-align: center !important at .r×140, and its max-width: 75% kept
+   the dek a narrower box on the column; stated over it, the whole
+   column's width.) */
+main.has-mega .duo-half--mega.is-slide > .swap-body > .swap-body-dek:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   align-self: flex-start !important;
   text-align: left !important;
+  max-width: none !important;
+  width: 100% !important;
 }
 /* (THE PREVIEW'S DEK RANGED LEFT ends) */
 /* ---------- THE SHEET SLIDES WITH THE PICTURE (2026-10-01) ----------

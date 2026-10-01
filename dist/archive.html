@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9c5ff62a">
+<link rel="stylesheet" href="style.css?v=cea9c711">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -8236,7 +8236,7 @@
         [].forEach.call(r != null ? document.querySelectorAll('section.card[data-row="' + r + '"]') : [], function (s) {
           if (s === sec || s.getAttribute('data-group') !== g) return;
           var m = s.querySelector('.duo-half--mega.is-open');
-          var po = m && m.querySelector('.peek-open');
+          var po = m && m.querySelector('.peek-open, .peek-corner');
           if (po) po.click();
           var u = s.querySelector('.duo-half--mega');
           if (u) { u.classList.add('is-under'); card.__under = u; }
@@ -8282,7 +8282,6 @@
     card.addEventListener('click', function (e) {
       if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
-        if (card.classList.contains('is-under')) return;
         if (card.classList.contains('is-open')) {
           shut();
           try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
