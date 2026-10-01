@@ -6401,7 +6401,15 @@
           bs.height = (j.Bd.b - j.Bd.t).toFixed(2) + 'px';
           bs.padding = j.bp.t + 'px ' + j.bp.r + 'px ' + j.bp.b + 'px ' + j.bp.l + 'px';
           var bt = j.body.querySelector(':scope > .swap-body-text') || j.body.firstElementChild;
-          if (bt && j.bfont) {
+          if (bt && j.bfont && j.cols2) {
+            var kb = [(j.Bd.r - j.Bd.l).toFixed(2), (j.Bd.b - j.Bd.t).toFixed(2), j.bp.t, j.bp.r, j.bp.b, j.bp.l, j.blh, j.ncol];
+            for (var kk in j.bfont) kb.push(kk, j.bfont[kk] || '');
+            if (j.dfont) for (var kq in j.dfont) kb.push(kq, j.dfont[kq] || '');
+            kb.push(j.dek ? j.dek.innerHTML : '');
+            j.key = kb.join('\u0001');
+            if (bt.__swapKey === j.key && j.body.querySelector(':scope > .swap-body-close')) { j.kept = true; j.set = true; }
+          }
+          if (bt && j.bfont && !j.kept) {
             j.bt = bt;
             for (var kf in j.bfont) if (j.bfont[kf]) bt.style[kf] = j.bfont[kf];
             if (j.cols2 && !j.body.querySelector(':scope > .swap-body-close')) {
@@ -6490,6 +6498,7 @@
         if (j.pdk) j.pdk.style.transform = shY;
       }
     });
+    twos.forEach(function (j) { j.bt.__swapKey = j.key; });
     jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
     jobs.forEach(function (j) { j.dh = j.sd ? j.sd.getBoundingClientRect().height + SWAP_GAP : 0; });
     jobs.forEach(function (j) {

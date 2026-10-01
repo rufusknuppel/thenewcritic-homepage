@@ -8335,7 +8335,24 @@
           bs.height = (j.Bd.b - j.Bd.t).toFixed(2) + 'px';
           bs.padding = j.bp.t + 'px ' + j.bp.r + 'px ' + j.bp.b + 'px ' + j.bp.l + 'px';
           var bt = j.body.querySelector(':scope > .swap-body-text') || j.body.firstElementChild;
-          if (bt && j.bfont) {
+          // (THE TEXT IS CUT ONCE PER BOX, 2026-10-01: the cut, the seal and
+          // the centring are a function of the box — its width and height,
+          // its padding, its leading and columns, its faces, the dek over
+          // it — and nothing else; the pass's second run found the same
+          // box and restored, re-laid, re-cut and re-sealed every text to
+          // the same end, a hundred milliseconds of multicol layout. The
+          // box is written down with the text, and a text whose box has
+          // not changed is left as it stands.)
+          if (bt && j.bfont && j.cols2) {
+            // (the box as it is written, to the hundredth)
+            var kb = [(j.Bd.r - j.Bd.l).toFixed(2), (j.Bd.b - j.Bd.t).toFixed(2), j.bp.t, j.bp.r, j.bp.b, j.bp.l, j.blh, j.ncol];
+            for (var kk in j.bfont) kb.push(kk, j.bfont[kk] || '');
+            if (j.dfont) for (var kq in j.dfont) kb.push(kq, j.dfont[kq] || '');
+            kb.push(j.dek ? j.dek.innerHTML : '');
+            j.key = kb.join('\u0001');
+            if (bt.__swapKey === j.key && j.body.querySelector(':scope > .swap-body-close')) { j.kept = true; j.set = true; }
+          }
+          if (bt && j.bfont && !j.kept) {
             j.bt = bt;
             for (var kf in j.bfont) if (j.bfont[kf]) bt.style[kf] = j.bfont[kf];
             // (an essay's dek stands in its preview, centred over the two
@@ -8457,6 +8474,7 @@
         if (j.pdk) j.pdk.style.transform = shY;
       }
     });
+    twos.forEach(function (j) { j.bt.__swapKey = j.key; });
     jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
     // READ: the deks' heights, all at once
     jobs.forEach(function (j) { j.dh = j.sd ? j.sd.getBoundingClientRect().height + SWAP_GAP : 0; });
