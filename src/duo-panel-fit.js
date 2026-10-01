@@ -6757,6 +6757,8 @@
   // (36, not 54, since 2026-09-24, at the user's word: every gap on the
   // page is 36, across or down, and 36 is what a card keeps from any ink)
   var COURIER_GAP = 36;
+  // (between the rows where the posts stand two to a row: seatRowGaps)
+  var ROWS_GAP = 72;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -7088,7 +7090,10 @@
             var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
             if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
-          rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
+          // (72 BETWEEN THE ROWS, 2026-09-30, at the user's word: where the
+          // posts stand two to a row, a row's highest ink stands 72 under
+          // the lowest of the row over it — across, the two keep 36)
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? ROWS_GAP : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)

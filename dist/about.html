@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=6e09ff9c">
+<link rel="stylesheet" href="style.css?v=a716785c">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4499,6 +4499,7 @@
     return isFinite(t) ? { t: t, b: b } : null;
   }
   var COURIER_GAP = 36;
+  var ROWS_GAP = 72;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -4682,7 +4683,7 @@
             var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
             if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
-          rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? ROWS_GAP : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--row-b'))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
