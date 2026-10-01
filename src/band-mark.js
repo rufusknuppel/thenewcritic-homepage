@@ -350,6 +350,16 @@
     // (on a whole pixel: a strip on a fraction of one showed a hairline
     // over it)
     if (under > 0) { under = Math.round(under); main.style.setProperty('--wm-under', under + 'px'); }
+    // (THE LAST MAGAZINE ON ITS LINE UNDER THE NAME, 2026-09-30: its
+    // capitals' top where its line box opens, and its ink's height on a
+    // whole pixel — style.css, THE LAST MAGAZINE UNDER THE NAME AGAIN)
+    var tl = document.querySelector('.head-rail .tlm-line > span');
+    var tf = tl && tl.offsetHeight ? face(tl) : null;
+    if (tf) {
+      var tr = tl.getBoundingClientRect();
+      main.style.setProperty('--tlm-cap', (tf.top - tr.top).toFixed(2) + 'px');
+      main.style.setProperty('--tlm-ink', Math.ceil(tf.foot - tf.top) + 'px');
+    }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
     [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -402,7 +412,7 @@
 // page's own #top stands under the name, so the link is answered here,
 // eased unless the reader asks for less motion.
 document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('a.margin-line');
+  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line');
   if (!a) return;
   e.preventDefault();
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
