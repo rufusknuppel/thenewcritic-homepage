@@ -1511,13 +1511,15 @@ function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
   const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
   const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
-  // (SUBSCRIBE, ARCHIVE, THE LAST MAGAZINE — the About link, in the
-  // Garamond — then STORE and EVENTS: 2026-09-30, at the user's word)
-  const about = by('about');
+  // (SUBSCRIBE, ARCHIVE, THE LAST MAGAZINE in the Garamond, ABOUT, then
+  // STORE and EVENTS: 2026-09-30, at the user's word. THE LAST MAGAZINE
+  // takes the reader to the top of the front page — src/band-mark.js —
+  // and ABOUT is its own link again, to its right.)
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
     link(by('archive'), 'Archive'),
-    about ? `<a class="sub-ticker-half sub-ticker-half--tlm" href="${escapeHtml(about.href)}"><span class="tlm-word">The Last Magazine</span></a>` : '',
+    `<a class="sub-ticker-half sub-ticker-half--tlm" href="#top" aria-label="The Last Magazine — to the top of the front page"><span class="tlm-word">The Last Magazine</span></a>`,
+    link(by('about'), 'About'),
     dead('Store'),
     dead('Events'),
   ].join('')}</span></nav>`;
@@ -2783,7 +2785,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}<div class="margin-stacks"><button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button></div></div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-corner"><button type="button" class="theme-toggle corner-toggle" aria-label="Light or dark, and a colour of your own for the bands"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex corner-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
@@ -3076,9 +3078,16 @@ function renderFontGateScript() {
     if (hex && hex !== YELLOW) {
       root.style.setProperty('--nc-mark', hex);
       root.style.setProperty('--hl-ink', inkOn(hex));
+      // (the bands' words, black on the mark, white under the hand —
+      // turned over where the reader's colour is too dark for black)
+      var lightInk = inkOn(hex) === WHITE;
+      root.style.setProperty('--band-ink', lightInk ? '#FFFFFF' : '#000000');
+      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#FFFFFF');
     } else {
       root.style.removeProperty('--nc-mark');
       root.style.removeProperty('--hl-ink');
+      root.style.removeProperty('--band-ink');
+      root.style.removeProperty('--band-hover');
     }
   };
   var store = function (mode) {
@@ -3117,6 +3126,12 @@ function renderFontGateScript() {
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
     paint(chosen === 'light' ? 'light' : 'dark');
+  } catch (e) {}
+  // THE READER'S COLOUR COMES BACK (2026-09-30): the bands' colour typed
+  // under HEX is kept and painted again on the next visit.
+  try {
+    var kept = hexOf(localStorage.getItem('nc-accent'));
+    if (kept && kept !== YELLOW) { accent = kept; mark(kept); }
   } catch (e) {}
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
   // paints that mark for this view only — nothing is stored, and the
@@ -3167,8 +3182,10 @@ function renderFontGateScript() {
   // the yellow back, which is the only way home short of typing its
   // code.
   var field = null;
-  var openField = function () {
-    field = field || document.querySelector('.theme-hex');
+  var openField = function (b) {
+    // (the field beside the toggle that was clicked — the corner's on
+    // the front page — else the first on the page)
+    field = (b && b.parentNode && b.parentNode.querySelector('.theme-hex')) || document.querySelector('.theme-hex');
     if (!field) return;
     field.value = accent || YELLOW;
     field.hidden = false;
@@ -3197,7 +3214,7 @@ function renderFontGateScript() {
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
     var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
-    if (t && t.classList.contains('theme-toggle-hex')) { openField(); return; }
+    if (t && t.classList.contains('theme-toggle-hex')) { openField(b); return; }
     var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : 'dark')
       : (current() === 'light' ? 'dark' : 'light');
     closeField();

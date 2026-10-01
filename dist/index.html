@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a7fa8bbf">
+<link rel="stylesheet" href="style.css?v=65a37365">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -67,9 +67,14 @@
     if (hex && hex !== YELLOW) {
       root.style.setProperty('--nc-mark', hex);
       root.style.setProperty('--hl-ink', inkOn(hex));
+      var lightInk = inkOn(hex) === WHITE;
+      root.style.setProperty('--band-ink', lightInk ? '#FFFFFF' : '#000000');
+      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#FFFFFF');
     } else {
       root.style.removeProperty('--nc-mark');
       root.style.removeProperty('--hl-ink');
+      root.style.removeProperty('--band-ink');
+      root.style.removeProperty('--band-hover');
     }
   };
   var store = function (mode) {
@@ -95,6 +100,10 @@
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
     paint(chosen === 'light' ? 'light' : 'dark');
+  } catch (e) {}
+  try {
+    var kept = hexOf(localStorage.getItem('nc-accent'));
+    if (kept && kept !== YELLOW) { accent = kept; mark(kept); }
   } catch (e) {}
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
@@ -125,8 +134,8 @@
     return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   };
   var field = null;
-  var openField = function () {
-    field = field || document.querySelector('.theme-hex');
+  var openField = function (b) {
+    field = (b && b.parentNode && b.parentNode.querySelector('.theme-hex')) || document.querySelector('.theme-hex');
     if (!field) return;
     field.value = accent || YELLOW;
     field.hidden = false;
@@ -150,7 +159,7 @@
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
     var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
-    if (t && t.classList.contains('theme-toggle-hex')) { openField(); return; }
+    if (t && t.classList.contains('theme-toggle-hex')) { openField(b); return; }
     var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : 'dark')
       : (current() === 'light' ? 'dark' : 'light');
     closeField();
@@ -380,7 +389,7 @@
     <p class="band-deks band-dek"></p>
     <p class="band-deks"><span class="band-inert">The Last Magazine</span></p>
   </nav>
-  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half sub-ticker-half--tlm" href="about.html"><span class="tlm-word">The Last Magazine</span></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav><div class="margin-stacks"><button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button></div></div>
+  <div class="head-rail"><div class="rail-corner"><button type="button" class="theme-toggle corner-toggle" aria-label="Light or dark, and a colour of your own for the bands"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex corner-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></div><div class="rail-line" aria-hidden="true"></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half sub-ticker-half--tlm" href="#top" aria-label="The Last Magazine — to the top of the front page"><span class="tlm-word">The Last Magazine</span></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav></div>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
 <div class="site-header" id="site-header">
@@ -1317,7 +1326,7 @@
   </div>
   </div>
   </div>
-  <nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half sub-ticker-half--tlm" href="about.html"><span class="tlm-word">The Last Magazine</span></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav>
+  <nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half sub-ticker-half--tlm" href="#top" aria-label="The Last Magazine — to the top of the front page"><span class="tlm-word">The Last Magazine</span></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav>
   <nav class="section-band section-band--colophon section-band--three" aria-label="Colophon">
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a><span class="band-sep">, </span><a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a><span class="band-sep">, </span><a href="https://x.com/thenewcritic" rel="noopener">X</a><span class="band-sep">, </span><a href="mailto:editors@thenewcritic.com">Email</a></p>
     <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
@@ -8749,7 +8758,7 @@
     .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line');
+  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line, a.sub-ticker-half--tlm');
   if (!a) return;
   e.preventDefault();
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;

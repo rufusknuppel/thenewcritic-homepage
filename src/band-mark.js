@@ -412,11 +412,12 @@
 })();
 
 // THE LAST MAGAZINE TAKES YOU TO THE TOP (2026-09-30, at the user's
-// word): the margin's line scrolls the front page to its very top — the
+// word): the margin's line — and, from later that day, the strip's —
+// scrolls the front page to its very top — the
 // page's own #top stands under the name, so the link is answered here,
 // eased unless the reader asks for less motion.
 document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line');
+  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line, a.sub-ticker-half--tlm');
   if (!a) return;
   e.preventDefault();
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
