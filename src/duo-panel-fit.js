@@ -3920,6 +3920,35 @@
     });
     return isFinite(lo) ? lo - br.top : null;
   }
+  // THE AIR BETWEEN THE NAME'S INK AND THE BAND LIST'S (2026-09-30):
+  // THE NEW CRITIC's painted foot to the list's capitals, off the faces
+  function glyphSpan(el) {
+    var rg = document.createRange(); rg.selectNodeContents(el);
+    var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+    if (!r) return null;
+    bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+    var cs = getComputedStyle(el);
+    bandInkCv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var t = (el.textContent || '').trim();
+    var m = bandInkCv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
+    var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+    if (!(fa > 0)) return null;
+    var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+    return { top: base - m.actualBoundingBoxAscent, bot: base + m.actualBoundingBoxDescent };
+  }
+  function headInkGap(band) {
+    var nm = document.querySelector('.site-nav--top .topbar-name');
+    var list = band && band.querySelector('.band-deks:last-child');
+    if (!nm || !list) return null;
+    var w = glyphSpan(nm);
+    var hi = Infinity;
+    [].forEach.call(list.querySelectorAll('a, span'), function (el) {
+      if (el.children.length || !(el.textContent || '').trim()) return;
+      var g = glyphSpan(el);
+      if (g) hi = Math.min(hi, g.top);
+    });
+    return w && isFinite(hi) ? hi - w.bot : null;
+  }
   function bandGaramondInset(band, edge) {
     if (!band) return 0;
     var br = band.getBoundingClientRect();
@@ -7021,7 +7050,12 @@
             if (stacked && !tk) {
               var nf = navInkFoot(hb);
               if (nf != null) {
-                firstAt = body.getBoundingClientRect().top + nf + ROWS_GAP;
+                // (THE SAME AIR UNDER THE LINE AS OVER IT, 2026-09-30, at the
+                // user's word: the first row stands under THE LAST MAGAZINE's
+                // ink by what stands between THE NEW CRITIC's ink and the
+                // line's — 72 where it cannot be read)
+                var hg = headInkGap(hb);
+                firstAt = body.getBoundingClientRect().top + nf + (hg != null && hg > 0 ? hg : ROWS_GAP);
                 // (the row's top is read off its courier's line box, which
                 // stands over its capitals' ink by the leading: that much
                 // higher, so ink stands 72 under ink)
