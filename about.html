@@ -3637,6 +3637,7 @@
   function fitTitleHalo() {
     function seat(host, title, cover, words) {
       ['--hl-l', '--hl-t', '--hl-w', '--hl-h', '--hl-dx', '--hl-dy'].forEach(function (v) { host.style.removeProperty(v); });
+      host.__hlRaw = null;
       if (!host.querySelector(':scope > .title-halo')) {
         var halo = document.createElement('span');
         halo.className = 'title-halo';
@@ -3671,6 +3672,7 @@
           Math.max(0, bot - land.bottom).toFixed(2) + 'px ' +
           Math.max(0, land.left - l).toFixed(2) + 'px');
       }
+      host.__hlRaw = { l: l - h.left, r: r - h.left, t: top - h.top, b: bot - h.top };
       var L = Math.round(l), R = Math.round(r), T = Math.round(top), B = Math.round(bot);
       host.style.setProperty('--hl-l', (L - h.left).toFixed(2) + 'px');
       host.style.setProperty('--hl-t', (T - h.top).toFixed(2) + 'px');
@@ -3696,6 +3698,21 @@
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (half) {
       seat(half, half.querySelector('.card-title'), half.querySelector('.duo-card-image'),
            [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
+    });
+  }
+  function reseatHalos() {
+    var hosts = [].filter.call(document.querySelectorAll(
+      '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'), function (el) { return el.__hlRaw; });
+    var boxes = hosts.map(function (el) { return el.getBoundingClientRect(); });
+    hosts.forEach(function (host, i) {
+      var h = boxes[i], raw = host.__hlRaw;
+      if (!h.width) return;
+      var L = Math.round(h.left + raw.l), R = Math.round(h.left + raw.r),
+          T = Math.round(h.top + raw.t), B = Math.round(h.top + raw.b);
+      host.style.setProperty('--hl-l', (L - h.left).toFixed(2) + 'px');
+      host.style.setProperty('--hl-t', (T - h.top).toFixed(2) + 'px');
+      host.style.setProperty('--hl-w', (R - L) + 'px');
+      host.style.setProperty('--hl-h', (B - T) + 'px');
     });
   }
   var PLATE_INNER_GAP = 24;
@@ -4439,6 +4456,7 @@
     fitTimes.length = 0;
     fitPassId++;
     var veiled = stageBegin();
+    if (veiled) rowKDirty = true;
     var world0 = worldSig();
     freshMemos();
     atRest(function () {
@@ -4604,6 +4622,7 @@
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
     }
+    if (!rowKAgain) step('reseatHalos', reseatHalos);
   }
   var rowKDirty = false, rowKAgain = false;
   var ROW_GAP = 36;
