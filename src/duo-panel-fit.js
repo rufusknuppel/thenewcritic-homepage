@@ -6570,6 +6570,18 @@
     // cold reveal at 1440 ~1.5s → ~22s. 2026-09-30)
     if (!movs.length) return [];
     var out = movs.slice(1);
+    // (THE FOOT GOES WITH THEM, 2026-09-30: the colophon and the strip
+    // pinned over it followed the rows that were kept, and with the rows
+    // ten per cent shorter the colophon stood in the first screen until
+    // stage two — the band at the window's foot on a fresh load. Every
+    // row's sibling after the first movement is out with the rest — all
+    // but the phone's strip pinned to the window's foot, which stands
+    // there from the first paint: the rows kept run past the first
+    // screen, so its seat is under the window and it rides the foot.)
+    for (var sib = movs[0].nextElementSibling; sib; sib = sib.nextElementSibling) {
+      if (sib.classList.contains('sub-ticker--pin')) continue;
+      if (out.indexOf(sib) < 0) out.push(sib);
+    }
     // the later movements go first, so the one measure below is taken
     // on a short page
     out.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
