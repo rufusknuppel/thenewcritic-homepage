@@ -142,6 +142,11 @@ function applyContentOverrides(posts) {
     // parser (applyDekBylines, which runs after) can't overwrite it
     // with whatever alias the feed's dek used.
     if (o.psName) { p.psName = o.psName; p.psNameLocked = true; }
+    // byline: the name the CARD shows, locked against applyDekBylines —
+    // which runs after this and would otherwise take the byline from
+    // the dek's subject as written there ("14-year-old Eli Goldfine on
+    // …" gave the card "14-YEAR-OLD ELI GOLDFINE"; 2026-10-01)
+    if (o.byline) { p.displayAuthor = o.byline; p.bylineLocked = true; }
     if (o.preview) {
       const paras = Array.isArray(o.preview) ? o.preview : [o.preview];
       p.preview = paras[0];
@@ -228,7 +233,7 @@ function applyDekBylines(posts) {
         // displayAuthor, not author: the author field still holds the
         // interviewer, which is the true byline of the piece and what any
         // non-panel use of the post should keep seeing.
-        p.displayAuthor = names.length > 1 ? `${names[0]} et al.` : names[0];
+        if (!p.bylineLocked) p.displayAuthor = names.length > 1 ? `${names[0]} et al.` : names[0];
         // The full subject name(s), unabbreviated — the postscript
         // page's index scroll lists every interviewee by name (see
         // renderPostscriptPage). Serial style: commas between the

@@ -12,7 +12,13 @@
 //             and the topic the kicker filters the ledger by)
 //   title   — the card headline
 //   dek     — subheading under the title (Substack's subtitle)
-//   author  — byline in the meta line, shown uppercase
+//   author  — byline in the meta line, shown uppercase (the post's author
+//             field; a postscript's card shows its dek's subject instead —
+//             see byline)
+//   byline  — the name the card shows where it must differ from both the
+//             author field and the dek's subject as written ("14-year-old
+//             Eli Goldfine on …" → byline: 'Eli Goldfine'); set psName
+//             with it so the postscript index reads the same
 //   date    — meta-line date text, e.g. 'Jun 30' (the like count stays automatic)
 //   preview — paragraph preview (string, or array for the hero's multiple paragraphs)
 //   focal   — CSS object-position for the cover crop, e.g. 'center 20%'
@@ -26,6 +32,12 @@
 //   mat     — the colour of the frame's ground round a zoomed-out drawing
 
 module.exports = {
+  'high-school-or-claude': {
+    // the dek reads "Postscript No. 24 | 14-year-old Eli Goldfine on
+    // self-educating through AI"; the card says the name alone
+    byline: 'Eli Goldfine',
+    psName: 'Eli Goldfine',
+  },
   'manifest-man': {
     kicker: 'Rationalist Workshop',
   },
