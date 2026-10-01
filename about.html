@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e035b7b2">
+<link rel="stylesheet" href="style.css?v=fa1c717f">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5506,11 +5506,12 @@
   }
   var capMemo = {};
   var PK_ICON = 18;
-  var PK_ARROWS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg>';
+  var PK_NEXT = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h14M11 4l6 6-6 6"/></svg>';
+  var PK_BACK = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M17 10H3M9 4l-6 6 6 6"/></svg>';
   var PK_CROSS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
   function pkHtml(head, dot) {
     return '<span class="pk-sep" aria-hidden="true">' + dot + '</span>'
-      + '<span class="pk-open">' + (head ? PK_ARROWS + 'Preview' : 'Preview' + PK_ARROWS) + '</span>'
+      + '<span class="pk-open">' + (head ? PK_BACK + 'Preview' : 'Preview' + PK_NEXT) + '</span>'
       + '<span class="pk-shut">' + (head ? PK_CROSS + 'Close' : 'Close' + PK_CROSS) + '</span>';
   }
   function seatPeekCorners() {
