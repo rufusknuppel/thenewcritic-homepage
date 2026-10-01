@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d900047b">
+<link rel="stylesheet" href="style.css?v=492244ab">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6424,6 +6424,8 @@
       }
     });
   }
+  var capMemo = {};
+  var PK_ICON = 18;
   function seatPeekCorners() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -6445,13 +6447,21 @@
         btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'peek-corner';
-        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span><span class="pk-open">Preview</span><span class="pk-shut">Close</span>';
+        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span>'
+          + '<span class="pk-open">Preview<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg></span>'
+          + '<span class="pk-shut">Close<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></span>';
         card.appendChild(btn);
       }
       var tail = card.__courierTail, te = tail && tail.el && inkEdges(tail.el);
       if (te) { var tr = tail.el.getBoundingClientRect(); line = { top: tr.top - oy, h: tr.height, el: tail.el }; }
       var cs = getComputedStyle(line.el), b = btn.style;
       b.removeProperty('display');
+      var capKey = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontSize + '|' + cs.fontFamily;
+      if (capMemo[capKey] == null) {
+        measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        capMemo[capKey] = measureCtx.measureText('H').actualBoundingBoxAscent || (parseFloat(cs.fontSize) || 13) * 0.7;
+      }
+      b.setProperty('--pk-cap', capMemo[capKey].toFixed(2) + 'px');
       b.fontFamily = cs.fontFamily; b.fontSize = cs.fontSize; b.fontWeight = cs.fontWeight;
       b.letterSpacing = cs.letterSpacing; b.textTransform = cs.textTransform; b.lineHeight = cs.lineHeight;
       b.top = (line.top - cr0.top).toFixed(2) + 'px';
@@ -7813,7 +7823,7 @@
             var cs3 = getComputedStyle(line3[0]);
             measureCtx.font = cs3.fontStyle + ' ' + cs3.fontWeight + ' ' + cs3.fontSize + ' ' + cs3.fontFamily;
             var pvT = cs3.textTransform === 'uppercase' ? 'PREVIEW' : 'Preview';
-            pvW = measureCtx.measureText(pvT).width + (parseFloat(cs3.letterSpacing) || 0) * pvT.length;
+            pvW = measureCtx.measureText(pvT).width + (parseFloat(cs3.letterSpacing) || 0) * pvT.length + PK_ICON;
           }
           var pvRoom = pvW ? gap3 + pvW : 0;
           var x3 = frL + (mirror3 ? pvRoom : 0);

@@ -8243,6 +8243,10 @@
   // right where the courier is set left, left where it is set right —
   // in the courier's own face; open, it reads Close (card-open.js takes
   // it as the one toggle)
+  var capMemo = {};
+  // (the glyph after Preview: its 12 box and the 6 before it — style.css,
+  // THE GLYPHS BY PREVIEW AND CLOSE — counted in the line's run)
+  var PK_ICON = 18;
   function seatPeekCorners() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -8264,7 +8268,13 @@
         btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'peek-corner';
-        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span><span class="pk-open">Preview</span><span class="pk-shut">Close</span>';
+        // (AN ARROW BY PREVIEW, AN × BY CLOSE, 2026-10-01, at the user's
+        // word: the site's own two glyphs — the preview's opening arrows
+        // and the ×, 12 in a 20 box — each after its word, centred on the
+        // courier's capitals; style.css, THE GLYPHS BY PREVIEW AND CLOSE)
+        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span>'
+          + '<span class="pk-open">Preview<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg></span>'
+          + '<span class="pk-shut">Close<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></span>';
         card.appendChild(btn);
       }
       // AUTHOR · DATE · PREVIEW (2026-10-01): the word ends the courier
@@ -8277,6 +8287,14 @@
       if (te) { var tr = tail.el.getBoundingClientRect(); line = { top: tr.top - oy, h: tr.height, el: tail.el }; }
       var cs = getComputedStyle(line.el), b = btn.style;
       b.removeProperty('display');
+      // (the courier's cap height, for the glyph's seat: measureCtx reads
+      // the H's ascent in the line's face, once per face and size)
+      var capKey = cs.fontStyle + '|' + cs.fontWeight + '|' + cs.fontSize + '|' + cs.fontFamily;
+      if (capMemo[capKey] == null) {
+        measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        capMemo[capKey] = measureCtx.measureText('H').actualBoundingBoxAscent || (parseFloat(cs.fontSize) || 13) * 0.7;
+      }
+      b.setProperty('--pk-cap', capMemo[capKey].toFixed(2) + 'px');
       b.fontFamily = cs.fontFamily; b.fontSize = cs.fontSize; b.fontWeight = cs.fontWeight;
       b.letterSpacing = cs.letterSpacing; b.textTransform = cs.textTransform; b.lineHeight = cs.lineHeight;
       b.top = (line.top - cr0.top).toFixed(2) + 'px';
@@ -10561,7 +10579,7 @@
             var cs3 = getComputedStyle(line3[0]);
             measureCtx.font = cs3.fontStyle + ' ' + cs3.fontWeight + ' ' + cs3.fontSize + ' ' + cs3.fontFamily;
             var pvT = cs3.textTransform === 'uppercase' ? 'PREVIEW' : 'Preview';
-            pvW = measureCtx.measureText(pvT).width + (parseFloat(cs3.letterSpacing) || 0) * pvT.length;
+            pvW = measureCtx.measureText(pvT).width + (parseFloat(cs3.letterSpacing) || 0) * pvT.length + PK_ICON;
           }
           // (the room Preview takes on the line: after the last piece, or
           // before the first on the mirrored line)
