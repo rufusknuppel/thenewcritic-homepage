@@ -345,6 +345,9 @@
       under = Math.max(0, (nf.top - wr.top) - (wr.bottom - nf.foot));
       ground = getComputedStyle(wm).backgroundColor;
     }
+    // (the strip pins that same air under the name's ink: style.css, THE
+    // STRIP UNDER THE NAME)
+    if (under > 0) main.style.setProperty('--wm-under', under.toFixed(2) + 'px');
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
     [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -381,4 +384,7 @@
   addEventListener('resize', refit);
   addEventListener('newcritic:fit', refit);
   addEventListener('newcritic:settled', refit);
+  // (a turn of the theme turns the name's ground: its shadow follows)
+  if (window.MutationObserver) new MutationObserver(function () { setTimeout(refit, 400); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();

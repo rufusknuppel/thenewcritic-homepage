@@ -7059,6 +7059,13 @@
               if (gsp && wmEl) {
                 var wr0 = wmEl.getBoundingClientRect();
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
+                // (THE STRIP UNDER THE NAME, 2026-09-30: where the subscribe
+                // strip is pinned under the name's air, the courier starts
+                // that same air under the strip's foot)
+                var topStrip = document.querySelector('.page-rows > .sub-ticker--pin');
+                if (topStrip && getComputedStyle(topStrip).position === 'fixed') {
+                  firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + (gsp.top - wr0.top);
+                }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
                 // pictures, stands that air under the name's ink — the
@@ -7287,7 +7294,7 @@
       // colophon — the edge is read off the colophon less its height)
       var pinH = 0;
       while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !(next.classList.contains('sub-ticker--foot') && !next.classList.contains('sub-ticker--pin'))) {
-        if (next.classList.contains('sub-ticker--pin')) pinH += next.offsetHeight;
+        if (next.classList.contains('sub-ticker--pin') && getComputedStyle(next).position === 'sticky') pinH += next.offsetHeight;
         next = next.nextElementSibling;
       }
       if (!next) return;
