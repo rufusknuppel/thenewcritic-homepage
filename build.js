@@ -28,6 +28,19 @@ const STAMP = (() => {
   const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
   return { viewBox, inner };
 })();
+// THE BIRD IN ITS BOX BESIDE THE NAME (2026-10-01, at the user's word):
+// the swallow traced from the print, cut out of a 4.5:5 rough-edged
+// block (assets/bird-box-knockout.svg, one even-odd path), stated
+// inline at the masthead's left. The block prints in currentColor, the
+// name's ink; the bird is a hole, so it is always the ground the name
+// stands on — white on the light page, charcoal on the dark. Sized and
+// seated by fitMastheadFill: cap top to baseline, 36 in from the edge.
+const BIRD_BOX = (() => {
+  const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-box-knockout.svg'), 'utf8');
+  const viewBox = (svg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 1 1';
+  const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
+  return { viewBox, inner };
+})();
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
 }
@@ -1307,6 +1320,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
+    <svg class="wm-bird" viewBox="${BIRD_BOX.viewBox}" overflow="visible" aria-hidden="true" focusable="false">${BIRD_BOX.inner}</svg>
     <span class="topbar-name">The <span class="tn-new">New</span> Critic</span>
   </a>
   ${currentKey === 'home'

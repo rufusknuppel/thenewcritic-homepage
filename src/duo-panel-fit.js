@@ -3985,6 +3985,11 @@
     if (edge === 'bottom') return isFinite(lo) ? br.bottom - lo : 0;
     return isFinite(hi) ? hi - br.top : 0;
   }
+  // The bird's box beside the masthead's name: its width over its height
+  // (assets/bird-box-knockout.svg, 438 x 488) and the air between its
+  // right edge and the name's ink, as a share of the name's cap — 36 at
+  // 1440, where the cap is 106.
+  var BIRD_BOX_RATIO = 438 / 488, MARK_GAP = 0.34;
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
@@ -4027,6 +4032,25 @@
     var w0 = i0.right - i0.left;
     if (!(w0 > 0)) return;
     var fitted = s0 * vwSize / w0;
+    // (THE BIRD'S BOX AT THE LEFT, 2026-10-01: opts.markLeft is the box's
+    // width over its height. It stands cap top to baseline, MARK_GAP of
+    // a cap clear of the ink, so the room it takes is a share of the
+    // face's cap at whatever size the name takes — the name is sized to
+    // the measure less that room, solved in one step, the cap read off
+    // the canvas 'H' in the name's own face as nameInk reads it.)
+    var leftRoom = 0;
+    var markLeft = opts && opts.markLeft > 0 ? opts.markLeft : 0;
+    if (markLeft) {
+      bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+      var mcs = getComputedStyle(name);
+      bandInkCv.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' 100px ' + mcs.fontFamily;
+      var capPer = bandInkCv.measureText('H').actualBoundingBoxAscent / 100;
+      if (capPer > 0) {
+        var per = (markLeft + MARK_GAP) * capPer;
+        fitted = vwSize / (w0 / s0 + per);
+        leftRoom = per * fitted;
+      }
+    }
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
@@ -4050,7 +4074,7 @@
     // under it — instead of centred.
     var headL = headLeftOf(wm);
     var inkAt = headL != null ? wb.left + headL
-      : RESERVE ? wb.left + SIZE_SIDE
+      : RESERVE || leftRoom ? wb.left + SIZE_SIDE + leftRoom
       : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
@@ -4204,7 +4228,9 @@
     // right, the name's ink 36 short of it — where the stack stands)
     var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
-    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R });
+    var bird = wm.querySelector('.wm-bird');
+    var BIRD_L = bird ? BIRD_BOX_RATIO : 0;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R, markLeft: BIRD_L });
     if (!f) return;
     // (…to the pixel: the band's top is the feet rounded UP to a whole
     // pixel, which adds that fraction to the air under the name; the air
@@ -4217,11 +4243,23 @@
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
-        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R }) || f;
+        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R, markLeft: BIRD_L }) || f;
       }
     }
     varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
     var wb = f.wb, inkBottom = f.inkBottom;
+    // THE BIRD'S BOX, seated on the name's flat cap and its baseline,
+    // WORDMARK_SIDE in from the window's edge (the room fillNameBand
+    // kept for it at the name's left).
+    var bi = bird && nameInk();
+    if (bi) {
+      var bh = bi.base - bi.capFlat;
+      bird.style.left = WORDMARK_SIDE.toFixed(2) + 'px';
+      bird.style.top = (bi.capFlat - wb.top).toFixed(2) + 'px';
+      bird.style.height = bh.toFixed(2) + 'px';
+      bird.style.width = (bh * BIRD_BOX_RATIO).toFixed(2) + 'px';
+      bird.classList.add('is-seated');
+    }
     // The block ends ON the ink's foot, one pixel of allowance under
     // it, so the letters print whole: the band and the page are the
     // same ground now, so nothing is gained by cutting the feet.
@@ -6861,7 +6899,7 @@
       // of a pass has nothing to find, and the ink scan is spared)
       var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2);
       if (wmKey === wmSizeKey) return;
-      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve });
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, markLeft: wm.querySelector('.wm-bird') ? BIRD_BOX_RATIO : 0 });
       wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });
