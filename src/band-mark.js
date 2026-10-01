@@ -430,7 +430,7 @@ document.addEventListener('click', function (e) {
 
 // THE LAST MAGAZINE BESIDE THE NAME (2026-10-01, at the user's word): a
 // stack of three lines at the right of THE NEW CRITIC, in the dek's
-// Garamond italic, ranged left, its last line's baseline on the name's
+// Garamond italic, ranged left, centred top to bottom on the name's ink
 // (--stack-shift, read off both faces; style.css, THE LAST MAGAZINE
 // BESIDE THE NAME). The fitter keeps the stack's room clear of the name.
 (function () {
@@ -439,7 +439,7 @@ document.addEventListener('click', function (e) {
   var nm = document.querySelector('.site-nav--top .topbar-name');
   if (!main || !stack || !nm) return;
   var cv = null;
-  var baseOf = function (el) {
+  var inkOf = function (el) {
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -450,15 +450,19 @@ document.addEventListener('click', function (e) {
     var m = cv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
-    return r.top + (r.height - (fa + fd)) / 2 + fa;
+    var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+    return { top: base - m.actualBoundingBoxAscent, base: base };
   };
+  // (CENTRED ON THE NAME, 2026-10-01, at the user's word: the stack's
+  // ink — The's top to Magazine's baseline, the g's tail left out —
+  // centred on the name's, its caps' top to its baseline)
   var seat = function () {
     if (!stack.offsetWidth) return;
-    var last = stack.lastElementChild;
-    var a = baseOf(nm), b = last && baseOf(last);
-    if (a == null || b == null) return;
+    var first = stack.firstElementChild, last = stack.lastElementChild;
+    var a = inkOf(nm), b = first && inkOf(first), c = last && inkOf(last);
+    if (!a || !b || !c) return;
     var cur = parseFloat(main.style.getPropertyValue('--stack-shift')) || 0;
-    var want = cur + (a - b);
+    var want = cur + ((a.top + a.base) / 2 - (b.top + c.base) / 2);
     if (Math.abs(want - cur) > 0.25) main.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
   };
   ['load', 'resize', 'scroll', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
