@@ -7,8 +7,6 @@
   // essays (cover-cue.js, style.css THE ESSAY OFFERS TWO THINGS).
   var ESSAYS = '.duo-half--mega';
   var READ = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var SHUT = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-  var PEEK = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 3h5v5M17 3L3 17M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function picBox(card) {
     var t = card.querySelector('.card-title.hl-rect.rx');
@@ -34,21 +32,17 @@
   }
   function inside(b, x, y) { return b && x >= b.l && x <= b.r && y >= b.t && y <= b.b; }
 
+  // READ NOW ALONE, AND THE WHOLE PICTURE ITS LINK (2026-10-01, at the
+  // user's word): the scrim is the post's link wherever the hand falls
+  // in the picture, and Preview has gone down to the courier's line
+  // (duo-panel-fit.js, seatPeekCorners)
   function acts(card) {
     if (card.__acts) return card.__acts;
     var link = card.querySelector('a.card-image-link') || card.querySelector('a[href]');
-    var el = document.createElement('div');
+    var el = document.createElement('a');
     el.className = 'essay-acts';
-    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">' + (card.classList.contains('duo-half--kind-postscript') ? 'Read Interview' : card.classList.contains('duo-half--kind-contra') ? 'Read Review' : 'Read Essay') + READ + '</a>'
-      + '<span class="essay-act-sep" aria-hidden="true">\u00B7</span>'
-      + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
-    el.querySelector('.essay-act--peek').addEventListener('click', function (e) {
-      e.preventDefault(); e.stopPropagation();
-      var po = card.querySelector('.peek-open');
-      if (po) po.click();
-      hold(card);
-      hide();
-    });
+    el.href = link ? link.getAttribute('href') : '#';
+    el.innerHTML = '<span class="essay-act essay-act--read">Read Now' + READ + '</span>';
     card.appendChild(el);
     card.__acts = el;
     return el;
@@ -98,10 +92,6 @@
   }
   function show(card, box) {
     place(card, box);
-    // (out and landed, the second act shuts it: READ · CLOSE)
-    var pk = acts(card).querySelector('.essay-act--peek');
-    var shut = card.classList.contains('is-open');
-    if (pk && pk.__shut !== shut) { pk.innerHTML = shut ? 'Close' + SHUT : 'Preview' + PEEK; pk.__shut = shut; }
     if (shown !== card) hide();
     card.classList.add('is-acts');
     shown = card;

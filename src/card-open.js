@@ -119,7 +119,8 @@
     card.addEventListener('click', function (e) {
       // PREVIEW IS ONE CONTROL (2026-09-22): the arrows open the card
       // and, open, the same word with its × shuts it
-      if (hit(e, '.peek-open')) {
+      // (and Preview in the courier's other corner, 2026-10-01)
+      if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
         if (card.classList.contains('is-open')) {
           shut();
