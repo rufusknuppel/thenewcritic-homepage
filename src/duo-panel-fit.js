@@ -7020,7 +7020,7 @@
         // ink is its courier line, read here so the first rows seat by it)
         var cur = rowCourier(row);
         var topInk = function () { return Math.min(ink ? ink.t : Infinity, cur ? cur.t : Infinity); };
-        var rowDelta = 0, hasJob = false;
+        var rowDelta = 0, hasJob = false, seatPic = false;
         // (the card's own margin, over the margins it already has: a
         // wrap's collapses into the card's negative one and moves nothing)
         var el = row;
@@ -7056,27 +7056,10 @@
                 // line's — 72 where it cannot be read)
                 var hg = headInkGap(hb);
                 firstAt = body.getBoundingClientRect().top + nf + (hg != null && hg > 0 ? hg : ROWS_GAP);
-                // (the row's top is read off its courier's line box, which
-                // stands over its capitals' ink by the leading: that much
-                // higher, so ink stands 72 under ink)
-                var boxT = Infinity, inkT = Infinity;
-                bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
-                [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
-                  if (getComputedStyle(k).visibility === 'hidden' || getComputedStyle(k.closest('.cover-meta') || k).visibility === 'hidden') return;
-                  var kr = document.createRange(); kr.selectNodeContents(k);
-                  var kx = [].filter.call(kr.getClientRects(), function (x) { return x.width > 0 && x.height > 0; })[0];
-                  if (!kx) return;
-                  var kcs = getComputedStyle(k);
-                  bandInkCv.font = kcs.fontStyle + ' ' + kcs.fontWeight + ' ' + kcs.fontSize + ' ' + kcs.fontFamily;
-                  var kt = (k.textContent || '').trim();
-                  var km = bandInkCv.measureText(kcs.textTransform === 'uppercase' ? kt.toUpperCase() : kt);
-                  if (!(km.fontBoundingBoxAscent > 0)) return;
-                  var kb = kx.top + (kx.height - (km.fontBoundingBoxAscent + km.fontBoundingBoxDescent)) / 2 + km.fontBoundingBoxAscent;
-                  boxT = Math.min(boxT, kx.top); inkT = Math.min(inkT, kb - km.actualBoundingBoxAscent);
-                });
-                // (against the very reading the row is moved by)
-                var lead = isFinite(inkT) ? Math.max(0, inkT - topInk()) : NaN;
-                if (isFinite(lead) && lead > 0 && lead < 20) firstAt -= lead;
+                // (TO THE PICTURES' TOP, NOT THE COURIER, 2026-09-30, at the
+                // user's word: the air is seated to the top of the first
+                // row's pictures, the courier standing in it over them)
+                seatPic = true;
               }
             }
             // (THE LATEST stands over it: its ink's top 72 under the band,
@@ -7108,7 +7091,7 @@
                 firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + (stacked ? ROWS_GAP : ROW_GAP);
               }
             }
-            rowDelta = firstAt - topInk(); hasJob = true;
+            rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
           }
         }
         // (a section's first row 36 under its dek's baseline — or its
