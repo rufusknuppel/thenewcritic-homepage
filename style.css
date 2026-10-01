@@ -10791,3 +10791,10 @@ main.has-mega .duo-half--mega > a.essay-acts:is(:hover, :focus-visible):is(*, .r
 main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   display: none !important;
 }
+main.has-mega .duo-half--mega > .peek-corner:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--nc-mark) !important;
+  -webkit-text-fill-color: var(--nc-mark) !important;
+}
