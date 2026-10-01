@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=78b08c70">
+<link rel="stylesheet" href="style.css?v=a4472442">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -713,6 +713,77 @@
 
 </script>
 <script>
+(function () {
+  var q = function (s, root) { return [].slice.call((root || document).querySelectorAll(s)); };
+  var set = function (el, c, want) { if (el.classList.contains(c) !== !!want) el.classList.toggle(c, !!want); };
+  var childWith = function (el, c) { if (!el) return false; for (var k = el.children, i = 0; i < k.length; i++) if (k[i].classList.contains(c)) return true; return false; };
+  function mark() {
+    q('.wrap').forEach(function (w) {
+      set(w, 'w-latest', childWith(w, 'card--latest'));
+      set(w, 'w-mega', childWith(w, 'card--mega'));
+      set(w, 'w-banner', childWith(w, 'page-banner'));
+    });
+    q('.movement-body, .movement').forEach(function (b) {
+      var k = b.children, n = k.length;
+      var wrapAt = function (m) { var e = k[n - m]; return e && e.classList.contains('wrap') ? e : null; };
+      set(b, 'mb-wrap-last', !!wrapAt(1));
+      set(b, 'mb-mega-2nd-last', childWith(wrapAt(2), 'card--mega'));
+      set(b, 'mb-mega-3rd-last', childWith(wrapAt(3), 'card--mega'));
+      if (b.classList.contains('movement')) {
+        set(b, 'm-mega-2nd-last', childWith(wrapAt(2), 'card--mega'));
+        var nx = b.nextElementSibling;
+        set(b, 'm-next', !!(nx && nx.classList.contains('movement')));
+      }
+    });
+    q('.row-divider').forEach(function (d) {
+      var nx = d.nextElementSibling;
+      set(d, 'rd-before-mega', !!(nx && nx.classList.contains('wrap') && childWith(nx, 'card--mega')));
+    });
+    q('.duo-half-divider').forEach(function (d) {
+      var nx = d.nextElementSibling;
+      set(d, 'before-ghost', !!(nx && nx.classList.contains('duo-half--ghost')));
+    });
+    q('.card--latest').forEach(function (c) { set(c, 'has-contra', !!c.querySelector('.latest-cell--contra')); });
+    q('.section-band .band-deks').forEach(function (p) { set(p, 'has-current', !!p.querySelector('a[aria-current="page"]')); });
+    q('.section-band .band-sep').forEach(function (s) {
+      var nx = s.nextElementSibling;
+      set(s, 'before-current', !!(nx && nx.tagName === 'A' && nx.getAttribute('aria-current') === 'page'));
+    });
+    q('.section-band .band-dek').forEach(function (p) { set(p, 'date-only', childWith(p, 'band-date') && !p.querySelector('a')); });
+    q('.plate-more').forEach(function (p) { set(p, 'has-ctl', childWith(p, 'plate-close') || childWith(p, 'plate-read')); });
+    q('.card-title, .latest-title').forEach(function (t) {
+      set(t, 'has-lines', !!t.querySelector('.title-line'));
+      q(':scope > a', t).forEach(function (a) {
+        var has = false;
+        for (var k = a.children, i = 0; i < k.length; i++) if (k[i].tagName === 'SPAN') { has = true; break; }
+        set(a, 'has-span', has);
+      });
+    });
+  }
+  mark();
+  window.__ncStructure = mark;
+  var DEK = '.card-dek, .latest-dek', TITLE = '.card-title, .latest-title';
+  var dekTitle = function (dek) { var t = dek.previousElementSibling; return t && t.matches(TITLE) ? t : null; };
+  document.addEventListener('pointerover', function (e) {
+    var dek = e.target.closest && e.target.closest(DEK); if (!dek) return;
+    var t = dekTitle(dek); if (t) set(t, 'dek-hover', true);
+  });
+  document.addEventListener('pointerout', function (e) {
+    var dek = e.target.closest && e.target.closest(DEK); if (!dek) return;
+    if (e.relatedTarget && dek.contains(e.relatedTarget)) return;
+    var t = dekTitle(dek); if (t) set(t, 'dek-hover', false);
+  });
+  document.addEventListener('pointerover', function (e) {
+    var a = e.target.closest && e.target.closest('.section-band .band-deks a'); if (!a) return;
+    var s = a.previousElementSibling; if (s && s.classList.contains('band-sep')) set(s, 'next-hover', true);
+  });
+  document.addEventListener('pointerout', function (e) {
+    var a = e.target.closest && e.target.closest('.section-band .band-deks a'); if (!a) return;
+    if (e.relatedTarget && a.contains(e.relatedTarget)) return;
+    var s = a.previousElementSibling; if (s && s.classList.contains('band-sep')) set(s, 'next-hover', false);
+  });
+})();
+
 (function(){
   if (!document.querySelector('.duo-panel, .latest-cell')) return;
   buildSwapCols();
@@ -1199,6 +1270,8 @@
       return '<span class="title-line" style="font-size:' + chosen.sizes[k].toFixed(2) + 'px">'
         + l.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
     }).join('');
+    el.classList.add('has-lines');
+    if (host !== el) host.classList.add('has-span');
     el.style.fontSize = chosen.sizes[0].toFixed(2) + 'px';
     if (chosen.sizes.length > 1) {
       var sLast = chosen.sizes[chosen.sizes.length - 1];
@@ -4510,6 +4583,7 @@
     step('fitCardRules', fitCardRules);
     step('fitToggle', fitToggle);
     step('fitSubscribeLines', fitSubscribeLines);
+    if (window.__ncStructure) window.__ncStructure();
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
     step('seatInkBlocks', seatInkBlocks);
     step('seatDekBlocks', seatDekBlocks);

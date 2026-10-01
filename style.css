@@ -1027,7 +1027,7 @@ section{ padding: 80px 0; }
      that would leave a stray gap under the row's last real cell. The ghost
      keeps its width-holding job only in the row layout. */
   .duo-half--ghost,
-  .duo-half-divider:has(+ .duo-half--ghost){ display: none; }
+  .duo-half-divider.before-ghost{ display: none; }
 }
 /* A divider before a ghost cell stays VISIBLE — the page's column rules
    run through the short last row to the footer instead of stopping a row
@@ -3452,7 +3452,7 @@ a.likes:hover::after,
    The portrait ratio would carry the height up with it (502 wide runs
    669 tall), so it stands down here and the cover takes its height
    from the row, as it already does when a contra shares the line. */
-.card--latest:not(:has(.latest-cell--contra)) .latest-cover-col--portrait{
+.card--latest:not(.has-contra) .latest-cover-col--portrait{
   aspect-ratio: auto;
 }
 /* THE PAIR'S DRESS, on the UNDER ROWS it moved to: the likes heart
@@ -8244,8 +8244,8 @@ main.has-mega .reprint{
    -80 and -57 respectively land both on 48. A banner's 47 top was
    tuned to follow a ROW; after a hero's 23 it read 71, so there it
    is 24 — the divider's own, collapsing to itself. */
-.wrap:has(> .card--latest) + .row-divider + .wrap > .card.card--mega{ margin-top: -57px; }
-.wrap:has(> .card--mega) + .row-divider + .wrap > .page-banner{ margin-top: 24px; }
+.wrap.w-latest + .row-divider + .wrap > .card.card--mega{ margin-top: -57px; }
+.wrap.w-mega + .row-divider + .wrap > .page-banner{ margin-top: 24px; }
 
 /* ---------- THE COVERS' BORDER STANDS DOWN ----------
    The 1px white line around every picture is off; the artwork's own
@@ -8481,7 +8481,7 @@ body.has-mega .courier-clone{ --white: var(--g); }
    (see EVERY CARD 48 FROM ITS NEIGHBOURS): the hero's 23 under its
    half, the divider, and 24 — the movement container now stands
    between, so the rule reads through it. */
-.movement:has(> .wrap:nth-last-child(2) > .card--mega) + .wrap > .page-banner{ margin-top: 24px; }
+.movement.m-mega-2nd-last.m-mega-2nd-last.m-mega-2nd-last + .wrap > .page-banner{ margin-top: 24px; }
 
 /* ---------- THE ROWS TAKE THE SIDEBAR'S COLUMN ----------
    With no rail to clear, every row and hero runs the page's full
@@ -9068,7 +9068,7 @@ main.has-mega :is(.banner-name, .reprint-name){
   padding: 0;
   background: var(--k);
 }
-.movement-body:has(> .wrap:nth-last-child(3) > .card--mega) > .section-foot{ margin-top: 24px; }
+.movement-body.mb-mega-3rd-last.mb-mega-3rd-last.mb-mega-3rd-last > .section-foot{ margin-top: 24px; }
 /* The page's last row carries no divider (build.js), so its foot
    band pays the whole 48 itself. */
 .wrap + .section-foot{ margin-top: 48px; }
@@ -9109,7 +9109,7 @@ main.has-mega :is(.banner-name, .reprint-name){
     0
     calc(-24px - max(0px, (100vw - var(--max)) / 2));
 }
-.wrap:has(> .page-banner) + .row-divider{ display: none; }
+.wrap.w-banner + .row-divider{ display: none; }
 
 /* ---------- THE BANNERS PLAY THE HEADER'S OPENING ----------
    The masthead is pinned at the top while THE LATEST's band and the
@@ -9191,7 +9191,7 @@ main.has-mega .cover-meta a:is(:focus-visible){ color: var(--hl-ink); background
    it stood. The last movement, with the reprint after it, keeps its
    old end. */
 .movement{ z-index: 0; }
-.movement:has(+ .movement)::after{
+.movement.m-next::after{
   content: '';
   display: block;
   height: var(--band-h, 72px);
@@ -9550,11 +9550,11 @@ main.has-mega .card .duo-half--mega .duo-panel .panel-col--left{ padding-left: 4
 /* After a hero the rule's 24 is the whole of the air: the body pays
    it as its pad (so its ground reaches the band) and the divider's
    own margin stands down, which keeps the band where it stood. */
-.movement-body:has(> .wrap:nth-last-child(2) > .card--mega){ padding-bottom: 24px; }
-.movement-body:has(> .wrap:nth-last-child(2) > .card--mega) > .row-divider:last-child{ margin-bottom: 0; }
+.movement-body.mb-mega-2nd-last.mb-mega-2nd-last.mb-mega-2nd-last{ padding-bottom: 24px; }
+.movement-body.mb-mega-2nd-last.mb-mega-2nd-last.mb-mega-2nd-last > .row-divider:last-child{ margin-bottom: 0; }
 /* The page's last row carries no divider (build.js), so its body
    pays the whole 48 itself. */
-.movement-body:has(> .wrap:last-child){ padding-bottom: 48px; }
+.movement-body.mb-wrap-last.mb-wrap-last{ padding-bottom: 48px; }
 
 /* ---------- THE CLOSING STACK'S SCHEMES ----------
    Five banners close the page (build.js, STACK), one under another,
@@ -9750,8 +9750,8 @@ main.has-mega :is(.card-title, .latest-title) :is(a, .title-line, span){
 .row-divider{ margin-top: 12px; margin-bottom: 36px; }
 .section-band + .wrap,
 .movement-body > .wrap:first-child{ padding-top: 72px; }
-.movement-body:has(> .wrap:nth-last-child(2) > .card--mega){ padding-bottom: 36px; }
-.movement-body:has(> .wrap:last-child){ padding-bottom: 72px; }
+.movement-body.mb-mega-2nd-last.mb-mega-2nd-last.mb-mega-2nd-last{ padding-bottom: 36px; }
+.movement-body.mb-wrap-last.mb-wrap-last{ padding-bottom: 72px; }
 .section-band,
 .section-band--colophon{ padding-left: 72px; padding-right: 72px; }
 
@@ -10174,31 +10174,31 @@ main.has-mega .cover-meta--author .cover-sep{ color: var(--g); }
    its last card is. */
 .movement-body > .row-divider:last-child{ display: none; }
 .movement-body,
-.movement-body:has(> .wrap:nth-last-child(2) > .card--mega),
-.movement-body:has(> .wrap:last-child){ padding-bottom: 72px; }
+.movement-body.mb-mega-2nd-last.mb-mega-2nd-last.mb-mega-2nd-last,
+.movement-body.mb-wrap-last.mb-wrap-last{ padding-bottom: 72px; }
 /* THE HERO'S BOX HANGS PAST ITS ARTWORK. A movement that ends on one
    closes its box 80 under the lowest thing it paints and then pulls
    the page up 57 (the mega's own margins) — 23 of overhang the white
    below it does not have to pay again. Its close is stated 23 short so
    the SEEN gap is the same 72 as everywhere else. */
-.movement-body:has(> .wrap:nth-last-child(2) > .card--mega){ padding-bottom: 49px; }
+.movement-body.mb-mega-2nd-last.mb-mega-2nd-last.mb-mega-2nd-last{ padding-bottom: 49px; }
 /* AND THE SAME 23 IS OWED WHEREVER A HERO IS FOLLOWED BY ANOTHER CARD.
    The hero's box closes 80 under the lowest thing it paints and pulls
    the page up 57 after it, so the white under its artwork read 95
    against every other 72. The rule between them takes the difference
    out of its own head: it stands 36 under the artwork like every
    other, and the gap comes out at 72. */
-.wrap:has(> .card--mega) + .row-divider{ margin-top: 13px; }
+.wrap.w-mega + .row-divider{ margin-top: 13px; }
 /* And the mirror of it: a hero standing UNDER a row opens its box 23
    above the first thing it paints, so the rule before it gives the
    same 23 back out of its foot. The rule keeps its 36 of air to the
    artwork on both sides, whichever card is which. */
-.row-divider:has(+ .wrap > .card--mega){ margin-bottom: 12px; }
+.row-divider.rd-before-mega.rd-before-mega{ margin-bottom: 12px; }
 /* BETWEEN TWO HEROES THE DEBT IS PAID ONCE. Their -57s are adjacent
    margins and collapse into one, so the pair overhangs 23 in total,
    not 23 each way: the rule takes it out of its head only and keeps
    its foot whole. */
-.wrap:has(> .card--mega) + .row-divider:has(+ .wrap > .card--mega){ margin-bottom: 35px; }
+.wrap.w-mega + .row-divider.rd-before-mega.rd-before-mega{ margin-bottom: 35px; }
 
 
 /* ---------- THE STATIC :has() ANCHORS ARE STRUCK ----------
@@ -10254,7 +10254,7 @@ main.has-mega .cover-meta--author .cover-sep{ color: var(--g); }
 .section-band{ height: 72px; }
 .section-foot{ height: 72px; }
 .head-rule{ height: calc(100vh - var(--band-h, 72px)); }
-.movement:has(+ .movement)::after{ height: var(--band-h, 72px); }
+.movement.m-next::after{ height: var(--band-h, 72px); }
 .movement + .movement{ margin-top: calc(-1 * var(--band-h, 72px)); }
 
 /* ---------- THE CLOSING STACK ON TWO SCHEMES ----------
@@ -10857,7 +10857,7 @@ main.has-mega .movement > .page-banner:first-child{
   margin-top: 72px;
   box-shadow: inset 0 1px 0 0 var(--k);
 }
-main.has-mega .movement:has(+ .movement)::after{ height: calc(var(--band-h, 72px) + 72px); }
+main.has-mega .movement.m-next::after{ height: calc(var(--band-h, 72px) + 72px); }
 main.has-mega .movement + .movement{ margin-top: calc(-1 * (var(--band-h, 72px) + 72px)); }
 
 /* The words' white, said at the weight the charcoal was said at.
@@ -10892,7 +10892,7 @@ main.has-mega .movement.m--essays > .movement-body{ margin-bottom: -23px; }
    the pinned word and still under the band (60) and the word that
    climbs over it from the next movement.
    --------------------------------------------------------------- */
-main.has-mega .movement:has(+ .movement)::after{
+main.has-mega .movement.m-next::after{
   position: relative;
   z-index: 1;
   background: var(--g);
@@ -11284,7 +11284,7 @@ main.has-mega .section-band--colophon.is-at-top{ box-shadow: none; }
    pinned band exactly as before.
    --------------------------------------------------------------- */
 main.has-mega .movement > .page-banner:first-child{ margin-top: 0; box-shadow: none; }
-main.has-mega .movement:has(+ .movement)::after{ height: var(--band-h, 72px); }
+main.has-mega .movement.m-next::after{ height: var(--band-h, 72px); }
 main.has-mega .movement + .movement{ margin-top: calc(-1 * var(--band-h, 72px)); }
 main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band),
 main.has-mega .movement > .page-banner:is(.subscribe-band, .events-band, .store-band).is-at-top{
@@ -13059,8 +13059,8 @@ main.has-mega .movement > .page-banner:first-child:is(*, .r.r.r.r.r.r.r.r.r.r){ 
 /* (2026-09-16: white on both sides of the reveal — the page is white
    now, so a charcoal ground under the load would flash before it, and
    a pull past the top or the foot shows white.) */
-html:has(> body.has-mega){ background: var(--g, var(--g)); }
-html.page-shown:has(> body.has-mega){ background: var(--g, var(--g)); }
+html.has-mega{ background: var(--g, var(--g)); }
+html.page-shown.has-mega{ background: var(--g, var(--g)); }
 body.has-mega{ background: var(--k); }
 
 /* ---------------------------------------------------------------
@@ -13427,8 +13427,8 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.latest-col, 
    it take none, and light and follow as the line's ancestors. Only a
    title the fitter has set in lines (every card's, once fitted) is
    treated so — a bare title keeps its block, and its link. */
-main.has-mega :is(.card-title, .latest-title):has(.title-line):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega :is(.card-title, .latest-title):has(.title-line) > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+main.has-mega :is(.card-title, .latest-title).has-lines:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).has-lines > a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
 main.has-mega :is(.card-title, .latest-title) .title-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   width: fit-content;
   max-width: 100%;
@@ -14717,8 +14717,8 @@ main.has-mega :is(.card-title, .latest-title) a:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r
    nothing underneath to take it, so those titles lit nothing. The
    give-up is conditional on the line existing now; a title that is
    one bare link keeps its own box, as any other link does. */
-:is(.card-title, .latest-title).is-cued a:has(> :is(.title-line, span)):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-:is(.card-title, .latest-title) a:has(> :is(.title-line, span)):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+:is(.card-title, .latest-title).is-cued a.has-span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+:is(.card-title, .latest-title) a.has-span:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none !important;
   box-shadow: none !important;
 }
@@ -14806,7 +14806,7 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, 
    striking the span moved the block down one level and no further.
    The line goes with it, guarded on holding no link of its own, so
    the colophon's deks (which do) are untouched. */
-.section-band .band-dek:has(> .band-date):not(:has(a)):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
+.section-band .band-dek.date-only:not(a):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ pointer-events: none; }
 
 /* ---------- ONE BOX TO A WORD IN THE TOGGLE (2026-09-18) ----------
    Light · Dark · Hex is ONE BUTTON, 72 by 65, holding five spans — and
@@ -14838,8 +14838,8 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega).pic-right :is(.card-title, 
    98 on the front page's. The row gives its block up, and only where
    an inner span is actually there to carry one — on the cards where
    .plate-more IS the words, it keeps its own. */
-.plate-more:has(> :is(.plate-close, .plate-read)):is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-.plate-more:has(> :is(.plate-close, .plate-read)):is(:hover, :focus-visible) > :not(.plate-close):not(.plate-read):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+.plate-more.has-ctl:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.plate-more.has-ctl:is(:hover, :focus-visible) > :not(.plate-close):not(.plate-read):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   background: none !important;
   box-shadow: none !important;
 }
@@ -14864,7 +14864,7 @@ main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r
    The band's tagline and its own name sit in the same deks and
    belong to no such set — muting them read as the band being half
    switched off. */
-.section-band .band-deks:has(a[aria-current="page"]) a:not([aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+.section-band .band-deks.has-current:not(a) a:not([aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 body.word-page .ledger-head:has(.arch-sort.active) .arch-sort:not(.active):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   /* NOT var(--muted): the bands and the colophon redefine it AS the
      ink (--muted: var(--k)), so muting to it changed nothing at all.
@@ -15208,11 +15208,11 @@ main.has-mega :is(.card-title, .latest-title):is(.is-cued, :hover, :focus-within
    the blocks answer on the hover itself and a page whose script never
    ran still has the mark. No box is painted here — the pseudo is the
    mark, and the ink turns charcoal on it. */
-main.has-mega :is(.card-title, .latest-title):has(+ :is(.card-dek, .latest-dek):hover) :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
+main.has-mega :is(.card-title, .latest-title).dek-hover.dek-hover :is(.hl-ink):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   display: block;
 }
-main.has-mega :is(.card-title, .latest-title):has(+ :is(.card-dek, .latest-dek):hover) :is(.title-line, a, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega :is(.card-title, .latest-title).dek-hover.dek-hover :is(.title-line, a, a > span):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within) :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--hl-ink) !important;
@@ -15249,7 +15249,7 @@ main.has-mega :is(.card-dek, .latest-dek).hl-blk:is(:hover, :focus-within) :is(*
   pointer-events: none;
 }
 main.has-mega :is(.card-title, .latest-title).hl-rect:is(.is-cued, :hover, :focus-within):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
-main.has-mega :is(.card-title, .latest-title).hl-rect:has(+ :is(.card-dek, .latest-dek):hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+main.has-mega :is(.card-title, .latest-title).hl-rect.dek-hover.dek-hover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
   display: block;
 }
 
@@ -15952,9 +15952,9 @@ main.has-mega .section-band .band-deks :is(a, .nav-links-dead):is(*, .r.r.r.r.r.
    WHAT IS CHOSEN above). The run's own :hover is what hands the mark
    over, so it is what hands the commas over too. */
 main.has-mega .section-band .band-deks a:hover + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega .section-band .band-deks .band-sep:has(+ a:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks .band-sep.next-hover:not(a):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band .band-deks:not(:hover) a[aria-current="page"] + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega .section-band .band-deks:not(:hover) .band-sep:has(+ a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+main.has-mega .section-band .band-deks:not(:hover) .band-sep.before-current:not(a):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--band-ground) !important;
 }
 
@@ -16027,9 +16027,9 @@ main.has-mega .page-rows > .section-band .band-deks a:hover:is(*, .r.r.r.r.r.r.r
   color: var(--band-ground) !important;
 }
 main.has-mega .section-band .band-deks a:hover + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega .section-band .band-deks .band-sep:has(+ a:hover):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .section-band .band-deks .band-sep.next-hover:not(a):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
 main.has-mega .section-band .band-deks:not(:hover) a[aria-current="page"] + .band-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
-main.has-mega .section-band .band-deks:not(:hover) .band-sep:has(+ a[aria-current="page"]):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+main.has-mega .section-band .band-deks:not(:hover) .band-sep.before-current:not(a):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   color: var(--band-ground) !important;
 }
 
@@ -21975,3 +21975,24 @@ html main.has-mega :is(.sub-ticker--nav, .page-rows > .section-band--colophon) a
   outline: none !important;
   text-decoration: none !important;
 }
+
+
+/* ---------- THE :has() QUESTIONS ARE ANSWERED ONCE, AS CLASSES (2026-09-30) ----------
+   With the front page one movement every structural :has() above
+   (.wrap:has(> .card--mega), .row-divider:has(+ .wrap > .card--mega),
+   .movement-body:has(> .wrap:last-child), html:has(> body.has-mega),
+   the titles' :has(.title-line), the dek-hover and band-sep states…)
+   stood over the whole page, and Chrome re-checked each on every one
+   of the fitter's thousands of writes: a forced recalc cost 3.2ms (0.5
+   without them) and stage two of the fit held the thread twelve
+   seconds after the reveal. Each now reads a class — w-mega, w-latest,
+   w-banner, rd-before-mega, mb-wrap-last, mb-mega-2nd-last,
+   mb-mega-3rd-last, m-mega-2nd-last, m-next, has-contra, has-lines,
+   has-span, dek-hover, has-current, before-current, next-hover,
+   date-only, has-ctl, before-ghost — set by src/structure-classes.js
+   before the first pass and at the end of every pass, the two pointer
+   states by its listeners. A class is doubled or trebled where the
+   :has() argument weighed more (:not(a) where it carried an element),
+   so every rule keeps exactly the weight it had. The rules left with a
+   :has() are the archive's two and the old nav's focus rings, whose
+   anchors the fitter never touches. */

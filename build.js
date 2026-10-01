@@ -3531,8 +3531,11 @@ ${js}
 // shell pages (about, give, archive) have none, so this stays out of
 // renderPageShell's fixed script set.
 function renderDuoPanelFitScript() {
+  // (the :has() answers ride ahead of the fitter: src/structure-classes.js)
+  const structure = slimJs(fs.readFileSync(path.join(__dirname, 'src/structure-classes.js'), 'utf8'));
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/duo-panel-fit.js'), 'utf8'));
   return `<script>
+${structure}
 ${js}
 </script>`;
 }

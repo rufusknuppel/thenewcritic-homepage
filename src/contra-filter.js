@@ -84,6 +84,8 @@
         card.appendChild(group[j] || makeGhost());
       }
     });
+    // (the dividers before ghosts are told so — src/structure-classes.js)
+    if (window.__ncStructure) window.__ncStructure();
     // Kick the fitter (debounced resize listener in duo-panel-fit.js):
     // widths are unchanged, but any freshly-revealed panel refits.
     window.dispatchEvent(new Event('resize'));

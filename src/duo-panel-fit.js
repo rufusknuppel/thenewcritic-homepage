@@ -824,6 +824,11 @@
       return '<span class="title-line" style="font-size:' + chosen.sizes[k].toFixed(2) + 'px">'
         + l.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
     }).join('');
+    // (the sheet's :has(.title-line) / a:has(> span) read these classes
+    // now — src/structure-classes.js; a restored title is re-marked when
+    // the pass ends)
+    el.classList.add('has-lines');
+    if (host !== el) host.classList.add('has-span');
     // The em-based margin corrections read the element's own size; the
     // first line's is the closest single stand-in for the stack.
     el.style.fontSize = chosen.sizes[0].toFixed(2) + 'px';
@@ -6740,6 +6745,9 @@
     // rebuilds the held clones on the FINAL geometry, not the first
     // paint's (stale anchors made the held couriers jump at the
     // lock-in).
+    // (the structural classes that answer the sheet's former :has()
+    // questions are re-read once the pass has settled the titles)
+    if (window.__ncStructure) window.__ncStructure();
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
     step('seatInkBlocks', seatInkBlocks);
     step('seatDekBlocks', seatDekBlocks);
