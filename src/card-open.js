@@ -126,6 +126,11 @@
       // (and Preview in the courier's other corner, 2026-10-01)
       if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
+        // (INERT, NOT GONE, 2026-10-01, at the user's word: while the mate's
+        // picture is out over this card its Preview stands as it is and
+        // answers nothing — the hand cannot reach it (style.css, THE
+        // PREVIEW SLIDES) and a key's press on it ends here)
+        if (card.classList.contains('is-under')) return;
         if (card.classList.contains('is-open')) {
           shut();
           try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}

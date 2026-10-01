@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=cb9832c5">
+<link rel="stylesheet" href="style.css?v=9c5ff62a">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6327,6 +6327,7 @@
     return b.r > b.l && b.b > b.t ? b : null;
   }
   var SLIDE_MARGIN = 36;
+  var SLIDE_LESS = 72;
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -6336,7 +6337,8 @@
       var wc = Math.min(P.r - P.l, Q.r - Q.l);
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
-      var dx = (wc + gap) * (right ? 1 : -1);
+      var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
+      var wb = wc - SLIDE_LESS;
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -6355,9 +6357,9 @@
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
-        bs.left = ((right ? P.l : P.r - wc) - cr0.left).toFixed(2) + 'px';
+        bs.left = ((right ? P.l : P.r - wb) - cr0.left).toFixed(2) + 'px';
         bs.top = (P.t - cr0.top).toFixed(2) + 'px';
-        bs.width = wc.toFixed(2) + 'px';
+        bs.width = wb.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
     });
@@ -6484,7 +6486,7 @@
           var mate = ONE_COL.matches ? null : slideMate(j.card);
           var Q = mate && slidePic(mate);
           if (Q) {
-            var wc = Math.min(Fr - Fl, Q.r - Q.l);
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
             j.slide = true;
@@ -7199,7 +7201,7 @@
   }
   var INK_SEL = 'a:not(.latest-cover):not(.latest-plate):not(.card-image-link):not(.swap-body)'
     + ':not(.ticker-cover-link):not(.latest-stack):not(.topbar-wordmark):not(.nav-wordmark-link)'
-    + ':not(.reprint-link):not(.skip-link), button:not(.theme-toggle), [role="button"],'
+    + ':not(.reprint-link):not(.skip-link), button:not(.theme-toggle):not(.peek-corner), [role="button"],'
     + ' .peek-open, .plate-close, .plate-read, .plate-title, .title-line,'
     + ' .banner-name, .topbar-name, .reprint-name, .ledger-word, .band-name-mid, .band-mini,'
     + ' .banner-line--below,'
@@ -8267,6 +8269,7 @@
     card.addEventListener('click', function (e) {
       if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
+        if (card.classList.contains('is-under')) return;
         if (card.classList.contains('is-open')) {
           shut();
           try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}

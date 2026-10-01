@@ -8189,6 +8189,10 @@
   // the picture on every side, which is what covers the mate as the card
   // goes over it. The preview's column is brought to the snapped picture.
   var SLIDE_MARGIN = 36;
+  // THE SLIDE IS 72 LESS (2026-10-01, "I want slide to be 72px less"):
+  // the picture's travel, and the preview column it reveals, are this
+  // much shorter than the narrower picture's width and the gutter
+  var SLIDE_LESS = 72;
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -8198,7 +8202,13 @@
       var wc = Math.min(P.r - P.l, Q.r - Q.l);
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
-      var dx = (wc + gap) * (right ? 1 : -1);
+      // THE SLIDE IS 72 LESS (2026-10-01, at the user's word): the picture
+      // travels the narrower picture's width and the gutter, less
+      // SLIDE_LESS, and the preview column it reveals is that much
+      // narrower too, so the gutter still stands between the column's
+      // end and the picture's edge
+      var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
+      var wb = wc - SLIDE_LESS;
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8219,9 +8229,9 @@
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
-        bs.left = ((right ? P.l : P.r - wc) - cr0.left).toFixed(2) + 'px';
+        bs.left = ((right ? P.l : P.r - wb) - cr0.left).toFixed(2) + 'px';
         bs.top = (P.t - cr0.top).toFixed(2) + 'px';
-        bs.width = wc.toFixed(2) + 'px';
+        bs.width = wb.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
     });
@@ -8419,7 +8429,9 @@
           var mate = ONE_COL.matches ? null : slideMate(j.card);
           var Q = mate && slidePic(mate);
           if (Q) {
-            var wc = Math.min(Fr - Fl, Q.r - Q.l);
+            // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
+            // narrower, as the slide is shorter by it — seatSlides)
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
             j.slide = true;
@@ -9549,7 +9561,11 @@
     // (named out above) but also on .banner-name and .reprint-name,
     // which are the names themselves and want the block like any
     // other word.
-    + ':not(.reprint-link):not(.skip-link), button:not(.theme-toggle), [role="button"],'
+    // NOT .peek-corner (2026-10-01, "Preview should only change font
+    // color"): Preview on the courier's line turns the mark's colour
+    // under the hand and nothing else — enrolled here it drew the
+    // block on its ::after, the word lost on its own ground
+    + ':not(.reprint-link):not(.skip-link), button:not(.theme-toggle):not(.peek-corner), [role="button"],'
     // NOT .card-title / .latest-title THEMSELVES (2026-09-19): where a
     // title is cut into lines the LINES carry the block, and where it
     // is not, the link inside it does. Seated as a carrier as well,
