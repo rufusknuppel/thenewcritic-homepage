@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=525b8402">
+<link rel="stylesheet" href="style.css?v=f27b7963">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5373,6 +5373,7 @@
     step('seatPlateBody', seatPlateBody);
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
+    step('seatDuoTitle', seatDuoTitle);
     step('seatRowGaps', seatRowGaps);
     step('seatRowGaps#2', seatRowGaps);
     step('fitLatestStack#2', fitLatestStack);
@@ -6005,6 +6006,16 @@
     }
     return { w: dp[n][k], lines: lines };
   }
+  var duoTitleW = 0;
+  function seatDuoTitle() {
+    if (ONE_COL.matches || !duoTitleW) return;
+    var cards = document.querySelectorAll('.card--duo-lead, .card--duo-beside');
+    if (!cards.length) return;
+    var was = parseFloat(cards[0].style.getPropertyValue('--duo-t')) || 0;
+    if (Math.abs(was - duoTitleW) < 0.5) return;
+    [].forEach.call(cards, function (c) { c.style.setProperty('--duo-t', duoTitleW + 'px'); });
+    seatSwapCols();
+  }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
     var jobs = [];
@@ -6227,6 +6238,7 @@
       measureCtx.font = j.sface;
       var tr100 = j.track * 100;
       var w100 = function (str) { return measureCtx.measureText(str).width + tr100 * str.length; };
+      if (j.card.closest('.card--duo-beside')) duoTitleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
       var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);
