@@ -67,6 +67,14 @@
   font-display: block;
   src: url(fonts/berlin-type-bold.woff2) format('woff2');
 }
+/* The meta's face — Work Sans (OFL, Google's variable cut, latin). */
+@font-face {
+  font-family: 'Work Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(fonts/work-sans.woff2) format('woff2');
+}
 /* The display face — Archivo Black (self-hosted OFL cut from Google
    Fonts): the panels' titles, deks and byline strips. One style only;
    registered at BOTH 400 and 700 so the rules' font-weight:700 lands
@@ -279,7 +287,21 @@
      every platform, where the bare "Courier" before it meant Apple's
      dark cut on a Mac and Courier New on Windows. The system faces
      back it up where the kit is missing. */
-  --byline-face: Courier, 'Courier New', monospace;
+  /* WORK SANS, IN CAPITALS (2026-10-01): the meta leaves Courier for
+     an early grotesk, after the 1920 Goldschmidt-Wallerstein
+     invitation (Heckel's woodcut) — Work Sans is drawn loosely on the
+     Bauer and Stephenson Blake grotesks of that card's day. Self-hosted
+     (OFL, variable 100–900, fonts/work-sans.woff2) at 400, beside
+     Libre Franklin 500 in a side-by-side. Every rule that sets this
+     face reads --byline-track (Courier's mono cells wanted -0.02em).
+     0.02em because it keeps the run at Courier's width (a measured
+     95-100% on the meta lines): seatMatterMeta drops the line's last
+     piece to a second line when the run outgrows the picture, and the
+     0.06em of the try-on ran 3-7% wider than Courier and wrapped the
+     narrow cards at 1024 (the portrait card's ELI GOLDFINE) that
+     Courier held on one line. */
+  --byline-face: 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --byline-track: 0.02em;
   /* THE META IS THE SYSTEM'S COURIER, IN CAPITALS (2026-09-22; Inter
      for an afternoon — bold, medium, regular, then sentence case) */
   --byline-weight: 400;
@@ -439,7 +461,7 @@ a{ color: inherit; }
   font-weight: 400;
   font-size: var(--courier-size);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   line-height: 1.4;
 }
 /* The rail's LISTS centre — sections and socials on the column's
@@ -518,7 +540,7 @@ a{ color: inherit; }
   font-weight: 400;
   font-size: var(--courier-size);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   line-height: 1.4;
 }
 /* The tagline HOVERS AS ONE: its two lines are separate links (each
@@ -678,7 +700,7 @@ a{ color: inherit; }
      tighten. (It wore stretched Neue Haas before; the fitted per-line
      sizes below drop to the credit 13.) */
   font-family: var(--byline-face); font-weight: 400;
-  letter-spacing: -0.02em; text-transform: uppercase;
+  letter-spacing: var(--byline-track); text-transform: uppercase;
   line-height: 1.4;
   /* An anchor now (it points home with the name and the mark — see THE
      MASTHEAD), so it has to be told to be the block the rail's margins
@@ -2699,7 +2721,7 @@ a.likes:hover::after,
   font-style: normal;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   text-align: left;
   color: var(--white);
@@ -3255,7 +3277,7 @@ a.likes:hover::after,
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   color: var(--white);
 }
@@ -5867,7 +5889,7 @@ body.has-mega .head-rule{
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 .dek-band :is(a, span){ position: relative; top: -0.54px; }
@@ -5912,7 +5934,7 @@ body.has-mega .head-rule{
   font-style: normal;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 /* Centred on the INK — the static value is only the no-JS fallback;
@@ -6007,7 +6029,7 @@ body.has-mega .head-rule{
   font-weight: 400;
   font-size: var(--courier-size);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   line-height: 1.4;
   color: var(--white);
   text-align: center;
@@ -6025,7 +6047,7 @@ body.has-mega .head-rule{
   font-weight: 400;
   font-size: var(--courier-size);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   line-height: 1.4;
   color: var(--white);
   text-align: justify;
@@ -6807,7 +6829,7 @@ body.has-mega::before{ content: none; }
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   color: var(--white);
   opacity: 0;
@@ -6926,7 +6948,7 @@ body.has-mega::before{ content: none; }
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   color: var(--white);
   /* BENEATH THE PICTURE. This is the only line on the page that
@@ -8676,7 +8698,7 @@ main.has-mega{ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-posts
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 
@@ -8708,7 +8730,7 @@ main.has-mega{ --g1: var(--c-latest); --g2: var(--c-essays); --g3: var(--c-posts
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 /* The fixed line takes the band's own middle box — the fitter seats the
@@ -8730,7 +8752,7 @@ body.masthead-picked .section-band .band-mid{ visibility: visible; }
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 
@@ -8848,7 +8870,7 @@ main.has-mega :is(.latest-courier--cover, .cover-under) :is(span, a){
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   /* NO Z-INDEX. The chip's 6 put it on the picture; this line stands
      with the title and the dek, and goes under the picture with them
@@ -9385,7 +9407,7 @@ main.has-mega .reprint-name:is(:focus-visible){ color: var(--hl-ink); background
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 .section-band .band-mid > :only-child::before{ content: none; }
@@ -9404,7 +9426,7 @@ main.has-mega .reprint-name:is(:focus-visible){ color: var(--hl-ink); background
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 
@@ -9993,7 +10015,7 @@ main.has-mega .plate-more{
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 /* THE TRIANGLE OVERSHOOTS ITS TWO LEGS BY 1: the picture's edges land
@@ -10020,7 +10042,7 @@ main.has-mega .plate-more{
   font-weight: 400;
   font-size: var(--courier-size);
   line-height: 1.4;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 
@@ -10645,7 +10667,7 @@ main.has-mega .section-band > .band-dek :is(a, span){
   font-family: var(--byline-face);
   font-style: normal;
   font-size: var(--courier-size);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
 }
 main.has-mega .section-band > .band-dek .cover-sep{ color: inherit; padding: 0 12px; }
@@ -12207,7 +12229,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card-foot{
   margin: 0;
   font-family: var(--byline-face);
-  font-size: 13px; line-height: 18.2px; letter-spacing: -0.26px;
+  font-size: 13px; line-height: 18.2px; letter-spacing: var(--byline-track);
   text-transform: uppercase; font-weight: 400;
   color: var(--g);
 }
@@ -12264,7 +12286,7 @@ body.ledger-page .about-mosaic-block{ padding: 72px var(--ledger-side); }
 .about-card .mh-role{
   margin: 0 0 6px;
   font-family: var(--byline-face);
-  font-size: 13px; line-height: 18.2px; letter-spacing: -0.26px;
+  font-size: 13px; line-height: 18.2px; letter-spacing: var(--byline-track);
   text-transform: uppercase; font-weight: 400; font-style: normal;
   color: var(--g);
 }
@@ -13489,7 +13511,7 @@ main.has-mega .marginalia .theme-toggle:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   font-weight: 400;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   color: var(--k);
 }
@@ -13527,7 +13549,7 @@ main.has-mega .marginalia .theme-hex:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   font-weight: 400;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   text-align: center;
   color: var(--k);
@@ -13765,7 +13787,7 @@ main.has-mega .marginalia .social-stack:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   font-style: normal;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   color: var(--k);
 }
 main.has-mega .marginalia .social-stack > span{ line-height: 13px; font-style: normal; }
@@ -13825,7 +13847,7 @@ body.word-page .ledger-head .arch-clear:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r){
   font-style: normal;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   color: var(--k);
 }
@@ -14135,7 +14157,7 @@ main.has-mega .page-banner--apart .banner-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.
   font-style: normal;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   text-transform: none;
   color: var(--k) !important;
   pointer-events: none;
@@ -14477,7 +14499,7 @@ main.has-mega :is(.latest-cell--ps, .duo-half--mega) :is(.card-title, .latest-ti
   font-style: normal;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   text-transform: none;
   white-space: nowrap;
   color: #FFFFFF;
@@ -15561,7 +15583,7 @@ main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.
   font-style: normal;
   font-size: 13px;
   line-height: 1.55;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
 }
 .sub-box-body p{ margin: 0; }
 /* THE PRICE IS SET BOLD, IN A REAL ONE. The self-hosted Roboto Mono
@@ -17192,7 +17214,7 @@ main.has-mega .latest-cell--contra.is-inbox .latest-cover-col--square:is(*, .r.r
   font-style: normal;
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   color: #FFFFFF;
 }
 
@@ -18110,7 +18132,7 @@ main.has-mega .head-seam > .seam-date:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   font-family: var(--byline-face);
   font-size: 13px;
   font-weight: var(--byline-weight, 700);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: var(--byline-case, uppercase);
   line-height: 1;
   color: #FFFFFF;
@@ -18239,7 +18261,7 @@ main.has-mega .foot-seam > .seam-date:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   font-family: var(--byline-face);
   font-size: 13px;
   font-weight: var(--byline-weight, 700);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--byline-track);
   text-transform: var(--byline-case, uppercase);
   line-height: 1;
   color: #FFFFFF;
@@ -18660,7 +18682,7 @@ main.has-mega .page-rows > .section-band > .band-dek > :is(.band-date, .band-cop
   font-size: 13px !important;
   font-weight: var(--byline-weight, 700) !important;
   font-style: normal !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: var(--byline-track) !important;
   text-transform: var(--byline-case, uppercase) !important;
   line-height: 1 !important;
   color: var(--band-text) !important;
@@ -19688,7 +19710,7 @@ main.has-mega .duo-half--mega > .essay-acts:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   font-family: var(--byline-face);
   font-size: 13px;
   line-height: 13px;
-  letter-spacing: -0.26px;
+  letter-spacing: var(--byline-track);
   text-transform: uppercase;
   white-space: nowrap;
   color: #FFFFFF !important;
