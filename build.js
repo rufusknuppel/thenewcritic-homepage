@@ -1365,7 +1365,12 @@ function bandDeks(m) {
     const a = (l) => l ? `<a href="${escapeHtml(l.href)}"${l.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(l.label)}</a>` : '';
     // (SUBSCRIBE is struck from the band, 2026-09-25, at the user's
     // word: the ticker under the band carries it)
-    return [a(by('archive')), a(by('about')), '<span class="nav-links-dead">Store</span>', '<span class="nav-links-dead">Events</span>'].filter(Boolean).join(BAND_SEP);
+    // THE LAST MAGAZINE, ARCHIVE, EVENTS, STORE (2026-09-30, at the
+    // user's word): the magazine's line is the About link now, first,
+    // and the list stands centred in the band (style.css)
+    const about = by('about');
+    const tlm = about ? a({ ...about, label: 'The Last Magazine' }) : '';
+    return [tlm, a(by('archive')), '<span class="nav-links-dead">Events</span>', '<span class="nav-links-dead">Store</span>'].filter(Boolean).join(BAND_SEP);
   }
   const list = m === 'contra' ? CONTRA_CATEGORIES : RAIL_CATEGORIES;
   return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(BAND_SEP);
@@ -1511,8 +1516,8 @@ function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {
     // too (bareMid still keeps their own line out of it): it gives its
     // seat to the band's miniature THE NEW CRITIC as the big name goes
     // under the band (src/band-mark.js).
-    return `<nav class="section-band section-band--three" aria-label="The Last Magazine">
-    ${bandName(TYAM_LINK)}
+    return `<nav class="section-band section-band--three section-band--head" aria-label="The Last Magazine">
+    ${bandName('')}
     <p class="band-deks band-dek">${mid && !bareMid ? `<span>${escapeHtml(mid)}</span>` : ''}</p>
     <p class="band-deks">${links}</p>
   </nav>`;
@@ -1555,14 +1560,17 @@ function renderPageFoot(onHome = false, onMark = false) {
   // (the foot's own ticker is struck, 2026-09-24: the head's rides
   // under the band the whole page, style.css, THE TICKER RIDES UNDER THE
   // BAND)
-  return `
+  // THE SUBSCRIBE STRIP PINS TO THE WINDOW'S FOOT UNTIL THE COLOPHON
+  // (2026-09-30, at the user's word): on the front page it stands in
+  // the rows straight over the colophon, sticky at the window's foot,
+  // so it rides the foot the page's whole length and comes to rest on
+  // the colophon as it arrives (style.css, THE STRIP PINS TO THE FOOT)
+  return `${onHome ? `\n  ${subTicker('foot').replace('sub-ticker--foot', 'sub-ticker--foot sub-ticker--pin')}` : ''}
   ${renderColophonBand()}
-  <section class="reprint${mk}">
-    <a class="reprint-stamp-link" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">${stampHtml('reprint-stamp')}</a>
-    <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
-  </section>
   <div class="foot-field${mk}" aria-hidden="true"></div>`;
+  // (THE REPRINT IS STRUCK, 2026-09-30, at the user's word: the page
+  // ends on the colophon; the name is held at the window's head the
+  // whole way down instead — style.css, THE NAME HOLDS THE HEAD)
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
 // band opens on its NAME at the left and closes on its links at the
@@ -2358,7 +2366,7 @@ const stackHtml = (text, side = 'right', href = 'archive.html') => `<a class="la
 // respect, the fitter's essay paths and all.
 function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, stack = '', stackSide = 'right', stackHref = 'archive.html', kind = '', pair = '', align = '', flip = false, trueHeight = false, trueWidth = false, row = null } = {}) {
   if (!post) return '';
-  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev, megaKind: kind }, `duo-half--wide duo-half--mega${kind ? ` duo-half--kind-${kind}` : ''}`);
+  const half = renderDuoHalf(post, { tag: 'From the Essay', btnLabel: 'Essays', btnHref: 'archive.html#section=essays', megaLabel: label, megaSwapMeta: rev, megaKind: kind }, `duo-half--wide duo-half--mega${kind ? ` duo-half--kind-${kind}` : ''}${row && row.r === 0 ? ' is-in' : ''}`);
   // (The hero's masthead row is retired — the top header carries the
   // brand; the hero opens straight on its courier band.)
   // The REV hero mirrors the composition — cover left, ground right
@@ -2752,7 +2760,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m)}\n  ${subTicker('head')}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m)}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the

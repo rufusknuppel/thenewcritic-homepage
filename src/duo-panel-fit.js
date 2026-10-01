@@ -3894,6 +3894,32 @@
   // own bounds on a canvas; the line's place in its band does not
   // depend on where the band stands, so the order of the steps is moot.
   var bandInkCv = null;
+  // THE LOWEST INK OF THE HEAD BAND'S LIST, from the band's own top
+  // (2026-09-30): each word's and comma's painted foot, off the face
+  function navInkFoot(band) {
+    if (!band) return null;
+    var list = band.querySelector('.band-deks:last-child');
+    if (!list) return null;
+    var br = band.getBoundingClientRect();
+    bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+    var lo = -Infinity;
+    [].forEach.call(list.querySelectorAll('a, span'), function (el) {
+      if (el.children.length) return;
+      var txt = el.textContent || '';
+      if (!txt.trim()) return;
+      var rg = document.createRange(); rg.selectNodeContents(el);
+      var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+      if (!r) return;
+      var cs = getComputedStyle(el);
+      bandInkCv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = bandInkCv.measureText(cs.textTransform === 'uppercase' ? txt.toUpperCase() : txt);
+      var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+      if (!(fa > 0)) return;
+      var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+      lo = Math.max(lo, base + m.actualBoundingBoxDescent);
+    });
+    return isFinite(lo) ? lo - br.top : null;
+  }
   function bandGaramondInset(band, edge) {
     if (!band) return 0;
     var br = band.getBoundingClientRect();
@@ -6988,6 +7014,37 @@
             // (72 under the strip where the posts stand two to a row and no
             // name stands over them: TEN ROWS, 2026-09-30)
             var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
+            // (72 UNDER THE NAV'S INK, 2026-09-30, at the user's word: where
+            // the rows stand, the first row's highest ink 72 under the
+            // lowest ink of the band's list — its commas' tails — read off
+            // the face, the band's foot no longer the measure)
+            if (stacked && !tk) {
+              var nf = navInkFoot(hb);
+              if (nf != null) {
+                firstAt = body.getBoundingClientRect().top + nf + ROWS_GAP;
+                // (the row's top is read off its courier's line box, which
+                // stands over its capitals' ink by the leading: that much
+                // higher, so ink stands 72 under ink)
+                var boxT = Infinity, inkT = Infinity;
+                bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+                [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
+                  if (getComputedStyle(k).visibility === 'hidden' || getComputedStyle(k.closest('.cover-meta') || k).visibility === 'hidden') return;
+                  var kr = document.createRange(); kr.selectNodeContents(k);
+                  var kx = [].filter.call(kr.getClientRects(), function (x) { return x.width > 0 && x.height > 0; })[0];
+                  if (!kx) return;
+                  var kcs = getComputedStyle(k);
+                  bandInkCv.font = kcs.fontStyle + ' ' + kcs.fontWeight + ' ' + kcs.fontSize + ' ' + kcs.fontFamily;
+                  var kt = (k.textContent || '').trim();
+                  var km = bandInkCv.measureText(kcs.textTransform === 'uppercase' ? kt.toUpperCase() : kt);
+                  if (!(km.fontBoundingBoxAscent > 0)) return;
+                  var kb = kx.top + (kx.height - (km.fontBoundingBoxAscent + km.fontBoundingBoxDescent)) / 2 + km.fontBoundingBoxAscent;
+                  boxT = Math.min(boxT, kx.top); inkT = Math.min(inkT, kb - km.actualBoundingBoxAscent);
+                });
+                // (against the very reading the row is moved by)
+                var lead = isFinite(inkT) ? Math.max(0, inkT - topInk()) : NaN;
+                if (isFinite(lead) && lead > 0 && lead < 20) firstAt -= lead;
+              }
+            }
             // (THE LATEST stands over it: its ink's top 72 under the band,
             // the row 36 under its baseline — 2026-09-23)
             var lh = body.querySelector(':scope > .latest-head');
@@ -7180,7 +7237,14 @@
       var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
       // (the foot's subscribe ticker, over the colophon, is the edge
       // where it stands: 2026-09-23)
-      while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !next.classList.contains('sub-ticker--foot')) next = next.nextElementSibling;
+      // (…except the strip pinned to the window's foot, 2026-09-30: where
+      // it is pinned is not where it rests, which is straight over the
+      // colophon — the edge is read off the colophon less its height)
+      var pinH = 0;
+      while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !(next.classList.contains('sub-ticker--foot') && !next.classList.contains('sub-ticker--pin'))) {
+        if (next.classList.contains('sub-ticker--pin')) pinH += next.offsetHeight;
+        next = next.nextElementSibling;
+      }
       if (!next) return;
       // THE STEP RUNS ON THROUGH THE SECTIONS (2026-09-24, at the user's
       // word): from 1024 up a section no longer stands 54 under the last
@@ -7281,7 +7345,7 @@
           if (isNaN(ml)) return;
           line = ban.getBoundingClientRect().top + ml;
         }
-      } else line = next.getBoundingClientRect().top;
+      } else line = next.getBoundingClientRect().top - pinH;
       // (the colophon is not moved but the last movement's foot grown
       // or taken in: a margin on the colophon opened a gap between the
       // two grounds, and the reprint under the page showed through it)

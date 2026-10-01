@@ -21260,3 +21260,67 @@ main.has-mega .page-rows > .reprint > .reprint-stamp-link{ display: none !import
    ran 50 past the reprint once the white over the name was struck, and
    the page scrolled on into nothing: the page ends where main does) */
 main.has-mega{ overflow-y: clip; }
+
+/* ---------- THE HEAD BAND'S LIST STANDS CENTRED (2026-09-30) ----------
+   THE LAST MAGAZINE, ARCHIVE, EVENTS, STORE in the middle of the band
+   (build.js bandDeks): the list spans the band's three columns and
+   stands at their centre; the name's slot on the left and the middle
+   line stand empty. */
+.section-band--head > .band-deks:last-child:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  justify-self: center !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  white-space: nowrap;
+}
+
+/* ---------- THE STRIP PINS TO THE FOOT (2026-09-30) ----------
+   The subscribe strip stands in the rows straight over the colophon
+   (build.js renderPageFoot) and sticks to the window's foot: it rides
+   the foot from the first screen, and the colophon, arriving, finds it
+   resting on its top and carries it up with the page. */
+main.has-mega .page-rows > .sub-ticker--pin:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: sticky !important;
+  top: auto !important;
+  bottom: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  translate: none !important;
+  animation: none !important;
+  z-index: 71 !important;
+}
+
+/* ---------- THE NAME HOLDS THE HEAD (2026-09-30) ----------
+   THE NEW CRITIC stays at the window's head at its full size the whole
+   way down, and the band pins straight under it rather than rising over
+   it; the rows pass under both. The reprint at the foot is struck
+   (build.js renderPageFoot). */
+main.has-mega .page-rows > .section-band--head:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  top: var(--masthead-h, 159px) !important;
+}
+main.has-mega .page-rows > .movement.m--latest .topbar-wordmark:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  z-index: 50 !important;
+}
+
+/* ---------- THE COLOPHON ON THE CHARCOAL (2026-09-30) ----------
+   The colophon band in the head band's charcoal, its words white,
+   turning the mark's colour under the hand as the head band's do. */
+main.has-mega .page-rows > .section-band--colophon:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  --g: #121417;
+  background-color: #121417 !important;
+}
+main.has-mega .page-rows > .section-band--colophon :is(a, span, p):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: #FFFFFF !important;
+}
+main.has-mega .page-rows > .section-band--colophon a:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-mark) !important;
+}
+
+/* ---------- THE BAND'S AIR IS ITS INSET (2026-09-30) ----------
+   With the stamp gone the band need not stand 96: it stands 86, the
+   list's capitals 36 under its top and its baseline 36 over its foot —
+   the band's 36 inset, top and bottom (the colophon the same). */
+@media (min-width: 1024px){
+  main.has-mega .page-rows > .section-band:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ height: 86px; }
+}
