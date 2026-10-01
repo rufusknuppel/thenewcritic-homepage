@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b2cbc3d8">
+<link rel="stylesheet" href="style.css?v=bb1e00ac">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -345,10 +345,10 @@
 <main id="main" class="has-mega">
 
   <div class="page-rows">
-  <nav class="section-band section-band--three" aria-label="The Last Magazine">
-    <p class="band-deks band-name"><a href="./#top">The Last Magazine</a></p>
+  <nav class="section-band section-band--three section-band--head" aria-label="The Last Magazine">
+    <p class="band-deks band-name"></p>
     <p class="band-deks band-dek"></p>
-    <p class="band-deks"><a href="archive.html" aria-current="page">Archive</a><span class="band-sep">, </span><a href="about.html">About</a><span class="band-sep">, </span><span class="nav-links-dead">Store</span><span class="band-sep">, </span><span class="nav-links-dead">Events</span></p>
+    <p class="band-deks"><a href="about.html">The Last Magazine</a><span class="band-sep">, </span><a href="archive.html" aria-current="page">Archive</a><span class="band-sep">, </span><span class="nav-links-dead">Events</span><span class="band-sep">, </span><span class="nav-links-dead">Store</span></p>
   </nav>
   <a class="sub-ticker sub-ticker--head" href="https://www.thenewcritic.com/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true"><span class="sub-ticker-half"><b>Subscribe</b></span></span></a>
   <div class="head-field" aria-hidden="true"></div>
@@ -1341,11 +1341,6 @@
     <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     <p class="band-deks band-name"><span>Est. May 2025</span></p>
   </nav>
-  <section class="reprint">
-    <a class="reprint-stamp-link" href="./#top" aria-label="The New Critic — to the top of the front page"><svg class="nc-stamp reprint-stamp" viewBox="0 0 283 296" aria-hidden="true" focusable="false"><use href="#nc-stamp"/></svg></a>
-    <div class="reprint-rule" aria-hidden="true"></div>
-    <a class="reprint-name" href="./#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
-  </section>
   <div class="foot-field" aria-hidden="true"></div>
   </div>
   <div class="marginalia">
@@ -3783,6 +3778,30 @@
   }
   var WORDMARK_SIDE = 36; // (144 for an hour on the 22nd, on the content's line; the page's 72 after; 36 from the 23rd, halfway into the margins)
   var bandInkCv = null;
+  function navInkFoot(band) {
+    if (!band) return null;
+    var list = band.querySelector('.band-deks:last-child');
+    if (!list) return null;
+    var br = band.getBoundingClientRect();
+    bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+    var lo = -Infinity;
+    [].forEach.call(list.querySelectorAll('a, span'), function (el) {
+      if (el.children.length) return;
+      var txt = el.textContent || '';
+      if (!txt.trim()) return;
+      var rg = document.createRange(); rg.selectNodeContents(el);
+      var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+      if (!r) return;
+      var cs = getComputedStyle(el);
+      bandInkCv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = bandInkCv.measureText(cs.textTransform === 'uppercase' ? txt.toUpperCase() : txt);
+      var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+      if (!(fa > 0)) return;
+      var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+      lo = Math.max(lo, base + m.actualBoundingBoxDescent);
+    });
+    return isFinite(lo) ? lo - br.top : null;
+  }
   function bandGaramondInset(band, edge) {
     if (!band) return 0;
     var br = band.getBoundingClientRect();
@@ -5547,6 +5566,29 @@
               : document.querySelector('.page-rows > .sub-ticker--head') || body.querySelector(':scope > .sub-ticker');
             if (tk && tk.offsetHeight) bandFoot += tk.offsetHeight;
             var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
+            if (stacked && !tk) {
+              var nf = navInkFoot(hb);
+              if (nf != null) {
+                firstAt = body.getBoundingClientRect().top + nf + ROWS_GAP;
+                var boxT = Infinity, inkT = Infinity;
+                bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+                [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
+                  if (getComputedStyle(k).visibility === 'hidden' || getComputedStyle(k.closest('.cover-meta') || k).visibility === 'hidden') return;
+                  var kr = document.createRange(); kr.selectNodeContents(k);
+                  var kx = [].filter.call(kr.getClientRects(), function (x) { return x.width > 0 && x.height > 0; })[0];
+                  if (!kx) return;
+                  var kcs = getComputedStyle(k);
+                  bandInkCv.font = kcs.fontStyle + ' ' + kcs.fontWeight + ' ' + kcs.fontSize + ' ' + kcs.fontFamily;
+                  var kt = (k.textContent || '').trim();
+                  var km = bandInkCv.measureText(kcs.textTransform === 'uppercase' ? kt.toUpperCase() : kt);
+                  if (!(km.fontBoundingBoxAscent > 0)) return;
+                  var kb = kx.top + (kx.height - (km.fontBoundingBoxAscent + km.fontBoundingBoxDescent)) / 2 + km.fontBoundingBoxAscent;
+                  boxT = Math.min(boxT, kx.top); inkT = Math.min(inkT, kb - km.actualBoundingBoxAscent);
+                });
+                var lead = isFinite(inkT) ? Math.max(0, inkT - topInk()) : NaN;
+                if (isFinite(lead) && lead > 0 && lead < 20) firstAt -= lead;
+              }
+            }
             var lh = body.querySelector(':scope > .latest-head');
             if (lh) {
               var lr = document.createRange(); lr.selectNodeContents(lh);
@@ -5646,7 +5688,11 @@
       if (lastA) { var a2 = rowCourier(lastA), b2 = rowInk(lastA); foot = Math.max(foot, a2 ? a2.b : -Infinity, b2 ? b2.b : -Infinity); }
       if (!isFinite(foot)) return;
       var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
-      while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !next.classList.contains('sub-ticker--foot')) next = next.nextElementSibling;
+      var pinH = 0;
+      while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !(next.classList.contains('sub-ticker--foot') && !next.classList.contains('sub-ticker--pin'))) {
+        if (next.classList.contains('sub-ticker--pin')) pinH += next.offsetHeight;
+        next = next.nextElementSibling;
+      }
       if (!next) return;
       if (next.classList.contains('movement') && !ONE_COL.matches) {
         var sBan = next.querySelector(':scope > .page-banner');
@@ -5718,7 +5764,7 @@
           if (isNaN(ml)) return;
           line = ban.getBoundingClientRect().top + ml;
         }
-      } else line = next.getBoundingClientRect().top;
+      } else line = next.getBoundingClientRect().top - pinH;
       var nm = 0;
       if (next.classList.contains('movement')) {
         nm = parseFloat(getComputedStyle(next).marginTop) || 0;
