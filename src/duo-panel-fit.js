@@ -7064,7 +7064,9 @@
                 // that same air under the strip's foot)
                 var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
                 if (topStrip && topStrip.offsetHeight > 0) {
-                  firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + (gsp.top - wr0.top);
+                  // (72 under the strip's foot to the courier's ink: 2026-09-30,
+                  // at the user's word)
+                  firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + ROWS_GAP;
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its

@@ -371,7 +371,11 @@
     var o = gone ? 1 : span > 0 ? Math.max(0, Math.min(1, (lineTop - y - wmFoot) / span)) : 1;
     if (force || o !== last) { last = o; if (o < 1) line.style.setProperty('opacity', o.toFixed(3)); else line.style.removeProperty('opacity'); }
     if (wm) {
-      var e = under > 0 ? Math.max(0, Math.min(under, y - Math.max(0, span))) : 0;
+      // (from 1024 up, the band unseen and the strip pinned under the
+      // name's air, that air is the name's ground from the first paint —
+      // the unseen band let pictures still finding their seats show
+      // through it as the page loaded: 2026-09-30)
+      var e = under > 0 ? (gone && wide.matches ? under : Math.max(0, Math.min(under, y - Math.max(0, span)))) : 0;
       if (force || e !== lastE) {
         lastE = e;
         // (a pixel more once it is whole, tucked under the strip, so no
