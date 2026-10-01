@@ -1511,10 +1511,13 @@ function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
   const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
   const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
+  // (SUBSCRIBE, ARCHIVE, THE LAST MAGAZINE — the About link, in the
+  // Garamond — then STORE and EVENTS: 2026-09-30, at the user's word)
+  const about = by('about');
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
-    link(by('archive'), 'Archive'),
-    link(by('about'), 'About'),
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
+    link(by('archive'), 'Archive'),
+    about ? `<a class="sub-ticker-half sub-ticker-half--tlm" href="${escapeHtml(about.href)}"><span class="tlm-word">The Last Magazine</span></a>` : '',
     dead('Store'),
     dead('Events'),
   ].join('')}</span></nav>`;

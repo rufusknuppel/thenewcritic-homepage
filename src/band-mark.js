@@ -390,13 +390,17 @@
         lastE = e;
         // (a pixel more once it is whole, tucked under the strip, so no
         // seam opens between the two)
-        if (e > 0) wm.style.setProperty('box-shadow', '0 ' + (e >= under ? under + 1 : e).toFixed(2) + 'px 0 0 ' + ground, 'important');
-        else wm.style.removeProperty('box-shadow');
+        // (its depth alone is written here; its colour is the sheet's, by
+        // the theme, so it turns with the page on the very frame —
+        // written from the script it lagged a turn of the theme by the
+        // refit's delay: 2026-09-30)
+        if (e > 0) wm.style.setProperty('--wm-shadow-y', (e >= under ? under + 1 : e).toFixed(2) + 'px');
+        else wm.style.removeProperty('--wm-shadow-y');
       }
     }
     if (force) { if (X > 0) band.style.setProperty('clip-path', 'inset(0 0 ' + X.toFixed(2) + 'px 0)'); else band.style.removeProperty('clip-path'); }
   }
-  function refit() { line && line.style.removeProperty('opacity'); wm && wm.style.removeProperty('box-shadow'); measure(); apply(true); }
+  function refit() { line && line.style.removeProperty('opacity'); wm && wm.style.removeProperty('--wm-shadow-y'); measure(); apply(true); }
   refit();
   addEventListener('scroll', function () { apply(false); }, { passive: true });
   addEventListener('resize', refit);
