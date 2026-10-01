@@ -6931,14 +6931,14 @@
     // questions are re-read once the pass has settled the titles)
     if (window.__ncStructure) window.__ncStructure();
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
-      step('seatInkBlocks', seatInkBlocks);
-      step('seatDekBlocks', seatDekBlocks);
-      step('seatMatterMeta', seatMatterMeta);
-      step('fitBandDekInset', fitBandDekInset);
+    step('seatInkBlocks', seatInkBlocks);
+    step('seatDekBlocks', seatDekBlocks);
+    step('seatMatterMeta', seatMatterMeta);
+    step('fitBandDekInset', fitBandDekInset);
     // (again: the name's air over its caps is the band's inset to its
     // Garamond, which the step above has only now seated — 2026-09-23)
-      step('fitMastheadFill#2', fitMastheadFill);
-      step('fitReprint#2', fitReprint);
+    step('fitMastheadFill#2', fitMastheadFill);
+    step('fitReprint#2', fitReprint);
     // THE RAIL'S AIR IS READ OFF THE FINISHED NAME (2026-10-01): band-mark
     // sets --wm-under — the strip's and the line's place under the name's
     // ink — at the mid-pass fit event, off a name the masthead fill above
@@ -6947,22 +6947,24 @@
     // rail's blocks below (seatRowGaps), so the rail is measured again
     // here; before this a cold first run seated the row 30 high and only
     // a second run put it right.
-      step('railMeasure', function () { if (window.__ncRailMeasure) window.__ncRailMeasure(); });
-      step('centreMatter', centreMatter);
-      step('seatPlateBody', seatPlateBody);
-      step('seatWordClips', seatWordClips);
-      step('seatSwapCols', seatSwapCols);
-      step('seatRowTitles', seatRowTitles);
-      step('seatRowGaps', seatRowGaps);
+    step('railMeasure', function () { if (window.__ncRailMeasure) window.__ncRailMeasure(); });
+    step('centreMatter', centreMatter);
+    step('seatPlateBody', seatPlateBody);
+    step('seatWordClips', seatWordClips);
+    step('seatSwapCols', seatSwapCols);
+    step('seatRowTitles', seatRowTitles);
+    step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
-      step('seatRowGaps#2', seatRowGaps);
+    step('seatRowGaps#2', seatRowGaps);
     // the margin's names were seated (fitSubscribeLines) before the
     // rows were drawn together, so their rests are read again here
-      step('fitLatestStack#2', fitLatestStack);
+    step('fitLatestStack#2', fitLatestStack);
     // (last of all, once nothing moves the cards again: every picture on
     // whole pixels — 2026-09-23)
-      step('snapPictures', snapPictures);
+    step('snapPictures', snapPictures);
+      // (and the slides read off the snapped pictures — 2026-10-01)
+    step('seatSlides', seatSlides);
     // (a postscript's width changed this pass — seatRowTitles: once more)
     if (rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
@@ -8142,6 +8144,87 @@
     // swaps every column again over the rows it finds: 2026-10-01)
     if (changed && !firstOfTwo) seatSwapCols();
   }
+  // THE CARD BESIDE A CARD IN ITS ROW (2026-10-01): the rows of the
+  // front page pair an essay with a postscript or a review, each in a
+  // section of its own, told apart by data-group and data-row
+  function slideMate(card) {
+    var sec = card.closest('section.card');
+    var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
+    if (!sec || g == null || r == null) return null;
+    var all = document.querySelectorAll('section.card[data-row="' + r + '"]');
+    for (var i = 0; i < all.length; i++) {
+      if (all[i] === sec || all[i].getAttribute('data-group') !== g) continue;
+      var m = all[i].querySelector('.duo-half--mega');
+      if (m) return m;
+    }
+    return null;
+  }
+  // the picture's painted box, where it rests (snapPictures' ruler, less
+  // any slide the card is carried by)
+  function slidePic(card) {
+    var t = card.querySelector('.card-title.hl-rect.rx');
+    if (!t) return null;
+    var cc = getComputedStyle(t, '::before');
+    if (cc.content === 'none') return null;
+    var r = t.getBoundingClientRect();
+    var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+    var cr = card.getBoundingClientRect(), rr = restRect(card);
+    var dx = cr.left - rr.left, dy = cr.top - rr.top;
+    var b = { l: r.left + (parseFloat(cc.left) || 0) - w - dx, r: r.right - (parseFloat(cc.right) || 0) + w - dx, t: r.top + (parseFloat(cc.top) || 0) - dy, b: r.bottom - (parseFloat(cc.bottom) || 0) - dy };
+    return b.r > b.l && b.b > b.t ? b : null;
+  }
+  // THE SLIDE, SEATED LAST (2026-10-01): once the pictures stand on their
+  // whole pixels, each sliding card is told how far it travels — the
+  // column it leaves and the gutter, so its picture lands with its near
+  // edge where the column's far edge stood beside the mate — and its
+  // sheet: the page's ground under the picture and its words, 36 past
+  // the picture on every side, which is what covers the mate as the card
+  // goes over it. The preview's column is brought to the snapped picture.
+  var SLIDE_MARGIN = 36;
+  function seatSlides() {
+    [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
+      if (card.matches('.is-opening, .is-shutting')) return;
+      var mate = slideMate(card);
+      var P = slidePic(card), Q = mate && slidePic(mate);
+      if (!P || !Q) return;
+      var wc = Math.min(P.r - P.l, Q.r - Q.l);
+      var right = Q.l > P.l;
+      var gap = right ? Q.l - P.r : P.l - Q.r;
+      var dx = (wc + gap) * (right ? 1 : -1);
+      // (the words under the two pictures, the lower of the two cards')
+      var foot = P.b;
+      [card, mate].forEach(function (c) {
+        var cr = c.getBoundingClientRect(), rr = restRect(c), oy = cr.top - rr.top;
+        [].forEach.call(c.querySelectorAll('.swap-col .swap-line, .cover-meta'), function (el) {
+          var r = el.getBoundingClientRect();
+          if (r.width && r.height && (el.textContent || '').trim()) foot = Math.max(foot, r.bottom - oy);
+        });
+      });
+      var cr0 = restRect(card);
+      var s = card.style;
+      s.setProperty('--slide-x', dx.toFixed(2) + 'px');
+      var sheet = card.querySelector(':scope > .slide-sheet');
+      if (!sheet) {
+        sheet = document.createElement('span');
+        sheet.className = 'slide-sheet';
+        sheet.setAttribute('aria-hidden', 'true');
+        card.insertBefore(sheet, card.firstChild);
+      }
+      var ss = sheet.style;
+      ss.left = (P.l - SLIDE_MARGIN - cr0.left).toFixed(2) + 'px';
+      ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
+      ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      ss.height = (foot - P.t + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      var body = card.querySelector(':scope > .swap-body.is-set');
+      if (body) {
+        var bs = body.style;
+        bs.left = ((right ? P.l : P.r - wc) - cr0.left).toFixed(2) + 'px';
+        bs.top = (P.t - cr0.top).toFixed(2) + 'px';
+        bs.width = wc.toFixed(2) + 'px';
+        bs.height = (P.b - P.t).toFixed(2) + 'px';
+      }
+    });
+  }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
     var jobs = [];
@@ -8273,12 +8356,30 @@
           // portrait or a review's square is one grid column, and two
           // columns in it stood a handful of words wide)
           j.ncol = (Fr - Fl) >= 480 ? 2 : 1;
+          // THE PREVIEW SLIDES (2026-10-01): where the card has a mate
+          // beside it in its row, the card slides over the mate when
+          // Preview is pressed, and the preview is the column it leaves
+          // in its own seat — as wide as the narrower of the two
+          // pictures, at the far side from the mate, the picture's
+          // height (seatSlides carries it; style.css, THE PREVIEW SLIDES)
+          var mate = ONE_COL.matches ? null : slideMate(j.card);
+          var Q = mate && slidePic(mate);
+          if (Q) {
+            var wc = Math.min(Fr - Fl, Q.r - Q.l);
+            j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
+            j.ncol = 1;
+            j.slide = true;
+          }
         }
       }
       // (36 round the body's text on every side, 2026-09-23)
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       // (54 round an essay's, in its picture: 2026-09-23)
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
+      // (a sliding preview's text runs the column's whole width, flush
+      // with the picture's edges, and its whole height)
+      if (j.slide) j.bp = { l: 0, r: 0, t: 0, b: 0 };
+      j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
       if (j.body) {
