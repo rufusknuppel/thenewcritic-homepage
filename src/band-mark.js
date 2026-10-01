@@ -319,7 +319,9 @@
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent, base: base };
+    var mH = cv.measureText('H');
+    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent, base: base,
+      capFlat: base - mH.actualBoundingBoxAscent };
   }
   function measure() {
     band = document.querySelector('.page-rows > .section-band--head');
@@ -342,7 +344,10 @@
     if (wm && nf) {
       var wr = wm.getBoundingClientRect();
       // (the air over the ink, less what the block already keeps under it)
-      under = Math.max(0, (nf.top - wr.top) - (wr.bottom - nf.foot));
+      // (FLAT CAP TO BASELINE, 2026-10-01: the air over the H's top, the
+      // strip that air under the baseline — the round letters' overshoot
+      // dips into both, as it is drawn to)
+      under = Math.max(0, (nf.capFlat - wr.top) - (wr.bottom - nf.base));
       ground = getComputedStyle(wm).backgroundColor;
     }
     // (the strip pins that same air under the name's ink: style.css, THE
@@ -451,7 +456,9 @@ document.addEventListener('click', function (e) {
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-    return { top: base - m.actualBoundingBoxAscent, base: base };
+    // (the name's top its flat cap, the H's, as its air is read)
+    var asc = el === nm ? cv.measureText('H').actualBoundingBoxAscent : m.actualBoundingBoxAscent;
+    return { top: base - asc, base: base };
   };
   // (CENTRED ON THE NAME, 2026-10-01, at the user's word: the stack's
   // ink — The's top to Magazine's baseline, the g's tail left out —

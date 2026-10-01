@@ -1507,14 +1507,13 @@ function subTicker(where = 'head') {
 // user's word): ARCHIVE, ABOUT, SUBSCRIBE, STORE, EVENTS in the strip's
 // own capitals, spread evenly across it (style.css, THE LINKS IN THE
 // STRIP); STORE and EVENTS lead nowhere yet, as in the band they left
-// THE CORNER CHIP (2026-10-01, at the user's word): LIGHT, DARK and HEX
-// as three dots in a little chip held in the window's bottom right
-// corner — white, charcoal, and the mark's colour. Each dot is its own
-// button for the head script's toggle (.theme-toggle, the -light, -dark
-// and -hex classes); the hex dot opens the field over the chip, the code
-// typed there the bands' colour.
+// THE CORNER CHIP (2026-10-01, at the user's word): LIGHT and DARK as
+// dots in a little chip held in the window's bottom right corner — white
+// and charcoal. Each dot is its own button for the head script's toggle
+// (.theme-toggle, the -light and -dark classes). (A third dot, the
+// mark's colour, opened the HEX field for an hour; HEX is struck.)
 function themeChip() {
-  return `<div class="theme-chip" role="group" aria-label="Light, dark, or a colour of your own"><button type="button" class="theme-toggle theme-toggle-light chip-dot chip-dot--light" aria-label="Light"></button><button type="button" class="theme-toggle theme-toggle-dark chip-dot chip-dot--dark" aria-label="Dark"></button><button type="button" class="theme-toggle theme-toggle-hex chip-dot chip-dot--hex" aria-label="A colour of your own, as a hex code"></button><input class="theme-hex chip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></div>`;
+  return `<div class="theme-chip" role="group" aria-label="Light or dark"><button type="button" class="theme-toggle theme-toggle-light chip-dot chip-dot--light" aria-label="Light"></button><button type="button" class="theme-toggle theme-toggle-dark chip-dot chip-dot--dark" aria-label="Dark"></button></div>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
@@ -3141,12 +3140,10 @@ function renderFontGateScript() {
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
     paint(chosen === 'light' ? 'light' : 'dark');
   } catch (e) {}
-  // THE READER'S COLOUR COMES BACK (2026-09-30): the bands' colour typed
-  // under HEX is kept and painted again on the next visit.
-  try {
-    var kept = hexOf(localStorage.getItem('nc-accent'));
-    if (kept && kept !== YELLOW) { accent = kept; mark(kept); }
-  } catch (e) {}
+  // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
+  // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from
+  // it is let go rather than painted with no way home)
+  try { localStorage.removeItem('nc-accent'); } catch (e) {}
   // A LOOK WITHOUT A CHANGE (2026-09-18): ?hex=888899 in the address
   // paints that mark for this view only — nothing is stored, and the
   // reader's own choice stands on the next plain visit.

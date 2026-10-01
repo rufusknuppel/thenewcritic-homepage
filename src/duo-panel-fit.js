@@ -4179,7 +4179,15 @@
       var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
       if (!(fa > 0)) return null;
       var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+      // (THE FLAT CAPS, 2026-10-01, at the user's word — "seems like
+      // there's a little more" than 36: the air was read to the round
+      // letters' overshoot, the C's, a pixel and a half past the flat
+      // tops the eye reads. The air over the name is stated to the flat
+      // cap — the H's — and the round letters dip into it as they are
+      // drawn to.)
+      var mH = bandInkCv.measureText('H');
+      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent,
+        capFlat: base - mH.actualBoundingBoxAscent, base: base };
     };
     // (THE LAST MAGAZINE BESIDE THE NAME, 2026-10-01: its stack at the
     // right, the name's ink 36 short of it — where the stack stands)
@@ -4194,7 +4202,7 @@
     // air at which the two stand equal, and seated again.)
     var ni = nameInk();
     if (ni) {
-      var e = ni.cap - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
+      var e = ni.capFlat - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;

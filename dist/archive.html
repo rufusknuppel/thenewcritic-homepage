@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f414b441">
+<link rel="stylesheet" href="style.css?v=565a768b">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -97,10 +97,7 @@
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
     paint(chosen === 'light' ? 'light' : 'dark');
   } catch (e) {}
-  try {
-    var kept = hexOf(localStorage.getItem('nc-accent'));
-    if (kept && kept !== YELLOW) { accent = kept; mark(kept); }
-  } catch (e) {}
+  try { localStorage.removeItem('nc-accent'); } catch (e) {}
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
     if (qHex) mark(qHex);
@@ -4063,7 +4060,9 @@
       var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
       if (!(fa > 0)) return null;
       var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+      var mH = bandInkCv.measureText('H');
+      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent,
+        capFlat: base - mH.actualBoundingBoxAscent, base: base };
     };
     var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
@@ -4071,7 +4070,7 @@
     if (!f) return;
     var ni = nameInk();
     if (ni) {
-      var e = ni.cap - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
+      var e = ni.capFlat - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;

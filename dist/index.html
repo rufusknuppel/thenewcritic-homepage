@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f414b441">
+<link rel="stylesheet" href="style.css?v=565a768b">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -101,10 +101,7 @@
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
     paint(chosen === 'light' ? 'light' : 'dark');
   } catch (e) {}
-  try {
-    var kept = hexOf(localStorage.getItem('nc-accent'));
-    if (kept && kept !== YELLOW) { accent = kept; mark(kept); }
-  } catch (e) {}
+  try { localStorage.removeItem('nc-accent'); } catch (e) {}
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
     if (qHex) mark(qHex);
@@ -389,7 +386,7 @@
     <p class="band-deks band-dek"></p>
     <p class="band-deks"><span class="band-inert">The Last Magazine</span></p>
   </nav>
-  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav></div><div class="theme-chip" role="group" aria-label="Light, dark, or a colour of your own"><button type="button" class="theme-toggle theme-toggle-light chip-dot chip-dot--light" aria-label="Light"></button><button type="button" class="theme-toggle theme-toggle-dark chip-dot chip-dot--dark" aria-label="Dark"></button><button type="button" class="theme-toggle theme-toggle-hex chip-dot chip-dot--hex" aria-label="A colour of your own, as a hex code"></button><input class="theme-hex chip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></div>
+  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav></div><div class="theme-chip" role="group" aria-label="Light or dark"><button type="button" class="theme-toggle theme-toggle-light chip-dot chip-dot--light" aria-label="Light"></button><button type="button" class="theme-toggle theme-toggle-dark chip-dot chip-dot--dark" aria-label="Dark"></button></div>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
 <div class="site-header" id="site-header">
@@ -4012,7 +4009,9 @@
       var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
       if (!(fa > 0)) return null;
       var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+      var mH = bandInkCv.measureText('H');
+      return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent,
+        capFlat: base - mH.actualBoundingBoxAscent, base: base };
     };
     var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
@@ -4020,7 +4019,7 @@
     if (!f) return;
     var ni = nameInk();
     if (ni) {
-      var e = ni.cap - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
+      var e = ni.capFlat - (f.wb.top + AIR), z = (ni.foot - f.wb.top - AIR) + (INSET - e);
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
@@ -8801,7 +8800,9 @@
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent, base: base };
+    var mH = cv.measureText('H');
+    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent, base: base,
+      capFlat: base - mH.actualBoundingBoxAscent };
   }
   function measure() {
     band = document.querySelector('.page-rows > .section-band--head');
@@ -8821,7 +8822,7 @@
     under = 0;
     if (wm && nf) {
       var wr = wm.getBoundingClientRect();
-      under = Math.max(0, (nf.top - wr.top) - (wr.bottom - nf.foot));
+      under = Math.max(0, (nf.capFlat - wr.top) - (wr.bottom - nf.base));
       ground = getComputedStyle(wm).backgroundColor;
     }
     if (under > 0) { under = Math.round(under); main.style.setProperty('--wm-under', under + 'px'); }
@@ -8894,7 +8895,8 @@ document.addEventListener('click', function (e) {
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-    return { top: base - m.actualBoundingBoxAscent, base: base };
+    var asc = el === nm ? cv.measureText('H').actualBoundingBoxAscent : m.actualBoundingBoxAscent;
+    return { top: base - asc, base: base };
   };
   var seat = function () {
     if (!stack.offsetWidth) return;
