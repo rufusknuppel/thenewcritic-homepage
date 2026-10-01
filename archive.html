@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=c3a23616">
+<link rel="stylesheet" href="style.css?v=8c34d6c7">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6307,14 +6307,6 @@
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
       var dx = (wc + gap) * (right ? 1 : -1);
-      var foot = P.b;
-      [card, mate].forEach(function (c) {
-        var cr = c.getBoundingClientRect(), rr = restRect(c), oy = cr.top - rr.top;
-        [].forEach.call(c.querySelectorAll('.swap-col .swap-line, .cover-meta'), function (el) {
-          var r = el.getBoundingClientRect();
-          if (r.width && r.height && (el.textContent || '').trim()) foot = Math.max(foot, r.bottom - oy);
-        });
-      });
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -6329,7 +6321,7 @@
       ss.left = (P.l - SLIDE_MARGIN - cr0.left).toFixed(2) + 'px';
       ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
       ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
-      ss.height = (foot - P.t + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      ss.height = (P.b - P.t + SLIDE_MARGIN).toFixed(2) + 'px';
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -8099,6 +8091,8 @@
           var m = s.querySelector('.duo-half--mega.is-open');
           var po = m && m.querySelector('.peek-open');
           if (po) po.click();
+          var u = s.querySelector('.duo-half--mega');
+          if (u) { u.classList.add('is-under'); card.__under = u; }
         });
       }
       if (shutTimer) { clearTimeout(shutTimer); shutTimer = 0; }
@@ -8112,6 +8106,7 @@
       if (openTimer) { clearTimeout(openTimer); openTimer = 0; }
       card.classList.remove('is-opening', 'is-inbox');
       card.classList.remove('is-open'); travel();
+      if (card.__under) { card.__under.classList.remove('is-under'); card.__under = null; }
       card.classList.add('is-shutting');
       if (shutTimer) clearTimeout(shutTimer);
       shutTimer = setTimeout(function () { shutTimer = 0; card.classList.remove('is-shutting'); }, SHUT);
