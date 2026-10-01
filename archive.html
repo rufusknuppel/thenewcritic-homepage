@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=57daa0a6">
+<link rel="stylesheet" href="style.css?v=971a6037">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5533,6 +5533,7 @@
     step('seatRowGaps#2', seatRowGaps);
     step('fitLatestStack#2', fitLatestStack);
     step('snapPictures', snapPictures);
+    step('seatSlides', seatSlides);
     if (rowKDirty && !rowKAgain) {
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
@@ -6261,6 +6262,74 @@
     });
     if (changed) seatSwapCols();
   }
+  function slideMate(card) {
+    var sec = card.closest('section.card');
+    var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
+    if (!sec || g == null || r == null) return null;
+    var all = document.querySelectorAll('section.card[data-row="' + r + '"]');
+    for (var i = 0; i < all.length; i++) {
+      if (all[i] === sec || all[i].getAttribute('data-group') !== g) continue;
+      var m = all[i].querySelector('.duo-half--mega');
+      if (m) return m;
+    }
+    return null;
+  }
+  function slidePic(card) {
+    var t = card.querySelector('.card-title.hl-rect.rx');
+    if (!t) return null;
+    var cc = getComputedStyle(t, '::before');
+    if (cc.content === 'none') return null;
+    var r = t.getBoundingClientRect();
+    var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+    var cr = card.getBoundingClientRect(), rr = restRect(card);
+    var dx = cr.left - rr.left, dy = cr.top - rr.top;
+    var b = { l: r.left + (parseFloat(cc.left) || 0) - w - dx, r: r.right - (parseFloat(cc.right) || 0) + w - dx, t: r.top + (parseFloat(cc.top) || 0) - dy, b: r.bottom - (parseFloat(cc.bottom) || 0) - dy };
+    return b.r > b.l && b.b > b.t ? b : null;
+  }
+  var SLIDE_MARGIN = 36;
+  function seatSlides() {
+    [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
+      if (card.matches('.is-opening, .is-shutting')) return;
+      var mate = slideMate(card);
+      var P = slidePic(card), Q = mate && slidePic(mate);
+      if (!P || !Q) return;
+      var wc = Math.min(P.r - P.l, Q.r - Q.l);
+      var right = Q.l > P.l;
+      var gap = right ? Q.l - P.r : P.l - Q.r;
+      var dx = (wc + gap) * (right ? 1 : -1);
+      var foot = P.b;
+      [card, mate].forEach(function (c) {
+        var cr = c.getBoundingClientRect(), rr = restRect(c), oy = cr.top - rr.top;
+        [].forEach.call(c.querySelectorAll('.swap-col .swap-line, .cover-meta'), function (el) {
+          var r = el.getBoundingClientRect();
+          if (r.width && r.height && (el.textContent || '').trim()) foot = Math.max(foot, r.bottom - oy);
+        });
+      });
+      var cr0 = restRect(card);
+      var s = card.style;
+      s.setProperty('--slide-x', dx.toFixed(2) + 'px');
+      var sheet = card.querySelector(':scope > .slide-sheet');
+      if (!sheet) {
+        sheet = document.createElement('span');
+        sheet.className = 'slide-sheet';
+        sheet.setAttribute('aria-hidden', 'true');
+        card.insertBefore(sheet, card.firstChild);
+      }
+      var ss = sheet.style;
+      ss.left = (P.l - SLIDE_MARGIN - cr0.left).toFixed(2) + 'px';
+      ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
+      ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      ss.height = (foot - P.t + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      var body = card.querySelector(':scope > .swap-body.is-set');
+      if (body) {
+        var bs = body.style;
+        bs.left = ((right ? P.l : P.r - wc) - cr0.left).toFixed(2) + 'px';
+        bs.top = (P.t - cr0.top).toFixed(2) + 'px';
+        bs.width = wc.toFixed(2) + 'px';
+        bs.height = (P.b - P.t).toFixed(2) + 'px';
+      }
+    });
+  }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
     var jobs = [];
@@ -6339,10 +6408,20 @@
           j.Bd = { l: Fl, r: Fr, t: B.t, b: B.b };
           j.cols2 = true;
           j.ncol = (Fr - Fl) >= 480 ? 2 : 1;
+          var mate = ONE_COL.matches ? null : slideMate(j.card);
+          var Q = mate && slidePic(mate);
+          if (Q) {
+            var wc = Math.min(Fr - Fl, Q.r - Q.l);
+            j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
+            j.ncol = 1;
+            j.slide = true;
+          }
         }
       }
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
+      if (j.slide) j.bp = { l: 0, r: 0, t: 0, b: 0 };
+      j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
       if (j.body) {
@@ -7967,6 +8046,16 @@
     var SHUT = 1000, // one fluid second (2026-09-22; the three moves took 1.4)
         shutTimer = 0, openTimer = 0;
     var open = function () {
+      if (card.classList.contains('is-slide')) {
+        var sec = card.closest('section.card');
+        var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
+        [].forEach.call(r != null ? document.querySelectorAll('section.card[data-row="' + r + '"]') : [], function (s) {
+          if (s === sec || s.getAttribute('data-group') !== g) return;
+          var m = s.querySelector('.duo-half--mega.is-open');
+          var po = m && m.querySelector('.peek-open');
+          if (po) po.click();
+        });
+      }
       if (shutTimer) { clearTimeout(shutTimer); shutTimer = 0; }
       card.classList.remove('is-shutting');
       card.classList.add('is-open'); travel();
@@ -8049,6 +8138,12 @@
         location.href = kicker.getAttribute('data-href');
       }
     });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' && e.key !== 'Esc') return;
+      if (!card.classList.contains('is-open')) return;
+      shut();
+      try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
+    });
     card.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
       var closer = hit(e, '.plate-close');
@@ -8063,6 +8158,7 @@
 (function () {
   var ESSAYS = '.duo-half--mega';
   var READ = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var SHUT = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
   var PEEK = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 3h5v5M17 3L3 17M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function picBox(card) {
     var t = card.querySelector('.card-title.hl-rect.rx');
@@ -8072,6 +8168,16 @@
     var wrap = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
     var box = { l: r.left + (parseFloat(c.left) || 0) - wrap, r: r.right - (parseFloat(c.right) || 0) + wrap, t: r.top + (parseFloat(c.top) || 0), b: r.bottom - (parseFloat(c.bottom) || 0) };
     return box.r > box.l && box.b > box.t ? box : null;
+  }
+  function mateOf(card) {
+    var sec = card.closest('section.card');
+    var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
+    if (!sec || g == null || r == null) return null;
+    var all = document.querySelectorAll('section.card[data-row="' + r + '"]');
+    for (var i = 0; i < all.length; i++) {
+      if (all[i] !== sec && all[i].getAttribute('data-group') === g) return all[i].querySelector(ESSAYS);
+    }
+    return null;
   }
   function inside(b, x, y) { return b && x >= b.l && x <= b.r && y >= b.t && y <= b.b; }
   function acts(card) {
@@ -8109,7 +8215,7 @@
     el.style.height = (box.b - box.t).toFixed(2) + 'px';
   }
   function hold(card) {
-    var held = card.matches('.is-open, .is-opening, .is-shutting');
+    var held = !card.classList.contains('is-slide') && card.matches('.is-open, .is-opening, .is-shutting');
     if (held) { var box = picBox(card); if (box) place(card, box); }
     if (card.classList.contains('is-acts-held') !== held) card.classList.toggle('is-acts-held', held);
   }
@@ -8123,6 +8229,9 @@
   }
   function show(card, box) {
     place(card, box);
+    var pk = acts(card).querySelector('.essay-act--peek');
+    var shut = card.classList.contains('is-open');
+    if (pk && pk.__shut !== shut) { pk.innerHTML = shut ? 'Close' + SHUT : 'Preview' + PEEK; pk.__shut = shut; }
     if (shown !== card) hide();
     card.classList.add('is-acts');
     shown = card;
@@ -8131,10 +8240,15 @@
   function run() {
     pending = false;
     var hitCard = null, hitBox = null;
-    var cards = document.querySelectorAll(ESSAYS);
+    var cards = [].slice.call(document.querySelectorAll(ESSAYS));
+    var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
+    var under = [];
+    out.forEach(function (c) { var m = mateOf(c); if (m) under.push(m); });
+    cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0 && under.indexOf(c) < 0; }));
     for (var i = 0; i < cards.length && !hitCard; i++) {
       var card = cards[i];
-      if (card.matches('.is-open, .is-opening')) continue;
+      if (card.matches('.is-opening, .is-shutting')) continue;
+      if (card.matches('.is-open') && !card.classList.contains('is-slide')) continue;
       var cr = card.getBoundingClientRect();
       if (ly < cr.top - 400 || ly > cr.bottom + 400) continue;
       var box = picBox(card);
