@@ -2607,11 +2607,16 @@
     if (swapHalf && title && getComputedStyle(title).display !== 'none') {
       var swapHR = swapHalf.getBoundingClientRect();
       var swapTR = title.getBoundingClientRect();
+      // (written down once every panel is fitted — panelsLate — not here:
+      // nothing reads these four, in the sheet or the script, and written
+      // here, a card at a time, each one had the card's style done again
+      // before the preview below was read — fifty-six small layouts a
+      // pass, 2026-10-01)
       if (swapHR.width && swapTR.width) {
-        swapHalf.style.setProperty('--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-w', swapTR.width.toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-h', swapTR.height.toFixed(2) + 'px');
+        panelsLate.push([swapHalf, '--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-w', swapTR.width.toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-h', swapTR.height.toFixed(2) + 'px']);
       }
       // And the plate's TRUE ink foot: the cut can leave the column
       // box a structural row taller than its text (a paragraph gap
@@ -2647,6 +2652,8 @@
   // track. In the stacked mobile layout (flex-direction column, see the
   // .contra-lead media block) the lead flows at natural height instead:
   // the inline height is cleared, the CSS max-height does the bounding.
+  // (the panels' late writes: see fit, --mega-title-t)
+  var panelsLate = [];
   function fitContraLead() {
     var lead = document.querySelector('.contra-lead');
     if (!lead) return;
@@ -6874,7 +6881,12 @@
     // load would leave every cloned berth's panel unfitted — its title stuck
     // at the CSS size while the original's filled its box.
     step('fitSlideSlots', fitSlideSlots);
-    step('panels', function () { [].forEach.call(document.querySelectorAll('.duo-panel'), fit); });
+    step('panels', function () {
+      panelsLate = [];
+      [].forEach.call(document.querySelectorAll('.duo-panel'), fit);
+      panelsLate.forEach(function (w) { w[0].style.setProperty(w[1], w[2]); });
+      panelsLate = [];
+    });
     step('fitLatestTitle', fitLatestTitle);
     step('fitCourierDots', fitCourierDots);
     step('fitMatterInk', function () { fitMatterInk('seat'); });
@@ -7055,75 +7067,73 @@
   function snapPictures() {
     var sx = window.scrollX || 0, sy = window.scrollY || 0;
     var snap = function (v, s0) { return Math.round(v + s0) - s0; };
+    // (READ OFF EVERY CARD, THEN WRITTEN TO ALL, 2026-10-01: a card at a
+    // time read its box, nudged it, read it again and wrote its clips —
+    // a hundred and seventy small layouts a pass. The three turns are
+    // taken over all the cards at once; each card's numbers are its own.)
+    var jobs = [];
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-open, .is-opening')) return;
       var t = card.querySelector('.card-title.hl-rect.rx');
       if (!t) return;
       var c = getComputedStyle(t, '::before');
       if (c.content === 'none') return;
-      var box = function () {
-        var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
-        var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
-        return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
-      };
-      var nudge = function (prop, d) {
-        if (Math.abs(d) < 0.005) return;
-        t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
-      };
-      // THE CARRY ON A WHOLE PIXEL TOO (2026-09-24). The box is the
-      // title's pseudo, and the title is carried across on a transform
-      // (--rb-dx, seatMatterMeta) by a fraction — 56.37 at 1440. The
-      // browser snaps the box to the pixel BEFORE the carry, so a box
-      // this step had put on whole pixels by its measured rect was
-      // painted a third of a pixel off them: the picture's edge column
-      // and row half-covered the pixel past the box, and the scrim a
-      // hand raises, seated on the whole pixels, left that sliver of
-      // picture showing along the right and the foot — the hairline
-      // under the hand. So the carry is rounded, and the box's insets
-      // take back what it moved — the picture stands where it stood, and
-      // its box, under a whole carry, is snapped where it is painted.
+      jobs.push({ card: card, t: t });
+    });
+    var box = function (t) {
+      var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
+      var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
+    };
+    var nudge = function (t, prop, d) {
+      if (Math.abs(d) < 0.005) return;
+      t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
+    };
+    // READ: the transforms' fractions and the boxes
+    jobs.forEach(function (j) {
+      var t = j.t;
       var tm = getComputedStyle(t).transform;
+      j.fx = 0; j.fy = 0;
       if (tm && tm !== 'none' && window.DOMMatrixReadOnly) {
         var mm = new DOMMatrixReadOnly(tm);
-        var fx = Math.round(mm.e) - mm.e, fy = Math.round(mm.f) - mm.f;
-        if (Math.abs(fx) >= 0.005) { nudge('--rb-dx', fx); nudge('--rx-l', -fx); nudge('--rx-r', fx); }
-        if (Math.abs(fy) >= 0.005) { nudge('--rb-dy', fy); nudge('--rx-t', -fy); nudge('--rx-b', fy); }
+        j.fx = Math.round(mm.e) - mm.e; j.fy = Math.round(mm.f) - mm.f;
       }
-      var b0 = box();
-      if (!(b0.r > b0.l && b0.b > b0.t)) return;
-      // (the top-left corner to the nearest pixel and the size to the
-      // nearest whole one, so a square stays square and every picture of
-      // a kind is the one size)
+    });
+    // WRITE: the transforms on whole pixels
+    jobs.forEach(function (j) {
+      var t = j.t;
+      if (Math.abs(j.fx) >= 0.005) { nudge(t, '--rb-dx', j.fx); nudge(t, '--rx-l', -j.fx); nudge(t, '--rx-r', j.fx); }
+      if (Math.abs(j.fy) >= 0.005) { nudge(t, '--rb-dy', j.fy); nudge(t, '--rx-t', -j.fy); nudge(t, '--rx-b', j.fy); }
+    });
+    // READ: the boxes
+    jobs.forEach(function (j) { j.b0 = box(j.t); });
+    // WRITE: the boxes on whole pixels
+    jobs.forEach(function (j) {
+      var b0 = j.b0;
+      if (!(b0.r > b0.l && b0.b > b0.t)) { j.off = true; return; }
       var nl = snap(b0.l, sx), nt = snap(b0.t, sy);
       var nr = nl + Math.round(b0.r - b0.l), nb = nt + Math.round(b0.b - b0.t);
       var dl = nl - b0.l, dr = nr - b0.r, dt = nt - b0.t, db = nb - b0.b;
-      nudge('--rx-l', dl); nudge('--rx-r', -dr); nudge('--rx-t', dt); nudge('--rx-b', -db);
-      // (and the title's clip, which is the box's — seated earlier in the
-      // pass, before the box was snapped, so its two sides stood a
-      // fraction in from the picture's: seated again on the snapped box,
-      // and a pixel past it for the blue ring round it, style.css, A
-      // PIXEL OF THE BLUE ROUND EVERY PICTURE)
-      // (its top and foot too, 2026-09-24: they stood the frame's 36 off,
-      // and the frame's shadow — the section's ground since the frames
-      // went — reached from a section's first picture up over the foot
-      // of the tag under the section's name; the frame is not shown, so
-      // nothing past the ring is the title's to paint)
-      // (the sheet widens this clip by the frame's --wrap, and a half
-      // pixel over and under, for the frame that stood round the box —
-      // style.css, "the title is clipped to its box through the slide" —
-      // so what is written here is that much narrower, and the clip
-      // lands on the ring)
-      var p = box(), tr = t.getBoundingClientRect();
-      var W = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      nudge(j.t, '--rx-l', dl); nudge(j.t, '--rx-r', -dr); nudge(j.t, '--rx-t', dt); nudge(j.t, '--rx-b', -db);
+    });
+    // READ: the boxes as snapped, the titles and the bodies
+    jobs.forEach(function (j) {
+      if (j.off) return;
+      j.p = box(j.t); j.tr = j.t.getBoundingClientRect();
+      j.W = parseFloat(getComputedStyle(j.t).getPropertyValue('--wrap')) || 0;
+      j.body = j.card.querySelector(':scope > .swap-body.is-set');
+      if (j.body) j.br = j.body.getBoundingClientRect();
+    });
+    // WRITE: the clips, and the bodies on the boxes
+    jobs.forEach(function (j) {
+      if (j.off) return;
+      var t = j.t, p = j.p, tr = j.tr, W = j.W, b0 = j.b0;
       t.style.setProperty('--ck-l', ((p.l - PIC_RING) - tr.left + W).toFixed(3) + 'px');
       t.style.setProperty('--ck-r', (tr.right - (p.r + PIC_RING) + W).toFixed(3) + 'px');
       t.style.setProperty('--ck-t', ((p.t - PIC_RING) - tr.top + W + 0.5).toFixed(3) + 'px');
       t.style.setProperty('--ck-b', (tr.bottom - (p.b + PIC_RING) + W + 0.5).toFixed(3) + 'px');
-      // (and the opened preview on the very same box, where it stands
-      // on the picture — within a pixel of it before the snap)
-      var body = card.querySelector(':scope > .swap-body.is-set');
+      var body = j.body, br = j.br;
       if (!body) return;
-      var br = body.getBoundingClientRect();
       if (Math.abs(br.left - b0.l) > 2 || Math.abs(br.top - b0.t) > 2 || Math.abs(br.right - b0.r) > 2 || Math.abs(br.bottom - b0.b) > 2) return;
       var bs = body.style;
       bs.left = ((parseFloat(bs.left) || 0) + (p.l - br.left)).toFixed(3) + 'px';

@@ -479,9 +479,13 @@ document.addEventListener('click', function (e) {
     var first = stack.firstElementChild, last = stack.lastElementChild;
     var a = inkOf(nm), b = first && inkOf(first), c = last && inkOf(last);
     if (!a || !b || !c) return;
-    var cur = parseFloat(main.style.getPropertyValue('--stack-shift')) || 0;
+    // (written on the rail, not on main: a custom property set on main
+    // has every element on the page restyled before the next read — 56ms
+    // after each fit — and the stack alone reads it: 2026-10-01)
+    var host = stack.closest('.head-rail') || main;
+    var cur = parseFloat(host.style.getPropertyValue('--stack-shift')) || 0;
     var want = cur + ((a.top + a.base) / 2 - (b.top + c.base) / 2);
-    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
+    if (Math.abs(want - cur) > 0.25) host.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
   };
   ['load', 'resize', 'scroll', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
