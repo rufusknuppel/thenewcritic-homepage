@@ -6682,7 +6682,7 @@
     step('seatPlateBody', seatPlateBody);
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
-    step('seatDuoTitle', seatDuoTitle);
+    step('seatRowTitles', seatRowTitles);
     step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
@@ -6946,8 +6946,11 @@
       // (THE LATEST IN ONE STACK, 2026-09-28: style.css says so on the
       // movement from 1024 up; the hand-set offsets down the page are
       // not read there)
-      var stacked = !ONE_COL.matches && body.parentElement.classList.contains('m--latest')
-        && getComputedStyle(body.parentElement).getPropertyValue('--latest-stack').trim() === '1';
+      // (and every section whose posts stand two to a row, 2026-09-30:
+      // --rows-stack, style.css EVERY SECTION'S POSTS STAND TWO TO A ROW)
+      var mvCs = getComputedStyle(body.parentElement);
+      var stacked = !ONE_COL.matches && ((body.parentElement.classList.contains('m--latest')
+        && mvCs.getPropertyValue('--latest-stack').trim() === '1') || mvCs.getPropertyValue('--rows-stack').trim() === '1');
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: a row's first
@@ -7071,12 +7074,19 @@
           // and the first's ink is the row's highest; the second is still
           // asked, where it sits, for any ink it carries over its picture)
           var nb = rows[ri + 1];
-          if (!ONE_COL.matches && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
+          if (!ONE_COL.matches && !stacked && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
             var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
             if (nbPic) {
               var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
               curT = Math.min(curT, pic.t + Math.round(pic.b - pic.t) - PAIR_STEP + (nbTop - nbPic.t) + acc);
             }
+          }
+          // (THE LATEST'S POSTS STAND TWO TO A ROW: a row's highest ink may
+          // be its second card's — a courier run to two lines over its
+          // picture — and the row is spaced from that)
+          if (stacked && pic && nb && row.classList.contains('card--row-a') && nb.classList.contains('card--row-b')) {
+            var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
+            if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
@@ -7084,7 +7094,7 @@
           // where they stand over it — 36 AROUND THE INK)
           // (after the pair, from the lower of the two: prevFoot is already
           // the lower, and the last picture alone would not say it)
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--duo-beside'))) {
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--row-b'))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: the 36 is
@@ -7097,11 +7107,11 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
-        // THE LEAD AND THE FIRST POSTSCRIPT SIDE BY SIDE (2026-09-30): in
-        // the stack the postscript's picture stands level with the lead
-        // essay's, beside it (style.css sets their sizes and sides); the
-        // row under stands 36 under the lower of the two (prevFoot).
-        if (stacked && pic && prevPic && row.classList.contains('card--duo-beside') && prev.classList.contains('card--duo-lead')) {
+        // THE LATEST'S POSTS STAND TWO TO A ROW (2026-09-30): in the stack
+        // a row's second picture stands level with its first, beside it
+        // (style.css sets their sizes and sides); the next row stands 36
+        // under the lower of the two (prevFoot).
+        if (stacked && pic && prevPic && row.classList.contains('card--row-b') && prev.classList.contains('card--row-a')) {
           rowDelta = prevPic.t - (pic.t + acc); hasJob = true; stepped = true;
         }
         var ovY = ONE_COL.matches || stacked ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
@@ -7671,18 +7681,33 @@
     }
     return { w: dp[n][k], lines: lines };
   }
-  // (THE POSTSCRIPT BESIDE THE LEAD IS AS WIDE AS ITS TITLE: the width
-  // seatSwapCols last found its title needs, and the step that hands it
-  // to the sheet and sets the titles again where it changed the picture)
-  var duoTitleW = 0;
-  function seatDuoTitle() {
-    if (ONE_COL.matches || !duoTitleW) return;
-    var cards = document.querySelectorAll('.card--duo-lead, .card--duo-beside');
+  // (THE LATEST'S POSTS STAND TWO TO A ROW: each title's one-line width
+  // as seatSwapCols last found it, written on every row card — every
+  // row's, since the one height is every row's to hold (--t0a …), and
+  // its own row's (--row-ta, --row-tb) — and the titles set again where
+  // that changed the pictures)
+  function seatRowTitles() {
+    if (ONE_COL.matches) return;
+    var cards = [].slice.call(document.querySelectorAll('.card--row-a, .card--row-b'));
     if (!cards.length) return;
-    var was = parseFloat(cards[0].style.getPropertyValue('--duo-t')) || 0;
-    if (Math.abs(was - duoTitleW) < 0.5) return;
-    [].forEach.call(cards, function (c) { c.style.setProperty('--duo-t', duoTitleW + 'px'); });
-    seatSwapCols();
+    var vals = {};
+    // (each group — THE LATEST, or a section — holds its own height)
+    cards.forEach(function (c) {
+      var g = c.getAttribute('data-group') || '';
+      (vals[g] = vals[g] || {})['--t' + c.getAttribute('data-row') + c.getAttribute('data-side')] = (c.__titleW || 0) + 'px';
+    });
+    var changed = false;
+    // (ONE HEIGHT FOR THE PAGE: every card is told THE LATEST's titles,
+    // whose rows set the height, and its own row's)
+    var lv = vals.latest || {};
+    cards.forEach(function (c) {
+      var r = c.getAttribute('data-row'), gv = vals[c.getAttribute('data-group') || ''];
+      var own = { '--row-ta': gv['--t' + r + 'a'] || '0px', '--row-tb': gv['--t' + r + 'b'] || '0px' };
+      [lv, own].forEach(function (set) {
+        for (var k in set) if (c.style.getPropertyValue(k) !== set[k]) { c.style.setProperty(k, set[k]); changed = true; }
+      });
+    });
+    if (changed) seatSwapCols();
   }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
@@ -8001,10 +8026,11 @@
       measureCtx.font = j.sface;
       var tr100 = j.track * 100;
       var w100 = function (str) { return measureCtx.measureText(str).width + tr100 * str.length; };
-      // THE POSTSCRIPT BESIDE THE LEAD IS AS WIDE AS ITS TITLE (2026-09-30,
-      // at the user's word): the width its title takes on one line at the
-      // full size, handed to the sheet as --duo-t by seatDuoTitle
-      if (j.card.closest('.card--duo-beside')) duoTitleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
+      // EACH PICTURE IN THE LATEST'S ROWS IS AS WIDE AS ITS TITLE
+      // (2026-09-30, at the user's word): the width its title takes on one
+      // line at the full size, handed to the sheet by seatRowTitles
+      var rowCard = j.card.closest('.card--row-a, .card--row-b');
+      if (rowCard) rowCard.__titleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
       var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);

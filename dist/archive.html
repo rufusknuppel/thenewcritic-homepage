@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f27b7963">
+<link rel="stylesheet" href="style.css?v=6e09ff9c">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5373,7 +5373,7 @@
     step('seatPlateBody', seatPlateBody);
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
-    step('seatDuoTitle', seatDuoTitle);
+    step('seatRowTitles', seatRowTitles);
     step('seatRowGaps', seatRowGaps);
     step('seatRowGaps#2', seatRowGaps);
     step('fitLatestStack#2', fitLatestStack);
@@ -5524,8 +5524,9 @@
       var rows = [].filter.call(body.querySelectorAll('.card'), function (c) { return !c.parentElement.closest('.card'); });
       var prev = null, prevInk = null, prevCur = null;
       var acc = 0, prevFoot = null, prevPic = null, cols = [];
-      var stacked = !ONE_COL.matches && body.parentElement.classList.contains('m--latest')
-        && getComputedStyle(body.parentElement).getPropertyValue('--latest-stack').trim() === '1';
+      var mvCs = getComputedStyle(body.parentElement);
+      var stacked = !ONE_COL.matches && ((body.parentElement.classList.contains('m--latest')
+        && mvCs.getPropertyValue('--latest-stack').trim() === '1') || mvCs.getPropertyValue('--rows-stack').trim() === '1');
       rows.forEach(function (row, ri) {
         var ink = rowInk(row);
         var cur = rowCourier(row);
@@ -5581,15 +5582,19 @@
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
           var curT = Math.min(cur.t, ink ? ink.t : Infinity) + acc;
           var nb = rows[ri + 1];
-          if (!ONE_COL.matches && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
+          if (!ONE_COL.matches && !stacked && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
             var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
             if (nbPic) {
               var nbTop = Math.min(nbCur ? nbCur.t : Infinity, nbInk ? nbInk.t : Infinity, nbPic.t);
               curT = Math.min(curT, pic.t + Math.round(pic.b - pic.t) - PAIR_STEP + (nbTop - nbPic.t) + acc);
             }
           }
+          if (stacked && pic && nb && row.classList.contains('card--row-a') && nb.classList.contains('card--row-b')) {
+            var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
+            if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
+          }
           rowDelta = COURIER_GAP - (curT - prevFoot); hasJob = true;
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--duo-beside'))) {
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--row-b'))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             var over = (pic.t + acc) - myTop;
@@ -5599,7 +5604,7 @@
             rowDelta = tgt - (pic.t + acc);
           }
         }
-        if (stacked && pic && prevPic && row.classList.contains('card--duo-beside') && prev.classList.contains('card--duo-lead')) {
+        if (stacked && pic && prevPic && row.classList.contains('card--row-b') && prev.classList.contains('card--row-a')) {
           rowDelta = prevPic.t - (pic.t + acc); hasJob = true; stepped = true;
         }
         var ovY = ONE_COL.matches || stacked ? NaN : parseFloat(row.style.getPropertyValue('--ov-y'));
@@ -6006,15 +6011,25 @@
     }
     return { w: dp[n][k], lines: lines };
   }
-  var duoTitleW = 0;
-  function seatDuoTitle() {
-    if (ONE_COL.matches || !duoTitleW) return;
-    var cards = document.querySelectorAll('.card--duo-lead, .card--duo-beside');
+  function seatRowTitles() {
+    if (ONE_COL.matches) return;
+    var cards = [].slice.call(document.querySelectorAll('.card--row-a, .card--row-b'));
     if (!cards.length) return;
-    var was = parseFloat(cards[0].style.getPropertyValue('--duo-t')) || 0;
-    if (Math.abs(was - duoTitleW) < 0.5) return;
-    [].forEach.call(cards, function (c) { c.style.setProperty('--duo-t', duoTitleW + 'px'); });
-    seatSwapCols();
+    var vals = {};
+    cards.forEach(function (c) {
+      var g = c.getAttribute('data-group') || '';
+      (vals[g] = vals[g] || {})['--t' + c.getAttribute('data-row') + c.getAttribute('data-side')] = (c.__titleW || 0) + 'px';
+    });
+    var changed = false;
+    var lv = vals.latest || {};
+    cards.forEach(function (c) {
+      var r = c.getAttribute('data-row'), gv = vals[c.getAttribute('data-group') || ''];
+      var own = { '--row-ta': gv['--t' + r + 'a'] || '0px', '--row-tb': gv['--t' + r + 'b'] || '0px' };
+      [lv, own].forEach(function (set) {
+        for (var k in set) if (c.style.getPropertyValue(k) !== set[k]) { c.style.setProperty(k, set[k]); changed = true; }
+      });
+    });
+    if (changed) seatSwapCols();
   }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
@@ -6238,7 +6253,8 @@
       measureCtx.font = j.sface;
       var tr100 = j.track * 100;
       var w100 = function (str) { return measureCtx.measureText(str).width + tr100 * str.length; };
-      if (j.card.closest('.card--duo-beside')) duoTitleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
+      var rowCard = j.card.closest('.card--row-a, .card--row-b');
+      if (rowCard) rowCard.__titleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
       var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);
