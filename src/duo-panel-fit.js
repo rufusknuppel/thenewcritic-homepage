@@ -8029,15 +8029,6 @@
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
       var dx = (wc + gap) * (right ? 1 : -1);
-      // (the words under the two pictures, the lower of the two cards')
-      var foot = P.b;
-      [card, mate].forEach(function (c) {
-        var cr = c.getBoundingClientRect(), rr = restRect(c), oy = cr.top - rr.top;
-        [].forEach.call(c.querySelectorAll('.swap-col .swap-line, .cover-meta'), function (el) {
-          var r = el.getBoundingClientRect();
-          if (r.width && r.height && (el.textContent || '').trim()) foot = Math.max(foot, r.bottom - oy);
-        });
-      });
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8052,7 +8043,9 @@
       ss.left = (P.l - SLIDE_MARGIN - cr0.left).toFixed(2) + 'px';
       ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
       ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
-      ss.height = (foot - P.t + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      // (the picture alone travels since later the same day: its sheet is
+      // the picture and the 36 over and beside it, the words left standing)
+      ss.height = (P.b - P.t + SLIDE_MARGIN).toFixed(2) + 'px';
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
