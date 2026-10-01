@@ -1503,13 +1503,33 @@ function subTicker(where = 'head') {
   return `<a class="sub-ticker sub-ticker--${where}" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic"><span class="sub-ticker-run" aria-hidden="true">${half}</span></a>`;
 }
 
-function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false } = {}) {
+// THE SITE'S LINKS RIDE IN THE SUBSCRIBE STRIP (2026-09-30, at the
+// user's word): ARCHIVE, ABOUT, SUBSCRIBE, STORE, EVENTS in the strip's
+// own capitals, spread evenly across it (style.css, THE LINKS IN THE
+// STRIP); STORE and EVENTS lead nowhere yet, as in the band they left
+function navStrip() {
+  const by = (key) => SITE_LINKS.find((l) => l.key === key);
+  const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
+  const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
+  return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
+    link(by('archive'), 'Archive'),
+    link(by('about'), 'About'),
+    `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
+    dead('Store'),
+    dead('Events'),
+  ].join('')}</span></nav>`;
+}
+
+function renderSectionBand(m, { mid = '', currentKey = '', bareMid = false, home = false } = {}) {
   const b = SECTION_BANDS[m] || SECTION_BANDS.latest;
   if (m === 'latest') {
     // The masthead's band: the site's links, the magazine's name, the
     // date. The name no longer rides in the courier beside the date —
     // it has the middle to itself.
-    const links = currentKey
+    // (on the front page the band holds only THE LAST MAGAZINE, a line
+    // and not a link, the links gone down to the strip: 2026-09-30)
+    const links = home ? '<span class="band-inert">The Last Magazine</span>'
+      : currentKey
       ? bandDeks(m).replace(`<a href="${currentKey}.html">`, `<a href="${currentKey}.html" aria-current="page">`)
       : bandDeks(m);
     // THE DATE IS BACK IN THE MIDDLE (2026-09-23), on the word pages
@@ -1565,7 +1585,7 @@ function renderPageFoot(onHome = false, onMark = false) {
   // the rows straight over the colophon, sticky at the window's foot,
   // so it rides the foot the page's whole length and comes to rest on
   // the colophon as it arrives (style.css, THE STRIP PINS TO THE FOOT)
-  return `${onHome ? `\n  ${subTicker('foot').replace('sub-ticker--foot', 'sub-ticker--foot sub-ticker--pin')}` : ''}
+  return `${onHome ? `\n  ${navStrip()}` : ''}
   ${renderColophonBand()}
   <div class="foot-field${mk}" aria-hidden="true"></div>`;
   // (THE REPRINT IS STRUCK, 2026-09-30, at the user's word: the page
@@ -2760,7 +2780,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m)}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
