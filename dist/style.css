@@ -10781,3 +10781,13 @@ main.has-mega .duo-half--mega.is-open > .peek-corner > .pk-shut:is(*, .r.r.r.r.r
     visibility: hidden !important;
   }
 }
+main.has-mega .duo-half--mega > a.essay-acts:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: rgba(18, 20, 23, .9) !important;
+  background-color: rgba(18, 20, 23, .9) !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}

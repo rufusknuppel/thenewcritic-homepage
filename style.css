@@ -22421,3 +22421,29 @@ main.has-mega .duo-half--mega.is-open > .peek-corner > .pk-shut:is(*, .r.r.r.r.r
   }
 }
 /* (THE PREVIEW SLIDES ends) */
+/* ---------- THE HAND ON A PICTURE TURNS THE WORD ALONE (2026-10-01) ----------
+   At the user's word ("should just be font change"; "on hover, whole
+   image goes yellow"): the whole picture went the mark's colour under
+   the hand. The picture's link — a.essay-acts, since READ NOW ALONE
+   made the whole picture the post's link — had fallen under the site's
+   link-hover block (a:is(:hover, :focus-visible){ background-color:
+   var(--yves) !important }, THE HIGHLIGHT IS THE MARK'S), and READ
+   ESSAY, in the mark's colour too, vanished on it. The scrim keeps its
+   charcoal under the hand, as THE ESSAY OFFERS TWO THINGS drew it; the
+   word alone turns. (Stated over that block's own weight.) */
+main.has-mega .duo-half--mega > a.essay-acts:is(:hover, :focus-visible):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: rgba(18, 20, 23, .9) !important;
+  background-color: rgba(18, 20, 23, .9) !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+/* ---------- NO ×; CLOSE ALONE SHUTS THE PREVIEW (2026-10-01) ----------
+   At the user's word ("get rid of x and leave close"): the × over the
+   preview's column is struck; the word on the courier's line, reading
+   CLOSE while the preview is open (READ NOW ALONE above), and Esc
+   shut it. */
+main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+/* (NO × ends) */
