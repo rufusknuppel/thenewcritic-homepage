@@ -4008,7 +4008,11 @@
     var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
     var cw = document.documentElement.clientWidth;
     var vw = cw - SIDE * 2;
-    var vwSize = cw - SIZE_SIDE * 2;
+    // (ROOM KEPT AT THE RIGHT, 2026-10-01: the masthead keeps THE LAST
+    // MAGAZINE's stack and the air before it clear of the name — the
+    // name sized to what is left and its ink begun at the left measure)
+    var RESERVE = (opts && opts.reserveRight > 0) ? opts.reserveRight : 0;
+    var vwSize = cw - SIZE_SIDE * 2 - RESERVE;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
     if (!s0 || !vw || !vwSize) return;
     var i0 = inkSpanOf(name);
@@ -4034,7 +4038,9 @@
     // word's ink begin that far in — the left edge of the first picture
     // under it — instead of centred.
     var headL = headLeftOf(wm);
-    var inkAt = headL != null ? wb.left + headL : wb.left + (wb.width - ink1) / 2;
+    var inkAt = headL != null ? wb.left + headL
+      : RESERVE ? wb.left + SIZE_SIDE
+      : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
     // sit lower than the canvas 'H' model says (the model put them 25
@@ -4175,7 +4181,11 @@
       var base = r.top + (r.height - (fa + fd)) / 2 + fa;
       return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
     };
-    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
+    // (THE LAST MAGAZINE BESIDE THE NAME, 2026-10-01: its stack at the
+    // right, the name's ink 36 short of it — where the stack stands)
+    var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
+    var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R });
     if (!f) return;
     // (…to the pixel: the band's top is the feet rounded UP to a whole
     // pixel, which adds that fraction to the air under the name; the air
@@ -4188,7 +4198,7 @@
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
-        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE }) || f;
+        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R }) || f;
       }
     }
     document.documentElement.style.setProperty('--masthead-air', AIR.toFixed(2) + 'px');
@@ -7133,11 +7143,17 @@
                   // pin over it, so its rect is read at rest — the rail's
                   // blocks down to the strip, margins and all — not where a
                   // scroll has stuck it)
-                  var railFoot = 0;
+                  // (the first block that stands — the name's air — opens on
+                  // the name's foot, its own margin being the name; blocks
+                  // of no height, THE LAST MAGAZINE's stack beside the
+                  // name, take no room)
+                  var railFoot = 0, railFirst = true;
                   for (var rEl = topStrip.parentNode.firstElementChild; rEl; rEl = rEl.nextElementSibling) {
                     var rcs = getComputedStyle(rEl);
                     if (rcs.display === 'none' || rcs.position === 'absolute') continue;
-                    if (rEl !== topStrip.parentNode.firstElementChild) railFoot += parseFloat(rcs.marginTop) || 0;
+                    if (!rEl.offsetHeight && rEl !== topStrip) continue;
+                    if (!railFirst) railFoot += parseFloat(rcs.marginTop) || 0;
+                    railFirst = false;
                     railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
                     if (rEl === topStrip) break;
                   }

@@ -421,47 +421,25 @@
 // page's own #top stands under the name, so the link is answered here,
 // eased unless the reader asks for less motion.
 document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line, a.sub-ticker-half--tlm');
+  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line, a.sub-ticker-half--tlm, a.wm-stack');
   if (!a) return;
   e.preventDefault();
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
 });
 
-// THE STRIP LANDS OVER THE LINE (2026-10-01): THE LAST MAGAZINE, at 40,
-// is a few pixels taller than the strip that rises to cover it, so once
-// the strip has landed in the line's place the line stands down
-// (style.css, THE LINE AT TWICE ITS SIZE) and comes back as the strip
-// leaves it.
-(function () {
-  var line = document.querySelector('.head-rail > .rail-tlm');
-  var strip = document.querySelector('.head-rail > .sub-ticker--top');
-  if (!line || !strip) return;
-  var check = function () {
-    var covered = strip.getBoundingClientRect().top <= line.getBoundingClientRect().top + 2;
-    if (line.classList.contains('is-covered') !== covered) line.classList.toggle('is-covered', covered);
-  };
-  addEventListener('scroll', check, { passive: true });
-  addEventListener('resize', check);
-  addEventListener('load', check);
-  check();
-})();
-
-// THE NAME AT THE FOOT IN THE HEAD'S PADDING (2026-10-01, at the user's
-// word): THE NEW CRITIC under the colophon stands as the head's does,
-// turned over — the head's air (36 from 1024 up, 30 on a phone) between
-// the colophon and its ink, and the same under its ink to the page's
-// end. The block is the head's height and one more of that air
-// (style.css); the name is moved, by --rep-shift, until its ink's top is
-// that air under the block's — read off the face, so any fit of its
-// size holds.
+// THE LAST MAGAZINE BESIDE THE NAME (2026-10-01, at the user's word): a
+// stack of three lines at the right of THE NEW CRITIC, in the dek's
+// Garamond italic, ranged left, its last line's baseline on the name's
+// (--stack-shift, read off both faces; style.css, THE LAST MAGAZINE
+// BESIDE THE NAME). The fitter keeps the stack's room clear of the name.
 (function () {
   var main = document.querySelector('main.has-mega');
-  var rep = document.querySelector('.page-rows > .reprint');
-  var name = rep && rep.querySelector('.reprint-name');
-  if (!main || !name) return;
+  var stack = document.querySelector('.page-rows > .head-rail .wm-stack');
+  var nm = document.querySelector('.site-nav--top .topbar-name');
+  if (!main || !stack || !nm) return;
   var cv = null;
-  var inkTop = function (el) {
+  var baseOf = function (el) {
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -472,21 +450,19 @@ document.addEventListener('click', function (e) {
     var m = cv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
-    return r.top + (r.height - (fa + fd)) / 2 + fa - m.actualBoundingBoxAscent;
+    return r.top + (r.height - (fa + fd)) / 2 + fa;
   };
   var seat = function () {
-    if (!rep.offsetHeight) return;
-    var t = inkTop(name);
-    if (t == null) return;
-    var cur = parseFloat(main.style.getPropertyValue('--rep-shift')) || 0;
-    // (the head's air over its ink, which band-mark.js states as
-    // --wm-under: 36 from 1024 up, 30 on a phone)
-    var air = parseFloat(getComputedStyle(main).getPropertyValue('--wm-under')) || 36;
-    var want = cur + (air - (t - rep.getBoundingClientRect().top));
-    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--rep-shift', want.toFixed(2) + 'px');
+    if (!stack.offsetWidth) return;
+    var last = stack.lastElementChild;
+    var a = baseOf(nm), b = last && baseOf(last);
+    if (a == null || b == null) return;
+    var cur = parseFloat(main.style.getPropertyValue('--stack-shift')) || 0;
+    var want = cur + (a - b);
+    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
   };
-  ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
-    addEventListener(ev, function () { setTimeout(seat, 0); });
+  ['load', 'resize', 'scroll', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
+    addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(seat);
   seat();

@@ -1595,16 +1595,11 @@ function renderPageFoot(onHome = false, onMark = false) {
   // so it rides the foot the page's whole length and comes to rest on
   // the colophon as it arrives (style.css, THE STRIP PINS TO THE FOOT)
   // (THE REPRINT IS STRUCK, 2026-09-30, at the user's word: the page
-  // ended on the colophon. THE REPRINT AGAIN, 2026-10-01, at the user's
-  // word: THE NEW CRITIC under the colophon, the head turned over — the
-  // strip rises over the name at the head and pins at the window's top;
-  // at the foot the page lifts off the name, held at the window's foot
-  // under it (style.css, THE NAME UNDER THE PAGE, HEAD AND FOOT).)
+  // ends on the colophon. It came back for a morning on 2026-10-01 —
+  // the name under the colophon, revealed as the page lifted off it —
+  // and was struck again the same day.)
   return `${onHome ? `\n  ${navStrip()}` : ''}
   ${renderColophonBand()}
-  <section class="reprint${mk}">
-    <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
-  </section>
   <div class="foot-field${mk}" aria-hidden="true"></div>`;
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
@@ -2795,7 +2790,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div><div class="rail-tlm"><a class="tlm-line" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The Last Magazine</span></a></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the

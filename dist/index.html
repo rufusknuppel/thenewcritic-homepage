@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=6fa0b76d">
+<link rel="stylesheet" href="style.css?v=8e60eb76">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -389,7 +389,7 @@
     <p class="band-deks band-dek"></p>
     <p class="band-deks"><span class="band-inert">The Last Magazine</span></p>
   </nav>
-  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div><div class="rail-tlm"><a class="tlm-line" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The Last Magazine</span></a></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span><span class="sub-ticker-half sub-ticker-half--mode"><button type="button" class="theme-toggle strip-toggle" aria-label="Light or dark, and a colour of your own for the bands"><b class="theme-toggle-light">Light</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-dark">Dark</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-hex">Hex</b></button><input class="theme-hex strip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></span></span></nav></div>
+  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span><span class="sub-ticker-half sub-ticker-half--mode"><button type="button" class="theme-toggle strip-toggle" aria-label="Light or dark, and a colour of your own for the bands"><b class="theme-toggle-light">Light</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-dark">Dark</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-hex">Hex</b></button><input class="theme-hex strip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></span></span></nav></div>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
 <div class="site-header" id="site-header">
@@ -1332,9 +1332,6 @@
     <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     <p class="band-deks band-name"><span>Est. May 2025</span></p>
   </nav>
-  <section class="reprint">
-    <a class="reprint-name" href="#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
-  </section>
   <div class="foot-field" aria-hidden="true"></div>
   </div>
 
@@ -3901,7 +3898,8 @@
     var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
     var cw = document.documentElement.clientWidth;
     var vw = cw - SIDE * 2;
-    var vwSize = cw - SIZE_SIDE * 2;
+    var RESERVE = (opts && opts.reserveRight > 0) ? opts.reserveRight : 0;
+    var vwSize = cw - SIZE_SIDE * 2 - RESERVE;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
     if (!s0 || !vw || !vwSize) return;
     var i0 = inkSpanOf(name);
@@ -3918,7 +3916,9 @@
     var ink1 = i1.right - i1.left;
     void vw;
     var headL = headLeftOf(wm);
-    var inkAt = headL != null ? wb.left + headL : wb.left + (wb.width - ink1) / 2;
+    var inkAt = headL != null ? wb.left + headL
+      : RESERVE ? wb.left + SIZE_SIDE
+      : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
     var size = parseFloat(ncs.fontSize) || 0;
@@ -4014,7 +4014,9 @@
       var base = r.top + (r.height - (fa + fd)) / 2 + fa;
       return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
     };
-    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
+    var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
+    var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R });
     if (!f) return;
     var ni = nameInk();
     if (ni) {
@@ -4022,7 +4024,7 @@
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
-        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE }) || f;
+        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R }) || f;
       }
     }
     document.documentElement.style.setProperty('--masthead-air', AIR.toFixed(2) + 'px');
@@ -5661,11 +5663,13 @@
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
                 var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
                 if (topStrip && topStrip.offsetHeight > 0) {
-                  var railFoot = 0;
+                  var railFoot = 0, railFirst = true;
                   for (var rEl = topStrip.parentNode.firstElementChild; rEl; rEl = rEl.nextElementSibling) {
                     var rcs = getComputedStyle(rEl);
                     if (rcs.display === 'none' || rcs.position === 'absolute') continue;
-                    if (rEl !== topStrip.parentNode.firstElementChild) railFoot += parseFloat(rcs.marginTop) || 0;
+                    if (!rEl.offsetHeight && rEl !== topStrip) continue;
+                    if (!railFirst) railFoot += parseFloat(rcs.marginTop) || 0;
+                    railFirst = false;
                     railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
                     if (rEl === topStrip) break;
                   }
@@ -8866,32 +8870,19 @@
     .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line, a.sub-ticker-half--tlm');
+  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line, a.sub-ticker-half--tlm, a.wm-stack');
   if (!a) return;
   e.preventDefault();
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
 });
 (function () {
-  var line = document.querySelector('.head-rail > .rail-tlm');
-  var strip = document.querySelector('.head-rail > .sub-ticker--top');
-  if (!line || !strip) return;
-  var check = function () {
-    var covered = strip.getBoundingClientRect().top <= line.getBoundingClientRect().top + 2;
-    if (line.classList.contains('is-covered') !== covered) line.classList.toggle('is-covered', covered);
-  };
-  addEventListener('scroll', check, { passive: true });
-  addEventListener('resize', check);
-  addEventListener('load', check);
-  check();
-})();
-(function () {
   var main = document.querySelector('main.has-mega');
-  var rep = document.querySelector('.page-rows > .reprint');
-  var name = rep && rep.querySelector('.reprint-name');
-  if (!main || !name) return;
+  var stack = document.querySelector('.page-rows > .head-rail .wm-stack');
+  var nm = document.querySelector('.site-nav--top .topbar-name');
+  if (!main || !stack || !nm) return;
   var cv = null;
-  var inkTop = function (el) {
+  var baseOf = function (el) {
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -8902,19 +8893,19 @@ document.addEventListener('click', function (e) {
     var m = cv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
-    return r.top + (r.height - (fa + fd)) / 2 + fa - m.actualBoundingBoxAscent;
+    return r.top + (r.height - (fa + fd)) / 2 + fa;
   };
   var seat = function () {
-    if (!rep.offsetHeight) return;
-    var t = inkTop(name);
-    if (t == null) return;
-    var cur = parseFloat(main.style.getPropertyValue('--rep-shift')) || 0;
-    var air = parseFloat(getComputedStyle(main).getPropertyValue('--wm-under')) || 36;
-    var want = cur + (air - (t - rep.getBoundingClientRect().top));
-    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--rep-shift', want.toFixed(2) + 'px');
+    if (!stack.offsetWidth) return;
+    var last = stack.lastElementChild;
+    var a = baseOf(nm), b = last && baseOf(last);
+    if (a == null || b == null) return;
+    var cur = parseFloat(main.style.getPropertyValue('--stack-shift')) || 0;
+    var want = cur + (a - b);
+    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
   };
-  ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
-    addEventListener(ev, function () { setTimeout(seat, 0); });
+  ['load', 'resize', 'scroll', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
+    addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(seat);
   seat();
