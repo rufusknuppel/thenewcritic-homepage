@@ -3017,11 +3017,12 @@ function renderFontGateScript() {
   // (YELLOW names the DEFAULT mark, whatever colour that is: the banana
   // when this was written, the blue #1182c2 for a day, the banana
   // again on the 22nd, #1184C4 from later that day, and the banana for
-  // good from the 25th, and #7886B4 from 2026-09-30. It must match
+  // good from the 25th, and #7886B4 for an hour on 2026-09-30, then the
+  // banana again that night, "Use FFE135 for hex". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#7886b4';
+  var YELLOW = '#ffe135';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
