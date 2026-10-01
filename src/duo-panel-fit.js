@@ -5089,6 +5089,7 @@
   function fitTitleHalo() {
     function seat(host, title, cover, words) {
       ['--hl-l', '--hl-t', '--hl-w', '--hl-h', '--hl-dx', '--hl-dy'].forEach(function (v) { host.style.removeProperty(v); });
+      host.__hlRaw = null;
       // The block is a real element (not a pseudo), so the pointer can
       // find it in the gap beside the words; made once, seated by the
       // vars below.
@@ -5169,6 +5170,9 @@
       // VIEWPORT's frame, not the host's: the offsets stay fractional
       // so that left + offset lands on a whole number, which is where
       // the edge is actually painted. */
+      // (the edges unrounded, off the card's own box, kept for
+      // reseatHalos: the rows can still move after this step)
+      host.__hlRaw = { l: l - h.left, r: r - h.left, t: top - h.top, b: bot - h.top };
       var L = Math.round(l), R = Math.round(r), T = Math.round(top), B = Math.round(bot);
       host.style.setProperty('--hl-l', (L - h.left).toFixed(2) + 'px');
       host.style.setProperty('--hl-t', (T - h.top).toFixed(2) + 'px');
@@ -5207,6 +5211,31 @@
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (half) {
       seat(half, half.querySelector('.card-title'), half.querySelector('.duo-card-image'),
            [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
+    });
+  }
+
+  // THE HALOS ROUNDED AGAIN WHERE THEIR CARDS NOW STAND (2026-09-30).
+  // fitTitleHalo rounds each block's edges to whole pixels in the
+  // viewport's frame, and seatRowGaps moves the rows after it: on a
+  // page fitted in two stages the rows stage one kept out of the layout
+  // were still moving on stage two's last run, and their halos stood up
+  // to a pixel off — a hairline at the edge (WHOLE PIXELS, above). The
+  // edges were measured off the card's own box, which moves whole with
+  // its row, so they are only rounded again here, nothing re-measured:
+  // where the rows had settled this writes what was there.
+  function reseatHalos() {
+    var hosts = [].filter.call(document.querySelectorAll(
+      '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'), function (el) { return el.__hlRaw; });
+    var boxes = hosts.map(function (el) { return el.getBoundingClientRect(); });
+    hosts.forEach(function (host, i) {
+      var h = boxes[i], raw = host.__hlRaw;
+      if (!h.width) return;
+      var L = Math.round(h.left + raw.l), R = Math.round(h.left + raw.r),
+          T = Math.round(h.top + raw.t), B = Math.round(h.top + raw.b);
+      host.style.setProperty('--hl-l', (L - h.left).toFixed(2) + 'px');
+      host.style.setProperty('--hl-t', (T - h.top).toFixed(2) + 'px');
+      host.style.setProperty('--hl-w', (R - L) + 'px');
+      host.style.setProperty('--hl-h', (B - T) + 'px');
     });
   }
 
@@ -6462,6 +6491,12 @@
     // (fitContra keys its second look on this).
     fitPassId++;
     var veiled = stageBegin();
+    // (STAGE TWO RUNS TWICE, 2026-09-30: a row's deks are seated off its
+    // titles before seatRowTitles has seated them, so the first run over
+    // a row is never its last — the rows stage one kept out of the
+    // layout had only the one where no postscript asked for another (on
+    // a phone), and every dek's block stood up to 45 off.)
+    if (veiled) rowKDirty = true;
     var world0 = worldSig();
     freshMemos();
     atRest(function () {
@@ -6757,6 +6792,8 @@
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
     }
+    // (the halos rounded again on the rows' last seats: reseatHalos)
+    if (!rowKAgain) step('reseatHalos', reseatHalos);
   }
   var rowKDirty = false, rowKAgain = false;
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
