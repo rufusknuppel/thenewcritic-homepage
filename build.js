@@ -1507,14 +1507,15 @@ function subTicker(where = 'head') {
 // user's word): ARCHIVE, ABOUT, SUBSCRIBE, STORE, EVENTS in the strip's
 // own capitals, spread evenly across it (style.css, THE LINKS IN THE
 // STRIP); STORE and EVENTS lead nowhere yet, as in the band they left
-// THE CORNER CIRCLE (2026-10-01, at the user's word): one circle held in
-// the window's bottom right corner, the ground it turns the page to —
+// THE CIRCLE (2026-10-01, at the user's word): one circle, the strip's
+// last thing at its right (held in the window's bottom right corner for
+// an hour), the ground it turns the page to —
 // white on the charcoal page, charcoal on the white — a .theme-toggle
 // with no -light or -dark of its own, so the head script turns the page
 // over. (It was a chip of three dots, then two, for an hour: LIGHT, DARK
 // and HEX's colour; HEX is struck.)
 function themeChip() {
-  return `<div class="theme-chip"><button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button></div>`;
+  return `<button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
@@ -1532,8 +1533,10 @@ function navStrip() {
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
-    // 2026-09-30; on 2026-10-01 it left for the chip in the window's
-    // bottom right corner — themeChip)
+    // 2026-09-30; on 2026-10-01 it left for a chip in the window's corner,
+    // became one circle there, and came back as that circle, the strip's
+    // last thing — themeChip)
+    `<span class="sub-ticker-half sub-ticker-half--flip">${themeChip()}</span>`,
   ].join('')}</span></nav>`;
 }
 
@@ -2798,7 +2801,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>${themeChip()}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
