@@ -6963,8 +6963,9 @@
     // (last of all, once nothing moves the cards again: every picture on
     // whole pixels — 2026-09-23)
     step('snapPictures', snapPictures);
-      // (and the slides read off the snapped pictures — 2026-10-01)
+    // (and the slides read off the snapped pictures — 2026-10-01)
     step('seatSlides', seatSlides);
+    step('seatPeekCorners', seatPeekCorners);
     // (a postscript's width changed this pass — seatRowTitles: once more)
     if (rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
@@ -8191,15 +8192,6 @@
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
       var dx = (wc + gap) * (right ? 1 : -1);
-      // (the words under the two pictures, the lower of the two cards')
-      var foot = P.b;
-      [card, mate].forEach(function (c) {
-        var cr = c.getBoundingClientRect(), rr = restRect(c), oy = cr.top - rr.top;
-        [].forEach.call(c.querySelectorAll('.swap-col .swap-line, .cover-meta'), function (el) {
-          var r = el.getBoundingClientRect();
-          if (r.width && r.height && (el.textContent || '').trim()) foot = Math.max(foot, r.bottom - oy);
-        });
-      });
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8214,7 +8206,9 @@
       ss.left = (P.l - SLIDE_MARGIN - cr0.left).toFixed(2) + 'px';
       ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
       ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
-      ss.height = (foot - P.t + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      // (the picture alone travels since later the same day: its sheet is
+      // the picture and the 36 over and beside it, the words left standing)
+      ss.height = (P.b - P.t + SLIDE_MARGIN).toFixed(2) + 'px';
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -8223,6 +8217,47 @@
         bs.width = wc.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
+    });
+  }
+  // PREVIEW IN THE COURIER'S OTHER CORNER (2026-10-01): the hand on a
+  // picture offers Read Now alone (essay-acts.js), and Preview stands on
+  // the courier's line under the picture, at the picture's other edge —
+  // right where the courier is set left, left where it is set right —
+  // in the courier's own face; open, it reads Close (card-open.js takes
+  // it as the one toggle)
+  function seatPeekCorners() {
+    [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
+      if (card.matches('.is-opening, .is-shutting')) return;
+      var P = slidePic(card);
+      if (!P) return;
+      var cr0 = restRect(card), cr = card.getBoundingClientRect();
+      var ox = cr.left - cr0.left, oy = cr.top - cr0.top;
+      var line = null, lo = Infinity;
+      [].forEach.call(card.querySelectorAll('.cover-meta'), function (el) {
+        if (el.closest('.peek-corner')) return;
+        var r = el.getBoundingClientRect();
+        if (!r.width || !r.height || !(el.textContent || '').trim() || r.top - oy < P.b - 1) return;
+        if (!line || r.top < line.top - 1) line = { top: r.top - oy, h: r.height, el: el };
+        lo = Math.min(lo, r.left - ox);
+      });
+      var btn = card.querySelector(':scope > .peek-corner');
+      if (!line) { if (btn) btn.style.display = 'none'; return; }
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'peek-corner';
+        btn.innerHTML = '<span class="pk-open">Preview</span><span class="pk-shut">Close</span>';
+        card.appendChild(btn);
+      }
+      var cs = getComputedStyle(line.el), b = btn.style;
+      b.removeProperty('display');
+      b.fontFamily = cs.fontFamily; b.fontSize = cs.fontSize; b.fontWeight = cs.fontWeight;
+      b.letterSpacing = cs.letterSpacing; b.textTransform = cs.textTransform; b.lineHeight = cs.lineHeight;
+      b.top = (line.top - cr0.top).toFixed(2) + 'px';
+      b.height = line.h.toFixed(2) + 'px';
+      var atLeft = Math.abs(lo - P.l) < 2;
+      if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
+      else { b.right = 'auto'; b.left = (P.l - cr0.left).toFixed(2) + 'px'; }
     });
   }
   function seatSwapCols() {
@@ -8378,7 +8413,8 @@
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       // (a sliding preview's text runs the column's whole width, flush
       // with the picture's edges, and its whole height)
-      if (j.slide) j.bp = { l: 0, r: 0, t: 0, b: 0 };
+      // (36 over it and under it, at the user's word, 2026-10-01)
+      if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');

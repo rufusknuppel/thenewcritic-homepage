@@ -67,6 +67,9 @@
           var m = s.querySelector('.duo-half--mega.is-open');
           var po = m && m.querySelector('.peek-open');
           if (po) po.click();
+          // (and the mate's own Preview stands down while this is out)
+          var u = s.querySelector('.duo-half--mega');
+          if (u) { u.classList.add('is-under'); card.__under = u; }
         });
       }
       if (shutTimer) { clearTimeout(shutTimer); shutTimer = 0; }
@@ -80,6 +83,7 @@
       if (openTimer) { clearTimeout(openTimer); openTimer = 0; }
       card.classList.remove('is-opening', 'is-inbox');
       card.classList.remove('is-open'); travel();
+      if (card.__under) { card.__under.classList.remove('is-under'); card.__under = null; }
       card.classList.add('is-shutting');
       if (shutTimer) clearTimeout(shutTimer);
       shutTimer = setTimeout(function () { shutTimer = 0; card.classList.remove('is-shutting'); }, SHUT);
@@ -119,7 +123,8 @@
     card.addEventListener('click', function (e) {
       // PREVIEW IS ONE CONTROL (2026-09-22): the arrows open the card
       // and, open, the same word with its × shuts it
-      if (hit(e, '.peek-open')) {
+      // (and Preview in the courier's other corner, 2026-10-01)
+      if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
         if (card.classList.contains('is-open')) {
           shut();
