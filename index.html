@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d2f9a5c2">
+<link rel="stylesheet" href="style.css?v=001cc5a6">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -8869,6 +8869,19 @@ document.addEventListener('click', function (e) {
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
 });
+(function () {
+  var line = document.querySelector('.head-rail > .rail-tlm');
+  var strip = document.querySelector('.head-rail > .sub-ticker--top');
+  if (!line || !strip) return;
+  var check = function () {
+    var covered = strip.getBoundingClientRect().top <= line.getBoundingClientRect().top + 2;
+    if (line.classList.contains('is-covered') !== covered) line.classList.toggle('is-covered', covered);
+  };
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', check);
+  addEventListener('load', check);
+  check();
+})();
 
 </script>
 <script>
