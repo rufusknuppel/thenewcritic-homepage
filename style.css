@@ -10948,3 +10948,18 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   width: 0.55em !important;
   text-align: left !important;
 }
+.site-nav--top .topbar-wordmark > .wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute !important;
+  display: block !important;
+  visibility: hidden;
+  color: var(--k) !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+  transition: none !important;
+}
+.site-nav--top .topbar-wordmark > .wm-bird.is-seated:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  visibility: visible;
+}
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus-within, .is-cued) > .wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-banana, #FFE135) !important;
+}
