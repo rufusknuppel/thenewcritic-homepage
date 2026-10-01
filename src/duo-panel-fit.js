@@ -8281,7 +8281,12 @@
       b.top = (line.top - cr0.top).toFixed(2) + 'px';
       b.height = line.h.toFixed(2) + 'px';
       btn.classList.toggle('pk-lone', !te);
-      if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
+      // (THE RIGHT CARD'S LINE RUNS THE OTHER WAY, 2026-10-01: on the
+      // mirrored line the word opens it, its right edge a gap before the
+      // first piece's ink, no dot before it — .pk-head)
+      btn.classList.toggle('pk-head', !!(te && tail.head));
+      if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
+      else if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
       else {
         var atLeft = Math.abs(lo - P.l) < 2;
         if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
@@ -10531,23 +10536,25 @@
           // one stood unseated on one another at the card's corner.)
           var cd3 = card.querySelector('.cover-meta--cdate');
           if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
-          var line3 = [kc, cd3].filter(Boolean);
+          // THE RIGHT CARD'S LINE RUNS THE OTHER WAY (2026-10-01, "For right
+          // cards, switch order of courier"): on a card set right the line
+          // reads PREVIEW · DATE · AUTHOR, the author ending on the
+          // picture's right edge, Preview opening the line (seatPeekCorners
+          // stands it before the first piece, no dot before it); on the
+          // left card AUTHOR · DATE · PREVIEW as before
+          var mirror3 = !!(card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches);
+          var line3 = (mirror3 ? [cd3, kc] : [kc, cd3]).filter(Boolean);
           // (the line's first word carries no dot before it: style.css,
           // THE LINE IS WHATEVER IT HAS — stated before the seats are
-          // read, since the dot is part of the word's box)
-          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
+          // read, since the dot is part of the word's box; on the
+          // mirrored line Preview is the first word, and every piece
+          // after it keeps its dot)
+          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', !mirror3 && el === line3[0]); });
           var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
           var gap3 = 1.8 * fs3;
-          var x3 = frL;
-          line3.forEach(function (el) {
-            el.classList.remove('is-wrapped');
-            seat(el, hy, hEdge, { inkL: x3 });
-            var e3 = inkEdges(el);
-            if (e3) x3 = e3.r + gap3;
-          });
           // (Preview's ink in the line's own face, so the line is laid
-          // with the word it ends on — its width, the gap and the dot
-          // before it count toward the line's run and its carry)
+          // with the word it ends — or opens — on: its width, the gap and
+          // the dot count toward the line's run and its carry)
           var pvW = 0;
           if (line3.length) {
             var cs3 = getComputedStyle(line3[0]);
@@ -10555,6 +10562,16 @@
             var pvT = cs3.textTransform === 'uppercase' ? 'PREVIEW' : 'Preview';
             pvW = measureCtx.measureText(pvT).width + (parseFloat(cs3.letterSpacing) || 0) * pvT.length;
           }
+          // (the room Preview takes on the line: after the last piece, or
+          // before the first on the mirrored line)
+          var pvRoom = pvW ? gap3 + pvW : 0;
+          var x3 = frL + (mirror3 ? pvRoom : 0);
+          line3.forEach(function (el) {
+            el.classList.remove('is-wrapped');
+            seat(el, hy, hEdge, { inkL: x3 });
+            var e3 = inkEdges(el);
+            if (e3) x3 = e3.r + gap3;
+          });
           // (THE LINE'S LAST PIECE TAKES A LINE OF ITS OWN where the one
           // line would run past the picture — a postscript's portrait is
           // one column wide — under the first, from the picture's left
@@ -10566,15 +10583,18 @@
           // postscript widens to keep its courier on one — 2026-09-30)
           var rc3 = card.closest('.card--row-a, .card--row-b');
           var le3 = tail3 && inkEdges(tail3);
-          if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r + (pvW ? gap3 + pvW : 0) - frL) + 1;
+          if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r + (mirror3 ? 0 : pvRoom) - frL) + 1;
           var wrapped3 = false;
-          if (le3 && line3.length > 1 && le3.r + (pvW ? gap3 + pvW : 0) > frR + 0.5) {
+          if (le3 && line3.length > 1 && le3.r + (mirror3 ? 0 : pvRoom) > frR + 0.5) {
             wrapped3 = true;
             tail3.classList.add('is-wrapped');
             seat(tail3, hy + 1.6 * fs3, hEdge, { inkL: frL });
             le3 = inkEdges(tail3);
           }
-          card.__courierTail = tail3 ? { el: tail3, gap: gap3 } : null;
+          // (where Preview stands: after the tail, or before the head of
+          // the mirrored line — the first piece, which keeps the upper
+          // line whatever wrapped)
+          card.__courierTail = tail3 ? { el: mirror3 ? line3[0] : tail3, gap: gap3, head: mirror3 } : null;
           // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): on a
           // card set right (.card--align-r, build.js — every other essay,
           // the right-hand card of a pair) each line of the courier ends
@@ -10591,10 +10611,10 @@
             // carry leaves room for its dot, the gap and the word)
             var first3 = line3.filter(function (el) { return !(el === tail3 && wrapped3); });
             var last3 = first3[first3.length - 1], fe3 = last3 && inkEdges(last3);
-            if (fe3) { var d3 = frR - (fe3.r + (wrapped3 || !pvW ? 0 : gap3 + pvW)); first3.forEach(function (el) { carry(el, d3); }); }
+            if (fe3) { var d3 = frR - (fe3.r + (wrapped3 || mirror3 ? 0 : pvRoom)); first3.forEach(function (el) { carry(el, d3); }); }
             // (the last piece on its own line: from the left edge, its
             // ink as wide as it was, Preview after it)
-            if (wrapped3 && le3) carry(tail3, frR - (frL + (le3.r - le3.l) + (pvW ? gap3 + pvW : 0)));
+            if (wrapped3 && le3) carry(tail3, frR - (frL + (le3.r - le3.l) + (mirror3 ? 0 : pvRoom)));
             if (frR > r) r = frR;
           }
           }

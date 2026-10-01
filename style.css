@@ -22521,7 +22521,11 @@ main.has-mega .duo-half--mega > .peek-corner > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.
   color: var(--k) !important;
   -webkit-text-fill-color: var(--k) !important;
 }
-main.has-mega .duo-half--mega > .peek-corner.pk-lone > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+/* (…and on the mirrored line of a card set right, where Preview opens
+   the line — PREVIEW · DATE · AUTHOR, "For right cards, switch order of
+   courier", 2026-10-01 — .pk-head, no dot before the first word) */
+main.has-mega .duo-half--mega > .peek-corner.pk-lone > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .peek-corner.pk-head > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   display: none !important;
 }
 /* (the date wrapped under the author keeps no dot before it, as the
