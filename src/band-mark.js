@@ -423,3 +423,22 @@ document.addEventListener('click', function (e) {
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
 });
+
+// THE STRIP LANDS OVER THE LINE (2026-10-01): THE LAST MAGAZINE, at 40,
+// is a few pixels taller than the strip that rises to cover it, so once
+// the strip has landed in the line's place the line stands down
+// (style.css, THE LINE AT TWICE ITS SIZE) and comes back as the strip
+// leaves it.
+(function () {
+  var line = document.querySelector('.head-rail > .rail-tlm');
+  var strip = document.querySelector('.head-rail > .sub-ticker--top');
+  if (!line || !strip) return;
+  var check = function () {
+    var covered = strip.getBoundingClientRect().top <= line.getBoundingClientRect().top + 2;
+    if (line.classList.contains('is-covered') !== covered) line.classList.toggle('is-covered', covered);
+  };
+  addEventListener('scroll', check, { passive: true });
+  addEventListener('resize', check);
+  addEventListener('load', check);
+  check();
+})();
