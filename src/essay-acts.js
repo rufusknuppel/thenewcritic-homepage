@@ -7,6 +7,7 @@
   // essays (cover-cue.js, style.css THE ESSAY OFFERS TWO THINGS).
   var ESSAYS = '.duo-half--mega';
   var READ = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var SHUT = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
   var PEEK = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 3h5v5M17 3L3 17M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   function picBox(card) {
@@ -19,6 +20,17 @@
     var wrap = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
     var box = { l: r.left + (parseFloat(c.left) || 0) - wrap, r: r.right - (parseFloat(c.right) || 0) + wrap, t: r.top + (parseFloat(c.top) || 0), b: r.bottom - (parseFloat(c.bottom) || 0) };
     return box.r > box.l && box.b > box.t ? box : null;
+  }
+  // the card beside it in its row (duo-panel-fit.js, slideMate)
+  function mateOf(card) {
+    var sec = card.closest('section.card');
+    var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
+    if (!sec || g == null || r == null) return null;
+    var all = document.querySelectorAll('section.card[data-row="' + r + '"]');
+    for (var i = 0; i < all.length; i++) {
+      if (all[i] !== sec && all[i].getAttribute('data-group') === g) return all[i].querySelector(ESSAYS);
+    }
+    return null;
   }
   function inside(b, x, y) { return b && x >= b.l && x <= b.r && y >= b.t && y <= b.b; }
 
@@ -68,8 +80,11 @@
   // text alone, fading in and out over it (style.css, THE PREVIEW FADES
   // OVER THE SCRIM). Watched on the card's own classes, so the hold
   // starts and ends in the same breath as the preview.
+  // (A SLIDING PREVIEW HOLDS NO SCRIM, 2026-10-01: the card slides off
+  // its preview with its picture in the light — style.css, THE PREVIEW
+  // SLIDES)
   function hold(card) {
-    var held = card.matches('.is-open, .is-opening, .is-shutting');
+    var held = !card.classList.contains('is-slide') && card.matches('.is-open, .is-opening, .is-shutting');
     if (held) { var box = picBox(card); if (box) place(card, box); }
     if (card.classList.contains('is-acts-held') !== held) card.classList.toggle('is-acts-held', held);
   }
@@ -83,6 +98,10 @@
   }
   function show(card, box) {
     place(card, box);
+    // (out and landed, the second act shuts it: READ · CLOSE)
+    var pk = acts(card).querySelector('.essay-act--peek');
+    var shut = card.classList.contains('is-open');
+    if (pk && pk.__shut !== shut) { pk.innerHTML = shut ? 'Close' + SHUT : 'Preview' + PEEK; pk.__shut = shut; }
     if (shown !== card) hide();
     card.classList.add('is-acts');
     shown = card;
@@ -92,10 +111,17 @@
   function run() {
     pending = false;
     var hitCard = null, hitBox = null;
-    var cards = document.querySelectorAll(ESSAYS);
+    // (a card slid out over its mate is asked first, and the mate under
+    // it not at all, 2026-10-01)
+    var cards = [].slice.call(document.querySelectorAll(ESSAYS));
+    var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
+    var under = [];
+    out.forEach(function (c) { var m = mateOf(c); if (m) under.push(m); });
+    cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0 && under.indexOf(c) < 0; }));
     for (var i = 0; i < cards.length && !hitCard; i++) {
       var card = cards[i];
-      if (card.matches('.is-open, .is-opening')) continue;
+      if (card.matches('.is-opening, .is-shutting')) continue;
+      if (card.matches('.is-open') && !card.classList.contains('is-slide')) continue;
       var cr = card.getBoundingClientRect();
       if (ly < cr.top - 400 || ly > cr.bottom + 400) continue;
       var box = picBox(card);

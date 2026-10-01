@@ -56,6 +56,19 @@
     // open and still, it says it only for a hand in the preview's box
     // or on the picture (.is-inbox, src/cover-cue.js).
     var open = function () {
+      // (ONE OUT TO A ROW, 2026-10-01: a sliding card goes over its mate,
+      // so a mate that is out comes home first — style.css, THE PREVIEW
+      // SLIDES)
+      if (card.classList.contains('is-slide')) {
+        var sec = card.closest('section.card');
+        var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
+        [].forEach.call(r != null ? document.querySelectorAll('section.card[data-row="' + r + '"]') : [], function (s) {
+          if (s === sec || s.getAttribute('data-group') !== g) return;
+          var m = s.querySelector('.duo-half--mega.is-open');
+          var po = m && m.querySelector('.peek-open');
+          if (po) po.click();
+        });
+      }
       if (shutTimer) { clearTimeout(shutTimer); shutTimer = 0; }
       card.classList.remove('is-shutting');
       card.classList.add('is-open'); travel();
@@ -176,6 +189,13 @@
         e.preventDefault(); e.stopPropagation();
         location.href = kicker.getAttribute('data-href');
       }
+    });
+    // (Esc slides an open preview home, 2026-10-01)
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' && e.key !== 'Esc') return;
+      if (!card.classList.contains('is-open')) return;
+      shut();
+      try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
     // The bracketed span is not a button, so its keys are its own.
     card.addEventListener('keydown', function (e) {
