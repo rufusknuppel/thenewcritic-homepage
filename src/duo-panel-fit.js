@@ -5251,7 +5251,14 @@
     jobs.forEach(function (j) { prep(j.host); });
     jobs.forEach(function (j) {
       if (!j.title || !j.cover) return;
-      j.h = j.host.getBoundingClientRect(); j.t = j.title.getBoundingClientRect(); j.p = j.cover.getBoundingClientRect();
+      // (THE TITLE AS IT RESTS, 2026-10-01: the pass reads the title before
+      // seatMatterMeta carries it on its transform (--rb-dx), and the halo
+      // is cut at the cover's edge off that box; the re-seat after a
+      // preview closes (refitAfterClose) read the carried box, found the
+      // cover over the title's end, and let the halo run the whole
+      // card — a jump of 132 on the Unstageable's row. Read without the
+      // transform, as restRect reads, it is the pass's own box both times.)
+      j.h = j.host.getBoundingClientRect(); j.t = restRect(j.title); j.p = j.cover.getBoundingClientRect();
     });
     jobs.forEach(function (j) { seat(j.host, j.title, j.cover, j.words, j.h, j.t, j.p); });
   }
