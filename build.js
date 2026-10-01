@@ -3319,9 +3319,8 @@ function renderFontGateScript() {
       f.load('700 100px helvetica-neue-lt-pro'),
       f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
-      // (The chips' face is the system's Courier since 2026-09-22 —
-      // nothing to wait on.)
-      f.load('400 100px courier-std'),
+      // The meta's face, self-hosted since 2026-10-01 (was Courier).
+      f.load('400 100px "Work Sans"'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
       f.load('700 100px garamond-premier-pro'), // the corner box's price

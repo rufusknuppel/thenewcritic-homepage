@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=cc8bcb76">
+<link rel="stylesheet" href="style.css?v=433638eb">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -203,7 +203,7 @@
       f.load('700 100px helvetica-neue-lt-pro'),
       f.load('400 100px helvetica-neue-lt-pro'),
       f.load('italic 400 100px futura-pt'),
-      f.load('400 100px courier-std'),
+      f.load('400 100px "Work Sans"'),
       f.load('400 100px garamond-premier-pro'),
       f.load('italic 400 100px garamond-premier-pro'),
       f.load('700 100px garamond-premier-pro'), // the corner box's price
@@ -6426,11 +6426,13 @@
   }
   var capMemo = {};
   var PK_ICON = 18;
-  var PK_ARROWS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg>';
+  var COURIER_COMMA_EM = 0.55;
+  var PK_NEXT = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h14M11 4l6 6-6 6"/></svg>';
+  var PK_BACK = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M17 10H3M9 4l-6 6 6 6"/></svg>';
   var PK_CROSS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
   function pkHtml(head, dot) {
     return '<span class="pk-sep" aria-hidden="true">' + dot + '</span>'
-      + '<span class="pk-open">' + (head ? PK_ARROWS + 'Preview' : 'Preview' + PK_ARROWS) + '</span>'
+      + '<span class="pk-open">' + (head ? PK_BACK + 'Preview' : 'Preview' + PK_NEXT) + '</span>'
       + '<span class="pk-shut">' + (head ? PK_CROSS + 'Close' : 'Close' + PK_CROSS) + '</span>';
   }
   function seatPeekCorners() {
@@ -6472,13 +6474,13 @@
       b.top = (line.top - cr0.top).toFixed(2) + 'px';
       b.height = line.h.toFixed(2) + 'px';
       btn.classList.toggle('pk-lone', !te);
-      var head = !!(te && tail.head);
+      var atLeft = Math.abs(lo - P.l) < 2;
+      var head = te ? !!tail.head : !atLeft;
       btn.classList.toggle('pk-head', head);
       if (btn.__head !== head) { btn.__head = head; btn.innerHTML = pkHtml(head, '\u00B7'); }
       if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
       else if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
       else {
-        var atLeft = Math.abs(lo - P.l) < 2;
         if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
         else { b.right = 'auto'; b.left = (P.l - cr0.left).toFixed(2) + 'px'; }
       }
@@ -7822,9 +7824,10 @@
           if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
           var mirror3 = !!(card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches);
           var line3 = (mirror3 ? [cd3, kc] : [kc, cd3]).filter(Boolean);
-          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', !mirror3 && el === line3[0]); });
+          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
           var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
           var gap3 = 1.8 * fs3;
+          var sep3 = COURIER_COMMA_EM * fs3;
           var pvW = 0;
           if (line3.length) {
             var cs3 = getComputedStyle(line3[0]);
@@ -7838,7 +7841,7 @@
             el.classList.remove('is-wrapped');
             seat(el, hy, hEdge, { inkL: x3 });
             var e3 = inkEdges(el);
-            if (e3) x3 = e3.r + gap3;
+            if (e3) x3 = e3.r + sep3;
           });
           var tail3 = line3.length ? line3[line3.length - 1] : null;
           var rc3 = card.closest('.card--row-a, .card--row-b');
@@ -7851,7 +7854,7 @@
             seat(tail3, hy + 1.6 * fs3, hEdge, { inkL: frL });
             le3 = inkEdges(tail3);
           }
-          card.__courierTail = tail3 ? { el: mirror3 ? line3[0] : tail3, gap: gap3, head: mirror3 } : null;
+          card.__courierTail = null;
           if (line3.length && card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
             var carry = function (el, d) {
               if (!el) return;
