@@ -2607,11 +2607,16 @@
     if (swapHalf && title && getComputedStyle(title).display !== 'none') {
       var swapHR = swapHalf.getBoundingClientRect();
       var swapTR = title.getBoundingClientRect();
+      // (written down once every panel is fitted — panelsLate — not here:
+      // nothing reads these four, in the sheet or the script, and written
+      // here, a card at a time, each one had the card's style done again
+      // before the preview below was read — fifty-six small layouts a
+      // pass, 2026-10-01)
       if (swapHR.width && swapTR.width) {
-        swapHalf.style.setProperty('--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-w', swapTR.width.toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-h', swapTR.height.toFixed(2) + 'px');
+        panelsLate.push([swapHalf, '--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-w', swapTR.width.toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-h', swapTR.height.toFixed(2) + 'px']);
       }
       // And the plate's TRUE ink foot: the cut can leave the column
       // box a structural row taller than its text (a paragraph gap
@@ -2647,6 +2652,8 @@
   // track. In the stacked mobile layout (flex-direction column, see the
   // .contra-lead media block) the lead flows at natural height instead:
   // the inline height is cleared, the CSS max-height does the bounding.
+  // (the panels' late writes: see fit, --mega-title-t)
+  var panelsLate = [];
   function fitContraLead() {
     var lead = document.querySelector('.contra-lead');
     if (!lead) return;
@@ -3636,7 +3643,7 @@
     var first = document.querySelector('.section-band');
     if (first) {
       var fh = first.getBoundingClientRect().height;
-      if (fh) document.documentElement.style.setProperty('--band-h', fh.toFixed(2) + 'px');
+      if (fh) varSet(document.documentElement, '--band-h', fh.toFixed(2) + 'px');
     }
     [].forEach.call(document.querySelectorAll('.section-band'), function (band) {
       var bb = band.getBoundingClientRect();
@@ -3865,7 +3872,7 @@
       }
       if (stuck) band.style.setProperty('position', stuck); else band.style.removeProperty('position');
       var rh = band.getBoundingClientRect().height;
-      if (rh) document.documentElement.style.setProperty('--reprint-h', Math.round(rh) + 'px');
+      if (rh) varSet(document.documentElement, '--reprint-h', Math.round(rh) + 'px');
       band.style.removeProperty('padding-top');
     });
   }
@@ -4023,6 +4030,10 @@
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
+    // (sizeOnly: the name sized and nothing seated — what the band's
+    // words need to take their size from, before the masthead is filled
+    // against them: THE NAME'S SIZE IS STATED FIRST, fitAllSteps)
+    if (opts && opts.sizeOnly) return { size: fitted };
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
@@ -4209,7 +4220,7 @@
         f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R }) || f;
       }
     }
-    document.documentElement.style.setProperty('--masthead-air', AIR.toFixed(2) + 'px');
+    varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
     var wb = f.wb, inkBottom = f.inkBottom;
     // The block ends ON the ink's foot, one pixel of allowance under
     // it, so the letters print whole: the band and the page are the
@@ -4263,7 +4274,7 @@
     // fraction: the head field is a viewport less the band and this,
     // and a fraction here put the wordmark's foot a hair past the fold
     // — and the first row's rule a hair inside it.
-    document.documentElement.style.setProperty('--masthead-h', Math.round(wmH) + 'px');
+    varSet(document.documentElement, '--masthead-h', Math.round(wmH) + 'px');
   }
   // A line's TRUE ink edges, read from layout: the first and last
   // characters' own boxes give the glyph origins, and the face's
@@ -5110,7 +5121,12 @@
   // READ ON, both printed by the builder and seated by the same passes
   // that seat every other line.)
   function fitTitleHalo() {
-    function seat(host, title, cover, words) {
+    // (READ ALL, THEN WRITE ALL, 2026-10-01: every host is cleared and
+    // given its block first, every box read next, and only then is
+    // anything written — one forced layout for the step where there was
+    // one a card; the block is absolute and the vars move nothing in
+    // the flow, so no card's reading depends on another's writing)
+    function prep(host) {
       ['--hl-l', '--hl-t', '--hl-w', '--hl-h', '--hl-dx', '--hl-dy'].forEach(function (v) { host.style.removeProperty(v); });
       host.__hlRaw = null;
       // The block is a real element (not a pseudo), so the pointer can
@@ -5122,8 +5138,9 @@
         halo.setAttribute('aria-hidden', 'true');
         host.insertBefore(halo, host.firstChild);
       }
+    }
+    function seat(host, title, cover, words, h, t, p) {
       if (!title || !cover) return;
-      var h = host.getBoundingClientRect(), t = title.getBoundingClientRect(), p = cover.getBoundingClientRect();
       if (!h.width || !t.width || !p.width) return;
       // The block's sides are the CARD'S — the hero's card box hangs
       // 24 past the page's margin each side, so it is read inset 24 —
@@ -5210,31 +5227,33 @@
     // the reading.
     var all = [].slice.call(document.querySelectorAll(
       '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
-    var wasOpen = all.map(function (el) { return el.classList.contains('is-open'); });
-    // ONLY THE STILLNESS THIS PASS ADDS IS THIS PASS'S TO TAKE AWAY.
-    // Run inside atRest (every close runs it there), the cards already
-    // stand behind a .fit-still that atRest owns and needs until it
-    // has reopened the cards it shut: stripping it here handed those
-    // cards back with their transitions live, and every other open
-    // preview slid open again each time one was closed.
-    var hadStill = all.map(function (el) { return el.classList.contains('fit-still'); });
-    all.forEach(function (el) { el.classList.add('fit-still'); el.classList.add('is-open'); });
+    // THE LANDING IS WHERE THE PICTURE STANDS (2026-10-01). The cards
+    // were opened (.is-open, behind .fit-still) to read each picture's
+    // landed box, and shut again — two layouts of the whole page, some
+    // 50ms each, on every run. Measured on every card at 390 and 1440:
+    // the box read open-and-still was the picture's resting box to the
+    // hundredth, since .fit-still holds the travel. So it is read where
+    // it stands, and nothing is opened.
     all.forEach(function (el) {
       var pic = el.querySelector('.latest-cover, .duo-card-image');
       el.__land = pic ? pic.getBoundingClientRect() : null;
     });
-    all.forEach(function (el, i) { if (!wasOpen[i]) el.classList.remove('is-open'); });
-    void document.body.offsetHeight;
-    all.forEach(function (el, i) { if (!hadStill[i]) el.classList.remove('fit-still'); });
 
+    var jobs = [];
     [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra'), function (cell) {
-      seat(cell, cell.querySelector('.latest-title'), cell.querySelector('.latest-cover-col'),
-           [cell.querySelector('.latest-title'), cell.querySelector('.latest-dek'), cell.querySelector('.cover-meta')]);
+      jobs.push({ host: cell, title: cell.querySelector('.latest-title'), cover: cell.querySelector('.latest-cover-col'),
+        words: [cell.querySelector('.latest-title'), cell.querySelector('.latest-dek'), cell.querySelector('.cover-meta')] });
     });
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (half) {
-      seat(half, half.querySelector('.card-title'), half.querySelector('.duo-card-image'),
-           [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')));
+      jobs.push({ host: half, title: half.querySelector('.card-title'), cover: half.querySelector('.duo-card-image'),
+        words: [].slice.call(half.querySelectorAll('.panel-col--left .card-title, .panel-col--left .card-dek, .panel-col--left .card-meta--line, .panel-col--left .cover-meta')) });
     });
+    jobs.forEach(function (j) { prep(j.host); });
+    jobs.forEach(function (j) {
+      if (!j.title || !j.cover) return;
+      j.h = j.host.getBoundingClientRect(); j.t = j.title.getBoundingClientRect(); j.p = j.cover.getBoundingClientRect();
+    });
+    jobs.forEach(function (j) { seat(j.host, j.title, j.cover, j.words, j.h, j.t, j.p); });
   }
 
   // THE HALOS ROUNDED AGAIN WHERE THEIR CARDS NOW STAND (2026-09-30).
@@ -6284,6 +6303,14 @@
   // a slow pass can be read from outside without a profiler.
   var fitTimes = [];
   try { window.fitTimes = fitTimes; } catch (e) {}
+  // A VARIABLE ON THE ROOT IS WRITTEN ONLY WHEN IT CHANGES (2026-10-01):
+  // a custom property set on html or main restyles the whole page at
+  // the next read, some 20ms here, and the second run of a pass (and
+  // every pass after the first) wrote the same values again.
+  function varSet(el, k, v) {
+    var st = el.style;
+    if (st.getPropertyValue(k) !== v) st.setProperty(k, v);
+  }
   function step(name, fn) {
     var t0 = performance.now();
     try { fn(); } catch (e) {
@@ -6506,6 +6533,20 @@
       el.style.setProperty('--rule-foot-r', clamp(ruleR - fR - RULE_REACH) + 'px');
     });
   }
+  // The page's standing, as a string: the box of everything a step
+  // seats, to the quarter pixel, and the document's height. One forced
+  // layout to read; equal strings mean a run moved nothing.
+  var SETTLE_RUNS = (/[?&]settle\b/.test(location.search) || (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && !/[?&]nosettle\b/.test(location.search))) ? 2 : 0;
+  function fitSig() {
+    var els = document.querySelectorAll('.page-rows > *, .movement-body > *, .card-title, .latest-title, .card-dek, .latest-dek, .cover-meta, .card-meta--line, img.card-image, .duo-card-image, .title-halo, .duo-half, .latest-cell--ps, .latest-cell--contra, .topbar-wordmark, .topbar-name');
+    var out = [];
+    for (var i = 0; i < els.length; i++) {
+      var r = els[i].getBoundingClientRect();
+      out.push(Math.round(r.top * 4), Math.round(r.left * 4), Math.round(r.width * 4), Math.round(r.height * 4));
+    }
+    out.push(document.documentElement.scrollHeight);
+    return out.join(',');
+  }
   function fitAll() { whenStill(fitAllNow); }
   function fitAllNow() {
     fitErrors.length = 0;
@@ -6534,7 +6575,52 @@
     var frozen = [].slice.call(document.querySelectorAll('.latest-cover-col--square'));
     frozen.forEach(function (el) { el.style.transition = 'none'; });
     try {
+      // THE PASS RUNS TWICE (2026-10-01). Its steps read each other's
+      // answers across the whole page, and the first of them read a page
+      // the last of them then re-form: the blocks (seatInkBlocks,
+      // seatDekBlocks) are measured off titles and columns that
+      // seatMatterMeta then widens, sizes and centres (.fr, .rx, the side
+      // stacks), seatSwapCols after it; the masthead's first fill reads
+      // the strip before fitBands has seated it. A second run over the
+      // page the first leaves is the fixed point — the staged page always
+      // had one, and the one-movement page without it stood a row's
+      // blocks and offsets off the shipped page at every width that did
+      // not happen to need the postscript-width rerun below. A run of
+      // the tail alone, with the head's resets, was tried and misses
+      // the halos' step (--hl-dx/dy) and the titles' seats by 14; so the
+      // whole pass, twice. (The first run skips its own postscript-width
+      // rerun: the second run reads the widths the first found.)
+      firstOfTwo = true;
+      try { fitAllSteps(); } finally { firstOfTwo = false; }
+      rowKDirty = false;
       fitAllSteps();
+      // THE PASS RUNS UNTIL THE PAGE STANDS STILL (2026-10-01, at the
+      // user's word: "hid until totally stable"). Some seats read what
+      // a later step moves — the first row off the band's list, the
+      // deks off titles seated after them — so one run over a cold
+      // page is not always its last; the third pass band-mark used to
+      // ask for (THE NAME'S SIZE IS STATED IN THE PASS) was what
+      // settled them, by accident. Settled on purpose now: the boxes
+      // of everything that seats are read into a signature, and the
+      // steps run again while a run moves any of them — at most twice
+      // more, which no page has needed.
+      //   (Measured 2026-10-01, with the first row read at rest: a cold
+      // pass stands at its fixed point at 390, 1440 and 1920 — the
+      // check runs once, moves nothing, and costs 0.65s of a 4.5s
+      // reveal. So it runs where the page is WORKED ON — the dev
+      // server, or ?settle on any build — and says so in fitErrors when
+      // a run moves anything; the shipped page takes the pass's word.)
+      if (SETTLE_RUNS > 0) {
+        var sig = fitSig();
+        for (var again = 0; again < SETTLE_RUNS; again++) {
+          fitAllSteps();
+          var sig2 = fitSig();
+          fitTimes.push(['settle#' + (again + 1), sig2 === sig ? 0 : 1]);
+          if (sig2 === sig) break;
+          fitErrors.push('settle#' + (again + 1) + ': a run after the pass moved the page');
+          sig = sig2;
+        }
+      }
     } finally {
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
     }
@@ -6609,7 +6695,16 @@
   // it leaves with removeProperty, so a settled page carries no trace.
   var stage = 0; // 0 nothing fitted · 1 the first screen, the rest out · 2 the whole page
   var laterEls = [];
+  var STAGE_NEVER = true;
   function canStage() {
+    // THE PAGE IS HELD UNTIL IT IS WHOLLY STILL (2026-10-01, at the
+    // user's word: "hid until totally stable"). The two stages showed
+    // the first screen early and fitted the rest behind a veil while
+    // the thread was held — the page seen, and dead to the hand, for
+    // the length of a pass. One pass over the whole page now, the
+    // gate lifting on its word; the staging below stays for a change
+    // of mind.
+    if (STAGE_NEVER) return false;
     if (window.__ncShown) return false;
     if (document.body.classList.contains('word-page')) return false;
     var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
@@ -6733,8 +6828,37 @@
     step('seatPlateMargins', seatPlateMargins);
     step('inkCenterBands', inkCenterBands);
     step('alignBands', alignBands);
-    step('fitMastheadFill', fitMastheadFill);
+    // THE NAME'S SIZE IS STATED FIRST (2026-10-01). band-mark.js derives
+    // --wm-size — the section heads' size — from the name's, and asked
+    // for a whole further pass whenever it found that size changed under
+    // it at the mid-pass fit event. The name's size is the width's alone,
+    // so it is stated here before anything reads it, and the pass that
+    // follows is the last.
+    // THE BANDS ARE SEATED BEFORE THE MASTHEAD IS FILLED (2026-10-01): the
+    // name's air over its caps is the strip's inset to its Garamond, and
+    // the fill read that inset off a strip fitBands had not yet seated —
+    // 30 short — wrote the masthead's height off it, and had the whole
+    // page laid out again on the right height at its second call. The
+    // strip's own seat owes the masthead nothing, so it goes first and the
+    // first fill is the last; the second call stays and finds nothing to do.
     step('fitBands', fitBands);
+    step('wmSize', function () {
+      var name = document.querySelector('.site-nav--top .topbar-name');
+      var wm = name && (name.closest('.topbar-wordmark') || name.parentElement);
+      // (sized as fitMastheadFill sizes it — THE LAST MAGAZINE's stack
+      // reserved at the right — or the stamp read one size here and
+      // another at the fit event, and asked for a pass without end)
+      var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
+      var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+      // (its size is the width's and the stack's alone: the second run
+      // of a pass has nothing to find, and the ink scan is spared)
+      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2);
+      if (wmKey === wmSizeKey) return;
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve });
+      wmSizeKey = wmKey;
+      if (window.__ncWmSize) window.__ncWmSize();
+    });
+    step('fitMastheadFill', fitMastheadFill);
     step('inkCenterDeks', inkCenterDeks);
     step('seatBandMid', seatBandMid);
     step('fitGroundStops', fitGroundStops);
@@ -6757,7 +6881,12 @@
     // load would leave every cloned berth's panel unfitted — its title stuck
     // at the CSS size while the original's filled its box.
     step('fitSlideSlots', fitSlideSlots);
-    step('panels', function () { [].forEach.call(document.querySelectorAll('.duo-panel'), fit); });
+    step('panels', function () {
+      panelsLate = [];
+      [].forEach.call(document.querySelectorAll('.duo-panel'), fit);
+      panelsLate.forEach(function (w) { w[0].style.setProperty(w[1], w[2]); });
+      panelsLate = [];
+    });
     step('fitLatestTitle', fitLatestTitle);
     step('fitCourierDots', fitCourierDots);
     step('fitMatterInk', function () { fitMatterInk('seat'); });
@@ -6802,31 +6931,40 @@
     // questions are re-read once the pass has settled the titles)
     if (window.__ncStructure) window.__ncStructure();
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
-    step('seatInkBlocks', seatInkBlocks);
-    step('seatDekBlocks', seatDekBlocks);
-    step('seatMatterMeta', seatMatterMeta);
-    step('fitBandDekInset', fitBandDekInset);
+      step('seatInkBlocks', seatInkBlocks);
+      step('seatDekBlocks', seatDekBlocks);
+      step('seatMatterMeta', seatMatterMeta);
+      step('fitBandDekInset', fitBandDekInset);
     // (again: the name's air over its caps is the band's inset to its
     // Garamond, which the step above has only now seated — 2026-09-23)
-    step('fitMastheadFill#2', fitMastheadFill);
-    step('fitReprint#2', fitReprint);
-    step('centreMatter', centreMatter);
-    step('seatPlateBody', seatPlateBody);
-    step('seatWordClips', seatWordClips);
-    step('seatSwapCols', seatSwapCols);
-    step('seatRowTitles', seatRowTitles);
-    step('seatRowGaps', seatRowGaps);
+      step('fitMastheadFill#2', fitMastheadFill);
+      step('fitReprint#2', fitReprint);
+    // THE RAIL'S AIR IS READ OFF THE FINISHED NAME (2026-10-01): band-mark
+    // sets --wm-under — the strip's and the line's place under the name's
+    // ink — at the mid-pass fit event, off a name the masthead fill above
+    // has since refilled (its first fill reads the strip's Garamond before
+    // fitBands has seated it, 30 short). The first row is seated off the
+    // rail's blocks below (seatRowGaps), so the rail is measured again
+    // here; before this a cold first run seated the row 30 high and only
+    // a second run put it right.
+      step('railMeasure', function () { if (window.__ncRailMeasure) window.__ncRailMeasure(); });
+      step('centreMatter', centreMatter);
+      step('seatPlateBody', seatPlateBody);
+      step('seatWordClips', seatWordClips);
+      step('seatSwapCols', seatSwapCols);
+      step('seatRowTitles', seatRowTitles);
+      step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
-    step('seatRowGaps#2', seatRowGaps);
+      step('seatRowGaps#2', seatRowGaps);
     // the margin's names were seated (fitSubscribeLines) before the
     // rows were drawn together, so their rests are read again here
-    step('fitLatestStack#2', fitLatestStack);
+      step('fitLatestStack#2', fitLatestStack);
     // (last of all, once nothing moves the cards again: every picture on
     // whole pixels — 2026-09-23)
-    step('snapPictures', snapPictures);
+      step('snapPictures', snapPictures);
     // (a postscript's width changed this pass — seatRowTitles: once more)
-    if (rowKDirty && !rowKAgain) {
+    if (rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
     }
@@ -6834,6 +6972,8 @@
     if (!rowKAgain) step('reseatHalos', reseatHalos);
   }
   var rowKDirty = false, rowKAgain = false;
+  var firstOfTwo = false;
+  var wmSizeKey = '';
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
   // courier lines standing in the gap (rowInk) — ink to ink before.
   // With the frames struck
@@ -6870,7 +7010,7 @@
       w = mega ? mega.getBoundingClientRect().width - 48 : 0;
     }
     if (!w) { main.style.removeProperty('--std-w'); return; }
-    main.style.setProperty('--std-w', ((w - 2 * ROW_GAP) / 3).toFixed(2) + 'px');
+    varSet(main, '--std-w', ((w - 2 * ROW_GAP) / 3).toFixed(2) + 'px');
   }
   function rowInk(row) {
     var t = Infinity, b = -Infinity;
@@ -6927,75 +7067,73 @@
   function snapPictures() {
     var sx = window.scrollX || 0, sy = window.scrollY || 0;
     var snap = function (v, s0) { return Math.round(v + s0) - s0; };
+    // (READ OFF EVERY CARD, THEN WRITTEN TO ALL, 2026-10-01: a card at a
+    // time read its box, nudged it, read it again and wrote its clips —
+    // a hundred and seventy small layouts a pass. The three turns are
+    // taken over all the cards at once; each card's numbers are its own.)
+    var jobs = [];
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-open, .is-opening')) return;
       var t = card.querySelector('.card-title.hl-rect.rx');
       if (!t) return;
       var c = getComputedStyle(t, '::before');
       if (c.content === 'none') return;
-      var box = function () {
-        var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
-        var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
-        return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
-      };
-      var nudge = function (prop, d) {
-        if (Math.abs(d) < 0.005) return;
-        t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
-      };
-      // THE CARRY ON A WHOLE PIXEL TOO (2026-09-24). The box is the
-      // title's pseudo, and the title is carried across on a transform
-      // (--rb-dx, seatMatterMeta) by a fraction — 56.37 at 1440. The
-      // browser snaps the box to the pixel BEFORE the carry, so a box
-      // this step had put on whole pixels by its measured rect was
-      // painted a third of a pixel off them: the picture's edge column
-      // and row half-covered the pixel past the box, and the scrim a
-      // hand raises, seated on the whole pixels, left that sliver of
-      // picture showing along the right and the foot — the hairline
-      // under the hand. So the carry is rounded, and the box's insets
-      // take back what it moved — the picture stands where it stood, and
-      // its box, under a whole carry, is snapped where it is painted.
+      jobs.push({ card: card, t: t });
+    });
+    var box = function (t) {
+      var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
+      var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
+    };
+    var nudge = function (t, prop, d) {
+      if (Math.abs(d) < 0.005) return;
+      t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
+    };
+    // READ: the transforms' fractions and the boxes
+    jobs.forEach(function (j) {
+      var t = j.t;
       var tm = getComputedStyle(t).transform;
+      j.fx = 0; j.fy = 0;
       if (tm && tm !== 'none' && window.DOMMatrixReadOnly) {
         var mm = new DOMMatrixReadOnly(tm);
-        var fx = Math.round(mm.e) - mm.e, fy = Math.round(mm.f) - mm.f;
-        if (Math.abs(fx) >= 0.005) { nudge('--rb-dx', fx); nudge('--rx-l', -fx); nudge('--rx-r', fx); }
-        if (Math.abs(fy) >= 0.005) { nudge('--rb-dy', fy); nudge('--rx-t', -fy); nudge('--rx-b', fy); }
+        j.fx = Math.round(mm.e) - mm.e; j.fy = Math.round(mm.f) - mm.f;
       }
-      var b0 = box();
-      if (!(b0.r > b0.l && b0.b > b0.t)) return;
-      // (the top-left corner to the nearest pixel and the size to the
-      // nearest whole one, so a square stays square and every picture of
-      // a kind is the one size)
+    });
+    // WRITE: the transforms on whole pixels
+    jobs.forEach(function (j) {
+      var t = j.t;
+      if (Math.abs(j.fx) >= 0.005) { nudge(t, '--rb-dx', j.fx); nudge(t, '--rx-l', -j.fx); nudge(t, '--rx-r', j.fx); }
+      if (Math.abs(j.fy) >= 0.005) { nudge(t, '--rb-dy', j.fy); nudge(t, '--rx-t', -j.fy); nudge(t, '--rx-b', j.fy); }
+    });
+    // READ: the boxes
+    jobs.forEach(function (j) { j.b0 = box(j.t); });
+    // WRITE: the boxes on whole pixels
+    jobs.forEach(function (j) {
+      var b0 = j.b0;
+      if (!(b0.r > b0.l && b0.b > b0.t)) { j.off = true; return; }
       var nl = snap(b0.l, sx), nt = snap(b0.t, sy);
       var nr = nl + Math.round(b0.r - b0.l), nb = nt + Math.round(b0.b - b0.t);
       var dl = nl - b0.l, dr = nr - b0.r, dt = nt - b0.t, db = nb - b0.b;
-      nudge('--rx-l', dl); nudge('--rx-r', -dr); nudge('--rx-t', dt); nudge('--rx-b', -db);
-      // (and the title's clip, which is the box's — seated earlier in the
-      // pass, before the box was snapped, so its two sides stood a
-      // fraction in from the picture's: seated again on the snapped box,
-      // and a pixel past it for the blue ring round it, style.css, A
-      // PIXEL OF THE BLUE ROUND EVERY PICTURE)
-      // (its top and foot too, 2026-09-24: they stood the frame's 36 off,
-      // and the frame's shadow — the section's ground since the frames
-      // went — reached from a section's first picture up over the foot
-      // of the tag under the section's name; the frame is not shown, so
-      // nothing past the ring is the title's to paint)
-      // (the sheet widens this clip by the frame's --wrap, and a half
-      // pixel over and under, for the frame that stood round the box —
-      // style.css, "the title is clipped to its box through the slide" —
-      // so what is written here is that much narrower, and the clip
-      // lands on the ring)
-      var p = box(), tr = t.getBoundingClientRect();
-      var W = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      nudge(j.t, '--rx-l', dl); nudge(j.t, '--rx-r', -dr); nudge(j.t, '--rx-t', dt); nudge(j.t, '--rx-b', -db);
+    });
+    // READ: the boxes as snapped, the titles and the bodies
+    jobs.forEach(function (j) {
+      if (j.off) return;
+      j.p = box(j.t); j.tr = j.t.getBoundingClientRect();
+      j.W = parseFloat(getComputedStyle(j.t).getPropertyValue('--wrap')) || 0;
+      j.body = j.card.querySelector(':scope > .swap-body.is-set');
+      if (j.body) j.br = j.body.getBoundingClientRect();
+    });
+    // WRITE: the clips, and the bodies on the boxes
+    jobs.forEach(function (j) {
+      if (j.off) return;
+      var t = j.t, p = j.p, tr = j.tr, W = j.W, b0 = j.b0;
       t.style.setProperty('--ck-l', ((p.l - PIC_RING) - tr.left + W).toFixed(3) + 'px');
       t.style.setProperty('--ck-r', (tr.right - (p.r + PIC_RING) + W).toFixed(3) + 'px');
       t.style.setProperty('--ck-t', ((p.t - PIC_RING) - tr.top + W + 0.5).toFixed(3) + 'px');
       t.style.setProperty('--ck-b', (tr.bottom - (p.b + PIC_RING) + W + 0.5).toFixed(3) + 'px');
-      // (and the opened preview on the very same box, where it stands
-      // on the picture — within a pixel of it before the snap)
-      var body = card.querySelector(':scope > .swap-body.is-set');
+      var body = j.body, br = j.br;
       if (!body) return;
-      var br = body.getBoundingClientRect();
       if (Math.abs(br.left - b0.l) > 2 || Math.abs(br.top - b0.t) > 2 || Math.abs(br.right - b0.r) > 2 || Math.abs(br.bottom - b0.b) > 2) return;
       var bs = body.style;
       bs.left = ((parseFloat(bs.left) || 0) + (p.l - br.left)).toFixed(3) + 'px';
@@ -7851,10 +7989,14 @@
     }
     return best ? best.bottom - faceBox(node).d : null;
   }
-  function sealPreview(bt, cap, lh) {
+  // THE SEALS IN ROUNDS (2026-10-01): sealPreview cut one text and read
+  // it back before the next, a layout or three a card. The plan (the
+  // last word that shows: reads alone) is drawn for every text first,
+  // then each round writes every text's cut and reads them all back at
+  // once, until every text has its ellipsis in view — the same writes
+  // and reads each text saw before, in the same order, a layout a round.
+  function sealPlan(bt, cap, lh) {
     var box = bt.getBoundingClientRect();
-    // (a line shows if its box ends inside the cap, give or take half a
-    // line: a face's text box can stand a hair past its line's)
     var maxB = cap != null ? box.top + cap + (lh ? lh / 2 : 0.5) : Infinity, maxR = box.right + 0.5;
     var words = [];
     var tw = document.createTreeWalker(bt, NodeFilter.SHOW_TEXT);
@@ -7862,7 +8004,7 @@
       var re = /\S+/g, m;
       while ((m = re.exec(n.nodeValue))) words.push({ n: n, s: m.index, e: m.index + m[0].length });
     }
-    if (!words.length) return;
+    if (!words.length) return null;
     var rg = document.createRange();
     var shows = function (w, s, e) {
       rg.setStart(w.n, s); rg.setEnd(w.n, e);
@@ -7875,19 +8017,38 @@
       while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (shows(words[mid], words[mid].s, words[mid].e)) lo = mid; else hi = mid; }
       k = lo;
     }
-    if (k < 0) return;
-    for (; k >= 0; k--) {
-      var w = words[k];
-      rg.setStart(w.n, w.e); rg.setEnd(bt, bt.childNodes.length);
-      rg.deleteContents();
-      var head = w.n.nodeValue.slice(0, w.e);
-      if (/\u2026\s*$/.test(head) && k === words.length - 1) { w.n.nodeValue = head; break; }
-      w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
-      var end = w.n.nodeValue.length;
-      if (end > 0 && shows(w, end - 1, end)) break;
-      w.n.nodeValue = head.slice(0, w.s);
+    if (k < 0) return null;
+    return { bt: bt, words: words, rg: rg, shows: shows, k: k, done: false };
+  }
+  // (one round's write: the cut after word k and the ellipsis on it)
+  function sealWrite(s) {
+    var w = s.words[s.k];
+    s.rg.setStart(w.n, w.e); s.rg.setEnd(s.bt, s.bt.childNodes.length);
+    s.rg.deleteContents();
+    var head = w.n.nodeValue.slice(0, w.e);
+    if (/\u2026\s*$/.test(head) && s.k === s.words.length - 1) { w.n.nodeValue = head; s.done = true; return; }
+    w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
+    s.w = w; s.head = head; s.end = w.n.nodeValue.length;
+  }
+  // (one round's read: the ellipsis in view, or the word dropped and the
+  // next round on the word before)
+  function sealCheck(s) {
+    if (s.end > 0 && s.shows(s.w, s.end - 1, s.end)) { s.done = true; return; }
+    s.w.n.nodeValue = s.head.slice(0, s.w.s);
+    s.k--;
+    if (s.k < 0) s.done = true;
+  }
+  function sealAll(list) {
+    var open = [];
+    list.forEach(function (x) { var s = sealPlan(x.bt, x.cap, x.lh); if (s) open.push(s); });
+    while (open.length) {
+      open.forEach(sealWrite);
+      open = open.filter(function (s) { return !s.done; });
+      open.forEach(sealCheck);
+      open = open.filter(function (s) { return !s.done; });
     }
   }
+  function sealPreview(bt, cap, lh) { sealAll([{ bt: bt, cap: cap, lh: lh }]); }
   function swapTokens(text) {
     var out = [];
     text.split(/\s+/).forEach(function (w) {
@@ -7977,7 +8138,9 @@
         for (var k in set) if (c.style.getPropertyValue(k) !== set[k]) { c.style.setProperty(k, set[k]); changed = true; }
       });
     });
-    if (changed) seatSwapCols();
+    // (the first of the pass's two runs leaves this to the second, which
+    // swaps every column again over the rows it finds: 2026-10-01)
+    if (changed && !firstOfTwo) seatSwapCols();
   }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
@@ -8153,6 +8316,17 @@
       if (img) { j.pos = getComputedStyle(img).objectPosition; if (!j.card.style.getPropertyValue('--swap-img')) swapImg(j.card, img); }
     });
     // WRITE: the column's seat, the dek's face and measure
+    // WRITTEN TO EVERY CARD, THEN READ OFF ALL OF THEM (2026-10-01): this
+    // loop wrote each card's column, body and preview text and read them
+    // back before it went on to the next — four or five forced layouts a
+    // card, a hundred and twenty a pass, a third of a second. Its writes
+    // go to every card first and its reads are taken off all of them at
+    // once, in the turns the old loop took for one card: the dek's
+    // height; the dek shown or not, and the text's natural height before
+    // its width is stated (the body's flex shrinks it, and the dek's
+    // presence tells); the lines at that width; the cut; the seal (which
+    // reads and writes each text in turn still, a layout a card); and the
+    // ink, for the centring. The values are the loop's own, in its order.
     jobs.forEach(function (j) {
       var s = j.col.style;
       s.left = j.I.l.toFixed(2) + 'px'; s.top = j.I.t.toFixed(2) + 'px';
@@ -8163,6 +8337,7 @@
         j.card.style.setProperty('--sw-x', j.sx.toFixed(2) + 'px');
         j.card.style.setProperty('--sw-y', j.sy.toFixed(2) + 'px');
         if (j.body && j.Bd) {
+          j.set = true;
           var bs = j.body.style;
           bs.left = (j.Bd.l - j.cr0.left).toFixed(2) + 'px';
           bs.top = (j.Bd.t - j.cr0.top).toFixed(2) + 'px';
@@ -8170,11 +8345,28 @@
           bs.height = (j.Bd.b - j.Bd.t).toFixed(2) + 'px';
           bs.padding = j.bp.t + 'px ' + j.bp.r + 'px ' + j.bp.b + 'px ' + j.bp.l + 'px';
           var bt = j.body.querySelector(':scope > .swap-body-text') || j.body.firstElementChild;
-          if (bt && j.bfont) {
+          // (THE TEXT IS CUT ONCE PER BOX, 2026-10-01: the cut, the seal and
+          // the centring are a function of the box — its width and height,
+          // its padding, its leading and columns, its faces, the dek over
+          // it — and nothing else; the pass's second run found the same
+          // box and restored, re-laid, re-cut and re-sealed every text to
+          // the same end, a hundred milliseconds of multicol layout. The
+          // box is written down with the text, and a text whose box has
+          // not changed is left as it stands.)
+          if (bt && j.bfont && j.cols2) {
+            // (the box as it is written, to the hundredth)
+            var kb = [(j.Bd.r - j.Bd.l).toFixed(2), (j.Bd.b - j.Bd.t).toFixed(2), j.bp.t, j.bp.r, j.bp.b, j.bp.l, j.blh, j.ncol];
+            for (var kk in j.bfont) kb.push(kk, j.bfont[kk] || '');
+            if (j.dfont) for (var kq in j.dfont) kb.push(kq, j.dfont[kq] || '');
+            kb.push(j.dek ? j.dek.innerHTML : '');
+            j.key = kb.join('\u0001');
+            if (bt.__swapKey === j.key && j.body.querySelector(':scope > .swap-body-close')) { j.kept = true; j.set = true; }
+          }
+          if (bt && j.bfont && !j.kept) {
+            j.bt = bt;
             for (var kf in j.bfont) if (j.bfont[kf]) bt.style[kf] = j.bfont[kf];
             // (an essay's dek stands in its preview, centred over the two
             // columns, 36 above them: 2026-09-23)
-            var pdk = null, pdkH = 0;
             if (j.cols2 && !j.body.querySelector(':scope > .swap-body-close')) {
               var cx = document.createElement('button');
               cx.type = 'button';
@@ -8189,18 +8381,14 @@
               j.body.appendChild(cx);
             }
             if (j.cols2) {
-              pdk = j.body.querySelector(':scope > .swap-body-dek');
+              var pdk = j.body.querySelector(':scope > .swap-body-dek');
               if (!pdk) { pdk = document.createElement('span'); pdk.className = 'swap-body-dek'; j.body.insertBefore(pdk, bt); }
               var srcDek = j.dek;
               pdk.innerHTML = srcDek ? srcDek.innerHTML : '';
               if (j.dfont) for (var kd in j.dfont) if (j.dfont[kd]) pdk.style[kd] = j.dfont[kd];
               pdk.style.transform = 'none';
               pdk.style.marginBottom = SWAP_PAD + 'px';
-              pdkH = pdk.textContent.trim() ? pdk.getBoundingClientRect().height + SWAP_PAD : 0;
-              if (!pdkH) pdk.style.display = 'none'; else pdk.style.removeProperty('display');
-            }
-            var rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - pdkH + 0.5) / j.blh));
-            if (j.cols2) {
+              j.pdk = pdk;
               // (two columns, filled in turn and cut on a whole line — or,
               // where the whole preview fits, balanced between the two at
               // its own height: either way the block stands centred in
@@ -8209,59 +8397,21 @@
               // (the text as it was built, whatever the last pass cut)
               if (bt.__src == null) bt.__src = bt.innerHTML;
               else if (bt.innerHTML !== bt.__src) bt.innerHTML = bt.__src;
-              var one = j.ncol === 1;
+              j.one = j.ncol === 1;
               // (one column is no multicol at all: a multicol of one cut
               // to a height runs its overflow on in columns to the side)
-              if (one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
+              if (j.one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
               bt.style.columnGap = SWAP_PAD + 'px';
               bt.style.columnFill = 'balance';
               bt.style.height = 'auto';
               bt.style.maxHeight = 'none';
-              bt.style.overflow = one ? 'hidden' : '';
-              var natural = bt.getBoundingClientRect().height;
-              var cap = rows * j.blh;
-              // (the columns level, each opening and closing on a line:
-              // BOTH COLUMNS OPEN AND CLOSE ON A LINE, above; the height
-              // is given a pixel over its lines so the last one is not
-              // pushed on by the engine's rounding of the leading, and
-              // the body's flex may not take that pixel back; and the
-              // measure is fixed here, where the lines are counted and
-              // cut: snapPictures later lays the box on whole pixels, a
-              // hair narrower, and a line cut full to the hair ran its
-              // last word, …, out into a third column)
-              bt.style.flexShrink = '0';
-              bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
-              var ncol = one ? 1 : 2;
-              var H = levelRows(paraLines(bt, ncol, SWAP_PAD, j.blh), ncol, rows);
-              var shut = H ? H * j.blh : (natural > cap + 0.5 ? cap : null);
-              if (shut != null) {
-                bt.style.columnFill = 'auto';
-                bt.style.height = (shut + 1).toFixed(2) + 'px';
-                bt.style.maxHeight = (shut + 1).toFixed(2) + 'px';
-              }
-              sealPreview(bt, shut, j.blh);
-              // (and centred by what it SHOWS, by its ink: as much air
-              // from the box's top to the painted top of the dek's first
-              // line as from the columns' last baseline to the box's
-              // foot — PADDING EVEN OVER AND UNDER, 2026-09-24; it was
-              // the dek's box and the last line's box)
-              bt.style.transform = 'none';
-              var bb = j.body.getBoundingClientRect(), tb = bt.getBoundingClientRect();
-              var inT = (pdk && pdkH) ? firstInkTop(pdk) : null;
-              if (inT == null) inT = firstInkTop(bt);
-              var inB = lastBaselineIn(bt, tb, j.blh);
-              if (inT == null || inB == null) inT = Infinity;
-              if (isFinite(inT)) {
-                var shY = 'translateY(' + (((bb.bottom - inB) - (inT - bb.top)) / 2).toFixed(2) + 'px)';
-                bt.style.transform = shY;
-                if (pdk) pdk.style.transform = shY;
-              }
+              bt.style.overflow = j.one ? 'hidden' : '';
             } else {
-              bt.style.setProperty('-webkit-line-clamp', String(rows));
-              bt.style.maxHeight = (rows * j.blh).toFixed(2) + 'px';
+              var rows1 = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b + 0.5) / j.blh));
+              bt.style.setProperty('-webkit-line-clamp', String(rows1));
+              bt.style.maxHeight = (rows1 * j.blh).toFixed(2) + 'px';
             }
           }
-          j.body.classList.add('is-set');
         }
       } else if (j.body) j.body.classList.remove('is-set');
       if (j.sd && j.dfont) {
@@ -8273,6 +8423,69 @@
         if (j.under) j.sd.style.top = '0px'; else j.sd.style.removeProperty('top');
       }
     });
+    var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
+    // READ: the deks' heights
+    twos.forEach(function (j) { j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0; });
+    // WRITE: the dek shown or not
+    twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
+    // READ: the texts' natural heights
+    twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
+    // WRITE: the texts at their width
+    // (the columns level, each opening and closing on a line:
+    // BOTH COLUMNS OPEN AND CLOSE ON A LINE, above; the height
+    // is given a pixel over its lines so the last one is not
+    // pushed on by the engine's rounding of the leading, and
+    // the body's flex may not take that pixel back; and the
+    // measure is fixed here, where the lines are counted and
+    // cut: snapPictures later lays the box on whole pixels, a
+    // hair narrower, and a line cut full to the hair ran its
+    // last word, …, out into a third column)
+    twos.forEach(function (j) {
+      j.bt.style.flexShrink = '0';
+      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+    });
+    // READ: the lines
+    twos.forEach(function (j) {
+      j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
+      var ncol = j.one ? 1 : 2;
+      j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
+    });
+    // WRITE: the cut
+    twos.forEach(function (j) {
+      var cap = j.rows * j.blh;
+      j.shut = j.H ? j.H * j.blh : (j.natural > cap + 0.5 ? cap : null);
+      if (j.shut != null) {
+        j.bt.style.columnFill = 'auto';
+        j.bt.style.height = (j.shut + 1).toFixed(2) + 'px';
+        j.bt.style.maxHeight = (j.shut + 1).toFixed(2) + 'px';
+      }
+    });
+    sealAll(twos.map(function (j) { return { bt: j.bt, cap: j.shut, lh: j.blh }; }));
+    // (and centred by what it SHOWS, by its ink: as much air
+    // from the box's top to the painted top of the dek's first
+    // line as from the columns' last baseline to the box's
+    // foot — PADDING EVEN OVER AND UNDER, 2026-09-24; it was
+    // the dek's box and the last line's box)
+    twos.forEach(function (j) { j.bt.style.transform = 'none'; });
+    // READ: the ink
+    twos.forEach(function (j) {
+      j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      var inT = (j.pdk && j.pdkH) ? firstInkTop(j.pdk) : null;
+      if (inT == null) inT = firstInkTop(j.bt);
+      var inB = lastBaselineIn(j.bt, j.tb, j.blh);
+      if (inT == null || inB == null) inT = Infinity;
+      j.inT = inT; j.inB = inB;
+    });
+    // WRITE: the centring, and the bodies set
+    twos.forEach(function (j) {
+      if (isFinite(j.inT)) {
+        var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
+        j.bt.style.transform = shY;
+        if (j.pdk) j.pdk.style.transform = shY;
+      }
+    });
+    twos.forEach(function (j) { j.bt.__swapKey = j.key; });
+    jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
     // READ: the deks' heights, all at once
     jobs.forEach(function (j) { j.dh = j.sd ? j.sd.getBoundingClientRect().height + SWAP_GAP : 0; });
     // WRITE: the title, sized on the canvas
@@ -8406,28 +8619,40 @@
     };
     var CK = ['--ck-t', '--ck-r', '--ck-b', '--ck-l'];
     var clear = function (el) { if (el) CK.forEach(function (v) { el.style.removeProperty(v); }); };
-    var write = function (el, box) {
-      var r = el.getBoundingClientRect(), c = carried(el);
+    // (READ ALL, THEN WRITE ALL, 2026-10-01: every card's boxes are read
+    // into a job first and every clip written after. The clips are
+    // clip-paths and the travel vars are read only in the motion, so
+    // nothing written here moves what the next card reads — one forced
+    // layout for the step where there was one a card.)
+    var read = function (el) { return { el: el, r: el.getBoundingClientRect(), c: carried(el) }; };
+    var write = function (m, box) {
+      var el = m.el, r = m.r, c = m.c;
       if (!r.width && !r.height) { clear(el); return; }
       el.style.setProperty('--ck-t', (box.t - (r.top - c[1])).toFixed(2) + 'px');
       el.style.setProperty('--ck-r', ((r.right - c[0]) - box.r).toFixed(2) + 'px');
       el.style.setProperty('--ck-b', ((r.bottom - c[1]) - box.b).toFixed(2) + 'px');
       el.style.setProperty('--ck-l', (box.l - (r.left - c[0])).toFixed(2) + 'px');
     };
+    var jobs = [];
     [].forEach.call(document.querySelectorAll('.duo-half--mega, .latest-cell--ps, .latest-cell--contra'), function (card) {
+      var j = { card: card };
       var title = card.querySelector('.card-title, .latest-title');
       var dek = card.querySelector('.card-dek, .latest-dek');
-      if (!title || !title.classList.contains('rx')) { clear(title); clear(dek); }
+      j.title = title; j.dek = dek;
+      if (!title || !title.classList.contains('rx')) j.bare = true;
       else {
         var bf = getComputedStyle(title, '::before');
-        var bT = px(bf.top), bR = px(bf.right), bB = px(bf.bottom), bL = px(bf.left);
-        title.style.setProperty('--ck-t', bT.toFixed(2) + 'px');
-        title.style.setProperty('--ck-r', bR.toFixed(2) + 'px');
-        title.style.setProperty('--ck-b', bB.toFixed(2) + 'px');
-        title.style.setProperty('--ck-l', bL.toFixed(2) + 'px');
+        j.b = { t: px(bf.top), r: px(bf.right), b: px(bf.bottom), l: px(bf.left) };
         var tr0 = title.getBoundingClientRect();
-        if (dek) write(dek, { l: tr0.left + bL, r: tr0.right - bR, t: tr0.top + bT, b: tr0.bottom - bB });
+        j.box = { l: tr0.left + j.b.l, r: tr0.right - j.b.r, t: tr0.top + j.b.t, b: tr0.bottom - j.b.b };
+        if (dek) j.dekM = read(dek);
       }
+      var contra = card.matches('.latest-cell--contra');
+      var rev = card.matches('.latest-cell--contra-rev');
+      var ccs = getComputedStyle(card);
+      var picEl = card.querySelector('.duo-card-image, .latest-cell--ps .latest-cover, .latest-cover-col--square');
+      var colEl = card.querySelector('.duo-panel .panel-col--left, :scope > .latest-col');
+      var plateEl = card.querySelector('.card-preview-block, .latest-plate');
       // ONE FLUID MOTION (2026-09-22, later): the box's release, the
       // picture's travel and the preview's arrival run together, and the
       // title's side and the preview both stand OVER the picture the
@@ -8438,12 +8663,6 @@
       // to be clipped (--cc0, the box's own edge on the picture) and
       // where the preview's clip stands at the close (--pc0, the
       // picture's landed edge).
-      var contra = card.matches('.latest-cell--contra');
-      var rev = card.matches('.latest-cell--contra-rev');
-      var ccs = getComputedStyle(card);
-      var picEl = card.querySelector('.duo-card-image, .latest-cell--ps .latest-cover, .latest-cover-col--square');
-      var colEl = card.querySelector('.duo-panel .panel-col--left, :scope > .latest-col');
-      var plateEl = card.querySelector('.card-preview-block, .latest-plate');
       if (picEl && colEl && plateEl) {
         var pr = restRect(picEl), co = colEl.getBoundingClientRect(), pb = plateEl.getBoundingClientRect();
         var O = REST_OVERLAP, tw, tb, cc0, pc0;
@@ -8459,19 +8678,14 @@
           if (!rev) { tw = dB; tb = dT; cc0 = (pr.bottom - O) - co.top; pc0 = pb.bottom - (pr.top + dT); }
           else { tw = dT; tb = dB; cc0 = co.bottom - (pr.top + O); pc0 = (pr.bottom + dB) - pb.top; }
         }
-        card.style.setProperty('--tw', tw.toFixed(2) + 'px');
-        card.style.setProperty('--tb', tb.toFixed(2) + 'px');
-        card.style.setProperty('--twa', Math.abs(tw).toFixed(2) + 'px');
-        card.style.setProperty('--tba', Math.abs(tb).toFixed(2) + 'px');
-        colEl.style.setProperty('--cc0', cc0.toFixed(2) + 'px');
-        plateEl.style.setProperty('--pc0', pc0.toFixed(2) + 'px');
+        j.travel = { colEl: colEl, plateEl: plateEl, tw: tw, tb: tb, cc0: cc0, pc0: pc0 };
       }
       var cu = card.querySelector('.plate-curtain');
-      if (!cu) return;
+      if (!cu) { jobs.push(j); return; }
       var bodies = cu.querySelectorAll('.card-preview-cols, .latest-plate-p');
       var pf = getComputedStyle(cu, '::before');
       var cr = cu.getBoundingClientRect();
-      if (!cr.width) { [].forEach.call(bodies, clear); return; }
+      if (!cr.width) { j.curtainClear = bodies; jobs.push(j); return; }
       var pbi = px(pf.getPropertyValue('--pb-i')), pbf = px(pf.getPropertyValue('--pb-f'));
       var P = { l: cr.left + px(pf.left), r: cr.right - px(pf.right), t: cr.top + px(pf.top), b: cr.bottom - px(pf.bottom) };
       if (card.matches('.latest-cell--contra')) {
@@ -8479,7 +8693,29 @@
         if (card.matches('.latest-cell--contra-rev')) P.b -= pbi; else P.t += pbi;
       } else if (card.classList.contains('pic-left')) { P.l += pbf; P.t += pbi; P.b -= pbi; }
       else { P.r -= pbf; P.t += pbi; P.b -= pbi; }
-      [].forEach.call(bodies, function (b) { write(b, P); });
+      j.P = P; j.bodies = [].map.call(bodies, read);
+      jobs.push(j);
+    });
+    jobs.forEach(function (j) {
+      if (j.bare) { clear(j.title); clear(j.dek); }
+      else {
+        j.title.style.setProperty('--ck-t', j.b.t.toFixed(2) + 'px');
+        j.title.style.setProperty('--ck-r', j.b.r.toFixed(2) + 'px');
+        j.title.style.setProperty('--ck-b', j.b.b.toFixed(2) + 'px');
+        j.title.style.setProperty('--ck-l', j.b.l.toFixed(2) + 'px');
+        if (j.dekM) write(j.dekM, j.box);
+      }
+      var tv = j.travel;
+      if (tv) {
+        j.card.style.setProperty('--tw', tv.tw.toFixed(2) + 'px');
+        j.card.style.setProperty('--tb', tv.tb.toFixed(2) + 'px');
+        j.card.style.setProperty('--twa', Math.abs(tv.tw).toFixed(2) + 'px');
+        j.card.style.setProperty('--tba', Math.abs(tv.tb).toFixed(2) + 'px');
+        tv.colEl.style.setProperty('--cc0', tv.cc0.toFixed(2) + 'px');
+        tv.plateEl.style.setProperty('--pc0', tv.pc0.toFixed(2) + 'px');
+      }
+      if (j.curtainClear) [].forEach.call(j.curtainClear, clear);
+      if (j.bodies) j.bodies.forEach(function (m) { write(m, j.P); });
     });
   }
   // THE LAST WORD ON THE AXIS (2026-09-22, night): once every step has

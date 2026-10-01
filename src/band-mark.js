@@ -82,7 +82,10 @@
   // The miniature's size and seat, from the wordmark's live size and
   // the band's height. Cached on the size that produced them.
   var geo = null;
-  function measure() {
+  // (quiet: called by the fitter inside its pass — THE NAME'S SIZE IS
+  // STATED IN THE PASS, duo-panel-fit.js — so the root is written
+  // before the heads are seated and no second pass is asked for)
+  function measure(quiet) {
     var cs = getComputedStyle(mark);
     var S = parseFloat(cs.fontSize) || 0;
     var B = band.getBoundingClientRect().height;
@@ -100,7 +103,7 @@
     var was = parseFloat(document.documentElement.style.getPropertyValue('--wm-size')) || 0;
     if (Math.abs(was - s) > 0.01) {
       document.documentElement.style.setProperty('--wm-size', s.toFixed(3) + 'px');
-      if (window.__ncRequestFit) window.__ncRequestFit();
+      if (!quiet && window.__ncRequestFit) window.__ncRequestFit();
     }
     mini.style.transform = 'none';
     // The stamp's box: the band less its air, as wide as its proportion.
@@ -281,6 +284,7 @@
   addEventListener('load', function () { lastP = -1; schedule(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { scanned = null; geo = null; lastP = -1; schedule(); }, function () {});
   window.__ncBandMark = function () { geo = null; lastP = -1; run(); };
+  window.__ncWmSize = function () { geo = null; measure(true); };
   run();
   canvas();
 })();
@@ -323,6 +327,10 @@
     return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent, base: base,
       capFlat: base - mH.actualBoundingBoxAscent };
   }
+  // (a variable on main is written only when it changes, 2026-10-01: it
+  // restyles the whole page at the next read, and this ran on every
+  // fit event — THE FIT IS ONE PASS, duo-panel-fit.js)
+  function varSet(el, k, v) { if (el.style.getPropertyValue(k) !== v) el.style.setProperty(k, v); }
   function measure() {
     band = document.querySelector('.page-rows > .section-band--head');
     line = band && band.querySelector('.band-deks:last-child');
@@ -354,7 +362,7 @@
     // STRIP UNDER THE NAME)
     // (on a whole pixel: a strip on a fraction of one showed a hairline
     // over it)
-    if (under > 0) { under = Math.round(under); main.style.setProperty('--wm-under', under + 'px'); }
+    if (under > 0) { under = Math.round(under); varSet(main, '--wm-under', under + 'px'); }
     // (THE LAST MAGAZINE ON ITS LINE UNDER THE NAME, 2026-09-30: its
     // capitals' top where its line box opens, and its ink's height on a
     // whole pixel — style.css, THE LAST MAGAZINE UNDER THE NAME AGAIN)
@@ -362,12 +370,12 @@
     var tf = tl && tl.offsetHeight ? face(tl) : null;
     if (tf) {
       var tr = tl.getBoundingClientRect();
-      main.style.setProperty('--tlm-cap', (tf.top - tr.top).toFixed(2) + 'px');
+      varSet(main, '--tlm-cap', (tf.top - tr.top).toFixed(2) + 'px');
       // (CENTRED ON ITS BASELINE, 2026-10-01, at the user's word: the
       // line's ink is read from its highest letter to its baseline, the
       // g's tail left out, so the words — not the tail — stand centred
       // where the strip lands, and the strip 36 under the baseline)
-      main.style.setProperty('--tlm-ink', Math.ceil(tf.base - tf.top) + 'px');
+      varSet(main, '--tlm-ink', Math.ceil(tf.base - tf.top) + 'px');
     }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
@@ -411,6 +419,9 @@
   }
   function refit() { line && line.style.removeProperty('opacity'); wm && wm.style.removeProperty('--wm-shadow-y'); measure(); apply(true); }
   refit();
+  // (the fitter asks for the rail again once the name is final, before
+  // it seats the first row off the rail: duo-panel-fit.js, railMeasure)
+  window.__ncRailMeasure = refit;
   addEventListener('scroll', function () { apply(false); }, { passive: true });
   addEventListener('resize', refit);
   addEventListener('newcritic:fit', refit);
@@ -468,9 +479,13 @@ document.addEventListener('click', function (e) {
     var first = stack.firstElementChild, last = stack.lastElementChild;
     var a = inkOf(nm), b = first && inkOf(first), c = last && inkOf(last);
     if (!a || !b || !c) return;
-    var cur = parseFloat(main.style.getPropertyValue('--stack-shift')) || 0;
+    // (written on the rail, not on main: a custom property set on main
+    // has every element on the page restyled before the next read — 56ms
+    // after each fit — and the stack alone reads it: 2026-10-01)
+    var host = stack.closest('.head-rail') || main;
+    var cur = parseFloat(host.style.getPropertyValue('--stack-shift')) || 0;
     var want = cur + ((a.top + a.base) / 2 - (b.top + c.base) / 2);
-    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
+    if (Math.abs(want - cur) > 0.25) host.style.setProperty('--stack-shift', want.toFixed(2) + 'px');
   };
   ['load', 'resize', 'scroll', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
