@@ -6830,7 +6830,12 @@
     step('wmSize', function () {
       var name = document.querySelector('.site-nav--top .topbar-name');
       var wm = name && (name.closest('.topbar-wordmark') || name.parentElement);
-      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
+      // (sized as fitMastheadFill sizes it — THE LAST MAGAZINE's stack
+      // reserved at the right — or the stamp read one size here and
+      // another at the fit event, and asked for a pass without end)
+      var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
+      var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve });
       if (window.__ncWmSize) window.__ncWmSize();
     });
     step('fitMastheadFill', fitMastheadFill);
@@ -6902,14 +6907,14 @@
     // questions are re-read once the pass has settled the titles)
     if (window.__ncStructure) window.__ncStructure();
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
-      S('seatInkBlocks', seatInkBlocks);
-      S('seatDekBlocks', seatDekBlocks);
-      S('seatMatterMeta', seatMatterMeta);
-      S('fitBandDekInset', fitBandDekInset);
+      step('seatInkBlocks', seatInkBlocks);
+      step('seatDekBlocks', seatDekBlocks);
+      step('seatMatterMeta', seatMatterMeta);
+      step('fitBandDekInset', fitBandDekInset);
     // (again: the name's air over its caps is the band's inset to its
     // Garamond, which the step above has only now seated — 2026-09-23)
-      S('fitMastheadFill#2', fitMastheadFill);
-      S('fitReprint#2', fitReprint);
+      step('fitMastheadFill#2', fitMastheadFill);
+      step('fitReprint#2', fitReprint);
     // THE RAIL'S AIR IS READ OFF THE FINISHED NAME (2026-10-01): band-mark
     // sets --wm-under — the strip's and the line's place under the name's
     // ink — at the mid-pass fit event, off a name the masthead fill above
@@ -6918,22 +6923,22 @@
     // rail's blocks below (seatRowGaps), so the rail is measured again
     // here; before this a cold first run seated the row 30 high and only
     // a second run put it right.
-      S('railMeasure', function () { if (window.__ncRailMeasure) window.__ncRailMeasure(); });
-      S('centreMatter', centreMatter);
-      S('seatPlateBody', seatPlateBody);
-      S('seatWordClips', seatWordClips);
-      S('seatSwapCols', seatSwapCols);
-      S('seatRowTitles', seatRowTitles);
-      S('seatRowGaps', seatRowGaps);
+      step('railMeasure', function () { if (window.__ncRailMeasure) window.__ncRailMeasure(); });
+      step('centreMatter', centreMatter);
+      step('seatPlateBody', seatPlateBody);
+      step('seatWordClips', seatWordClips);
+      step('seatSwapCols', seatSwapCols);
+      step('seatRowTitles', seatRowTitles);
+      step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
-      S('seatRowGaps#2', seatRowGaps);
+      step('seatRowGaps#2', seatRowGaps);
     // the margin's names were seated (fitSubscribeLines) before the
     // rows were drawn together, so their rests are read again here
-      S('fitLatestStack#2', fitLatestStack);
+      step('fitLatestStack#2', fitLatestStack);
     // (last of all, once nothing moves the cards again: every picture on
     // whole pixels — 2026-09-23)
-      S('snapPictures', snapPictures);
+      step('snapPictures', snapPictures);
     // (a postscript's width changed this pass — seatRowTitles: once more)
     if (rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
