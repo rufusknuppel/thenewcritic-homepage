@@ -8247,6 +8247,10 @@
   // (the glyph after Preview: its 12 box and the 6 before it — style.css,
   // THE GLYPHS BY PREVIEW AND CLOSE — counted in the line's run)
   var PK_ICON = 18;
+  // (the room between the courier line's pieces, in ems of its size: a
+  // comma and a word space — style.css, THE COMMA BETWEEN DATE AND
+  // AUTHOR, sets the comma in it)
+  var COURIER_COMMA_EM = 0.55;
   // (the button's words and glyphs — the glyph after its word, or before
   // it on the mirrored line of a card set right, "for preview/close on
   // rights, move symbols to the left", 2026-10-01; written again only
@@ -8318,13 +8322,16 @@
       // (THE RIGHT CARD'S LINE RUNS THE OTHER WAY, 2026-10-01: on the
       // mirrored line the word opens it, its right edge a gap before the
       // first piece's ink, no dot before it — .pk-head)
-      var head = !!(te && tail.head);
+      // (alone at the picture's left edge \u2014 across from a line set right
+      // \u2014 it reads \u2190 PREVIEW, the glyph first and pointing to the edge,
+      // as the mirrored line's did: 2026-10-01, PREVIEW ACROSS THE LINE)
+      var atLeft = Math.abs(lo - P.l) < 2;
+      var head = te ? !!tail.head : !atLeft;
       btn.classList.toggle('pk-head', head);
       if (btn.__head !== head) { btn.__head = head; btn.innerHTML = pkHtml(head, '\u00B7'); }
       if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
       else if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
       else {
-        var atLeft = Math.abs(lo - P.l) < 2;
         if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
         else { b.right = 'auto'; b.left = (P.l - cr0.left).toFixed(2) + 'px'; }
       }
@@ -10585,9 +10592,19 @@
           // read, since the dot is part of the word's box; on the
           // mirrored line Preview is the first word, and every piece
           // after it keeps its dot)
-          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', !mirror3 && el === line3[0]); });
+          // (PREVIEW ACROSS THE LINE FROM THE REST, 2026-10-01, at the
+          // user's word: "Move the preview to the opposite side of other
+          // courier, remove dot between Date and author, add comma
+          // instead" — the line's first piece opens it on either side
+          // now, Preview standing alone at the picture's other edge)
+          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
           var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
           var gap3 = 1.8 * fs3;
+          // (the pieces a comma and a space apart — OVERLOCKED, OCT 1 —
+          // the comma the later piece's ::before, set left in this
+          // measure: style.css, THE COMMA BETWEEN DATE AND AUTHOR; Preview
+          // keeps the full gap3 off the line in the run below)
+          var sep3 = COURIER_COMMA_EM * fs3;
           // (Preview's ink in the line's own face, so the line is laid
           // with the word it ends — or opens — on: its width, the gap and
           // the dot count toward the line's run and its carry)
@@ -10606,7 +10623,7 @@
             el.classList.remove('is-wrapped');
             seat(el, hy, hEdge, { inkL: x3 });
             var e3 = inkEdges(el);
-            if (e3) x3 = e3.r + gap3;
+            if (e3) x3 = e3.r + sep3;
           });
           // (THE LINE'S LAST PIECE TAKES A LINE OF ITS OWN where the one
           // line would run past the picture — a postscript's portrait is
@@ -10630,7 +10647,11 @@
           // (where Preview stands: after the tail, or before the head of
           // the mirrored line — the first piece, which keeps the upper
           // line whatever wrapped)
-          card.__courierTail = tail3 ? { el: mirror3 ? line3[0] : tail3, gap: gap3, head: mirror3 } : null;
+          // (no longer after the tail: Preview stands alone at the
+          // picture's other edge — seatPeekCorners' lone seat — so no
+          // tail is handed on; the run above still counts its room, so
+          // the line wraps where line and Preview would meet)
+          card.__courierTail = null;
           // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): on a
           // card set right (.card--align-r, build.js — every other essay,
           // the right-hand card of a pair) each line of the courier ends

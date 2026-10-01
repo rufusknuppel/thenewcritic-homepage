@@ -22733,3 +22733,20 @@ main.has-mega .duo-half--mega > .essay-acts .essay-act svg:is(*, .r.r.r.r.r.r.r.
   translate: 0 calc(6px - 0.5cap) !important;
 }
 /* (THE READ ARROW ON THE CAPITALS' INK ends) */
+
+/* ---------- THE COMMA BETWEEN DATE AND AUTHOR (2026-10-01) ----------
+   At the user's word ("remove dot between Date and author, add comma
+   instead"): the courier line's two pieces read OVERLOCKED, OCT 1 — and
+   SEP 25, ELI GOLDFINE on a card set right — the later piece's ::before
+   a comma set left in the 0.55em the fitter leaves between them
+   (seatMatterMeta, COURIER_COMMA_EM), hard on the first piece's ink
+   with a word space after it. The first piece and a piece wrapped to a
+   line of its own keep none, as they kept no dot. Preview stands alone
+   across the line from them (PREVIEW ACROSS THE LINE, duo-panel-fit.js). */
+main.has-mega .duo-half--mega .cover-meta--kick:not(.cover-meta--corner) .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
+main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  content: ',' !important;
+  width: 0.55em !important;
+  text-align: left !important;
+}
+/* (THE COMMA BETWEEN DATE AND AUTHOR ends) */
