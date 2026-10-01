@@ -6693,7 +6693,13 @@
     // (last of all, once nothing moves the cards again: every picture on
     // whole pixels — 2026-09-23)
     step('snapPictures', snapPictures);
+    // (a postscript's width changed this pass — seatRowTitles: once more)
+    if (rowKDirty && !rowKAgain) {
+      rowKDirty = false; rowKAgain = true;
+      try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
+    }
   }
+  var rowKDirty = false, rowKAgain = false;
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
   // courier lines standing in the gap (rowInk) — ink to ink before.
   // With the frames struck
@@ -7716,6 +7722,34 @@
       (vals[g] = vals[g] || {})['--t' + c.getAttribute('data-row') + c.getAttribute('data-side')] = (c.__titleW || 0) + 'px';
     });
     var changed = false;
+    // A POSTSCRIPT WIDENS TO ITS TITLE ON TWO LINES AND ITS COURIER ON
+    // ONE (2026-09-30, at the user's word): from its portrait (3 wide to
+    // 4 high) toward the square, never past it — its k on both cards of
+    // its row, the essay beside it taking what is left
+    var psK = {};
+    cards.forEach(function (c) {
+      if (!c.classList.contains('card--kind-postscript')) return;
+      var t = c.querySelector('.card-title.hl-rect.rx');
+      var H = t ? parseFloat(getComputedStyle(t, '::before').height) : 0;
+      if (!(H > 0)) return;
+      // (and a title that can stand on ONE line without passing the
+      // square takes the width for one: 2026-09-30, later)
+      var tw = (c.__titleW && c.__titleW <= H) ? c.__titleW : (c.__title2W || 0);
+      var need = Math.max(tw, c.__courierW || 0);
+      var k = Math.max(0.75, Math.min(1, need / H));
+      psK[(c.getAttribute('data-group') || '') + '|' + c.getAttribute('data-row')] = { side: c.getAttribute('data-side'), k: k.toFixed(4) };
+    });
+    var kChanged = false;
+    cards.forEach(function (c) {
+      var ps = psK[(c.getAttribute('data-group') || '') + '|' + c.getAttribute('data-row')];
+      if (!ps) return;
+      var key = ps.side === 'a' ? '--row-ka' : '--row-kb';
+      if (c.style.getPropertyValue(key).trim() !== ps.k) { c.style.setProperty(key, ps.k); kChanged = true; }
+    });
+    // (the pass goes on as it stands, and the whole of it is run once
+    // more at its end with the new widths: seatMatterMeta seated again
+    // mid-pass, without the steps round it, shifted every title twice)
+    if (kChanged) rowKDirty = true;
     // (ONE HEIGHT FOR THE PAGE: every card is told THE LATEST's titles,
     // whose rows set the height, and its own row's)
     var lv = vals.latest || {};
@@ -8050,6 +8084,8 @@
       // line at the full size, handed to the sheet by seatRowTitles
       var rowCard = j.card.closest('.card--row-a, .card--row-b');
       if (rowCard) rowCard.__titleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
+      // (and on two lines, for a postscript's width: seatRowTitles)
+      if (rowCard) rowCard.__title2W = tok.length > 1 ? Math.ceil(swapPartition(tok, 2, w100).w * maxFs / 100 / 0.99) + 2 : rowCard.__titleW;
       var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);
@@ -9882,6 +9918,11 @@
           // line, seatSwapCols reading the courier's lowest ink.)
           if (kc) kc.classList.remove('is-wrapped');
           var ae3 = kc && inkEdges(kc);
+          // (the line's whole width on one line, for seatRowTitles: a
+          // postscript widens to keep its courier on one — 2026-09-30)
+          var rc3 = card.closest('.card--row-a, .card--row-b');
+          var le3 = line3.length ? inkEdges(line3[line3.length - 1]) : null;
+          if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r - frL) + 1;
           if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
             kc.classList.add('is-wrapped');
             // (over the picture the author keeps the line nearest it, its

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a36c8977">
+<link rel="stylesheet" href="style.css?v=b2cbc3d8">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5378,7 +5378,12 @@
     step('seatRowGaps#2', seatRowGaps);
     step('fitLatestStack#2', fitLatestStack);
     step('snapPictures', snapPictures);
+    if (rowKDirty && !rowKAgain) {
+      rowKDirty = false; rowKAgain = true;
+      try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
+    }
   }
+  var rowKDirty = false, rowKAgain = false;
   var ROW_GAP = 36;
   var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
   function fitStdWidth() {
@@ -6026,6 +6031,25 @@
       (vals[g] = vals[g] || {})['--t' + c.getAttribute('data-row') + c.getAttribute('data-side')] = (c.__titleW || 0) + 'px';
     });
     var changed = false;
+    var psK = {};
+    cards.forEach(function (c) {
+      if (!c.classList.contains('card--kind-postscript')) return;
+      var t = c.querySelector('.card-title.hl-rect.rx');
+      var H = t ? parseFloat(getComputedStyle(t, '::before').height) : 0;
+      if (!(H > 0)) return;
+      var tw = (c.__titleW && c.__titleW <= H) ? c.__titleW : (c.__title2W || 0);
+      var need = Math.max(tw, c.__courierW || 0);
+      var k = Math.max(0.75, Math.min(1, need / H));
+      psK[(c.getAttribute('data-group') || '') + '|' + c.getAttribute('data-row')] = { side: c.getAttribute('data-side'), k: k.toFixed(4) };
+    });
+    var kChanged = false;
+    cards.forEach(function (c) {
+      var ps = psK[(c.getAttribute('data-group') || '') + '|' + c.getAttribute('data-row')];
+      if (!ps) return;
+      var key = ps.side === 'a' ? '--row-ka' : '--row-kb';
+      if (c.style.getPropertyValue(key).trim() !== ps.k) { c.style.setProperty(key, ps.k); kChanged = true; }
+    });
+    if (kChanged) rowKDirty = true;
     var lv = vals.latest || {};
     cards.forEach(function (c) {
       var r = c.getAttribute('data-row'), gv = vals[c.getAttribute('data-group') || ''];
@@ -6260,6 +6284,7 @@
       var w100 = function (str) { return measureCtx.measureText(str).width + tr100 * str.length; };
       var rowCard = j.card.closest('.card--row-a, .card--row-b');
       if (rowCard) rowCard.__titleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
+      if (rowCard) rowCard.__title2W = tok.length > 1 ? Math.ceil(swapPartition(tok, 2, w100).w * maxFs / 100 / 0.99) + 2 : rowCard.__titleW;
       var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);
@@ -7334,6 +7359,9 @@
           });
           if (kc) kc.classList.remove('is-wrapped');
           var ae3 = kc && inkEdges(kc);
+          var rc3 = card.closest('.card--row-a, .card--row-b');
+          var le3 = line3.length ? inkEdges(line3[line3.length - 1]) : null;
+          if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r - frL) + 1;
           if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
             kc.classList.add('is-wrapped');
             var x3b = frL;
@@ -7857,7 +7885,7 @@
     var link = card.querySelector('a.card-image-link') || card.querySelector('a[href]');
     var el = document.createElement('div');
     el.className = 'essay-acts';
-    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">Read Now' + READ + '</a>'
+    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">' + (card.classList.contains('duo-half--kind-postscript') ? 'Read Interview' : card.classList.contains('duo-half--kind-contra') ? 'Read Review' : 'Read Essay') + READ + '</a>'
       + '<span class="essay-act-sep" aria-hidden="true">\u00B7</span>'
       + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
     el.querySelector('.essay-act--peek').addEventListener('click', function (e) {
@@ -8363,7 +8391,7 @@
     cue = document.createElement('span');
     cue.className = 'cover-cue';
     cue.setAttribute('aria-hidden', 'true');
-    cue.textContent = 'Read Now';
+    cue.textContent = 'Read Essay';
     (document.querySelector('main.has-mega') || document.body).appendChild(cue);
     return cue;
   }
@@ -8426,6 +8454,11 @@
     host = el;
     if (host) host.classList.add('is-cued');
     if (host && host.closest && host.closest(CELLS)) host.closest(CELLS).classList.add('is-cue-host');
+    if (host && cue) {
+      var kc = host.closest('.duo-half--kind-postscript, .latest-cell--ps') ? 'Read Interview'
+        : host.closest('.duo-half--kind-contra, .latest-cell--contra') ? 'Read Review' : 'Read Essay';
+      if (cue.textContent !== kc) cue.textContent = kc;
+    }
     if (host && cue) {
       var body = host.closest('.movement-body');
       if (body && cue.parentNode !== body) { body.appendChild(cue); seated = false; }

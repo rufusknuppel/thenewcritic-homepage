@@ -358,7 +358,7 @@
     // It speaks to the eye, not to a reader on a screen reader: the
     // link it stands on already says where it goes.
     cue.setAttribute('aria-hidden', 'true');
-    cue.textContent = 'Read Now';
+    cue.textContent = 'Read Essay';
     // INSIDE MAIN, NOT ON BODY (2026-09-21). main.has-mega is a stacking
     // context of its own (z-index 1), and the corner box is docked
     // inside it now (src/subscribe-box.js) at 95 — a line on <body> at
@@ -497,6 +497,14 @@
     // the sheet ranks it 8: over the picture (8, and earlier in the
     // body), under the box (9). Its absolute seat is measured again
     // from the new body.
+    // READ ESSAY, READ INTERVIEW, READ REVIEW (2026-09-30): the words
+    // name what the picture opens — a postscript is an interview, a
+    // contra a review, the rest essays.
+    if (host && cue) {
+      var kc = host.closest('.duo-half--kind-postscript, .latest-cell--ps') ? 'Read Interview'
+        : host.closest('.duo-half--kind-contra, .latest-cell--contra') ? 'Read Review' : 'Read Essay';
+      if (cue.textContent !== kc) cue.textContent = kc;
+    }
     if (host && cue) {
       var body = host.closest('.movement-body');
       if (body && cue.parentNode !== body) { body.appendChild(cue); seated = false; }

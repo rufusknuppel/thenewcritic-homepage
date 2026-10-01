@@ -27,7 +27,7 @@
     var link = card.querySelector('a.card-image-link') || card.querySelector('a[href]');
     var el = document.createElement('div');
     el.className = 'essay-acts';
-    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">Read Now' + READ + '</a>'
+    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">' + (card.classList.contains('duo-half--kind-postscript') ? 'Read Interview' : card.classList.contains('duo-half--kind-contra') ? 'Read Review' : 'Read Essay') + READ + '</a>'
       + '<span class="essay-act-sep" aria-hidden="true">\u00B7</span>'
       + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
     el.querySelector('.essay-act--peek').addEventListener('click', function (e) {

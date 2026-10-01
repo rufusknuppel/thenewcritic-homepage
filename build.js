@@ -2673,7 +2673,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the essay takes the rest of the row (style.css, TEN ROWS). The
   // sections' banners and THE LATEST's name are gone, so every row
   // stands in the first movement.
-  const ROWS = 10;
+  const ROWS = 14;
   let psAt = 0, ctAt = 0;
   let rowsMade = 0;
   for (let i = 0; i < ROWS && essays[i]; i++) {
@@ -4967,7 +4967,7 @@ async function main() {
   // rows) — see renderHomepage's row plan. All of essaysAll/
   // postscriptAll/contraAll get extended previews below, so these can
   // slice deeper than the list-page lead slices above.
-  const homeEssays = essaysAll.slice(0, 10);
+  const homeEssays = essaysAll.slice(0, 14);
   const homePostscripts = postscriptAll.slice(0, 8);
   // 10 now: four are spent in the rows above (one in the first
   // movement, three in the postscripts'), and the CONTRA movement's
