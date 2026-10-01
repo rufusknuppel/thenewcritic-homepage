@@ -1511,17 +1511,21 @@ function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
   const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
   const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
-  // (SUBSCRIBE, ARCHIVE, THE LAST MAGAZINE in the Garamond, ABOUT, then
-  // STORE and EVENTS: 2026-09-30, at the user's word. THE LAST MAGAZINE
-  // takes the reader to the top of the front page — src/band-mark.js —
-  // and ABOUT is its own link again, to its right.)
+  // (SUBSCRIBE, ARCHIVE, ABOUT, THE LAST MAGAZINE in the Garamond, then
+  // STORE, EVENTS and LIGHT / DARK / HEX: 2026-09-30, at the user's word.
+  // THE LAST MAGAZINE takes the reader to the top of the front page —
+  // src/band-mark.js — and ABOUT is its own link again, to its left.)
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
     link(by('archive'), 'Archive'),
-    `<a class="sub-ticker-half sub-ticker-half--tlm" href="#top" aria-label="The Last Magazine — to the top of the front page"><span class="tlm-word">The Last Magazine</span></a>`,
     link(by('about'), 'About'),
+    `<a class="sub-ticker-half sub-ticker-half--tlm" href="#top" aria-label="The Last Magazine — to the top of the front page"><span class="tlm-word">The Last Magazine</span></a>`,
     dead('Store'),
     dead('Events'),
+    // (LIGHT / DARK / HEX, one word of the strip's at its right end:
+    // 2026-09-30, at the user's word. The slashes take no hand; HEX opens
+    // the field under it, the code typed there the bands' colour.)
+    `<span class="sub-ticker-half sub-ticker-half--mode"><button type="button" class="theme-toggle strip-toggle" aria-label="Light or dark, and a colour of your own for the bands"><b class="theme-toggle-light">Light</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-dark">Dark</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-hex">Hex</b></button><input class="theme-hex strip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></span>`,
   ].join('')}</span></nav>`;
 }
 
@@ -2785,7 +2789,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-corner"><button type="button" class="theme-toggle corner-toggle" aria-label="Light or dark, and a colour of your own for the bands"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span><span class="theme-toggle-hex">Hex</span></button><input class="theme-hex corner-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
@@ -3183,13 +3187,15 @@ function renderFontGateScript() {
   // code.
   var field = null;
   var openField = function (b) {
-    // (the field beside the toggle that was clicked — the corner's on
+    // (the field beside the toggle that was clicked — the strip's on
     // the front page — else the first on the page)
     field = (b && b.parentNode && b.parentNode.querySelector('.theme-hex')) || document.querySelector('.theme-hex');
     if (!field) return;
     field.value = accent || YELLOW;
     field.hidden = false;
-    field.focus();
+    // (no scroll: the strip clips, and a focus scrolling the field into
+    // view slid the strip's words up out of it)
+    try { field.focus({ preventScroll: true }); } catch (err) { field.focus(); }
     // The caret at the end of the code, nothing highlighted: the
     // field opens to be typed into, not swept.
     try { var n = field.value.length; field.setSelectionRange(n, n); } catch (err) {}
