@@ -22624,8 +22624,10 @@ main.has-mega .duo-half--mega > .peek-corner.pk-head .pk-ico:is(*, .r.r.r.r.r.r.
     all: unset;
     box-sizing: border-box !important;
     position: absolute !important;
-    top: 36px !important;
-    right: 36px !important;
+    /* (18 from the top and the right — "and 18px from top and right",
+       the same day; it was 36) */
+    top: 18px !important;
+    right: 18px !important;
     display: block !important;
     /* (18 across — "actually dot should be 18px", the same day; the
        strip's phone copy keeps its 14.4) */
