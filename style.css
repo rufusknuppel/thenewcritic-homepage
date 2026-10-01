@@ -9852,7 +9852,7 @@ main.has-mega .cover-meta.is-first .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
     --stack-h: calc(var(--pic-scale, 1) * (100svh - var(--band-h, 72px) - 36px - 36px - 90px - 36px));
     --stack-w: calc(100vw - 288px);
     --rows-h: min(var(--stack-h), calc((var(--stack-w) - 36px) / (var(--k0a, 0.0001) + var(--k0b, 0.0001))), calc((var(--stack-w) - 36px - min(var(--t0a, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k0b, 0.0001)), calc((var(--stack-w) - 36px - min(var(--t0b, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k0a, 0.0001)), calc((var(--stack-w) - 36px) / (var(--k1a, 0.0001) + var(--k1b, 0.0001))), calc((var(--stack-w) - 36px - min(var(--t1a, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k1b, 0.0001)), calc((var(--stack-w) - 36px - min(var(--t1b, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k1a, 0.0001)), calc((var(--stack-w) - 36px) / (var(--k2a, 0.0001) + var(--k2b, 0.0001))), calc((var(--stack-w) - 36px - min(var(--t2a, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k2b, 0.0001)), calc((var(--stack-w) - 36px - min(var(--t2b, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k2a, 0.0001)));
-    --row-wa: clamp(min(var(--row-ta, 0px), calc((var(--stack-w) - 36px) / 2)), calc((var(--stack-w) - 36px) * var(--row-ka, 1) / (var(--row-ka, 1) + var(--row-kb, 1))), calc((var(--stack-w) - 36px) - min(var(--row-tb, 0px), calc((var(--stack-w) - 36px) / 2))));
+    --row-wa: calc(var(--row-fa, 0) * var(--rows-h) * var(--row-ka, 1) + var(--row-fb, 0) * ((var(--stack-w) - 36px) - var(--rows-h) * var(--row-kb, 1)) + (1 - var(--row-fa, 0) - var(--row-fb, 0)) * clamp(min(var(--row-ta, 0px), calc((var(--stack-w) - 36px) / 2)), calc((var(--stack-w) - 36px) * var(--row-ka, 1) / (var(--row-ka, 1) + var(--row-kb, 1))), calc((var(--stack-w) - 36px) - min(var(--row-tb, 0px), calc((var(--stack-w) - 36px) / 2)))));
     --row-wb: calc((var(--stack-w) - 36px) - var(--row-wa));
     --row-g: calc(var(--row-wa) + 36px + var(--row-wb));
     width: calc(var(--pic-w) + 72px) !important;
@@ -9874,3 +9874,5 @@ main.has-mega .cover-meta.is-first .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
     height: calc(var(--rows-h) + 72px) !important;
   }
 }
+main.has-mega{ --open-gap: 0px !important; }
+main.has-mega .section-band > .band-mini--stamp{ display: none !important; }

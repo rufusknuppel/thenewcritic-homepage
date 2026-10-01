@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a716785c">
+<link rel="stylesheet" href="style.css?v=822a90ee">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7541,6 +7541,7 @@
     var sx = window.scrollX || 0;
     var seats = bands.map(function (band) {
       if (ONE_COL.matches) return null;
+      if (band.parentElement && getComputedStyle(band.parentElement).getPropertyValue('--rows-stack').trim() === '1') return null;
       var card = band.parentElement && band.parentElement.querySelector('.card--mega');
       if (!card) return null;
       var r = card.getBoundingClientRect();
