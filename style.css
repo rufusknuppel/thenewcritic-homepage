@@ -10822,7 +10822,8 @@ main.has-mega .duo-half--mega > .peek-corner > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.
   color: var(--k) !important;
   -webkit-text-fill-color: var(--k) !important;
 }
-main.has-mega .duo-half--mega > .peek-corner.pk-lone > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+main.has-mega .duo-half--mega > .peek-corner.pk-lone > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
+main.has-mega .duo-half--mega > .peek-corner.pk-head > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   display: none !important;
 }
 main.has-mega .duo-half--mega .cover-meta--cdate.is-wrapped .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
