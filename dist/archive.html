@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=822a90ee">
+<link rel="stylesheet" href="style.css?v=a36c8977">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5541,7 +5541,7 @@
             var tk = document.body.classList.contains('word-page') ? null
               : document.querySelector('.page-rows > .sub-ticker--head') || body.querySelector(':scope > .sub-ticker');
             if (tk && tk.offsetHeight) bandFoot += tk.offsetHeight;
-            var firstAt = bandFoot + ROW_GAP;
+            var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
             var lh = body.querySelector(':scope > .latest-head');
             if (lh) {
               var lr = document.createRange(); lr.selectNodeContents(lh);

@@ -6979,7 +6979,9 @@
             var tk = document.body.classList.contains('word-page') ? null
               : document.querySelector('.page-rows > .sub-ticker--head') || body.querySelector(':scope > .sub-ticker');
             if (tk && tk.offsetHeight) bandFoot += tk.offsetHeight;
-            var firstAt = bandFoot + ROW_GAP;
+            // (72 under the strip where the posts stand two to a row and no
+            // name stands over them: TEN ROWS, 2026-09-30)
+            var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
             // (THE LATEST stands over it: its ink's top 72 under the band,
             // the row 36 under its baseline — 2026-09-23)
             var lh = body.querySelector(':scope > .latest-head');

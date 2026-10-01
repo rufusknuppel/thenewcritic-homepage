@@ -2374,8 +2374,9 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // on the left, so the diagonal can step on from the card over it:
   // EVERY CARD STEPS DOWN, 2026-09-24)
   // (THE LATEST'S POSTS STAND TWO TO A ROW, 2026-09-30: courier and
-  // title set left on every one, at the user's word)
-  const alignR = row ? false : flip ? pair === 'a' : (align === 'r' || pair === 'b');
+  // title set left on the left-hand card of a row and right on the
+  // right-hand one, at the user's word)
+  const alignR = row ? row.side === 'b' : flip ? pair === 'a' : (align === 'r' || pair === 'b');
   // THE ESSAY'S PICTURE STANDS AT ITS OWN HEIGHT (2026-09-24): an
   // essay's cover keeps its width and takes its original's proportions
   // down the page, read off the _WxH Substack writes into the file name,
@@ -2661,172 +2662,42 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // below with the latest row.
   // EVERY ESSAY TURNED (2026-09-18): picture LEFT on the lead, then
   // alternating — each card the mirror of what it was.
-  // THE LATEST'S POSTS STAND TWO TO A ROW (2026-09-30, at the user's
-  // word): its six posts, in the order they stand, two to a row — each
-  // with its width per unit of height: an essay its cover's own (the _WxH
-  // in the file name), a postscript 3 wide to 4 high, a review square.
-  // A last post alone stands centred by itself.
-  const latestOrder = [[essays[0], ''], [postscripts[0], 'postscript'], [contras[0], 'contra'], [essays[1], ''], [postscripts[1], 'postscript'], [contras[1], 'contra']].filter(([p]) => p);
-  const kOf = ([p, kind]) => {
-    if (kind === 'postscript') return 0.75;
-    if (kind === 'contra') return 1;
-    const d = /_(\d+)x(\d+)\.[a-z]+$/i.exec(decodeURIComponent(p.image || ''));
-    return d && +d[2] > 0 ? +d[1] / +d[2] : 4 / 3;
-  };
-  // (one group of rows — THE LATEST, or a section — to one height: each
-  // card carries its group's every row's widths-per-height; a group of
-  // more than three rows is left as it was)
-  // (ONE HEIGHT FOR THE PAGE, 2026-09-30, at the user's word: every
-  // section's rows stand at THE LATEST's height, so every card carries
-  // THE LATEST's rows — --k0a … — and its own row's two, --row-ka/kb)
-  const kRows = (order) => {
-    const ks = order.map(kOf);
-    const n = Math.ceil(order.length / 2);
-    const at = (i) => (i < ks.length ? ks[i] : 0.0001);
-    return { ks, n, at, all: Array.from({ length: 3 }, (_, r) => `--k${r}a: ${(r < n ? at(2 * r) : 0.0001).toFixed(4)}; --k${r}b: ${(r < n ? at(2 * r + 1) : 0.0001).toFixed(4)}`).join('; ') };
-  };
-  const latestRows = kRows(latestOrder);
-  const rowsFor = (group, order, fixedPosts = []) => {
-    const { n: nRows, at: kAt } = kRows(order);
-    // (a missing partner's width per height is all but nothing, so its
-    // row's bounds never bind)
-    const all = latestRows.all;
-    // (a post may hold its own shape in its row — `fixed`, kept for the
-    // whole group so both cards of the row know: --row-fa / --row-fb)
-    const fixedAt = new Set(fixedPosts.map((fp) => order.findIndex(([p]) => p === fp)).filter((i) => i >= 0));
-    return (post) => {
-      const i = order.findIndex(([p]) => p === post);
-      if (i < 0 || nRows > 3) return null;
-      const r = i >> 1;
-      return { g: group, i: r, side: i % 2 ? 'b' : 'a', solo: i % 2 === 0 && i === order.length - 1, ka: kAt(2 * r), kb: kAt(2 * r + 1), all, fixedAt, r };
-    };
-  };
-  const rowOf = rowsFor('latest', latestOrder, [contras[1]]);
-  blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html', trueHeight: true, row: rowOf(essays[0]) }));
-  // The latest postscript and contra, in the hero's dress (see
-  // renderLatestRow above).
-  // (ONE LINE OF POSTS, 2026-09-23: every essay the one way round now —
-  // picture over its words, nothing beside it to face — and the latest
-  // postscript and review
-  // follow it one to a row, in the essay's card)
-  // (TWO ACROSS, 2026-09-23, later: the postscript and the review side by
-  // side, the review's square centred on the portrait — style.css, ONE
-  // LINE OF POSTS; seatRowGaps)
-  blocks.push(renderMegaHero(postscripts[0], { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: contras[0] ? 'a' : '', flip: true, row: rowOf(postscripts[0]) }));
-  blocks.push(renderMegaHero(contras[0], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[0] ? 'b' : '', flip: true, row: rowOf(contras[0]) }));
-  // (SUBSCRIBE IS OFF THE FRONT PAGE'S BODY, 2026-09-19. The word stood
-  // under the latest row in the sections' own dress, carrying the offer
-  // as a courier line beneath it — both are struck. The offer is made
-  // in the corner box now (renderSubscribeBox), which asks for the
-  // reader once rather than standing in the middle of the reading.
-  // SUBSCRIBE_ABOVE and SUBSCRIBE_BELOW stay declared against its
-  // return; the banner was:
-  //   blocks.push(renderBanner({ word: 'Subscribe', href: `${SITE_URL}/subscribe`,
-  //     modifier: 'subscribe-word page-banner--apart',
-  //     above: SUBSCRIBE_ABOVE, below: SUBSCRIBE_BELOW })
-  //     .replace('class="page-banner', 'class="ops-word page-banner'));
-  // — .ops-word kept it out of the movement loop's banner test so it
-  // stood in the body between the rows, the next row opening 72 under
-  // its feet as under any section word.)
+  // TEN ROWS, AN ESSAY IN EACH (2026-09-30, at the user's word: remake
+  // the page without its section titles — ten rows, each an essay in
+  // landscape on the left or the right, alternating, beside a postscript
+  // or a review, alternating; every review square, every postscript
+  // portrait). The rows run newest first: row i's essay is essays[i],
+  // its companion the next postscript on the even rows and the next
+  // review on the odd (the other kind where one runs out). The companion
+  // holds its shape at the page's one height (--row-fa / --row-fb) and
+  // the essay takes the rest of the row (style.css, TEN ROWS). The
+  // sections' banners and THE LATEST's name are gone, so every row
+  // stands in the first movement.
+  const ROWS = 10;
+  let psAt = 0, ctAt = 0;
+  let rowsMade = 0;
+  for (let i = 0; i < ROWS && essays[i]; i++) {
+    const wantPs = i % 2 === 0;
+    let comp = null, kind = '';
+    if (wantPs && postscripts[psAt]) { comp = postscripts[psAt++]; kind = 'postscript'; }
+    else if (!wantPs && contras[ctAt]) { comp = contras[ctAt++]; kind = 'contra'; }
+    else if (postscripts[psAt]) { comp = postscripts[psAt++]; kind = 'postscript'; }
+    else if (contras[ctAt]) { comp = contras[ctAt++]; kind = 'contra'; }
+    const kc = kind === 'postscript' ? 0.75 : 1;
+    const essayLeft = i % 2 === 0;
+    // (side a is the left card, which the fitter stands first; the
+    // companion's width is held at its shape and the essay's is the rest)
+    const ka = essayLeft ? 1.5 : kc, kb = essayLeft ? kc : 1.5;
+    const fixedAt = new Set(comp ? [2 * i + (essayLeft ? 1 : 0)] : []);
+    const rowFor = (side) => ({ g: 'rows', i, r: i, side, solo: !comp, ka, kb: comp ? kb : 0.0001, all: '', fixedAt });
+    const essayCard = renderMegaHero(essays[i], { rev: true, label: 'Essays', trueHeight: true, row: rowFor(essayLeft ? 'a' : 'b') });
+    const compCard = comp ? renderMegaHero(comp, { rev: true, label: kind === 'postscript' ? 'Postscript' : 'Contra', kind, trueWidth: kind === 'postscript', row: rowFor(essayLeft ? 'b' : 'a') }) : '';
+    if (essayLeft) { blocks.push(essayCard); if (compCard) blocks.push(compCard); }
+    else { if (compCard) blocks.push(compCard); blocks.push(essayCard); }
+    rowsMade++;
+  }
+  console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length})`);
   void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;
-  // The SECOND essay as a mirrored hero inside the first movement —
-  // cover left, ground right — then the next postscript/contra pair
-  // MIRRORED too: contra left, postscript right with its text in the
-  // middle and its cover closing the row's right end. Both keep the
-  // lead seat (the rail is on the right up here, so no m2).
-  blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays', align: 'r', trueHeight: true, row: rowOf(essays[1]) }));
-  // (2026-09-24: this pair reads review first — the contra takes the
-  // left seat and the postscript the right, at the user's word.)
-  // (2026-09-30: the postscript first again and the review after it,
-  // square, at the user's word — THE LATEST's last row; the review's
-  // width is held at its height, --row-fb, and the postscript takes
-  // the rest of the row)
-  blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: contras[1] ? 'a' : '', row: rowOf(postscripts[1]) }));
-  blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'b' : '', row: rowOf(contras[1]) }));
-  // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
-  // block full-bleed, SUBSCRIBE in the masthead voice centred where
-  // the name stands above, and one courier line whose ink opens on
-  // the S's own left ink (glyph-seated by alignBands in
-  // duo-panel-fit.js). The statement reads as ONE LINE UNDER the
-  // word, centred on the page. It CLOSES the first movement:
-  // everything below it is the second.
-  // THE SECTION BANNERS NAME THE SECTIONS THEY OPEN — ESSAYS, POSTSCRIPT,
-  // CONTRA. (The modifiers keep their old names: the fitter's ground
-  // stops and rail-fix read them.)
-  // EACH SECTION'S WORD CARRIES ITS LINE (2026-09-18): one courier
-  // sentence under the word, inside the 72 under its feet, seated the
-  // way SUBSCRIBE's offer is (fitSubscribeLines, .page-banner--apart).
-  // (THE TAGS ARE STRUCK, 2026-09-24, at the user's word: the sections'
-  // names stand alone, no italic line under them)
-  blocks.push(renderBanner({ word: 'Essays', href: SECTION_BANDS.essays.href, modifier: 'subscribe-band page-banner--apart page-banner--section' }));
-  // THE SECOND MOVEMENT, under the band: the next essay as a
-  // MIRRORED hero (cover left, ground right, labelled Essay), then
-  // the next contra/postscript pair mirrored the same way.
-  // THE ESSAYS OPEN ON THE BASE BUILD — title column LEFT, cover
-  // right, as the page's own hero — and alternate from there: base,
-  // mirrored, base, mirrored, base. essays[0] and [1] are spent in the
-  // first movement, so this movement reads from [2] and repeats
-  // nothing.
-  // (the essays' words alternate sides down the page, left then right,
-  // counted from the lead: [0] left, [1] right, [2] left… — 2026-09-24)
-  // (THE ESSAYS START ON THE RIGHT, 2026-09-24, for an hour; then THE
-  // STEP RUNS ON THROUGH THE SECTIONS, at the user's word: every
-  // section's first card on the other side from the last card of the
-  // section over it — The Latest closes on the right, so the essays
-  // open on the left, [2], [4], [6], and [3], [5] step right)
-  // (EVERY SECTION'S POSTS STAND TWO TO A ROW, 2026-09-30, at the user's
-  // word: the Essays, the Postscripts and the Contras as THE LATEST's —
-  // each section's rows at one height of their own)
-  const essayRow = rowsFor('essays', essays.slice(2, 8).filter(Boolean).map((p) => [p, '']));
-  blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true, trueHeight: true, row: essayRow(essays[2]) }));
-  blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true, row: essayRow(essays[3]) }));
-  blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true, trueHeight: true, row: essayRow(essays[4]) }));
-  blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true, row: essayRow(essays[5]) }));
-  blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true, trueHeight: true, row: essayRow(essays[6]) }));
-  // (a sixth essay beside What Was College For?, at the user's word,
-  // 2026-09-30: the section's last row two across like the rest)
-  blocks.push(renderMegaHero(essays[7], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true, row: essayRow(essays[7]) }));
-  // EVENTS closes the essays — the word alone, like STORE.
-  blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section' }));
-  // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
-  // build, then the pair MIRRORED, then the base again. All three
-  // keep the base SEAT (the strip is back on the right down here), so
-  // the middle one mirrors its contents without moving its box.
-  // The contras have left these rows — this movement is postscripts
-  // alone, each row's two columns splitting the whole measure. In
-  // every pair the LEFT cell reads turned over (renderPostscriptPair),
-  // so the two pictures stand together at the row's centre.
-  // (one to a row since ONE LINE OF POSTS, 2026-09-23 — the pairs are
-  // retired; renderPostscriptPair stands for the word pages)
-  // (two across since 2026-09-23, later)
-  // (a post with no partner stands alone, centred)
-  const pairOf = (list, i) => (i % 2 ? 'b' : (list[i + 1] ? 'a' : ''));
-  // (THE STEP RUNS ON THROUGH THE SECTIONS, 2026-09-24: the essays
-  // close on the left, so the postscripts open on the right — flipped)
-  const psRow = rowsFor('postscript', postscripts.slice(2, 8).map((p) => [p, 'postscript']));
-  postscripts.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: pairOf(l, i), flip: true, row: psRow(p) })));
-  // The middle pair reads REVERSED — cover right, text left.
-  // The middle pair used to mirror (picture on the other side); every
-  // pair reads the same way now.
-  // And a third pair back in the base build — covers on the left.
-  // STORE closes the postscripts — the word alone, no courier line.
-  blocks.push(renderBanner({ word: 'Contra', href: SECTION_BANDS.contra.href, modifier: 'store-band page-banner--apart page-banner--section' }));
-  // THE CONTRA MOVEMENT: the section's own row formation, three
-  // squares across, twice — reading from the reviews the rows above
-  // haven't already spent.
-  // The three reviews the postscript rows gave up come back here, so
-  // the section reads the most recent six IN SEQUENCE, top to bottom —
-  // contras[0] leads the first movement's row and is not repeated.
-  // contras[0] and [1] lead the first movement's rows and are not
-  // repeated; the section runs [2] onward, three to a row — TWO rows,
-  // six reviews. (A third ran to [11] and is retired: the movement
-  // closes on the second row now.)
-  // (one to a row since ONE LINE OF POSTS, 2026-09-23)
-  // (two across since 2026-09-23, later)
-  // (CONTRA STARTS ON THE RIGHT, 2026-09-24, at the user's word: each
-  // pair flipped, the first on the right, the next stepping down left)
-  const contraRows = rowsFor('contra', contras.slice(2, 8).map((p) => [p, 'contra']));
-  contras.slice(2, 8).forEach((p, i, l) => blocks.push(renderMegaHero(p, { rev: true, label: 'Contra', kind: 'contra', pair: pairOf(l, i), flip: true, row: contraRows(p) })));
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
   // it heralds, so the ground changes on its own top edge, under the
@@ -2887,7 +2758,8 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
     // head band, the first row 36 under it
     // (the ticker stands in the rows now, under the band — 2026-09-24)
-    const lead = m === 'latest' ? `\n  <h2 class="latest-head">The Latest</h2>` : '';
+    // (THE LATEST's name is struck with the sections' titles: TEN ROWS)
+    const lead = '';
     duoHtml += `${head}\n  <div class="movement-body">${lead}`; open = true;
   };
   // EVERY MOVEMENT CLOSES ON AN EMPTY BAND — the section band's own
