@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=c4a4289f">
+<link rel="stylesheet" href="style.css?v=d900047b">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7491,6 +7491,8 @@
     el.style.top = (box.t - o.top + op.clientTop).toFixed(2) + 'px';
     el.style.width = (box.r - box.l).toFixed(2) + 'px';
     el.style.height = (box.b - box.t).toFixed(2) + 'px';
+    if (card.__actW == null) { var a = el.firstElementChild; card.__actW = a ? a.getBoundingClientRect().width : 0; }
+    el.classList.toggle('is-narrow', (box.r - box.l) < card.__actW + 24);
   }
   function hold(card) {
     var held = !card.classList.contains('is-slide') && card.matches('.is-open, .is-opening, .is-shutting');
@@ -7517,9 +7519,16 @@
     var hitCard = null, hitBox = null;
     var cards = [].slice.call(document.querySelectorAll(ESSAYS));
     var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
-    var under = [];
-    out.forEach(function (c) { var m = mateOf(c); if (m) under.push(m); });
-    cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0 && under.indexOf(c) < 0; }));
+    var under = [], cover = [];
+    out.forEach(function (c) {
+      var m = mateOf(c); if (!m) return;
+      under.push(m);
+      var cv = c.matches('.is-opening, .is-shutting') ? null : picBox(c);
+      var sh = cv && c.querySelector(':scope > .slide-sheet');
+      if (sh) { var sr = sh.getBoundingClientRect(); if (sr.width > 0) cv = { l: sr.left, r: sr.right, t: cv.t, b: cv.b }; }
+      cover.push(cv);
+    });
+    cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0; }));
     for (var i = 0; i < cards.length && !hitCard; i++) {
       var card = cards[i];
       if (card.matches('.is-opening, .is-shutting')) continue;
@@ -7528,6 +7537,15 @@
       if (ly < cr.top - 400 || ly > cr.bottom + 400) continue;
       var box = picBox(card);
       if (!box) continue;
+      var ui = under.indexOf(card);
+      if (ui >= 0) {
+        var cv = cover[ui];
+        if (!cv) continue;
+        var mid = (box.l + box.r) / 2;
+        if (cv.l < mid) box = { l: Math.max(box.l, cv.r), r: box.r, t: box.t, b: box.b };
+        else box = { l: box.l, r: Math.min(box.r, cv.l), t: box.t, b: box.b };
+        if (box.r - box.l < 8) continue;
+      }
       var on = inside(box, lx, ly);
       if (on) { hitCard = card; hitBox = box; }
     }
