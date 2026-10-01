@@ -1507,13 +1507,14 @@ function subTicker(where = 'head') {
 // user's word): ARCHIVE, ABOUT, SUBSCRIBE, STORE, EVENTS in the strip's
 // own capitals, spread evenly across it (style.css, THE LINKS IN THE
 // STRIP); STORE and EVENTS lead nowhere yet, as in the band they left
-// THE CORNER CHIP (2026-10-01, at the user's word): LIGHT and DARK as
-// dots in a little chip held in the window's bottom right corner — white
-// and charcoal. Each dot is its own button for the head script's toggle
-// (.theme-toggle, the -light and -dark classes). (A third dot, the
-// mark's colour, opened the HEX field for an hour; HEX is struck.)
+// THE CORNER CIRCLE (2026-10-01, at the user's word): one circle held in
+// the window's bottom right corner, the ground it turns the page to —
+// white on the charcoal page, charcoal on the white — a .theme-toggle
+// with no -light or -dark of its own, so the head script turns the page
+// over. (It was a chip of three dots, then two, for an hour: LIGHT, DARK
+// and HEX's colour; HEX is struck.)
 function themeChip() {
-  return `<div class="theme-chip" role="group" aria-label="Light or dark"><button type="button" class="theme-toggle theme-toggle-light chip-dot chip-dot--light" aria-label="Light"></button><button type="button" class="theme-toggle theme-toggle-dark chip-dot chip-dot--dark" aria-label="Dark"></button></div>`;
+  return `<div class="theme-chip"><button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button></div>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
