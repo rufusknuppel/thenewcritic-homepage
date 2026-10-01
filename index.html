@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f701c54d">
+<link rel="stylesheet" href="style.css?v=6465fc2a">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -380,7 +380,7 @@
     <p class="band-deks band-dek"></p>
     <p class="band-deks"><span class="band-inert">The Last Magazine</span></p>
   </nav>
-  <div class="head-rail"><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav><div class="margin-stacks"><a class="margin-line" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a><button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button></div></div>
+  <div class="head-rail"><div class="rail-line"><a class="tlm-line" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The Last Magazine</span></a></div><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav><div class="margin-stacks"><button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button></div></div>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
 <div class="site-header" id="site-header">
@@ -8704,6 +8704,13 @@
       ground = getComputedStyle(wm).backgroundColor;
     }
     if (under > 0) { under = Math.round(under); main.style.setProperty('--wm-under', under + 'px'); }
+    var tl = document.querySelector('.head-rail .tlm-line > span');
+    var tf = tl && tl.offsetHeight ? face(tl) : null;
+    if (tf) {
+      var tr = tl.getBoundingClientRect();
+      main.style.setProperty('--tlm-cap', (tf.top - tr.top).toFixed(2) + 'px');
+      main.style.setProperty('--tlm-ink', Math.ceil(tf.foot - tf.top) + 'px');
+    }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
     [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -8742,7 +8749,7 @@
     .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('a.margin-line');
+  var a = e.target && e.target.closest && e.target.closest('a.margin-line, a.tlm-line');
   if (!a) return;
   e.preventDefault();
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
