@@ -284,3 +284,76 @@
   run();
   canvas();
 })();
+
+// THE BAND GOES UNDER THE NAME, ITS LINE FADING (2026-09-30, at the
+// user's word): THE LAST MAGAZINE's band no longer pins — it scrolls up
+// with the page and passes under THE NEW CRITIC (style.css, THE BAND
+// GOES UNDER THE NAME) — and its line fades as it rises, from whole at
+// the page's top to nothing by the time its ink reaches the name's ink.
+// And the first row's courier, which reaches up into the band's foot
+// (the pictures stand under the line's ink by the air over it), stands
+// over the band: from 1024 up the band's paint is cut a pixel over the
+// courier's ink (never into the line's) — the band and the page are one
+// charcoal, so the cut does not show, and the two travel together.
+(function () {
+  var main = document.querySelector('main.has-mega');
+  if (!main || document.body.classList.contains('word-page')) return;
+  var wide = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : { matches: true };
+  var band = null, line = null, X = 0, lineTop = 0, wmFoot = 0, last = -1;
+  var cv = null;
+  function face(el) {
+    var rg = document.createRange(); rg.selectNodeContents(el);
+    var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+    if (!r) return null;
+    cv = cv || document.createElement('canvas').getContext('2d');
+    var cs = getComputedStyle(el);
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var t = (el.textContent || '').trim();
+    var m = cv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
+    var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+    if (!(fa > 0)) return null;
+    var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+  }
+  function measure() {
+    band = document.querySelector('.page-rows > .section-band--head');
+    line = band && band.querySelector('.band-deks:last-child');
+    X = 0; lineTop = 0; wmFoot = 0;
+    if (!band || !line) return;
+    var y = window.pageYOffset || 0;
+    // (the line's ink, where it rests at the page's top, and the name's
+    // foot, which holds the window's head)
+    var lt = Infinity, lf = -Infinity;
+    [].forEach.call(line.querySelectorAll('a, span'), function (w) {
+      if (w.children.length || !(w.textContent || '').trim()) return;
+      var f = face(w); if (f) { lt = Math.min(lt, f.top); lf = Math.max(lf, f.foot); }
+    });
+    var nm = document.querySelector('.site-nav--top .topbar-name');
+    var nf = nm && face(nm);
+    if (isFinite(lt) && nf) { lineTop = lt + y; wmFoot = nf.foot; }
+    if (!wide.matches || !isFinite(lf)) return;
+    var hi = Infinity;
+    [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
+      var m = k.closest('.cover-meta') || k;
+      if (getComputedStyle(m).visibility === 'hidden' || getComputedStyle(k).visibility === 'hidden') return;
+      var f = face(k); if (f) hi = Math.min(hi, f.top);
+    });
+    if (!isFinite(hi)) return;
+    var foot = band.getBoundingClientRect().bottom;
+    X = Math.max(0, Math.min(foot - (hi - 1), foot - (lf + 1)));
+  }
+  function apply(force) {
+    if (!band || !line) return;
+    var y = window.pageYOffset || 0;
+    var span = lineTop - wmFoot;
+    var o = span > 0 ? Math.max(0, Math.min(1, (lineTop - y - wmFoot) / span)) : 1;
+    if (force || o !== last) { last = o; if (o < 1) line.style.setProperty('opacity', o.toFixed(3)); else line.style.removeProperty('opacity'); }
+    if (force) { if (X > 0) band.style.setProperty('clip-path', 'inset(0 0 ' + X.toFixed(2) + 'px 0)'); else band.style.removeProperty('clip-path'); }
+  }
+  function refit() { line && line.style.removeProperty('opacity'); measure(); apply(true); }
+  refit();
+  addEventListener('scroll', function () { apply(false); }, { passive: true });
+  addEventListener('resize', refit);
+  addEventListener('newcritic:fit', refit);
+  addEventListener('newcritic:settled', refit);
+})();
