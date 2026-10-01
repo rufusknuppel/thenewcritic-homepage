@@ -4023,6 +4023,10 @@
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
+    // (sizeOnly: the name sized and nothing seated — what the band's
+    // words need to take their size from, before the masthead is filled
+    // against them: THE NAME'S SIZE IS STATED FIRST, fitAllSteps)
+    if (opts && opts.sizeOnly) return { size: fitted };
     var i1 = inkSpanOf(name);
     if (!i1) return;
     var wb = wm.getBoundingClientRect();
@@ -5216,22 +5220,17 @@
     // the reading.
     var all = [].slice.call(document.querySelectorAll(
       '.latest-cell--ps, .latest-cell--contra, .duo-half--mega'));
-    var wasOpen = all.map(function (el) { return el.classList.contains('is-open'); });
-    // ONLY THE STILLNESS THIS PASS ADDS IS THIS PASS'S TO TAKE AWAY.
-    // Run inside atRest (every close runs it there), the cards already
-    // stand behind a .fit-still that atRest owns and needs until it
-    // has reopened the cards it shut: stripping it here handed those
-    // cards back with their transitions live, and every other open
-    // preview slid open again each time one was closed.
-    var hadStill = all.map(function (el) { return el.classList.contains('fit-still'); });
-    all.forEach(function (el) { el.classList.add('fit-still'); el.classList.add('is-open'); });
+    // THE LANDING IS WHERE THE PICTURE STANDS (2026-10-01). The cards
+    // were opened (.is-open, behind .fit-still) to read each picture's
+    // landed box, and shut again — two layouts of the whole page, some
+    // 50ms each, on every run. Measured on every card at 390 and 1440:
+    // the box read open-and-still was the picture's resting box to the
+    // hundredth, since .fit-still holds the travel. So it is read where
+    // it stands, and nothing is opened.
     all.forEach(function (el) {
       var pic = el.querySelector('.latest-cover, .duo-card-image');
       el.__land = pic ? pic.getBoundingClientRect() : null;
     });
-    all.forEach(function (el, i) { if (!wasOpen[i]) el.classList.remove('is-open'); });
-    void document.body.offsetHeight;
-    all.forEach(function (el, i) { if (!hadStill[i]) el.classList.remove('fit-still'); });
 
     var jobs = [];
     [].forEach.call(document.querySelectorAll('.latest-cell--ps, .latest-cell--contra'), function (cell) {
@@ -6530,6 +6529,7 @@
   // The page's standing, as a string: the box of everything a step
   // seats, to the quarter pixel, and the document's height. One forced
   // layout to read; equal strings mean a run moved nothing.
+  var SETTLE_RUNS = (/[?&]settle\b/.test(location.search) || (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && !/[?&]nosettle\b/.test(location.search))) ? 2 : 0;
   function fitSig() {
     var els = document.querySelectorAll('.page-rows > *, .movement-body > *, .card-title, .latest-title, .card-dek, .latest-dek, .cover-meta, .card-meta--line, img.card-image, .duo-card-image, .title-halo, .duo-half, .latest-cell--ps, .latest-cell--contra, .topbar-wordmark, .topbar-name');
     var out = [];
@@ -6568,6 +6568,24 @@
     var frozen = [].slice.call(document.querySelectorAll('.latest-cover-col--square'));
     frozen.forEach(function (el) { el.style.transition = 'none'; });
     try {
+      // THE PASS RUNS TWICE (2026-10-01). Its steps read each other's
+      // answers across the whole page, and the first of them read a page
+      // the last of them then re-form: the blocks (seatInkBlocks,
+      // seatDekBlocks) are measured off titles and columns that
+      // seatMatterMeta then widens, sizes and centres (.fr, .rx, the side
+      // stacks), seatSwapCols after it; the masthead's first fill reads
+      // the strip before fitBands has seated it. A second run over the
+      // page the first leaves is the fixed point — the staged page always
+      // had one, and the one-movement page without it stood a row's
+      // blocks and offsets off the shipped page at every width that did
+      // not happen to need the postscript-width rerun below. A run of
+      // the tail alone, with the head's resets, was tried and misses
+      // the halos' step (--hl-dx/dy) and the titles' seats by 14; so the
+      // whole pass, twice. (The first run skips its own postscript-width
+      // rerun: the second run reads the widths the first found.)
+      firstOfTwo = true;
+      try { fitAllSteps(); } finally { firstOfTwo = false; }
+      rowKDirty = false;
       fitAllSteps();
       // THE PASS RUNS UNTIL THE PAGE STANDS STILL (2026-10-01, at the
       // user's word: "hid until totally stable"). Some seats read what
@@ -6579,13 +6597,22 @@
       // of everything that seats are read into a signature, and the
       // steps run again while a run moves any of them — at most twice
       // more, which no page has needed.
-      var sig = fitSig();
-      for (var again = 0; again < 2; again++) {
-        fitAllSteps();
-        var sig2 = fitSig();
-        fitTimes.push(['settle#' + (again + 1), sig2 === sig ? 0 : 1]);
-        if (sig2 === sig) break;
-        sig = sig2;
+      //   (Measured 2026-10-01, with the first row read at rest: a cold
+      // pass stands at its fixed point at 390, 1440 and 1920 — the
+      // check runs once, moves nothing, and costs 0.65s of a 4.5s
+      // reveal. So it runs where the page is WORKED ON — the dev
+      // server, or ?settle on any build — and says so in fitErrors when
+      // a run moves anything; the shipped page takes the pass's word.)
+      if (SETTLE_RUNS > 0) {
+        var sig = fitSig();
+        for (var again = 0; again < SETTLE_RUNS; again++) {
+          fitAllSteps();
+          var sig2 = fitSig();
+          fitTimes.push(['settle#' + (again + 1), sig2 === sig ? 0 : 1]);
+          if (sig2 === sig) break;
+          fitErrors.push('settle#' + (again + 1) + ': a run after the pass moved the page');
+          sig = sig2;
+        }
       }
     } finally {
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
@@ -6794,14 +6821,19 @@
     step('seatPlateMargins', seatPlateMargins);
     step('inkCenterBands', inkCenterBands);
     step('alignBands', alignBands);
+    // THE NAME'S SIZE IS STATED FIRST (2026-10-01). band-mark.js derives
+    // --wm-size — the section heads' size — from the name's, and asked
+    // for a whole further pass whenever it found that size changed under
+    // it at the mid-pass fit event. The name's size is the width's alone,
+    // so it is stated here before anything reads it, and the pass that
+    // follows is the last.
+    step('wmSize', function () {
+      var name = document.querySelector('.site-nav--top .topbar-name');
+      var wm = name && (name.closest('.topbar-wordmark') || name.parentElement);
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
+      if (window.__ncWmSize) window.__ncWmSize();
+    });
     step('fitMastheadFill', fitMastheadFill);
-    // THE NAME'S SIZE IS STATED IN THE PASS (2026-10-01): band-mark.js
-    // derives --wm-size (the heads' size) from the name the step above
-    // has just filled, and used to find it changed after the pass and
-    // ask for another — a whole third pass on every cold load. Asked
-    // here, quietly, before the heads are seated, it finds nothing to
-    // say afterwards.
-    step('wmSize', function () { if (window.__ncWmSize) window.__ncWmSize(); });
     step('fitBands', fitBands);
     step('inkCenterDeks', inkCenterDeks);
     step('seatBandMid', seatBandMid);
@@ -6870,31 +6902,40 @@
     // questions are re-read once the pass has settled the titles)
     if (window.__ncStructure) window.__ncStructure();
     try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
-    step('seatInkBlocks', seatInkBlocks);
-    step('seatDekBlocks', seatDekBlocks);
-    step('seatMatterMeta', seatMatterMeta);
-    step('fitBandDekInset', fitBandDekInset);
+      S('seatInkBlocks', seatInkBlocks);
+      S('seatDekBlocks', seatDekBlocks);
+      S('seatMatterMeta', seatMatterMeta);
+      S('fitBandDekInset', fitBandDekInset);
     // (again: the name's air over its caps is the band's inset to its
     // Garamond, which the step above has only now seated — 2026-09-23)
-    step('fitMastheadFill#2', fitMastheadFill);
-    step('fitReprint#2', fitReprint);
-    step('centreMatter', centreMatter);
-    step('seatPlateBody', seatPlateBody);
-    step('seatWordClips', seatWordClips);
-    step('seatSwapCols', seatSwapCols);
-    step('seatRowTitles', seatRowTitles);
-    step('seatRowGaps', seatRowGaps);
+      S('fitMastheadFill#2', fitMastheadFill);
+      S('fitReprint#2', fitReprint);
+    // THE RAIL'S AIR IS READ OFF THE FINISHED NAME (2026-10-01): band-mark
+    // sets --wm-under — the strip's and the line's place under the name's
+    // ink — at the mid-pass fit event, off a name the masthead fill above
+    // has since refilled (its first fill reads the strip's Garamond before
+    // fitBands has seated it, 30 short). The first row is seated off the
+    // rail's blocks below (seatRowGaps), so the rail is measured again
+    // here; before this a cold first run seated the row 30 high and only
+    // a second run put it right.
+      S('railMeasure', function () { if (window.__ncRailMeasure) window.__ncRailMeasure(); });
+      S('centreMatter', centreMatter);
+      S('seatPlateBody', seatPlateBody);
+      S('seatWordClips', seatWordClips);
+      S('seatSwapCols', seatSwapCols);
+      S('seatRowTitles', seatRowTitles);
+      S('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
-    step('seatRowGaps#2', seatRowGaps);
+      S('seatRowGaps#2', seatRowGaps);
     // the margin's names were seated (fitSubscribeLines) before the
     // rows were drawn together, so their rests are read again here
-    step('fitLatestStack#2', fitLatestStack);
+      S('fitLatestStack#2', fitLatestStack);
     // (last of all, once nothing moves the cards again: every picture on
     // whole pixels — 2026-09-23)
-    step('snapPictures', snapPictures);
+      S('snapPictures', snapPictures);
     // (a postscript's width changed this pass — seatRowTitles: once more)
-    if (rowKDirty && !rowKAgain) {
+    if (rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
     }
@@ -6902,6 +6943,7 @@
     if (!rowKAgain) step('reseatHalos', reseatHalos);
   }
   var rowKDirty = false, rowKAgain = false;
+  var firstOfTwo = false;
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
   // courier lines standing in the gap (rowInk) — ink to ink before.
   // With the frames struck
