@@ -8192,7 +8192,8 @@
   // THE SLIDE IS 72 LESS (2026-10-01, "I want slide to be 72px less"):
   // the picture's travel, and the preview column it reveals, are this
   // much shorter than the narrower picture's width and the gutter
-  var SLIDE_LESS = 72;
+  // (…AND 36 LESS AGAIN, later the same day, "slide 36px less": 108)
+  var SLIDE_LESS = 108;
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
