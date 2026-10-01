@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=fd3b74eb">
+<link rel="stylesheet" href="style.css?v=8c34d6c7">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4675,6 +4675,7 @@
     step('fitLatestStack#2', fitLatestStack);
     step('snapPictures', snapPictures);
     step('seatSlides', seatSlides);
+    step('seatPeekCorners', seatPeekCorners);
     if (rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
@@ -5476,14 +5477,6 @@
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
       var dx = (wc + gap) * (right ? 1 : -1);
-      var foot = P.b;
-      [card, mate].forEach(function (c) {
-        var cr = c.getBoundingClientRect(), rr = restRect(c), oy = cr.top - rr.top;
-        [].forEach.call(c.querySelectorAll('.swap-col .swap-line, .cover-meta'), function (el) {
-          var r = el.getBoundingClientRect();
-          if (r.width && r.height && (el.textContent || '').trim()) foot = Math.max(foot, r.bottom - oy);
-        });
-      });
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -5498,7 +5491,7 @@
       ss.left = (P.l - SLIDE_MARGIN - cr0.left).toFixed(2) + 'px';
       ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
       ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
-      ss.height = (foot - P.t + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
+      ss.height = (P.b - P.t + SLIDE_MARGIN).toFixed(2) + 'px';
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -5507,6 +5500,41 @@
         bs.width = wc.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
+    });
+  }
+  function seatPeekCorners() {
+    [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
+      if (card.matches('.is-opening, .is-shutting')) return;
+      var P = slidePic(card);
+      if (!P) return;
+      var cr0 = restRect(card), cr = card.getBoundingClientRect();
+      var ox = cr.left - cr0.left, oy = cr.top - cr0.top;
+      var line = null, lo = Infinity;
+      [].forEach.call(card.querySelectorAll('.cover-meta'), function (el) {
+        if (el.closest('.peek-corner')) return;
+        var r = el.getBoundingClientRect();
+        if (!r.width || !r.height || !(el.textContent || '').trim() || r.top - oy < P.b - 1) return;
+        if (!line || r.top < line.top - 1) line = { top: r.top - oy, h: r.height, el: el };
+        lo = Math.min(lo, r.left - ox);
+      });
+      var btn = card.querySelector(':scope > .peek-corner');
+      if (!line) { if (btn) btn.style.display = 'none'; return; }
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'peek-corner';
+        btn.innerHTML = '<span class="pk-open">Preview</span><span class="pk-shut">Close</span>';
+        card.appendChild(btn);
+      }
+      var cs = getComputedStyle(line.el), b = btn.style;
+      b.removeProperty('display');
+      b.fontFamily = cs.fontFamily; b.fontSize = cs.fontSize; b.fontWeight = cs.fontWeight;
+      b.letterSpacing = cs.letterSpacing; b.textTransform = cs.textTransform; b.lineHeight = cs.lineHeight;
+      b.top = (line.top - cr0.top).toFixed(2) + 'px';
+      b.height = line.h.toFixed(2) + 'px';
+      var atLeft = Math.abs(lo - P.l) < 2;
+      if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
+      else { b.right = 'auto'; b.left = (P.l - cr0.left).toFixed(2) + 'px'; }
     });
   }
   function seatSwapCols() {
@@ -5599,7 +5627,7 @@
       }
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
-      if (j.slide) j.bp = { l: 0, r: 0, t: 0, b: 0 };
+      if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -7273,6 +7301,8 @@
           var m = s.querySelector('.duo-half--mega.is-open');
           var po = m && m.querySelector('.peek-open');
           if (po) po.click();
+          var u = s.querySelector('.duo-half--mega');
+          if (u) { u.classList.add('is-under'); card.__under = u; }
         });
       }
       if (shutTimer) { clearTimeout(shutTimer); shutTimer = 0; }
@@ -7286,6 +7316,7 @@
       if (openTimer) { clearTimeout(openTimer); openTimer = 0; }
       card.classList.remove('is-opening', 'is-inbox');
       card.classList.remove('is-open'); travel();
+      if (card.__under) { card.__under.classList.remove('is-under'); card.__under = null; }
       card.classList.add('is-shutting');
       if (shutTimer) clearTimeout(shutTimer);
       shutTimer = setTimeout(function () { shutTimer = 0; card.classList.remove('is-shutting'); }, SHUT);
@@ -7312,7 +7343,7 @@
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
     card.addEventListener('click', function (e) {
-      if (hit(e, '.peek-open')) {
+      if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
         if (card.classList.contains('is-open')) {
           shut();
@@ -7377,8 +7408,6 @@
 (function () {
   var ESSAYS = '.duo-half--mega';
   var READ = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M8 4h8v8M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var SHUT = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
-  var PEEK = '<svg width="12" height="12" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 3h5v5M17 3L3 17M8 17H3v-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function picBox(card) {
     var t = card.querySelector('.card-title.hl-rect.rx');
     if (!t) return null;
@@ -7402,18 +7431,11 @@
   function acts(card) {
     if (card.__acts) return card.__acts;
     var link = card.querySelector('a.card-image-link') || card.querySelector('a[href]');
-    var el = document.createElement('div');
+    var el = document.createElement('a');
     el.className = 'essay-acts';
-    el.innerHTML = '<a class="essay-act essay-act--read" href="' + (link ? link.getAttribute('href') : '#') + '">' + (card.classList.contains('duo-half--kind-postscript') ? 'Read Interview' : card.classList.contains('duo-half--kind-contra') ? 'Read Review' : 'Read Essay') + READ + '</a>'
-      + '<span class="essay-act-sep" aria-hidden="true">\u00B7</span>'
-      + '<button type="button" class="essay-act essay-act--peek">Preview' + PEEK + '</button>';
-    el.querySelector('.essay-act--peek').addEventListener('click', function (e) {
-      e.preventDefault(); e.stopPropagation();
-      var po = card.querySelector('.peek-open');
-      if (po) po.click();
-      hold(card);
-      hide();
-    });
+    el.href = link ? link.getAttribute('href') : '#';
+    var word = card.classList.contains('duo-half--kind-postscript') ? 'Read Interview' : card.classList.contains('duo-half--kind-contra') ? 'Read Review' : 'Read Essay';
+    el.innerHTML = '<span class="essay-act essay-act--read">' + word + READ + '</span>';
     card.appendChild(el);
     card.__acts = el;
     return el;
@@ -7448,9 +7470,6 @@
   }
   function show(card, box) {
     place(card, box);
-    var pk = acts(card).querySelector('.essay-act--peek');
-    var shut = card.classList.contains('is-open');
-    if (pk && pk.__shut !== shut) { pk.innerHTML = shut ? 'Close' + SHUT : 'Preview' + PEEK; pk.__shut = shut; }
     if (shown !== card) hide();
     card.classList.add('is-acts');
     shown = card;
