@@ -5272,6 +5272,10 @@
     var movs = [].filter.call(rows.children, function (el) { return el.classList.contains('movement'); });
     if (!movs.length) return [];
     var out = movs.slice(1);
+    for (var sib = movs[0].nextElementSibling; sib; sib = sib.nextElementSibling) {
+      if (sib.classList.contains('sub-ticker--pin')) continue;
+      if (out.indexOf(sib) < 0) out.push(sib);
+    }
     out.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
     var body = movs[0].querySelector('.movement-body');
     if (!body) return out;
