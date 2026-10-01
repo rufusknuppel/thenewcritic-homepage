@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a7fa8bbf">
+<link rel="stylesheet" href="style.css?v=65a37365">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -65,9 +65,14 @@
     if (hex && hex !== YELLOW) {
       root.style.setProperty('--nc-mark', hex);
       root.style.setProperty('--hl-ink', inkOn(hex));
+      var lightInk = inkOn(hex) === WHITE;
+      root.style.setProperty('--band-ink', lightInk ? '#FFFFFF' : '#000000');
+      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#FFFFFF');
     } else {
       root.style.removeProperty('--nc-mark');
       root.style.removeProperty('--hl-ink');
+      root.style.removeProperty('--band-ink');
+      root.style.removeProperty('--band-hover');
     }
   };
   var store = function (mode) {
@@ -93,6 +98,10 @@
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
     paint(chosen === 'light' ? 'light' : 'dark');
+  } catch (e) {}
+  try {
+    var kept = hexOf(localStorage.getItem('nc-accent'));
+    if (kept && kept !== YELLOW) { accent = kept; mark(kept); }
   } catch (e) {}
   try {
     var qHex = hexOf(new URLSearchParams(location.search).get('hex'));
@@ -123,8 +132,8 @@
     return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   };
   var field = null;
-  var openField = function () {
-    field = field || document.querySelector('.theme-hex');
+  var openField = function (b) {
+    field = (b && b.parentNode && b.parentNode.querySelector('.theme-hex')) || document.querySelector('.theme-hex');
     if (!field) return;
     field.value = accent || YELLOW;
     field.hidden = false;
@@ -148,7 +157,7 @@
     var b = e.target && e.target.closest && e.target.closest('.theme-toggle');
     if (!b) return;
     var t = e.target.closest('.theme-toggle-light, .theme-toggle-dark, .theme-toggle-hex');
-    if (t && t.classList.contains('theme-toggle-hex')) { openField(); return; }
+    if (t && t.classList.contains('theme-toggle-hex')) { openField(b); return; }
     var mode = t ? (t.classList.contains('theme-toggle-light') ? 'light' : 'dark')
       : (current() === 'light' ? 'dark' : 'light');
     closeField();
