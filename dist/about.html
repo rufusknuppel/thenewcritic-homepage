@@ -4611,16 +4611,19 @@
     step('seatPlateMargins', seatPlateMargins);
     step('inkCenterBands', inkCenterBands);
     step('alignBands', alignBands);
+    step('fitBands', fitBands);
     step('wmSize', function () {
       var name = document.querySelector('.site-nav--top .topbar-name');
       var wm = name && (name.closest('.topbar-wordmark') || name.parentElement);
       var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
       var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2);
+      if (wmKey === wmSizeKey) return;
       if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve });
+      wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });
     step('fitMastheadFill', fitMastheadFill);
-    step('fitBands', fitBands);
     step('inkCenterDeks', inkCenterDeks);
     step('seatBandMid', seatBandMid);
     step('fitGroundStops', fitGroundStops);
@@ -4673,6 +4676,7 @@
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
+  var wmSizeKey = '';
   var ROW_GAP = 36;
   var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
   function fitStdWidth() {
@@ -5285,7 +5289,7 @@
     }
     return best ? best.bottom - faceBox(node).d : null;
   }
-  function sealPreview(bt, cap, lh) {
+  function sealPlan(bt, cap, lh) {
     var box = bt.getBoundingClientRect();
     var maxB = cap != null ? box.top + cap + (lh ? lh / 2 : 0.5) : Infinity, maxR = box.right + 0.5;
     var words = [];
@@ -5294,7 +5298,7 @@
       var re = /\S+/g, m;
       while ((m = re.exec(n.nodeValue))) words.push({ n: n, s: m.index, e: m.index + m[0].length });
     }
-    if (!words.length) return;
+    if (!words.length) return null;
     var rg = document.createRange();
     var shows = function (w, s, e) {
       rg.setStart(w.n, s); rg.setEnd(w.n, e);
@@ -5307,19 +5311,35 @@
       while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (shows(words[mid], words[mid].s, words[mid].e)) lo = mid; else hi = mid; }
       k = lo;
     }
-    if (k < 0) return;
-    for (; k >= 0; k--) {
-      var w = words[k];
-      rg.setStart(w.n, w.e); rg.setEnd(bt, bt.childNodes.length);
-      rg.deleteContents();
-      var head = w.n.nodeValue.slice(0, w.e);
-      if (/\u2026\s*$/.test(head) && k === words.length - 1) { w.n.nodeValue = head; break; }
-      w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
-      var end = w.n.nodeValue.length;
-      if (end > 0 && shows(w, end - 1, end)) break;
-      w.n.nodeValue = head.slice(0, w.s);
+    if (k < 0) return null;
+    return { bt: bt, words: words, rg: rg, shows: shows, k: k, done: false };
+  }
+  function sealWrite(s) {
+    var w = s.words[s.k];
+    s.rg.setStart(w.n, w.e); s.rg.setEnd(s.bt, s.bt.childNodes.length);
+    s.rg.deleteContents();
+    var head = w.n.nodeValue.slice(0, w.e);
+    if (/\u2026\s*$/.test(head) && s.k === s.words.length - 1) { w.n.nodeValue = head; s.done = true; return; }
+    w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
+    s.w = w; s.head = head; s.end = w.n.nodeValue.length;
+  }
+  function sealCheck(s) {
+    if (s.end > 0 && s.shows(s.w, s.end - 1, s.end)) { s.done = true; return; }
+    s.w.n.nodeValue = s.head.slice(0, s.w.s);
+    s.k--;
+    if (s.k < 0) s.done = true;
+  }
+  function sealAll(list) {
+    var open = [];
+    list.forEach(function (x) { var s = sealPlan(x.bt, x.cap, x.lh); if (s) open.push(s); });
+    while (open.length) {
+      open.forEach(sealWrite);
+      open = open.filter(function (s) { return !s.done; });
+      open.forEach(sealCheck);
+      open = open.filter(function (s) { return !s.done; });
     }
   }
+  function sealPreview(bt, cap, lh) { sealAll([{ bt: bt, cap: cap, lh: lh }]); }
   function swapTokens(text) {
     var out = [];
     text.split(/\s+/).forEach(function (w) {
@@ -5392,7 +5412,7 @@
         for (var k in set) if (c.style.getPropertyValue(k) !== set[k]) { c.style.setProperty(k, set[k]); changed = true; }
       });
     });
-    if (changed) seatSwapCols();
+    if (changed && !firstOfTwo) seatSwapCols();
   }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
@@ -5513,6 +5533,7 @@
         j.card.style.setProperty('--sw-x', j.sx.toFixed(2) + 'px');
         j.card.style.setProperty('--sw-y', j.sy.toFixed(2) + 'px');
         if (j.body && j.Bd) {
+          j.set = true;
           var bs = j.body.style;
           bs.left = (j.Bd.l - j.cr0.left).toFixed(2) + 'px';
           bs.top = (j.Bd.t - j.cr0.top).toFixed(2) + 'px';
@@ -5521,8 +5542,8 @@
           bs.padding = j.bp.t + 'px ' + j.bp.r + 'px ' + j.bp.b + 'px ' + j.bp.l + 'px';
           var bt = j.body.querySelector(':scope > .swap-body-text') || j.body.firstElementChild;
           if (bt && j.bfont) {
+            j.bt = bt;
             for (var kf in j.bfont) if (j.bfont[kf]) bt.style[kf] = j.bfont[kf];
-            var pdk = null, pdkH = 0;
             if (j.cols2 && !j.body.querySelector(':scope > .swap-body-close')) {
               var cx = document.createElement('button');
               cx.type = 'button';
@@ -5537,58 +5558,30 @@
               j.body.appendChild(cx);
             }
             if (j.cols2) {
-              pdk = j.body.querySelector(':scope > .swap-body-dek');
+              var pdk = j.body.querySelector(':scope > .swap-body-dek');
               if (!pdk) { pdk = document.createElement('span'); pdk.className = 'swap-body-dek'; j.body.insertBefore(pdk, bt); }
               var srcDek = j.dek;
               pdk.innerHTML = srcDek ? srcDek.innerHTML : '';
               if (j.dfont) for (var kd in j.dfont) if (j.dfont[kd]) pdk.style[kd] = j.dfont[kd];
               pdk.style.transform = 'none';
               pdk.style.marginBottom = SWAP_PAD + 'px';
-              pdkH = pdk.textContent.trim() ? pdk.getBoundingClientRect().height + SWAP_PAD : 0;
-              if (!pdkH) pdk.style.display = 'none'; else pdk.style.removeProperty('display');
-            }
-            var rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - pdkH + 0.5) / j.blh));
-            if (j.cols2) {
+              j.pdk = pdk;
               bt.style.removeProperty('-webkit-line-clamp');
               if (bt.__src == null) bt.__src = bt.innerHTML;
               else if (bt.innerHTML !== bt.__src) bt.innerHTML = bt.__src;
-              var one = j.ncol === 1;
-              if (one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
+              j.one = j.ncol === 1;
+              if (j.one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
               bt.style.columnGap = SWAP_PAD + 'px';
               bt.style.columnFill = 'balance';
               bt.style.height = 'auto';
               bt.style.maxHeight = 'none';
-              bt.style.overflow = one ? 'hidden' : '';
-              var natural = bt.getBoundingClientRect().height;
-              var cap = rows * j.blh;
-              bt.style.flexShrink = '0';
-              bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
-              var ncol = one ? 1 : 2;
-              var H = levelRows(paraLines(bt, ncol, SWAP_PAD, j.blh), ncol, rows);
-              var shut = H ? H * j.blh : (natural > cap + 0.5 ? cap : null);
-              if (shut != null) {
-                bt.style.columnFill = 'auto';
-                bt.style.height = (shut + 1).toFixed(2) + 'px';
-                bt.style.maxHeight = (shut + 1).toFixed(2) + 'px';
-              }
-              sealPreview(bt, shut, j.blh);
-              bt.style.transform = 'none';
-              var bb = j.body.getBoundingClientRect(), tb = bt.getBoundingClientRect();
-              var inT = (pdk && pdkH) ? firstInkTop(pdk) : null;
-              if (inT == null) inT = firstInkTop(bt);
-              var inB = lastBaselineIn(bt, tb, j.blh);
-              if (inT == null || inB == null) inT = Infinity;
-              if (isFinite(inT)) {
-                var shY = 'translateY(' + (((bb.bottom - inB) - (inT - bb.top)) / 2).toFixed(2) + 'px)';
-                bt.style.transform = shY;
-                if (pdk) pdk.style.transform = shY;
-              }
+              bt.style.overflow = j.one ? 'hidden' : '';
             } else {
-              bt.style.setProperty('-webkit-line-clamp', String(rows));
-              bt.style.maxHeight = (rows * j.blh).toFixed(2) + 'px';
+              var rows1 = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b + 0.5) / j.blh));
+              bt.style.setProperty('-webkit-line-clamp', String(rows1));
+              bt.style.maxHeight = (rows1 * j.blh).toFixed(2) + 'px';
             }
           }
-          j.body.classList.add('is-set');
         }
       } else if (j.body) j.body.classList.remove('is-set');
       if (j.sd && j.dfont) {
@@ -5598,6 +5591,46 @@
         if (j.under) j.sd.style.top = '0px'; else j.sd.style.removeProperty('top');
       }
     });
+    var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
+    twos.forEach(function (j) { j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0; });
+    twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
+    twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
+    twos.forEach(function (j) {
+      j.bt.style.flexShrink = '0';
+      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+    });
+    twos.forEach(function (j) {
+      j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
+      var ncol = j.one ? 1 : 2;
+      j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
+    });
+    twos.forEach(function (j) {
+      var cap = j.rows * j.blh;
+      j.shut = j.H ? j.H * j.blh : (j.natural > cap + 0.5 ? cap : null);
+      if (j.shut != null) {
+        j.bt.style.columnFill = 'auto';
+        j.bt.style.height = (j.shut + 1).toFixed(2) + 'px';
+        j.bt.style.maxHeight = (j.shut + 1).toFixed(2) + 'px';
+      }
+    });
+    sealAll(twos.map(function (j) { return { bt: j.bt, cap: j.shut, lh: j.blh }; }));
+    twos.forEach(function (j) { j.bt.style.transform = 'none'; });
+    twos.forEach(function (j) {
+      j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      var inT = (j.pdk && j.pdkH) ? firstInkTop(j.pdk) : null;
+      if (inT == null) inT = firstInkTop(j.bt);
+      var inB = lastBaselineIn(j.bt, j.tb, j.blh);
+      if (inT == null || inB == null) inT = Infinity;
+      j.inT = inT; j.inB = inB;
+    });
+    twos.forEach(function (j) {
+      if (isFinite(j.inT)) {
+        var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
+        j.bt.style.transform = shY;
+        if (j.pdk) j.pdk.style.transform = shY;
+      }
+    });
+    jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
     jobs.forEach(function (j) { j.dh = j.sd ? j.sd.getBoundingClientRect().height + SWAP_GAP : 0; });
     jobs.forEach(function (j) {
       var text = j.st.getAttribute('data-text') || '';

@@ -6827,6 +6827,14 @@
     // it at the mid-pass fit event. The name's size is the width's alone,
     // so it is stated here before anything reads it, and the pass that
     // follows is the last.
+    // THE BANDS ARE SEATED BEFORE THE MASTHEAD IS FILLED (2026-10-01): the
+    // name's air over its caps is the strip's inset to its Garamond, and
+    // the fill read that inset off a strip fitBands had not yet seated —
+    // 30 short — wrote the masthead's height off it, and had the whole
+    // page laid out again on the right height at its second call. The
+    // strip's own seat owes the masthead nothing, so it goes first and the
+    // first fill is the last; the second call stays and finds nothing to do.
+    step('fitBands', fitBands);
     step('wmSize', function () {
       var name = document.querySelector('.site-nav--top .topbar-name');
       var wm = name && (name.closest('.topbar-wordmark') || name.parentElement);
@@ -6835,11 +6843,15 @@
       // another at the fit event, and asked for a pass without end)
       var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
       var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+      // (its size is the width's and the stack's alone: the second run
+      // of a pass has nothing to find, and the ink scan is spared)
+      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2);
+      if (wmKey === wmSizeKey) return;
       if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve });
+      wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });
     step('fitMastheadFill', fitMastheadFill);
-    step('fitBands', fitBands);
     step('inkCenterDeks', inkCenterDeks);
     step('seatBandMid', seatBandMid);
     step('fitGroundStops', fitGroundStops);
@@ -6949,6 +6961,7 @@
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
+  var wmSizeKey = '';
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
   // courier lines standing in the gap (rowInk) — ink to ink before.
   // With the frames struck
@@ -7966,10 +7979,14 @@
     }
     return best ? best.bottom - faceBox(node).d : null;
   }
-  function sealPreview(bt, cap, lh) {
+  // THE SEALS IN ROUNDS (2026-10-01): sealPreview cut one text and read
+  // it back before the next, a layout or three a card. The plan (the
+  // last word that shows: reads alone) is drawn for every text first,
+  // then each round writes every text's cut and reads them all back at
+  // once, until every text has its ellipsis in view — the same writes
+  // and reads each text saw before, in the same order, a layout a round.
+  function sealPlan(bt, cap, lh) {
     var box = bt.getBoundingClientRect();
-    // (a line shows if its box ends inside the cap, give or take half a
-    // line: a face's text box can stand a hair past its line's)
     var maxB = cap != null ? box.top + cap + (lh ? lh / 2 : 0.5) : Infinity, maxR = box.right + 0.5;
     var words = [];
     var tw = document.createTreeWalker(bt, NodeFilter.SHOW_TEXT);
@@ -7977,7 +7994,7 @@
       var re = /\S+/g, m;
       while ((m = re.exec(n.nodeValue))) words.push({ n: n, s: m.index, e: m.index + m[0].length });
     }
-    if (!words.length) return;
+    if (!words.length) return null;
     var rg = document.createRange();
     var shows = function (w, s, e) {
       rg.setStart(w.n, s); rg.setEnd(w.n, e);
@@ -7990,19 +8007,38 @@
       while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (shows(words[mid], words[mid].s, words[mid].e)) lo = mid; else hi = mid; }
       k = lo;
     }
-    if (k < 0) return;
-    for (; k >= 0; k--) {
-      var w = words[k];
-      rg.setStart(w.n, w.e); rg.setEnd(bt, bt.childNodes.length);
-      rg.deleteContents();
-      var head = w.n.nodeValue.slice(0, w.e);
-      if (/\u2026\s*$/.test(head) && k === words.length - 1) { w.n.nodeValue = head; break; }
-      w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
-      var end = w.n.nodeValue.length;
-      if (end > 0 && shows(w, end - 1, end)) break;
-      w.n.nodeValue = head.slice(0, w.s);
+    if (k < 0) return null;
+    return { bt: bt, words: words, rg: rg, shows: shows, k: k, done: false };
+  }
+  // (one round's write: the cut after word k and the ellipsis on it)
+  function sealWrite(s) {
+    var w = s.words[s.k];
+    s.rg.setStart(w.n, w.e); s.rg.setEnd(s.bt, s.bt.childNodes.length);
+    s.rg.deleteContents();
+    var head = w.n.nodeValue.slice(0, w.e);
+    if (/\u2026\s*$/.test(head) && s.k === s.words.length - 1) { w.n.nodeValue = head; s.done = true; return; }
+    w.n.nodeValue = head.replace(TRAIL_PUNCT, '') + '\u2026';
+    s.w = w; s.head = head; s.end = w.n.nodeValue.length;
+  }
+  // (one round's read: the ellipsis in view, or the word dropped and the
+  // next round on the word before)
+  function sealCheck(s) {
+    if (s.end > 0 && s.shows(s.w, s.end - 1, s.end)) { s.done = true; return; }
+    s.w.n.nodeValue = s.head.slice(0, s.w.s);
+    s.k--;
+    if (s.k < 0) s.done = true;
+  }
+  function sealAll(list) {
+    var open = [];
+    list.forEach(function (x) { var s = sealPlan(x.bt, x.cap, x.lh); if (s) open.push(s); });
+    while (open.length) {
+      open.forEach(sealWrite);
+      open = open.filter(function (s) { return !s.done; });
+      open.forEach(sealCheck);
+      open = open.filter(function (s) { return !s.done; });
     }
   }
+  function sealPreview(bt, cap, lh) { sealAll([{ bt: bt, cap: cap, lh: lh }]); }
   function swapTokens(text) {
     var out = [];
     text.split(/\s+/).forEach(function (w) {
@@ -8092,7 +8128,9 @@
         for (var k in set) if (c.style.getPropertyValue(k) !== set[k]) { c.style.setProperty(k, set[k]); changed = true; }
       });
     });
-    if (changed) seatSwapCols();
+    // (the first of the pass's two runs leaves this to the second, which
+    // swaps every column again over the rows it finds: 2026-10-01)
+    if (changed && !firstOfTwo) seatSwapCols();
   }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
@@ -8268,6 +8306,17 @@
       if (img) { j.pos = getComputedStyle(img).objectPosition; if (!j.card.style.getPropertyValue('--swap-img')) swapImg(j.card, img); }
     });
     // WRITE: the column's seat, the dek's face and measure
+    // WRITTEN TO EVERY CARD, THEN READ OFF ALL OF THEM (2026-10-01): this
+    // loop wrote each card's column, body and preview text and read them
+    // back before it went on to the next — four or five forced layouts a
+    // card, a hundred and twenty a pass, a third of a second. Its writes
+    // go to every card first and its reads are taken off all of them at
+    // once, in the turns the old loop took for one card: the dek's
+    // height; the dek shown or not, and the text's natural height before
+    // its width is stated (the body's flex shrinks it, and the dek's
+    // presence tells); the lines at that width; the cut; the seal (which
+    // reads and writes each text in turn still, a layout a card); and the
+    // ink, for the centring. The values are the loop's own, in its order.
     jobs.forEach(function (j) {
       var s = j.col.style;
       s.left = j.I.l.toFixed(2) + 'px'; s.top = j.I.t.toFixed(2) + 'px';
@@ -8278,6 +8327,7 @@
         j.card.style.setProperty('--sw-x', j.sx.toFixed(2) + 'px');
         j.card.style.setProperty('--sw-y', j.sy.toFixed(2) + 'px');
         if (j.body && j.Bd) {
+          j.set = true;
           var bs = j.body.style;
           bs.left = (j.Bd.l - j.cr0.left).toFixed(2) + 'px';
           bs.top = (j.Bd.t - j.cr0.top).toFixed(2) + 'px';
@@ -8286,10 +8336,10 @@
           bs.padding = j.bp.t + 'px ' + j.bp.r + 'px ' + j.bp.b + 'px ' + j.bp.l + 'px';
           var bt = j.body.querySelector(':scope > .swap-body-text') || j.body.firstElementChild;
           if (bt && j.bfont) {
+            j.bt = bt;
             for (var kf in j.bfont) if (j.bfont[kf]) bt.style[kf] = j.bfont[kf];
             // (an essay's dek stands in its preview, centred over the two
             // columns, 36 above them: 2026-09-23)
-            var pdk = null, pdkH = 0;
             if (j.cols2 && !j.body.querySelector(':scope > .swap-body-close')) {
               var cx = document.createElement('button');
               cx.type = 'button';
@@ -8304,18 +8354,14 @@
               j.body.appendChild(cx);
             }
             if (j.cols2) {
-              pdk = j.body.querySelector(':scope > .swap-body-dek');
+              var pdk = j.body.querySelector(':scope > .swap-body-dek');
               if (!pdk) { pdk = document.createElement('span'); pdk.className = 'swap-body-dek'; j.body.insertBefore(pdk, bt); }
               var srcDek = j.dek;
               pdk.innerHTML = srcDek ? srcDek.innerHTML : '';
               if (j.dfont) for (var kd in j.dfont) if (j.dfont[kd]) pdk.style[kd] = j.dfont[kd];
               pdk.style.transform = 'none';
               pdk.style.marginBottom = SWAP_PAD + 'px';
-              pdkH = pdk.textContent.trim() ? pdk.getBoundingClientRect().height + SWAP_PAD : 0;
-              if (!pdkH) pdk.style.display = 'none'; else pdk.style.removeProperty('display');
-            }
-            var rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - pdkH + 0.5) / j.blh));
-            if (j.cols2) {
+              j.pdk = pdk;
               // (two columns, filled in turn and cut on a whole line — or,
               // where the whole preview fits, balanced between the two at
               // its own height: either way the block stands centred in
@@ -8324,59 +8370,21 @@
               // (the text as it was built, whatever the last pass cut)
               if (bt.__src == null) bt.__src = bt.innerHTML;
               else if (bt.innerHTML !== bt.__src) bt.innerHTML = bt.__src;
-              var one = j.ncol === 1;
+              j.one = j.ncol === 1;
               // (one column is no multicol at all: a multicol of one cut
               // to a height runs its overflow on in columns to the side)
-              if (one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
+              if (j.one) bt.style.removeProperty('column-count'); else bt.style.columnCount = '2';
               bt.style.columnGap = SWAP_PAD + 'px';
               bt.style.columnFill = 'balance';
               bt.style.height = 'auto';
               bt.style.maxHeight = 'none';
-              bt.style.overflow = one ? 'hidden' : '';
-              var natural = bt.getBoundingClientRect().height;
-              var cap = rows * j.blh;
-              // (the columns level, each opening and closing on a line:
-              // BOTH COLUMNS OPEN AND CLOSE ON A LINE, above; the height
-              // is given a pixel over its lines so the last one is not
-              // pushed on by the engine's rounding of the leading, and
-              // the body's flex may not take that pixel back; and the
-              // measure is fixed here, where the lines are counted and
-              // cut: snapPictures later lays the box on whole pixels, a
-              // hair narrower, and a line cut full to the hair ran its
-              // last word, …, out into a third column)
-              bt.style.flexShrink = '0';
-              bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
-              var ncol = one ? 1 : 2;
-              var H = levelRows(paraLines(bt, ncol, SWAP_PAD, j.blh), ncol, rows);
-              var shut = H ? H * j.blh : (natural > cap + 0.5 ? cap : null);
-              if (shut != null) {
-                bt.style.columnFill = 'auto';
-                bt.style.height = (shut + 1).toFixed(2) + 'px';
-                bt.style.maxHeight = (shut + 1).toFixed(2) + 'px';
-              }
-              sealPreview(bt, shut, j.blh);
-              // (and centred by what it SHOWS, by its ink: as much air
-              // from the box's top to the painted top of the dek's first
-              // line as from the columns' last baseline to the box's
-              // foot — PADDING EVEN OVER AND UNDER, 2026-09-24; it was
-              // the dek's box and the last line's box)
-              bt.style.transform = 'none';
-              var bb = j.body.getBoundingClientRect(), tb = bt.getBoundingClientRect();
-              var inT = (pdk && pdkH) ? firstInkTop(pdk) : null;
-              if (inT == null) inT = firstInkTop(bt);
-              var inB = lastBaselineIn(bt, tb, j.blh);
-              if (inT == null || inB == null) inT = Infinity;
-              if (isFinite(inT)) {
-                var shY = 'translateY(' + (((bb.bottom - inB) - (inT - bb.top)) / 2).toFixed(2) + 'px)';
-                bt.style.transform = shY;
-                if (pdk) pdk.style.transform = shY;
-              }
+              bt.style.overflow = j.one ? 'hidden' : '';
             } else {
-              bt.style.setProperty('-webkit-line-clamp', String(rows));
-              bt.style.maxHeight = (rows * j.blh).toFixed(2) + 'px';
+              var rows1 = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b + 0.5) / j.blh));
+              bt.style.setProperty('-webkit-line-clamp', String(rows1));
+              bt.style.maxHeight = (rows1 * j.blh).toFixed(2) + 'px';
             }
           }
-          j.body.classList.add('is-set');
         }
       } else if (j.body) j.body.classList.remove('is-set');
       if (j.sd && j.dfont) {
@@ -8388,6 +8396,68 @@
         if (j.under) j.sd.style.top = '0px'; else j.sd.style.removeProperty('top');
       }
     });
+    var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
+    // READ: the deks' heights
+    twos.forEach(function (j) { j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0; });
+    // WRITE: the dek shown or not
+    twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
+    // READ: the texts' natural heights
+    twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
+    // WRITE: the texts at their width
+    // (the columns level, each opening and closing on a line:
+    // BOTH COLUMNS OPEN AND CLOSE ON A LINE, above; the height
+    // is given a pixel over its lines so the last one is not
+    // pushed on by the engine's rounding of the leading, and
+    // the body's flex may not take that pixel back; and the
+    // measure is fixed here, where the lines are counted and
+    // cut: snapPictures later lays the box on whole pixels, a
+    // hair narrower, and a line cut full to the hair ran its
+    // last word, …, out into a third column)
+    twos.forEach(function (j) {
+      j.bt.style.flexShrink = '0';
+      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+    });
+    // READ: the lines
+    twos.forEach(function (j) {
+      j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
+      var ncol = j.one ? 1 : 2;
+      j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
+    });
+    // WRITE: the cut
+    twos.forEach(function (j) {
+      var cap = j.rows * j.blh;
+      j.shut = j.H ? j.H * j.blh : (j.natural > cap + 0.5 ? cap : null);
+      if (j.shut != null) {
+        j.bt.style.columnFill = 'auto';
+        j.bt.style.height = (j.shut + 1).toFixed(2) + 'px';
+        j.bt.style.maxHeight = (j.shut + 1).toFixed(2) + 'px';
+      }
+    });
+    sealAll(twos.map(function (j) { return { bt: j.bt, cap: j.shut, lh: j.blh }; }));
+    // (and centred by what it SHOWS, by its ink: as much air
+    // from the box's top to the painted top of the dek's first
+    // line as from the columns' last baseline to the box's
+    // foot — PADDING EVEN OVER AND UNDER, 2026-09-24; it was
+    // the dek's box and the last line's box)
+    twos.forEach(function (j) { j.bt.style.transform = 'none'; });
+    // READ: the ink
+    twos.forEach(function (j) {
+      j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      var inT = (j.pdk && j.pdkH) ? firstInkTop(j.pdk) : null;
+      if (inT == null) inT = firstInkTop(j.bt);
+      var inB = lastBaselineIn(j.bt, j.tb, j.blh);
+      if (inT == null || inB == null) inT = Infinity;
+      j.inT = inT; j.inB = inB;
+    });
+    // WRITE: the centring, and the bodies set
+    twos.forEach(function (j) {
+      if (isFinite(j.inT)) {
+        var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
+        j.bt.style.transform = shY;
+        if (j.pdk) j.pdk.style.transform = shY;
+      }
+    });
+    jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
     // READ: the deks' heights, all at once
     jobs.forEach(function (j) { j.dh = j.sd ? j.sd.getBoundingClientRect().height + SWAP_GAP : 0; });
     // WRITE: the title, sized on the canvas
