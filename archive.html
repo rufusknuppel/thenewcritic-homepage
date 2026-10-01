@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=6fa0b76d">
+<link rel="stylesheet" href="style.css?v=8e60eb76">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -1350,9 +1350,6 @@
     <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     <p class="band-deks band-name"><span>Est. May 2025</span></p>
   </nav>
-  <section class="reprint">
-    <a class="reprint-name" href="./#top" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
-  </section>
   <div class="foot-field" aria-hidden="true"></div>
   </div>
   <div class="marginalia">
@@ -3952,7 +3949,8 @@
     var SIZE_SIDE = (opts && opts.sizeSide != null) ? opts.sizeSide : 72;
     var cw = document.documentElement.clientWidth;
     var vw = cw - SIDE * 2;
-    var vwSize = cw - SIZE_SIDE * 2;
+    var RESERVE = (opts && opts.reserveRight > 0) ? opts.reserveRight : 0;
+    var vwSize = cw - SIZE_SIDE * 2 - RESERVE;
     var s0 = parseFloat(getComputedStyle(name).fontSize);
     if (!s0 || !vw || !vwSize) return;
     var i0 = inkSpanOf(name);
@@ -3969,7 +3967,9 @@
     var ink1 = i1.right - i1.left;
     void vw;
     var headL = headLeftOf(wm);
-    var inkAt = headL != null ? wb.left + headL : wb.left + (wb.width - ink1) / 2;
+    var inkAt = headL != null ? wb.left + headL
+      : RESERVE ? wb.left + SIZE_SIDE
+      : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
     var size = parseFloat(ncs.fontSize) || 0;
@@ -4065,7 +4065,9 @@
       var base = r.top + (r.height - (fa + fd)) / 2 + fa;
       return { cap: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
     };
-    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE });
+    var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
+    var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R });
     if (!f) return;
     var ni = nameInk();
     if (ni) {
@@ -4073,7 +4075,7 @@
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
-        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE }) || f;
+        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R }) || f;
       }
     }
     document.documentElement.style.setProperty('--masthead-air', AIR.toFixed(2) + 'px');
@@ -5712,11 +5714,13 @@
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
                 var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
                 if (topStrip && topStrip.offsetHeight > 0) {
-                  var railFoot = 0;
+                  var railFoot = 0, railFirst = true;
                   for (var rEl = topStrip.parentNode.firstElementChild; rEl; rEl = rEl.nextElementSibling) {
                     var rcs = getComputedStyle(rEl);
                     if (rcs.display === 'none' || rcs.position === 'absolute') continue;
-                    if (rEl !== topStrip.parentNode.firstElementChild) railFoot += parseFloat(rcs.marginTop) || 0;
+                    if (!rEl.offsetHeight && rEl !== topStrip) continue;
+                    if (!railFirst) railFoot += parseFloat(rcs.marginTop) || 0;
+                    railFirst = false;
                     railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
                     if (rEl === topStrip) break;
                   }
