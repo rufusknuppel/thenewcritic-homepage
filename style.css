@@ -7543,7 +7543,7 @@ main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra).is-in
 main.has-mega .duo-half--mega.is-inbox .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega .latest-cell--ps.is-inbox .latest-cover:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
 main.has-mega .latest-cell--contra.is-inbox .latest-cover-col--square:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
-  content: 'Read Now\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%23F8F8FF' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  content: var(--read-word, 'Read Essay') '\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%23F8F8FF' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8791,7 +8791,7 @@ main.has-mega .duo-half--mega > .swap-body *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 }
 main.has-mega :is(.duo-half--mega.is-inbox .duo-card-image, .latest-cell--ps.is-inbox .latest-cover, .latest-cell--contra.is-inbox .latest-cover-col--square):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
   color: var(--nc-mark) !important;
-  content: 'Read Now\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%23FFE135' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  content: var(--read-word, 'Read Essay') '\00a0\00a0' url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20'%3E%3Cpath d='M8 4h8v8M16 4L4 16' fill='none' stroke='%23FFE135' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before,
 main.has-mega:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after{
@@ -9877,3 +9877,8 @@ main.has-mega .cover-meta.is-first .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
 }
 main.has-mega{ --open-gap: 0px !important; }
 main.has-mega .section-band > .band-mini--stamp{ display: none !important; }
+main.has-mega :is(.duo-half--kind-postscript, .latest-cell--ps){ --read-word: 'Read Interview'; }
+main.has-mega :is(.duo-half--kind-contra, .latest-cell--contra){ --read-word: 'Read Review'; }
+main.has-mega{ --close-gap: 0px !important; }
+main.has-mega .page-rows > .reprint > .reprint-stamp-link{ display: none !important; }
+main.has-mega{ overflow-y: clip; }
