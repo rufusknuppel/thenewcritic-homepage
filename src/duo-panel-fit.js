@@ -7059,7 +7059,20 @@
               if (gsp && wmEl) {
                 var wr0 = wmEl.getBoundingClientRect();
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
-                seatPic = true;
+                // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
+                // the user's word: the first row's courier ink, not its
+                // pictures, stands that air under the name's ink — the
+                // row's top is read off the courier's line box, which
+                // stands over its capitals by the leading)
+                var kInk = Infinity;
+                [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
+                  if (getComputedStyle(k).visibility === 'hidden' || getComputedStyle(k.closest('.cover-meta') || k).visibility === 'hidden') return;
+                  var g = glyphSpan(k); if (g) kInk = Math.min(kInk, g.top);
+                });
+                if (isFinite(kInk)) {
+                  var kLead = kInk - topInk();
+                  if (kLead > 0 && kLead < 20) firstAt -= kLead;
+                } else seatPic = true;
               }
             }
             if (stacked && !tk && !hbGone) {
