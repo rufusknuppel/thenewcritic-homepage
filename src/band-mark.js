@@ -319,7 +319,7 @@
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent };
+    return { top: base - m.actualBoundingBoxAscent, foot: base + m.actualBoundingBoxDescent, base: base };
   }
   function measure() {
     band = document.querySelector('.page-rows > .section-band--head');
@@ -358,7 +358,11 @@
     if (tf) {
       var tr = tl.getBoundingClientRect();
       main.style.setProperty('--tlm-cap', (tf.top - tr.top).toFixed(2) + 'px');
-      main.style.setProperty('--tlm-ink', Math.ceil(tf.foot - tf.top) + 'px');
+      // (CENTRED ON ITS BASELINE, 2026-10-01, at the user's word: the
+      // line's ink is read from its highest letter to its baseline, the
+      // g's tail left out, so the words — not the tail — stand centred
+      // where the strip lands, and the strip 36 under the baseline)
+      main.style.setProperty('--tlm-ink', Math.ceil(tf.base - tf.top) + 'px');
     }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
@@ -441,4 +445,49 @@ document.addEventListener('click', function (e) {
   addEventListener('resize', check);
   addEventListener('load', check);
   check();
+})();
+
+// THE NAME AT THE FOOT IN THE HEAD'S PADDING (2026-10-01, at the user's
+// word): THE NEW CRITIC under the colophon stands as the head's does,
+// turned over — the head's air (36 from 1024 up, 30 on a phone) between
+// the colophon and its ink, and the same under its ink to the page's
+// end. The block is the head's height and one more of that air
+// (style.css); the name is moved, by --rep-shift, until its ink's top is
+// that air under the block's — read off the face, so any fit of its
+// size holds.
+(function () {
+  var main = document.querySelector('main.has-mega');
+  var rep = document.querySelector('.page-rows > .reprint');
+  var name = rep && rep.querySelector('.reprint-name');
+  if (!main || !name) return;
+  var cv = null;
+  var inkTop = function (el) {
+    var rg = document.createRange(); rg.selectNodeContents(el);
+    var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+    if (!r) return null;
+    cv = cv || document.createElement('canvas').getContext('2d');
+    var cs = getComputedStyle(el);
+    cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var t = (el.textContent || '').trim();
+    var m = cv.measureText(cs.textTransform === 'uppercase' ? t.toUpperCase() : t);
+    var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+    if (!(fa > 0)) return null;
+    return r.top + (r.height - (fa + fd)) / 2 + fa - m.actualBoundingBoxAscent;
+  };
+  var seat = function () {
+    if (!rep.offsetHeight) return;
+    var t = inkTop(name);
+    if (t == null) return;
+    var cur = parseFloat(main.style.getPropertyValue('--rep-shift')) || 0;
+    // (the head's air over its ink, which band-mark.js states as
+    // --wm-under: 36 from 1024 up, 30 on a phone)
+    var air = parseFloat(getComputedStyle(main).getPropertyValue('--wm-under')) || 36;
+    var want = cur + (air - (t - rep.getBoundingClientRect().top));
+    if (Math.abs(want - cur) > 0.25) main.style.setProperty('--rep-shift', want.toFixed(2) + 'px');
+  };
+  ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
+    addEventListener(ev, function () { setTimeout(seat, 0); });
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(seat);
+  seat();
 })();

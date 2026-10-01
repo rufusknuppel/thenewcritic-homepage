@@ -1594,12 +1594,18 @@ function renderPageFoot(onHome = false, onMark = false) {
   // the rows straight over the colophon, sticky at the window's foot,
   // so it rides the foot the page's whole length and comes to rest on
   // the colophon as it arrives (style.css, THE STRIP PINS TO THE FOOT)
+  // (THE REPRINT IS STRUCK, 2026-09-30, at the user's word: the page
+  // ended on the colophon. THE REPRINT AGAIN, 2026-10-01, at the user's
+  // word: THE NEW CRITIC under the colophon, the head turned over — the
+  // strip rises over the name at the head and pins at the window's top;
+  // at the foot the page lifts off the name, held at the window's foot
+  // under it (style.css, THE NAME UNDER THE PAGE, HEAD AND FOOT).)
   return `${onHome ? `\n  ${navStrip()}` : ''}
   ${renderColophonBand()}
+  <section class="reprint${mk}">
+    <a class="reprint-name" href="${onHome ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">The <span class="tn-new">New</span> Critic</a>
+  </section>
   <div class="foot-field${mk}" aria-hidden="true"></div>`;
-  // (THE REPRINT IS STRUCK, 2026-09-30, at the user's word: the page
-  // ends on the colophon; the name is held at the window's head the
-  // whole way down instead — style.css, THE NAME HOLDS THE HEAD)
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
 // band opens on its NAME at the left and closes on its links at the

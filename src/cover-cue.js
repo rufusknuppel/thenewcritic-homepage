@@ -331,12 +331,16 @@
   var coloEl = document.querySelector('.page-rows > .section-band--colophon');
   var repUp = function () {
     if (!repEl || !coloEl) return;
-    var up = coloEl.getBoundingClientRect().bottom <= repEl.getBoundingClientRect().top + 0.5;
+    // (a colophon out of the layout — the first stage of a fresh load,
+    // duo-panel-fit.js — has not lifted off anything: 2026-10-01)
+    var up = coloEl.offsetHeight > 0 && repEl.offsetHeight > 0 &&
+      coloEl.getBoundingClientRect().bottom <= repEl.getBoundingClientRect().top + 0.5;
     if (repEl.classList.contains('is-bared') !== up) repEl.classList.toggle('is-bared', up);
   };
   addEventListener('scroll', repUp, { passive: true });
   addEventListener('resize', repUp);
   addEventListener('load', repUp);
+  addEventListener('newcritic:settled', repUp);
   repUp();
   var WM_BLOCK = '.topbar-wordmark, .reprint, .section-band';
   var litBlock = null;
