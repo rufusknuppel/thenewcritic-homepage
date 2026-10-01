@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=21fd9e38">
+<link rel="stylesheet" href="style.css?v=4b65a8c7">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6426,6 +6426,13 @@
   }
   var capMemo = {};
   var PK_ICON = 18;
+  var PK_ARROWS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg>';
+  var PK_CROSS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
+  function pkHtml(head, dot) {
+    return '<span class="pk-sep" aria-hidden="true">' + dot + '</span>'
+      + '<span class="pk-open">' + (head ? PK_ARROWS + 'Preview' : 'Preview' + PK_ARROWS) + '</span>'
+      + '<span class="pk-shut">' + (head ? PK_CROSS + 'Close' : 'Close' + PK_CROSS) + '</span>';
+  }
   function seatPeekCorners() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -6447,9 +6454,7 @@
         btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'peek-corner';
-        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span>'
-          + '<span class="pk-open">Preview<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg></span>'
-          + '<span class="pk-shut">Close<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></span>';
+        btn.innerHTML = pkHtml(false, '·');
         card.appendChild(btn);
       }
       var tail = card.__courierTail, te = tail && tail.el && inkEdges(tail.el);
@@ -6467,7 +6472,9 @@
       b.top = (line.top - cr0.top).toFixed(2) + 'px';
       b.height = line.h.toFixed(2) + 'px';
       btn.classList.toggle('pk-lone', !te);
-      btn.classList.toggle('pk-head', !!(te && tail.head));
+      var head = !!(te && tail.head);
+      btn.classList.toggle('pk-head', head);
+      if (btn.__head !== head) { btn.__head = head; btn.innerHTML = pkHtml(head, '\u00B7'); }
       if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
       else if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
       else {

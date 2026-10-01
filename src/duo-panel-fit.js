@@ -8247,6 +8247,17 @@
   // (the glyph after Preview: its 12 box and the 6 before it — style.css,
   // THE GLYPHS BY PREVIEW AND CLOSE — counted in the line's run)
   var PK_ICON = 18;
+  // (the button's words and glyphs — the glyph after its word, or before
+  // it on the mirrored line of a card set right, "for preview/close on
+  // rights, move symbols to the left", 2026-10-01; written again only
+  // when the side changes)
+  var PK_ARROWS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg>';
+  var PK_CROSS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
+  function pkHtml(head, dot) {
+    return '<span class="pk-sep" aria-hidden="true">' + dot + '</span>'
+      + '<span class="pk-open">' + (head ? PK_ARROWS + 'Preview' : 'Preview' + PK_ARROWS) + '</span>'
+      + '<span class="pk-shut">' + (head ? PK_CROSS + 'Close' : 'Close' + PK_CROSS) + '</span>';
+  }
   function seatPeekCorners() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -8272,9 +8283,7 @@
         // word: the site's own two glyphs — the preview's opening arrows
         // and the ×, 12 in a 20 box — each after its word, centred on the
         // courier's capitals; style.css, THE GLYPHS BY PREVIEW AND CLOSE)
-        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span>'
-          + '<span class="pk-open">Preview<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg></span>'
-          + '<span class="pk-shut">Close<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></span>';
+        btn.innerHTML = pkHtml(false, '·');
         card.appendChild(btn);
       }
       // AUTHOR · DATE · PREVIEW (2026-10-01): the word ends the courier
@@ -8303,7 +8312,9 @@
       // (THE RIGHT CARD'S LINE RUNS THE OTHER WAY, 2026-10-01: on the
       // mirrored line the word opens it, its right edge a gap before the
       // first piece's ink, no dot before it — .pk-head)
-      btn.classList.toggle('pk-head', !!(te && tail.head));
+      var head = !!(te && tail.head);
+      btn.classList.toggle('pk-head', head);
+      if (btn.__head !== head) { btn.__head = head; btn.innerHTML = pkHtml(head, '\u00B7'); }
       if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
       else if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
       else {

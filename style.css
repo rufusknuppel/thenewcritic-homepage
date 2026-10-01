@@ -22602,6 +22602,13 @@ main.has-mega .duo-half--mega > .peek-corner .pk-ico path:is(*, .r.r.r.r.r.r.r.r
   fill: none !important;
   stroke: currentColor !important;
 }
+/* (…and before the word on the mirrored line of a card set right,
+   "for preview/close on rights, move symbols to the left", 2026-10-01:
+   the glyph opens the line there, 6 before PREVIEW or CLOSE —
+   seatPeekCorners writes it first, .pk-head) */
+main.has-mega .duo-half--mega > .peek-corner.pk-head .pk-ico:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin: 0 6px 0 0 !important;
+}
 /* (THE GLYPHS BY PREVIEW AND CLOSE ends) */
 /* ---------- THE CIRCLE IN THE NAME'S CORNER (2026-10-01) ----------
    At the user's word ("Move dot to the top right corner of wordmark 36px
