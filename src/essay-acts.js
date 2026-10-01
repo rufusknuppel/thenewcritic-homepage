@@ -42,7 +42,9 @@
     var el = document.createElement('a');
     el.className = 'essay-acts';
     el.href = link ? link.getAttribute('href') : '#';
-    el.innerHTML = '<span class="essay-act essay-act--read">Read Now' + READ + '</span>';
+    // (named for its kind: Read Essay, Read Interview, Read Review)
+    var word = card.classList.contains('duo-half--kind-postscript') ? 'Read Interview' : card.classList.contains('duo-half--kind-contra') ? 'Read Review' : 'Read Essay';
+    el.innerHTML = '<span class="essay-act essay-act--read">' + word + READ + '</span>';
     card.appendChild(el);
     card.__acts = el;
     return el;
