@@ -8251,11 +8251,17 @@
   // it on the mirrored line of a card set right, "for preview/close on
   // rights, move symbols to the left", 2026-10-01; written again only
   // when the side changes)
-  var PK_ARROWS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 4h5v5M16 4l-5.5 5.5M9 16H4v-5M4 16l5.5-5.5"/></svg>';
+  // PREVIEW --> AND <-- PREVIEW (2026-10-01, at the user's word: "I want
+  // the preview to have --> or <-- arrow"): a plain arrow in the Read
+  // arrow's own drawing (its 8-unit head, 1.6 stroke) where the opening
+  // arrows stood, pointing out along the line — after the word on a
+  // card set left, before it, pointing left, on the mirrored line
+  var PK_NEXT = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h14M11 4l6 6-6 6"/></svg>';
+  var PK_BACK = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M17 10H3M9 4l-6 6 6 6"/></svg>';
   var PK_CROSS = '<svg class="pk-ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
   function pkHtml(head, dot) {
     return '<span class="pk-sep" aria-hidden="true">' + dot + '</span>'
-      + '<span class="pk-open">' + (head ? PK_ARROWS + 'Preview' : 'Preview' + PK_ARROWS) + '</span>'
+      + '<span class="pk-open">' + (head ? PK_BACK + 'Preview' : 'Preview' + PK_NEXT) + '</span>'
       + '<span class="pk-shut">' + (head ? PK_CROSS + 'Close' : 'Close' + PK_CROSS) + '</span>';
   }
   function seatPeekCorners() {
