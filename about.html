@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d5556b88">
+<link rel="stylesheet" href="style.css?v=2281590f">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4690,6 +4690,10 @@
               if (gsp && wmEl) {
                 var wr0 = wmEl.getBoundingClientRect();
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
+                var topStrip = document.querySelector('.page-rows > .sub-ticker--pin');
+                if (topStrip && getComputedStyle(topStrip).position === 'fixed') {
+                  firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + (gsp.top - wr0.top);
+                }
                 var kInk = Infinity;
                 [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
                   if (getComputedStyle(k).visibility === 'hidden' || getComputedStyle(k.closest('.cover-meta') || k).visibility === 'hidden') return;
@@ -4810,7 +4814,7 @@
       var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
       var pinH = 0;
       while (next && !next.classList.contains('movement') && !next.classList.contains('section-band--colophon') && !(next.classList.contains('sub-ticker--foot') && !next.classList.contains('sub-ticker--pin'))) {
-        if (next.classList.contains('sub-ticker--pin')) pinH += next.offsetHeight;
+        if (next.classList.contains('sub-ticker--pin') && getComputedStyle(next).position === 'sticky') pinH += next.offsetHeight;
         next = next.nextElementSibling;
       }
       if (!next) return;
