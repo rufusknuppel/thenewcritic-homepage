@@ -82,7 +82,10 @@
   // The miniature's size and seat, from the wordmark's live size and
   // the band's height. Cached on the size that produced them.
   var geo = null;
-  function measure() {
+  // (quiet: called by the fitter inside its pass — THE NAME'S SIZE IS
+  // STATED IN THE PASS, duo-panel-fit.js — so the root is written
+  // before the heads are seated and no second pass is asked for)
+  function measure(quiet) {
     var cs = getComputedStyle(mark);
     var S = parseFloat(cs.fontSize) || 0;
     var B = band.getBoundingClientRect().height;
@@ -100,7 +103,7 @@
     var was = parseFloat(document.documentElement.style.getPropertyValue('--wm-size')) || 0;
     if (Math.abs(was - s) > 0.01) {
       document.documentElement.style.setProperty('--wm-size', s.toFixed(3) + 'px');
-      if (window.__ncRequestFit) window.__ncRequestFit();
+      if (!quiet && window.__ncRequestFit) window.__ncRequestFit();
     }
     mini.style.transform = 'none';
     // The stamp's box: the band less its air, as wide as its proportion.
@@ -281,6 +284,7 @@
   addEventListener('load', function () { lastP = -1; schedule(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { scanned = null; geo = null; lastP = -1; schedule(); }, function () {});
   window.__ncBandMark = function () { geo = null; lastP = -1; run(); };
+  window.__ncWmSize = function () { geo = null; measure(true); };
   run();
   canvas();
 })();
