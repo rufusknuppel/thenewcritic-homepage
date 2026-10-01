@@ -22490,3 +22490,36 @@ main.has-mega .duo-half--mega.is-slide > .swap-body > .swap-body-dek:is(*, .r.r.
   }
 }
 /* (THE SHEET SLIDES WITH THE PICTURE ends) */
+/* ---------- THE LINE READS AUTHOR · DATE · PREVIEW (2026-10-01) ----------
+   At the user's word ("I want to remove kickers for now, and have
+   Author · Date · Preview"): the courier line under a picture read
+   KICKER · DATE · AUTHOR with Preview at the picture's other edge. The
+   kicker stands down for now (its line kept, unseen, for the day it is
+   wanted back); the author opens the line, the date follows, and
+   Preview — Close, while the preview is open — ends it, a dot before
+   it like the dot before the date (seatMatterMeta, seatPeekCorners).
+   The dot before Preview keeps the line's own ink under the hand — the
+   word alone turns: stated over the site's hovered-button rule (which
+   turns a button's every descendant, .r×140). */
+main.has-mega .duo-half--mega .cover-meta--ckick:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+main.has-mega .duo-half--mega > .peek-corner > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute;
+  right: 100%;
+  width: 1.8em;
+  text-align: center;
+  pointer-events: none;
+  color: var(--k) !important;
+  -webkit-text-fill-color: var(--k) !important;
+}
+main.has-mega .duo-half--mega > .peek-corner.pk-lone > .pk-sep:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: none !important;
+}
+/* (the date wrapped under the author keeps no dot before it, as the
+   author wrapped did not) */
+main.has-mega .duo-half--mega .cover-meta--cdate.is-wrapped .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{
+  display: none !important;
+  content: none !important;
+}
+/* (THE LINE READS AUTHOR · DATE · PREVIEW ends) */
