@@ -6564,7 +6564,11 @@
     var rows = document.querySelector('main.has-mega > .page-rows');
     if (!rows) return [];
     var movs = [].filter.call(rows.children, function (el) { return el.classList.contains('movement'); });
-    if (movs.length < 2) return [];
+    // (ONE movement is enough to stage: the front page has stood as a
+    // single movement since its section titles went, and asking for two
+    // let stage one lapse — every row fitted before the gate lifted, the
+    // cold reveal at 1440 ~1.5s → ~22s. 2026-09-30)
+    if (!movs.length) return [];
     var out = movs.slice(1);
     // the later movements go first, so the one measure below is taken
     // on a short page
