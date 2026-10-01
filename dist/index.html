@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=2281590f">
+<link rel="stylesheet" href="style.css?v=ed8afe49">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -380,8 +380,7 @@
     <p class="band-deks band-dek"></p>
     <p class="band-deks"><span class="band-inert">The Last Magazine</span></p>
   </nav>
-  <p class="margin-line"><span>The</span><span>Last</span><span>Magazine</span></p>
-  <button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button>
+  <div class="head-rail"><nav class="sub-ticker sub-ticker--top sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run"><a class="sub-ticker-half" href="archive.html"><b>Archive</b></a><a class="sub-ticker-half" href="about.html"><b>About</b></a><a class="sub-ticker-half sub-ticker-half--sub" href="https://www.thenewcritic.com/subscribe" rel="noopener"><b>Subscribe</b></a><span class="sub-ticker-half nav-links-dead"><b>Store</b></span><span class="sub-ticker-half nav-links-dead"><b>Events</b></span></span></nav><div class="margin-stacks"><p class="margin-line"><span>The</span><span>Last</span><span>Magazine</span></p><button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button></div></div>
   <div class="head-field" aria-hidden="true"></div>
   <div class="movement m--latest">
 <div class="site-header" id="site-header">
@@ -5551,8 +5550,8 @@
               if (gsp && wmEl) {
                 var wr0 = wmEl.getBoundingClientRect();
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
-                var topStrip = document.querySelector('.page-rows > .sub-ticker--pin');
-                if (topStrip && getComputedStyle(topStrip).position === 'fixed') {
+                var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+                if (topStrip && topStrip.offsetHeight > 0) {
                   firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + (gsp.top - wr0.top);
                 }
                 var kInk = Infinity;
@@ -8711,7 +8710,7 @@
       under = Math.max(0, (nf.top - wr.top) - (wr.bottom - nf.foot));
       ground = getComputedStyle(wm).backgroundColor;
     }
-    if (under > 0) main.style.setProperty('--wm-under', under.toFixed(2) + 'px');
+    if (under > 0) { under = Math.round(under); main.style.setProperty('--wm-under', under + 'px'); }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
     [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -8734,7 +8733,7 @@
       var e = under > 0 ? Math.max(0, Math.min(under, y - Math.max(0, span))) : 0;
       if (force || e !== lastE) {
         lastE = e;
-        if (e > 0) wm.style.setProperty('box-shadow', '0 ' + e.toFixed(2) + 'px 0 0 ' + ground, 'important');
+        if (e > 0) wm.style.setProperty('box-shadow', '0 ' + (e >= under ? under + 1 : e).toFixed(2) + 'px 0 0 ' + ground, 'important');
         else wm.style.removeProperty('box-shadow');
       }
     }

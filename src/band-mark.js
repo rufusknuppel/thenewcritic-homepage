@@ -347,7 +347,9 @@
     }
     // (the strip pins that same air under the name's ink: style.css, THE
     // STRIP UNDER THE NAME)
-    if (under > 0) main.style.setProperty('--wm-under', under.toFixed(2) + 'px');
+    // (on a whole pixel: a strip on a fraction of one showed a hairline
+    // over it)
+    if (under > 0) { under = Math.round(under); main.style.setProperty('--wm-under', under + 'px'); }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
     [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -372,7 +374,9 @@
       var e = under > 0 ? Math.max(0, Math.min(under, y - Math.max(0, span))) : 0;
       if (force || e !== lastE) {
         lastE = e;
-        if (e > 0) wm.style.setProperty('box-shadow', '0 ' + e.toFixed(2) + 'px 0 0 ' + ground, 'important');
+        // (a pixel more once it is whole, tucked under the strip, so no
+        // seam opens between the two)
+        if (e > 0) wm.style.setProperty('box-shadow', '0 ' + (e >= under ? under + 1 : e).toFixed(2) + 'px 0 0 ' + ground, 'important');
         else wm.style.removeProperty('box-shadow');
       }
     }

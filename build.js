@@ -2780,7 +2780,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <p class="margin-line"><span>The</span><span>Last</span><span>Magazine</span></p>\n  <button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail">${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}<div class="margin-stacks"><p class="margin-line"><span>The</span><span>Last</span><span>Magazine</span></p><button type="button" class="theme-toggle margin-toggle" aria-label="Light or dark"><span class="theme-toggle-light">Light</span><span class="theme-toggle-dark">Dark</span></button></div></div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the

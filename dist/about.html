@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=2281590f">
+<link rel="stylesheet" href="style.css?v=ed8afe49">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4690,8 +4690,8 @@
               if (gsp && wmEl) {
                 var wr0 = wmEl.getBoundingClientRect();
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
-                var topStrip = document.querySelector('.page-rows > .sub-ticker--pin');
-                if (topStrip && getComputedStyle(topStrip).position === 'fixed') {
+                var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+                if (topStrip && topStrip.offsetHeight > 0) {
                   firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + (gsp.top - wr0.top);
                 }
                 var kInk = Infinity;

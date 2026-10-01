@@ -7062,8 +7062,8 @@
                 // (THE STRIP UNDER THE NAME, 2026-09-30: where the subscribe
                 // strip is pinned under the name's air, the courier starts
                 // that same air under the strip's foot)
-                var topStrip = document.querySelector('.page-rows > .sub-ticker--pin');
-                if (topStrip && getComputedStyle(topStrip).position === 'fixed') {
+                var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+                if (topStrip && topStrip.offsetHeight > 0) {
                   firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + (gsp.top - wr0.top);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
