@@ -300,6 +300,12 @@
   if (!main || document.body.classList.contains('word-page')) return;
   var wide = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : { matches: true };
   var band = null, line = null, X = 0, lineTop = 0, wmFoot = 0, last = -1;
+  // (THE NAME'S AIR UNDER IT ON THE SCROLL, 2026-09-30, at the user's
+  // word: once the line has faded, the name's charcoal reaches on under
+  // its ink, pixel for pixel with the scroll, until the air under the ink
+  // is the air over it — a shadow of the name's own block, cast straight
+  // down, so nothing moves)
+  var wm = null, under = 0, ground = '', lastE = -1;
   var cv = null;
   function face(el) {
     var rg = document.createRange(); rg.selectNodeContents(el);
@@ -331,6 +337,14 @@
     var nm = document.querySelector('.site-nav--top .topbar-name');
     var nf = nm && face(nm);
     if (isFinite(lt) && nf) { lineTop = lt + y; wmFoot = nf.foot; }
+    wm = nm && nm.closest('.topbar-wordmark');
+    under = 0;
+    if (wm && nf) {
+      var wr = wm.getBoundingClientRect();
+      // (the air over the ink, less what the block already keeps under it)
+      under = Math.max(0, (nf.top - wr.top) - (wr.bottom - nf.foot));
+      ground = getComputedStyle(wm).backgroundColor;
+    }
     if (!wide.matches || !isFinite(lf)) return;
     var hi = Infinity;
     [].forEach.call(document.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -348,9 +362,17 @@
     var span = lineTop - wmFoot;
     var o = span > 0 ? Math.max(0, Math.min(1, (lineTop - y - wmFoot) / span)) : 1;
     if (force || o !== last) { last = o; if (o < 1) line.style.setProperty('opacity', o.toFixed(3)); else line.style.removeProperty('opacity'); }
+    if (wm) {
+      var e = under > 0 ? Math.max(0, Math.min(under, y - Math.max(0, span))) : 0;
+      if (force || e !== lastE) {
+        lastE = e;
+        if (e > 0) wm.style.setProperty('box-shadow', '0 ' + e.toFixed(2) + 'px 0 0 ' + ground, 'important');
+        else wm.style.removeProperty('box-shadow');
+      }
+    }
     if (force) { if (X > 0) band.style.setProperty('clip-path', 'inset(0 0 ' + X.toFixed(2) + 'px 0)'); else band.style.removeProperty('clip-path'); }
   }
-  function refit() { line && line.style.removeProperty('opacity'); measure(); apply(true); }
+  function refit() { line && line.style.removeProperty('opacity'); wm && wm.style.removeProperty('box-shadow'); measure(); apply(true); }
   refit();
   addEventListener('scroll', function () { apply(false); }, { passive: true });
   addEventListener('resize', refit);
