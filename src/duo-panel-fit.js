@@ -6997,12 +6997,16 @@
                 // the lead card's picture is (seatSectionHeads puts its ink
                 // 36 from the window's right edge).
                 var lWide = !ONE_COL.matches;
-                var lShift = (bandFoot + (lWide ? ROW_GAP : 72)) - (lb - lm.actualBoundingBoxAscent);
+                // (72 OVER AND UNDER THE SECTIONS' NAMES, 2026-09-30, at the
+                // user's word: where the posts stand two to a row, the name's
+                // cap top 72 under the strip and the first row 72 under its
+                // baseline)
+                var lShift = (bandFoot + (lWide ? (stacked ? ROWS_GAP : ROW_GAP) : 72)) - (lb - lm.actualBoundingBoxAscent);
                 lh.style.top = ((parseFloat(lh.style.top) || 0) + lShift).toFixed(2) + 'px';
                 // (THE LATEST IN ONE STACK, 2026-09-28: the pictures down
                 // the middle begin 36 under the name's baseline, not beside
                 // it — the name keeps the top right)
-                firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
+                firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + (stacked ? ROWS_GAP : ROW_GAP);
               }
             }
             rowDelta = firstAt - topInk(); hasJob = true;
@@ -7017,7 +7021,7 @@
           var sBase = sAnchor && baselineOf(sAnchor);
           // (under its LAST line: on a phone the tag runs to two, and the
           // row stood over the second — ONE COLUMN ON A PHONE, 2026-09-24)
-          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - topInk(); hasJob = true; }
+          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + (stacked ? ROWS_GAP : SECTION_ROW_GAP) - topInk(); hasJob = true; }
         }
         // 54 BETWEEN THE COURIER LINES (2026-09-23): the rows stand off
         // one another by their courier labels' ink — the foot line of the
@@ -7244,6 +7248,14 @@
           var need = -Infinity;
           var fH = hSpan ? footOver(rows, hSpan) : -Infinity;
           if (isFinite(fH)) need = Math.max(need, fH + COURIER_GAP - (bBase.cap - nmv));
+          // (72 OVER THE SECTIONS' NAMES, 2026-09-30: where the next
+          // section's posts stand two to a row, its name's cap top stands
+          // 72 under the lowest ink of the section over it, all the way
+          // across — the rows run the page's width)
+          if (getComputedStyle(next).getPropertyValue('--rows-stack').trim() === '1') {
+            var fAll = footOver(rows, { l: -1e6, r: 1e6 });
+            if (isFinite(fAll)) need = fAll + ROWS_GAP - (bBase.cap - nmv);
+          }
           var fs = nr0 && picSpanOf(nr0), fb = nr0 && picBoxOf(nr0);
           var fP = fs ? footOver(rows, fs) : -Infinity;
           if (fb && isFinite(fP)) need = Math.max(need, fP + COURIER_GAP - (fb.t - nmv));

@@ -5360,9 +5360,9 @@
                 var lm = measureCtx.measureText((lh.textContent || '').trim());
                 var lb = lrr.top + (lrr.height - (lm.fontBoundingBoxAscent + lm.fontBoundingBoxDescent)) / 2 + lm.fontBoundingBoxAscent;
                 var lWide = !ONE_COL.matches;
-                var lShift = (bandFoot + (lWide ? ROW_GAP : 72)) - (lb - lm.actualBoundingBoxAscent);
+                var lShift = (bandFoot + (lWide ? (stacked ? ROWS_GAP : ROW_GAP) : 72)) - (lb - lm.actualBoundingBoxAscent);
                 lh.style.top = ((parseFloat(lh.style.top) || 0) + lShift).toFixed(2) + 'px';
-                firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + ROW_GAP;
+                firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + (stacked ? ROWS_GAP : ROW_GAP);
               }
             }
             rowDelta = firstAt - topInk(); hasJob = true;
@@ -5372,7 +5372,7 @@
           var sb = body.parentElement.querySelector(':scope > .page-banner--section');
           var sAnchor = sb && (sb.querySelector('.banner-line--below') || sb.querySelector('.banner-name'));
           var sBase = sAnchor && baselineOf(sAnchor);
-          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + SECTION_ROW_GAP - topInk(); hasJob = true; }
+          if (sBase) { rowDelta = Math.max(sBase.base, lastBaseline(sAnchor)) + (stacked ? ROWS_GAP : SECTION_ROW_GAP) - topInk(); hasJob = true; }
         }
         var pic = picBoxOf(row);
         var side = row.classList.contains('card--align-r') ? 'r' : 'l';
@@ -5503,6 +5503,10 @@
           var need = -Infinity;
           var fH = hSpan ? footOver(rows, hSpan) : -Infinity;
           if (isFinite(fH)) need = Math.max(need, fH + COURIER_GAP - (bBase.cap - nmv));
+          if (getComputedStyle(next).getPropertyValue('--rows-stack').trim() === '1') {
+            var fAll = footOver(rows, { l: -1e6, r: 1e6 });
+            if (isFinite(fAll)) need = fAll + ROWS_GAP - (bBase.cap - nmv);
+          }
           var fs = nr0 && picSpanOf(nr0), fb = nr0 && picBoxOf(nr0);
           var fP = fs ? footOver(rows, fs) : -Infinity;
           if (fb && isFinite(fP)) need = Math.max(need, fP + COURIER_GAP - (fb.t - nmv));
