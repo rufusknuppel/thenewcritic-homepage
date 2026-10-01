@@ -5321,7 +5321,7 @@
     var rows = document.querySelector('main.has-mega > .page-rows');
     if (!rows) return [];
     var movs = [].filter.call(rows.children, function (el) { return el.classList.contains('movement'); });
-    if (movs.length < 2) return [];
+    if (!movs.length) return [];
     var out = movs.slice(1);
     out.forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });
     var body = movs[0].querySelector('.movement-body');
