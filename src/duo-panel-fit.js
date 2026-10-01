@@ -7128,7 +7128,20 @@
                   // (under the strip's foot to the first row's top — its
                   // pictures, the courier standing under them — 72 for an
                   // hour, then 36: 2026-09-30, at the user's word)
-                  firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + COURIER_GAP;
+                  // (THE BAND RISES OVER THE LINE, 2026-10-01: the strip stands
+                  // under THE LAST MAGAZINE at rest and rises on the scroll to
+                  // pin over it, so its rect is read at rest — the rail's
+                  // blocks down to the strip, margins and all — not where a
+                  // scroll has stuck it)
+                  var railFoot = 0;
+                  for (var rEl = topStrip.parentNode.firstElementChild; rEl; rEl = rEl.nextElementSibling) {
+                    var rcs = getComputedStyle(rEl);
+                    if (rcs.display === 'none' || rcs.position === 'absolute') continue;
+                    if (rEl !== topStrip.parentNode.firstElementChild) railFoot += parseFloat(rcs.marginTop) || 0;
+                    railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
+                    if (rEl === topStrip) break;
+                  }
+                  firstAt = body.getBoundingClientRect().top + railFoot + COURIER_GAP;
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its

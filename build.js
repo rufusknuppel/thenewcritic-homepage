@@ -1511,15 +1511,15 @@ function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
   const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
   const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
-  // (SUBSCRIBE, ARCHIVE, ABOUT, THE LAST MAGAZINE in the Garamond, then
-  // STORE, EVENTS and LIGHT / DARK / HEX: 2026-09-30, at the user's word.
-  // THE LAST MAGAZINE takes the reader to the top of the front page —
-  // src/band-mark.js — and ABOUT is its own link again, to its left.)
+  // (SUBSCRIBE, ARCHIVE, ABOUT, STORE, EVENTS and LIGHT / DARK / HEX:
+  // 2026-09-30, at the user's word. THE LAST MAGAZINE, which stood among
+  // them for a day, has its own line over the strip again from
+  // 2026-10-01 — the head rail, openMovement — and the strip rises over
+  // it on the scroll.)
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
     link(by('archive'), 'Archive'),
     link(by('about'), 'About'),
-    `<a class="sub-ticker-half sub-ticker-half--tlm" href="#top" aria-label="The Last Magazine — to the top of the front page"><span class="tlm-word">The Last Magazine</span></a>`,
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX, one word of the strip's at its right end:
@@ -2789,7 +2789,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-line" aria-hidden="true"></div><div class="rail-tlm"><a class="tlm-line" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The Last Magazine</span></a></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
