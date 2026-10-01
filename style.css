@@ -22447,3 +22447,18 @@ main.has-mega .duo-half--mega > .swap-body > .swap-body-close:is(*, .r.r.r.r.r.r
   display: none !important;
 }
 /* (NO × ends) */
+/* ---------- PREVIEW TURNS, IT IS NOT BLOCKED (2026-10-01) ----------
+   At the user's word ("preview also highlights"): the word on the
+   courier's line — a button, its word in a span — fell under the same
+   link-hover block by its second selector (a hovered button's
+   descendants take the mark's colour as a ground), and the word, in the
+   mark's colour too, vanished on it. No ground, no shadow: the word
+   turns, as READ ESSAY does. (Stated over the block's weight.) */
+main.has-mega .duo-half--mega > .peek-corner:is(:hover, :focus-visible) *:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--nc-mark) !important;
+  -webkit-text-fill-color: var(--nc-mark) !important;
+}
+/* (PREVIEW TURNS ends) */
