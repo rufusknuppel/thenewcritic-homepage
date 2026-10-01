@@ -1519,6 +1519,11 @@ function subTicker(where = 'head') {
 // with no -light or -dark of its own, so the head script turns the page
 // over. (It was a chip of three dots, then two, for an hour: LIGHT, DARK
 // and HEX's colour; HEX is struck.)
+// (THE CIRCLE IN THE NAME'S CORNER, 2026-10-01, at the user's word:
+// from 1024 up it stands in the head rail's stack beside THE LAST
+// MAGAZINE, 36 from the window's top and right — style.css, THE CIRCLE
+// IN THE NAME'S CORNER — and the strip's copy is not shown; under 1024
+// the strip's copy stands as before)
 function themeChip() {
   return `<button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button>`;
 }
@@ -2806,7 +2811,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
