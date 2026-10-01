@@ -7406,8 +7406,8 @@
           var hy = cr.top + REST_INSET / 2, fy = cr.bottom - REST_INSET / 2;
           if (!card.matches('.duo-half--mega')) corners(hy, fy, frL, frR, kc);
           else {
-          hy = cr.top + REST_INSET - ESSAY_COURIER_GAP;
-          var hEdge = 'bot';
+          hy = cr.bottom - REST_INSET + ESSAY_COURIER_GAP;
+          var hEdge = 'top';
           var kk3 = card.querySelector('.cover-meta--ckick');
           if (kk3) seat(kk3, hy, hEdge, { inkL: frL });
           var pkArrow = 0;
@@ -7445,14 +7445,7 @@
           if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r - frL) + 1;
           if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
             kc.classList.add('is-wrapped');
-            var x3b = frL;
-            line3.forEach(function (el) {
-              if (el === kc) return;
-              seat(el, hy - 1.6 * fs3, hEdge, { inkL: x3b });
-              var e3b = inkEdges(el);
-              if (e3b) x3b = e3b.r + gap3;
-            });
-            seat(kc, hy, hEdge, { inkL: frL });
+            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
           }
           if (line3.length && card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
             var carry = function (el, d) {

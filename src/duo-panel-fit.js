@@ -9969,8 +9969,11 @@
           // (seatSwapCols reads no courier under the picture and seats the
           // title from the foot itself); a row's highest ink is its
           // courier now (seatRowGaps).
-          hy = cr.top + REST_INSET - ESSAY_COURIER_GAP;
-          var hEdge = 'bot';
+          // THE COURIER UNDER THE PICTURE AGAIN (2026-09-30, later, at the
+          // user's word): its caps' tops 18 under the picture's foot, the
+          // title 18 under the courier's ink (seatSwapCols reads it there)
+          hy = cr.bottom - REST_INSET + ESSAY_COURIER_GAP;
+          var hEdge = 'top';
           // (KICKER · DATE · AUTHOR from the picture's left edge, 2026-09-23)
           var kk3 = card.querySelector('.cover-meta--ckick');
           if (kk3) seat(kk3, hy, hEdge, { inkL: frL });
@@ -10043,17 +10046,9 @@
           if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r - frL) + 1;
           if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
             kc.classList.add('is-wrapped');
-            // (over the picture the author keeps the line nearest it, its
-            // foot 18 over the picture, and the first line stands a line
-            // over that — re-seated from the picture's left: 2026-09-30)
-            var x3b = frL;
-            line3.forEach(function (el) {
-              if (el === kc) return;
-              seat(el, hy - 1.6 * fs3, hEdge, { inkL: x3b });
-              var e3b = inkEdges(el);
-              if (e3b) x3b = e3b.r + gap3;
-            });
-            seat(kc, hy, hEdge, { inkL: frL });
+            // (under the picture the author takes the line under the
+            // first, from the picture's left edge)
+            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
           }
           // THE WORDS UNDER THE PICTURE TAKE A SIDE (2026-09-24): on a
           // card set right (.card--align-r, build.js — every other essay,
