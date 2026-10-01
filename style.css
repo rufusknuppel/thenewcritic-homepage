@@ -22750,3 +22750,33 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   text-align: left !important;
 }
 /* (THE COMMA BETWEEN DATE AND AUTHOR ends) */
+
+/* ---------- THE BIRD IN ITS BOX BESIDE THE NAME (2026-10-01) ----------
+   At the user's word ("Upload to the left of the wordmark on the site,
+   with bird matching background depending on light/dark mode"): the
+   swallow cut out of its rough-edged 4.5:5 block stands at the
+   masthead's left, 36 in from the window's edge, cap top to baseline of
+   THE NEW CRITIC, the name sized to the room after it (fitMastheadFill,
+   BIRD_BOX_RATIO and MARK_GAP in duo-panel-fit.js). The block prints in
+   the name's ink and lights with it under the hand; the bird is a hole
+   in it, so it is the masthead's own ground in either mode — white on
+   the light page, charcoal on the dark. Hidden until the fitter has
+   seated it, so it never shows at the inline size in the flow. It takes
+   the pointer (the link gives it up to .ops-hit), so it is the name's
+   link too. */
+.site-nav--top .topbar-wordmark > .wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  position: absolute !important;
+  display: block !important;
+  visibility: hidden;
+  color: var(--k) !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+  transition: none !important;
+}
+.site-nav--top .topbar-wordmark > .wm-bird.is-seated:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  visibility: visible;
+}
+.site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus-within, .is-cued) > .wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  color: var(--nc-banana, #FFE135) !important;
+}
+/* (THE BIRD IN ITS BOX BESIDE THE NAME ends) */

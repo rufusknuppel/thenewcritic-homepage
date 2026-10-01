@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=433638eb">
+<link rel="stylesheet" href="style.css?v=c265b4c6">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -3022,6 +3022,7 @@
     if (edge === 'bottom') return isFinite(lo) ? br.bottom - lo : 0;
     return isFinite(hi) ? hi - br.top : 0;
   }
+  var BIRD_BOX_RATIO = 438 / 488, MARK_GAP = 0.34;
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
@@ -3045,6 +3046,19 @@
     var w0 = i0.right - i0.left;
     if (!(w0 > 0)) return;
     var fitted = s0 * vwSize / w0;
+    var leftRoom = 0;
+    var markLeft = opts && opts.markLeft > 0 ? opts.markLeft : 0;
+    if (markLeft) {
+      bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
+      var mcs = getComputedStyle(name);
+      bandInkCv.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' 100px ' + mcs.fontFamily;
+      var capPer = bandInkCv.measureText('H').actualBoundingBoxAscent / 100;
+      if (capPer > 0) {
+        var per = (markLeft + MARK_GAP) * capPer;
+        fitted = vwSize / (w0 / s0 + per);
+        leftRoom = per * fitted;
+      }
+    }
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
@@ -3056,7 +3070,7 @@
     void vw;
     var headL = headLeftOf(wm);
     var inkAt = headL != null ? wb.left + headL
-      : RESERVE ? wb.left + SIZE_SIDE
+      : RESERVE || leftRoom ? wb.left + SIZE_SIDE + leftRoom
       : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     var ncs = getComputedStyle(name);
@@ -3157,7 +3171,9 @@
     };
     var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
-    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R });
+    var bird = wm.querySelector('.wm-bird');
+    var BIRD_L = bird ? BIRD_BOX_RATIO : 0;
+    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R, markLeft: BIRD_L });
     if (!f) return;
     var ni = nameInk();
     if (ni) {
@@ -3165,11 +3181,20 @@
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
-        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R }) || f;
+        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R, markLeft: BIRD_L }) || f;
       }
     }
     varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
     var wb = f.wb, inkBottom = f.inkBottom;
+    var bi = bird && nameInk();
+    if (bi) {
+      var bh = bi.base - bi.capFlat;
+      bird.style.left = WORDMARK_SIDE.toFixed(2) + 'px';
+      bird.style.top = (bi.capFlat - wb.top).toFixed(2) + 'px';
+      bird.style.height = bh.toFixed(2) + 'px';
+      bird.style.width = (bh * BIRD_BOX_RATIO).toFixed(2) + 'px';
+      bird.classList.add('is-seated');
+    }
     var band = document.querySelector('.dek-band--masthead');
     var foot = inkBottom;
     var ni2 = nameInk();
@@ -4620,7 +4645,7 @@
       var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
       var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2);
       if (wmKey === wmSizeKey) return;
-      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve });
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, markLeft: wm.querySelector('.wm-bird') ? BIRD_BOX_RATIO : 0 });
       wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });
