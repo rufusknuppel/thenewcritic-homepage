@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a4472442">
+<link rel="stylesheet" href="style.css?v=d2f9a5c2">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4798,7 +4798,15 @@
                 firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
                 var topStrip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
                 if (topStrip && topStrip.offsetHeight > 0) {
-                  firstAt = body.getBoundingClientRect().top + (topStrip.getBoundingClientRect().bottom - wr0.bottom) + COURIER_GAP;
+                  var railFoot = 0;
+                  for (var rEl = topStrip.parentNode.firstElementChild; rEl; rEl = rEl.nextElementSibling) {
+                    var rcs = getComputedStyle(rEl);
+                    if (rcs.display === 'none' || rcs.position === 'absolute') continue;
+                    if (rEl !== topStrip.parentNode.firstElementChild) railFoot += parseFloat(rcs.marginTop) || 0;
+                    railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
+                    if (rEl === topStrip) break;
+                  }
+                  firstAt = body.getBoundingClientRect().top + railFoot + COURIER_GAP;
                 }
                 var kInk = Infinity;
                 [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
