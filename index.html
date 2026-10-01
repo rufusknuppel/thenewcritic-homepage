@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d3716be6">
+<link rel="stylesheet" href="style.css?v=ad45ed66">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5531,7 +5531,7 @@
         var ink = rowInk(row);
         var cur = rowCourier(row);
         var topInk = function () { return Math.min(ink ? ink.t : Infinity, cur ? cur.t : Infinity); };
-        var rowDelta = 0, hasJob = false;
+        var rowDelta = 0, hasJob = false, seatPic = false;
         var el = row;
         if (!prev && ink && body.parentElement.classList.contains('m--latest')) {
           var hb = document.querySelector('.page-rows > .section-band');
@@ -5546,23 +5546,7 @@
               if (nf != null) {
                 var hg = headInkGap(hb);
                 firstAt = body.getBoundingClientRect().top + nf + (hg != null && hg > 0 ? hg : ROWS_GAP);
-                var boxT = Infinity, inkT = Infinity;
-                bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
-                [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
-                  if (getComputedStyle(k).visibility === 'hidden' || getComputedStyle(k.closest('.cover-meta') || k).visibility === 'hidden') return;
-                  var kr = document.createRange(); kr.selectNodeContents(k);
-                  var kx = [].filter.call(kr.getClientRects(), function (x) { return x.width > 0 && x.height > 0; })[0];
-                  if (!kx) return;
-                  var kcs = getComputedStyle(k);
-                  bandInkCv.font = kcs.fontStyle + ' ' + kcs.fontWeight + ' ' + kcs.fontSize + ' ' + kcs.fontFamily;
-                  var kt = (k.textContent || '').trim();
-                  var km = bandInkCv.measureText(kcs.textTransform === 'uppercase' ? kt.toUpperCase() : kt);
-                  if (!(km.fontBoundingBoxAscent > 0)) return;
-                  var kb = kx.top + (kx.height - (km.fontBoundingBoxAscent + km.fontBoundingBoxDescent)) / 2 + km.fontBoundingBoxAscent;
-                  boxT = Math.min(boxT, kx.top); inkT = Math.min(inkT, kb - km.actualBoundingBoxAscent);
-                });
-                var lead = isFinite(inkT) ? Math.max(0, inkT - topInk()) : NaN;
-                if (isFinite(lead) && lead > 0 && lead < 20) firstAt -= lead;
+                seatPic = true;
               }
             }
             var lh = body.querySelector(':scope > .latest-head');
@@ -5580,7 +5564,7 @@
                 firstAt = lWide && !stacked ? bandFoot + ROW_GAP : lb + lShift + (stacked ? ROWS_GAP : ROW_GAP);
               }
             }
-            rowDelta = firstAt - topInk(); hasJob = true;
+            rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
           }
         }
         if (!prev && ink && !body.parentElement.classList.contains('m--latest')) {
@@ -8663,9 +8647,9 @@
 (function () {
   var main = document.querySelector('main.has-mega');
   if (!main || document.body.classList.contains('word-page')) return;
-  var root = document.documentElement;
   var wide = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : { matches: true };
   var SCALE = 0.5;
+  var D = 0, lastP = -1;
   function measure() {
     var wm = document.querySelector('.site-nav--top .topbar-wordmark');
     var nm = wm && wm.querySelector('.topbar-name');
@@ -8674,21 +8658,24 @@
     var im = parseFloat(wm.style.getPropertyValue('--ink-mid'));
     if (!(im > it)) return;
     var mt = parseFloat(getComputedStyle(nm).marginTop) || 0;
+    D = 2 * (im - it) * (1 - SCALE);
     main.style.setProperty('--wm-oy', (it - mt).toFixed(2) + 'px');
-    main.style.setProperty('--wm-small-h', (wm.offsetHeight - 2 * (im - it) * (1 - SCALE)).toFixed(2) + 'px');
+    main.style.setProperty('--wm-d', D.toFixed(2) + 'px');
+    main.style.setProperty('--wm-small-h', (wm.offsetHeight - D).toFixed(2) + 'px');
+    lastP = -1;
   }
-  var on = null;
   function set() {
-    var want = !!wide.matches && (window.pageYOffset || document.documentElement.scrollTop || 0) > 0;
-    if (want === on) return;
-    on = want;
-    root.classList.toggle('wm-small', want);
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var p = wide.matches && D > 0 ? Math.max(0, Math.min(1, y / D)) : 0;
+    if (Math.abs(p - lastP) < 0.0005) return;
+    lastP = p;
+    main.style.setProperty('--wm-p', p.toFixed(4));
   }
   measure(); set();
   addEventListener('scroll', set, { passive: true });
   addEventListener('resize', function () { measure(); set(); });
-  addEventListener('newcritic:fit', measure);
-  addEventListener('newcritic:settled', measure);
+  addEventListener('newcritic:fit', function () { measure(); set(); });
+  addEventListener('newcritic:settled', function () { measure(); set(); });
 })();
 
 </script>
