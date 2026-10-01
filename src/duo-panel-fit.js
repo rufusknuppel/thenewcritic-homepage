@@ -6682,6 +6682,7 @@
     step('seatPlateBody', seatPlateBody);
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
+    step('seatDuoTitle', seatDuoTitle);
     step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
@@ -7670,6 +7671,19 @@
     }
     return { w: dp[n][k], lines: lines };
   }
+  // (THE POSTSCRIPT BESIDE THE LEAD IS AS WIDE AS ITS TITLE: the width
+  // seatSwapCols last found its title needs, and the step that hands it
+  // to the sheet and sets the titles again where it changed the picture)
+  var duoTitleW = 0;
+  function seatDuoTitle() {
+    if (ONE_COL.matches || !duoTitleW) return;
+    var cards = document.querySelectorAll('.card--duo-lead, .card--duo-beside');
+    if (!cards.length) return;
+    var was = parseFloat(cards[0].style.getPropertyValue('--duo-t')) || 0;
+    if (Math.abs(was - duoTitleW) < 0.5) return;
+    [].forEach.call(cards, function (c) { c.style.setProperty('--duo-t', duoTitleW + 'px'); });
+    seatSwapCols();
+  }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
     var jobs = [];
@@ -7987,6 +8001,10 @@
       measureCtx.font = j.sface;
       var tr100 = j.track * 100;
       var w100 = function (str) { return measureCtx.measureText(str).width + tr100 * str.length; };
+      // THE POSTSCRIPT BESIDE THE LEAD IS AS WIDE AS ITS TITLE (2026-09-30,
+      // at the user's word): the width its title takes on one line at the
+      // full size, handed to the sheet as --duo-t by seatDuoTitle
+      if (j.card.closest('.card--duo-beside')) duoTitleW = Math.ceil(w100(text) * maxFs / 100 / 0.99) + 2;
       var best = null, tries = [];
       for (var k = 1; k <= Math.min(SWAP_LINES, tok.length); k++) {
         var p = swapPartition(tok, k, w100);

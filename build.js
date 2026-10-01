@@ -859,8 +859,10 @@ const BIO_PATTERNS = [
   // between the byline bio and the review's opening line — so no run
   // filter sees it: "New Critic paid subscribers get access to Postscript,
   // our interview series, Contra, our criticism section, and exclusive New
-  // Critic parties for only $30 a year."
-  /^[^.!?]{0,60}\bpaid subscribers get access\b/i,
+  // Critic parties for only $30 a year." (and without "access", on the
+  // essays since 2026-09: "New Critic paid subscribers get Postscript,
+  // our interview series, … for $30 a year.")
+  /^[^.!?]{0,60}\bpaid subscribers get\b/i,
   // "If you read The New Critic and take delight or solace in our project,
   // please consider a paid subscription to this flesh-and-blood gen z
   // magazine." — the plea's closing paragraph, phrased sentence-first.
@@ -2371,7 +2373,9 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // (a FLIPPED pair stands its first card on the right and its second
   // on the left, so the diagonal can step on from the card over it:
   // EVERY CARD STEPS DOWN, 2026-09-24)
-  const alignR = flip ? pair === 'a' : (align === 'r' || pair === 'b');
+  // (the postscript beside the lead is set left, courier and title, at
+  // the user's word, 2026-09-30: THE LEAD AND THE FIRST POSTSCRIPT)
+  const alignR = duo === 'beside' ? false : flip ? pair === 'a' : (align === 'r' || pair === 'b');
   // THE ESSAY'S PICTURE STANDS AT ITS OWN HEIGHT (2026-09-24): an
   // essay's cover keeps its width and takes its original's proportions
   // down the page, read off the _WxH Substack writes into the file name,
