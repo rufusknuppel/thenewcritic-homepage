@@ -284,3 +284,44 @@
   run();
   canvas();
 })();
+
+// THE NAME HALVES ON THE FIRST SCROLL (2026-09-30, at the user's word):
+// from 1024 up, once the page leaves its top, THE NEW CRITIC stands at
+// half its size, its ink's top still where it was (36 under the
+// window's head) and centred; the name's block is cut to the smaller
+// ink and the band pins as far under it as it stood under the whole
+// name. Back at the very top the name is whole again. The geometry is
+// read off the fitted name (--ink-top and --ink-mid, fitMastheadFill)
+// into --wm-oy (the scale's origin, in the name's own box) and
+// --wm-small-h (the block's height when halved); the sheet does the
+// rest (style.css, THE NAME HALVES ON THE FIRST SCROLL).
+(function () {
+  var main = document.querySelector('main.has-mega');
+  if (!main || document.body.classList.contains('word-page')) return;
+  var root = document.documentElement;
+  var wide = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : { matches: true };
+  var SCALE = 0.5;
+  function measure() {
+    var wm = document.querySelector('.site-nav--top .topbar-wordmark');
+    var nm = wm && wm.querySelector('.topbar-name');
+    if (!wm || !nm) return;
+    var it = parseFloat(wm.style.getPropertyValue('--ink-top'));
+    var im = parseFloat(wm.style.getPropertyValue('--ink-mid'));
+    if (!(im > it)) return;
+    var mt = parseFloat(getComputedStyle(nm).marginTop) || 0;
+    main.style.setProperty('--wm-oy', (it - mt).toFixed(2) + 'px');
+    main.style.setProperty('--wm-small-h', (wm.offsetHeight - 2 * (im - it) * (1 - SCALE)).toFixed(2) + 'px');
+  }
+  var on = null;
+  function set() {
+    var want = !!wide.matches && (window.pageYOffset || document.documentElement.scrollTop || 0) > 0;
+    if (want === on) return;
+    on = want;
+    root.classList.toggle('wm-small', want);
+  }
+  measure(); set();
+  addEventListener('scroll', set, { passive: true });
+  addEventListener('resize', function () { measure(); set(); });
+  addEventListener('newcritic:fit', measure);
+  addEventListener('newcritic:settled', measure);
+})();
