@@ -22555,3 +22555,24 @@ main.has-mega .duo-half--mega > .peek-corner:is(:hover, :focus-visible):is(*, .r
   outline: none !important;
 }
 /* (PREVIEW TURNS ITS COLOUR AND NOTHING ELSE ends) */
+/* ---------- READ ON THE SLIVER (2026-10-01) ----------
+   At the user's word ("when one preview is open, read should adjust and
+   still work for other card"): the mate under an open card keeps its
+   Read on the edge of its picture the slid picture leaves in the light
+   (src/essay-acts.js, the box cut to that edge). Where the edge is
+   narrower than the word on one line, the word breaks over its lines,
+   centred, the arrow on the last. */
+main.has-mega .duo-half--mega > .essay-acts.is-narrow .essay-act:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  row-gap: 6px !important;
+  max-width: 100% !important;
+  padding: 0 4px !important;
+  white-space: normal !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+  /* (a size down and no tracking: INTERVIEW on the 72 the sheet leaves) */
+  font-size: 11px !important;
+  letter-spacing: 0 !important;
+}
+/* (READ ON THE SLIVER ends) */

@@ -64,6 +64,12 @@
     el.style.top = (box.t - o.top + op.clientTop).toFixed(2) + 'px';
     el.style.width = (box.r - box.l).toFixed(2) + 'px';
     el.style.height = (box.b - box.t).toFixed(2) + 'px';
+    // (THE WORD FITS THE SLIVER, 2026-10-01: where the box is narrower
+    // than the word on one line — the uncovered edge of a mate's picture
+    // — the word breaks over its lines, centred; style.css, READ ON THE
+    // SLIVER. The one-line width is read once per card.)
+    if (card.__actW == null) { var a = el.firstElementChild; card.__actW = a ? a.getBoundingClientRect().width : 0; }
+    el.classList.toggle('is-narrow', (box.r - box.l) < card.__actW + 24);
   }
   // THE SCRIM IS HELD THROUGH A PREVIEW (2026-09-24). It was the hover's
   // alone, and a preview brought a charcoal of its own that faded in
@@ -105,11 +111,26 @@
     var hitCard = null, hitBox = null;
     // (a card slid out over its mate is asked first, and the mate under
     // it not at all, 2026-10-01)
+    // (READ ON THE SLIVER, 2026-10-01, "when one preview is open, read
+    // should adjust and still work for other card": the mate under an
+    // open card is asked too, for the part of its picture the slid
+    // picture leaves in the light — its box cut to that edge; while the
+    // slid picture is still moving the mate is not asked)
     var cards = [].slice.call(document.querySelectorAll(ESSAYS));
     var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
-    var under = [];
-    out.forEach(function (c) { var m = mateOf(c); if (m) under.push(m); });
-    cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0 && under.indexOf(c) < 0; }));
+    var under = [], cover = [];
+    out.forEach(function (c) {
+      var m = mateOf(c); if (!m) return;
+      under.push(m);
+      var cv = c.matches('.is-opening, .is-shutting') ? null : picBox(c);
+      // (the slid picture goes on its sheet, 36 of the page's ground
+      // either side of it — .slide-sheet, seatSlides — which covers the
+      // mate's picture as the picture does: the cover is the sheet's width)
+      var sh = cv && c.querySelector(':scope > .slide-sheet');
+      if (sh) { var sr = sh.getBoundingClientRect(); if (sr.width > 0) cv = { l: sr.left, r: sr.right, t: cv.t, b: cv.b }; }
+      cover.push(cv);
+    });
+    cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0; }));
     for (var i = 0; i < cards.length && !hitCard; i++) {
       var card = cards[i];
       if (card.matches('.is-opening, .is-shutting')) continue;
@@ -118,6 +139,17 @@
       if (ly < cr.top - 400 || ly > cr.bottom + 400) continue;
       var box = picBox(card);
       if (!box) continue;
+      var ui = under.indexOf(card);
+      if (ui >= 0) {
+        var cv = cover[ui];
+        if (!cv) continue;
+        // (the slid picture lies over one end of the mate's: what is
+        // left is the other end, from the slid picture's edge)
+        var mid = (box.l + box.r) / 2;
+        if (cv.l < mid) box = { l: Math.max(box.l, cv.r), r: box.r, t: box.t, b: box.b };
+        else box = { l: box.l, r: Math.min(box.r, cv.l), t: box.t, b: box.b };
+        if (box.r - box.l < 8) continue;
+      }
       var on = inside(box, lx, ly);
       if (on) { hitCard = card; hitBox = box; }
     }
