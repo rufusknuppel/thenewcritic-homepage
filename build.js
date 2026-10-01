@@ -1507,12 +1507,21 @@ function subTicker(where = 'head') {
 // user's word): ARCHIVE, ABOUT, SUBSCRIBE, STORE, EVENTS in the strip's
 // own capitals, spread evenly across it (style.css, THE LINKS IN THE
 // STRIP); STORE and EVENTS lead nowhere yet, as in the band they left
+// THE CORNER CHIP (2026-10-01, at the user's word): LIGHT, DARK and HEX
+// as three dots in a little chip held in the window's bottom right
+// corner — white, charcoal, and the mark's colour. Each dot is its own
+// button for the head script's toggle (.theme-toggle, the -light, -dark
+// and -hex classes); the hex dot opens the field over the chip, the code
+// typed there the bands' colour.
+function themeChip() {
+  return `<div class="theme-chip" role="group" aria-label="Light, dark, or a colour of your own"><button type="button" class="theme-toggle theme-toggle-light chip-dot chip-dot--light" aria-label="Light"></button><button type="button" class="theme-toggle theme-toggle-dark chip-dot chip-dot--dark" aria-label="Dark"></button><button type="button" class="theme-toggle theme-toggle-hex chip-dot chip-dot--hex" aria-label="A colour of your own, as a hex code"></button><input class="theme-hex chip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></div>`;
+}
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
   const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
   const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
-  // (SUBSCRIBE, ARCHIVE, ABOUT, STORE, EVENTS and LIGHT / DARK / HEX:
-  // 2026-09-30, at the user's word. THE LAST MAGAZINE, which stood among
+  // (SUBSCRIBE, ARCHIVE, ABOUT, STORE, EVENTS — and LIGHT / DARK / HEX
+  // until it became the corner chip: 2026-09-30, at the user's word. THE LAST MAGAZINE, which stood among
   // them for a day, has its own line over the strip again from
   // 2026-10-01 — the head rail, openMovement — and the strip rises over
   // it on the scroll.)
@@ -1522,10 +1531,9 @@ function navStrip() {
     link(by('about'), 'About'),
     dead('Store'),
     dead('Events'),
-    // (LIGHT / DARK / HEX, one word of the strip's at its right end:
-    // 2026-09-30, at the user's word. The slashes take no hand; HEX opens
-    // the field under it, the code typed there the bands' colour.)
-    `<span class="sub-ticker-half sub-ticker-half--mode"><button type="button" class="theme-toggle strip-toggle" aria-label="Light or dark, and a colour of your own for the bands"><b class="theme-toggle-light">Light</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-dark">Dark</b><b class="strip-slash" aria-hidden="true"> / </b><b class="theme-toggle-hex">Hex</b></button><input class="theme-hex strip-hex" type="text" maxlength="7" placeholder="#" aria-label="The bands' colour, as a hex code" autocomplete="off" autocapitalize="off" spellcheck="false" hidden></span>`,
+    // (LIGHT / DARK / HEX stood here as the strip's last word from
+    // 2026-09-30; on 2026-10-01 it left for the chip in the window's
+    // bottom right corner — themeChip)
   ].join('')}</span></nav>`;
 }
 
@@ -2790,7 +2798,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>${themeChip()}\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
