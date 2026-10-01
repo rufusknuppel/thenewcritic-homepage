@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8e8e4173">
+<link rel="stylesheet" href="style.css?v=d5556b88">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5593,7 +5593,18 @@
               : document.querySelector('.page-rows > .sub-ticker--head') || body.querySelector(':scope > .sub-ticker');
             if (tk && tk.offsetHeight) bandFoot += tk.offsetHeight;
             var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
-            if (stacked && !tk) {
+            var hbGone = hb && getComputedStyle(hb).visibility === 'hidden';
+            if (stacked && !tk && hbGone) {
+              var nmEl = document.querySelector('.site-nav--top .topbar-name');
+              var wmEl = nmEl && nmEl.closest('.topbar-wordmark');
+              var gsp = nmEl && glyphSpan(nmEl);
+              if (gsp && wmEl) {
+                var wr0 = wmEl.getBoundingClientRect();
+                firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
+                seatPic = true;
+              }
+            }
+            if (stacked && !tk && !hbGone) {
               var nf = navInkFoot(hb);
               if (nf != null) {
                 var hg = headInkGap(hb);

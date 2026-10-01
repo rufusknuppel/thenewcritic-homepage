@@ -7047,7 +7047,22 @@
             // the rows stand, the first row's highest ink 72 under the
             // lowest ink of the band's list — its commas' tails — read off
             // the face, the band's foot no longer the measure)
-            if (stacked && !tk) {
+            // (THE LINE IN THE MARGIN, 2026-09-30: from 1024 up the band
+            // stands in the flow unseen, THE LAST MAGAZINE in the left
+            // margin — the first row's pictures then stand under THE NEW
+            // CRITIC's ink by the air over it)
+            var hbGone = hb && getComputedStyle(hb).visibility === 'hidden';
+            if (stacked && !tk && hbGone) {
+              var nmEl = document.querySelector('.site-nav--top .topbar-name');
+              var wmEl = nmEl && nmEl.closest('.topbar-wordmark');
+              var gsp = nmEl && glyphSpan(nmEl);
+              if (gsp && wmEl) {
+                var wr0 = wmEl.getBoundingClientRect();
+                firstAt = body.getBoundingClientRect().top - (wr0.bottom - gsp.bot) + (gsp.top - wr0.top);
+                seatPic = true;
+              }
+            }
+            if (stacked && !tk && !hbGone) {
               var nf = navInkFoot(hb);
               if (nf != null) {
                 // (THE SAME AIR UNDER THE LINE AS OVER IT, 2026-09-30, at the

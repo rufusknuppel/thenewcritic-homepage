@@ -359,8 +359,11 @@
   function apply(force) {
     if (!band || !line) return;
     var y = window.pageYOffset || 0;
-    var span = lineTop - wmFoot;
-    var o = span > 0 ? Math.max(0, Math.min(1, (lineTop - y - wmFoot) / span)) : 1;
+    // (the band unseen from 1024 up, its line in the margin: nothing to
+    // fade, and the name's air under it begins with the first scroll)
+    var gone = getComputedStyle(band).visibility === 'hidden';
+    var span = gone ? 0 : lineTop - wmFoot;
+    var o = gone ? 1 : span > 0 ? Math.max(0, Math.min(1, (lineTop - y - wmFoot) / span)) : 1;
     if (force || o !== last) { last = o; if (o < 1) line.style.setProperty('opacity', o.toFixed(3)); else line.style.removeProperty('opacity'); }
     if (wm) {
       var e = under > 0 ? Math.max(0, Math.min(under, y - Math.max(0, span))) : 0;
