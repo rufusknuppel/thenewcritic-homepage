@@ -3108,10 +3108,10 @@
       var swapHR = swapHalf.getBoundingClientRect();
       var swapTR = title.getBoundingClientRect();
       if (swapHR.width && swapTR.width) {
-        swapHalf.style.setProperty('--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-w', swapTR.width.toFixed(2) + 'px');
-        swapHalf.style.setProperty('--mega-title-h', swapTR.height.toFixed(2) + 'px');
+        panelsLate.push([swapHalf, '--mega-title-t', (swapTR.top - swapHR.top).toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-l', (swapTR.left - swapHR.left).toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-w', swapTR.width.toFixed(2) + 'px']);
+        panelsLate.push([swapHalf, '--mega-title-h', swapTR.height.toFixed(2) + 'px']);
       }
       var swapCols = swapHalf.querySelector('.card-preview-cols');
       if (swapCols) {
@@ -3128,6 +3128,7 @@
       }
     }
   }
+  var panelsLate = [];
   function fitContraLead() {
     var lead = document.querySelector('.contra-lead');
     if (!lead) return;
@@ -5548,7 +5549,12 @@
     step('fitHeroLink', fitHeroLink); // before the panels: the hero panel pins to the fitted link
     step('fitContraLead', fitContraLead); // before too: the lead's height moves every row below it
     step('fitSlideSlots', fitSlideSlots);
-    step('panels', function () { [].forEach.call(document.querySelectorAll('.duo-panel'), fit); });
+    step('panels', function () {
+      panelsLate = [];
+      [].forEach.call(document.querySelectorAll('.duo-panel'), fit);
+      panelsLate.forEach(function (w) { w[0].style.setProperty(w[1], w[2]); });
+      panelsLate = [];
+    });
     step('fitLatestTitle', fitLatestTitle);
     step('fitCourierDots', fitCourierDots);
     step('fitMatterInk', function () { fitMatterInk('seat'); });
@@ -5636,43 +5642,63 @@
   function snapPictures() {
     var sx = window.scrollX || 0, sy = window.scrollY || 0;
     var snap = function (v, s0) { return Math.round(v + s0) - s0; };
+    var jobs = [];
     [].forEach.call(document.querySelectorAll('.duo-half--mega'), function (card) {
       if (card.matches('.is-open, .is-opening')) return;
       var t = card.querySelector('.card-title.hl-rect.rx');
       if (!t) return;
       var c = getComputedStyle(t, '::before');
       if (c.content === 'none') return;
-      var box = function () {
-        var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
-        var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
-        return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
-      };
-      var nudge = function (prop, d) {
-        if (Math.abs(d) < 0.005) return;
-        t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
-      };
+      jobs.push({ card: card, t: t });
+    });
+    var box = function (t) {
+      var r = t.getBoundingClientRect(), cc = getComputedStyle(t, '::before');
+      var w = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      return { l: r.left + (parseFloat(cc.left) || 0) - w, r: r.right - (parseFloat(cc.right) || 0) + w, t: r.top + (parseFloat(cc.top) || 0), b: r.bottom - (parseFloat(cc.bottom) || 0) };
+    };
+    var nudge = function (t, prop, d) {
+      if (Math.abs(d) < 0.005) return;
+      t.style.setProperty(prop, ((parseFloat(t.style.getPropertyValue(prop)) || 0) + d).toFixed(3) + 'px');
+    };
+    jobs.forEach(function (j) {
+      var t = j.t;
       var tm = getComputedStyle(t).transform;
+      j.fx = 0; j.fy = 0;
       if (tm && tm !== 'none' && window.DOMMatrixReadOnly) {
         var mm = new DOMMatrixReadOnly(tm);
-        var fx = Math.round(mm.e) - mm.e, fy = Math.round(mm.f) - mm.f;
-        if (Math.abs(fx) >= 0.005) { nudge('--rb-dx', fx); nudge('--rx-l', -fx); nudge('--rx-r', fx); }
-        if (Math.abs(fy) >= 0.005) { nudge('--rb-dy', fy); nudge('--rx-t', -fy); nudge('--rx-b', fy); }
+        j.fx = Math.round(mm.e) - mm.e; j.fy = Math.round(mm.f) - mm.f;
       }
-      var b0 = box();
-      if (!(b0.r > b0.l && b0.b > b0.t)) return;
+    });
+    jobs.forEach(function (j) {
+      var t = j.t;
+      if (Math.abs(j.fx) >= 0.005) { nudge(t, '--rb-dx', j.fx); nudge(t, '--rx-l', -j.fx); nudge(t, '--rx-r', j.fx); }
+      if (Math.abs(j.fy) >= 0.005) { nudge(t, '--rb-dy', j.fy); nudge(t, '--rx-t', -j.fy); nudge(t, '--rx-b', j.fy); }
+    });
+    jobs.forEach(function (j) { j.b0 = box(j.t); });
+    jobs.forEach(function (j) {
+      var b0 = j.b0;
+      if (!(b0.r > b0.l && b0.b > b0.t)) { j.off = true; return; }
       var nl = snap(b0.l, sx), nt = snap(b0.t, sy);
       var nr = nl + Math.round(b0.r - b0.l), nb = nt + Math.round(b0.b - b0.t);
       var dl = nl - b0.l, dr = nr - b0.r, dt = nt - b0.t, db = nb - b0.b;
-      nudge('--rx-l', dl); nudge('--rx-r', -dr); nudge('--rx-t', dt); nudge('--rx-b', -db);
-      var p = box(), tr = t.getBoundingClientRect();
-      var W = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
+      nudge(j.t, '--rx-l', dl); nudge(j.t, '--rx-r', -dr); nudge(j.t, '--rx-t', dt); nudge(j.t, '--rx-b', -db);
+    });
+    jobs.forEach(function (j) {
+      if (j.off) return;
+      j.p = box(j.t); j.tr = j.t.getBoundingClientRect();
+      j.W = parseFloat(getComputedStyle(j.t).getPropertyValue('--wrap')) || 0;
+      j.body = j.card.querySelector(':scope > .swap-body.is-set');
+      if (j.body) j.br = j.body.getBoundingClientRect();
+    });
+    jobs.forEach(function (j) {
+      if (j.off) return;
+      var t = j.t, p = j.p, tr = j.tr, W = j.W, b0 = j.b0;
       t.style.setProperty('--ck-l', ((p.l - PIC_RING) - tr.left + W).toFixed(3) + 'px');
       t.style.setProperty('--ck-r', (tr.right - (p.r + PIC_RING) + W).toFixed(3) + 'px');
       t.style.setProperty('--ck-t', ((p.t - PIC_RING) - tr.top + W + 0.5).toFixed(3) + 'px');
       t.style.setProperty('--ck-b', (tr.bottom - (p.b + PIC_RING) + W + 0.5).toFixed(3) + 'px');
-      var body = card.querySelector(':scope > .swap-body.is-set');
+      var body = j.body, br = j.br;
       if (!body) return;
-      var br = body.getBoundingClientRect();
       if (Math.abs(br.left - b0.l) > 2 || Math.abs(br.top - b0.t) > 2 || Math.abs(br.right - b0.r) > 2 || Math.abs(br.bottom - b0.b) > 2) return;
       var bs = body.style;
       bs.left = ((parseFloat(bs.left) || 0) + (p.l - br.left)).toFixed(3) + 'px';
