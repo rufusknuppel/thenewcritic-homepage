@@ -21184,7 +21184,9 @@ main.has-mega .cover-meta.is-first .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
    than its proportions is cut top and foot, a narrower one at the
    sides), never below its title's one line. The height is solved on
    that width (--stack-w here). A last post alone keeps its own width,
-   centred, no wider than the row.
+   centred, no wider than the row. A post marked to hold its shape
+   (--row-fa / --row-fb, build.js: THE LATEST's last review, square)
+   keeps its own width at the height and its partner takes the rest.
    72 BETWEEN THE ROWS (2026-09-30, at the user's word): a row's highest
    ink stands 72 under the lowest ink of the row over it (seatRowGaps,
    ROWS_GAP); across, the two pictures keep their 36. */
@@ -21194,7 +21196,7 @@ main.has-mega .cover-meta.is-first .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
     --stack-h: calc(var(--pic-scale, 1) * (100svh - var(--band-h, 72px) - 36px - 36px - 90px - 36px));
     --stack-w: calc(100vw - 288px);
     --rows-h: min(var(--stack-h), calc((var(--stack-w) - 36px) / (var(--k0a, 0.0001) + var(--k0b, 0.0001))), calc((var(--stack-w) - 36px - min(var(--t0a, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k0b, 0.0001)), calc((var(--stack-w) - 36px - min(var(--t0b, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k0a, 0.0001)), calc((var(--stack-w) - 36px) / (var(--k1a, 0.0001) + var(--k1b, 0.0001))), calc((var(--stack-w) - 36px - min(var(--t1a, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k1b, 0.0001)), calc((var(--stack-w) - 36px - min(var(--t1b, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k1a, 0.0001)), calc((var(--stack-w) - 36px) / (var(--k2a, 0.0001) + var(--k2b, 0.0001))), calc((var(--stack-w) - 36px - min(var(--t2a, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k2b, 0.0001)), calc((var(--stack-w) - 36px - min(var(--t2b, 0px), calc((var(--stack-w) - 36px) / 2))) / var(--k2a, 0.0001)));
-    --row-wa: clamp(min(var(--row-ta, 0px), calc((var(--stack-w) - 36px) / 2)), calc((var(--stack-w) - 36px) * var(--row-ka, 1) / (var(--row-ka, 1) + var(--row-kb, 1))), calc((var(--stack-w) - 36px) - min(var(--row-tb, 0px), calc((var(--stack-w) - 36px) / 2))));
+    --row-wa: calc(var(--row-fa, 0) * var(--rows-h) * var(--row-ka, 1) + var(--row-fb, 0) * ((var(--stack-w) - 36px) - var(--rows-h) * var(--row-kb, 1)) + (1 - var(--row-fa, 0) - var(--row-fb, 0)) * clamp(min(var(--row-ta, 0px), calc((var(--stack-w) - 36px) / 2)), calc((var(--stack-w) - 36px) * var(--row-ka, 1) / (var(--row-ka, 1) + var(--row-kb, 1))), calc((var(--stack-w) - 36px) - min(var(--row-tb, 0px), calc((var(--stack-w) - 36px) / 2)))));
     --row-wb: calc((var(--stack-w) - 36px) - var(--row-wa));
     --row-g: calc(var(--row-wa) + 36px + var(--row-wb));
     width: calc(var(--pic-w) + 72px) !important;
@@ -21217,3 +21219,14 @@ main.has-mega .cover-meta.is-first .cover-kicker:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.
   }
 }
 /* (THE LATEST'S POSTS STAND TWO TO A ROW ends) */
+
+
+/* ---------- NO STAMP IN THE TOP BAND, NO SPACER UNDER THE NAME (2026-09-30) ----------
+   At the user's word: the page opens on THE NEW CRITIC with the head
+   band straight under it — the spacer that stood the band and the
+   subscribe strip on the window's foot (THE PAGE OPENS ON THE NAME
+   ALONE, --open-gap) is struck — and the stamp that stood big in that
+   air and came down into the band (THE STAMP, src/band-mark.js) is not
+   shown. The reprint's stamp at the foot stays. */
+main.has-mega{ --open-gap: 0px !important; }
+main.has-mega .section-band > .band-mini--stamp{ display: none !important; }

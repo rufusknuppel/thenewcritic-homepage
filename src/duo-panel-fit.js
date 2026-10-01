@@ -10286,6 +10286,10 @@
     var sx = window.scrollX || 0;
     var seats = bands.map(function (band) {
       if (ONE_COL.matches) return null;
+      // (CENTRED OVER THEIR ROWS, 2026-09-30, at the user's word: where a
+      // section's posts stand two to a row its name stands centred, as
+      // THE LATEST's does — no left edge stated)
+      if (band.parentElement && getComputedStyle(band.parentElement).getPropertyValue('--rows-stack').trim() === '1') return null;
       var card = band.parentElement && band.parentElement.querySelector('.card--mega');
       if (!card) return null;
       var r = card.getBoundingClientRect();

@@ -2399,7 +2399,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // its own row's two widths-per-height (--row-ka, --row-kb) and every
   // row's (--k0a …), so the sheet can solve the one picture height every
   // row can hold (style.css, THE LATEST'S POSTS STAND TWO TO A ROW).
-  const styles = [row ? `--row-ka: ${row.ka.toFixed(4)}; --row-kb: ${row.kb.toFixed(4)}; ${row.all}` : '', picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
+  const styles = [row ? `--row-ka: ${row.ka.toFixed(4)}; --row-kb: ${row.kb.toFixed(4)}; ${row.all}${row.fixedAt && row.fixedAt.has(2 * row.r) ? '; --row-fa: 1' : ''}${row.fixedAt && row.fixedAt.has(2 * row.r + 1) ? '; --row-fb: 1' : ''}` : '', picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
   const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}${hasX ? ' card--ovx' : ''}"${styles ? ` style="${styles}"` : ''}${row ? ` data-group="${row.g}" data-row="${row.i}" data-side="${row.side}"` : ''} data-slug="${escapeHtml(slug)}`;
   return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}` : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
@@ -2666,7 +2666,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // with its width per unit of height: an essay its cover's own (the _WxH
   // in the file name), a postscript 3 wide to 4 high, a review square.
   // A last post alone stands centred by itself.
-  const latestOrder = [[essays[0], ''], [postscripts[0], 'postscript'], [contras[0], 'contra'], [essays[1], ''], [contras[1], 'contra'], [postscripts[1], 'postscript']].filter(([p]) => p);
+  const latestOrder = [[essays[0], ''], [postscripts[0], 'postscript'], [contras[0], 'contra'], [essays[1], ''], [postscripts[1], 'postscript'], [contras[1], 'contra']].filter(([p]) => p);
   const kOf = ([p, kind]) => {
     if (kind === 'postscript') return 0.75;
     if (kind === 'contra') return 1;
@@ -2686,19 +2686,22 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     return { ks, n, at, all: Array.from({ length: 3 }, (_, r) => `--k${r}a: ${(r < n ? at(2 * r) : 0.0001).toFixed(4)}; --k${r}b: ${(r < n ? at(2 * r + 1) : 0.0001).toFixed(4)}`).join('; ') };
   };
   const latestRows = kRows(latestOrder);
-  const rowsFor = (group, order) => {
+  const rowsFor = (group, order, fixedPosts = []) => {
     const { n: nRows, at: kAt } = kRows(order);
     // (a missing partner's width per height is all but nothing, so its
     // row's bounds never bind)
     const all = latestRows.all;
+    // (a post may hold its own shape in its row — `fixed`, kept for the
+    // whole group so both cards of the row know: --row-fa / --row-fb)
+    const fixedAt = new Set(fixedPosts.map((fp) => order.findIndex(([p]) => p === fp)).filter((i) => i >= 0));
     return (post) => {
       const i = order.findIndex(([p]) => p === post);
       if (i < 0 || nRows > 3) return null;
       const r = i >> 1;
-      return { g: group, i: r, side: i % 2 ? 'b' : 'a', solo: i % 2 === 0 && i === order.length - 1, ka: kAt(2 * r), kb: kAt(2 * r + 1), all };
+      return { g: group, i: r, side: i % 2 ? 'b' : 'a', solo: i % 2 === 0 && i === order.length - 1, ka: kAt(2 * r), kb: kAt(2 * r + 1), all, fixedAt, r };
     };
   };
-  const rowOf = rowsFor('latest', latestOrder);
+  const rowOf = rowsFor('latest', latestOrder, [contras[1]]);
   blocks.push(renderMegaHero(essays[0], { rev: true, label: 'Essays', stack: 'The Latest', stackHref: 'archive.html', trueHeight: true, row: rowOf(essays[0]) }));
   // The latest postscript and contra, in the hero's dress (see
   // renderLatestRow above).
@@ -2734,8 +2737,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   blocks.push(renderMegaHero(essays[1], { rev: true, label: 'Essays', align: 'r', trueHeight: true, row: rowOf(essays[1]) }));
   // (2026-09-24: this pair reads review first — the contra takes the
   // left seat and the postscript the right, at the user's word.)
-  blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'a' : '', row: rowOf(contras[1]) }));
-  blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: contras[1] ? 'b' : '', row: rowOf(postscripts[1]) }));
+  // (2026-09-30: the postscript first again and the review after it,
+  // square, at the user's word — THE LATEST's last row; the review's
+  // width is held at its height, --row-fb, and the postscript takes
+  // the rest of the row)
+  blocks.push(renderMegaHero(postscripts[1], { rev: true, label: 'Postscript', kind: 'postscript', trueWidth: true, pair: contras[1] ? 'a' : '', row: rowOf(postscripts[1]) }));
+  blocks.push(renderMegaHero(contras[1], { rev: true, label: 'Contra', kind: 'contra', pair: postscripts[1] ? 'b' : '', row: rowOf(contras[1]) }));
   // THE SUBSCRIBE BAND: the header said again mid-page — the chrome
   // block full-bleed, SUBSCRIBE in the masthead voice centred where
   // the name stands above, and one courier line whose ink opens on
@@ -2770,12 +2777,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // (EVERY SECTION'S POSTS STAND TWO TO A ROW, 2026-09-30, at the user's
   // word: the Essays, the Postscripts and the Contras as THE LATEST's —
   // each section's rows at one height of their own)
-  const essayRow = rowsFor('essays', essays.slice(2, 7).filter(Boolean).map((p) => [p, '']));
+  const essayRow = rowsFor('essays', essays.slice(2, 8).filter(Boolean).map((p) => [p, '']));
   blocks.push(renderMegaHero(essays[2], { rev: true, label: 'Essays', m2: true, trueHeight: true, row: essayRow(essays[2]) }));
   blocks.push(renderMegaHero(essays[3], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true, row: essayRow(essays[3]) }));
   blocks.push(renderMegaHero(essays[4], { rev: true, label: 'Essays', m2: true, trueHeight: true, row: essayRow(essays[4]) }));
   blocks.push(renderMegaHero(essays[5], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true, row: essayRow(essays[5]) }));
   blocks.push(renderMegaHero(essays[6], { rev: true, label: 'Essays', m2: true, trueHeight: true, row: essayRow(essays[6]) }));
+  // (a sixth essay beside What Was College For?, at the user's word,
+  // 2026-09-30: the section's last row two across like the rest)
+  blocks.push(renderMegaHero(essays[7], { rev: true, label: 'Essays', m2: true, align: 'r', trueHeight: true, row: essayRow(essays[7]) }));
   // EVENTS closes the essays — the word alone, like STORE.
   blocks.push(renderBanner({ word: 'Postscript', href: SECTION_BANDS.postscript.href, modifier: 'events-band page-banner--apart page-banner--section' }));
   // THE POSTSCRIPTS' MOVEMENT: three rows under EVENTS — the base
