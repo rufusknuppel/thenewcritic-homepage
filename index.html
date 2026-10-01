@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=030608fd">
+<link rel="stylesheet" href="style.css?v=cb9832c5">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4564,7 +4564,7 @@
     jobs.forEach(function (j) { prep(j.host); });
     jobs.forEach(function (j) {
       if (!j.title || !j.cover) return;
-      j.h = j.host.getBoundingClientRect(); j.t = j.title.getBoundingClientRect(); j.p = j.cover.getBoundingClientRect();
+      j.h = j.host.getBoundingClientRect(); j.t = restRect(j.title); j.p = j.cover.getBoundingClientRect();
     });
     jobs.forEach(function (j) { seat(j.host, j.title, j.cover, j.words, j.h, j.t, j.p); });
   }
@@ -6383,18 +6383,24 @@
         btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'peek-corner';
-        btn.innerHTML = '<span class="pk-open">Preview</span><span class="pk-shut">Close</span>';
+        btn.innerHTML = '<span class="pk-sep" aria-hidden="true">·</span><span class="pk-open">Preview</span><span class="pk-shut">Close</span>';
         card.appendChild(btn);
       }
+      var tail = card.__courierTail, te = tail && tail.el && inkEdges(tail.el);
+      if (te) { var tr = tail.el.getBoundingClientRect(); line = { top: tr.top - oy, h: tr.height, el: tail.el }; }
       var cs = getComputedStyle(line.el), b = btn.style;
       b.removeProperty('display');
       b.fontFamily = cs.fontFamily; b.fontSize = cs.fontSize; b.fontWeight = cs.fontWeight;
       b.letterSpacing = cs.letterSpacing; b.textTransform = cs.textTransform; b.lineHeight = cs.lineHeight;
       b.top = (line.top - cr0.top).toFixed(2) + 'px';
       b.height = line.h.toFixed(2) + 'px';
-      var atLeft = Math.abs(lo - P.l) < 2;
-      if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
-      else { b.right = 'auto'; b.left = (P.l - cr0.left).toFixed(2) + 'px'; }
+      btn.classList.toggle('pk-lone', !te);
+      if (te) { b.right = 'auto'; b.left = (te.r + tail.gap - ox - cr0.left).toFixed(2) + 'px'; }
+      else {
+        var atLeft = Math.abs(lo - P.l) < 2;
+        if (atLeft) { b.left = 'auto'; b.right = (cr0.right - P.r).toFixed(2) + 'px'; }
+        else { b.right = 'auto'; b.left = (P.l - cr0.left).toFixed(2) + 'px'; }
+      }
     });
   }
   function seatSwapCols() {
@@ -7715,7 +7721,6 @@
           hy = cr.bottom - REST_INSET + ESSAY_COURIER_GAP;
           var hEdge = 'top';
           var kk3 = card.querySelector('.cover-meta--ckick');
-          if (kk3) seat(kk3, hy, hEdge, { inkL: frL });
           var pkArrow = 0;
           var pkb = pk && (pk.querySelector('.peek-open') || pk);
           if (pkb) {
@@ -7734,35 +7739,45 @@
           }
           var cd3 = card.querySelector('.cover-meta--cdate');
           if (cd3 && !(cd3.textContent || '').trim()) cd3 = null;
-          var line3 = [kk3, cd3, kc].filter(Boolean);
-          [kk3, cd3, kc].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
+          var line3 = [kc, cd3].filter(Boolean);
+          [kc, cd3, kk3].forEach(function (el) { if (el) el.classList.toggle('is-first', el === line3[0]); });
           var fs3 = parseFloat(getComputedStyle(line3[0] || card).fontSize) || 13;
           var gap3 = 1.8 * fs3;
           var x3 = frL;
           line3.forEach(function (el) {
+            el.classList.remove('is-wrapped');
             seat(el, hy, hEdge, { inkL: x3 });
             var e3 = inkEdges(el);
             if (e3) x3 = e3.r + gap3;
           });
-          if (kc) kc.classList.remove('is-wrapped');
-          var ae3 = kc && inkEdges(kc);
-          var rc3 = card.closest('.card--row-a, .card--row-b');
-          var le3 = line3.length ? inkEdges(line3[line3.length - 1]) : null;
-          if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r - frL) + 1;
-          if (ae3 && ae3.r > frR + 0.5 && line3.length > 1) {
-            kc.classList.add('is-wrapped');
-            seat(kc, hy + 1.6 * fs3, hEdge, { inkL: frL });
+          var pvW = 0;
+          if (line3.length) {
+            var cs3 = getComputedStyle(line3[0]);
+            measureCtx.font = cs3.fontStyle + ' ' + cs3.fontWeight + ' ' + cs3.fontSize + ' ' + cs3.fontFamily;
+            var pvT = cs3.textTransform === 'uppercase' ? 'PREVIEW' : 'Preview';
+            pvW = measureCtx.measureText(pvT).width + (parseFloat(cs3.letterSpacing) || 0) * pvT.length;
           }
+          var tail3 = line3.length ? line3[line3.length - 1] : null;
+          var rc3 = card.closest('.card--row-a, .card--row-b');
+          var le3 = tail3 && inkEdges(tail3);
+          if (rc3 && le3) rc3.__courierW = Math.ceil(le3.r + (pvW ? gap3 + pvW : 0) - frL) + 1;
+          var wrapped3 = false;
+          if (le3 && line3.length > 1 && le3.r + (pvW ? gap3 + pvW : 0) > frR + 0.5) {
+            wrapped3 = true;
+            tail3.classList.add('is-wrapped');
+            seat(tail3, hy + 1.6 * fs3, hEdge, { inkL: frL });
+            le3 = inkEdges(tail3);
+          }
+          card.__courierTail = tail3 ? { el: tail3, gap: gap3 } : null;
           if (line3.length && card.closest('.card--align-r') && SIDE_ALIGN_MQ.matches) {
             var carry = function (el, d) {
               if (!el) return;
               el.style.setProperty('--rb-dx', ((parseFloat(el.style.getPropertyValue('--rb-dx')) || 0) + d).toFixed(2) + 'px');
             };
-            var wrapped3 = !!(kc && kc.classList.contains('is-wrapped'));
-            var first3 = line3.filter(function (el) { return !(el === kc && wrapped3); });
-            var last3 = first3[first3.length - 1], le3 = last3 && inkEdges(last3);
-            if (le3) { var d3 = frR - le3.r; first3.forEach(function (el) { carry(el, d3); }); }
-            if (wrapped3 && ae3) carry(kc, frR - (frL + (ae3.r - ae3.l)));
+            var first3 = line3.filter(function (el) { return !(el === tail3 && wrapped3); });
+            var last3 = first3[first3.length - 1], fe3 = last3 && inkEdges(last3);
+            if (fe3) { var d3 = frR - (fe3.r + (wrapped3 || !pvW ? 0 : gap3 + pvW)); first3.forEach(function (el) { carry(el, d3); }); }
+            if (wrapped3 && le3) carry(tail3, frR - (frL + (le3.r - le3.l) + (pvW ? gap3 + pvW : 0)));
             if (frR > r) r = frR;
           }
           }
