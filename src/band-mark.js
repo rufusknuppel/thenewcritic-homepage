@@ -285,22 +285,24 @@
   canvas();
 })();
 
-// THE NAME HALVES ON THE FIRST SCROLL (2026-09-30, at the user's word):
-// from 1024 up, once the page leaves its top, THE NEW CRITIC stands at
-// half its size, its ink's top still where it was (36 under the
-// window's head) and centred; the name's block is cut to the smaller
-// ink and the band pins as far under it as it stood under the whole
-// name. Back at the very top the name is whole again. The geometry is
-// read off the fitted name (--ink-top and --ink-mid, fitMastheadFill)
-// into --wm-oy (the scale's origin, in the name's own box) and
-// --wm-small-h (the block's height when halved); the sheet does the
-// rest (style.css, THE NAME HALVES ON THE FIRST SCROLL).
+// THE NAME HALVES WITH THE FIRST SCROLL (2026-09-30, at the user's word,
+// and scrubbed by the scroll the same day): from 1024 up THE NEW CRITIC
+// shrinks with the page's first pixels, from its whole size at the top
+// to half once the page has moved by the height it gives up (--wm-d:
+// half the ink's height), its ink's top still 36 under the window's head
+// and centred. Its block shortens by exactly what has been scrolled, so
+// THE LAST MAGAZINE's band, riding up with the page, stays flush under
+// it and pins there when the name is halved. The scroll's share of that
+// travel is --wm-p (0..1); the geometry is read off the fitted name
+// (--ink-top, --ink-mid: fitMastheadFill) into --wm-oy (the scale's
+// origin in the name's own box), --wm-d and --wm-small-h. The sheet
+// does the rest (style.css, THE NAME HALVES WITH THE FIRST SCROLL).
 (function () {
   var main = document.querySelector('main.has-mega');
   if (!main || document.body.classList.contains('word-page')) return;
-  var root = document.documentElement;
   var wide = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : { matches: true };
   var SCALE = 0.5;
+  var D = 0, lastP = -1;
   function measure() {
     var wm = document.querySelector('.site-nav--top .topbar-wordmark');
     var nm = wm && wm.querySelector('.topbar-name');
@@ -309,19 +311,22 @@
     var im = parseFloat(wm.style.getPropertyValue('--ink-mid'));
     if (!(im > it)) return;
     var mt = parseFloat(getComputedStyle(nm).marginTop) || 0;
+    D = 2 * (im - it) * (1 - SCALE);
     main.style.setProperty('--wm-oy', (it - mt).toFixed(2) + 'px');
-    main.style.setProperty('--wm-small-h', (wm.offsetHeight - 2 * (im - it) * (1 - SCALE)).toFixed(2) + 'px');
+    main.style.setProperty('--wm-d', D.toFixed(2) + 'px');
+    main.style.setProperty('--wm-small-h', (wm.offsetHeight - D).toFixed(2) + 'px');
+    lastP = -1;
   }
-  var on = null;
   function set() {
-    var want = !!wide.matches && (window.pageYOffset || document.documentElement.scrollTop || 0) > 0;
-    if (want === on) return;
-    on = want;
-    root.classList.toggle('wm-small', want);
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var p = wide.matches && D > 0 ? Math.max(0, Math.min(1, y / D)) : 0;
+    if (Math.abs(p - lastP) < 0.0005) return;
+    lastP = p;
+    main.style.setProperty('--wm-p', p.toFixed(4));
   }
   measure(); set();
   addEventListener('scroll', set, { passive: true });
   addEventListener('resize', function () { measure(); set(); });
-  addEventListener('newcritic:fit', measure);
-  addEventListener('newcritic:settled', measure);
+  addEventListener('newcritic:fit', function () { measure(); set(); });
+  addEventListener('newcritic:settled', function () { measure(); set(); });
 })();
