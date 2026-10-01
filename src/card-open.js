@@ -50,7 +50,8 @@
     // and the picture's Read Now hold until the box is back on it. An
     // open in the meantime clears it.
     var SHUT = 1000, // one fluid second (2026-09-22; the three moves took 1.4)
-        shutTimer = 0, openTimer = 0;
+        shutTimer = 0, openTimer = 0,
+        waitTimer = 0; // (the mate's way home, before this one goes out)
     // AND THE OPEN THE SAME (2026-09-22, later): .is-opening for the
     // three moves out, so the picture says Read Now through them; once
     // open and still, it says it only for a hand in the preview's box
@@ -59,6 +60,11 @@
       // (ONE OUT TO A ROW, 2026-10-01: a sliding card goes over its mate,
       // so a mate that is out comes home first — style.css, THE PREVIEW
       // SLIDES)
+      // (ONE SHUTS BEFORE THE OTHER OPENS, 2026-10-01, at the user's word:
+      // the mate is sent home, and this card waits the length of that
+      // move — SHUT, the slide's own second — before it goes out; a
+      // second press in the wait calls the wait off)
+      var sent = false;
       if (card.classList.contains('is-slide')) {
         var sec = card.closest('section.card');
         var g = sec && sec.getAttribute('data-group'), r = sec && sec.getAttribute('data-row');
@@ -66,12 +72,20 @@
           if (s === sec || s.getAttribute('data-group') !== g) return;
           var m = s.querySelector('.duo-half--mega.is-open');
           var po = m && m.querySelector('.peek-open, .peek-corner');
-          if (po) po.click();
+          if (po) { po.click(); sent = true; }
           // (and the mate's own Preview stands down while this is out)
           var u = s.querySelector('.duo-half--mega');
           if (u) { u.classList.add('is-under'); card.__under = u; }
         });
       }
+      if (sent) {
+        card.classList.add('is-waiting');
+        waitTimer = setTimeout(function () { waitTimer = 0; card.classList.remove('is-waiting'); begin(); }, SHUT);
+        return;
+      }
+      begin();
+    };
+    var begin = function () {
       if (shutTimer) { clearTimeout(shutTimer); shutTimer = 0; }
       card.classList.remove('is-shutting');
       card.classList.add('is-open'); travel();
@@ -80,6 +94,7 @@
       openTimer = setTimeout(function () { openTimer = 0; card.classList.remove('is-opening'); }, SHUT);
     };
     var shut = function () {
+      if (waitTimer) { clearTimeout(waitTimer); waitTimer = 0; card.classList.remove('is-waiting'); }
       if (openTimer) { clearTimeout(openTimer); openTimer = 0; }
       card.classList.remove('is-opening', 'is-inbox');
       card.classList.remove('is-open'); travel();
@@ -130,6 +145,13 @@
         // out over it sends this one home and opens the mate's — ONE OUT
         // TO A ROW, in open(); 2026-10-01, "should disengage one preview,
         // and start other")
+        // (a press while this card waits on its mate's way home calls
+        // the open off; the mate's shut goes on)
+        if (waitTimer) {
+          clearTimeout(waitTimer); waitTimer = 0; card.classList.remove('is-waiting');
+          if (card.__under) { card.__under.classList.remove('is-under'); card.__under = null; }
+          return;
+        }
         if (card.classList.contains('is-open')) {
           shut();
           try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
