@@ -4236,6 +4236,11 @@
       if (gap0) gap0.style.marginLeft = '';
     }
     if (stackEl) stackEl.style.removeProperty('right');
+    var stampRatio = 438 / 488;
+    if (stamp) {
+      var vb = (stamp.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
+      if (vb.length === 4 && vb[2] > 0 && vb[3] > 0) stampRatio = vb[2] / vb[3];
+    }
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
     var fill = function () {
       var side = stamp ? MAST_SIDE_STAMP : WORDMARK_SIDE;
@@ -4257,8 +4262,11 @@
         if (!sc) break;
         var sh = sc.foot - sc.cap;
         stamp.style.height = sh.toFixed(2) + 'px';
-        stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
-        var r2 = sh * 438 / 488 + 36;
+        // (the stamp's proportion off its own viewBox — a circle's square
+        // since THE BIRD IN A CIRCLE, 2026-10-01; it was the block's
+        // 438 / 488, written here)
+        stamp.style.width = (sh * stampRatio).toFixed(2) + 'px';
+        var r2 = sh * stampRatio + 36;
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
         var g0Err = 36 - (ia.left - i0.right);
