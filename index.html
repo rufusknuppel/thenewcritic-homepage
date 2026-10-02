@@ -9561,9 +9561,74 @@ window.__ncStripInk = function () {
   var ask = function () { if (!raf) raf = requestAnimationFrame(apply); };
   window.__ncPullClear = function () { if (raf) { cancelAnimationFrame(raf); raf = 0; } return clear(); };
   window.__ncPullApply = function () { geo = null; apply(); };
+  window.__ncPullTick = function () { if (raf) { cancelAnimationFrame(raf); raf = 0; } apply(); };
   addEventListener('scroll', ask, { passive: true });
   addEventListener('resize', function () { geo = null; ask(); });
   apply();
+})();
+(function () {
+  var main = document.querySelector('main.wm-opening');
+  if (!main) return;
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)');
+  var COLLAPSE_MS = 900, WHEEL_QUIET = 220;
+  var running = false, held = false, lastWheel = 0, touchY = null, touchHeld = false;
+  var rest = function () {
+    return (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
+      + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
+  };
+  var ease = function (k) { return 0.5 - 0.5 * Math.cos(Math.PI * k); };
+  var go = function (to) {
+    var from = window.pageYOffset || 0;
+    if (Math.abs(to - from) < 1) return;
+    if (still && still.matches) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
+    running = true;
+    var t0 = null;
+    var step = function (now) {
+      if (t0 === null) t0 = now;
+      var k = Math.min(1, (now - t0) / COLLAPSE_MS);
+      window.scrollTo({ top: from + (to - from) * ease(k), behavior: 'instant' });
+      if (window.__ncPullTick) window.__ncPullTick();
+      if (k < 1) requestAnimationFrame(step); else running = false;
+    };
+    requestAnimationFrame(step);
+  };
+  var turn = function (down) {
+    if (!wide.matches) return false;
+    var y = window.pageYOffset || 0, r = rest();
+    if (!(r > 0)) return false;
+    if (down && y < r - 0.5) { go(r); return true; }
+    if (!down && y > 0.5 && y <= r + 0.5) { go(0); return true; }
+    return false;
+  };
+  addEventListener('wheel', function (e) {
+    var now = e.timeStamp || Date.now();
+    if (held && (running || now - lastWheel < WHEEL_QUIET)) { lastWheel = now; e.preventDefault(); return; }
+    held = false;
+    if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX) || !e.deltaY) return;
+    if (turn(e.deltaY > 0)) { held = true; lastWheel = now; e.preventDefault(); }
+  }, { passive: false });
+  addEventListener('touchstart', function (e) { touchY = e.touches.length === 1 ? e.touches[0].clientY : null; touchHeld = running; }, { passive: true });
+  addEventListener('touchmove', function (e) {
+    if (touchHeld || running) { e.preventDefault(); return; }
+    if (touchY === null || e.touches.length !== 1) return;
+    var dy = touchY - e.touches[0].clientY;
+    if (Math.abs(dy) < 6) return;
+    if (turn(dy > 0)) { touchHeld = true; e.preventDefault(); }
+    touchY = null;
+  }, { passive: false });
+  addEventListener('touchend', function () { touchHeld = false; }, { passive: true });
+  addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    var k = e.key;
+    var down = k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey);
+    var up = k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey);
+    if (!down && !up) return;
+    if (running) { e.preventDefault(); return; }
+    if (turn(down)) e.preventDefault();
+  });
 })();
 
 </script>
