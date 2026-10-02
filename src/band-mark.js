@@ -455,7 +455,7 @@ document.addEventListener('click', function (e) {
   var nm = document.querySelector('.site-nav--top .topbar-name');
   if (!main || !stack || !nm) return;
   var cv = null;
-  var inkOf = function (el) {
+  var inkOf = function (el, whole) {
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -468,7 +468,7 @@ document.addEventListener('click', function (e) {
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
     // (the name's top its flat cap, the H's, as its air is read)
-    var asc = el === nm ? cv.measureText('H').actualBoundingBoxAscent : m.actualBoundingBoxAscent;
+    var asc = el === nm && !whole ? cv.measureText('H').actualBoundingBoxAscent : m.actualBoundingBoxAscent;
     return { top: base - asc, base: base };
   };
   // (CENTRED ON THE NAME, 2026-10-01, at the user's word: the stack's
@@ -478,10 +478,11 @@ document.addEventListener('click', function (e) {
     if (!stack.offsetWidth) return;
     var host = stack.closest('.head-rail') || main;
     // (THE STAMP IN THE NAME, 2026-10-01: the stack is the bird's block,
-    // the capitals' height — fitMastheadFill sizes it — its top on the
-    // name's flat cap, so it stands cap top to baseline with the letters)
+    // the height of the name's ink — fitMastheadFill sizes it — its top
+    // on the ink's top, the T's and h's, so it stands with the letters'
+    // ink from top to foot: "stamp ink should align with wordmark ink")
     var stamp = stack.querySelector('.wm-bird');
-    var a0 = stamp && inkOf(nm);
+    var a0 = stamp && inkOf(nm, true);
     if (a0) {
       var cur0 = parseFloat(host.style.getPropertyValue('--stack-shift')) || 0;
       var want0 = cur0 + (a0.top - stamp.getBoundingClientRect().top);

@@ -4238,7 +4238,9 @@
     };
     var f = fill();
     if (!f) return;
-    // (the stamp to the caps' height at the size the name took, the room
+    // (the stamp to the name's ink at the size the name took — the T's
+    // and h's top to the lowest letter's foot, at the user's word: "stamp
+    // ink should align with wordmark ink" — the room
     // kept for it to its width, and the two word spaces to 36 of ink —
     // read off the words' own ink, the face's bearings included — and the
     // name filled again on them, till all hold: the stamp is a sixteenth
@@ -4247,7 +4249,7 @@
       for (var gk = 0; gk < 6; gk++) {
         var sc = nameInk();
         if (!sc) break;
-        var sh = sc.base - sc.capFlat;
+        var sh = sc.foot - sc.cap;
         stamp.style.height = sh.toFixed(2) + 'px';
         stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
         var r2 = sh * 438 / 488 + 36;
