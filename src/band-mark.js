@@ -585,7 +585,16 @@ document.addEventListener('click', function (e) {
 // (the strip's sides for how far it has come up, 0 at rest to 1 pinned:
 // read by the name's columns too, which drift out with them — THE BIRD
 // ONTO THE BAND)
-window.__ncStripSide = function (p) { return 144 - 72 * p; };
+// (in from 144 to 180 since the name settles in the band beside them:
+// "I want the nav bar items to push in slightly" — they eased out to 72
+// before)
+// (…to 36 clear of the name settled beside them once the strip settles at
+// 144 and the name with it: window.__ncSideEnd, THE NAME SETTLES IN THE
+// BAND WITH THE BIRD)
+// (…and held at 144 since the words settle evenly between the name and
+// the bird, placed by THE NAME SETTLES IN THE BAND WITH THE BIRD: "center
+// nav bar items between bird and wordmark inks")
+window.__ncStripSide = function () { return 144; };
 
 // THE STRIP'S ITEMS EASE OUT AS IT RISES (design/stacked-wordmark,
 // 2026-10-02, at the user's word — "When page opens, nav bar items should
@@ -653,86 +662,57 @@ window.__ncStripInk = function () {
 // in, 18 clear of it each side. Scrolling back undoes it. The fitter and
 // the readers above measure with it cleared (__ncPullClear /
 // __ncPullApply).
+// (THE NAME SETTLES IN THE BAND WITH THE BIRD, at the user's word —
+// "Remove the last magazine. I want the nav bar items to push in slightly
+// and THENEW and CRITIC to drift all the way out to 36px from the edges,
+// settling in the band like the bird": The Last Magazine leaves the
+// strip, a gap the bird's width and 18 each side keeping its place in the
+// middle (.sub-ticker-half--slot); the strip's words ease in from 144 to
+// 180 (window.__ncStripSide); THE/NEW and CRI/TIC shrink with the bird, at
+// its scale, and drift out until their outer edges stand 36 from the
+// window's, settling over the strip's middle as it pins; once there they
+// are the charcoal, as the bird is, and the bird goes to About.)
 (function () {
   var main = document.querySelector('main.wm-opening');
   var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
   var wm = document.querySelector('.site-nav--top .topbar-wordmark');
   var stack = document.querySelector('.page-rows > .head-rail .wm-stack');
   var rail = stack && stack.parentNode;
-  var tA = strip && strip.querySelector('.tlm-a'), tB = strip && strip.querySelector('.tlm-b');
+  var slot = strip && strip.querySelector('.sub-ticker-half--slot');
   // (THE/NEW and CRI/TIC shrink each on its own side, the first pinned
   // to the left, the second to the right: "Have THE/NEW shrink pinned to
   // left, while CRI/TIC pins to the right", 2026-10-02 — the name as a
   // whole shrank about its middle before)
-  var colL = wm.querySelector('.tn-col--l'), colR = wm.querySelector('.tn-col--r');
-  if (!main || !strip || !wm || !stack || !rail || !tA || !tB || !colL || !colR) return;
+  var colL = wm && wm.querySelector('.tn-col--l'), colR = wm && wm.querySelector('.tn-col--r');
+  if (!main || !strip || !wm || !stack || !rail || !slot || !colL || !colR) return;
   var wide = window.matchMedia('(min-width: 1024px)');
   // (the bird three quarters of the strip's height, an eighth of it over
   // and under: 108 in 144 — "I want bird to be bigger in band", 2026-10-02,
   // where it was 72 — and 81 in 108 once the strip is a quarter less: "I
   // want the band to be 25% smaller")
-  // (THE LAST and MAGAZINE tuck into the bird, 11 from its ink where they
-  // stand rather than 18 from its box: "I also want The Last Magazine to
-  // kind of tuck into the bird, especially Magazine", 2026-10-02, then "a
-  // couple more pixels padding on either side" than 9 — the bird's ink is
-  // read once off its own drawing, row by row)
-  var BIRD_SHARE = 0.75, BIRD_GAP = 11;
-  var rows = null;
-  (function () {
-    var svg = stack.querySelector('svg.wm-bird');
-    var vb = svg && svg.viewBox && svg.viewBox.baseVal;
-    if (!svg || !vb || !vb.width || !window.XMLSerializer) return;
-    var W = Math.round(vb.width), H = Math.round(vb.height);
-    var src = new XMLSerializer().serializeToString(svg).replace(/currentColor/g, '#000');
-    if (!/xmlns=/.test(src)) src = src.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
-    src = src.replace('<svg', '<svg width="' + W + '" height="' + H + '"');
-    var img = new Image();
-    img.onload = function () {
-      try {
-        var c = document.createElement('canvas'); c.width = W; c.height = H;
-        var x = c.getContext('2d'); x.drawImage(img, 0, 0, W, H);
-        var d = x.getImageData(0, 0, W, H).data, out = [];
-        // (the bird's body only, its largest piece of ink: the specks it
-        // carries are not the bird, and would hold the words off)
-        var N = W * H, lab = new Int32Array(N), st = new Int32Array(N), best = 0, bestN = 0, id = 0;
-        for (var q = 0; q < N; q++) {
-          if (lab[q] || d[q * 4 + 3] <= 64) continue;
-          id++; var top = 0, cnt = 0; st[top++] = q; lab[q] = id;
-          while (top) {
-            var v = st[--top], vx = v % W; cnt++;
-            var nb = [vx > 0 ? v - 1 : -1, vx < W - 1 ? v + 1 : -1, v - W, v + W];
-            for (var j = 0; j < 4; j++) { var u = nb[j]; if (u >= 0 && u < N && !lab[u] && d[u * 4 + 3] > 64) { lab[u] = id; st[top++] = u; } }
-          }
-          if (cnt > bestN) { bestN = cnt; best = id; }
-        }
-        for (var r = 0; r < H; r++) {
-          var l = -1, rt = -1;
-          for (var k = 0; k < W; k++) if (lab[r * W + k] === best) { if (l < 0) l = k; rt = k + 1; }
-          out.push(l < 0 ? null : [l / W, rt / W]);
-        }
-        rows = out; geo = null; ask();
-      } catch (e) { rows = null; }
-    };
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
-  })();
-  // (the bird's ink, left and right, as fractions of its width, over the
-  // rows from f0 to f1 of its height: its box where it is not yet read)
-  var inkAcross = function (f0, f1) {
-    if (!rows) return [0, 1];
-    var n = rows.length, a = Math.max(0, Math.floor(f0 * n)), b = Math.min(n, Math.ceil(f1 * n));
-    var l = 1, r = 0;
-    for (var i = a; i < b; i++) if (rows[i]) { l = Math.min(l, rows[i][0]); r = Math.max(r, rows[i][1]); }
-    return r > l ? [l, r] : null;
-  };
-  var geo = null, raf = 0, applied = false, dPrevA = 0, dPrevB = 0;
+  // (THE/NEW and CRI/TIC end with their outer edges 36 from the window's)
+  // (the strip grows from its resting height to 144 as it rises, and
+  // everything settles in that: "Have band settle at 144px")
+  // (THE/NEW and CRI/TIC settle in the middle of the 144 gutters either
+  // side, the strip's words evenly between the name's ink and the bird's,
+  // the bird in the window's middle, the light-or-dark circle between
+  // CRITIC and the edge: "Fit THE/NEW and CRITIC in 144px gutters,
+  // disregard 36px requirement"; "center nav bar items between bird and
+  // wordmark inks"; "center dot between edge and CRITIC" — they settled
+  // 36 from the edges, the words easing in, for a few minutes)
+  var BIRD_SHARE = 0.75, GUTTER = 144, STRIP_SETTLED = 144;
+  var halves = [].slice.call(strip.querySelectorAll('.sub-ticker-run > .sub-ticker-half')).filter(function (h) { return h.querySelector(':scope > b'); });
+  var dot = strip.querySelector('.sub-ticker-run > .sub-ticker-half--flip');
+  var geo = null, raf = 0, applied = false;
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   function clear() {
     var was = applied;
     [colL, colR].forEach(function (c) { c.style.removeProperty('scale'); c.style.removeProperty('translate'); c.style.removeProperty('transform-origin'); });
     stack.style.removeProperty('transform'); stack.style.removeProperty('transform-origin');
     rail.style.removeProperty('z-index');
-    tA.style.removeProperty('transform'); tB.style.removeProperty('transform');
-    applied = false; dPrevA = dPrevB = 0; geo = null;
+    strip.style.removeProperty('height');
+    halves.concat(dot ? [dot] : []).forEach(function (h) { h.style.removeProperty('translate'); });
+    applied = false; geo = null;
     if (landed) land(false);
     return was;
   }
@@ -743,25 +723,22 @@ window.__ncStripInk = function () {
     var ink = nm && ncSvgInk(nm);
     var sh = strip.getBoundingClientRect().height;
     if (!b.height || !ink || !sh) return null;
-    var wr = wm.getBoundingClientRect();
     // (the strip's resting place on the page: the name's block and the air
     // under it — the same sum that seats it)
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     if (!(rest > 0)) return null;
     var lr = colL.getBoundingClientRect(), rr = colR.getBoundingClientRect();
-    return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, sh: sh,
-      lc: { l: lr.left, t: lr.top }, rc: { l: rr.left, r: rr.right, t: rr.top },
-      ix: (ink.left + ink.right) / 2, iy: (ink.top + ink.bot) / 2, ih: ink.bot - ink.top,
-      wl: wr.left, wt: wr.top, rest: rest };
+    var words = halves.map(function (h) { var r = h.querySelector(':scope > b').getBoundingClientRect(); return { l: r.left, w: r.width }; });
+    var dr = dot && dot.getBoundingClientRect();
+    return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, sh: sh, vw: document.documentElement.clientWidth,
+      words: words, dot: dr ? (dr.left + dr.right) / 2 : null,
+      lc: { l: lr.left, r: lr.right, t: lr.top }, rc: { l: rr.left, r: rr.right, t: rr.top },
+      iy: (ink.top + ink.bot) / 2, rest: rest };
   }
-  // (THE WORDS MOVE EVENLY, at the user's words — "Don't let The Last
-  // Magazine jump at any point"; then "I don't like how THE LAST MAGAZINE
-  // words move in and out, want it to be linear, even if it overlaps":
-  // each word goes straight from where it stands to its seat beside the
-  // bird, in step with the scroll, and the bird may pass over them on its
-  // way. A curve that stood them aside from the bird's path stood here
-  // for an hour.)
+  // (THE WORDS MOVE EVENLY: everything here runs straight from where it
+  // stands to where it settles, in step with the scroll — "Want everything
+  // to move upwards and paced continuously / So all at same rate")
   function apply() {
     raf = 0;
     if (!wide.matches) { if (applied) clear(); return; }
@@ -770,76 +747,70 @@ window.__ncStripInk = function () {
     var y = window.pageYOffset || 0, B = geo.b;
     var p = clamp(y / geo.rest, 0, 1);
     if (p <= 0 && !applied) return;
-    // (the letters: from where they stand to the pinned strip's middle,
-    // three quarters its height, behind it, each column on its own side)
-    var seatH = geo.sh * BIRD_SHARE;
-    var sEnd = geo.ih > 0 ? Math.min(1, seatH / geo.ih) : 1;
-    var s = 1 + (sEnd - 1) * p;
-    // (THE/NEW about its left edge, CRI/TIC about its right, both about
-    // the letters' middle top to bottom, rising to the strip's)
-    // (and out with the strip's first and last words as their sides ease
-    // from 144 to 72: "THENEW and CRITIC should also drift left or right
-    // with edges of nav words")
-    var rise = ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px';
-    var out = window.__ncStripSide ? window.__ncStripSide(0) - window.__ncStripSide(p) : 0;
-    colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
-    colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
-    [colL, colR].forEach(function (c) { c.style.setProperty('scale', s.toFixed(4)); });
-    colL.style.setProperty('translate', (-out).toFixed(2) + 'px ' + rise);
-    colR.style.setProperty('translate', out.toFixed(2) + 'px ' + rise);
-    // (the bird: from where it stands to its seat in the pinned strip,
-    // between THE LAST and MAGAZINE as they part)
-    var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
-    var aRight = aR.right + dPrevA, bLeft = bR.left - dPrevB;
-    var sw = seatH * B.w / B.h;
-    var S = { l: (aRight + bLeft) / 2 - sw / 2, t: (geo.sh - seatH) / 2, h: seatH };
+    // (the bird: from where it stands to its seat in the pinned strip, in
+    // the middle of the gap The Last Magazine left)
+    var shEnd = Math.max(geo.sh, STRIP_SETTLED);
+    strip.style.setProperty('height', (geo.sh + (shEnd - geo.sh) * p).toFixed(2) + 'px', 'important');
+    var seatH = shEnd * BIRD_SHARE, sw = seatH * B.w / B.h;
+    var S = { l: geo.vw / 2 - sw / 2, t: (shEnd - seatH) / 2, h: seatH };
     var box = { l: B.l + (S.l - B.l) * p, t: B.t + (S.t - B.t) * p, h: B.h + (S.h - B.h) * p };
-    // (each word to 11 from the bird's ink at its own height, seated,
-    // straight there with the scroll)
-    var sr = strip.getBoundingClientRect();
-    var ink = inkAcross((aR.top - sr.top - S.t) / S.h, (aR.bottom - sr.top - S.t) / S.h) || [0, 1];
-    var dA = p * (aRight - (S.l + sw * ink[0] - BIRD_GAP));
-    var dB = p * ((S.l + sw * ink[1] + BIRD_GAP) - bLeft);
     stack.style.setProperty('transform-origin', '0 0');
     stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
     rail.style.setProperty('z-index', '73', 'important');
-    tA.style.setProperty('transform', 'translateX(' + (-dA).toFixed(2) + 'px)');
-    tB.style.setProperty('transform', 'translateX(' + dB.toFixed(2) + 'px)');
-    dPrevA = dA; dPrevB = dB; applied = true;
+    // (the letters: at the bird's scale, THE/NEW about its left edge and
+    // CRI/TIC about its right, both about the letters' middle top to
+    // bottom, rising to the strip's and drifting out to 36 from the sides)
+    var sEnd = seatH / B.h, s = 1 + (sEnd - 1) * p;
+    var rise = ((shEnd / 2 - geo.iy) * p).toFixed(2) + 'px';
+    // (each column settled in the middle of its gutter, THE/NEW as wide as
+    // CRI/TIC there — "Match TheNEW final width in band to CRITIC" — and so
+    // a little shorter)
+    var wR = (geo.rc.r - geo.rc.l) * sEnd, wL = wR;
+    var sL = 1 + (wL / (geo.lc.r - geo.lc.l) - 1) * p;
+    var lEnd = (GUTTER - wL) / 2, rEnd = geo.vw - (GUTTER - wR) / 2;
+    colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
+    colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
+    colL.style.setProperty('scale', sL.toFixed(4));
+    colR.style.setProperty('scale', s.toFixed(4));
+    colL.style.setProperty('translate', ((lEnd - geo.lc.l) * p).toFixed(2) + 'px ' + rise);
+    colR.style.setProperty('translate', ((rEnd - geo.rc.r) * p).toFixed(2) + 'px ' + rise);
+    // (the strip's words: the first half evenly between the name's ink and
+    // the bird's on the left, the second on the right — as many gaps as
+    // words and one)
+    var half = Math.ceil(geo.words.length / 2);
+    var spread = function (ws, from, to) {
+      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0);
+      var g = (to - from - tot) / (ws.length + 1), x = from, out = [];
+      ws.forEach(function (w) { x += g; out.push(x); x += w.w; });
+      return out;
+    };
+    var to = spread(geo.words.slice(0, half), lEnd + wL, S.l).concat(spread(geo.words.slice(half), S.l + sw, rEnd - wR));
+    halves.forEach(function (h, i) { h.style.setProperty('translate', ((to[i] - geo.words[i].l) * p).toFixed(2) + 'px 0'); });
+    // (the circle keeps the sheet's -50% that centres it top to bottom)
+    if (dot && geo.dot != null) dot.style.setProperty('translate', (((rEnd + geo.vw) / 2 - geo.dot) * p).toFixed(2) + 'px -50%', 'important');
+    applied = true;
     land(p >= 1);
   }
-  // (LANDED, at the user's word — "Bird and the last magazine should land
-  // white on band and hover charcoal, together, all linking to the
-  // About": once the bird is seated it is The Last Magazine's, white with
-  // the words, lit charcoal with them under a hand on either, and it
-  // takes the reader to About as they do: style.css, THE BIRD ON THE BAND)
-  var tlm = tA.closest('a'), homeLabel = stack.getAttribute('aria-label'), homeHref = stack.getAttribute('href');
+  // (LANDED: once seated the bird and the name are the band's — the
+  // charcoal, white under a hand (style.css, THE BIRD ON THE BAND) — and
+  // the bird goes to About, where The Last Magazine went)
+  var homeLabel = stack.getAttribute('aria-label'), homeHref = stack.getAttribute('href');
+  var aboutHref = slot.getAttribute('data-href');
   var landed = false;
   function land(on) {
     if (on === landed) return;
     landed = on;
     stack.classList.toggle('is-on-band', on);
-    if (on && tlm) {
-      stack.setAttribute('href', tlm.getAttribute('href'));
-      stack.setAttribute('aria-label', 'The Last Magazine — about');
+    wm.classList.toggle('is-on-band', on);
+    if (on && aboutHref) {
+      stack.setAttribute('href', aboutHref);
+      stack.setAttribute('aria-label', 'About The New Critic');
       stack.classList.remove('is-pair-lit');
     } else {
       stack.setAttribute('href', homeHref);
       stack.setAttribute('aria-label', homeLabel);
-      lit(false);
     }
   }
-  function lit(on) {
-    stack.classList.toggle('is-band-lit', on && landed);
-    if (tlm) tlm.classList.toggle('is-band-lit', on);
-  }
-  [stack, tlm].forEach(function (el) {
-    if (!el) return;
-    el.addEventListener('pointerenter', function () { if (el === tlm || landed) lit(true); });
-    el.addEventListener('pointerleave', function () { lit(false); });
-    el.addEventListener('focus', function () { if (el === tlm || landed) lit(true); });
-    el.addEventListener('blur', function () { lit(false); });
-  });
   var ask = function () { if (!raf) raf = requestAnimationFrame(apply); };
   window.__ncPullClear = function () { if (raf) { cancelAnimationFrame(raf); raf = 0; } return clear(); };
   window.__ncPullApply = function () { geo = null; apply(); };
