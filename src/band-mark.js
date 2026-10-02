@@ -603,9 +603,9 @@ document.addEventListener('click', function (e) {
 // on the name (main.wm-opening), everything runs on one measure, how far
 // the strip has come up the window (p, 0 at rest to 1 pinned), and runs
 // evenly with the scroll: the letters rise and shrink about their middle
-// to stand, 72 tall, behind the pinned strip, which comes over them on
+// to stand, 108 tall, behind the pinned strip, which comes over them on
 // the way; the bird rises and shrinks straight to its seat in the strip,
-// its height less 36 over and under; THE LAST and MAGAZINE part to let it
+// its height less 18 over and under; THE LAST and MAGAZINE part to let it
 // in, 18 clear of it each side. Scrolling back undoes it. The fitter and
 // the readers above measure with it cleared (__ncPullClear /
 // __ncPullApply).
@@ -618,7 +618,9 @@ document.addEventListener('click', function (e) {
   var tA = strip && strip.querySelector('.tlm-a'), tB = strip && strip.querySelector('.tlm-b');
   if (!main || !strip || !wm || !stack || !rail || !tA || !tB) return;
   var wide = window.matchMedia('(min-width: 1024px)');
-  var BIRD_AIR = 36, BIRD_GAP = 18;
+  // (18 over and under the bird in the strip, 108 tall: "I want bird to be
+  // bigger in band", 2026-10-02 — it was 36, 72 tall)
+  var BIRD_AIR = 18, BIRD_GAP = 18;
   var geo = null, raf = 0, applied = false, dPrev = 0;
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   function clear() {
@@ -656,7 +658,7 @@ document.addEventListener('click', function (e) {
     var p = clamp(y / geo.rest, 0, 1);
     if (p <= 0 && !applied) return;
     // (the letters: from where they stand to the pinned strip's middle,
-    // its height less 36 over and under, behind it)
+    // its height less 18 over and under, behind it)
     var seatH = Math.max(0, geo.sh - 2 * BIRD_AIR);
     var sEnd = geo.ih > 0 ? Math.min(1, seatH / geo.ih) : 1;
     var s = 1 + (sEnd - 1) * p;
