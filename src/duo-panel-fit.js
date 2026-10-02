@@ -4307,7 +4307,9 @@
         // "Move Critic a few pixels right": the bird's right edge is a
         // wingtip, so CRITIC stands 4 further off it than 36 to read as
         // even; the name refits, CRITIC still 36 from the window's right)
-        var CRITIC_NUDGE = 4;
+        // (…AND THEN 9 CLOSER, the same day, at the user's word — "I want C
+        // to crowd 9px closer to bird": 31 from the bird's ink to the C's)
+        var CRITIC_NUDGE = 4 - 9;
         var g1Err = (36 + sw + 36 + CRITIC_NUDGE) - (ib.left - ia.right);
         if (Math.abs(g0Err) <= 0.05 && Math.abs(g1Err) <= 0.05) break;
         gap0.style.marginLeft = ((parseFloat(gap0.style.marginLeft) || 0) + g0Err).toFixed(2) + 'px';
