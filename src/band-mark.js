@@ -532,3 +532,23 @@ document.addEventListener('click', function (e) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(seat);
   seat();
 })();
+
+// THE STAMP AND THE NAME LIGHT TOGETHER (2026-10-02, at the user's word —
+// "have stamp and wordmark hover together"): a hand on either the
+// masthead's name or the stamp between NEW and CRITIC turns both the
+// mark's colour (.is-pair-lit; style.css, THE STAMP AND THE NAME LIGHT
+// TOGETHER). The two are separate links — the stamp rides the head rail —
+// so the pair is kept here, not by the sheet's :hover.
+(function () {
+  var wm = document.querySelector('.site-nav--top .topbar-wordmark');
+  var st = document.querySelector('.page-rows > .head-rail .wm-stack');
+  if (!wm || !st) return;
+  var on = function () { wm.classList.add('is-pair-lit'); st.classList.add('is-pair-lit'); };
+  var off = function () { wm.classList.remove('is-pair-lit'); st.classList.remove('is-pair-lit'); };
+  [wm, st].forEach(function (el) {
+    el.addEventListener('pointerenter', on);
+    el.addEventListener('pointerleave', off);
+    el.addEventListener('focus', on);
+    el.addEventListener('blur', off);
+  });
+})();

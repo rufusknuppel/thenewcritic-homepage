@@ -49,6 +49,11 @@ const STAMP = (() => {
 // shapes, set in the clear ground away from the bird ("specks should be
 // as big as the ones in the bird, and there should only be 5"). One
 // id, one stamp.)
+// (TURNED OVER, 2026-10-02: "Flip the stamp so that on dark, background
+// is dark and bird is white"; "Inverse for light" — the outer line and
+// gap are struck, the block takes the page's ground and an ink layer
+// under it shows through the bird and the specks: style.css, THE STAMP
+// TURNED OVER)
 const BIRD_STAMP = (() => {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
   return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
@@ -1581,7 +1586,7 @@ function themeChip() {
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
-  const link = (l, word) => l ? `<a class="sub-ticker-half" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
+  const link = (l, word, cls = '') => l ? `<a class="sub-ticker-half${cls ? ' ' + cls : ''}" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
   const dead = (word) => `<span class="sub-ticker-half nav-links-dead"><b>${escapeHtml(word)}</b></span>`;
   // (SUBSCRIBE, ARCHIVE, ABOUT, STORE, EVENTS — and LIGHT / DARK / HEX
   // until it became the corner chip: 2026-09-30, at the user's word. THE LAST MAGAZINE, which stood among
@@ -1596,7 +1601,11 @@ function navStrip() {
     // About link reads THE LAST MAGAZINE in the strip's capitals, black
     // like its neighbours — "Actually the last magazine should also be
     // black" — after a minute in white)
-    link(by('about'), 'The Last Magazine'),
+    // (IN THE DEK'S GARAMOND, 2026-10-02, at the user's word — "turn The
+    // Last Magazine to Garamond dek styling in the band": the italic, at
+    // the dek's size, as written — style.css, THE LAST MAGAZINE IN THE
+    // DEK'S GARAMOND)
+    link(by('about'), 'The Last Magazine', 'sub-ticker-half--dek'),
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
