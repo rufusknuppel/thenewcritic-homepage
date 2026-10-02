@@ -814,7 +814,95 @@ window.__ncStripInk = function () {
   var ask = function () { if (!raf) raf = requestAnimationFrame(apply); };
   window.__ncPullClear = function () { if (raf) { cancelAnimationFrame(raf); raf = 0; } return clear(); };
   window.__ncPullApply = function () { geo = null; apply(); };
+  // (one frame of it, on the measure in hand: the collapse below draws it
+  // in the same frame it moves the page, so nothing trails the strip)
+  window.__ncPullTick = function () { if (raf) { cancelAnimationFrame(raf); raf = 0; } apply(); };
   addEventListener('scroll', ask, { passive: true });
   addEventListener('resize', function () { geo = null; ask(); });
   apply();
+})();
+
+// THE COLLAPSE ON A TOUCH OF THE SCROLL (2026-10-02, at the user's words —
+// "On scroll, trigger collapse"; "I want it to look super smooth"): from
+// 1024 up, where the page opens on the name, the reader no longer scrolls
+// the strip up by hand. The first turn of the wheel, swipe or key
+// downward while the page stands in the opening carries it the whole way
+// — the strip pinned at the top, the name and the bird settled in it —
+// over COLLAPSE_MS on a sine's ease in and out; a turn upward from there
+// carries it back. Everything the scroll drives still moves together on
+// the one timeline, and is drawn in the frame the page moves
+// (window.__ncPullTick), so nothing trails the strip. The input that set
+// it going is taken, and so is what follows it — a trackpad's glide, the
+// rest of a swipe — until the hand has let go, so nothing pulls against
+// it or carries the page on past the strip once it lands. A reader who
+// asks for less motion is taken there at once. (The strip's resting place
+// on the page, the opening's foot, is the same sum that seats it: the
+// name's block and the air under it.)
+(function () {
+  var main = document.querySelector('main.wm-opening');
+  if (!main) return;
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)');
+  var COLLAPSE_MS = 900, WHEEL_QUIET = 220;
+  var running = false, held = false, lastWheel = 0, touchY = null, touchHeld = false;
+  var rest = function () {
+    return (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
+      + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
+  };
+  var ease = function (k) { return 0.5 - 0.5 * Math.cos(Math.PI * k); };
+  var go = function (to) {
+    var from = window.pageYOffset || 0;
+    if (Math.abs(to - from) < 1) return;
+    if (still && still.matches) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
+    running = true;
+    var t0 = null;
+    var step = function (now) {
+      if (t0 === null) t0 = now;
+      var k = Math.min(1, (now - t0) / COLLAPSE_MS);
+      window.scrollTo({ top: from + (to - from) * ease(k), behavior: 'instant' });
+      if (window.__ncPullTick) window.__ncPullTick();
+      if (k < 1) requestAnimationFrame(step); else running = false;
+    };
+    requestAnimationFrame(step);
+  };
+  // (down: within the opening, to its foot; up: from its foot or within
+  // it, to the top — true when the turn was taken)
+  var turn = function (down) {
+    if (!wide.matches) return false;
+    var y = window.pageYOffset || 0, r = rest();
+    if (!(r > 0)) return false;
+    if (down && y < r - 0.5) { go(r); return true; }
+    if (!down && y > 0.5 && y <= r + 0.5) { go(0); return true; }
+    return false;
+  };
+  addEventListener('wheel', function (e) {
+    var now = e.timeStamp || Date.now();
+    // (a glide still running on from the turn that was taken: held until
+    // the wheel goes quiet)
+    if (held && (running || now - lastWheel < WHEEL_QUIET)) { lastWheel = now; e.preventDefault(); return; }
+    held = false;
+    if (e.ctrlKey || Math.abs(e.deltaY) < Math.abs(e.deltaX) || !e.deltaY) return;
+    if (turn(e.deltaY > 0)) { held = true; lastWheel = now; e.preventDefault(); }
+  }, { passive: false });
+  addEventListener('touchstart', function (e) { touchY = e.touches.length === 1 ? e.touches[0].clientY : null; touchHeld = running; }, { passive: true });
+  addEventListener('touchmove', function (e) {
+    if (touchHeld || running) { e.preventDefault(); return; }
+    if (touchY === null || e.touches.length !== 1) return;
+    var dy = touchY - e.touches[0].clientY;
+    if (Math.abs(dy) < 6) return;
+    if (turn(dy > 0)) { touchHeld = true; e.preventDefault(); }
+    touchY = null;
+  }, { passive: false });
+  addEventListener('touchend', function () { touchHeld = false; }, { passive: true });
+  addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    var k = e.key;
+    var down = k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey);
+    var up = k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey);
+    if (!down && !up) return;
+    if (running) { e.preventDefault(); return; }
+    if (turn(down)) e.preventDefault();
+  });
 })();
