@@ -4355,7 +4355,14 @@
       if (mainEl && mainEl.classList.contains('wm-opening')) {
         var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
         var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
-        airWant = Math.max(36, (document.documentElement.clientHeight - stripH - (si.base - si.capFlat)) / 2);
+        // (THE NAME IN THE WINDOW'S MIDDLE, at the user's word — "move the
+        // wordmark logo on initial load so top padding matches the bottom
+        // padding with nav bar": the strip counts in the air under the
+        // name, so the name stands in the middle of the whole window —
+        // the strip still on its foot, and 36 at least between the two:
+        // band-mark.js sets the air under)
+        var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
+        airWant = Math.max(36, Math.min((vh0 - inkH) / 2, vh0 - inkH - stripH - 36));
       }
       var have = si.capFlat - f.wb.top;
       if (Math.abs(airWant - have) > 0.05) {
@@ -7511,7 +7518,10 @@
                     railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
                     if (rEl === topStrip) break;
                   }
-                  firstAt = body.getBoundingClientRect().top + railFoot + COURIER_GAP;
+                  // (72 where the page opens on the name: design/stacked-
+                  // wordmark, 2026-10-02 — "Increase distance between band
+                  // and first post to 72px")
+                  firstAt = body.getBoundingClientRect().top + railFoot + (document.querySelector('main.wm-opening') ? 72 : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
@@ -7859,7 +7869,12 @@
         next.style.setProperty('margin-top', '0px', 'important');
         next.style.removeProperty('--step-over');
       }
-      edges.push({ el: body, prop: 'padding-bottom', delta: COURIER_GAP - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
+      // (72 OVER THE COLOPHON where the page opens on the name, design/
+      // stacked-wordmark, 2026-10-02, at the user's word — "Increase
+      // distance between band and first post to 72px, same below last
+      // post to colophon")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
       if (j.exact) {

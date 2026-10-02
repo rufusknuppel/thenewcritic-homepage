@@ -1619,7 +1619,7 @@ function navStrip() {
     // (THE LAST and MAGAZINE in two pieces, design/stacked-wordmark, so the
     // bird can come down between them as the strip rises: band-mark.js,
     // THE BIRD ONTO THE BAND)
-    by('about') ? `<a class="sub-ticker-half sub-ticker-half--about" href="${escapeHtml(by('about').href)}"><b><span class="tlm-a">The Last</span> <span class="tlm-b">Magazine</span></b></a>` : '',
+    by('about') ? `<a class="sub-ticker-half sub-ticker-half--about sub-ticker-half--dek" href="${escapeHtml(by('about').href)}"><b><span class="tlm-a">The Last</span> <span class="tlm-b">Magazine</span></b></a>` : '',
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
