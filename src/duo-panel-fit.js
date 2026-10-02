@@ -7534,9 +7534,11 @@
                   // so the 72 holds under it settled: "Have band settle at
                   // 144px")
                   var opening = !!document.querySelector('main.wm-opening');
-                  // (144 since, at the user's word — "Increase space above
-                  // and below first and last content rows to 144px")
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 144 + Math.max(0, 144 - topStrip.offsetHeight) : COURIER_GAP);
+                  // (144 for an hour, at the user's word — "Increase space
+                  // above and below first and last content rows to 144px" —
+                  // then 72 again: "Space above first post and below last
+                  // post should be 72px")
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + Math.max(0, 144 - topStrip.offsetHeight) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
@@ -7888,9 +7890,10 @@
       // stacked-wordmark, 2026-10-02, at the user's word — "Increase
       // distance between band and first post to 72px, same below last
       // post to colophon")
-      // (144 since: "Increase space above and below first and last content
-      // rows to 144px")
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 144 : COURIER_GAP;
+      // (144 for an hour — "Increase space above and below first and last
+      // content rows to 144px" — then 72 again: "Space above first post
+      // and below last post should be 72px")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {

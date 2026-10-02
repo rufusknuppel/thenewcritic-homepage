@@ -1603,7 +1603,9 @@ function navStrip() {
   // it on the scroll.)
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
-    link(by('archive'), 'Archive'),
+    // (STORE and ARCHIVE change places, design/stacked-wordmark, at the
+    // user's word — "switch archive and store")
+    dead('Store'),
     // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-01, at the user's word
     // — "Replace about with The Last Magazine in helvetica style": the
     // About link reads THE LAST MAGAZINE in the strip's capitals, black
@@ -1625,7 +1627,7 @@ function navStrip() {
     // went — data-href; band-mark.js, THE NAME SETTLES IN THE BAND WITH THE
     // BIRD. Unseen everywhere else.)
     by('about') ? `<span class="sub-ticker-half sub-ticker-half--slot" aria-hidden="true" data-href="${escapeHtml(by('about').href)}"></span>` : '',
-    dead('Store'),
+    link(by('archive'), 'Archive'),
     // (ABOUT in EVENTS' place, design/stacked-wordmark, at the user's word —
     // "Replace events with About")
     link(by('about'), 'About'),
