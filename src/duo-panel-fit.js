@@ -4299,7 +4299,12 @@
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
         var g0Err = 36 - (ia.left - i0.right);
-        var g1Err = (36 + sw + 36) - (ib.left - ia.right);
+        // (CRITIC A FEW PIXELS RIGHT, 2026-10-02, at the user's word —
+        // "Move Critic a few pixels right": the bird's right edge is a
+        // wingtip, so CRITIC stands 4 further off it than 36 to read as
+        // even; the name refits, CRITIC still 36 from the window's right)
+        var CRITIC_NUDGE = 4;
+        var g1Err = (36 + sw + 36 + CRITIC_NUDGE) - (ib.left - ia.right);
         if (Math.abs(g0Err) <= 0.05 && Math.abs(g1Err) <= 0.05) break;
         gap0.style.marginLeft = ((parseFloat(gap0.style.marginLeft) || 0) + g0Err).toFixed(2) + 'px';
         gapEl.style.marginLeft = ((parseFloat(gapEl.style.marginLeft) || 0) + g1Err).toFixed(2) + 'px';
