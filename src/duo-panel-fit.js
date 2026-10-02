@@ -4031,7 +4031,7 @@
     // px of the masthead's spacer between NEW and CRITIC, where the stamp
     // stands — it does not grow with the size, so only the letters are
     // scaled to the measure less it)
-    var FG = opts && opts.fixedGap > 0 && opts.fixedGap < w0 ? opts.fixedGap : 0;
+    var FG = opts && opts.fixedGap && opts.fixedGap < w0 ? opts.fixedGap : 0;
     if (FG) fitted = s0 * (vwSize - FG) / (w0 - FG);
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
@@ -4211,34 +4211,56 @@
     var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
     // THE STAMP BETWEEN THE NEW AND CRITIC (2026-10-01, at the user's
     // word — "Put the stamp between THE NEW and CRITIC"; before it, "Set
-    // 36px from top bottom side and wordmark", "Taller masthead"): the
-    // stack is the stamp now — The Last, the bird's block, Magazine, a
-    // fixed 91 x 146.61 (assets/bird-stamp.svg) — and it stands in the
-    // name, 36 from NEW's ink and 36 from CRITIC's. The name spans the
-    // measure again, the spacer between the words (.tn-gap) holding the
-    // stamp and its two 36s at a fixed width the size is not scaled by.
+    // 36px from top bottom side and wordmark"; "Make stamp exact height
+    // as letters and align"; "Remove The Last Magazine altogether"): the
+    // stack is the stamp now — the bird's straight-edged 4.5:5 block
+    // (assets/bird-stamp.svg) — the capitals' height, cap top to
+    // baseline, standing in the name 36 from NEW's ink and 36 from
+    // CRITIC's. The name spans the measure again, the spacer between the
+    // words (.tn-gap) holding the stamp and its two 36s at a fixed width
+    // the size is not scaled by. (THE THREE GAPS ARE ONE, at the user's
+    // word — "the space between the and new, should equal the space on
+    // either side of the stamp"; "All three should be equal": THE stands
+    // 36 from NEW by its ink too, the word space between them trued by
+    // .tn-gap0's margin, which may run negative where the face's own
+    // space is wider.)
     var stamp = stackEl && stackEl.offsetWidth ? stackEl.querySelector('.wm-bird') : null;
     var gapEl = name.querySelector('.tn-gap');
     var tnNew = name.querySelector('.tn-new'), tnCritic = name.querySelector('.tn-critic');
-    if (!stamp || !gapEl || !tnNew || !tnCritic) { stamp = null; if (gapEl) gapEl.style.width = ''; }
+    var gap0 = name.querySelector('.tn-gap0'), tnThe = name.querySelector('.tn-the');
+    if (!stamp || !gapEl || !tnNew || !tnCritic || !gap0 || !tnThe) {
+      stamp = null;
+      if (gapEl) gapEl.style.width = '';
+      if (gap0) gap0.style.marginLeft = '';
+    }
     var RESERVE_R = stamp ? 0 : (stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0);
     var fill = function () {
       return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R,
-        fixedGap: gapEl ? parseFloat(gapEl.style.width) || 0 : 0 });
+        fixedGap: (gapEl ? parseFloat(gapEl.style.width) || 0 : 0) + (gap0 ? parseFloat(gap0.style.marginLeft) || 0 : 0) });
     };
     var f = fill();
     if (!f) return;
-    // (the spacer to the width that leaves the stamp's 36 to each word's
-    // ink — read off the words' own ink, the face's bearings and the word
-    // space included, and the name filled again on it)
+    // (the stamp to the caps' height at the size the name took, and the
+    // spacer to the width that leaves its 36 to each word's ink — read
+    // off the words' own ink, the face's bearings and the word space
+    // included — and the name filled again on it, till both hold: the
+    // stamp is a fourteenth of the name's width, so they close fast)
     if (stamp) {
-      var wantGap = stamp.getBoundingClientRect().width + 72;
-      for (var gk = 0; gk < 4; gk++) {
-        var ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
-        if (!ia || !ib) break;
+      for (var gk = 0; gk < 6; gk++) {
+        var sc = nameInk();
+        if (!sc) break;
+        var sh = sc.base - sc.capFlat;
+        var shOld = parseFloat(stamp.style.height) || 0;
+        stamp.style.height = sh.toFixed(2) + 'px';
+        stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
+        var wantGap = sh * 438 / 488 + 72;
+        var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
+        if (!i0 || !ia || !ib) break;
         var gErr = wantGap - (ib.left - ia.right);
-        if (Math.abs(gErr) <= 0.1) break;
+        var g0Err = 36 - (ia.left - i0.right);
+        if (Math.abs(gErr) <= 0.1 && Math.abs(g0Err) <= 0.1 && Math.abs(sh - shOld) <= 0.05) break;
         gapEl.style.width = Math.max(0, (parseFloat(gapEl.style.width) || 0) + gErr).toFixed(2) + 'px';
+        gap0.style.marginLeft = ((parseFloat(gap0.style.marginLeft) || 0) + g0Err).toFixed(2) + 'px';
         f = fill() || f;
       }
     }
@@ -4256,18 +4278,17 @@
         f = fill() || f;
       }
     }
-    // (THE MASTHEAD HOLDS THE STAMP: its ink 36 under the window's top
-    // and 36 over the yellow strip. The strip pins under the baseline the
-    // air the caps keep over them (band-mark.js, --wm-under), so where
-    // the name's own air is less than (stamp + 72 - cap) / 2 it grows to
-    // that, over the caps and under the feet alike, and the name is
-    // seated again on it. band-mark.js seats the stamp's top.)
+    // (36 OVER THE CAPS AND 36 UNDER THE BASELINE where the stamp stands,
+    // at the user's word — "Reduce padding above and below masthead to
+    // 36px": the air over the flat cap is 36, and the strip pins that
+    // same air under the baseline (band-mark.js, --wm-under). The fill
+    // seats the caps by its scan, the face's bounds a hair off it, so the
+    // air is solved on the face's cap and the name seated again.)
     var si = stamp && nameInk();
     if (si) {
-      var need = (stamp.getBoundingClientRect().height + 72 - (si.base - si.capFlat)) / 2;
       var have = si.capFlat - f.wb.top;
-      if (need - have > 0.05) {
-        AIR += need - have;
+      if (Math.abs(36 - have) > 0.05) {
+        AIR += 36 - have;
         f = fill() || f;
       }
     }
@@ -6921,7 +6942,10 @@
       // NEW AND CRITIC, fitMastheadFill)
       var gapW = 0;
       var stampIn = stackEl && stackEl.offsetWidth && stackEl.querySelector('.wm-bird');
-      if (stampIn && name) { var gEl = name.querySelector('.tn-gap'); gapW = gEl ? parseFloat(gEl.style.width) || 0 : 0; }
+      if (stampIn && name) {
+        var gEl = name.querySelector('.tn-gap'), g0El = name.querySelector('.tn-gap0');
+        gapW = (gEl ? parseFloat(gEl.style.width) || 0 : 0) + (g0El ? parseFloat(g0El.style.marginLeft) || 0 : 0);
+      }
       var reserve = stampIn ? 0 : (stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0);
       // (its size is the width's and the stack's alone: the second run
       // of a pass has nothing to find, and the ink scan is spared)

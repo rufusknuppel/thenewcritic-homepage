@@ -22751,33 +22751,30 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
 }
 /* (THE COMMA BETWEEN DATE AND AUTHOR ends) */
 
-/* ---------- THE STAMP IN THE STACK'S PLACE (2026-10-01) ----------
-   At the user's word ("move the stamp ... all to the right of the
-   wordmark"; "Set 36px from top bottom side and wordmark" — the stamp,
-   not the text; "Expand stamp so that text can be 18px and stretch side
-   to side"; "Revert stamp shape and move letters above/below stamp"):
-   THE LAST MAGAZINE's three lines give way to one column — The Last,
-   the stamp, Magazine — drawn as one svg (assets/bird-stamp.svg,
-   build.js): the swallow cut out of its rough-edged 4.5:5 block, 91
-   across, and the two lines over and under it at 18 in the dek's
-   Garamond italic, each stretched to the block's width, 8 of air
-   between their ink and the block. The column stands 36 from the
-   window's top and right edge, 36 over the yellow strip and 36 clear of
-   the name's ink: the air over and under the name grows to hold it
-   ("Taller masthead": fitMastheadFill), band-mark.js seats it. The
-   block is the stack's ink and lights under the hand; the bird is a
-   hole, so it is the masthead's ground in either mode. The letters keep
-   the stack's resting ink, and the links' hover paints every
-   descendant's ground (--yves) — the svg keeps none — so only the block
-   goes yellow ("On hover only the background of the stamp should go
-   yellow"). (Supersedes THE BIRD IN ITS BOX BESIDE THE NAME, the stamp
-   at the name's left.) */
+/* ---------- THE STAMP IN THE NAME (2026-10-01) ----------
+   At the user's word, in its turns ("move the stamp ... to the right of
+   the wordmark"; "Revert stamp shape"; "smooth edges of the SVG. Put the
+   stamp between THE NEW and CRITIC"; "Make stamp exact height as letters
+   and align. Reduce padding above and below masthead to 36px"; "Remove
+   The Last Magazine altogether"): THE LAST MAGAZINE's stack gives way to
+   the stamp alone — the swallow cut out of its straight-edged 4.5:5
+   block (assets/bird-stamp.svg) — standing between THE NEW and CRITIC,
+   cap top to baseline of the name, 36 from each word's ink; the masthead
+   keeps 36 of air over the caps and 36 under the baseline
+   (fitMastheadFill sizes it and the gap, band-mark.js seats its top).
+   The block is the stack's ink and lights under the hand; the bird is a
+   hole, so it is the masthead's ground in either mode. The links' hover
+   paints every descendant's ground (--yves); the stamp keeps none, so
+   only the block goes yellow ("On hover only the background of the
+   stamp should go yellow"). (Supersedes THE BIRD IN ITS BOX BESIDE THE
+   NAME, the stamp at the name's left.) */
 @media (min-width: 1024px){
   main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
     display: block !important;
     flex: none !important;
-    width: 91px !important;
-    height: 146.61px !important;
+    height: 100px;
+    width: auto;
+    aspect-ratio: 438 / 488;
     margin: 0 !important;
     overflow: visible !important;
     pointer-events: auto;
@@ -22787,16 +22784,12 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
     box-shadow: none !important;
     transition: none !important;
   }
-  main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird > .wm-bird-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    fill: var(--wm-ink, #FFFFFF) !important;
-    background: transparent !important;
-  }
 }
 /* (THE STAMP BETWEEN THE NEW AND CRITIC, 2026-10-01, at the user's
    word — "smooth edges of the SVG. Put the stamp between THE NEW and
-   CRITIC": the block's edges are straight now, and the column stands in
-   the name, 36 from NEW's ink and 36 from CRITIC's, the name spanning
-   the measure again. The spacer between the words holds it — no ink, no
+   CRITIC": the block's edges are straight now, and it stands in the
+   name, 36 from NEW's ink and 36 from CRITIC's, the name spanning the
+   measure again. The spacer between the words holds it — no ink, no
    height, its width the fitter's (fitMastheadFill); none on the phone,
    where the stack is not shown.) */
 .site-nav--top .topbar-name .tn-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
@@ -22807,7 +22800,23 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   vertical-align: baseline !important;
   background: none !important;
 }
+/* (and THE's space to NEW, trued to the same 36 by its ink: "All three
+   should be equal" — a margin, so it may close a face's wider space) */
+.site-nav--top .topbar-name .tn-gap0:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: inline-block !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  vertical-align: baseline !important;
+  background: none !important;
+}
+@media (max-width: 1023.98px){
+  .site-nav--top .topbar-name .tn-gap0:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ margin-left: 0 !important; }
+}
 @media (max-width: 1023.98px){
   .site-nav--top .topbar-name .tn-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ width: 0 !important; }
 }
-/* (THE STAMP IN THE STACK'S PLACE ends) */
+/* (THE STAMP IN THE NAME ends) */

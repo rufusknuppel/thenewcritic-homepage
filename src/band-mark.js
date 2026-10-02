@@ -477,14 +477,14 @@ document.addEventListener('click', function (e) {
   var seat = function () {
     if (!stack.offsetWidth) return;
     var host = stack.closest('.head-rail') || main;
-    // (THE STAMP IN THE STACK'S PLACE, 2026-10-01: the stack is one svg,
-    // The Last, the bird's block, Magazine — its top, The Last's ink, 36
-    // under the masthead's; fitMastheadFill grows the masthead to hold it)
+    // (THE STAMP IN THE NAME, 2026-10-01: the stack is the bird's block,
+    // the capitals' height — fitMastheadFill sizes it — its top on the
+    // name's flat cap, so it stands cap top to baseline with the letters)
     var stamp = stack.querySelector('.wm-bird');
-    var wmEl = nm.closest('.topbar-wordmark');
-    if (stamp && wmEl) {
+    var a0 = stamp && inkOf(nm);
+    if (a0) {
       var cur0 = parseFloat(host.style.getPropertyValue('--stack-shift')) || 0;
-      var want0 = cur0 + (wmEl.getBoundingClientRect().top + 36 - stamp.getBoundingClientRect().top);
+      var want0 = cur0 + (a0.top - stamp.getBoundingClientRect().top);
       if (Math.abs(want0 - cur0) > 0.25) host.style.setProperty('--stack-shift', want0.toFixed(2) + 'px');
       return;
     }

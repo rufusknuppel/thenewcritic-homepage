@@ -28,14 +28,12 @@ const STAMP = (() => {
   const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
   return { viewBox, inner };
 })();
-// THE STAMP BESIDE THE NAME (2026-10-01, at the user's word): the
-// swallow traced from the print, cut out of its rough-edged 4.5:5 block,
-// with The Last over it and Magazine under it at 18 in the dek's Garamond
-// italic, each stretched to the block's 91 (assets/bird-stamp.svg, one
-// svg). It stands at the name's right in THE LAST MAGAZINE stack's place
-// (it stood at the name's left for an afternoon), 36 from the window's
-// top, its right edge and the name's ink, and 36 over the yellow strip:
-// the air over and under the name grows to hold it (fitMastheadFill,
+// THE STAMP IN THE NAME (2026-10-01, at the user's word): the swallow
+// traced from the print, cut out of its straight-edged 4.5:5 block
+// (assets/bird-stamp.svg, one even-odd path). It stands between THE NEW
+// and CRITIC in THE LAST MAGAZINE stack's place — the words themselves
+// are gone ("Remove The Last Magazine altogether") — the capitals'
+// height, cap top to baseline, 36 from each word's ink (fitMastheadFill,
 // band-mark.js). The block prints in currentColor, the stack's ink; the
 // bird is a hole, so it is always the ground the masthead stands on —
 // white on the light page, charcoal on the dark.
@@ -1322,7 +1320,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <span class="topbar-name">The <span class="tn-new">New</span><span class="tn-gap" aria-hidden="true"></span> <span class="tn-critic">Critic</span></span>
+    <span class="topbar-name"><span class="tn-the">The</span><span class="tn-gap0" aria-hidden="true"></span> <span class="tn-new">New</span><span class="tn-gap" aria-hidden="true"></span> <span class="tn-critic">Critic</span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
@@ -1554,7 +1552,12 @@ function navStrip() {
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
     link(by('archive'), 'Archive'),
-    link(by('about'), 'About'),
+    // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-01, at the user's word
+    // — "Replace about with The Last Magazine in helvetica style": the
+    // About link reads THE LAST MAGAZINE in the strip's capitals, black
+    // like its neighbours — "Actually the last magazine should also be
+    // black" — after a minute in white)
+    link(by('about'), 'The Last Magazine'),
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
@@ -2826,7 +2829,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page">${BIRD_STAMP}</a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
