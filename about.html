@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=7f24cf96">
+<link rel="stylesheet" href="style.css?v=d5dc68a1">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -350,7 +350,7 @@
 
 
 
-<main id="main" class="has-mega">
+<main id="main" class="has-mega wm-opening">
 
   <div class="page-rows">
   <nav class="section-band section-band--three section-band--head" aria-label="The Last Magazine">
@@ -3205,7 +3205,8 @@
         stamp.style.width = sw.toFixed(2) + 'px';
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
-        var g0Err = 36 - (ia.left - i0.right);
+        var stacked = name.classList.contains('tn-stacked');
+        var g0Err = stacked ? -(parseFloat(gap0.style.marginLeft) || 0) : 36 - (ia.left - i0.right);
         var CRITIC_NUDGE = 4 - 9;
         var g1Err = (36 + sw + 36 + CRITIC_NUDGE) - (ib.left - ia.right);
         if (Math.abs(g0Err) <= 0.05 && Math.abs(g1Err) <= 0.05) break;
@@ -3225,9 +3226,16 @@
     }
     var si = stamp && nameInk();
     if (si) {
+      var airWant = 36;
+      var mainEl = name.closest('main');
+      if (mainEl && mainEl.classList.contains('wm-opening')) {
+        var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+        var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
+        airWant = Math.max(36, (document.documentElement.clientHeight - stripH - (si.base - si.capFlat)) / 2);
+      }
       var have = si.capFlat - f.wb.top;
-      if (Math.abs(36 - have) > 0.05) {
-        AIR += 36 - have;
+      if (Math.abs(airWant - have) > 0.05) {
+        AIR += airWant - have;
         f = fill() || f;
       }
     }
