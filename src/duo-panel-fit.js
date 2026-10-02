@@ -4302,7 +4302,11 @@
         stamp.style.width = sw.toFixed(2) + 'px';
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
-        var g0Err = 36 - (ia.left - i0.right);
+        // (THE NAME STACKED: THE over NEW, so there is no gap between them
+        // to true — the left column's right is NEW's, the right column's
+        // left is CRI's and TIC's)
+        var stacked = name.classList.contains('tn-stacked');
+        var g0Err = stacked ? -(parseFloat(gap0.style.marginLeft) || 0) : 36 - (ia.left - i0.right);
         // (CRITIC A FEW PIXELS RIGHT, 2026-10-02, at the user's word —
         // "Move Critic a few pixels right": the bird's right edge is a
         // wingtip, so CRITIC stands 4 further off it than 36 to read as

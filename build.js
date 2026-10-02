@@ -74,10 +74,14 @@ const BIRD_STAMP = (() => {
 // reads the name's ink off the boxes. The ink is currentColor, so the
 // name keeps the theme's colour and its hover.
 const WORDMARK_CAP_EM = 0.708; // the words' cap, in the name's em (Avenir Next's own)
-function wordmarkWord(word) {
+// (widthEm: the word set to a width rather than to the cap — THE NAME
+// STACKED, where the four words stand at one width and each takes the
+// cap that width gives it)
+function wordmarkWord(word, widthEm = 0) {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
-  const w = (WORDMARK_CAP_EM * vb[2] / vb[3]).toFixed(4);
+  const w = widthEm ? widthEm.toFixed(4) : (WORDMARK_CAP_EM * vb[2] / vb[3]).toFixed(4);
+  const h = widthEm ? (widthEm * vb[3] / vb[2]).toFixed(4) : WORDMARK_CAP_EM;
   // (the round letters' dip under the baseline, as a share of the cap:
   // the fitter keeps the masthead's block open to it, so the Cs' bowls
   // are not shaved flat on the baseline — "The bottom of the cs in
@@ -87,7 +91,7 @@ function wordmarkWord(word) {
   for (let i = 1; i < nums.length; i += 2) maxY = Math.max(maxY, +nums[i]);
   const dip = ((maxY - (vb[1] + vb[3])) / vb[3]).toFixed(4);
   return svg.replace(/^<svg xmlns="[^"]*"/,
-    `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${WORDMARK_CAP_EM}em"`);
+    `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${h}em"`);
 }
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
@@ -1368,7 +1372,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <span class="topbar-name"><span class="tn-the">${wordmarkWord('the')}</span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-new">${wordmarkWord('new')}</span><span class="tn-gap" aria-hidden="true"></span><span class="tn-critic">${wordmarkWord('critic')}</span></span>
+    <span class="topbar-name tn-stacked"><span class="tn-col tn-col--l"><span class="tn-the">${wordmarkWord('the', 3)}</span><span class="tn-new">${wordmarkWord('new', 3)}</span></span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-gap" aria-hidden="true"></span><span class="tn-col tn-col--r tn-critic"><span class="tn-cri">${wordmarkWord('cri', 3)}</span><span class="tn-tic">${wordmarkWord('tic', 3)}</span></span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
