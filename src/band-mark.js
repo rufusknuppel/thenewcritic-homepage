@@ -655,7 +655,12 @@ window.__ncStripCap = function () {
   var stack = document.querySelector('.page-rows > .head-rail .wm-stack');
   var rail = stack && stack.parentNode;
   var tA = strip && strip.querySelector('.tlm-a'), tB = strip && strip.querySelector('.tlm-b');
-  if (!main || !strip || !wm || !stack || !rail || !tA || !tB) return;
+  // (THE/NEW and CRI/TIC shrink each on its own side, the first pinned
+  // to the left, the second to the right: "Have THE/NEW shrink pinned to
+  // left, while CRI/TIC pins to the right", 2026-10-02 — the name as a
+  // whole shrank about its middle before)
+  var colL = wm.querySelector('.tn-col--l'), colR = wm.querySelector('.tn-col--r');
+  if (!main || !strip || !wm || !stack || !rail || !tA || !tB || !colL || !colR) return;
   var wide = window.matchMedia('(min-width: 1024px)');
   // (the bird three quarters of the strip's height, an eighth of it over
   // and under: 108 in 144 — "I want bird to be bigger in band", 2026-10-02,
@@ -718,7 +723,7 @@ window.__ncStripCap = function () {
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   function clear() {
     var was = applied;
-    wm.style.removeProperty('scale'); wm.style.removeProperty('translate'); wm.style.removeProperty('transform-origin');
+    [colL, colR].forEach(function (c) { c.style.removeProperty('scale'); c.style.removeProperty('translate'); c.style.removeProperty('transform-origin'); });
     stack.style.removeProperty('transform'); stack.style.removeProperty('transform-origin');
     rail.style.removeProperty('z-index');
     tA.style.removeProperty('transform'); tB.style.removeProperty('transform');
@@ -739,7 +744,9 @@ window.__ncStripCap = function () {
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     if (!(rest > 0)) return null;
+    var lr = colL.getBoundingClientRect(), rr = colR.getBoundingClientRect();
     return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, sh: sh,
+      lc: { l: lr.left, t: lr.top }, rc: { l: rr.left, r: rr.right, t: rr.top },
       ix: (ink.left + ink.right) / 2, iy: (ink.top + ink.bot) / 2, ih: ink.bot - ink.top,
       wl: wr.left, wt: wr.top, rest: rest };
   }
@@ -759,13 +766,16 @@ window.__ncStripCap = function () {
     var p = clamp(y / geo.rest, 0, 1);
     if (p <= 0 && !applied) return;
     // (the letters: from where they stand to the pinned strip's middle,
-    // three quarters its height, behind it)
+    // three quarters its height, behind it, each column on its own side)
     var seatH = geo.sh * BIRD_SHARE;
     var sEnd = geo.ih > 0 ? Math.min(1, seatH / geo.ih) : 1;
     var s = 1 + (sEnd - 1) * p;
-    wm.style.setProperty('transform-origin', (geo.ix - geo.wl).toFixed(2) + 'px ' + (geo.iy - geo.wt).toFixed(2) + 'px');
-    wm.style.setProperty('scale', s.toFixed(4));
-    wm.style.setProperty('translate', '0 ' + ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px');
+    // (THE/NEW about its left edge, CRI/TIC about its right, both about
+    // the letters' middle top to bottom, rising to the strip's)
+    var rise = '0 ' + ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px';
+    colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
+    colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
+    [colL, colR].forEach(function (c) { c.style.setProperty('scale', s.toFixed(4)); c.style.setProperty('translate', rise); });
     // (the bird: from where it stands to its seat in the pinned strip,
     // between THE LAST and MAGAZINE as they part)
     var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
