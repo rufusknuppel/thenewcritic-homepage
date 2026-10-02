@@ -624,40 +624,6 @@ window.__ncStripSide = function () { return 144; };
   update();
 })();
 
-// THE SPECKS ACROSS THE BAND (design/stacked-wordmark, 2026-10-02, at the
-// user's word — "Put the specks throughout whole band"): from 1024 up,
-// where the page opens on the name, the head strip carries specks of the
-// name's ink across the whole of it, white on the charcoal — about one to
-// every 6,000 square pixels, scattered by a seeded hand so they stand the
-// same on every visit, each a small rough blot 2 to 4 across. Drawn again
-// when the window's width changes (style.css, THE STRIP IN CHARCOAL).
-(function () {
-  var main = document.querySelector('main.wm-opening');
-  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-  if (!main || !strip) return;
-  var layer = document.createElement('span');
-  layer.className = 'band-specks';
-  layer.setAttribute('aria-hidden', 'true');
-  strip.insertBefore(layer, strip.firstChild);
-  var lastW = 0;
-  var draw = function () {
-    var w = document.documentElement.clientWidth;
-    if (w === lastW) return;
-    lastW = w;
-    var seed = 7;
-    var rnd = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
-    var n = Math.round(w * 144 / 6000), html = '';
-    for (var i = 0; i < n; i++) {
-      var x = rnd() * w, y = rnd() * 100, d = 2 + rnd() * 2, e = 0.7 + rnd() * 0.6, r = Math.round(rnd() * 180);
-      var br = [0, 0, 0, 0].map(function () { return Math.round(35 + rnd() * 30) + '%'; }).join(' ');
-      html += '<i style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(2) + '%;width:' + d.toFixed(2) + 'px;height:' + (d * e).toFixed(2) + 'px;border-radius:' + br + ';transform:translate(-50%,-50%) rotate(' + r + 'deg)"></i>';
-    }
-    layer.innerHTML = html;
-  };
-  draw();
-  addEventListener('resize', draw);
-})();
-
 // THE STRIP'S WORDS' INK (design/stacked-wordmark, 2026-10-02): where the
 // head strip's words' capitals stand in it — their flat cap and their
 // baseline, under the strip's top, read off the first word's face — so the
