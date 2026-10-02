@@ -9436,12 +9436,12 @@ document.addEventListener('click', function (e) {
   var tA = strip && strip.querySelector('.tlm-a'), tB = strip && strip.querySelector('.tlm-b');
   if (!main || !strip || !wm || !stack || !rail || !tA || !tB) return;
   var wide = window.matchMedia('(min-width: 1024px)');
-  var SHRINK = 0.5, BIRD_AIR = 36, BIRD_GAP = 18, TRAVEL = 144;
+  var BIRD_AIR = 36, BIRD_GAP = 18;
   var geo = null, raf = 0, applied = false, dPrev = 0;
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   function clear() {
     var was = applied;
-    wm.style.removeProperty('scale'); wm.style.removeProperty('transform-origin');
+    wm.style.removeProperty('scale'); wm.style.removeProperty('translate'); wm.style.removeProperty('transform-origin');
     stack.style.removeProperty('transform'); stack.style.removeProperty('transform-origin');
     rail.style.removeProperty('z-index');
     tA.style.removeProperty('transform'); tB.style.removeProperty('transform');
@@ -9453,14 +9453,14 @@ document.addEventListener('click', function (e) {
     var b = stack.getBoundingClientRect();
     var nm = wm.querySelector('.topbar-name');
     var ink = nm && ncSvgInk(nm);
-    if (!b.height || !ink) return null;
+    var sh = strip.getBoundingClientRect().height;
+    if (!b.height || !ink || !sh) return null;
     var wr = wm.getBoundingClientRect();
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     if (!(rest > 0)) return null;
-    var top = Math.min(ink.top, b.top), bot = Math.max(ink.bot, b.bottom);
-    var left = Math.min(ink.left, b.left), right = Math.max(ink.right, b.right);
-    return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, cx: (left + right) / 2, cy: (top + bot) / 2,
+    return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, sh: sh,
+      ix: (ink.left + ink.right) / 2, iy: (ink.top + ink.bot) / 2, ih: ink.bot - ink.top,
       wl: wr.left, wt: wr.top, rest: rest };
   }
   function apply() {
@@ -9468,30 +9468,24 @@ document.addEventListener('click', function (e) {
     if (!wide.matches) { if (applied) clear(); return; }
     if (!geo) { var was = applied; if (was) clear(); geo = measure(); }
     if (!geo) return;
-    var y = window.pageYOffset || 0, rest = geo.rest, B = geo.b;
-    var p = clamp(y / rest, 0, 1);
+    var y = window.pageYOffset || 0, B = geo.b;
+    var p = clamp(y / geo.rest, 0, 1);
     if (p <= 0 && !applied) return;
-    var s = 1 - SHRINK * p;
-    wm.style.setProperty('transform-origin', (geo.cx - geo.wl).toFixed(2) + 'px ' + (geo.cy - geo.wt).toFixed(2) + 'px');
+    var seatH = Math.max(0, geo.sh - 2 * BIRD_AIR);
+    var sEnd = geo.ih > 0 ? Math.min(1, seatH / geo.ih) : 1;
+    var s = 1 + (sEnd - 1) * p;
+    wm.style.setProperty('transform-origin', (geo.ix - geo.wl).toFixed(2) + 'px ' + (geo.iy - geo.wt).toFixed(2) + 'px');
     wm.style.setProperty('scale', s.toFixed(4));
-    var A = { l: geo.cx + s * (B.l - geo.cx), t: geo.cy + s * (B.t - geo.cy), w: B.w * s, h: B.h * s };
-    var Bf = B.t + B.h;
-    var pc = (rest - Bf) / (rest - SHRINK * (Bf - geo.cy));
-    var t = clamp((y - pc * rest) / TRAVEL, 0, 1), e = t * t * (3 - 2 * t);
-    var box = A, d = 0;
-    if (t > 0) {
-      var sr = strip.getBoundingClientRect();
-      var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
-      var aRight = aR.right + dPrev, bLeft = bR.left - dPrev;
-      var sh = Math.max(0, sr.height - 2 * BIRD_AIR), sw = sh * B.w / B.h;
-      var mid = (aRight + bLeft) / 2;
-      var S = { l: mid - sw / 2, t: sr.top + BIRD_AIR, w: sw, h: sh };
-      box = { l: A.l + (S.l - A.l) * e, t: A.t + (S.t - A.t) * e, w: A.w + (S.w - A.w) * e, h: A.h + (S.h - A.h) * e };
-      d = e * Math.max(0, sw / 2 + BIRD_GAP - (bLeft - aRight) / 2);
-    }
+    wm.style.setProperty('translate', '0 ' + ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px');
+    var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
+    var aRight = aR.right + dPrev, bLeft = bR.left - dPrev;
+    var sw = seatH * B.w / B.h;
+    var S = { l: (aRight + bLeft) / 2 - sw / 2, t: BIRD_AIR, h: seatH };
+    var box = { l: B.l + (S.l - B.l) * p, t: B.t + (S.t - B.t) * p, h: B.h + (S.h - B.h) * p };
+    var d = p * Math.max(0, sw / 2 + BIRD_GAP - (bLeft - aRight) / 2);
     stack.style.setProperty('transform-origin', '0 0');
     stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
-    if (t > 0) rail.style.setProperty('z-index', '73', 'important'); else rail.style.removeProperty('z-index');
+    rail.style.setProperty('z-index', '73', 'important');
     tA.style.setProperty('transform', 'translateX(' + (-d).toFixed(2) + 'px)');
     tB.style.setProperty('transform', 'translateX(' + d.toFixed(2) + 'px)');
     dPrev = d; applied = true;
