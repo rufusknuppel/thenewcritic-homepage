@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=58ae4599">
+<link rel="stylesheet" href="style.css?v=d740b16d">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4089,6 +4089,11 @@
       if (gap0) gap0.style.marginLeft = '';
     }
     if (stackEl) stackEl.style.removeProperty('right');
+    var stampRatio = 438 / 488;
+    if (stamp) {
+      var vb = (stamp.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
+      if (vb.length === 4 && vb[2] > 0 && vb[3] > 0) stampRatio = vb[2] / vb[3];
+    }
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
     var fill = function () {
       var side = stamp ? MAST_SIDE_STAMP : WORDMARK_SIDE;
@@ -4103,8 +4108,8 @@
         if (!sc) break;
         var sh = sc.foot - sc.cap;
         stamp.style.height = sh.toFixed(2) + 'px';
-        stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
-        var r2 = sh * 438 / 488 + 36;
+        stamp.style.width = (sh * stampRatio).toFixed(2) + 'px';
+        var r2 = sh * stampRatio + 36;
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
         var g0Err = 36 - (ia.left - i0.right);
