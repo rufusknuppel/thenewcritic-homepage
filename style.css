@@ -22844,19 +22844,3 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
   }
 }
 /* (THE BIRD FLIES THE OTHER WAY ends) */
-/* ---------- THE BIRD IN A CIRCLE (2026-10-01) ----------
-   At the user's word ("set the bird inside a circle"): the stamp's
-   square-cornered block gives way to a circle — the block's height
-   across (488 of the drawing, the capitals' height on the page), centred
-   where the block's centre was, the swallow cut out of it as before
-   (assets/bird-stamp.svg: the outer subpath a circle, the viewBox the
-   circle's square). The stamp is square now, so its box here is 1:1
-   where it was 438:488; the fitter reads the stamp's rendered width for
-   the name's room and the gaps, so THE to NEW to CRITIC to the circle
-   stay 36 apart and the circle 72 from the right. */
-@media (min-width: 1024px){
-  main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    aspect-ratio: 1 / 1 !important;
-  }
-}
-/* (THE BIRD IN A CIRCLE ends) */
