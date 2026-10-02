@@ -30,11 +30,11 @@ const STAMP = (() => {
 })();
 // THE STAMP IN THE NAME (2026-10-01, at the user's word): the swallow
 // traced from the print, cut out of its straight-edged 4.5:5 block
-// (assets/bird-stamp.svg, one even-odd path). It stands between THE NEW
-// and CRITIC in THE LAST MAGAZINE stack's place — the words themselves
-// are gone ("Remove The Last Magazine altogether") — the capitals'
-// height, cap top to baseline, 36 from each word's ink (fitMastheadFill,
-// band-mark.js). The block prints in currentColor, the stack's ink; the
+// (assets/bird-stamp.svg, one even-odd path). It stands after CRITIC
+// in THE LAST MAGAZINE stack's place — the words themselves are gone
+// ("Remove The Last Magazine altogether") — the capitals' height, cap
+// top to baseline, 36 from the name's ink and the window's edge
+// (fitMastheadFill, band-mark.js). The block prints in currentColor, the stack's ink; the
 // bird is a hole, so it is always the ground the masthead stands on —
 // white on the light page, charcoal on the dark.
 const BIRD_STAMP = (() => {
