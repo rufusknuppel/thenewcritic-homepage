@@ -1613,7 +1613,10 @@ function navStrip() {
     // Magazine to Garamond dek styling in the band" — then back in the
     // strip's Helvetica capitals at the user's word: "Move the Last
     // Magazine back to helvetica")
-    link(by('about'), 'The Last Magazine'),
+    // (IN THE GARAMOND ITALIC AT 36 in the head's strip, design/stacked-
+    // wordmark, at the user's word — "make The Last Magazine 36px garamond
+    // italics": style.css, THE STRIP AT 72)
+    link(by('about'), 'The Last Magazine', 'sub-ticker-half--dek'),
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
