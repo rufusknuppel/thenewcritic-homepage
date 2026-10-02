@@ -1616,7 +1616,10 @@ function navStrip() {
     // (in the Garamond italic at 36, then 18, for a while on 2026-10-02 in
     // design/stacked-wordmark; back in the strip's Helvetica capitals at
     // the user's word — "Switch back to helvetica for THe last magazine")
-    link(by('about'), 'The Last Magazine'),
+    // (THE LAST and MAGAZINE in two pieces, design/stacked-wordmark, so the
+    // bird can come down between them as the strip rises: band-mark.js,
+    // THE BIRD ONTO THE BAND)
+    by('about') ? `<a class="sub-ticker-half sub-ticker-half--about" href="${escapeHtml(by('about').href)}"><b><span class="tlm-a">The Last</span> <span class="tlm-b">Magazine</span></b></a>` : '',
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from

@@ -6999,6 +6999,11 @@
     // letters with the band's rule crossing it. Last, because it reads
     // boxes that every step above it moves.
     var seatLast = true;
+    // (THE BAND PULLS UP OVER THE NAME, design/stacked-wordmark: the
+    // scroll's shrink of the name and the bird's flight onto the strip are
+    // transforms the pass must not measure — cleared first, written again
+    // last: band-mark.js, __ncPullClear / __ncPullApply)
+    if (window.__ncPullClear && !rowKAgain) window.__ncPullClear();
     // The columns' 24 step into their blocks (fitTitleHalo) is a
     // transform the rest of the pass must not measure: cleared first,
     // written last, so every seat is taken off the untransformed box
@@ -7172,6 +7177,7 @@
     }
     // (the halos rounded again on the rows' last seats: reseatHalos)
     if (!rowKAgain) step('reseatHalos', reseatHalos);
+    if (window.__ncPullApply && !rowKAgain) window.__ncPullApply();
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;

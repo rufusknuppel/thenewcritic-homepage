@@ -439,7 +439,13 @@ function ncSvgInk(el) {
     }
     if (force) { if (X > 0) band.style.setProperty('clip-path', 'inset(0 0 ' + X.toFixed(2) + 'px 0)'); else band.style.removeProperty('clip-path'); }
   }
-  function refit() { line && line.style.removeProperty('opacity'); wm && wm.style.removeProperty('--wm-shadow-y'); measure(); apply(true); }
+  function refit() {
+    // (read with the scroll's shrink and the bird's flight cleared, put back
+    // after: THE BIRD ONTO THE BAND)
+    var held = window.__ncPullClear ? window.__ncPullClear() : false;
+    line && line.style.removeProperty('opacity'); wm && wm.style.removeProperty('--wm-shadow-y'); measure(); apply(true);
+    if (held && window.__ncPullApply) window.__ncPullApply();
+  }
   refit();
   // (the fitter asks for the rail again once the name is final, before
   // it seats the first row off the rail: duo-panel-fit.js, railMeasure)
@@ -499,6 +505,12 @@ document.addEventListener('click', function (e) {
   // ink — The's top to Magazine's baseline, the g's tail left out —
   // centred on the name's, its caps' top to its baseline)
   var seat = function () {
+    // (read with the scroll's shrink and the bird's flight cleared: THE
+    // BIRD ONTO THE BAND)
+    var held = window.__ncPullClear ? window.__ncPullClear() : false;
+    try { seat0(); } finally { if (held && window.__ncPullApply) window.__ncPullApply(); }
+  };
+  var seat0 = function () {
     if (!stack.offsetWidth) return;
     var host = stack.closest('.head-rail') || main;
     // (THE STAMP IN THE NAME, 2026-10-01: the stack is the bird's block,
@@ -579,4 +591,101 @@ document.addEventListener('click', function (e) {
     addEventListener(ev, ask, { passive: true });
   });
   update();
+})();
+
+// THE BIRD ONTO THE BAND (design/stacked-wordmark, 2026-10-02, at the
+// user's words — "As it pulls up I want the three elements (THE/NEW, the
+// bird, and CRI/TIC) to shrink, when band reaches Bird, I want the bird to
+// transfer onto band ... while the band hides the letters of THE NEW
+// CRITIC"; "Actually I want THE LAST to separate from MAGAZINE, as bird
+// slides between"): from 1024 up, where the page opens on the name
+// (main.wm-opening), the name and the bird, held at the window's head,
+// shrink about their middle as the strip rises — to half when it pins —
+// and the strip comes over the letters. When the strip's top reaches the
+// bird's foot the bird crosses onto it over the next 144 of scroll: it
+// comes down into the strip's middle, the strip's height less 36 over and
+// under, and THE LAST and MAGAZINE part to let it in, 18 clear of it each
+// side; it rides the strip from there and stays on it pinned. All of it
+// is the scroll's — scrolling back undoes it. The fitter and the readers
+// above measure with it cleared (__ncPullClear / __ncPullApply).
+(function () {
+  var main = document.querySelector('main.wm-opening');
+  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+  var wm = document.querySelector('.site-nav--top .topbar-wordmark');
+  var stack = document.querySelector('.page-rows > .head-rail .wm-stack');
+  var rail = stack && stack.parentNode;
+  var tA = strip && strip.querySelector('.tlm-a'), tB = strip && strip.querySelector('.tlm-b');
+  if (!main || !strip || !wm || !stack || !rail || !tA || !tB) return;
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var SHRINK = 0.5, BIRD_AIR = 36, BIRD_GAP = 18, TRAVEL = 144;
+  var geo = null, raf = 0, applied = false, dPrev = 0;
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  function clear() {
+    var was = applied;
+    wm.style.removeProperty('scale'); wm.style.removeProperty('transform-origin');
+    stack.style.removeProperty('transform'); stack.style.removeProperty('transform-origin');
+    rail.style.removeProperty('z-index');
+    tA.style.removeProperty('transform'); tB.style.removeProperty('transform');
+    applied = false; dPrev = 0; geo = null;
+    return was;
+  }
+  function measure() {
+    if (!wide.matches) return null;
+    var b = stack.getBoundingClientRect();
+    var nm = wm.querySelector('.topbar-name');
+    var ink = nm && ncSvgInk(nm);
+    if (!b.height || !ink) return null;
+    var wr = wm.getBoundingClientRect();
+    // (the strip's resting place on the page: the name's block and the air
+    // under it — the same sum that seats it)
+    var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
+      + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
+    if (!(rest > 0)) return null;
+    var top = Math.min(ink.top, b.top), bot = Math.max(ink.bot, b.bottom);
+    var left = Math.min(ink.left, b.left), right = Math.max(ink.right, b.right);
+    return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, cx: (left + right) / 2, cy: (top + bot) / 2,
+      wl: wr.left, wt: wr.top, rest: rest };
+  }
+  function apply() {
+    raf = 0;
+    if (!wide.matches) { if (applied) clear(); return; }
+    if (!geo) { var was = applied; if (was) clear(); geo = measure(); }
+    if (!geo) return;
+    var y = window.pageYOffset || 0, rest = geo.rest, B = geo.b;
+    var p = clamp(y / rest, 0, 1);
+    if (p <= 0 && !applied) return;
+    var s = 1 - SHRINK * p;
+    wm.style.setProperty('transform-origin', (geo.cx - geo.wl).toFixed(2) + 'px ' + (geo.cy - geo.wt).toFixed(2) + 'px');
+    wm.style.setProperty('scale', s.toFixed(4));
+    // (the bird in the name, shrunk about the name's middle)
+    var A = { l: geo.cx + s * (B.l - geo.cx), t: geo.cy + s * (B.t - geo.cy), w: B.w * s, h: B.h * s };
+    // (where the strip's top meets the bird's foot, solved: the strip's
+    // top is rest - y, the foot cy + s(B.foot - cy))
+    var Bf = B.t + B.h;
+    var pc = (rest - Bf) / (rest - SHRINK * (Bf - geo.cy));
+    var t = clamp((y - pc * rest) / TRAVEL, 0, 1), e = t * t * (3 - 2 * t);
+    var box = A, d = 0;
+    if (t > 0) {
+      var sr = strip.getBoundingClientRect();
+      var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
+      var aRight = aR.right + dPrev, bLeft = bR.left - dPrev;
+      var sh = Math.max(0, sr.height - 2 * BIRD_AIR), sw = sh * B.w / B.h;
+      var mid = (aRight + bLeft) / 2;
+      var S = { l: mid - sw / 2, t: sr.top + BIRD_AIR, w: sw, h: sh };
+      box = { l: A.l + (S.l - A.l) * e, t: A.t + (S.t - A.t) * e, w: A.w + (S.w - A.w) * e, h: A.h + (S.h - A.h) * e };
+      d = e * Math.max(0, sw / 2 + BIRD_GAP - (bLeft - aRight) / 2);
+    }
+    stack.style.setProperty('transform-origin', '0 0');
+    stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
+    if (t > 0) rail.style.setProperty('z-index', '73', 'important'); else rail.style.removeProperty('z-index');
+    tA.style.setProperty('transform', 'translateX(' + (-d).toFixed(2) + 'px)');
+    tB.style.setProperty('transform', 'translateX(' + d.toFixed(2) + 'px)');
+    dPrev = d; applied = true;
+  }
+  var ask = function () { if (!raf) raf = requestAnimationFrame(apply); };
+  window.__ncPullClear = function () { if (raf) { cancelAnimationFrame(raf); raf = 0; } return clear(); };
+  window.__ncPullApply = function () { geo = null; apply(); };
+  addEventListener('scroll', ask, { passive: true });
+  addEventListener('resize', function () { geo = null; ask(); });
+  apply();
 })();
