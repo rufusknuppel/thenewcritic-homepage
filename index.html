@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9c0c3b0f">
+<link rel="stylesheet" href="style.css?v=81b7a5cd">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4136,7 +4136,7 @@
       var hcs = getComputedStyle(host);
       var ch = end.node.nodeValue.charAt(end.at);
       if (hcs.textTransform === 'uppercase') ch = ch.toUpperCase();
-      measureCtx.font = hcs.fontWeight + ' ' + hcs.fontSize + ' ' + hcs.fontFamily;
+      measureCtx.font = hcs.fontStyle + ' ' + hcs.fontWeight + ' ' + hcs.fontSize + ' ' + hcs.fontFamily;
       var m2 = measureCtx.measureText(ch);
       return { ls: parseFloat(hcs.letterSpacing) || 0, left: m2.actualBoundingBoxLeft || 0,
                rightGap: m2.width - m2.actualBoundingBoxRight };
