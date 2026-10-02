@@ -4355,14 +4355,17 @@
       if (mainEl && mainEl.classList.contains('wm-opening')) {
         var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
         var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
-        // (THE NAME IN THE WINDOW'S MIDDLE, at the user's word — "move the
-        // wordmark logo on initial load so top padding matches the bottom
-        // padding with nav bar": the strip counts in the air under the
-        // name, so the name stands in the middle of the whole window —
-        // the strip still on its foot, and 36 at least between the two:
-        // band-mark.js sets the air under)
+        // (THE NAME AS FAR FROM THE TOP AS FROM THE STRIP'S WORDS, at the
+        // user's words — "move the wordmark logo on initial load so top
+        // padding matches the bottom padding with nav bar"; "The Wordmark
+        // should be spaced from the top of the site on initial load the
+        // same distance from nav bar words": the air over the name is the
+        // air from its foot to the strip's words' cap top, the strip still
+        // on the window's foot, and 36 at least between the name and the
+        // strip — band-mark.js sets the air under, by window.__ncStripCap)
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
-        airWant = Math.max(36, Math.min((vh0 - inkH) / 2, vh0 - inkH - stripH - 36));
+        var capIn = window.__ncStripCap ? window.__ncStripCap() : 0;
+        airWant = Math.max(36, Math.min((vh0 - stripH + capIn - inkH) / 2, vh0 - inkH - stripH - 36));
       }
       var have = si.capFlat - f.wb.top;
       if (Math.abs(airWant - have) > 0.05) {

@@ -384,9 +384,12 @@ function ncSvgInk(el) {
       // opens on the name the strip stands in the air under it, so that
       // air is the air over it less the strip, never under 36 —
       // fitMastheadFill sets the air over)
-      if (main.classList.contains('wm-opening') && wide.matches) {
-        var stp = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-        airUnder = Math.max(36, airUnder - (stp ? stp.offsetHeight : 0));
+      // ("The Wordmark should be spaced from the top of the site on
+      // initial load the same distance from nav bar words": the air under
+      // is the air over less how far into the strip its words' caps
+      // stand — window.__ncStripCap, below)
+      if (main.classList.contains('wm-opening') && wide.matches && window.__ncStripCap) {
+        airUnder = Math.max(36, airUnder - window.__ncStripCap());
       }
       under = Math.max(0, airUnder - (wr.bottom - nf.base));
       ground = getComputedStyle(wm).backgroundColor;
@@ -607,6 +610,28 @@ document.addEventListener('click', function (e) {
   update();
 })();
 
+// THE STRIP'S WORDS' CAP TOP (design/stacked-wordmark, 2026-10-02): how
+// far under the head strip's top its words' capitals stand — the first
+// word's flat cap, read off the face — so the opening name can stand as
+// far from them as from the window's top (fitMastheadFill, and the air
+// under the name below).
+window.__ncStripCap = function () {
+  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+  var b = strip && strip.querySelector('.sub-ticker-half > b');
+  if (!b || !strip.offsetHeight) return 0;
+  var rg = document.createRange(); rg.selectNodeContents(b);
+  var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+  if (!r) return 0;
+  var cs = getComputedStyle(b);
+  var cv = window.__ncCapCv || (window.__ncCapCv = document.createElement('canvas').getContext('2d'));
+  cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var m = cv.measureText('H');
+  var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+  if (!(fa > 0)) return 0;
+  var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+  return base - m.actualBoundingBoxAscent - strip.getBoundingClientRect().top;
+};
+
 // THE BIRD ONTO THE BAND (design/stacked-wordmark, 2026-10-02, at the
 // user's words — "As it pulls up I want the three elements (THE/NEW, the
 // bird, and CRI/TIC) to shrink, when band reaches Bird, I want the bird to
@@ -714,50 +739,17 @@ document.addEventListener('click', function (e) {
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     if (!(rest > 0)) return null;
-    var sr = strip.getBoundingClientRect(), aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
     return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, sh: sh,
-      ta: aR.top - sr.top, th: aR.height, aRight: aR.right, bLeft: bR.left, curve: null,
       ix: (ink.left + ink.right) / 2, iy: (ink.top + ink.bot) / 2, ih: ink.bot - ink.top,
       wl: wr.left, wt: wr.top, rest: rest };
   }
-  // (THE WORDS MOVE EVENLY, at the user's word — "Don't let The Last
-  // Magazine jump at any point": how far each word stands aside is laid
-  // out once for the whole of the bird's way, as the most it must give
-  // at each step, and smoothed over — widened then averaged, so the curve
-  // never falls under what is needed — and the words ride that curve)
-  function curveFor(g) {
-    var N = 400, B = g.b, seatH = g.sh * BIRD_SHARE, sw = seatH * B.w / B.h, bw0 = B.w / B.h;
-    var mid = (g.aRight + g.bLeft) / 2;
-    var S = { l: mid - sw / 2, t: (g.sh - seatH) / 2, h: seatH };
-    var ink = inkAcross(g.ta / seatH - S.t / seatH, (g.ta + g.th - S.t) / seatH) || [0, 1];
-    var FA = g.aRight - (S.l + sw * ink[0] - BIRD_GAP), FB = (S.l + sw * ink[1] + BIRD_GAP) - g.bLeft;
-    var nA = [], nB = [];
-    for (var i = 0; i <= N; i++) {
-      var p = i / N, bt = B.t + (S.t - B.t) * p, bh = B.h + (S.h - B.h) * p, bl = B.l + (S.l - B.l) * p, bw = bh * bw0;
-      var top = g.rest * (1 - p) + g.ta;
-      var f0 = (top - bt) / bh, f1 = (top + g.th - bt) / bh;
-      var now = f1 > 0 && f0 < 1 ? inkAcross(Math.max(0, f0), Math.min(1, f1)) : null;
-      var a = p * FA, b = p * FB;
-      if (now) { a = Math.max(a, g.aRight - (bl + bw * now[0] - BIRD_GAP)); b = Math.max(b, (bl + bw * now[1] + BIRD_GAP) - g.bLeft); }
-      nA.push(a); nB.push(b);
-    }
-    var R = Math.max(1, Math.round(N * 0.04));
-    var widen = function (v, r) { return v.map(function (_, i) { var m = -Infinity; for (var j = Math.max(0, i - r); j <= Math.min(N, i + r); j++) m = Math.max(m, v[j]); return m; }); };
-    var blur = function (v, r) { return v.map(function (_, i) { var t = 0, n = 0; for (var j = Math.max(0, i - r); j <= Math.min(N, i + r); j++) { t += v[j]; n++; } return t / n; }); };
-    var smooth = function (v, F) {
-      var w = blur(blur(widen(v, 2 * R), R), R);
-      // (it starts where the words stand and ends on their seats: the
-      // ends are eased onto, not cut)
-      var e0 = w[0], e1 = w[N] - F;
-      // (and never under what is needed where the ends are eased)
-      return w.map(function (x, i) { var q = i / N, k = q * q * (3 - 2 * q); return Math.max(v[i], x - e0 * (1 - k) - e1 * k); });
-    };
-    return { a: smooth(nA, FA), b: smooth(nB, FB), N: N };
-  }
-  function along(c, p) {
-    var x = p * c.N, i = Math.min(c.N - 1, Math.floor(x)), f = x - i;
-    return [c.a[i] + (c.a[i + 1] - c.a[i]) * f, c.b[i] + (c.b[i + 1] - c.b[i]) * f];
-  }
+  // (THE WORDS MOVE EVENLY, at the user's words — "Don't let The Last
+  // Magazine jump at any point"; then "I don't like how THE LAST MAGAZINE
+  // words move in and out, want it to be linear, even if it overlaps":
+  // each word goes straight from where it stands to its seat beside the
+  // bird, in step with the scroll, and the bird may pass over them on its
+  // way. A curve that stood them aside from the bird's path stood here
+  // for an hour.)
   function apply() {
     raf = 0;
     if (!wide.matches) { if (applied) clear(); return; }
@@ -781,27 +773,12 @@ document.addEventListener('click', function (e) {
     var sw = seatH * B.w / B.h;
     var S = { l: (aRight + bLeft) / 2 - sw / 2, t: (geo.sh - seatH) / 2, h: seatH };
     var box = { l: B.l + (S.l - B.l) * p, t: B.t + (S.t - B.t) * p, h: B.h + (S.h - B.h) * p };
-    // (each word to 9 from the bird's ink at its own height, seated)
+    // (each word to 11 from the bird's ink at its own height, seated,
+    // straight there with the scroll)
     var sr = strip.getBoundingClientRect();
     var ink = inkAcross((aR.top - sr.top - S.t) / S.h, (aR.bottom - sr.top - S.t) / S.h) || [0, 1];
     var dA = p * (aRight - (S.l + sw * ink[0] - BIRD_GAP));
     var dB = p * ((S.l + sw * ink[1] + BIRD_GAP) - bLeft);
-    // (and never under the bird on its way: where its ink crosses the
-    // words' line they stand aside, the same 11 clear of it — "don't want
-    // the bird to pass over the text")
-    var bw = box.h * B.w / B.h;
-    var f0 = (aR.top - box.t) / box.h, f1 = (aR.bottom - box.t) / box.h;
-    var now = f1 > 0 && f0 < 1 ? inkAcross(Math.max(0, f0), Math.min(1, f1)) : null;
-    if (now) {
-      dA = Math.max(dA, aRight - (box.l + bw * now[0] - BIRD_GAP));
-      dB = Math.max(dB, (box.l + bw * now[1] + BIRD_GAP) - bLeft);
-    }
-    // (once the bird's ink is read, the laid-out curve: THE WORDS MOVE
-    // EVENLY)
-    if (rows) {
-      if (!geo.curve) geo.curve = curveFor(geo);
-      var c = along(geo.curve, p); dA = c[0]; dB = c[1];
-    }
     stack.style.setProperty('transform-origin', '0 0');
     stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
     rail.style.setProperty('z-index', '73', 'important');

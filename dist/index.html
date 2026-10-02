@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8b7c89ce">
+<link rel="stylesheet" href="style.css?v=e9a0a315">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4092,7 +4092,8 @@
         var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
         var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
-        airWant = Math.max(36, Math.min((vh0 - inkH) / 2, vh0 - inkH - stripH - 36));
+        var capIn = window.__ncStripCap ? window.__ncStripCap() : 0;
+        airWant = Math.max(36, Math.min((vh0 - stripH + capIn - inkH) / 2, vh0 - inkH - stripH - 36));
       }
       var have = si.capFlat - f.wb.top;
       if (Math.abs(airWant - have) > 0.05) {
@@ -9286,9 +9287,8 @@ function ncSvgInk(el) {
     if (wm && nf) {
       var wr = wm.getBoundingClientRect();
       var airUnder = nf.capFlat - wr.top;
-      if (main.classList.contains('wm-opening') && wide.matches) {
-        var stp = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-        airUnder = Math.max(36, airUnder - (stp ? stp.offsetHeight : 0));
+      if (main.classList.contains('wm-opening') && wide.matches && window.__ncStripCap) {
+        airUnder = Math.max(36, airUnder - window.__ncStripCap());
       }
       under = Math.max(0, airUnder - (wr.bottom - nf.base));
       ground = getComputedStyle(wm).backgroundColor;
@@ -9434,6 +9434,22 @@ document.addEventListener('click', function (e) {
   });
   update();
 })();
+window.__ncStripCap = function () {
+  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+  var b = strip && strip.querySelector('.sub-ticker-half > b');
+  if (!b || !strip.offsetHeight) return 0;
+  var rg = document.createRange(); rg.selectNodeContents(b);
+  var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
+  if (!r) return 0;
+  var cs = getComputedStyle(b);
+  var cv = window.__ncCapCv || (window.__ncCapCv = document.createElement('canvas').getContext('2d'));
+  cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var m = cv.measureText('H');
+  var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+  if (!(fa > 0)) return 0;
+  var base = r.top + (r.height - (fa + fd)) / 2 + fa;
+  return base - m.actualBoundingBoxAscent - strip.getBoundingClientRect().top;
+};
 (function () {
   var main = document.querySelector('main.wm-opening');
   var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -9510,41 +9526,9 @@ document.addEventListener('click', function (e) {
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     if (!(rest > 0)) return null;
-    var sr = strip.getBoundingClientRect(), aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
     return { b: { l: b.left, t: b.top, w: b.width, h: b.height }, sh: sh,
-      ta: aR.top - sr.top, th: aR.height, aRight: aR.right, bLeft: bR.left, curve: null,
       ix: (ink.left + ink.right) / 2, iy: (ink.top + ink.bot) / 2, ih: ink.bot - ink.top,
       wl: wr.left, wt: wr.top, rest: rest };
-  }
-  function curveFor(g) {
-    var N = 400, B = g.b, seatH = g.sh * BIRD_SHARE, sw = seatH * B.w / B.h, bw0 = B.w / B.h;
-    var mid = (g.aRight + g.bLeft) / 2;
-    var S = { l: mid - sw / 2, t: (g.sh - seatH) / 2, h: seatH };
-    var ink = inkAcross(g.ta / seatH - S.t / seatH, (g.ta + g.th - S.t) / seatH) || [0, 1];
-    var FA = g.aRight - (S.l + sw * ink[0] - BIRD_GAP), FB = (S.l + sw * ink[1] + BIRD_GAP) - g.bLeft;
-    var nA = [], nB = [];
-    for (var i = 0; i <= N; i++) {
-      var p = i / N, bt = B.t + (S.t - B.t) * p, bh = B.h + (S.h - B.h) * p, bl = B.l + (S.l - B.l) * p, bw = bh * bw0;
-      var top = g.rest * (1 - p) + g.ta;
-      var f0 = (top - bt) / bh, f1 = (top + g.th - bt) / bh;
-      var now = f1 > 0 && f0 < 1 ? inkAcross(Math.max(0, f0), Math.min(1, f1)) : null;
-      var a = p * FA, b = p * FB;
-      if (now) { a = Math.max(a, g.aRight - (bl + bw * now[0] - BIRD_GAP)); b = Math.max(b, (bl + bw * now[1] + BIRD_GAP) - g.bLeft); }
-      nA.push(a); nB.push(b);
-    }
-    var R = Math.max(1, Math.round(N * 0.04));
-    var widen = function (v, r) { return v.map(function (_, i) { var m = -Infinity; for (var j = Math.max(0, i - r); j <= Math.min(N, i + r); j++) m = Math.max(m, v[j]); return m; }); };
-    var blur = function (v, r) { return v.map(function (_, i) { var t = 0, n = 0; for (var j = Math.max(0, i - r); j <= Math.min(N, i + r); j++) { t += v[j]; n++; } return t / n; }); };
-    var smooth = function (v, F) {
-      var w = blur(blur(widen(v, 2 * R), R), R);
-      var e0 = w[0], e1 = w[N] - F;
-      return w.map(function (x, i) { var q = i / N, k = q * q * (3 - 2 * q); return Math.max(v[i], x - e0 * (1 - k) - e1 * k); });
-    };
-    return { a: smooth(nA, FA), b: smooth(nB, FB), N: N };
-  }
-  function along(c, p) {
-    var x = p * c.N, i = Math.min(c.N - 1, Math.floor(x)), f = x - i;
-    return [c.a[i] + (c.a[i + 1] - c.a[i]) * f, c.b[i] + (c.b[i + 1] - c.b[i]) * f];
   }
   function apply() {
     raf = 0;
@@ -9569,17 +9553,6 @@ document.addEventListener('click', function (e) {
     var ink = inkAcross((aR.top - sr.top - S.t) / S.h, (aR.bottom - sr.top - S.t) / S.h) || [0, 1];
     var dA = p * (aRight - (S.l + sw * ink[0] - BIRD_GAP));
     var dB = p * ((S.l + sw * ink[1] + BIRD_GAP) - bLeft);
-    var bw = box.h * B.w / B.h;
-    var f0 = (aR.top - box.t) / box.h, f1 = (aR.bottom - box.t) / box.h;
-    var now = f1 > 0 && f0 < 1 ? inkAcross(Math.max(0, f0), Math.min(1, f1)) : null;
-    if (now) {
-      dA = Math.max(dA, aRight - (box.l + bw * now[0] - BIRD_GAP));
-      dB = Math.max(dB, (box.l + bw * now[1] + BIRD_GAP) - bLeft);
-    }
-    if (rows) {
-      if (!geo.curve) geo.curve = curveFor(geo);
-      var c = along(geo.curve, p); dA = c[0]; dB = c[1];
-    }
     stack.style.setProperty('transform-origin', '0 0');
     stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
     rail.style.setProperty('z-index', '73', 'important');
