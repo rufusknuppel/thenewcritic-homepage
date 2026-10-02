@@ -3897,6 +3897,11 @@
   // 72 of charcoal margin and the 72 of air inside it — the masthead's
   // and the reprint's ink from 144 to 144.
   var WORDMARK_SIDE = 36; // (144 for an hour on the 22nd, on the content's line; the page's 72 after; 36 from the 23rd, halfway into the margins)
+  // (THE MASTHEAD'S SIDES WITH THE STAMP, 2026-10-01, at the user's word —
+  // "make side margins on wordmark/stamp 72px": where the stamp stands
+  // after CRITIC, the name's ink opens 72 from the window's left and the
+  // stamp closes 72 from its right — style.css, THE STAMP IN THE NAME)
+  var MAST_SIDE_STAMP = 72;
   // THE BAND'S GARAMOND STANDS 72 OFF THE NAME'S INK (2026-09-23): the
   // head band's line under the masthead's THE NEW CRITIC and the
   // colophon's over the reprint's, ink to ink — the name's air is the 72
@@ -4233,7 +4238,8 @@
     if (stackEl) stackEl.style.removeProperty('right');
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
     var fill = function () {
-      return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R,
+      var side = stamp ? MAST_SIDE_STAMP : WORDMARK_SIDE;
+      return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: side, sizeSide: side, reserveRight: RESERVE_R,
         fixedGap: (gapEl ? parseFloat(gapEl.style.marginLeft) || 0 : 0) + (gap0 ? parseFloat(gap0.style.marginLeft) || 0 : 0) });
     };
     var f = fill();
@@ -6941,9 +6947,10 @@
       var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
       // (its size is the width's and the stack's alone: the second run
       // of a pass has nothing to find, and the ink scan is spared)
-      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2);
+      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2) + ':' + (stampIn ? 1 : 0);
       if (wmKey === wmSizeKey) return;
-      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, fixedGap: gapW });
+      var wmSide = stampIn ? MAST_SIDE_STAMP : WORDMARK_SIDE;
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: wmSide, sizeSide: wmSide, reserveRight: reserve, fixedGap: gapW });
       wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });
