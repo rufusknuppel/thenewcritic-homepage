@@ -21,6 +21,12 @@
   if (document.body.classList.contains('word-page')) return;
   if (!window.IntersectionObserver) return;
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // (not where the page opens on the name, design/stacked-wordmark,
+  // 2026-10-02, at the user's word — "Want everything linear": there
+  // everything moves with the scroll alone, and a card rising and
+  // unblurring on a clock of its own, eased, was the one thing that did
+  // not; the cards simply stand)
+  if (document.querySelector('main.wm-opening')) return;
   var cards = [].slice.call(document.querySelectorAll('main.has-mega .page-rows .duo-half--mega'));
   if (!cards.length) return;
   document.documentElement.classList.add('nc-reveal');

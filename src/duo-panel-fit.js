@@ -4302,7 +4302,11 @@
         stamp.style.width = sw.toFixed(2) + 'px';
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
-        var g0Err = 36 - (ia.left - i0.right);
+        // (THE NAME STACKED: THE over NEW, so there is no gap between them
+        // to true — the left column's right is NEW's, the right column's
+        // left is CRI's and TIC's)
+        var stacked = name.classList.contains('tn-stacked');
+        var g0Err = stacked ? -(parseFloat(gap0.style.marginLeft) || 0) : 36 - (ia.left - i0.right);
         // (CRITIC A FEW PIXELS RIGHT, 2026-10-02, at the user's word —
         // "Move Critic a few pixels right": the bird's right edge is a
         // wingtip, so CRITIC stands 4 further off it than 36 to read as
@@ -4339,9 +4343,39 @@
     // air is solved on the face's cap and the name seated again.)
     var si = stamp && nameInk();
     if (si) {
+      // (THE OPENING SCREEN, design/stacked-wordmark, at the user's word —
+      // "open with the band on the bottom and the wordmark/logo in the
+      // center of the site": where the page opens on the name
+      // (main.wm-opening), the air over the caps is half of what the
+      // window leaves after the name's ink and the strip, so the name
+      // stands centred in the first screen and the strip, 'that same air
+      // under the baseline, rests on the window's foot; never under 36)
+      var airWant = 36;
+      var mainEl = name.closest('main');
+      if (mainEl && mainEl.classList.contains('wm-opening')) {
+        var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+        var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
+        // (THE NAME'S INK AS FAR FROM THE TOP AS THE STRIP'S FROM THE FOOT,
+        // at the user's word — "The ink of the words should be the same
+        // distance from the top as the ink in the nav bar is from the
+        // bottom": the air over the name's caps is the air under the
+        // strip's words' baseline, the strip resting on the window's
+        // foot, the rest of the window between the two, never under 36 —
+        // band-mark.js sets that air under, window.__ncOpenUnder. It
+        // followed the middle of the window, then the strip's words, the
+        // same day)
+        var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
+        var sInk = window.__ncStripInk ? window.__ncStripInk() : null;
+        var footAir = sInk ? stripH - sInk.base : 36;
+        // (to the bird's wing tip, not the letters' caps: "Use bird wing
+        // tip for the padding not word ink" — the bird's box is its ink,
+        // 18 over the caps)
+        airWant = Math.max(0, Math.min(footAir + 18, vh0 - inkH - stripH - 36));
+        window.__ncOpenUnder = Math.max(36, vh0 - airWant - inkH - stripH);
+      }
       var have = si.capFlat - f.wb.top;
-      if (Math.abs(36 - have) > 0.05) {
-        AIR += 36 - have;
+      if (Math.abs(airWant - have) > 0.05) {
+        AIR += airWant - have;
         f = fill() || f;
       }
     }
@@ -6981,6 +7015,11 @@
     // letters with the band's rule crossing it. Last, because it reads
     // boxes that every step above it moves.
     var seatLast = true;
+    // (THE BAND PULLS UP OVER THE NAME, design/stacked-wordmark: the
+    // scroll's shrink of the name and the bird's flight onto the strip are
+    // transforms the pass must not measure — cleared first, written again
+    // last: band-mark.js, __ncPullClear / __ncPullApply)
+    if (window.__ncPullClear && !rowKAgain) window.__ncPullClear();
     // The columns' 24 step into their blocks (fitTitleHalo) is a
     // transform the rest of the pass must not measure: cleared first,
     // written last, so every seat is taken off the untransformed box
@@ -7154,6 +7193,7 @@
     }
     // (the halos rounded again on the rows' last seats: reseatHalos)
     if (!rowKAgain) step('reseatHalos', reseatHalos);
+    if (window.__ncPullApply && !rowKAgain) window.__ncPullApply();
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
@@ -7487,7 +7527,18 @@
                     railFoot += rEl.offsetHeight + (parseFloat(rcs.marginBottom) || 0);
                     if (rEl === topStrip) break;
                   }
-                  firstAt = body.getBoundingClientRect().top + railFoot + COURIER_GAP;
+                  // (72 where the page opens on the name: design/stacked-
+                  // wordmark, 2026-10-02 — "Increase distance between band
+                  // and first post to 72px")
+                  // (and the more the strip grows by as it settles at 144,
+                  // so the 72 holds under it settled: "Have band settle at
+                  // 144px")
+                  var opening = !!document.querySelector('main.wm-opening');
+                  // (144 for an hour, at the user's word — "Increase space
+                  // above and below first and last content rows to 144px" —
+                  // then 72 again: "Space above first post and below last
+                  // post should be 72px")
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + Math.max(0, 144 - topStrip.offsetHeight) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
@@ -7835,7 +7886,15 @@
         next.style.setProperty('margin-top', '0px', 'important');
         next.style.removeProperty('--step-over');
       }
-      edges.push({ el: body, prop: 'padding-bottom', delta: COURIER_GAP - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
+      // (72 OVER THE COLOPHON where the page opens on the name, design/
+      // stacked-wordmark, 2026-10-02, at the user's word — "Increase
+      // distance between band and first post to 72px, same below last
+      // post to colophon")
+      // (144 for an hour — "Increase space above and below first and last
+      // content rows to 144px" — then 72 again: "Space above first post
+      // and below last post should be 72px")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
       if (j.exact) {

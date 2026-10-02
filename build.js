@@ -74,10 +74,14 @@ const BIRD_STAMP = (() => {
 // reads the name's ink off the boxes. The ink is currentColor, so the
 // name keeps the theme's colour and its hover.
 const WORDMARK_CAP_EM = 0.708; // the words' cap, in the name's em (Avenir Next's own)
-function wordmarkWord(word) {
+// (widthEm: the word set to a width rather than to the cap — THE NAME
+// STACKED, where the four words stand at one width and each takes the
+// cap that width gives it)
+function wordmarkWord(word, widthEm = 0) {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
-  const w = (WORDMARK_CAP_EM * vb[2] / vb[3]).toFixed(4);
+  const w = widthEm ? widthEm.toFixed(4) : (WORDMARK_CAP_EM * vb[2] / vb[3]).toFixed(4);
+  const h = widthEm ? (widthEm * vb[3] / vb[2]).toFixed(4) : WORDMARK_CAP_EM;
   // (the round letters' dip under the baseline, as a share of the cap:
   // the fitter keeps the masthead's block open to it, so the Cs' bowls
   // are not shaved flat on the baseline — "The bottom of the cs in
@@ -87,7 +91,7 @@ function wordmarkWord(word) {
   for (let i = 1; i < nums.length; i += 2) maxY = Math.max(maxY, +nums[i]);
   const dip = ((maxY - (vb[1] + vb[3])) / vb[3]).toFixed(4);
   return svg.replace(/^<svg xmlns="[^"]*"/,
-    `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${WORDMARK_CAP_EM}em"`);
+    `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${h}em"`);
 }
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
@@ -1368,7 +1372,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <span class="topbar-name"><span class="tn-the">${wordmarkWord('the')}</span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-new">${wordmarkWord('new')}</span><span class="tn-gap" aria-hidden="true"></span><span class="tn-critic">${wordmarkWord('critic')}</span></span>
+    <span class="topbar-name tn-stacked"><span class="tn-col tn-col--l"><span class="tn-the">${wordmarkWord('the', 3)}</span><span class="tn-new">${wordmarkWord('new', 3)}</span></span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-gap" aria-hidden="true"></span><span class="tn-col tn-col--r tn-critic"><span class="tn-cri">${wordmarkWord('cri', 2.29166)}</span><span class="tn-tic">${wordmarkWord('tic', 2.29166)}</span></span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
@@ -1599,7 +1603,9 @@ function navStrip() {
   // it on the scroll.)
   return `<nav class="sub-ticker sub-ticker--foot sub-ticker--pin sub-ticker--nav" aria-label="The New Critic"><span class="sub-ticker-run">${[
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
-    link(by('archive'), 'Archive'),
+    // (STORE and ARCHIVE change places, design/stacked-wordmark, at the
+    // user's word — "switch archive and store")
+    dead('Store'),
     // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-01, at the user's word
     // — "Replace about with The Last Magazine in helvetica style": the
     // About link reads THE LAST MAGAZINE in the strip's capitals, black
@@ -1609,9 +1615,22 @@ function navStrip() {
     // Magazine to Garamond dek styling in the band" — then back in the
     // strip's Helvetica capitals at the user's word: "Move the Last
     // Magazine back to helvetica")
-    link(by('about'), 'The Last Magazine'),
-    dead('Store'),
-    dead('Events'),
+    // (in the Garamond italic at 36, then 18, for a while on 2026-10-02 in
+    // design/stacked-wordmark; back in the strip's Helvetica capitals at
+    // the user's word — "Switch back to helvetica for THe last magazine")
+    // (THE LAST and MAGAZINE in two pieces, design/stacked-wordmark, so the
+    // bird can come down between them as the strip rises: band-mark.js,
+    // THE BIRD ONTO THE BAND)
+    // (REMOVED, design/stacked-wordmark, at the user's word — "Remove the
+    // last magazine": a gap keeps its place in the middle of the head
+    // strip for the bird to settle in, and the bird, settled, goes where it
+    // went — data-href; band-mark.js, THE NAME SETTLES IN THE BAND WITH THE
+    // BIRD. Unseen everywhere else.)
+    by('about') ? `<span class="sub-ticker-half sub-ticker-half--slot" aria-hidden="true" data-href="${escapeHtml(by('about').href)}"></span>` : '',
+    link(by('archive'), 'Archive'),
+    // (ABOUT in EVENTS' place, design/stacked-wordmark, at the user's word —
+    // "Replace events with About")
+    link(by('about'), 'About'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
     // 2026-09-30; on 2026-10-01 it left for a chip in the window's corner,
     // became one circle there, and came back as that circle, the strip's
@@ -3223,7 +3242,10 @@ function renderFontGateScript() {
     // predates the dark default and is not a choice made against it.)
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
-    paint(chosen === 'light' ? 'light' : 'dark');
+    // (LIGHT IS THE DEFAULT on design/stacked-wordmark, at the user's word —
+    // "have default site color be white": the page stands on white, a
+    // reader's stored Dark kept)
+    paint(chosen === 'dark' ? 'dark' : 'light');
   } catch (e) {}
   // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
   // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from
@@ -3801,7 +3823,7 @@ function markMega(html) {
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
-    .replace('<main id="main">', '<main id="main" class="has-mega">');
+    .replace('<main id="main">', '<main id="main" class="has-mega wm-opening">');
 }
 
 // ---------- THREE COVERS HOLD THE PAGE, NOT TWENTY-THREE (2026-09-21) ----
