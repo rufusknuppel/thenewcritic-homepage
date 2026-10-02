@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dc0f6367">
+<link rel="stylesheet" href="style.css?v=c29ceaa4">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -97,7 +97,7 @@
     }
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
-    paint(chosen === 'light' ? 'light' : 'dark');
+    paint(chosen === 'dark' ? 'dark' : 'light');
   } catch (e) {}
   try { localStorage.removeItem('nc-accent'); } catch (e) {}
   try {
@@ -7660,6 +7660,8 @@
       cover.push(cv);
     });
     cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0; }));
+    var top = lx >= 0 && document.elementFromPoint ? document.elementFromPoint(lx, ly) : null;
+    if (top && top.closest && top.closest('.page-rows > .head-rail, .site-nav--top')) { hide(); return; }
     for (var i = 0; i < cards.length && !hitCard; i++) {
       var card = cards[i];
       if (card.matches('.is-opening, .is-shutting')) continue;
