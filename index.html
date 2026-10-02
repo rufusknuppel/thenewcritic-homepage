@@ -9436,7 +9436,7 @@ document.addEventListener('click', function (e) {
   var tA = strip && strip.querySelector('.tlm-a'), tB = strip && strip.querySelector('.tlm-b');
   if (!main || !strip || !wm || !stack || !rail || !tA || !tB) return;
   var wide = window.matchMedia('(min-width: 1024px)');
-  var BIRD_AIR = 36, BIRD_GAP = 18;
+  var BIRD_AIR = 18, BIRD_GAP = 18;
   var geo = null, raf = 0, applied = false, dPrev = 0;
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   function clear() {
