@@ -1,3 +1,20 @@
+// THE NAME IN VECTOR (2026-10-02): the masthead's words are drawn
+// (build.js, wordmarkWord), each svg's box its ink across and the flat
+// cap to the baseline down; their union is the name's ink, or null where
+// an element holds no drawn word.
+function ncSvgInk(el) {
+  if (!el || !el.querySelectorAll) return null;
+  var ss = el.querySelectorAll('svg.tn-svg');
+  var l = Infinity, r = -Infinity, t = Infinity, b = -Infinity, ft = -Infinity;
+  for (var i = 0; i < ss.length; i++) {
+    var q = ss[i].getBoundingClientRect();
+    if (!q.width) continue;
+    l = Math.min(l, q.left); r = Math.max(r, q.right); t = Math.min(t, q.top); b = Math.max(b, q.bottom);
+    // (the round letters' dip under the baseline, a share of the cap)
+    ft = Math.max(ft, q.bottom + q.height * (parseFloat(ss[i].getAttribute('data-dip')) || 0));
+  }
+  return isFinite(l) ? { left: l, right: r, top: t, bot: b, foot: ft } : null;
+}
 (function () {
   // THE WORDMARK'S MINIATURE IN THE BAND (2026-09-17).
   //
@@ -58,6 +75,9 @@
   // last inked rows read.
   var scanned = null;
   function scan(cs) {
+    // (the drawn name: its cap is its boxes' height, its foot the baseline)
+    var sv = ncSvgInk(mark), S0 = parseFloat(cs.fontSize) || 0;
+    if (sv) return S0 ? { above: (sv.bot - sv.top) / S0, below: 0 } : null;
     var scanPx = 200, W = 3000, H = 320, y0 = 240;
     var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     var g = cv.getContext('2d');
@@ -312,6 +332,8 @@
   var wm = null, under = 0, ground = '', lastE = -1;
   var cv = null;
   function face(el) {
+    var sv = ncSvgInk(el);
+    if (sv) return { top: sv.top, foot: sv.foot, base: sv.bot, capFlat: sv.top };
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -456,6 +478,8 @@ document.addEventListener('click', function (e) {
   if (!main || !stack || !nm) return;
   var cv = null;
   var inkOf = function (el, whole) {
+    var sv = ncSvgInk(el);
+    if (sv) return { top: sv.top, base: sv.bot };
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -485,7 +509,10 @@ document.addEventListener('click', function (e) {
     var a0 = stamp && inkOf(nm, true);
     if (a0) {
       var cur0 = parseFloat(host.style.getPropertyValue('--stack-shift')) || 0;
-      var want0 = cur0 + (a0.top - stamp.getBoundingClientRect().top);
+      // (18 over the cap, as the stamp stands 18 proud of the letters
+      // top and foot: fitMastheadFill sizes it, 2026-10-02)
+      var STAMP_PROUD = 18;
+      var want0 = cur0 + (a0.top - STAMP_PROUD - stamp.getBoundingClientRect().top);
       if (Math.abs(want0 - cur0) > 0.25) host.style.setProperty('--stack-shift', want0.toFixed(2) + 'px');
       return;
     }

@@ -53,6 +53,32 @@ const BIRD_STAMP = (() => {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
   return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
 })();
+// THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
+// word — "Use it as the wordmark, making the ink 5% thinner"): the
+// masthead's THE NEW CRITIC is three vector words, each traced from the
+// printed lettering (Avenir Next Heavy at 93.5% width, tracked in, its
+// edges roughened and worn), the ink 5% thinner than the poster files'
+// (the stems 95 of the field's 300-pixel cap where they were 100). Each
+// word's box is its ink across and the flat cap to the baseline down —
+// the round letters overshoot it, as they are drawn to — so the fitter
+// reads the name's ink off the boxes. The ink is currentColor, so the
+// name keeps the theme's colour and its hover.
+const WORDMARK_CAP_EM = 0.708; // the words' cap, in the name's em (Avenir Next's own)
+function wordmarkWord(word) {
+  const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
+  const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
+  const w = (WORDMARK_CAP_EM * vb[2] / vb[3]).toFixed(4);
+  // (the round letters' dip under the baseline, as a share of the cap:
+  // the fitter keeps the masthead's block open to it, so the Cs' bowls
+  // are not shaved flat on the baseline — "The bottom of the cs in
+  // Critic look cut off")
+  const nums = ((svg.match(/ d="([^"]+)"/) || [])[1] || '').match(/-?[\d.]+/g) || [];
+  let maxY = vb[1] + vb[3];
+  for (let i = 1; i < nums.length; i += 2) maxY = Math.max(maxY, +nums[i]);
+  const dip = ((maxY - (vb[1] + vb[3])) / vb[3]).toFixed(4);
+  return svg.replace(/^<svg xmlns="[^"]*"/,
+    `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${WORDMARK_CAP_EM}em"`);
+}
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
 }
@@ -1332,7 +1358,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <span class="topbar-name"><span class="tn-the">The</span><span class="tn-gap0" aria-hidden="true"></span> <span class="tn-new">New</span><span class="tn-gap" aria-hidden="true"></span> <span class="tn-critic">Critic</span></span>
+    <span class="topbar-name"><span class="tn-the">${wordmarkWord('the')}</span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-new">${wordmarkWord('new')}</span><span class="tn-gap" aria-hidden="true"></span><span class="tn-critic">${wordmarkWord('critic')}</span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the

@@ -3901,7 +3901,10 @@
   // "make side margins on wordmark/stamp 72px": where the stamp stands
   // after CRITIC, the name's ink opens 72 from the window's left and the
   // stamp closes 72 from its right — style.css, THE STAMP IN THE NAME)
-  var MAST_SIDE_STAMP = 72;
+  // (36 FROM EACH SIDE, 2026-10-02, at the user's word — "Bring ink of
+  // wordmark to sit all the way 36px from sides": the stamp stands in the
+  // name now, so the name's ink alone runs 36 to 36)
+  var MAST_SIDE_STAMP = 36;
   // THE BAND'S GARAMOND STANDS 72 OFF THE NAME'S INK (2026-09-23): the
   // head band's line under the masthead's THE NEW CRITIC and the
   // colophon's over the reprint's, ink to ink — the name's air is the 72
@@ -3940,6 +3943,8 @@
   // THE AIR BETWEEN THE NAME'S INK AND THE BAND LIST'S (2026-09-30):
   // THE NEW CRITIC's painted foot to the list's capitals, off the faces
   function glyphSpan(el) {
+    var sv = svgInk(el);
+    if (sv) return { top: sv.top, bot: sv.foot };
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -4064,6 +4069,20 @@
       : RESERVE ? wb.left + SIZE_SIDE
       : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
+    // (THE NAME IN VECTOR, 2026-10-02: the drawn words' boxes are their
+    // ink, cap to baseline, so the cap and the foot are read off them and
+    // nothing is scanned)
+    var sv0 = svgInk(name);
+    if (sv0) {
+      var mtV = parseFloat(getComputedStyle(name).marginTop) || 0;
+      name.style.marginTop = (mtV + (wb.top + AIR - sv0.top)).toFixed(2) + 'px';
+      var sv1 = svgInk(name) || sv0;
+      wm.style.setProperty('--ink-mid', ((sv1.top + sv1.bot) / 2 - wb.top).toFixed(2) + 'px');
+      wm.style.setProperty('--ink-top', (sv1.top - wb.top).toFixed(2) + 'px');
+      wm.style.height = Math.round(Math.max(0, sv1.bot - wb.top + AIR_B)) + 'px';
+      seatHit(name, wb.top + AIR, sv1.bot);
+      return { wb: wb, inkBottom: sv1.bot };
+    }
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
     // sit lower than the canvas 'H' model says (the model put them 25
     // above where they print). The string is drawn on a canvas at a
@@ -4190,6 +4209,9 @@
     // (the name's cap and foot off the face's own bounds, as the band's
     // Garamond is read)
     var nameInk = function () {
+      // (the drawn words: their boxes are the flat cap to the baseline)
+      var sv = svgInk(name);
+      if (sv) return { cap: sv.top, foot: sv.foot, capFlat: sv.top, base: sv.bot };
       var rg = document.createRange(); rg.selectNodeContents(name);
       var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
       if (!r) return null;
@@ -4236,7 +4258,10 @@
       if (gap0) gap0.style.marginLeft = '';
     }
     if (stackEl) stackEl.style.removeProperty('right');
-    var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+    // (THE STAMP BETWEEN NEW AND CRITIC, 2026-10-02, at the user's word —
+    // "Put the stamp between THE NEW and Critic": it stands in the name's
+    // own gap, so no room is kept at the right; the name runs 72 to 72)
+    var RESERVE_R = 0;
     var fill = function () {
       var side = stamp ? MAST_SIDE_STAMP : WORDMARK_SIDE;
       return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: side, sizeSide: side, reserveRight: RESERVE_R,
@@ -4251,22 +4276,33 @@
     // read off the words' own ink, the face's bearings included — and the
     // name filled again on them, till all hold: the stamp is a sixteenth
     // of the name's width, so they close fast)
+    // (THE STAMP BETWEEN NEW AND CRITIC, 2026-10-02: the gap NEW to
+    // CRITIC is 36, the stamp, 36 — the stamp's width off its own viewBox,
+    // the block alone now its frame is struck — and the stamp the name's
+    // height, flat cap to baseline: "Make sure stamp is same height as the
+    // letters and aligned")
+    var vbS = stamp ? (stamp.getAttribute('viewBox') || '0 0 1 1').split(/[\s,]+/) : null;
+    var ASPECT_S = vbS ? (parseFloat(vbS[2]) || 1) / (parseFloat(vbS[3]) || 1) : 1;
+    var sw = 0;
     if (stamp) {
-      for (var gk = 0; gk < 6; gk++) {
+      for (var gk = 0; gk < 8; gk++) {
         var sc = nameInk();
         if (!sc) break;
-        var sh = sc.foot - sc.cap;
+        // (18 PROUD OF THE LETTERS each way, 2026-10-02, at the user's word
+        // — "Make stamp 18px taller and longer than letters": its top 18
+        // over the cap, its foot 18 under the baseline — band-mark.js seats
+        // it, STAMP_PROUD there)
+        var sh = sc.base - sc.capFlat + 2 * 18;
+        sw = sh * ASPECT_S;
         stamp.style.height = sh.toFixed(2) + 'px';
-        stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
-        var r2 = sh * 438 / 488 + 36;
+        stamp.style.width = sw.toFixed(2) + 'px';
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
         var g0Err = 36 - (ia.left - i0.right);
-        var g1Err = 36 - (ib.left - ia.right);
-        if (Math.abs(g0Err) <= 0.1 && Math.abs(g1Err) <= 0.1 && Math.abs(r2 - RESERVE_R) <= 0.1) break;
+        var g1Err = (36 + sw + 36) - (ib.left - ia.right);
+        if (Math.abs(g0Err) <= 0.05 && Math.abs(g1Err) <= 0.05) break;
         gap0.style.marginLeft = ((parseFloat(gap0.style.marginLeft) || 0) + g0Err).toFixed(2) + 'px';
         gapEl.style.marginLeft = ((parseFloat(gapEl.style.marginLeft) || 0) + g1Err).toFixed(2) + 'px';
-        RESERVE_R = r2;
         f = fill() || f;
       }
     }
@@ -4299,6 +4335,16 @@
       }
     }
     varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
+    // (the stamp across: its left 36 past NEW's ink — the stack is pinned
+    // by its right, so that right is moved by what the left is off; band-
+    // mark.js seats its top on the cap)
+    if (stamp) {
+      var iNew = inkSpanOf(tnNew), sr = stamp.getBoundingClientRect();
+      if (iNew && sr.width) {
+        var curRight = parseFloat(getComputedStyle(stackEl).right) || 0;
+        stackEl.style.setProperty('right', (curRight - (iNew.right + 36 - sr.left)).toFixed(2) + 'px', 'important');
+      }
+    }
     var wb = f.wb, inkBottom = f.inkBottom;
     // The block ends ON the ink's foot, one pixel of allowance under
     // it, so the letters print whole: the band and the page are the
@@ -4376,7 +4422,33 @@
     })(el);
     return out;
   }
+  // THE NAME IN VECTOR (2026-10-02, at the user's word — "Use it as the
+  // wordmark"): the masthead's words are drawn, not set (build.js,
+  // wordmarkWord), each svg's box its ink across and the flat cap to the
+  // baseline down. Their union is the name's ink: left, right, the cap's
+  // top and the baseline — null where an element holds no drawn word,
+  // so every text reader below goes on as it was. (foot: the round
+  // letters' dip under the baseline, data-dip, a share of the cap —
+  // the block is kept open to it, the air is measured from the baseline)
+  function svgInk(el) {
+    if (!el || !el.querySelectorAll) return null;
+    var ss = el.matches && el.matches('svg.tn-svg') ? [el] : el.querySelectorAll('svg.tn-svg');
+    var l = Infinity, r = -Infinity, t = Infinity, b = -Infinity, ft = -Infinity;
+    for (var i = 0; i < ss.length; i++) {
+      var q = ss[i].getBoundingClientRect();
+      if (!q.width) continue;
+      if (q.left < l) l = q.left;
+      if (q.right > r) r = q.right;
+      if (q.top < t) t = q.top;
+      if (q.bottom > b) b = q.bottom;
+      var fq = q.bottom + q.height * (parseFloat(ss[i].getAttribute('data-dip')) || 0);
+      if (fq > ft) ft = fq;
+    }
+    return isFinite(l) ? { left: l, right: r, top: t, bot: b, foot: ft } : null;
+  }
   function inkSpanOf(el) {
+    var sv = svgInk(el);
+    if (sv) return { left: sv.left, right: sv.right };
     var pieces = inkPieces(el);
     if (!pieces.length) return null;
     // The ends are the first and last PRINTING characters — a piece
@@ -6944,7 +7016,9 @@
         var gEl = name.querySelector('.tn-gap'), g0El = name.querySelector('.tn-gap0');
         gapW = (gEl ? parseFloat(gEl.style.marginLeft) || 0 : 0) + (g0El ? parseFloat(g0El.style.marginLeft) || 0 : 0);
       }
-      var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+      // (none kept at the right: the stamp stands between NEW and CRITIC,
+      // in the gap the spacers' margins hold — 2026-10-02)
+      var reserve = 0;
       // (its size is the width's and the stack's alone: the second run
       // of a pass has nothing to find, and the ink scan is spared)
       var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2) + ':' + (stampIn ? 1 : 0);
