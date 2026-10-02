@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e9a0a315">
+<link rel="stylesheet" href="style.css?v=adf879c4">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4092,8 +4092,10 @@
         var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
         var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
-        var capIn = window.__ncStripCap ? window.__ncStripCap() : 0;
-        airWant = Math.max(36, Math.min((vh0 - stripH + capIn - inkH) / 2, vh0 - inkH - stripH - 36));
+        var sInk = window.__ncStripInk ? window.__ncStripInk() : null;
+        var footAir = sInk ? stripH - sInk.base : 36;
+        airWant = Math.max(0, Math.min(footAir, vh0 - inkH - stripH - 36));
+        window.__ncOpenUnder = Math.max(36, vh0 - airWant - inkH - stripH);
       }
       var have = si.capFlat - f.wb.top;
       if (Math.abs(airWant - have) > 0.05) {
@@ -9287,8 +9289,8 @@ function ncSvgInk(el) {
     if (wm && nf) {
       var wr = wm.getBoundingClientRect();
       var airUnder = nf.capFlat - wr.top;
-      if (main.classList.contains('wm-opening') && wide.matches && window.__ncStripCap) {
-        airUnder = Math.max(36, airUnder - window.__ncStripCap());
+      if (main.classList.contains('wm-opening') && wide.matches && window.__ncOpenUnder != null) {
+        airUnder = window.__ncOpenUnder;
       }
       under = Math.max(0, airUnder - (wr.bottom - nf.base));
       ground = getComputedStyle(wm).backgroundColor;
@@ -9415,6 +9417,7 @@ document.addEventListener('click', function (e) {
     el.addEventListener('blur', off);
   });
 })();
+window.__ncStripSide = function (p) { return 144 - 72 * p; };
 (function () {
   var main = document.querySelector('main.wm-opening');
   var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -9425,7 +9428,7 @@ document.addEventListener('click', function (e) {
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     var p = rest > 0 ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
-    var v = (144 - 72 * p).toFixed(2) + 'px';
+    var v = window.__ncStripSide(p).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };
@@ -9434,21 +9437,22 @@ document.addEventListener('click', function (e) {
   });
   update();
 })();
-window.__ncStripCap = function () {
+window.__ncStripInk = function () {
   var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
   var b = strip && strip.querySelector('.sub-ticker-half > b');
-  if (!b || !strip.offsetHeight) return 0;
+  if (!b || !strip.offsetHeight) return null;
   var rg = document.createRange(); rg.selectNodeContents(b);
   var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
-  if (!r) return 0;
+  if (!r) return null;
   var cs = getComputedStyle(b);
   var cv = window.__ncCapCv || (window.__ncCapCv = document.createElement('canvas').getContext('2d'));
   cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
   var m = cv.measureText('H');
   var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
-  if (!(fa > 0)) return 0;
+  if (!(fa > 0)) return null;
+  var top = strip.getBoundingClientRect().top;
   var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-  return base - m.actualBoundingBoxAscent - strip.getBoundingClientRect().top;
+  return { cap: base - m.actualBoundingBoxAscent - top, base: base - top };
 };
 (function () {
   var main = document.querySelector('main.wm-opening');
@@ -9544,10 +9548,13 @@ window.__ncStripCap = function () {
     var seatH = geo.sh * BIRD_SHARE;
     var sEnd = geo.ih > 0 ? Math.min(1, seatH / geo.ih) : 1;
     var s = 1 + (sEnd - 1) * p;
-    var rise = '0 ' + ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px';
+    var rise = ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px';
+    var out = window.__ncStripSide ? window.__ncStripSide(0) - window.__ncStripSide(p) : 0;
     colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
     colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
-    [colL, colR].forEach(function (c) { c.style.setProperty('scale', s.toFixed(4)); c.style.setProperty('translate', rise); });
+    [colL, colR].forEach(function (c) { c.style.setProperty('scale', s.toFixed(4)); });
+    colL.style.setProperty('translate', (-out).toFixed(2) + 'px ' + rise);
+    colR.style.setProperty('translate', out.toFixed(2) + 'px ' + rise);
     var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();
     var aRight = aR.right + dPrevA, bLeft = bR.left - dPrevB;
     var sw = seatH * B.w / B.h;

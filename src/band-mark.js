@@ -384,12 +384,12 @@ function ncSvgInk(el) {
       // opens on the name the strip stands in the air under it, so that
       // air is the air over it less the strip, never under 36 —
       // fitMastheadFill sets the air over)
-      // ("The Wordmark should be spaced from the top of the site on
-      // initial load the same distance from nav bar words": the air under
-      // is the air over less how far into the strip its words' caps
-      // stand — window.__ncStripCap, below)
-      if (main.classList.contains('wm-opening') && wide.matches && window.__ncStripCap) {
-        airUnder = Math.max(36, airUnder - window.__ncStripCap());
+      // (then as far from the strip's words as from the top; now the rest
+      // of the window, as fitMastheadFill leaves it: window.__ncOpenUnder —
+      // "The ink of the words should be the same distance from the top as
+      // the ink in the nav bar is from the bottom")
+      if (main.classList.contains('wm-opening') && wide.matches && window.__ncOpenUnder != null) {
+        airUnder = window.__ncOpenUnder;
       }
       under = Math.max(0, airUnder - (wr.bottom - nf.base));
       ground = getComputedStyle(wm).backgroundColor;
@@ -582,6 +582,11 @@ document.addEventListener('click', function (e) {
   });
 })();
 
+// (the strip's sides for how far it has come up, 0 at rest to 1 pinned:
+// read by the name's columns too, which drift out with them — THE BIRD
+// ONTO THE BAND)
+window.__ncStripSide = function (p) { return 144 - 72 * p; };
+
 // THE STRIP'S ITEMS EASE OUT AS IT RISES (design/stacked-wordmark,
 // 2026-10-02, at the user's word — "When page opens, nav bar items should
 // be 144px from sides, then should relax to 72px as scrolling to top"):
@@ -600,7 +605,7 @@ document.addEventListener('click', function (e) {
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     var p = rest > 0 ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
-    var v = (144 - 72 * p).toFixed(2) + 'px';
+    var v = window.__ncStripSide(p).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };
@@ -610,26 +615,26 @@ document.addEventListener('click', function (e) {
   update();
 })();
 
-// THE STRIP'S WORDS' CAP TOP (design/stacked-wordmark, 2026-10-02): how
-// far under the head strip's top its words' capitals stand — the first
-// word's flat cap, read off the face — so the opening name can stand as
-// far from them as from the window's top (fitMastheadFill, and the air
-// under the name below).
-window.__ncStripCap = function () {
+// THE STRIP'S WORDS' INK (design/stacked-wordmark, 2026-10-02): where the
+// head strip's words' capitals stand in it — their flat cap and their
+// baseline, under the strip's top, read off the first word's face — so the
+// opening name can be seated by them (fitMastheadFill).
+window.__ncStripInk = function () {
   var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
   var b = strip && strip.querySelector('.sub-ticker-half > b');
-  if (!b || !strip.offsetHeight) return 0;
+  if (!b || !strip.offsetHeight) return null;
   var rg = document.createRange(); rg.selectNodeContents(b);
   var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
-  if (!r) return 0;
+  if (!r) return null;
   var cs = getComputedStyle(b);
   var cv = window.__ncCapCv || (window.__ncCapCv = document.createElement('canvas').getContext('2d'));
   cv.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
   var m = cv.measureText('H');
   var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
-  if (!(fa > 0)) return 0;
+  if (!(fa > 0)) return null;
+  var top = strip.getBoundingClientRect().top;
   var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-  return base - m.actualBoundingBoxAscent - strip.getBoundingClientRect().top;
+  return { cap: base - m.actualBoundingBoxAscent - top, base: base - top };
 };
 
 // THE BIRD ONTO THE BAND (design/stacked-wordmark, 2026-10-02, at the
@@ -772,10 +777,16 @@ window.__ncStripCap = function () {
     var s = 1 + (sEnd - 1) * p;
     // (THE/NEW about its left edge, CRI/TIC about its right, both about
     // the letters' middle top to bottom, rising to the strip's)
-    var rise = '0 ' + ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px';
+    // (and out with the strip's first and last words as their sides ease
+    // from 144 to 72: "THENEW and CRITIC should also drift left or right
+    // with edges of nav words")
+    var rise = ((geo.sh / 2 - geo.iy) * p).toFixed(2) + 'px';
+    var out = window.__ncStripSide ? window.__ncStripSide(0) - window.__ncStripSide(p) : 0;
     colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
     colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
-    [colL, colR].forEach(function (c) { c.style.setProperty('scale', s.toFixed(4)); c.style.setProperty('translate', rise); });
+    [colL, colR].forEach(function (c) { c.style.setProperty('scale', s.toFixed(4)); });
+    colL.style.setProperty('translate', (-out).toFixed(2) + 'px ' + rise);
+    colR.style.setProperty('translate', out.toFixed(2) + 'px ' + rise);
     // (the bird: from where it stands to its seat in the pinned strip,
     // between THE LAST and MAGAZINE as they part)
     var aR = tA.getBoundingClientRect(), bR = tB.getBoundingClientRect();

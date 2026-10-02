@@ -4355,17 +4355,20 @@
       if (mainEl && mainEl.classList.contains('wm-opening')) {
         var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
         var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
-        // (THE NAME AS FAR FROM THE TOP AS FROM THE STRIP'S WORDS, at the
-        // user's words — "move the wordmark logo on initial load so top
-        // padding matches the bottom padding with nav bar"; "The Wordmark
-        // should be spaced from the top of the site on initial load the
-        // same distance from nav bar words": the air over the name is the
-        // air from its foot to the strip's words' cap top, the strip still
-        // on the window's foot, and 36 at least between the name and the
-        // strip — band-mark.js sets the air under, by window.__ncStripCap)
+        // (THE NAME'S INK AS FAR FROM THE TOP AS THE STRIP'S FROM THE FOOT,
+        // at the user's word — "The ink of the words should be the same
+        // distance from the top as the ink in the nav bar is from the
+        // bottom": the air over the name's caps is the air under the
+        // strip's words' baseline, the strip resting on the window's
+        // foot, the rest of the window between the two, never under 36 —
+        // band-mark.js sets that air under, window.__ncOpenUnder. It
+        // followed the middle of the window, then the strip's words, the
+        // same day)
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
-        var capIn = window.__ncStripCap ? window.__ncStripCap() : 0;
-        airWant = Math.max(36, Math.min((vh0 - stripH + capIn - inkH) / 2, vh0 - inkH - stripH - 36));
+        var sInk = window.__ncStripInk ? window.__ncStripInk() : null;
+        var footAir = sInk ? stripH - sInk.base : 36;
+        airWant = Math.max(0, Math.min(footAir, vh0 - inkH - stripH - 36));
+        window.__ncOpenUnder = Math.max(36, vh0 - airWant - inkH - stripH);
       }
       var have = si.capFlat - f.wb.top;
       if (Math.abs(airWant - have) > 0.05) {
