@@ -22867,7 +22867,8 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
    letters, over the cap and under the baseline ("Make stamp 18px taller
    and longer than letters"). The name's ink runs 36 from each side of
    the window ("Bring ink of wordmark to sit all the way 36px from
-   sides": MAST_SIDE_STAMP). On a phone, where the stamp is not shown,
+   sides": MAST_SIDE_STAMP) — 144 from 2026-10-02, the name sized down to
+   it ("Reduce sizes so wordmark edges are 144px from sides"). On a phone, where the stamp is not shown,
    the words stand 0.3 of their cap apart. */
 .site-nav--top .topbar-wordmark .topbar-name svg.tn-svg:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
   display: inline-block !important;

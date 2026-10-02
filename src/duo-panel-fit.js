@@ -3904,7 +3904,11 @@
   // (36 FROM EACH SIDE, 2026-10-02, at the user's word — "Bring ink of
   // wordmark to sit all the way 36px from sides": the stamp stands in the
   // name now, so the name's ink alone runs 36 to 36)
-  var MAST_SIDE_STAMP = 36;
+  // (144 FROM EACH SIDE, 2026-10-02, at the user's word — "Reduce sizes
+  // so wordmark edges are 144px from sides": the name sized down so its
+  // ink, THE's left to CRITIC's right, stands 144 from each edge, from
+  // 1024 up; the phone keeps WORDMARK_SIDE)
+  var MAST_SIDE_STAMP = 144;
   // THE BAND'S GARAMOND STANDS 72 OFF THE NAME'S INK (2026-09-23): the
   // head band's line under the masthead's THE NEW CRITIC and the
   // colophon's over the reprint's, ink to ink — the name's air is the 72
