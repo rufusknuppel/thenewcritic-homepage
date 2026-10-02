@@ -37,6 +37,16 @@ const STAMP = (() => {
 // (fitMastheadFill, band-mark.js). The block prints in currentColor, the stack's ink; the
 // bird is a hole, so it is always the ground the masthead stands on —
 // white on the light page, charcoal on the dark.
+// (THE STAMP PRINTED, 2026-10-01, at the user's word — "add a thin
+// texture and border around the stamp ... white border then another
+// black border", "almost smooth to the site when smaller": the drawing's
+// outer edge is a thin line of the ink, then a gap of the ground as wide
+// as the line ("white and black outer border should be same size"),
+// then the block, all inside the box the block had, so the stamp keeps
+// its seat; a filter in the drawing roughens every edge by a unit or so
+// and lets through only a few pinpoint specks of the ground, the ink
+// otherwise pure ("no texture inside", "minimal speckles, like are in
+// the bird"). One id, one stamp.)
 const BIRD_STAMP = (() => {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
   return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
