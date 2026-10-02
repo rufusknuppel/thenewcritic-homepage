@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=adf879c4">
+<link rel="stylesheet" href="style.css?v=c20445e5">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4094,7 +4094,7 @@
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
         var sInk = window.__ncStripInk ? window.__ncStripInk() : null;
         var footAir = sInk ? stripH - sInk.base : 36;
-        airWant = Math.max(0, Math.min(footAir, vh0 - inkH - stripH - 36));
+        airWant = Math.max(0, Math.min(footAir + 18, vh0 - inkH - stripH - 36));
         window.__ncOpenUnder = Math.max(36, vh0 - airWant - inkH - stripH);
       }
       var have = si.capFlat - f.wb.top;
