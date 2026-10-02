@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8634331e">
+<link rel="stylesheet" href="style.css?v=c7a4930e">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5615,6 +5615,7 @@
   }
   function fitAllSteps() {
     var seatLast = true;
+    if (window.__ncPullClear && !rowKAgain) window.__ncPullClear();
     step('resetPlateBody', resetPlateBody);
     step('fitStdWidth', fitStdWidth);
     step('clearTitleStep', function () {
@@ -5704,6 +5705,7 @@
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
     }
     if (!rowKAgain) step('reseatHalos', reseatHalos);
+    if (window.__ncPullApply && !rowKAgain) window.__ncPullApply();
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
