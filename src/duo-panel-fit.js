@@ -4343,9 +4343,23 @@
     // air is solved on the face's cap and the name seated again.)
     var si = stamp && nameInk();
     if (si) {
+      // (THE OPENING SCREEN, design/stacked-wordmark, at the user's word —
+      // "open with the band on the bottom and the wordmark/logo in the
+      // center of the site": where the page opens on the name
+      // (main.wm-opening), the air over the caps is half of what the
+      // window leaves after the name's ink and the strip, so the name
+      // stands centred in the first screen and the strip, 'that same air
+      // under the baseline, rests on the window's foot; never under 36)
+      var airWant = 36;
+      var mainEl = name.closest('main');
+      if (mainEl && mainEl.classList.contains('wm-opening')) {
+        var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+        var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
+        airWant = Math.max(36, (document.documentElement.clientHeight - stripH - (si.base - si.capFlat)) / 2);
+      }
       var have = si.capFlat - f.wb.top;
-      if (Math.abs(36 - have) > 0.05) {
-        AIR += 36 - have;
+      if (Math.abs(airWant - have) > 0.05) {
+        AIR += airWant - have;
         f = fill() || f;
       }
     }

@@ -3805,7 +3805,7 @@ function markMega(html) {
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
-    .replace('<main id="main">', '<main id="main" class="has-mega">');
+    .replace('<main id="main">', '<main id="main" class="has-mega wm-opening">');
 }
 
 // ---------- THREE COVERS HOLD THE PAGE, NOT TWENTY-THREE (2026-09-21) ----

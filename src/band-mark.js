@@ -552,3 +552,31 @@ document.addEventListener('click', function (e) {
     el.addEventListener('blur', off);
   });
 })();
+
+// THE STRIP'S ITEMS EASE OUT AS IT RISES (design/stacked-wordmark,
+// 2026-10-02, at the user's word — "When page opens, nav bar items should
+// be 144px from sides, then should relax to 72px as scrolling to top"):
+// where the page opens on the name (main.wm-opening), the strip rests on
+// the window's foot with its first and last words 144 from the sides, and
+// as it rides up to pin at the top they ease out to 72, in proportion to
+// how far it has come (--strip-side; style.css, THE OPENING SCREEN).
+(function () {
+  var main = document.querySelector('main.wm-opening');
+  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+  if (!main || !strip) return;
+  var root = document.documentElement, raf = 0, last = '';
+  var update = function () {
+    raf = 0;
+    // (its resting place on the page: the name's block and the air under it)
+    var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
+      + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
+    var p = rest > 0 ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
+    var v = (144 - 72 * p).toFixed(2) + 'px';
+    if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
+  };
+  var ask = function () { if (!raf) raf = requestAnimationFrame(update); };
+  ['scroll', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
+    addEventListener(ev, ask, { passive: true });
+  });
+  update();
+})();
