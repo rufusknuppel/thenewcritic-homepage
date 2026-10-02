@@ -131,6 +131,11 @@
       cover.push(cv);
     });
     cards = out.concat(cards.filter(function (c) { return out.indexOf(c) < 0; }));
+    // (not through the head strip, or the name and the bird settled in it,
+    // that stand over a picture as it passes under them: the hand is on
+    // the strip, not the picture — design/stacked-wordmark, 2026-10-02)
+    var top = lx >= 0 && document.elementFromPoint ? document.elementFromPoint(lx, ly) : null;
+    if (top && top.closest && top.closest('.page-rows > .head-rail, .site-nav--top')) { hide(); return; }
     for (var i = 0; i < cards.length && !hitCard; i++) {
       var card = cards[i];
       if (card.matches('.is-opening, .is-shutting')) continue;

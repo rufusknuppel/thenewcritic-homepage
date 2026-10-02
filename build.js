@@ -1626,7 +1626,9 @@ function navStrip() {
     // BIRD. Unseen everywhere else.)
     by('about') ? `<span class="sub-ticker-half sub-ticker-half--slot" aria-hidden="true" data-href="${escapeHtml(by('about').href)}"></span>` : '',
     dead('Store'),
-    dead('Events'),
+    // (ABOUT in EVENTS' place, design/stacked-wordmark, at the user's word —
+    // "Replace events with About")
+    link(by('about'), 'About'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
     // 2026-09-30; on 2026-10-01 it left for a chip in the window's corner,
     // became one circle there, and came back as that circle, the strip's
@@ -2896,7 +2898,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}${SITE_LINKS.find((l) => l.key === 'about') ? `<p class="tlm-open"><a href="${escapeHtml(SITE_LINKS.find((l) => l.key === 'about').href)}">The Last Magazine</a></p>` : ''}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
@@ -3238,7 +3240,10 @@ function renderFontGateScript() {
     // predates the dark default and is not a choice made against it.)
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
-    paint(chosen === 'light' ? 'light' : 'dark');
+    // (LIGHT IS THE DEFAULT on design/stacked-wordmark, at the user's word —
+    // "have default site color be white": the page stands on white, a
+    // reader's stored Dark kept)
+    paint(chosen === 'dark' ? 'dark' : 'light');
   } catch (e) {}
   // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
   // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from
