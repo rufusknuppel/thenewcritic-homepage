@@ -4367,7 +4367,10 @@
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
         var sInk = window.__ncStripInk ? window.__ncStripInk() : null;
         var footAir = sInk ? stripH - sInk.base : 36;
-        airWant = Math.max(0, Math.min(footAir, vh0 - inkH - stripH - 36));
+        // (to the bird's wing tip, not the letters' caps: "Use bird wing
+        // tip for the padding not word ink" — the bird's box is its ink,
+        // 18 over the caps)
+        airWant = Math.max(0, Math.min(footAir + 18, vh0 - inkH - stripH - 36));
         window.__ncOpenUnder = Math.max(36, vh0 - airWant - inkH - stripH);
       }
       var have = si.capFlat - f.wb.top;
