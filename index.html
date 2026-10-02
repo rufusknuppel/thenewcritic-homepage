@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=3f94fd85">
+<link rel="stylesheet" href="style.css?v=0b214312">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4039,7 +4039,7 @@
       for (var gk = 0; gk < 6; gk++) {
         var sc = nameInk();
         if (!sc) break;
-        var sh = sc.base - sc.capFlat;
+        var sh = sc.foot - sc.cap;
         stamp.style.height = sh.toFixed(2) + 'px';
         stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
         var r2 = sh * 438 / 488 + 36;
@@ -9273,7 +9273,7 @@ document.addEventListener('click', function (e) {
   var nm = document.querySelector('.site-nav--top .topbar-name');
   if (!main || !stack || !nm) return;
   var cv = null;
-  var inkOf = function (el) {
+  var inkOf = function (el, whole) {
     var rg = document.createRange(); rg.selectNodeContents(el);
     var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; })[0];
     if (!r) return null;
@@ -9285,14 +9285,14 @@ document.addEventListener('click', function (e) {
     var fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
     if (!(fa > 0)) return null;
     var base = r.top + (r.height - (fa + fd)) / 2 + fa;
-    var asc = el === nm ? cv.measureText('H').actualBoundingBoxAscent : m.actualBoundingBoxAscent;
+    var asc = el === nm && !whole ? cv.measureText('H').actualBoundingBoxAscent : m.actualBoundingBoxAscent;
     return { top: base - asc, base: base };
   };
   var seat = function () {
     if (!stack.offsetWidth) return;
     var host = stack.closest('.head-rail') || main;
     var stamp = stack.querySelector('.wm-bird');
-    var a0 = stamp && inkOf(nm);
+    var a0 = stamp && inkOf(nm, true);
     if (a0) {
       var cur0 = parseFloat(host.style.getPropertyValue('--stack-shift')) || 0;
       var want0 = cur0 + (a0.top - stamp.getBoundingClientRect().top);
