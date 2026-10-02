@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=0b214312">
+<link rel="stylesheet" href="style.css?v=24051742">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -3866,6 +3866,7 @@
     });
   }
   var WORDMARK_SIDE = 36; // (144 for an hour on the 22nd, on the content's line; the page's 72 after; 36 from the 23rd, halfway into the margins)
+  var MAST_SIDE_STAMP = 72;
   var bandInkCv = null;
   function navInkFoot(band) {
     if (!band) return null;
@@ -4090,7 +4091,8 @@
     if (stackEl) stackEl.style.removeProperty('right');
     var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
     var fill = function () {
-      return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R,
+      var side = stamp ? MAST_SIDE_STAMP : WORDMARK_SIDE;
+      return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: side, sizeSide: side, reserveRight: RESERVE_R,
         fixedGap: (gapEl ? parseFloat(gapEl.style.marginLeft) || 0 : 0) + (gap0 ? parseFloat(gap0.style.marginLeft) || 0 : 0) });
     };
     var f = fill();
@@ -5587,9 +5589,10 @@
         gapW = (gEl ? parseFloat(gEl.style.marginLeft) || 0 : 0) + (g0El ? parseFloat(g0El.style.marginLeft) || 0 : 0);
       }
       var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
-      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2);
+      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2) + ':' + (stampIn ? 1 : 0);
       if (wmKey === wmSizeKey) return;
-      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, fixedGap: gapW });
+      var wmSide = stampIn ? MAST_SIDE_STAMP : WORDMARK_SIDE;
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: wmSide, sizeSide: wmSide, reserveRight: reserve, fixedGap: gapW });
       wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });
