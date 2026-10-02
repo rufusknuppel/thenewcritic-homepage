@@ -57,8 +57,9 @@ const BIRD_STAMP = (() => {
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
 // masthead's THE NEW CRITIC is three vector words, each traced from the
 // printed lettering (Avenir Next Heavy at 93.5% width, tracked in, its
-// edges roughened and worn), the ink 5% thinner than the poster files'
-// (the stems 95 of the field's 300-pixel cap where they were 100). Each
+// edges roughened and worn), the ink thinner than the poster files' —
+// 5% at first, then 10% again ("Make ink another 10% thinner"): the
+// stems 85.6 of the field's 300-pixel cap where they were 100. Each
 // word's box is its ink across and the flat cap to the baseline down —
 // the round letters overshoot it, as they are drawn to — so the fitter
 // reads the name's ink off the boxes. The ink is currentColor, so the
