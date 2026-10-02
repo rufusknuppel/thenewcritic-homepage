@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=81b7a5cd">
+<link rel="stylesheet" href="style.css?v=3f94fd85">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -3164,13 +3164,14 @@
     var gap0 = name.querySelector('.tn-gap0'), tnThe = name.querySelector('.tn-the');
     if (!stamp || !gapEl || !tnNew || !tnCritic || !gap0 || !tnThe) {
       stamp = null;
-      if (gapEl) gapEl.style.width = '';
+      if (gapEl) gapEl.style.marginLeft = '';
       if (gap0) gap0.style.marginLeft = '';
     }
-    var RESERVE_R = stamp ? 0 : (stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0);
+    if (stackEl) stackEl.style.removeProperty('right');
+    var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
     var fill = function () {
       return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R,
-        fixedGap: (gapEl ? parseFloat(gapEl.style.width) || 0 : 0) + (gap0 ? parseFloat(gap0.style.marginLeft) || 0 : 0) });
+        fixedGap: (gapEl ? parseFloat(gapEl.style.marginLeft) || 0 : 0) + (gap0 ? parseFloat(gap0.style.marginLeft) || 0 : 0) });
     };
     var f = fill();
     if (!f) return;
@@ -3179,17 +3180,17 @@
         var sc = nameInk();
         if (!sc) break;
         var sh = sc.base - sc.capFlat;
-        var shOld = parseFloat(stamp.style.height) || 0;
         stamp.style.height = sh.toFixed(2) + 'px';
         stamp.style.width = (sh * 438 / 488).toFixed(2) + 'px';
-        var wantGap = sh * 438 / 488 + 72;
+        var r2 = sh * 438 / 488 + 36;
         var i0 = inkSpanOf(tnThe), ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
         if (!i0 || !ia || !ib) break;
-        var gErr = wantGap - (ib.left - ia.right);
         var g0Err = 36 - (ia.left - i0.right);
-        if (Math.abs(gErr) <= 0.1 && Math.abs(g0Err) <= 0.1 && Math.abs(sh - shOld) <= 0.05) break;
-        gapEl.style.width = Math.max(0, (parseFloat(gapEl.style.width) || 0) + gErr).toFixed(2) + 'px';
+        var g1Err = 36 - (ib.left - ia.right);
+        if (Math.abs(g0Err) <= 0.1 && Math.abs(g1Err) <= 0.1 && Math.abs(r2 - RESERVE_R) <= 0.1) break;
         gap0.style.marginLeft = ((parseFloat(gap0.style.marginLeft) || 0) + g0Err).toFixed(2) + 'px';
+        gapEl.style.marginLeft = ((parseFloat(gapEl.style.marginLeft) || 0) + g1Err).toFixed(2) + 'px';
+        RESERVE_R = r2;
         f = fill() || f;
       }
     }
@@ -3210,14 +3211,6 @@
         f = fill() || f;
       }
     }
-    if (stamp) {
-      var ia2 = inkSpanOf(tnNew);
-      var host = stackEl.offsetParent;
-      if (ia2 && host) {
-        var hr = host.getBoundingClientRect();
-        stackEl.style.setProperty('right', (hr.right - (ia2.right + 36 + stamp.getBoundingClientRect().width)).toFixed(2) + 'px', 'important');
-      }
-    } else if (stackEl) stackEl.style.removeProperty('right');
     varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
     var wb = f.wb, inkBottom = f.inkBottom;
     var band = document.querySelector('.dek-band--masthead');
@@ -4671,9 +4664,9 @@
       var stampIn = stackEl && stackEl.offsetWidth && stackEl.querySelector('.wm-bird');
       if (stampIn && name) {
         var gEl = name.querySelector('.tn-gap'), g0El = name.querySelector('.tn-gap0');
-        gapW = (gEl ? parseFloat(gEl.style.width) || 0 : 0) + (g0El ? parseFloat(g0El.style.marginLeft) || 0 : 0);
+        gapW = (gEl ? parseFloat(gEl.style.marginLeft) || 0 : 0) + (g0El ? parseFloat(g0El.style.marginLeft) || 0 : 0);
       }
-      var reserve = stampIn ? 0 : (stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0);
+      var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
       var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2);
       if (wmKey === wmSizeKey) return;
       if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, fixedGap: gapW });
