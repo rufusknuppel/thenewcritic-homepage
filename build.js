@@ -43,10 +43,12 @@ const STAMP = (() => {
 // outer edge is a thin line of the ink, then a gap of the ground as wide
 // as the line ("white and black outer border should be same size"),
 // then the block, all inside the box the block had, so the stamp keeps
-// its seat; a filter in the drawing roughens every edge by a unit or so
-// and lets through only a few pinpoint specks of the ground, the ink
-// otherwise pure ("no texture inside", "minimal speckles, like are in
-// the bird"). One id, one stamp.)
+// its seat; a filter in the drawing roughens every edge by a unit or so,
+// and the ink is otherwise pure ("no texture inside") but for five
+// specks of the ground cut in by hand, each one of the bird's own speck
+// shapes, set in the clear ground away from the bird ("specks should be
+// as big as the ones in the bird, and there should only be 5"). One
+// id, one stamp.)
 const BIRD_STAMP = (() => {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
   return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
