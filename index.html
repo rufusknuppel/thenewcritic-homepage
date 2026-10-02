@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=c29ceaa4">
+<link rel="stylesheet" href="style.css?v=2e69833b">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -9439,32 +9439,6 @@ window.__ncStripSide = function () { return 144; };
     addEventListener(ev, ask, { passive: true });
   });
   update();
-})();
-(function () {
-  var main = document.querySelector('main.wm-opening');
-  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-  if (!main || !strip) return;
-  var layer = document.createElement('span');
-  layer.className = 'band-specks';
-  layer.setAttribute('aria-hidden', 'true');
-  strip.insertBefore(layer, strip.firstChild);
-  var lastW = 0;
-  var draw = function () {
-    var w = document.documentElement.clientWidth;
-    if (w === lastW) return;
-    lastW = w;
-    var seed = 7;
-    var rnd = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
-    var n = Math.round(w * 144 / 6000), html = '';
-    for (var i = 0; i < n; i++) {
-      var x = rnd() * w, y = rnd() * 100, d = 2 + rnd() * 2, e = 0.7 + rnd() * 0.6, r = Math.round(rnd() * 180);
-      var br = [0, 0, 0, 0].map(function () { return Math.round(35 + rnd() * 30) + '%'; }).join(' ');
-      html += '<i style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(2) + '%;width:' + d.toFixed(2) + 'px;height:' + (d * e).toFixed(2) + 'px;border-radius:' + br + ';transform:translate(-50%,-50%) rotate(' + r + 'deg)"></i>';
-    }
-    layer.innerHTML = html;
-  };
-  draw();
-  addEventListener('resize', draw);
 })();
 window.__ncStripInk = function () {
   var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
