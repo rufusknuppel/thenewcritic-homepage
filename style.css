@@ -22961,3 +22961,26 @@ main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird .
   fill: currentColor !important;
 }
 /* (THE STAMP TURNED OVER ends) */
+
+/* ---------- THE BIRD ALONE (2026-10-02) ----------
+   At the user's words ("make it so the bird is 18px bigger on either side
+   of the letters and make the letters space evenly with new padding (so
+   separate bird from stamp background altogether)"; "keep speckles. And
+   spread those throughout the whole wordmark"): the stamp is the swallow
+   alone, its drawing cropped to the bird's own ink (assets/bird-stamp.svg,
+   323.28 by 340.76) — no block behind it — so the bird's ink stands 18
+   over the letters' cap and 18 under their baseline, and NEW to the bird
+   and the bird to CRITIC are 36 of ink (fitMastheadFill reads the drawing's
+   proportion off its viewBox). The specks the block carried print in
+   the ink across the whole name, three times the five at the user's word
+   ("3x the amount of speckles") — two by the bird, three in THE, four in
+   NEW, six in CRITIC, in proportion to their widths — each in clear
+   ground, the bird's own five speck shapes in turn, every other one
+   mirrored, at the bird's own size. (Supersedes THE STAMP TURNED OVER: its two
+   layers are gone with the block.) */
+@media (min-width: 1024px){
+  main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    aspect-ratio: 323.28 / 340.76;
+  }
+}
+/* (THE BIRD ALONE ends) */

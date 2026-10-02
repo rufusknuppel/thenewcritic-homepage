@@ -54,6 +54,10 @@ const STAMP = (() => {
 // gap are struck, the block takes the page's ground and an ink layer
 // under it shows through the bird and the specks: style.css, THE STAMP
 // TURNED OVER)
+// (THE BIRD ALONE, 2026-10-02: "separate bird from stamp background
+// altogether" — the drawing is the swallow only, cropped to its ink, with
+// two of the fifteen specks by it; the other thirteen are in the name's
+// words: style.css, THE BIRD ALONE)
 const BIRD_STAMP = (() => {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
   return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
