@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8b7c89ce">
+<link rel="stylesheet" href="style.css?v=e9a0a315">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4152,7 +4152,8 @@
         var stripEl = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
         var stripH = stripEl ? stripEl.getBoundingClientRect().height : 36;
         var vh0 = document.documentElement.clientHeight, inkH = si.base - si.capFlat;
-        airWant = Math.max(36, Math.min((vh0 - inkH) / 2, vh0 - inkH - stripH - 36));
+        var capIn = window.__ncStripCap ? window.__ncStripCap() : 0;
+        airWant = Math.max(36, Math.min((vh0 - stripH + capIn - inkH) / 2, vh0 - inkH - stripH - 36));
       }
       var have = si.capFlat - f.wb.top;
       if (Math.abs(airWant - have) > 0.05) {
