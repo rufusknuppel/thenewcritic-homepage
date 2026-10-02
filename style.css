@@ -22894,36 +22894,9 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
 }
 /* (THE NAME IN THE KOSUTH LETTERING ends) */
 
-/* ---------- THE LAST MAGAZINE IN THE DEK'S GARAMOND (2026-10-02) ----------
-   At the user's word ("turn The Last Magazine to Garamond dek styling in
-   the band"): in the strip, The Last Magazine leaves the Helvetica
-   capitals for the dek's own type — the Garamond italic at the dek's
-   20, as written, untracked — in the strip's ink like its neighbours,
-   and turning with them under the hand. */
-html main.has-mega .sub-ticker--nav a.sub-ticker-half--dek b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  font-family: garamond-premier-pro, "Playfair Display", Georgia, serif !important;
-  font-style: italic !important;
-  font-weight: 400 !important;
-  font-size: 20px !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
-  font-synthesis: none !important;
-  /* (its capitals centred where its neighbours' are: the italic's sit
-     0.61 high in the strip's line, 1.37 under 1024 — read off both
-     faces' own bounds) */
-  position: relative !important;
-  top: 0.61px !important;
-}
-/* (under 1024, where the strip's capitals step down to 11, the italic
-   steps down to 16, as the strip's Garamond did — six words across a
-   phone) */
-@media (max-width: 1023.98px){
-  html main.has-mega .sub-ticker--nav a.sub-ticker-half--dek b:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    font-size: 16px !important;
-    top: 1.37px !important;
-  }
-}
-/* (THE LAST MAGAZINE IN THE DEK'S GARAMOND ends) */
+/* (THE LAST MAGAZINE IN THE DEK'S GARAMOND, 2026-10-02, struck the same
+   day at the user's word — "Move the Last Magazine back to helvetica":
+   it reads in the strip's Helvetica capitals with its neighbours again) */
 
 /* ---------- THE STAMP AND THE NAME LIGHT TOGETHER (2026-10-02) ----------
    At the user's word ("have stamp and wordmark hover together"): a hand

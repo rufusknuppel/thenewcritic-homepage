@@ -1605,11 +1605,11 @@ function navStrip() {
     // About link reads THE LAST MAGAZINE in the strip's capitals, black
     // like its neighbours — "Actually the last magazine should also be
     // black" — after a minute in white)
-    // (IN THE DEK'S GARAMOND, 2026-10-02, at the user's word — "turn The
-    // Last Magazine to Garamond dek styling in the band": the italic, at
-    // the dek's size, as written — style.css, THE LAST MAGAZINE IN THE
-    // DEK'S GARAMOND)
-    link(by('about'), 'The Last Magazine', 'sub-ticker-half--dek'),
+    // (IN THE DEK'S GARAMOND for an hour on 2026-10-02 — "turn The Last
+    // Magazine to Garamond dek styling in the band" — then back in the
+    // strip's Helvetica capitals at the user's word: "Move the Last
+    // Magazine back to helvetica")
+    link(by('about'), 'The Last Magazine'),
     dead('Store'),
     dead('Events'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
