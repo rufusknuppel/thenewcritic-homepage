@@ -3985,11 +3985,6 @@
     if (edge === 'bottom') return isFinite(lo) ? br.bottom - lo : 0;
     return isFinite(hi) ? hi - br.top : 0;
   }
-  // The bird's box beside the masthead's name: its width over its height
-  // (assets/bird-box-knockout.svg, 438 x 488) and the air between its
-  // right edge and the name's ink, as a share of the name's cap — 36 at
-  // 1440, where the cap is 106.
-  var BIRD_BOX_RATIO = 438 / 488, MARK_GAP = 0.34;
   function fillNameBand(name, wm, opts) {
     if (!name || !wm) return null;
     var maxSize = (opts && opts.maxSize) || 0;
@@ -4032,25 +4027,12 @@
     var w0 = i0.right - i0.left;
     if (!(w0 > 0)) return;
     var fitted = s0 * vwSize / w0;
-    // (THE BIRD'S BOX AT THE LEFT, 2026-10-01: opts.markLeft is the box's
-    // width over its height. It stands cap top to baseline, MARK_GAP of
-    // a cap clear of the ink, so the room it takes is a share of the
-    // face's cap at whatever size the name takes — the name is sized to
-    // the measure less that room, solved in one step, the cap read off
-    // the canvas 'H' in the name's own face as nameInk reads it.)
-    var leftRoom = 0;
-    var markLeft = opts && opts.markLeft > 0 ? opts.markLeft : 0;
-    if (markLeft) {
-      bandInkCv = bandInkCv || document.createElement('canvas').getContext('2d');
-      var mcs = getComputedStyle(name);
-      bandInkCv.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' 100px ' + mcs.fontFamily;
-      var capPer = bandInkCv.measureText('H').actualBoundingBoxAscent / 100;
-      if (capPer > 0) {
-        var per = (markLeft + MARK_GAP) * capPer;
-        fitted = vwSize / (w0 / s0 + per);
-        leftRoom = per * fitted;
-      }
-    }
+    // (A GAP OF FIXED WIDTH IN THE NAME, 2026-10-01: opts.fixedGap, the
+    // px of the masthead's spacer between NEW and CRITIC, where the stamp
+    // stands — it does not grow with the size, so only the letters are
+    // scaled to the measure less it)
+    var FG = opts && opts.fixedGap > 0 && opts.fixedGap < w0 ? opts.fixedGap : 0;
+    if (FG) fitted = s0 * (vwSize - FG) / (w0 - FG);
     var capped = maxSize > 0 && fitted > maxSize;
     if (capped) fitted = maxSize;
     name.style.fontSize = fitted.toFixed(3) + 'px';
@@ -4074,7 +4056,7 @@
     // under it — instead of centred.
     var headL = headLeftOf(wm);
     var inkAt = headL != null ? wb.left + headL
-      : RESERVE || leftRoom ? wb.left + SIZE_SIDE + leftRoom
+      : RESERVE ? wb.left + SIZE_SIDE
       : wb.left + (wb.width - ink1) / 2;
     name.style.transform = 'translateX(' + (inkAt - i1.left).toFixed(2) + 'px)';
     // THE CAP OFF THE PAINTED GLYPHS, not a cap model: Placard's caps
@@ -4227,11 +4209,39 @@
     // (THE LAST MAGAZINE BESIDE THE NAME, 2026-10-01: its stack at the
     // right, the name's ink 36 short of it — where the stack stands)
     var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
-    var RESERVE_R = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
-    var bird = wm.querySelector('.wm-bird');
-    var BIRD_L = bird ? BIRD_BOX_RATIO : 0;
-    var f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R, markLeft: BIRD_L });
+    // THE STAMP BETWEEN THE NEW AND CRITIC (2026-10-01, at the user's
+    // word — "Put the stamp between THE NEW and CRITIC"; before it, "Set
+    // 36px from top bottom side and wordmark", "Taller masthead"): the
+    // stack is the stamp now — The Last, the bird's block, Magazine, a
+    // fixed 91 x 146.61 (assets/bird-stamp.svg) — and it stands in the
+    // name, 36 from NEW's ink and 36 from CRITIC's. The name spans the
+    // measure again, the spacer between the words (.tn-gap) holding the
+    // stamp and its two 36s at a fixed width the size is not scaled by.
+    var stamp = stackEl && stackEl.offsetWidth ? stackEl.querySelector('.wm-bird') : null;
+    var gapEl = name.querySelector('.tn-gap');
+    var tnNew = name.querySelector('.tn-new'), tnCritic = name.querySelector('.tn-critic');
+    if (!stamp || !gapEl || !tnNew || !tnCritic) { stamp = null; if (gapEl) gapEl.style.width = ''; }
+    var RESERVE_R = stamp ? 0 : (stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0);
+    var fill = function () {
+      return fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R,
+        fixedGap: gapEl ? parseFloat(gapEl.style.width) || 0 : 0 });
+    };
+    var f = fill();
     if (!f) return;
+    // (the spacer to the width that leaves the stamp's 36 to each word's
+    // ink — read off the words' own ink, the face's bearings and the word
+    // space included, and the name filled again on it)
+    if (stamp) {
+      var wantGap = stamp.getBoundingClientRect().width + 72;
+      for (var gk = 0; gk < 4; gk++) {
+        var ia = inkSpanOf(tnNew), ib = inkSpanOf(tnCritic);
+        if (!ia || !ib) break;
+        var gErr = wantGap - (ib.left - ia.right);
+        if (Math.abs(gErr) <= 0.1) break;
+        gapEl.style.width = Math.max(0, (parseFloat(gapEl.style.width) || 0) + gErr).toFixed(2) + 'px';
+        f = fill() || f;
+      }
+    }
     // (…to the pixel: the band's top is the feet rounded UP to a whole
     // pixel, which adds that fraction to the air under the name; the air
     // over the caps is given the same fraction. The fill seats the caps
@@ -4243,23 +4253,35 @@
       var air2 = INSET - e + (Math.ceil(z) - z) / 2;
       if (Math.abs(air2 - AIR) > 0.05) {
         AIR = air2;
-        f = fillNameBand(name, wm, { air: AIR, airBottom: AIR_B, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: RESERVE_R, markLeft: BIRD_L }) || f;
+        f = fill() || f;
       }
     }
+    // (THE MASTHEAD HOLDS THE STAMP: its ink 36 under the window's top
+    // and 36 over the yellow strip. The strip pins under the baseline the
+    // air the caps keep over them (band-mark.js, --wm-under), so where
+    // the name's own air is less than (stamp + 72 - cap) / 2 it grows to
+    // that, over the caps and under the feet alike, and the name is
+    // seated again on it. band-mark.js seats the stamp's top.)
+    var si = stamp && nameInk();
+    if (si) {
+      var need = (stamp.getBoundingClientRect().height + 72 - (si.base - si.capFlat)) / 2;
+      var have = si.capFlat - f.wb.top;
+      if (need - have > 0.05) {
+        AIR += need - have;
+        f = fill() || f;
+      }
+    }
+    // (and across: its left edge 36 past NEW's ink)
+    if (stamp) {
+      var ia2 = inkSpanOf(tnNew);
+      var host = stackEl.offsetParent;
+      if (ia2 && host) {
+        var hr = host.getBoundingClientRect();
+        stackEl.style.setProperty('right', (hr.right - (ia2.right + 36 + stamp.getBoundingClientRect().width)).toFixed(2) + 'px', 'important');
+      }
+    } else if (stackEl) stackEl.style.removeProperty('right');
     varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
     var wb = f.wb, inkBottom = f.inkBottom;
-    // THE BIRD'S BOX, seated on the name's flat cap and its baseline,
-    // WORDMARK_SIDE in from the window's edge (the room fillNameBand
-    // kept for it at the name's left).
-    var bi = bird && nameInk();
-    if (bi) {
-      var bh = bi.base - bi.capFlat;
-      bird.style.left = WORDMARK_SIDE.toFixed(2) + 'px';
-      bird.style.top = (bi.capFlat - wb.top).toFixed(2) + 'px';
-      bird.style.height = bh.toFixed(2) + 'px';
-      bird.style.width = (bh * BIRD_BOX_RATIO).toFixed(2) + 'px';
-      bird.classList.add('is-seated');
-    }
     // The block ends ON the ink's foot, one pixel of allowance under
     // it, so the letters print whole: the band and the page are the
     // same ground now, so nothing is gained by cutting the feet.
@@ -6894,12 +6916,18 @@
       // reserved at the right — or the stamp read one size here and
       // another at the fit event, and asked for a pass without end)
       var stackEl = document.querySelector('.page-rows > .head-rail .wm-stack');
-      var reserve = stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0;
+      // (the stamp between the words takes no room at the right: the
+      // name's spacer holds it, a fixed width — THE STAMP BETWEEN THE
+      // NEW AND CRITIC, fitMastheadFill)
+      var gapW = 0;
+      var stampIn = stackEl && stackEl.offsetWidth && stackEl.querySelector('.wm-bird');
+      if (stampIn && name) { var gEl = name.querySelector('.tn-gap'); gapW = gEl ? parseFloat(gEl.style.width) || 0 : 0; }
+      var reserve = stampIn ? 0 : (stackEl && stackEl.offsetWidth ? stackEl.getBoundingClientRect().width + 36 : 0);
       // (its size is the width's and the stack's alone: the second run
       // of a pass has nothing to find, and the ink scan is spared)
-      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2);
+      var wmKey = fitPassId + ':' + window.innerWidth + ':' + reserve.toFixed(2) + ':' + gapW.toFixed(2);
       if (wmKey === wmSizeKey) return;
-      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, markLeft: wm.querySelector('.wm-bird') ? BIRD_BOX_RATIO : 0 });
+      if (name && wm) fillNameBand(name, wm, { sizeOnly: true, side: WORDMARK_SIDE, sizeSide: WORDMARK_SIDE, reserveRight: reserve, fixedGap: gapW });
       wmSizeKey = wmKey;
       if (window.__ncWmSize) window.__ncWmSize();
     });

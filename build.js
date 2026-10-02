@@ -28,18 +28,20 @@ const STAMP = (() => {
   const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
   return { viewBox, inner };
 })();
-// THE BIRD IN ITS BOX BESIDE THE NAME (2026-10-01, at the user's word):
-// the swallow traced from the print, cut out of a 4.5:5 rough-edged
-// block (assets/bird-box-knockout.svg, one even-odd path), stated
-// inline at the masthead's left. The block prints in currentColor, the
-// name's ink; the bird is a hole, so it is always the ground the name
-// stands on — white on the light page, charcoal on the dark. Sized and
-// seated by fitMastheadFill: cap top to baseline, 36 in from the edge.
-const BIRD_BOX = (() => {
-  const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-box-knockout.svg'), 'utf8');
-  const viewBox = (svg.match(/viewBox="([^"]+)"/) || [])[1] || '0 0 1 1';
-  const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '').trim();
-  return { viewBox, inner };
+// THE STAMP BESIDE THE NAME (2026-10-01, at the user's word): the
+// swallow traced from the print, cut out of its rough-edged 4.5:5 block,
+// with The Last over it and Magazine under it at 18 in the dek's Garamond
+// italic, each stretched to the block's 91 (assets/bird-stamp.svg, one
+// svg). It stands at the name's right in THE LAST MAGAZINE stack's place
+// (it stood at the name's left for an afternoon), 36 from the window's
+// top, its right edge and the name's ink, and 36 over the yellow strip:
+// the air over and under the name grows to hold it (fitMastheadFill,
+// band-mark.js). The block prints in currentColor, the stack's ink; the
+// bird is a hole, so it is always the ground the masthead stands on —
+// white on the light page, charcoal on the dark.
+const BIRD_STAMP = (() => {
+  const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
+  return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
 })();
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
@@ -1320,8 +1322,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <svg class="wm-bird" viewBox="${BIRD_BOX.viewBox}" overflow="visible" aria-hidden="true" focusable="false">${BIRD_BOX.inner}</svg>
-    <span class="topbar-name">The <span class="tn-new">New</span> Critic</span>
+    <span class="topbar-name">The <span class="tn-new">New</span><span class="tn-gap" aria-hidden="true"></span> <span class="tn-critic">Critic</span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
@@ -2825,7 +2826,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page"><span>The</span><span>Last</span><span>Magazine</span></a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The Last Magazine — to the top of the front page">${BIRD_STAMP}</a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the

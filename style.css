@@ -22751,39 +22751,63 @@ main.has-mega .duo-half--mega .cover-meta--cdate .cover-kicker:is(*, .r.r.r.r.r.
 }
 /* (THE COMMA BETWEEN DATE AND AUTHOR ends) */
 
-/* ---------- THE BIRD IN ITS BOX BESIDE THE NAME (2026-10-01) ----------
-   At the user's word ("Upload to the left of the wordmark on the site,
-   with bird matching background depending on light/dark mode"): the
-   swallow cut out of its rough-edged 4.5:5 block stands at the
-   masthead's left, 36 in from the window's edge, cap top to baseline of
-   THE NEW CRITIC, the name sized to the room after it (fitMastheadFill,
-   BIRD_BOX_RATIO and MARK_GAP in duo-panel-fit.js). The block prints in
-   the name's ink and lights with it under the hand; the bird is a hole
-   in it, so it is the masthead's own ground in either mode — white on
-   the light page, charcoal on the dark. Hidden until the fitter has
-   seated it, so it never shows at the inline size in the flow. It takes
-   the pointer (the link gives it up to .ops-hit), so it is the name's
-   link too. */
-.site-nav--top .topbar-wordmark > .wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  position: absolute !important;
-  display: block !important;
-  visibility: hidden;
-  color: var(--k) !important;
-  pointer-events: auto !important;
-  overflow: visible !important;
-  transition: none !important;
-  /* (ONLY THE BOX LIGHTS, 2026-10-01, at the user's word — "On hover
-     only the background of the stamp should go yellow": the links'
-     hover paints every descendant's ground --yves, and on the stamp
-     that filled the bird's hole, so the whole stamp went yellow. The
-     svg keeps no ground; the box takes the yellow, the bird stays the
-     masthead's ground.) */
-  background: transparent !important;
+/* ---------- THE STAMP IN THE STACK'S PLACE (2026-10-01) ----------
+   At the user's word ("move the stamp ... all to the right of the
+   wordmark"; "Set 36px from top bottom side and wordmark" — the stamp,
+   not the text; "Expand stamp so that text can be 18px and stretch side
+   to side"; "Revert stamp shape and move letters above/below stamp"):
+   THE LAST MAGAZINE's three lines give way to one column — The Last,
+   the stamp, Magazine — drawn as one svg (assets/bird-stamp.svg,
+   build.js): the swallow cut out of its rough-edged 4.5:5 block, 91
+   across, and the two lines over and under it at 18 in the dek's
+   Garamond italic, each stretched to the block's width, 8 of air
+   between their ink and the block. The column stands 36 from the
+   window's top and right edge, 36 over the yellow strip and 36 clear of
+   the name's ink: the air over and under the name grows to hold it
+   ("Taller masthead": fitMastheadFill), band-mark.js seats it. The
+   block is the stack's ink and lights under the hand; the bird is a
+   hole, so it is the masthead's ground in either mode. The letters keep
+   the stack's resting ink, and the links' hover paints every
+   descendant's ground (--yves) — the svg keeps none — so only the block
+   goes yellow ("On hover only the background of the stamp should go
+   yellow"). (Supersedes THE BIRD IN ITS BOX BESIDE THE NAME, the stamp
+   at the name's left.) */
+@media (min-width: 1024px){
+  main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    display: block !important;
+    flex: none !important;
+    width: 91px !important;
+    height: 146.61px !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    pointer-events: auto;
+    cursor: pointer;
+    color: inherit !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transition: none !important;
+  }
+  main.has-mega .page-rows > .head-rail > .rail-stack > a.wm-stack > svg.wm-bird > .wm-bird-line:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    fill: var(--wm-ink, #FFFFFF) !important;
+    background: transparent !important;
+  }
 }
-.site-nav--top .topbar-wordmark > .wm-bird.is-seated:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  visibility: visible;
+/* (THE STAMP BETWEEN THE NEW AND CRITIC, 2026-10-01, at the user's
+   word — "smooth edges of the SVG. Put the stamp between THE NEW and
+   CRITIC": the block's edges are straight now, and the column stands in
+   the name, 36 from NEW's ink and 36 from CRITIC's, the name spanning
+   the measure again. The spacer between the words holds it — no ink, no
+   height, its width the fitter's (fitMastheadFill); none on the phone,
+   where the stack is not shown.) */
+.site-nav--top .topbar-name .tn-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  display: inline-block !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: baseline !important;
+  background: none !important;
 }
-.site-nav--top .topbar-wordmark:is(:hover, :focus-visible, :focus-within, .is-cued) > .wm-bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  color: var(--nc-banana, #FFE135) !important;
+@media (max-width: 1023.98px){
+  .site-nav--top .topbar-name .tn-gap:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ width: 0 !important; }
 }
-/* (THE BIRD IN ITS BOX BESIDE THE NAME ends) */
+/* (THE STAMP IN THE STACK'S PLACE ends) */
