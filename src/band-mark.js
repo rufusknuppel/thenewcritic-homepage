@@ -670,7 +670,8 @@ window.__ncStripInk = function () {
   // (the bird three quarters of the strip's height, an eighth of it over
   // and under: 108 in 144 — "I want bird to be bigger in band", 2026-10-02,
   // where it was 72 — and 81 in 108 once the strip is a quarter less: "I
-  // want the band to be 25% smaller")
+  // want the band to be 25% smaller"), 54 in 72 once it is 72 again ("Set
+  // the band to 72px")
   // (THE LAST and MAGAZINE tuck into the bird, 11 from its ink where they
   // stand rather than 18 from its box: "I also want The Last Magazine to
   // kind of tuck into the bird, especially Magazine", 2026-10-02, then "a
