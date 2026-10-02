@@ -4404,7 +4404,9 @@
       // The shared scratch context (it only ever measures, and every
       // hand states its font first), not a canvas per end: this runs
       // twice for every name and line the page seats.
-      measureCtx.font = hcs.fontWeight + ' ' + hcs.fontSize + ' ' + hcs.fontFamily;
+      // (in its style too: an italic's bearings are not its roman's —
+      // the masthead's name went to the Garamond italic, 2026-10-01)
+      measureCtx.font = hcs.fontStyle + ' ' + hcs.fontWeight + ' ' + hcs.fontSize + ' ' + hcs.fontFamily;
       var m2 = measureCtx.measureText(ch);
       return { ls: parseFloat(hcs.letterSpacing) || 0, left: m2.actualBoundingBoxLeft || 0,
                rightGap: m2.width - m2.actualBoundingBoxRight };
