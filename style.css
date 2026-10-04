@@ -23594,7 +23594,12 @@ html body main.has-mega .sub-ticker--nav .sub-ticker-half:is(*, .r.r.r.r.r.r.r.r
     --rows-h: calc(100svh - var(--strip-settled, 108px) - 108px - var(--card-words, 0px)) !important;
   }
   html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .wrap > .card--mega:is(.card--row-a, .card--row-b):not(.card--row-big):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    --pair-h: min(calc(100svh - var(--strip-settled, 108px) - 108px - var(--card-words, 0px)), calc((var(--stack-w) - 36px) / 1.8));
+    /* (held between the postscript at 4:5 and the postscript square: on a
+       short window the window's height would have made the review narrow,
+       its title run to more lines, the words deeper and the row shorter
+       again, until the pair fell in on itself and its words stood off its
+       pictures — "This row is misaligned", 2026-10-04) */
+    --pair-h: clamp(calc((var(--stack-w) - 36px) / 2), calc(100svh - var(--strip-settled, 108px) - 108px - var(--card-words, 0px)), calc((var(--stack-w) - 36px) / 1.8));
     --rows-h: var(--pair-h) !important;
     --row-wb: var(--pair-h) !important;
     --row-wa: calc(var(--stack-w) - 36px - var(--pair-h)) !important;
