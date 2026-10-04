@@ -220,10 +220,16 @@
     if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
     var h = co.offsetHeight || 1;
     var pr = Math.max(0, Math.min(1, (window.innerHeight - co.getBoundingClientRect().top) / h));
-    var v = pr.toFixed(4);
+    // (the fade first, over the colophon's first half, and the words spread
+    // only once it is done, over the second — "Fade should occur before
+    // words start moving, by the end of the colophon")
+    var fade = Math.min(1, pr / FADE_SHARE), spread = Math.max(0, (pr - FADE_SHARE) / (1 - FADE_SHARE));
+    var v = spread.toFixed(4), vf = fade.toFixed(4);
     if (st.style.getPropertyValue('--colo-p') !== v) st.style.setProperty('--colo-p', v);
-    st.classList.toggle('is-giving', pr > 0.5);
+    if (st.style.getPropertyValue('--colo-fade') !== vf) st.style.setProperty('--colo-fade', vf);
+    st.classList.toggle('is-giving', fade > 0.5);
   };
+  var FADE_SHARE = 0.5;
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
