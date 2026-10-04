@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d91bf738">
+<link rel="stylesheet" href="style.css?v=28b04062">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -9938,10 +9938,13 @@ window.__ncStripInk = function () {
     if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
     var h = co.offsetHeight || 1;
     var pr = Math.max(0, Math.min(1, (window.innerHeight - co.getBoundingClientRect().top) / h));
-    var v = pr.toFixed(4);
+    var fade = Math.min(1, pr / FADE_SHARE), spread = Math.max(0, (pr - FADE_SHARE) / (1 - FADE_SHARE));
+    var v = spread.toFixed(4), vf = fade.toFixed(4);
     if (st.style.getPropertyValue('--colo-p') !== v) st.style.setProperty('--colo-p', v);
-    st.classList.toggle('is-giving', pr > 0.5);
+    if (st.style.getPropertyValue('--colo-fade') !== vf) st.style.setProperty('--colo-fade', vf);
+    st.classList.toggle('is-giving', fade > 0.5);
   };
+  var FADE_SHARE = 0.5;
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
