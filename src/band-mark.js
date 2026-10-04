@@ -616,10 +616,11 @@ window.__ncStripSide = function () { return 72; };
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     var p = rest > 0 && !main.classList.contains('wm-banded') ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
-    // (36 where the page opens on the band: the name and THE LAST
-    // MAGAZINE 36 from the sides — "The edge of the last magazine should
-    // stretch to 36px from side")
-    var v = (main.classList.contains('wm-banded') ? 36 : window.__ncStripSide(p)).toFixed(2) + 'px';
+    // (72 where the page opens on the band: the bird and THE LAST
+    // MAGAZINE 72 from the sides — 36 for a while, "The edge of the last
+    // magazine should stretch to 36px from side", then "Move bird to start
+    // 72px from side" / "Same with the last magazine")
+    var v = (main.classList.contains('wm-banded') ? 72 : window.__ncStripSide(p)).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };
