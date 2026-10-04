@@ -2894,9 +2894,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       rowsMade++;
     }
   }
-  // THE LATEST'S RAIL: the magazine's line in the dek's Garamond, THE
-  // LATEST ON in the meta's Work Sans, and under it the kickers of the
-  // most recent posts of every kind, newest first, each to its post.
+  // THE LATEST'S RAIL: THE LATEST in the meta's Work Sans, and under it
+  // the kickers of the most recent posts of every kind, newest first,
+  // each to its post — and under each kicker its writer in the dek's
+  // Garamond italic, "by" them, or "w/" them for a postscript (a
+  // conversation): at the user's word, 2026-10-04 ("I want The Latest to
+  // just say THE LATEST, then after the kicker, a garamond dek italics
+  // with by Author or w/ Author for postscripts").
   const RAIL_KICKERS = 6;
   const seenKick = new Set();
   // (a post with no kicker stands by its title — content-overrides.js
@@ -2908,8 +2912,11 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     .filter((p) => { const k = railWord(p).toLowerCase(); if (seenKick.has(k)) return false; seenKick.add(k); return true; })
     .slice(0, RAIL_KICKERS);
   const latestRailHtml = `\n  <aside class="latest-rail" aria-label="The latest"><div class="latest-rail__hold"><div class="latest-rail__in">`
-    + `<p class="latest-rail__meta">The Latest On</p>`
-    + `<ul class="latest-rail__list">${railPosts.map((p) => `<li><a href="${escapeHtml(p.link)}">${escapeHtml(railWord(p))}</a></li>`).join('')}</ul>`
+    + `<p class="latest-rail__meta">The Latest</p>`
+    + `<ul class="latest-rail__list">${railPosts.map((p) => {
+      const who = p.author && p.author !== SITE_NAME ? `${postscripts.includes(p) ? 'w/' : 'by'} ${p.author}` : '';
+      return `<li><a href="${escapeHtml(p.link)}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span>${who ? ` <span class="latest-rail__by">${escapeHtml(who)}</span>` : ''}</a></li>`;
+    }).join('')}</ul>`
     + `</div></div></aside>`;
   console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length}; rail ${railPosts.length})`);
   void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;
