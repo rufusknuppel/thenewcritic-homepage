@@ -133,7 +133,7 @@ function bandLogoHtml() {
     .replace(/(<filter id="wm-stamp-ink-band" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"/, `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
     .replace(/(<g filter="url\(#wm-stamp-ink-band\)">)/, `$1${rect}`);
   if (!bird.includes('band-logo__frame') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band frame: bird SVG did not take the outline');
-  return `<a class="band-logo" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the-new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
+  return `<a class="band-logo" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;

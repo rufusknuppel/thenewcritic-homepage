@@ -33,3 +33,41 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(seat);
   seat();
 })();
+
+// THE LATEST'S EDGE UNDER THE NAV (design/latest-rail, 2026-10-04, at the
+// user's word — "set the size for the latest column so its far edge sits
+// halfway between Store and archive"): where the page opens on the band,
+// the blue panel's left edge stands halfway across the gap between STORE
+// and ARCHIVE in the band over it. Read here (--rail-edge, on main) and
+// spent in style.css as the rail's column (54 ROUND THE POSTS); the band's
+// words do not hang on the column, so one reading holds until the window
+// or the fonts change — and a change after the first seats the rows again
+// (the fitter answers a resize).
+(function () {
+  var main = document.querySelector('main.wm-banded');
+  var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+  if (!main || !strip) return;
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var seated = false;
+  var word = function (re) {
+    var bs = strip.querySelectorAll('.sub-ticker-run > .sub-ticker-half > b');
+    for (var i = 0; i < bs.length; i++) if (re.test(bs[i].textContent.trim())) return bs[i].getBoundingClientRect();
+    return null;
+  };
+  var measure = function () {
+    if (!wide.matches) return;
+    var s = word(/^store$/i), a = word(/^archive$/i);
+    if (!s || !a || !s.width || !a.width) return;
+    var mid = (s.right + a.left) / 2;
+    var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
+    if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {
+      main.style.setProperty('--rail-edge', mid.toFixed(2) + 'px');
+      if (seated) { try { window.dispatchEvent(new Event('resize')); } catch (e) {} }
+    }
+    seated = true;
+  };
+  measure();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  addEventListener('resize', measure, { passive: true });
+  addEventListener('load', measure);
+})();
