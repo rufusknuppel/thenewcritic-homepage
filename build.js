@@ -113,9 +113,27 @@ function bandWord(word) {
   return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
     `<svg class="band-logo__line" aria-hidden="true" focusable="false" style="width:${(vb[2] / vb[3]).toFixed(4)}em;height:1em"`);
 }
+// The band's bird in a 4.5:5 outline ("put bird in 4.5:5 outline matching
+// the roughness of the bird"): a rectangle drawn inside the bird's own
+// filter group, so the same turbulence roughens its edges. In the bird's
+// units: its box is 323.28 × 340.76 about (224.99, 250); the outline's
+// stroke is 12, 30 clear of the bird at the sides, and its outer edge
+// stands 4.5 wide to 5 tall.
+const BAND_FRAME = (() => {
+  const cx = 63.35 + 323.28 / 2, cy = 79.62 + 340.76 / 2, sw = 12;
+  const wo = 323.28 + 2 * (30 + sw), ho = wo * 5 / 4.5;
+  const r = n => +n.toFixed(2);
+  return { sw, wo: r(wo), ho: r(ho), x: r(cx - wo / 2), y: r(cy - ho / 2), cx, cy };
+})();
 function bandLogoHtml() {
-  const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, 'wm-stamp-ink-band').replace('class="wm-bird"', 'class="band-logo__bird"');
-  return `<a class="band-logo" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__name">${bandWord('the-new')}${bandWord('critic')}</span>${bird}</a>`;
+  const F = BAND_FRAME;
+  const rect = `<rect class="band-logo__frame" x="${+(F.x + F.sw / 2).toFixed(2)}" y="${+(F.y + F.sw / 2).toFixed(2)}" width="${+(F.wo - F.sw).toFixed(2)}" height="${+(F.ho - F.sw).toFixed(2)}" fill="none" stroke="currentColor" stroke-width="${F.sw}"/>`;
+  const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, 'wm-stamp-ink-band').replace('class="wm-bird"', 'class="band-logo__bird"')
+    .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
+    .replace(/(<filter id="wm-stamp-ink-band" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"/, `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
+    .replace(/(<g filter="url\(#wm-stamp-ink-band\)">)/, `$1${rect}`);
+  if (!bird.includes('band-logo__frame') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band frame: bird SVG did not take the outline');
+  return `<a class="band-logo" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the-new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
