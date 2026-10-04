@@ -23281,7 +23281,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
    there should be a big essay. Then the next line should have a
    Postscript and a Contra that sit next to each other. These lines
    should alternate"). From 1024 up the rows stand in the window's right
-   three quarters, 144 off its right edge (--stack-w, centred on
+   three quarters, 72 off its right edge (--stack-w, centred on
    --rows-cx): an essay alone across the whole column at its cover's
    proportions (.card--row-big, no taller than the stack), then a
    postscript and a review side by side, each holding its shape, at the
@@ -23290,13 +23290,15 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
    the first movement's body, its hold sticky under the strip and a
    window less the strip tall, its words centred in it, so it holds in
    the middle of the screen from the first row to the body's foot over
-   the colophon. The rail is a quarter of the window, never under 300
-   (--rail-w). Under 1024 the phone's one column stands as it was, the
+   the colophon. The rail's column is a quarter of the window less 72,
+   never under 260 (--rail-col), with 72 either side of it — the
+   window's edge, then the rows ("Far margin should only have 72px
+   spacing. 72px should separate either side of The Latest column"). Under 1024 the phone's one column stands as it was, the
    rail struck (the name carries THE LAST MAGAZINE there). */
 @media (min-width: 1024px){
-  html body:not(.word-page) main.has-mega{ --rail-w: max(25vw, 300px); }
+  html body:not(.word-page) main.has-mega{ --rail-col: max(calc(25vw - 72px), 260px); --rail-w: calc(var(--rail-col) + 144px); }
   html body:not(.word-page) main.has-mega .page-rows > .movement:is(.m--latest, .m--essays, .m--postscript, .m--contra) > .movement-body > .wrap > .card--mega:is(.card--row-a, .card--row-b):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    --stack-w: calc(100vw - var(--rail-w) - 144px);
+    --stack-w: calc(100vw - var(--rail-w) - 72px);
     --rows-cx: calc(var(--rail-w) + var(--stack-w) / 2);
     --rows-h: min(var(--stack-h), calc((var(--stack-w) - 36px) / (var(--row-ka, 1) + var(--row-kb, 1))));
   }
@@ -23317,8 +23319,8 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 0;
-    width: var(--rail-w);
+    left: 72px;
+    width: var(--rail-col);
     z-index: 2;
     pointer-events: none;
   }
@@ -23335,7 +23337,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   pointer-events: auto;
   box-sizing: border-box;
   max-width: 100%;
-  padding: 0 36px;
+  padding: 0;
   text-align: center;
   color: var(--k, #121417);
 }
