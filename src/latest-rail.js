@@ -12,7 +12,7 @@
   var main = document.querySelector('main');
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
-  var DIVIDE = 54;
+  var DIVIDE = 36;
   // FOUR SECTIONS, EACH WITH ITS COLUMN (2026-10-04): a column for each
   // section, held from halfway between its first row and the last
   // section's ink (54 over its first picture: duo-panel-fit.js stands the
@@ -63,8 +63,9 @@
     });
     // A DIVIDER BETWEEN THE SECTIONS (2026-10-04, at the user's words —
     // "Have a 72px Charcoal Divider between the sections"; then "section
-    // dividers should actually be 54px and blue"): the columns' blue, the
-    // window's width, 54 tall, 54 under the last
+    // dividers should actually be 54px and blue"; then "section dividers
+    // should be charcoal actually"; "I want dividers to be 36px"): the
+    // band's charcoal, the window's width, 36 tall, 54 under the last
     // section's ink and 54 over the next's first picture (duo-panel-fit.js,
     // SECTION_GAP); the columns stop on it and start under it.
     // SECTIONS PIN AT THEIR END (2026-10-04, at the user's word — "When
@@ -85,7 +86,11 @@
       setImp(rail, 'top', top.toFixed(2) + 'px');
       setImp(rail, 'bottom', '0px');
       setImp(rail, 'z-index', String(4 * i + 2));
-      var end = next == null ? null : next - DIVIDE;
+      // (the last section's foot is the colophon's top, the room drawn up
+      // under it standing past the rows: THE COLOPHON PULLS UP)
+      var tail = body.querySelector(':scope > .sec-tail');
+      var coloEl = document.querySelector('.page-rows > .section-band--colophon.colo');
+      var end = next != null ? next - DIVIDE : tail && tail.offsetHeight && coloEl ? coloEl.getBoundingClientRect().top - br.top : null;
       secWraps(key).forEach(function (w) {
         w.__z = 4 * i + 3;
         w.style.setProperty('position', 'relative');
@@ -113,22 +118,27 @@
       setImp(sh, 'top', (top - DIVIDE).toFixed(2) + 'px');
       setImp(sh, 'z-index', String(4 * i + 1));
     });
-    // THE COLOPHON PUSHES THE BAND OFF (2026-10-04, at the user's words —
-    // "When the colophon arrives, it should push the top band out of
-    // view"; then "the top band should start to move out right when
-    // colophon band reaches bottom of the screen"): the band's track (the
-    // head rail, its sticky box) ends a window less the band over the
-    // colophon's top, so the band sets off up the window the moment the
-    // colophon shows at its foot, and goes a pixel for a pixel with it.
+    // (THE COLOPHON PUSHED THE BAND OFF for an hour, 2026-10-04 — "When
+    // the colophon arrives, it should push the top band out of view" — then
+    // "At the bottom, keep the top band, and have the bottom pull up": the
+    // band holds to the page's end, and the colophon comes up over the last
+    // section as each section's divider comes up over a section)
     var rail0 = document.querySelector('.page-rows > .head-rail');
-    var colo = document.querySelector('.page-rows > .section-band--colophon.colo');
-    if (rail0 && colo && main.classList.contains('wm-banded')) {
-      var pr = rail0.parentElement.getBoundingClientRect();
-      var lead = window.innerHeight - (strip ? strip.offsetHeight : 0);
-      setImp(rail0, 'bottom', Math.max(0, pr.bottom - (colo.getBoundingClientRect().top - lead)).toFixed(2) + 'px');
+    if (rail0) rail0.style.removeProperty('bottom');
+    // (the room under the colophon runs on by the body's own foot padding
+    // too — the fitter's 54 over the colophon — since a pinned row holds
+    // only inside the body's content: the colophon drawn up by the same, so
+    // it stands where the fitter seats it)
+    var tl = body.querySelector(':scope > .sec-tail'), co = document.querySelector('.page-rows > .section-band--colophon.colo');
+    if (tl && co && tl.offsetHeight) {
+      var room = co.offsetHeight + (parseFloat(getComputedStyle(body).paddingBottom) || 0);
+      setImp(tl, 'height', room.toFixed(2) + 'px');
+      setImp(co, 'margin-top', (-room).toFixed(2) + 'px');
     }
     measure();
     light();
+    band.seatLead = true;
+    band();
   };
   // THE POST IN THE WINDOW LIGHTS ITS LINE (2026-10-04, at the user's word
   // — "whichever post is aligned with ... the latest column, the latest
@@ -179,11 +189,48 @@
   addEventListener('newcritic:travel', function () {
     lift(); setTimeout(lift, 50); setTimeout(lift, 1000); setTimeout(lift, 1700);
   });
+  // THE BAND GIVES UP ITS NAME TO THE COLOPHON'S (2026-10-04, at the
+  // user's word — "As colophon appears, fade out top band wordmark and
+  // stamp and spread out nav bar items"): from the colophon's top at the
+  // window's foot to the page's end, the band's name and bird fade out and
+  // give up their room, and the band's words spread across it (--colo-p,
+  // 0 to 1, on the band; --band-logo-w, the name's width; style.css, THE
+  // BAND GIVES UP ITS NAME).
+  var band = function () {
+    var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    var co = document.querySelector('.page-rows > .section-band--colophon.colo');
+    if (!st || !co || !main.classList.contains('wm-banded')) return;
+    // (the room the name holds at rest — its own width and the even gap
+    // after it — read once a seat with the name back in the row: the name
+    // stands out of the row, over that room, so the room can go)
+    if (band.seatLead) {
+      band.seatLead = false;
+      var run = st.querySelector(':scope > .sub-ticker-run'), lg = st.querySelector('.band-logo');
+      var first = run && [].filter.call(run.children, function (c) { return c !== lg && c.offsetWidth && getComputedStyle(c).position !== 'absolute'; })[0];
+      if (run && lg && first) {
+        st.classList.add('is-measuring');
+        var lead = first.getBoundingClientRect().left - lg.getBoundingClientRect().left;
+        st.classList.remove('is-measuring');
+        if (lead > 0) st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
+      }
+    }
+    // (the band's own width, for the bird's seat at its right — the bird
+    // stands in the name, which stands out of the row)
+    var bw = st.clientWidth.toFixed(2) + 'px';
+    if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
+    var h = co.offsetHeight || 1;
+    var pr = Math.max(0, Math.min(1, (window.innerHeight - co.getBoundingClientRect().top) / h));
+    var v = pr.toFixed(4);
+    if (st.style.getPropertyValue('--colo-p') !== v) st.style.setProperty('--colo-p', v);
+    st.classList.toggle('is-giving', pr > 0.5);
+  };
+  band.seatLead = true;
+  window.__ncBand = band;
   var ticking = false;
   addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () { ticking = false; light(); });
+    requestAnimationFrame(function () { ticking = false; light(); band(); });
   }, { passive: true });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
@@ -224,7 +271,11 @@
   };
   var measure = function () {
     if (!wide.matches) return;
+    // (read with the band's words at rest, not spread for the colophon)
+    var p0 = strip.style.getPropertyValue('--colo-p');
+    if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
     var s = word(/^store$/i), a = word(/^archive$/i);
+    if (p0) strip.style.setProperty('--colo-p', p0);
     if (!s || !a || !s.width || !a.width) return;
     var mid = (s.right + a.left) / 2;
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));

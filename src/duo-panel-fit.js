@@ -7357,10 +7357,11 @@
   var COURIER_GAP = 36;
   // (between the rows where the posts stand two to a row: seatRowGaps)
   var ROWS_GAP = 72;
-  // (54 to the divider between the sections, its 54, and 54 past it —
+  // (54 to the divider between the sections, its 36, and 54 past it —
   // "Have a 72px Charcoal Divider between the sections", then "section
-  // dividers should actually be 54px and blue")
-  var SECTION_GAP = 162;
+  // dividers should actually be 54px and blue", "charcoal actually", "I
+  // want dividers to be 36px")
+  var SECTION_GAP = 144;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -7791,8 +7792,8 @@
           // (72 BETWEEN THE ROWS, 2026-09-30, at the user's word: where the
           // posts stand two to a row, a row's highest ink stands 72 under
           // the lowest of the row over it — across, the two keep 36)
-          // (a section's first row 162 under the last section's ink —
-          // 54 to the divider, its 54, and 54 past it: FOUR SECTIONS, 2026-10-04)
+          // (a section's first row 144 under the last section's ink —
+          // 54 to the divider, its 36, and 54 past it: FOUR SECTIONS, 2026-10-04)
           rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROWS_GAP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only

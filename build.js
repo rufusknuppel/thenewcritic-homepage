@@ -1797,8 +1797,9 @@ function renderHomeColophon() {
     '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
     '<a href="mailto:editors@thenewcritic.com">Email</a>',
     '<span>Copyright The New Critic, Inc.</span>',
-    '<span>Est. May 2025</span>',
   ];
+  // (EST. MAY 2025 opens the row — "Move Est. to the left of the colophon")
+  links.unshift('<span>Est. May 2025</span>');
   return `<nav class="section-band section-band--colophon colo" aria-label="Colophon">
     <p class="colo-run">${links.join('')}</p>
     <div class="colo-name">${bandLogoHtml('colo', 'colo-logo')}</div>
@@ -2955,13 +2956,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   const taken = new Set([...latestPosts, ...pickRows.flat()]);
   const fresh = (list) => list.filter((p) => p && !taken.has(p)).slice(0, SEC_N);
   const ones = (list) => list.map((p) => [p]);
-  const twos = (list) => list.reduce((rs, p, i) => (i % 2 ? rs[rs.length - 1].push(p) : rs.push([p]), rs), []);
   const SECTIONS = [
     { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'r', rows: ones(latestPosts) },
     { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'l', rows: ones(fresh(essays)) },
-    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'r', rows: twos(fresh(postscripts)) },
-    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: twos(fresh(contras)) },
-    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'r', rows: pickRows },
+    // (one to a row in every section now — "In postscript/contra sections,
+    // make one a row and editor's")
+    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'r', rows: ones(fresh(postscripts)) },
+    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: ones(fresh(contras)) },
+    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'r', rows: ones(pickRows.flat()) },
   ].filter((sec) => sec.rows.length);
   SECTIONS.forEach((sec) => { sec.posts = sec.rows.flat(); });
   const LABEL = { essay: 'Essays', postscript: 'Postscript', contra: 'Contra' };
@@ -3089,7 +3091,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // (the rail stands last in the latest movement's body, out of the
   // rows' flow — the sheet seats the first row as the body's first child)
   let railHere = false;
-  const closeMovement = () => { if (open) { duoHtml += `${railHere ? latestRailHtml : ''}\n  </div>\n  </div>`; open = false; railHere = false; } };
+  // (and the room the colophon is drawn up over, so the last section's
+  // last row can hold at the window's foot while the colophon comes up
+  // over it — style.css, THE COLOPHON PULLS UP)
+  const closeMovement = () => { if (open) { duoHtml += `${railHere ? `\n  <div class="sec-tail" aria-hidden="true"></div>${latestRailHtml}` : ''}\n  </div>\n  </div>`; open = false; railHere = false; } };
   blocks.forEach((block, i) => {
     const isBanner = /class="page-banner/.test(block);
     const isWord = /class="ops-word/.test(block);
