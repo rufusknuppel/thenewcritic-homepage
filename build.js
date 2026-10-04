@@ -3076,7 +3076,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="sub-ticker-run">${bandLogoHtml()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="sub-ticker-run">${bandLogoHtml()}${themeChip()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
@@ -3433,7 +3433,11 @@ function renderFontGateScript() {
     // (THE CIRCLE IS STRUCK, 2026-10-04 — "Remove color change dot": with
     // no way to turn the page over, a stored Dark is not applied, as when
     // the mode words were struck)
-    paint('light');
+    // (CHARCOAL IS THE DEFAULT AGAIN, and the circle back in the band,
+    // 2026-10-04, at the user's words — "Turn the whole site to charcoal";
+    // "Add dot back in top band to light/dark toggle": the page stands on
+    // the charcoal, a reader's stored Light kept)
+    paint(chosen === 'light' ? 'light' : 'dark');
   } catch (e) {}
   // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
   // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from
