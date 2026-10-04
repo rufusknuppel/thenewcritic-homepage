@@ -78,29 +78,24 @@
     // up over both, its divider first, on a sheet of the page's white that
     // runs from the divider to the rows' end. Each section stands a level
     // over the last (z, four to a section: sheet, column, rows, divider).
+    // (The rows' pin stood down the same day — "With this new format, don't
+    // pin the left column ever": the stacking stands, the pin does not.)
     rails.forEach(function (rail, i) {
       var top = tops[i];
       if (top == null) return;
-      var next = null;
-      for (var k = i + 1; k < tops.length; k++) if (tops[k] != null) { next = tops[k]; break; }
       var key = rail.getAttribute('data-sec');
       setImp(rail, 'top', top.toFixed(2) + 'px');
       setImp(rail, 'bottom', '0px');
       setImp(rail, 'z-index', String(4 * i + 2));
-      // (the last section's foot is the colophon's top, the room drawn up
-      // under it standing past the rows: THE COLOPHON PULLS UP)
-      var tail = body.querySelector(':scope > .sec-tail');
-      var coloEl = document.querySelector('.page-rows > .section-band--colophon.colo');
-      var end = next != null ? next - DIVIDE : tail && tail.offsetHeight && coloEl ? coloEl.getBoundingClientRect().top - br.top : null;
       secWraps(key).forEach(function (w) {
         w.__z = 4 * i + 3;
         w.style.setProperty('position', 'relative');
         w.style.setProperty('z-index', String(w.__z + (w.querySelector('.is-open, .is-opening, .is-shutting') ? 1 : 0)));
-        if (end != null && w.classList.contains('wrap--sec-end')) {
-          var wt = w.getBoundingClientRect().top - br.top;
-          w.style.setProperty('position', 'sticky');
-          w.style.setProperty('top', (window.innerHeight - (end - wt)).toFixed(2) + 'px');
-        } else w.style.removeProperty('top');
+        // (the rows no longer pin at their section's end — "With this new
+        // format, don't pin the left column ever", 2026-10-04, once every
+        // column stood on the right: they run on up the window with the
+        // page, the next section's divider and sheet following them up)
+        w.style.removeProperty('top');
       });
       if (i === 0) return;
       var dv = rail.__divide, sh = rail.__sheet;
@@ -119,22 +114,22 @@
       setImp(sh, 'top', (top - DIVIDE).toFixed(2) + 'px');
       setImp(sh, 'z-index', String(4 * i + 1));
     });
-    // (THE COLOPHON PUSHED THE BAND OFF for an hour, 2026-10-04 — "When
-    // the colophon arrives, it should push the top band out of view" — then
-    // "At the bottom, keep the top band, and have the bottom pull up": the
-    // band holds to the page's end, and the colophon comes up over the last
-    // section as each section's divider comes up over a section)
+    // THE COLOPHON PUSHES THE BAND OFF (2026-10-04, at the user's words —
+    // "When the colophon arrives, it should push the top band out of
+    // view"; for a while "At the bottom, keep the top band, and have the
+    // bottom pull up", the band held to the end and the colophon drawn up
+    // over a pinned last row; then "At bottom colophon should go below
+    // wordmark stamp and site shouldn't pin, top band should release"): the
+    // band's track (the head rail, its sticky box) ends a window less the
+    // band over the colophon's top, so the band sets off up the window the
+    // moment the colophon shows at its foot, and goes a pixel for a pixel
+    // with it; nothing pins, and the colophon follows the rows in the flow.
     var rail0 = document.querySelector('.page-rows > .head-rail');
-    if (rail0) rail0.style.removeProperty('bottom');
-    // (the room under the colophon runs on by the body's own foot padding
-    // too — the fitter's 54 over the colophon — since a pinned row holds
-    // only inside the body's content: the colophon drawn up by the same, so
-    // it stands where the fitter seats it)
-    var tl = body.querySelector(':scope > .sec-tail'), co = document.querySelector('.page-rows > .section-band--colophon.colo');
-    if (tl && co && tl.offsetHeight) {
-      var room = co.offsetHeight + (parseFloat(getComputedStyle(body).paddingBottom) || 0);
-      setImp(tl, 'height', room.toFixed(2) + 'px');
-      setImp(co, 'margin-top', (-room).toFixed(2) + 'px');
+    var colo = document.querySelector('.page-rows > .section-band--colophon.colo');
+    if (rail0 && colo && main.classList.contains('wm-banded')) {
+      var pr = rail0.parentElement.getBoundingClientRect();
+      var lead = window.innerHeight - (strip ? strip.offsetHeight : 0);
+      setImp(rail0, 'bottom', Math.max(0, pr.bottom - (colo.getBoundingClientRect().top - lead)).toFixed(2) + 'px');
     }
     measure();
     light();
@@ -265,8 +260,10 @@
     // stands in the name, which stands out of the row)
     var bw = st.clientWidth.toFixed(2) + 'px';
     if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
-    var h = co.offsetHeight || 1;
-    var pr = Math.max(0, Math.min(1, (window.innerHeight - co.getBoundingClientRect().top) / h));
+    // (the band leaves whole now, pushed off by the colophon — "top band
+    // should release": its name and bird no longer fade, its words no
+    // longer spread)
+    var pr = 0;
     // (the fade first, over the colophon's first quarter, and the words
     // spread only once it is done, over the rest — "Fade should occur
     // before words start moving, by the end of the colophon"; "I want the
