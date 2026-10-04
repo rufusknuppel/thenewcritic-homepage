@@ -11295,12 +11295,13 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 }
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded{
-    margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px))) !important;
+    margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px)) - (144px - var(--strip-settled, 144px))) !important;
   }
 }
 @media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded{ --strip-settled: 108px; }
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
-    height: 144px !important;
+    height: 108px !important;
   }
   html body main.has-mega.wm-opening.wm-banded .site-nav--top .topbar-wordmark,
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .rail-stack{
@@ -11313,7 +11314,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
     column-gap: 0.6323em;
     align-items: center;
     flex: 0 0 auto;
-    font-size: min(41.5px, (100vw - 640px) * 0.0694);
+    font-size: min(43.37px, (100vw - 564px) * 0.06988);
     line-height: 0;
     color: #FFFFFF;
     text-decoration: none;
