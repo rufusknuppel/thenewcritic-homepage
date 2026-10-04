@@ -7358,11 +7358,14 @@
   // (between the rows where the posts stand two to a row: seatRowGaps —
   // 54 since 2026-10-04, at the user's word: "Have 54px between post rows")
   var ROWS_GAP = 54;
-  // (54 to the divider between the sections, its 9, and 54 past it —
-  // "Have a 72px Charcoal Divider between the sections", then "section
-  // dividers should actually be 54px and blue", "charcoal actually", "I
-  // want dividers to be 36px", "Set section dividers to 9px")
-  var SECTION_GAP = 117;
+  // (54 to the divider between the sections, its 9, and 54 past it, for a
+  // day — "Have a 72px Charcoal Divider between the sections", then
+  // "section dividers should actually be 54px and blue", "charcoal
+  // actually", "I want dividers to be 36px", "Set section dividers to
+  // 9px" — then the rows' 54, the divider in the column only, on the next
+  // section's first picture's top: "Section divider should align with the
+  // top of the content, so no double spacing between sections")
+  var SECTION_GAP = 54;
   // (the blue rule hung under the band: style.css, --band-rule)
   var BAND_RULE = 9;
   function rowCourier(row) {

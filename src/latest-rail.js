@@ -12,7 +12,27 @@
   var main = document.querySelector('main');
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
-  var DIVIDE = 9;
+  // ONE COLUMN, ITS WORDS CHANGING (2026-10-04, at the user's words —
+  // "Remove right column section dividers altogether"; "Just fade
+  // out/replace content"): the sections' columns are one, the first's,
+  // charcoal from the band to the colophon, and every section's words
+  // stand in its hold in one place, one at a time — the section of the
+  // post across the window's middle (light, below) — the last fading out
+  // and then the next in (style.css, ONE COLUMN). The other columns stand
+  // empty and unseen.
+  var hold0 = rails[0].querySelector('.latest-rail__hold');
+  rails.forEach(function (r, i) {
+    var inn = r.querySelector('.latest-rail__in');
+    if (!inn) return;
+    inn.setAttribute('data-sec', r.getAttribute('data-sec'));
+    if (i === 0) { inn.classList.add('is-current'); return; }
+    if (hold0) hold0.appendChild(inn);
+    r.classList.add('is-merged');
+    r.setAttribute('aria-hidden', 'true');
+  });
+  var wordsOf = function (rail) {
+    return document.querySelector('.latest-rail__in[data-sec="' + rail.getAttribute('data-sec') + '"]') || rail;
+  };
   // FOUR SECTIONS, EACH WITH ITS COLUMN (2026-10-04): a column for each
   // section, held from halfway between its first row and the last
   // section's ink (54 over its first picture: duo-panel-fit.js stands the
@@ -59,16 +79,24 @@
     var tops = rails.map(function (rail, i) {
       if (i === 0) return Math.max(0, rest + settled - bodyTop);
       var cs = cardsOf(rail.getAttribute('data-sec'));
-      return cs.length ? picTop(cs[0]) - br.top - 54 : null;
+      // (the column from its section's first picture's top, its divider
+      // over its head on that line — "Section divider should align with
+      // the top of the content, so no double spacing between sections",
+      // 2026-10-04: the sections 54 apart, as the rows)
+      return cs.length ? picTop(cs[0]) - br.top : null;
     });
     // A DIVIDER BETWEEN THE SECTIONS (2026-10-04, at the user's words —
     // "Have a 72px Charcoal Divider between the sections"; then "section
     // dividers should actually be 54px and blue"; then "section dividers
     // should be charcoal actually"; "I want dividers to be 36px"; "Set
-    // section dividers to 9px"): the band's charcoal, the window's width,
-    // 9 tall, 54 under the last
-    // section's ink and 54 over the next's first picture (duo-panel-fit.js,
-    // SECTION_GAP); the columns stop on it and start under it.
+    // section dividers to 9px"; "Want dividers to be blue"; "Section
+    // divider should only be in the ... right column"; "Section divider
+    // should align with the top of the content"): the mark's blue, 9 tall,
+    // across the column only (style.css, THE DIVIDERS IN THE COLUMN), its
+    // top on the next section's first picture's top, the sections the
+    // rows' 54 apart (duo-panel-fit.js, SECTION_GAP); the column before
+    // runs to it, the next starts under it. (Stood down the same day —
+    // "Remove right column section dividers altogether": ONE COLUMN.)
     // SECTIONS PIN AT THEIR END (2026-10-04, at the user's word — "When
     // sections end, should pin to bottom, and divider should pull over
     // top"): a section's last row holds where it stands once the section's
@@ -97,40 +125,16 @@
         // page, the next section's divider and sheet following them up)
         w.style.removeProperty('top');
       });
-      if (i === 0) return;
-      var dv = rail.__divide, sh = rail.__sheet;
-      if (!dv) {
-        sh = rail.__sheet = document.createElement('div');
-        sh.className = 'sec-sheet';
-        sh.setAttribute('aria-hidden', 'true');
-        body.insertBefore(sh, rail);
-        dv = rail.__divide = document.createElement('div');
-        dv.className = 'sec-divide';
-        dv.setAttribute('aria-hidden', 'true');
-        body.insertBefore(dv, rail);
-      }
-      setImp(dv, 'top', (top - DIVIDE).toFixed(2) + 'px');
-      setImp(dv, 'z-index', String(4 * i + 3));
-      setImp(sh, 'top', (top - DIVIDE).toFixed(2) + 'px');
-      setImp(sh, 'z-index', String(4 * i + 1));
+      // (no divider and no sheet between the sections since "Remove right
+      // column section dividers altogether": one column, ONE COLUMN above)
     });
-    // THE COLOPHON PUSHES THE BAND OFF (2026-10-04, at the user's words —
-    // "When the colophon arrives, it should push the top band out of
-    // view"; for a while "At the bottom, keep the top band, and have the
-    // bottom pull up", the band held to the end and the colophon drawn up
-    // over a pinned last row; then "At bottom colophon should go below
-    // wordmark stamp and site shouldn't pin, top band should release"): the
-    // band's track (the head rail, its sticky box) ends a window less the
-    // band over the colophon's top, so the band sets off up the window the
-    // moment the colophon shows at its foot, and goes a pixel for a pixel
-    // with it; nothing pins, and the colophon follows the rows in the flow.
+    // (THE COLOPHON PUSHED THE BAND OFF twice on 2026-10-04 — "When the
+    // colophon arrives, it should push the top band out of view", then
+    // "top band should release" — and then "Band shouldn't release": the
+    // band holds to the page's end, and its blue rule comes up over it as
+    // the colophon comes — THE RULE COMES UP OVER THE BAND, in band())
     var rail0 = document.querySelector('.page-rows > .head-rail');
-    var colo = document.querySelector('.page-rows > .section-band--colophon.colo');
-    if (rail0 && colo && main.classList.contains('wm-banded')) {
-      var pr = rail0.parentElement.getBoundingClientRect();
-      var lead = window.innerHeight - (strip ? strip.offsetHeight : 0);
-      setImp(rail0, 'bottom', Math.max(0, pr.bottom - (colo.getBoundingClientRect().top - lead)).toFixed(2) + 'px');
-    }
+    if (rail0) rail0.style.removeProperty('bottom');
     measure();
     light();
     band.seatLead = true;
@@ -148,7 +152,7 @@
     spans = [];
     rails.forEach(function (rail) {
       var links = {};
-      [].forEach.call(rail.querySelectorAll('.latest-rail__list a[data-slug]'), function (a) { links[a.getAttribute('data-slug')] = a; });
+      [].forEach.call(wordsOf(rail).querySelectorAll('.latest-rail__list a[data-slug]'), function (a) { links[a.getAttribute('data-slug')] = a; });
       cardsOf(rail.getAttribute('data-sec')).forEach(function (card) {
         var r = card.getBoundingClientRect();
         if (!r.height) return;
@@ -172,7 +176,16 @@
     lit.forEach(function (a) { if (now.indexOf(a) < 0) a.classList.remove('is-now'); });
     now.forEach(function (a) { a.classList.add('is-now'); });
     lit = now;
+    // (the column's words the lit post's section's: ONE COLUMN)
+    var key = best ? best.rail.getAttribute('data-sec') : null;
+    if (key && key !== curKey && hold0) {
+      curKey = key;
+      [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in'), function (w) {
+        w.classList.toggle('is-current', w.getAttribute('data-sec') === key);
+      });
+    }
   };
+  var curKey = rails[0].getAttribute('data-sec');
   // (a card out on its slide stands a level over its row's other wrap,
   // so it can go over its mate: each pinned wrap is a stacking context)
   var lift = function () {
@@ -264,6 +277,23 @@
     // should release": its name and bird no longer fade, its words no
     // longer spread)
     var pr = 0;
+    // THE RULE COMES UP OVER THE BAND (2026-10-04, at the user's words —
+    // "When top band releases, have blue divider pull up over it, settling
+    // at top of the page"; "But divider should pull up over pinned band";
+    // "Band shouldn't release"): the band holds; from the colophon's top at
+    // the window's foot, the band's blue rule comes up over it a pixel for
+    // a pixel, the band cut off under the rule, till the rule stands at the
+    // window's top, the band gone under it (--band-foot, --band-cover, on
+    // the head rail, the band's own small box: style.css, THE RULE COMES
+    // UP). Read off the band's foot and the colophon's top each frame.
+    var hr = st.parentElement;
+    if (hr) {
+      var foot = Math.max(0, st.getBoundingClientRect().bottom);
+      var cover = Math.max(0, Math.min(foot, window.innerHeight - co.getBoundingClientRect().top));
+      var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
+      if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
+      if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
+    }
     // (the fade first, over the colophon's first quarter, and the words
     // spread only once it is done, over the rest — "Fade should occur
     // before words start moving, by the end of the colophon"; "I want the

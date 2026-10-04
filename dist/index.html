@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f0795201">
+<link rel="stylesheet" href="style.css?v=a218d2b3">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5754,7 +5754,7 @@
   }
   var COURIER_GAP = 36;
   var ROWS_GAP = 54;
-  var SECTION_GAP = 117;
+  var SECTION_GAP = 54;
   var BAND_RULE = 9;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
@@ -9787,7 +9787,19 @@ window.__ncStripInk = function () {
   var main = document.querySelector('main');
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
-  var DIVIDE = 9;
+  var hold0 = rails[0].querySelector('.latest-rail__hold');
+  rails.forEach(function (r, i) {
+    var inn = r.querySelector('.latest-rail__in');
+    if (!inn) return;
+    inn.setAttribute('data-sec', r.getAttribute('data-sec'));
+    if (i === 0) { inn.classList.add('is-current'); return; }
+    if (hold0) hold0.appendChild(inn);
+    r.classList.add('is-merged');
+    r.setAttribute('aria-hidden', 'true');
+  });
+  var wordsOf = function (rail) {
+    return document.querySelector('.latest-rail__in[data-sec="' + rail.getAttribute('data-sec') + '"]') || rail;
+  };
   var picTop = function (card) {
     var t = card.querySelector('.card-title.hl-rect.rx');
     if (!t) return card.getBoundingClientRect().top;
@@ -9825,7 +9837,7 @@ window.__ncStripInk = function () {
     var tops = rails.map(function (rail, i) {
       if (i === 0) return Math.max(0, rest + settled - bodyTop);
       var cs = cardsOf(rail.getAttribute('data-sec'));
-      return cs.length ? picTop(cs[0]) - br.top - 54 : null;
+      return cs.length ? picTop(cs[0]) - br.top : null;
     });
     rails.forEach(function (rail, i) {
       var top = tops[i];
@@ -9840,30 +9852,9 @@ window.__ncStripInk = function () {
         w.style.setProperty('z-index', String(w.__z + (w.querySelector('.is-open, .is-opening, .is-shutting') ? 1 : 0)));
         w.style.removeProperty('top');
       });
-      if (i === 0) return;
-      var dv = rail.__divide, sh = rail.__sheet;
-      if (!dv) {
-        sh = rail.__sheet = document.createElement('div');
-        sh.className = 'sec-sheet';
-        sh.setAttribute('aria-hidden', 'true');
-        body.insertBefore(sh, rail);
-        dv = rail.__divide = document.createElement('div');
-        dv.className = 'sec-divide';
-        dv.setAttribute('aria-hidden', 'true');
-        body.insertBefore(dv, rail);
-      }
-      setImp(dv, 'top', (top - DIVIDE).toFixed(2) + 'px');
-      setImp(dv, 'z-index', String(4 * i + 3));
-      setImp(sh, 'top', (top - DIVIDE).toFixed(2) + 'px');
-      setImp(sh, 'z-index', String(4 * i + 1));
     });
     var rail0 = document.querySelector('.page-rows > .head-rail');
-    var colo = document.querySelector('.page-rows > .section-band--colophon.colo');
-    if (rail0 && colo && main.classList.contains('wm-banded')) {
-      var pr = rail0.parentElement.getBoundingClientRect();
-      var lead = window.innerHeight - (strip ? strip.offsetHeight : 0);
-      setImp(rail0, 'bottom', Math.max(0, pr.bottom - (colo.getBoundingClientRect().top - lead)).toFixed(2) + 'px');
-    }
+    if (rail0) rail0.style.removeProperty('bottom');
     measure();
     light();
     band.seatLead = true;
@@ -9875,7 +9866,7 @@ window.__ncStripInk = function () {
     spans = [];
     rails.forEach(function (rail) {
       var links = {};
-      [].forEach.call(rail.querySelectorAll('.latest-rail__list a[data-slug]'), function (a) { links[a.getAttribute('data-slug')] = a; });
+      [].forEach.call(wordsOf(rail).querySelectorAll('.latest-rail__list a[data-slug]'), function (a) { links[a.getAttribute('data-slug')] = a; });
       cardsOf(rail.getAttribute('data-sec')).forEach(function (card) {
         var r = card.getBoundingClientRect();
         if (!r.height) return;
@@ -9899,7 +9890,15 @@ window.__ncStripInk = function () {
     lit.forEach(function (a) { if (now.indexOf(a) < 0) a.classList.remove('is-now'); });
     now.forEach(function (a) { a.classList.add('is-now'); });
     lit = now;
+    var key = best ? best.rail.getAttribute('data-sec') : null;
+    if (key && key !== curKey && hold0) {
+      curKey = key;
+      [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in'), function (w) {
+        w.classList.toggle('is-current', w.getAttribute('data-sec') === key);
+      });
+    }
   };
+  var curKey = rails[0].getAttribute('data-sec');
   var lift = function () {
     allWraps().forEach(function (w) {
       if (w.__z == null) return;
@@ -9966,6 +9965,14 @@ window.__ncStripInk = function () {
     var bw = st.clientWidth.toFixed(2) + 'px';
     if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
     var pr = 0;
+    var hr = st.parentElement;
+    if (hr) {
+      var foot = Math.max(0, st.getBoundingClientRect().bottom);
+      var cover = Math.max(0, Math.min(foot, window.innerHeight - co.getBoundingClientRect().top));
+      var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
+      if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
+      if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
+    }
     var fade = Math.min(1, pr / FADE_SHARE), spread = Math.max(0, (pr - FADE_SHARE) / (1 - FADE_SHARE));
     var v = spread.toFixed(4), vf = fade.toFixed(4);
     if (st.style.getPropertyValue('--colo-p') !== v) st.style.setProperty('--colo-p', v);
