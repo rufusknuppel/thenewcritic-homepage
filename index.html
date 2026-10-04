@@ -9287,34 +9287,36 @@ window.__ncStripInk = function () {
     if (p <= 0 && !applied) return;
     var shEnd = Math.max(geo.sh, STRIP_SETTLED);
     strip.style.setProperty('height', (geo.sh + (shEnd - geo.sh) * p).toFixed(2) + 'px', 'important');
-    var seatH = shEnd * BIRD_SHARE, sw = seatH * B.w / B.h;
-    var S = { l: geo.vw / 2 - sw / 2, t: (shEnd - seatH) / 2, h: seatH };
-    var box = { l: B.l + (S.l - B.l) * p, t: B.t + (S.t - B.t) * p, h: B.h + (S.h - B.h) * p };
+    var sEnd = (shEnd * BIRD_SHARE) / B.h, s = 1 + (sEnd - 1) * p;
+    var C = { x: (geo.lc.l + geo.rc.r) / 2, y: geo.iy }, C1 = { x: geo.vw / 2, y: shEnd / 2 };
+    var Cp = { x: C.x + (C1.x - C.x) * p, y: C.y + (C1.y - C.y) * p };
+    var move = function (x0, y0) { return { x: Cp.x - x0 - s * (C.x - x0), y: Cp.y - y0 - s * (C.y - y0) }; };
+    var mb = move(B.l, B.t);
     stack.style.setProperty('transform-origin', '0 0');
-    stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
+    stack.style.setProperty('transform', 'translate(' + mb.x.toFixed(2) + 'px, ' + mb.y.toFixed(2) + 'px) scale(' + s.toFixed(4) + ')');
     rail.style.setProperty('z-index', '73', 'important');
-    var sEnd = seatH / B.h, s = 1 + (sEnd - 1) * p;
-    var rise = ((shEnd / 2 - geo.iy) * p).toFixed(2) + 'px';
-    var wR = (geo.rc.r - geo.rc.l) * sEnd, wL = wR;
-    var sL = 1 + (wL / (geo.lc.r - geo.lc.l) - 1) * p;
-    var SETTLED_SIDE = 72;
-    var lEnd = SETTLED_SIDE, rEnd = geo.vw - SETTLED_SIDE;
-    colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
-    colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
-    colL.style.setProperty('scale', sL.toFixed(4));
-    colR.style.setProperty('scale', s.toFixed(4));
-    colL.style.setProperty('translate', ((lEnd - geo.lc.l) * p).toFixed(2) + 'px ' + rise);
-    colR.style.setProperty('translate', ((rEnd - geo.rc.r) * p).toFixed(2) + 'px ' + rise);
+    [[colL, geo.lc], [colR, geo.rc]].forEach(function (q) {
+      var m = move(q[1].l, q[1].t);
+      q[0].style.setProperty('transform-origin', '0 0');
+      q[0].style.setProperty('scale', s.toFixed(4));
+      q[0].style.setProperty('translate', m.x.toFixed(2) + 'px ' + m.y.toFixed(2) + 'px');
+    });
+    var SIDE = 72;
+    var gL = C1.x + sEnd * (geo.lc.l - C.x), gR = C1.x + sEnd * (geo.rc.r - C.x);
     var half = Math.ceil(geo.words.length / 2);
-    var spread = function (ws, from, to) {
-      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0);
-      var g = (to - from - tot) / (ws.length + 1), x = from, out = [];
+    var fromLeft = function (ws, from, to) {
+      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0), g = (to - from - tot) / ws.length, x = from, out = [];
+      ws.forEach(function (w) { out.push(x); x += w.w + g; });
+      return out;
+    };
+    var toRight = function (ws, from, to) {
+      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0), g = (to - from - tot) / ws.length, x = from, out = [];
       ws.forEach(function (w) { x += g; out.push(x); x += w.w; });
       return out;
     };
-    var to = spread(geo.words.slice(0, half), lEnd + wL, S.l).concat(spread(geo.words.slice(half), S.l + sw, rEnd - wR));
+    var to = fromLeft(geo.words.slice(0, half), SIDE, gL).concat(toRight(geo.words.slice(half), gR, geo.vw - SIDE));
     halves.forEach(function (h, i) { h.style.setProperty('translate', ((to[i] - geo.words[i].l) * p).toFixed(2) + 'px 0'); });
-    if (dot && geo.dot != null) dot.style.setProperty('translate', (((rEnd + geo.vw) / 2 - geo.dot) * p).toFixed(2) + 'px -50%', 'important');
+    if (dot && geo.dot != null) dot.style.setProperty('translate', ((geo.vw - SIDE / 2 - geo.dot) * p).toFixed(2) + 'px -50%', 'important');
     applied = true;
     land(p >= 1);
   }
