@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=28f5d36f">
+<link rel="stylesheet" href="style.css?v=dbc297fb">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4778,6 +4778,7 @@
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
     step('seatRowTitles', seatRowTitles);
+    step('fitRowScreens', fitRowScreens);
     step('seatRowGaps', seatRowGaps);
     step('seatRowGaps#2', seatRowGaps);
     step('fitLatestStack#2', fitLatestStack);
@@ -4793,6 +4794,33 @@
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
+  function fitRowScreens() {
+    if (!bandedInk()) return;
+    var body = document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+    if (!body) return;
+    var cards = [].slice.call(body.querySelectorAll(':scope > .wrap > .card--mega'));
+    var depthOf = function (row) {
+      var pb = picBoxOf(row), ink = rowInk(row), cur = rowCourier(row);
+      if (!pb || !ink) return NaN;
+      return Math.max(ink.b, cur ? cur.b : -Infinity) - pb.b;
+    };
+    var put = function (rows, d) {
+      if (!(d >= 0 && d < 600)) return;
+      rows.forEach(function (row) {
+        var was = parseFloat(row.style.getPropertyValue('--card-words'));
+        if (isNaN(was) || Math.abs(was - d) > 0.5) { row.style.setProperty('--card-words', d.toFixed(2) + 'px'); rowKDirty = true; }
+      });
+    };
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      if (c.classList.contains('card--row-big')) { put([c], depthOf(c)); continue; }
+      var nb = cards[i + 1];
+      if (c.classList.contains('card--row-a') && nb && nb.classList.contains('card--row-b')) {
+        put([c, nb], Math.max(depthOf(c), depthOf(nb)));
+        i++;
+      }
+    }
+  }
   var wmSizeKey = '';
   var ROW_GAP = 36;
   var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
