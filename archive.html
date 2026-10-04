@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f072f6b4">
+<link rel="stylesheet" href="style.css?v=28f5d36f">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5728,12 +5728,44 @@
     if (!w) { main.style.removeProperty('--std-w'); return; }
     varSet(main, '--std-w', ((w - 2 * ROW_GAP) / 3).toFixed(2) + 'px');
   }
+  var inkCtx = null, bandedPage = null;
+  function bandedInk() {
+    if (bandedPage === null) bandedPage = !!document.querySelector('main.wm-banded');
+    return bandedPage && !ONE_COL.matches;
+  }
+  function inkFoot(el, rb) {
+    try {
+      var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = tw.nextNode())) nodes.push(n);
+      var rg = document.createRange(), txt = '', host = null;
+      outer: for (var i = nodes.length - 1; i >= 0; i--) {
+        var s = nodes[i].data;
+        for (var k = s.length - 1; k >= 0; k--) {
+          rg.setStart(nodes[i], k); rg.setEnd(nodes[i], k + 1);
+          var cr = rg.getClientRects(), r0 = null;
+          for (var q = 0; q < cr.length; q++) if (cr[q].width > 0) { r0 = cr[q]; break; }
+          if (!r0) continue;
+          if (r0.bottom < rb - 1) break outer;
+          txt = s[k] + txt; host = host || nodes[i].parentElement;
+        }
+      }
+      if (!txt.trim() || !host) return rb;
+      var cs = getComputedStyle(host);
+      inkCtx = inkCtx || document.createElement('canvas').getContext('2d');
+      inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = inkCtx.measureText(txt);
+      if (!isFinite(m.fontBoundingBoxDescent) || !isFinite(m.actualBoundingBoxDescent)) return rb;
+      return rb - m.fontBoundingBoxDescent + m.actualBoundingBoxDescent;
+    } catch (e) { return rb; }
+  }
   function rowInk(row) {
     var t = Infinity, b = -Infinity;
+    var inked = bandedInk();
     var add = function (el) {
       var rg = document.createRange(); rg.selectNodeContents(el);
-      var rs = rg.getClientRects();
-      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > b) b = rs[i].bottom; }
+      var rs = rg.getClientRects(), eb = -Infinity;
+      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > eb) eb = rs[i].bottom; }
+      if (isFinite(eb)) { if (inked) eb = inkFoot(el, eb); if (eb > b) b = eb; }
     };
     [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink'), add);
     [].forEach.call(row.querySelectorAll('.card-title.hl-rect.rx, .latest-title.hl-rect.rx'), function (ttl) {
@@ -5849,13 +5881,16 @@
   }
   function wordsSpanOf(row) {
     var l = Infinity, r = -Infinity, b = -Infinity;
+    var inked = bandedInk();
     [].forEach.call(row.querySelectorAll('.cover-meta, .swap-line, .swap-dek-ink'), function (m) {
       if (getComputedStyle(m).visibility === 'hidden') return;
       var rg = document.createRange(); rg.selectNodeContents(m);
+      var mb = -Infinity;
       [].forEach.call(rg.getClientRects(), function (x) {
         if (!x.width || !x.height) return;
-        l = Math.min(l, x.left); r = Math.max(r, x.right); b = Math.max(b, x.bottom);
+        l = Math.min(l, x.left); r = Math.max(r, x.right); mb = Math.max(mb, x.bottom);
       });
+      if (isFinite(mb)) b = Math.max(b, inked && !m.classList.contains('cover-meta') ? inkFoot(m, mb) : mb);
     });
     return isFinite(l) ? { l: l, r: r, b: b } : null;
   }
@@ -5992,7 +6027,7 @@
             if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
           rowDelta = (stacked && row.classList.contains('card--row-a') ? ROWS_GAP : COURIER_GAP) - (curT - prevFoot); hasJob = true;
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--row-b'))) {
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && (prev.classList.contains('card--row-b') || row.classList.contains('card--row-a')))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             var over = (pic.t + acc) - myTop;
@@ -6127,7 +6162,7 @@
         next.style.setProperty('margin-top', '0px', 'important');
         next.style.removeProperty('--step-over');
       }
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 36 : 72) : COURIER_GAP;
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
