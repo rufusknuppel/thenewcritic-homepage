@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=747f14c9">
+<link rel="stylesheet" href="style.css?v=f072f6b4">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5837,7 +5837,7 @@
         next.style.setProperty('margin-top', '0px', 'important');
         next.style.removeProperty('--step-over');
       }
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 36 : 72) : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
