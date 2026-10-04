@@ -7909,7 +7909,10 @@
       // (144 for an hour — "Increase space above and below first and last
       // content rows to 144px" — then 72 again: "Space above first post
       // and below last post should be 72px")
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      // (36 where the page opens on the band, design/latest-rail,
+      // 2026-10-04: "Want the content to start 36px from the top and end
+      // 36px from the bottom")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 36 : 72) : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
