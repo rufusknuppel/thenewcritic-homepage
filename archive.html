@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d58258d8">
+<link rel="stylesheet" href="style.css?v=19e409e1">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6036,6 +6036,12 @@
       var foot = Math.max(a ? a.b : -Infinity, b ? b.b : -Infinity);
       var lastA = last.classList.contains('card--pair-b') && rows[rows.length - 2];
       if (lastA) { var a2 = rowCourier(lastA), b2 = rowInk(lastA); foot = Math.max(foot, a2 ? a2.b : -Infinity, b2 ? b2.b : -Infinity); }
+      var lastRow = last.getAttribute('data-row'), lastGroup = last.getAttribute('data-group');
+      if (lastRow != null) rows.forEach(function (r) {
+        if (r === last || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup) return;
+        var a4 = rowCourier(r), b4 = rowInk(r);
+        foot = Math.max(foot, a4 ? a4.b : -Infinity, b4 ? b4.b : -Infinity);
+      });
       if (!isFinite(foot)) return;
       var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
       var pinH = 0;
