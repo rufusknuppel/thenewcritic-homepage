@@ -7355,13 +7355,14 @@
   // (36, not 54, since 2026-09-24, at the user's word: every gap on the
   // page is 36, across or down, and 36 is what a card keeps from any ink)
   var COURIER_GAP = 36;
-  // (between the rows where the posts stand two to a row: seatRowGaps)
-  var ROWS_GAP = 72;
-  // (54 to the divider between the sections, its 36, and 54 past it —
+  // (between the rows where the posts stand two to a row: seatRowGaps —
+  // 54 since 2026-10-04, at the user's word: "Have 54px between post rows")
+  var ROWS_GAP = 54;
+  // (54 to the divider between the sections, its 9, and 54 past it —
   // "Have a 72px Charcoal Divider between the sections", then "section
   // dividers should actually be 54px and blue", "charcoal actually", "I
-  // want dividers to be 36px")
-  var SECTION_GAP = 144;
+  // want dividers to be 36px", "Set section dividers to 9px")
+  var SECTION_GAP = 117;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {

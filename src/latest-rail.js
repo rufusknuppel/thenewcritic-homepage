@@ -12,7 +12,7 @@
   var main = document.querySelector('main');
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
-  var DIVIDE = 36;
+  var DIVIDE = 9;
   // FOUR SECTIONS, EACH WITH ITS COLUMN (2026-10-04): a column for each
   // section, held from halfway between its first row and the last
   // section's ink (54 over its first picture: duo-panel-fit.js stands the
@@ -64,8 +64,9 @@
     // A DIVIDER BETWEEN THE SECTIONS (2026-10-04, at the user's words —
     // "Have a 72px Charcoal Divider between the sections"; then "section
     // dividers should actually be 54px and blue"; then "section dividers
-    // should be charcoal actually"; "I want dividers to be 36px"): the
-    // band's charcoal, the window's width, 36 tall, 54 under the last
+    // should be charcoal actually"; "I want dividers to be 36px"; "Set
+    // section dividers to 9px"): the band's charcoal, the window's width,
+    // 9 tall, 54 under the last
     // section's ink and 54 over the next's first picture (duo-panel-fit.js,
     // SECTION_GAP); the columns stop on it and start under it.
     // SECTIONS PIN AT THEIR END (2026-10-04, at the user's word — "When
@@ -200,19 +201,65 @@
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     var co = document.querySelector('.page-rows > .section-band--colophon.colo');
     if (!st || !co || !main.classList.contains('wm-banded')) return;
-    // (the room the name holds at rest — its own width and the even gap
-    // after it — read once a seat with the name back in the row: the name
-    // stands out of the row, over that room, so the room can go)
+    // (the band's words at rest stand evenly between the name's ink and
+    // the bird's outline — "the nav bar items should be evenly distributed
+    // between ink of wordmark and ink of stamp outline": one gap from
+    // CRITIC's last stroke to the first word's ink, between each word's
+    // ink and the next's, and from the last word's to the frame's outer
+    // edge. Read with the row's paddings at the band's sides and the
+    // colophon away; --band-lead and --band-trail are the room the row
+    // gives the name and the bird at rest, given up as the colophon comes)
     if (band.seatLead) {
       band.seatLead = false;
-      var run = st.querySelector(':scope > .sub-ticker-run'), lg = st.querySelector('.band-logo');
-      var first = run && [].filter.call(run.children, function (c) { return c !== lg && c.offsetWidth && getComputedStyle(c).position !== 'absolute'; })[0];
-      if (run && lg && first) {
-        st.classList.add('is-measuring');
-        var lead = first.getBoundingClientRect().left - lg.getBoundingClientRect().left;
-        st.classList.remove('is-measuring');
-        if (lead > 0) st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
+      var run = st.querySelector(':scope > .sub-ticker-run');
+      var low = st.querySelector('.band-logo__low svg path');
+      var frame = st.querySelector('.band-logo__frame');
+      var p0 = st.style.getPropertyValue('--colo-p');
+      st.style.setProperty('--colo-p', '0');
+      st.style.setProperty('--band-lead', '0px');
+      st.style.setProperty('--band-trail', '0px');
+      var words = run ? [].filter.call(run.children, function (c) {
+        return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
+      }) : [];
+      var ctx = band.ctx || (band.ctx = document.createElement('canvas').getContext('2d'));
+      var ink = words.map(function (c) {
+        // (a word's ink inside its box: the face's own bearings, and the
+        // tracking after its last letter, which the box keeps)
+        var b = c.querySelector('b'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
+        ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        var t = cs.textTransform === 'uppercase' ? b.textContent.toUpperCase() : b.textContent;
+        var m = ctx.measureText(t), n = Array.from(t).length || 1;
+        var tr = (r.width - m.width) / n;
+        var bx = c.getBoundingClientRect();
+        var l = r.left - m.actualBoundingBoxLeft, rr = r.left + m.actualBoundingBoxRight + tr * (n - 1);
+        return { l: l, r: rr, inL: l - bx.left, inR: bx.right - rr, w: bx.width };
+      });
+      if (run && low && frame && ink.length > 1) {
+        var lb = low.getBBox(), lm = low.getScreenCTM();
+        var fb = frame.getBBox(), fm = frame.getScreenCTM();
+        var sw = parseFloat(frame.getAttribute('stroke-width')) || 0;
+        var x0 = lm.a * (lb.x + lb.width) + lm.e;
+        var x1 = fm.a * (fb.x - sw / 2) + fm.e;
+        var inkW = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
+        var g = (x1 - x0 - inkW) / (ink.length + 1);
+        var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
+        var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
+        var lead = (x0 + g - ink[0].inL) - (rb.left + padL);
+        var trail = (rb.right - padR) - (x1 - g + ink[ink.length - 1].inR);
+        if (g > 0 && lead > 0 && trail > 0) {
+          st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
+          st.style.setProperty('--band-trail', trail.toFixed(2) + 'px');
+        } else {
+          st.style.removeProperty('--band-lead');
+          st.style.removeProperty('--band-trail');
+        }
+      } else {
+        st.style.removeProperty('--band-lead');
+        st.style.removeProperty('--band-trail');
       }
+      if (p0) st.style.setProperty('--colo-p', p0); else st.style.removeProperty('--colo-p');
+      // (the column's edge hangs on STORE and ARCHIVE: read it again)
+      if (window.__ncRailEdge) window.__ncRailEdge();
     }
     // (the band's own width, for the bird's seat at its right — the bird
     // stands in the name, which stands out of the row)
@@ -220,16 +267,17 @@
     if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
     var h = co.offsetHeight || 1;
     var pr = Math.max(0, Math.min(1, (window.innerHeight - co.getBoundingClientRect().top) / h));
-    // (the fade first, over the colophon's first half, and the words spread
-    // only once it is done, over the second — "Fade should occur before
-    // words start moving, by the end of the colophon")
+    // (the fade first, over the colophon's first quarter, and the words
+    // spread only once it is done, over the rest — "Fade should occur
+    // before words start moving, by the end of the colophon"; "I want the
+    // wordmark/stamp, to be gone by 1/4")
     var fade = Math.min(1, pr / FADE_SHARE), spread = Math.max(0, (pr - FADE_SHARE) / (1 - FADE_SHARE));
     var v = spread.toFixed(4), vf = fade.toFixed(4);
     if (st.style.getPropertyValue('--colo-p') !== v) st.style.setProperty('--colo-p', v);
     if (st.style.getPropertyValue('--colo-fade') !== vf) st.style.setProperty('--colo-fade', vf);
     st.classList.toggle('is-giving', fade > 0.5);
   };
-  var FADE_SHARE = 0.5;
+  var FADE_SHARE = 0.25;
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
@@ -292,6 +340,7 @@
     seated = true;
   };
   measure();
+  window.__ncRailEdge = measure;
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   addEventListener('resize', measure, { passive: true });
   addEventListener('load', measure);

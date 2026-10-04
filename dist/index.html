@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=28b04062">
+<link rel="stylesheet" href="style.css?v=83de2879">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5753,8 +5753,8 @@
     return isFinite(t) ? { t: t, b: b } : null;
   }
   var COURIER_GAP = 36;
-  var ROWS_GAP = 72;
-  var SECTION_GAP = 144;
+  var ROWS_GAP = 54;
+  var SECTION_GAP = 117;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -9786,7 +9786,7 @@ window.__ncStripInk = function () {
   var main = document.querySelector('main');
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
-  var DIVIDE = 36;
+  var DIVIDE = 9;
   var picTop = function (card) {
     var t = card.querySelector('.card-title.hl-rect.rx');
     if (!t) return card.getBoundingClientRect().top;
@@ -9925,14 +9925,52 @@ window.__ncStripInk = function () {
     if (!st || !co || !main.classList.contains('wm-banded')) return;
     if (band.seatLead) {
       band.seatLead = false;
-      var run = st.querySelector(':scope > .sub-ticker-run'), lg = st.querySelector('.band-logo');
-      var first = run && [].filter.call(run.children, function (c) { return c !== lg && c.offsetWidth && getComputedStyle(c).position !== 'absolute'; })[0];
-      if (run && lg && first) {
-        st.classList.add('is-measuring');
-        var lead = first.getBoundingClientRect().left - lg.getBoundingClientRect().left;
-        st.classList.remove('is-measuring');
-        if (lead > 0) st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
+      var run = st.querySelector(':scope > .sub-ticker-run');
+      var low = st.querySelector('.band-logo__low svg path');
+      var frame = st.querySelector('.band-logo__frame');
+      var p0 = st.style.getPropertyValue('--colo-p');
+      st.style.setProperty('--colo-p', '0');
+      st.style.setProperty('--band-lead', '0px');
+      st.style.setProperty('--band-trail', '0px');
+      var words = run ? [].filter.call(run.children, function (c) {
+        return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
+      }) : [];
+      var ctx = band.ctx || (band.ctx = document.createElement('canvas').getContext('2d'));
+      var ink = words.map(function (c) {
+        var b = c.querySelector('b'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
+        ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        var t = cs.textTransform === 'uppercase' ? b.textContent.toUpperCase() : b.textContent;
+        var m = ctx.measureText(t), n = Array.from(t).length || 1;
+        var tr = (r.width - m.width) / n;
+        var bx = c.getBoundingClientRect();
+        var l = r.left - m.actualBoundingBoxLeft, rr = r.left + m.actualBoundingBoxRight + tr * (n - 1);
+        return { l: l, r: rr, inL: l - bx.left, inR: bx.right - rr, w: bx.width };
+      });
+      if (run && low && frame && ink.length > 1) {
+        var lb = low.getBBox(), lm = low.getScreenCTM();
+        var fb = frame.getBBox(), fm = frame.getScreenCTM();
+        var sw = parseFloat(frame.getAttribute('stroke-width')) || 0;
+        var x0 = lm.a * (lb.x + lb.width) + lm.e;
+        var x1 = fm.a * (fb.x - sw / 2) + fm.e;
+        var inkW = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
+        var g = (x1 - x0 - inkW) / (ink.length + 1);
+        var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
+        var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
+        var lead = (x0 + g - ink[0].inL) - (rb.left + padL);
+        var trail = (rb.right - padR) - (x1 - g + ink[ink.length - 1].inR);
+        if (g > 0 && lead > 0 && trail > 0) {
+          st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
+          st.style.setProperty('--band-trail', trail.toFixed(2) + 'px');
+        } else {
+          st.style.removeProperty('--band-lead');
+          st.style.removeProperty('--band-trail');
+        }
+      } else {
+        st.style.removeProperty('--band-lead');
+        st.style.removeProperty('--band-trail');
       }
+      if (p0) st.style.setProperty('--colo-p', p0); else st.style.removeProperty('--colo-p');
+      if (window.__ncRailEdge) window.__ncRailEdge();
     }
     var bw = st.clientWidth.toFixed(2) + 'px';
     if (st.style.getPropertyValue('--band-w') !== bw) st.style.setProperty('--band-w', bw);
@@ -9944,7 +9982,7 @@ window.__ncStripInk = function () {
     if (st.style.getPropertyValue('--colo-fade') !== vf) st.style.setProperty('--colo-fade', vf);
     st.classList.toggle('is-giving', fade > 0.5);
   };
-  var FADE_SHARE = 0.5;
+  var FADE_SHARE = 0.25;
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
@@ -9994,6 +10032,7 @@ window.__ncStripInk = function () {
     seated = true;
   };
   measure();
+  window.__ncRailEdge = measure;
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
   addEventListener('resize', measure, { passive: true });
   addEventListener('load', measure);
