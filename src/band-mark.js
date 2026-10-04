@@ -619,8 +619,9 @@ window.__ncStripSide = function () { return 72; };
     // (72 where the page opens on the band: the bird and THE LAST
     // MAGAZINE 72 from the sides — 36 for a while, "The edge of the last
     // magazine should stretch to 36px from side", then "Move bird to start
-    // 72px from side" / "Same with the last magazine")
-    var v = (main.classList.contains('wm-banded') ? 72 : window.__ncStripSide(p)).toFixed(2) + 'px';
+    // 72px from side" / "Same with the last magazine", then 36 again,
+    // "Move band margins to 36px" — "Actually 54px")
+    var v = (main.classList.contains('wm-banded') ? 54 : window.__ncStripSide(p)).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };

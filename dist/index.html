@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=85060300">
+<link rel="stylesheet" href="style.css?v=de97fb4a">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5900,7 +5900,7 @@
         next.style.setProperty('margin-top', '0px', 'important');
         next.style.removeProperty('--step-over');
       }
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
@@ -9270,7 +9270,7 @@ window.__ncStripSide = function () { return 72; };
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     var p = rest > 0 && !main.classList.contains('wm-banded') ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
-    var v = (main.classList.contains('wm-banded') ? 72 : window.__ncStripSide(p)).toFixed(2) + 'px';
+    var v = (main.classList.contains('wm-banded') ? 54 : window.__ncStripSide(p)).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };

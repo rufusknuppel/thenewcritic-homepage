@@ -8001,7 +8001,9 @@
       // (36 where the page opens on the band for a few minutes, design/
       // latest-rail, 2026-10-04 — then 72 again, to the glyphs' own ink:
       // "Increase top and bottom gap above content to 72px")
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      // (…and 36 again where the page opens on the band: "Move white
+      // margins around posts to 36px" — "Actually 54px")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
