@@ -594,7 +594,9 @@ document.addEventListener('click', function (e) {
 // (…and held at 144 since the words settle evenly between the name and
 // the bird, placed by THE NAME SETTLES IN THE BAND WITH THE BIRD: "center
 // nav bar items between bird and wordmark inks")
-window.__ncStripSide = function () { return 144; };
+// (72 since 2026-10-04, at the user's word — "Move the band margins to
+// 72px on open and settle")
+window.__ncStripSide = function () { return 72; };
 
 // THE STRIP'S ITEMS EASE OUT AS IT RISES (design/stacked-wordmark,
 // 2026-10-02, at the user's word — "When page opens, nav bar items should
@@ -700,7 +702,7 @@ window.__ncStripInk = function () {
   // disregard 36px requirement"; "center nav bar items between bird and
   // wordmark inks"; "center dot between edge and CRITIC" — they settled
   // 36 from the edges, the words easing in, for a few minutes)
-  var BIRD_SHARE = 0.75, GUTTER = 144, STRIP_SETTLED = 144;
+  var BIRD_SHARE = 0.75, STRIP_SETTLED = 144;
   var halves = [].slice.call(strip.querySelectorAll('.sub-ticker-run > .sub-ticker-half')).filter(function (h) { return h.querySelector(':scope > b'); });
   var dot = strip.querySelector('.sub-ticker-run > .sub-ticker-half--flip');
   var geo = null, raf = 0, applied = false;
@@ -767,7 +769,12 @@ window.__ncStripInk = function () {
     // a little shorter)
     var wR = (geo.rc.r - geo.rc.l) * sEnd, wL = wR;
     var sL = 1 + (wL / (geo.lc.r - geo.lc.l) - 1) * p;
-    var lEnd = (GUTTER - wL) / 2, rEnd = geo.vw - (GUTTER - wR) / 2;
+    // (72 FROM THE SIDES, 2026-10-04, at the user's word — "Move the band
+    // margins to 72px on open and settle": THE/NEW's ink settles 72 from
+    // the window's left, CRI/TIC's 72 from its right, where each stood in
+    // the middle of a 144 gutter)
+    var SETTLED_SIDE = 72;
+    var lEnd = SETTLED_SIDE, rEnd = geo.vw - SETTLED_SIDE;
     colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
     colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
     colL.style.setProperty('scale', sL.toFixed(4));

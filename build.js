@@ -3114,6 +3114,7 @@ ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 ${renderRailFixScript()}
 ${renderBandMarkScript()}
+${renderLatestRailScript()}
 ${renderEditModeScript()}
 ${renderCoverCueScript()}
 ${renderCardRevealScript()}
@@ -3640,6 +3641,14 @@ ${js}
 // courier and title — as the reader scrolls it into the window, its
 // picture fetched and decoded before it is shown (src/card-reveal.js;
 // style.css, EACH CARD ARRIVES WHOLE).
+// THE LATEST'S RAIL RIDES UP WITH THE ROWS (src/latest-rail.js)
+function renderLatestRailScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/latest-rail.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
 function renderCardRevealScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/card-reveal.js'), 'utf8'));
   return `<script>
