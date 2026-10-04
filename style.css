@@ -11293,16 +11293,16 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 @media (max-width: 1023.98px){
   .latest-rail{ display: none; }
 }
-.latest-rail__list li + li{ margin-top: 12px; }
+.latest-rail__list li + li{ margin-top: 14px; }
 .latest-rail__kick, .latest-rail__by{
   display: inline;
   font-family: var(--excerpt);
   font-weight: 400;
-  font-size: 18px;
-  line-height: 1.3;
+  font-size: 27px;
+  line-height: 1.2;
 }
 .latest-rail__kick{ font-style: normal; }
-.latest-rail__by{ font-style: italic; }
+.latest-rail__by{ font-style: italic; font-size: 18px; white-space: nowrap; }
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded{
     margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px)) - (144px - var(--strip-settled, 144px))) !important;
@@ -11325,6 +11325,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
     align-items: center;
     flex: 0 0 auto;
     font-size: min(43.37px, (100vw - 564px) * 0.06988);
+    margin-left: -18px;
     line-height: 0;
     color: #FFFFFF;
     text-decoration: none;
