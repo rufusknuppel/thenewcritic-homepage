@@ -8,13 +8,45 @@
 // strip settles. Before, the box began at the body's top, behind the
 // opening, and the rail held still on the screen while the rows rose.
 (function () {
-  var rail = document.querySelector('.latest-rail');
+  var rails = [].slice.call(document.querySelectorAll('.latest-rail'));
   var main = document.querySelector('main');
-  if (!rail || !main) return;
+  if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
+  var DIVIDE = 54;
+  // FOUR SECTIONS, EACH WITH ITS COLUMN (2026-10-04): a column for each
+  // section, held from halfway between its first row and the last
+  // section's ink (54 over its first picture: duo-panel-fit.js stands the
+  // sections 108 apart) down to halfway to the next — the first from the
+  // band's foot, the last to the colophon.
+  var picTop = function (card) {
+    var t = card.querySelector('.card-title.hl-rect.rx');
+    if (!t) return card.getBoundingClientRect().top;
+    return t.getBoundingClientRect().top + (parseFloat(getComputedStyle(t, '::before').top) || 0);
+  };
+  var cardsOf = function (key) {
+    return [].slice.call(document.querySelectorAll('.page-rows .movement-body > .wrap > section.card--sec-' + key));
+  };
+  var setImp = function (el, prop, v) {
+    if (el.style.getPropertyValue(prop) !== v) el.style.setProperty(prop, v, 'important');
+  };
+  var secWraps = function (key) {
+    return [].slice.call(rails[0].parentElement.querySelectorAll(':scope > .wrap.wrap--sec-' + key));
+  };
+  var allWraps = function () { return [].slice.call(rails[0].parentElement.querySelectorAll(':scope > .wrap.wrap--sec')); };
   var seat = function () {
-    if (!rail.offsetWidth) return;
-    var body = rail.parentElement;
+    var first = rails[0];
+    if (!first.offsetWidth) {
+      allWraps().forEach(function (w) { ['position', 'top', 'z-index'].forEach(function (k) { w.style.removeProperty(k); }); });
+      return;
+    }
+    // (read with the sections unpinned — style.css, SECTIONS PIN AT
+    // THEIR END — and pinned again once seated)
+    main.classList.add('sec-nopin');
+    try { seatNow(); } finally { main.classList.remove('sec-nopin'); }
+  };
+  var seatNow = function () {
+    var first = rails[0];
+    var body = first.parentElement;
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     // (no rest where there is no opening: the page opens on the band, 2026-10-04)
@@ -22,15 +54,151 @@
     // (the band's own height where the page opens on it: 108, "make whole band 36px shorter")
     var strip = document.querySelector('.sub-ticker--top');
     var settled = main.classList.contains('wm-banded') && strip ? strip.offsetHeight : STRIP_SETTLED;
-    var bodyTop = body.getBoundingClientRect().top + (window.pageYOffset || 0);
-    var top = Math.max(0, rest + settled - bodyTop);
-    var cur = parseFloat(rail.style.top) || 0;
-    if (Math.abs(cur - top) > 0.25) rail.style.setProperty('top', top.toFixed(2) + 'px', 'important');
+    var br = body.getBoundingClientRect();
+    var bodyTop = br.top + (window.pageYOffset || 0);
+    var tops = rails.map(function (rail, i) {
+      if (i === 0) return Math.max(0, rest + settled - bodyTop);
+      var cs = cardsOf(rail.getAttribute('data-sec'));
+      return cs.length ? picTop(cs[0]) - br.top - 54 : null;
+    });
+    // A DIVIDER BETWEEN THE SECTIONS (2026-10-04, at the user's words —
+    // "Have a 72px Charcoal Divider between the sections"; then "section
+    // dividers should actually be 54px and blue"): the columns' blue, the
+    // window's width, 54 tall, 54 under the last
+    // section's ink and 54 over the next's first picture (duo-panel-fit.js,
+    // SECTION_GAP); the columns stop on it and start under it.
+    // SECTIONS PIN AT THEIR END (2026-10-04, at the user's word — "When
+    // sections end, should pin to bottom, and divider should pull over
+    // top"): a section's last row holds where it stands once the section's
+    // foot (the next divider's top) reaches the window's foot — sticky, its
+    // top a window less the row's depth to that foot — and its column holds
+    // with it (the column runs on to the rows' end); the next section comes
+    // up over both, its divider first, on a sheet of the page's white that
+    // runs from the divider to the rows' end. Each section stands a level
+    // over the last (z, four to a section: sheet, column, rows, divider).
+    rails.forEach(function (rail, i) {
+      var top = tops[i];
+      if (top == null) return;
+      var next = null;
+      for (var k = i + 1; k < tops.length; k++) if (tops[k] != null) { next = tops[k]; break; }
+      var key = rail.getAttribute('data-sec');
+      setImp(rail, 'top', top.toFixed(2) + 'px');
+      setImp(rail, 'bottom', '0px');
+      setImp(rail, 'z-index', String(4 * i + 2));
+      var end = next == null ? null : next - DIVIDE;
+      secWraps(key).forEach(function (w) {
+        w.__z = 4 * i + 3;
+        w.style.setProperty('position', 'relative');
+        w.style.setProperty('z-index', String(w.__z + (w.querySelector('.is-open, .is-opening, .is-shutting') ? 1 : 0)));
+        if (end != null && w.classList.contains('wrap--sec-end')) {
+          var wt = w.getBoundingClientRect().top - br.top;
+          w.style.setProperty('position', 'sticky');
+          w.style.setProperty('top', (window.innerHeight - (end - wt)).toFixed(2) + 'px');
+        } else w.style.removeProperty('top');
+      });
+      if (i === 0) return;
+      var dv = rail.__divide, sh = rail.__sheet;
+      if (!dv) {
+        sh = rail.__sheet = document.createElement('div');
+        sh.className = 'sec-sheet';
+        sh.setAttribute('aria-hidden', 'true');
+        body.insertBefore(sh, rail);
+        dv = rail.__divide = document.createElement('div');
+        dv.className = 'sec-divide';
+        dv.setAttribute('aria-hidden', 'true');
+        body.insertBefore(dv, rail);
+      }
+      setImp(dv, 'top', (top - DIVIDE).toFixed(2) + 'px');
+      setImp(dv, 'z-index', String(4 * i + 3));
+      setImp(sh, 'top', (top - DIVIDE).toFixed(2) + 'px');
+      setImp(sh, 'z-index', String(4 * i + 1));
+    });
+    // THE COLOPHON PUSHES THE BAND OFF (2026-10-04, at the user's words —
+    // "When the colophon arrives, it should push the top band out of
+    // view"; then "the top band should start to move out right when
+    // colophon band reaches bottom of the screen"): the band's track (the
+    // head rail, its sticky box) ends a window less the band over the
+    // colophon's top, so the band sets off up the window the moment the
+    // colophon shows at its foot, and goes a pixel for a pixel with it.
+    var rail0 = document.querySelector('.page-rows > .head-rail');
+    var colo = document.querySelector('.page-rows > .section-band--colophon.colo');
+    if (rail0 && colo && main.classList.contains('wm-banded')) {
+      var pr = rail0.parentElement.getBoundingClientRect();
+      var lead = window.innerHeight - (strip ? strip.offsetHeight : 0);
+      setImp(rail0, 'bottom', Math.max(0, pr.bottom - (colo.getBoundingClientRect().top - lead)).toFixed(2) + 'px');
+    }
+    measure();
+    light();
   };
+  // THE POST IN THE WINDOW LIGHTS ITS LINE (2026-10-04, at the user's word
+  // — "whichever post is aligned with ... the latest column, the latest
+  // should ... show this by highlighting in white that post. And then on
+  // hover, it should go back to charcoal"): the row standing across the
+  // middle of the window under the band — or, between rows, the nearer —
+  // lights its posts' lines in their column (a.is-now; style.css).
+  var spans = [];
+  var measure = function () {
+    var y0 = window.pageYOffset || 0;
+    spans = [];
+    rails.forEach(function (rail) {
+      var links = {};
+      [].forEach.call(rail.querySelectorAll('.latest-rail__list a[data-slug]'), function (a) { links[a.getAttribute('data-slug')] = a; });
+      cardsOf(rail.getAttribute('data-sec')).forEach(function (card) {
+        var r = card.getBoundingClientRect();
+        if (!r.height) return;
+        var a = links[card.getAttribute('data-slug')];
+        if (a) spans.push({ rail: rail, a: a, row: card.getAttribute('data-row'), t: picTop(card) + y0, b: r.bottom + y0 });
+      });
+    });
+  };
+  var lit = [];
+  var light = function () {
+    if (!spans.length) return;
+    var strip = document.querySelector('.sub-ticker--top');
+    var band = strip ? Math.max(0, strip.getBoundingClientRect().bottom) : 0;
+    var y = (window.pageYOffset || 0) + band + (window.innerHeight - band) / 2;
+    var best = null, bestD = Infinity;
+    spans.forEach(function (sp) {
+      var d = y < sp.t ? sp.t - y : y > sp.b ? y - sp.b : 0;
+      if (d < bestD) { bestD = d; best = sp; }
+    });
+    var now = best ? spans.filter(function (sp) { return sp.row === best.row; }).map(function (sp) { return sp.a; }) : [];
+    lit.forEach(function (a) { if (now.indexOf(a) < 0) a.classList.remove('is-now'); });
+    now.forEach(function (a) { a.classList.add('is-now'); });
+    lit = now;
+  };
+  // (a card out on its slide stands a level over its row's other wrap,
+  // so it can go over its mate: each pinned wrap is a stacking context)
+  var lift = function () {
+    allWraps().forEach(function (w) {
+      if (w.__z == null) return;
+      var z = String(w.__z + (w.querySelector('.is-open, .is-opening, .is-shutting') ? 1 : 0));
+      if (w.style.zIndex !== z) w.style.setProperty('z-index', z);
+    });
+  };
+  addEventListener('newcritic:travel', function () {
+    lift(); setTimeout(lift, 50); setTimeout(lift, 1000); setTimeout(lift, 1700);
+  });
+  var ticking = false;
+  addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { ticking = false; light(); });
+  }, { passive: true });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(seat);
+  // (and whenever the rows move under them — the fitter's later passes
+  // stand the cards anew without a word)
+  if (window.ResizeObserver) {
+    var due = 0;
+    var ro = new ResizeObserver(function () {
+      if (due) return;
+      due = requestAnimationFrame(function () { due = 0; seat(); });
+    });
+    ro.observe(rails[0].parentElement);
+  }
   seat();
 })();
 

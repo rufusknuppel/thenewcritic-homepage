@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=52c4b509">
+<link rel="stylesheet" href="style.css?v=a43898c7">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4440,6 +4440,8 @@
     var opened = cards.filter(function (el) { return el.classList.contains('is-open'); });
     cards.forEach(function (el) { el.classList.add('fit-still'); });
     opened.forEach(function (el) { el.classList.remove('is-open'); });
+    var mainEl = document.querySelector('main');
+    if (mainEl) mainEl.classList.add('sec-nopin');
     cards.forEach(function (el) {
       if (!el.getAnimations) return;
       try { el.getAnimations({ subtree: true }).forEach(function (a) { a.cancel(); }); } catch (e) {}
@@ -4447,6 +4449,7 @@
     try {
       fn();
     } finally {
+      if (mainEl) mainEl.classList.remove('sec-nopin');
       opened.forEach(function (el) { el.classList.add('is-open'); });
       void document.body.offsetHeight;
       cards.forEach(function (el) { el.classList.remove('fit-still'); });
@@ -4813,7 +4816,7 @@
     };
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
-      if (c.classList.contains('card--row-big')) { put([c], depthOf(c)); continue; }
+      if (c.classList.contains('card--row-big') || c.classList.contains('card--row-solo')) { put([c], depthOf(c)); continue; }
       var nb = cards[i + 1];
       if (c.classList.contains('card--row-a') && nb && nb.classList.contains('card--row-b')) {
         put([c, nb], Math.max(depthOf(c), depthOf(nb)));
@@ -4886,6 +4889,7 @@
   }
   var COURIER_GAP = 36;
   var ROWS_GAP = 72;
+  var SECTION_GAP = 162;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -5134,7 +5138,7 @@
             var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
             if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? ROWS_GAP : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROWS_GAP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && (prev.classList.contains('card--row-b') || row.classList.contains('card--row-a')))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
@@ -5648,12 +5652,39 @@
   }
   var SLIDE_MARGIN = 36;
   var SLIDE_LESS = 108;
+  var SOLO_COL = 290, SLIDE_GAP = 36, COLUMN_SIDE = 54;
+  function slideDir(card) {
+    var sec = card.closest('section.card');
+    return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
+  }
+  function slideSeat(card, P) {
+    if (ONE_COL.matches || !P) return null;
+    var mate = slideMate(card), Q = mate && slidePic(mate);
+    var d = slideDir(card);
+    if (!d) return Q ? { Q: Q, out: false, d: Q.l > P.l ? 1 : -1 } : null;
+    if (Q && (Q.l > P.l) === (d > 0)) return { Q: Q, out: false, d: d };
+    var pw = P.r - P.l;
+    var colW = Q ? Math.min(pw, Q.r - Q.l) - SLIDE_LESS : Math.min(pw - SLIDE_LESS, Math.max(SOLO_COL, (pw - 72) / 3));
+    if (!(colW > 60)) return null;
+    var w = colW + SLIDE_LESS;
+    return { Q: d < 0 ? { l: P.l - SLIDE_GAP - w, r: P.l - SLIDE_GAP, t: P.t, b: P.b } : { l: P.r + SLIDE_GAP, r: P.r + SLIDE_GAP + w, t: P.t, b: P.b }, out: true, d: d };
+  }
+  function columnEdge(card, d) {
+    var sec = card.closest('section.card');
+    var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
+    var rail = key && document.querySelector('.latest-rail--' + key);
+    var rr = rail && rail.offsetWidth ? rail.getBoundingClientRect() : null;
+    var vw = document.documentElement.clientWidth;
+    var railL = sec && sec.classList.contains('card--rail-l');
+    if (d < 0) return railL && rr ? rr.right + COLUMN_SIDE : COLUMN_SIDE;
+    return !railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE;
+  }
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
-      var mate = slideMate(card);
-      var P = slidePic(card), Q = mate && slidePic(mate);
+      var P = slidePic(card), seat = slideSeat(card, P), Q = seat && seat.Q;
       if (!P || !Q) return;
+      card.classList.toggle('is-slide-out', !!seat.out);
       var wc = Math.min(P.r - P.l, Q.r - Q.l);
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
@@ -5662,6 +5693,22 @@
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
+      if (seat.out) {
+        var tEl = card.querySelector('.card-title.hl-rect.rx');
+        if (tEl) {
+          var cr1 = card.getBoundingClientRect();
+          var tr0 = parseFloat((getComputedStyle(tEl).translate || '').split(' ')[0]) || 0;
+          var T0 = tEl.getBoundingClientRect().left - (cr1.left - cr0.left) - tr0;
+          var E = columnEdge(card, seat.d);
+          var cut = function (x) {
+            var v = x.toFixed(2) + 'px', far = '100000px', nfar = '-100000px';
+            return seat.d < 0 ? 'polygon(' + v + ' ' + nfar + ', ' + far + ' ' + nfar + ', ' + far + ' ' + far + ', ' + v + ' ' + far + ')'
+              : 'polygon(' + nfar + ' ' + nfar + ', ' + v + ' ' + nfar + ', ' + v + ' ' + far + ', ' + nfar + ' ' + far + ')';
+          };
+          s.setProperty('--slide-cut0', cut(E - T0));
+          s.setProperty('--slide-cut1', cut(E - T0 - dx));
+        }
+      }
       var sheet = card.querySelector(':scope > .slide-sheet');
       if (!sheet) {
         sheet = document.createElement('span');
@@ -5736,6 +5783,8 @@
       btn.classList.toggle('pk-lone', !te);
       var atLeft = Math.abs(lo - P.l) < 2;
       var head = te ? !!tail.head : !atLeft;
+      var sd = slideDir(card);
+      if (sd && card.classList.contains('is-slide')) head = sd < 0;
       btn.classList.toggle('pk-head', head);
       if (btn.__head !== head) { btn.__head = head; btn.innerHTML = pkHtml(head, '\u00B7'); }
       if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
@@ -5824,8 +5873,8 @@
           j.Bd = { l: Fl, r: Fr, t: B.t, b: B.b };
           j.cols2 = true;
           j.ncol = (Fr - Fl) >= 480 ? 2 : 1;
-          var mate = ONE_COL.matches ? null : slideMate(j.card);
-          var Q = mate && slidePic(mate);
+          var seat = slideSeat(j.card, { l: Fl, r: Fr, t: B.t, b: B.b });
+          var Q = seat && seat.Q;
           if (Q) {
             var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
@@ -5964,6 +6013,20 @@
       }
     });
     sealAll(twos.map(function (j) { return { bt: j.bt, cap: j.shut, lh: j.blh }; }));
+    twos.forEach(function (j) {
+      if (j.shut == null) return;
+      var ps = [].filter.call(j.bt.querySelectorAll('.swap-p'), function (p) { return (p.textContent || '').trim(); });
+      if (ps.length < 2) return;
+      var last = ps[ps.length - 1];
+      if (!/\u2026\s*$/.test(last.textContent)) return;
+      var n = paraLines({ getBoundingClientRect: function () { return j.bt.getBoundingClientRect(); }, querySelectorAll: function () { return [last]; } }, j.one ? 1 : 2, SWAP_PAD, j.blh)[0];
+      if (n > 1) return;
+      last.remove();
+      var prev = ps[ps.length - 2];
+      var tw = document.createTreeWalker(prev, NodeFilter.SHOW_TEXT), tn = null;
+      for (var t = tw.nextNode(); t; t = tw.nextNode()) if (t.nodeValue.trim()) tn = t;
+      if (tn && !/\u2026\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(TRAIL_PUNCT, '') + '\u2026';
+    });
     twos.forEach(function (j) { j.bt.style.transform = 'none'; });
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();

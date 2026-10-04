@@ -6547,6 +6547,10 @@
     // ones are shut for it.
     cards.forEach(function (el) { el.classList.add('fit-still'); });
     opened.forEach(function (el) { el.classList.remove('is-open'); });
+    // (and the sections unpinned for the pass: SECTIONS PIN AT THEIR END,
+    // latest-rail.js — a pinned row would be read where the window holds it)
+    var mainEl = document.querySelector('main');
+    if (mainEl) mainEl.classList.add('sec-nopin');
     // AND EVERY TRAVEL ALREADY IN FLIGHT IS CANCELLED — the shut card's
     // picture on its way home as much as the open one's on its way
     // out. Standing the transitions down stops new ones starting, but
@@ -6563,6 +6567,7 @@
     try {
       fn();
     } finally {
+      if (mainEl) mainEl.classList.remove('sec-nopin');
       opened.forEach(function (el) { el.classList.add('is-open'); });
       void document.body.offsetHeight;
       cards.forEach(function (el) { el.classList.remove('fit-still'); });
@@ -7236,7 +7241,9 @@
     };
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
-      if (c.classList.contains('card--row-big')) { put([c], depthOf(c)); continue; }
+      // (a postscript or a review alone in its row reads its own depth,
+      // as an essay does: FOUR SECTIONS, 2026-10-04)
+      if (c.classList.contains('card--row-big') || c.classList.contains('card--row-solo')) { put([c], depthOf(c)); continue; }
       var nb = cards[i + 1];
       if (c.classList.contains('card--row-a') && nb && nb.classList.contains('card--row-b')) {
         put([c, nb], Math.max(depthOf(c), depthOf(nb)));
@@ -7350,6 +7357,10 @@
   var COURIER_GAP = 36;
   // (between the rows where the posts stand two to a row: seatRowGaps)
   var ROWS_GAP = 72;
+  // (54 to the divider between the sections, its 54, and 54 past it —
+  // "Have a 72px Charcoal Divider between the sections", then "section
+  // dividers should actually be 54px and blue")
+  var SECTION_GAP = 162;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -7780,7 +7791,9 @@
           // (72 BETWEEN THE ROWS, 2026-09-30, at the user's word: where the
           // posts stand two to a row, a row's highest ink stands 72 under
           // the lowest of the row over it — across, the two keep 36)
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? ROWS_GAP : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          // (a section's first row 162 under the last section's ink —
+          // 54 to the divider, its 54, and 54 past it: FOUR SECTIONS, 2026-10-04)
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROWS_GAP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)
@@ -8537,12 +8550,54 @@
   // much shorter than the narrower picture's width and the gutter
   // (…AND 36 LESS AGAIN, later the same day, "slide 36px less": 108)
   var SLIDE_LESS = 108;
+  // THE SLIDE UNDER THE MARGIN (2026-10-04, at the user's words: "I want
+  // the preview for the essays to have the arrow pointing towards the
+  // left. And I want the preview to slide the image to the left, revealing
+  // a column of text ... the image should slide under the far margin";
+  // "In essay/contra/postscript sections, preview direction/text alignment
+  // should alternate"): a card says which way it slides (build.js,
+  // card--slide-l / -r). Where its mate stands that way it goes over the
+  // mate as before; where none does — an essay alone, a pair sliding
+  // apart — it slides into the white the same way, as far as a postscript
+  // would (a mate's narrower picture, or for a card alone a column a
+  // third of the picture and never under SOLO_COL), and passes under the
+  // column's edge, the picture cut on that line (style.css, THE SLIDE
+  // UNDER THE MARGIN). Q is the seat it slides over, real or not.
+  var SOLO_COL = 290, SLIDE_GAP = 36, COLUMN_SIDE = 54;
+  function slideDir(card) {
+    var sec = card.closest('section.card');
+    return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
+  }
+  function slideSeat(card, P) {
+    if (ONE_COL.matches || !P) return null;
+    var mate = slideMate(card), Q = mate && slidePic(mate);
+    var d = slideDir(card);
+    if (!d) return Q ? { Q: Q, out: false, d: Q.l > P.l ? 1 : -1 } : null;
+    if (Q && (Q.l > P.l) === (d > 0)) return { Q: Q, out: false, d: d };
+    var pw = P.r - P.l;
+    var colW = Q ? Math.min(pw, Q.r - Q.l) - SLIDE_LESS : Math.min(pw - SLIDE_LESS, Math.max(SOLO_COL, (pw - 72) / 3));
+    if (!(colW > 60)) return null;
+    var w = colW + SLIDE_LESS;
+    return { Q: d < 0 ? { l: P.l - SLIDE_GAP - w, r: P.l - SLIDE_GAP, t: P.t, b: P.b } : { l: P.r + SLIDE_GAP, r: P.r + SLIDE_GAP + w, t: P.t, b: P.b }, out: true, d: d };
+  }
+  // (the column's edge the picture passes under: 54 off the window's side,
+  // or 54 off the section's blue on the other)
+  function columnEdge(card, d) {
+    var sec = card.closest('section.card');
+    var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
+    var rail = key && document.querySelector('.latest-rail--' + key);
+    var rr = rail && rail.offsetWidth ? rail.getBoundingClientRect() : null;
+    var vw = document.documentElement.clientWidth;
+    var railL = sec && sec.classList.contains('card--rail-l');
+    if (d < 0) return railL && rr ? rr.right + COLUMN_SIDE : COLUMN_SIDE;
+    return !railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE;
+  }
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
-      var mate = slideMate(card);
-      var P = slidePic(card), Q = mate && slidePic(mate);
+      var P = slidePic(card), seat = slideSeat(card, P), Q = seat && seat.Q;
       if (!P || !Q) return;
+      card.classList.toggle('is-slide-out', !!seat.out);
       var wc = Math.min(P.r - P.l, Q.r - Q.l);
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
@@ -8556,6 +8611,25 @@
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
+      // (the cut, in the title's own frame — where the column's edge stands
+      // at rest and where it stands once the picture has travelled; the
+      // two ease together, so the edge holds still on the page)
+      if (seat.out) {
+        var tEl = card.querySelector('.card-title.hl-rect.rx');
+        if (tEl) {
+          var cr1 = card.getBoundingClientRect();
+          var tr0 = parseFloat((getComputedStyle(tEl).translate || '').split(' ')[0]) || 0;
+          var T0 = tEl.getBoundingClientRect().left - (cr1.left - cr0.left) - tr0;
+          var E = columnEdge(card, seat.d);
+          var cut = function (x) {
+            var v = x.toFixed(2) + 'px', far = '100000px', nfar = '-100000px';
+            return seat.d < 0 ? 'polygon(' + v + ' ' + nfar + ', ' + far + ' ' + nfar + ', ' + far + ' ' + far + ', ' + v + ' ' + far + ')'
+              : 'polygon(' + nfar + ' ' + nfar + ', ' + v + ' ' + nfar + ', ' + v + ' ' + far + ', ' + nfar + ' ' + far + ')';
+          };
+          s.setProperty('--slide-cut0', cut(E - T0));
+          s.setProperty('--slide-cut1', cut(E - T0 - dx));
+        }
+      }
       var sheet = card.querySelector(':scope > .slide-sheet');
       if (!sheet) {
         sheet = document.createElement('span');
@@ -8670,6 +8744,11 @@
       // as the mirrored line's did: 2026-10-01, PREVIEW ACROSS THE LINE)
       var atLeft = Math.abs(lo - P.l) < 2;
       var head = te ? !!tail.head : !atLeft;
+      // (the arrow points the way the picture slides: 2026-10-04, THE SLIDE
+      // UNDER THE MARGIN — "I want the preview for the essays to have the
+      // arrow pointing towards the left")
+      var sd = slideDir(card);
+      if (sd && card.classList.contains('is-slide')) head = sd < 0;
       btn.classList.toggle('pk-head', head);
       if (btn.__head !== head) { btn.__head = head; btn.innerHTML = pkHtml(head, '\u00B7'); }
       if (te && tail.head) { b.left = 'auto'; b.right = (cr0.right - (te.l - ox - tail.gap)).toFixed(2) + 'px'; }
@@ -8817,8 +8896,10 @@
           // in its own seat — as wide as the narrower of the two
           // pictures, at the far side from the mate, the picture's
           // height (seatSlides carries it; style.css, THE PREVIEW SLIDES)
-          var mate = ONE_COL.matches ? null : slideMate(j.card);
-          var Q = mate && slidePic(mate);
+          // (or into the white, under the margin, where no mate stands the
+          // way it slides: THE SLIDE UNDER THE MARGIN, 2026-10-04)
+          var seat = slideSeat(j.card, { l: Fl, r: Fr, t: B.t, b: B.b });
+          var Q = seat && seat.Q;
           if (Q) {
             // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
             // narrower, as the slide is shorter by it — seatSlides)
@@ -9020,6 +9101,24 @@
       }
     });
     sealAll(twos.map(function (j) { return { bt: j.bt, cap: j.shut, lh: j.blh }; }));
+    // NO ORPHAN AT THE FOOT (2026-10-04, at the user's word — "If there's an
+    // orphan paragraph, remove the orphan"): a preview whose last paragraph
+    // shows one line under the others ends on the paragraph before it
+    // instead, its ellipsis there.
+    twos.forEach(function (j) {
+      if (j.shut == null) return;
+      var ps = [].filter.call(j.bt.querySelectorAll('.swap-p'), function (p) { return (p.textContent || '').trim(); });
+      if (ps.length < 2) return;
+      var last = ps[ps.length - 1];
+      if (!/\u2026\s*$/.test(last.textContent)) return;
+      var n = paraLines({ getBoundingClientRect: function () { return j.bt.getBoundingClientRect(); }, querySelectorAll: function () { return [last]; } }, j.one ? 1 : 2, SWAP_PAD, j.blh)[0];
+      if (n > 1) return;
+      last.remove();
+      var prev = ps[ps.length - 2];
+      var tw = document.createTreeWalker(prev, NodeFilter.SHOW_TEXT), tn = null;
+      for (var t = tw.nextNode(); t; t = tw.nextNode()) if (t.nodeValue.trim()) tn = t;
+      if (tn && !/\u2026\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(TRAIL_PUNCT, '') + '\u2026';
+    });
     // (and centred by what it SHOWS, by its ink: as much air
     // from the box's top to the painted top of the dek's first
     // line as from the columns' last baseline to the box's

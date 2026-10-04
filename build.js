@@ -125,15 +125,15 @@ const BAND_FRAME = (() => {
   const r = n => +n.toFixed(2);
   return { sw, wo: r(wo), ho: r(ho), x: r(cx - wo / 2), y: r(cy - ho / 2), cx, cy };
 })();
-function bandLogoHtml() {
+function bandLogoHtml(id = 'band', cls = '') {
   const F = BAND_FRAME;
   const rect = `<rect class="band-logo__frame" x="${+(F.x + F.sw / 2).toFixed(2)}" y="${+(F.y + F.sw / 2).toFixed(2)}" width="${+(F.wo - F.sw).toFixed(2)}" height="${+(F.ho - F.sw).toFixed(2)}" fill="none" stroke="currentColor" stroke-width="${F.sw}"/>`;
-  const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, 'wm-stamp-ink-band').replace('class="wm-bird"', 'class="band-logo__bird"')
+  const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
-    .replace(/(<filter id="wm-stamp-ink-band" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"/, `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
-    .replace(/(<g filter="url\(#wm-stamp-ink-band\)">)/, `$1${rect}`);
+    .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
+    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${rect}`);
   if (!bird.includes('band-logo__frame') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band frame: bird SVG did not take the outline');
-  return `<a class="band-logo" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
+  return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
@@ -1755,7 +1755,7 @@ function renderPageFoot(onHome = false, onMark = false) {
   // the name under the colophon, revealed as the page lifted off it —
   // and was struck again the same day.)
   return `${onHome ? `\n  ${navStrip()}` : ''}
-  ${renderColophonBand()}
+  ${onHome ? renderHomeColophon() : renderColophonBand()}
   <div class="foot-field${mk}" aria-hidden="true"></div>`;
 }
 // THE FOOT IS THE HEAD TURNED OVER IN ITS SLOTS (2026-09-19): the head
@@ -1777,6 +1777,31 @@ function renderColophonBand(mk = '') {
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
     <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
     ${bandName('<span>Est. May 2025</span>')}
+  </nav>`;
+}
+// THE COLOPHON IS THE BAND TURNED OVER (2026-10-04, at the user's word:
+// "I want to update the colophon to look like the top band with the
+// charcoal and the new labeling. And I would like, instead of the top
+// band, to have the new critic and the bird stamp be very large and to
+// sit beneath the work sans row as a row of its own. When the colophon
+// arrives, it should push the top band out of view"): on the front page
+// the colophon is the band's charcoal, its links in the band's Work Sans
+// capitals across one row, and under them the band's name — the bird,
+// THE, NEW, CRITIC — the window's width less its 54s (style.css, THE
+// COLOPHON IS THE BAND TURNED OVER). The band's track ends on its top
+// (latest-rail.js), so it pushes the band off as it comes up.
+function renderHomeColophon() {
+  const links = [
+    '<a href="https://www.thenewcritic.com" rel="noopener">Substack</a>',
+    '<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>',
+    '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
+    '<a href="mailto:editors@thenewcritic.com">Email</a>',
+    '<span>Copyright The New Critic, Inc.</span>',
+    '<span>Est. May 2025</span>',
+  ];
+  return `<nav class="section-band section-band--colophon colo" aria-label="Colophon">
+    <p class="colo-run">${links.join('')}</p>
+    <div class="colo-name">${bandLogoHtml('colo', 'colo-logo')}</div>
   </nav>`;
 }
 function renderPageRail({ side, word, href, after, before, categories }) {
@@ -2570,7 +2595,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // (THE LATEST'S POSTS STAND TWO TO A ROW, 2026-09-30: courier and
   // title set left on the left-hand card of a row and right on the
   // right-hand one, at the user's word)
-  const alignR = row ? row.side === 'b' : flip ? pair === 'a' : (align === 'r' || pair === 'b');
+  const alignR = row ? (row.alignR != null ? !!row.alignR : row.side === 'b') : flip ? pair === 'a' : (align === 'r' || pair === 'b');
   // THE ESSAY'S PICTURE STANDS AT ITS OWN HEIGHT (2026-09-24): an
   // essay's cover keeps its width and takes its original's proportions
   // down the page, read off the _WxH Substack writes into the file name,
@@ -2596,7 +2621,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // row can hold (style.css, THE LATEST'S POSTS STAND TWO TO A ROW).
   const styles = [row ? `--row-ka: ${row.ka.toFixed(4)}; --row-kb: ${row.kb.toFixed(4)}; ${row.all}${row.fixedAt && row.fixedAt.has(2 * row.r) ? '; --row-fa: 1' : ''}${row.fixedAt && row.fixedAt.has(2 * row.r + 1) ? '; --row-fb: 1' : ''}` : '', picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
   const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}${hasX ? ' card--ovx' : ''}"${styles ? ` style="${styles}"` : ''}${row ? ` data-group="${row.g}" data-row="${row.i}" data-side="${row.side}"` : ''} data-slug="${escapeHtml(slug)}`;
-  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}${row.big ? ' card--row-big' : ''}` : ''}${trueH}">
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}${row.big ? ' card--row-big' : ''}${row.sec ? ` card--sec-${row.sec} card--rail-${row.rail}${row.secFirst ? ' card--sec-first' : ''}${row.secLast ? ' card--sec-last' : ''}${row.pairRow ? ' card--sec-pair' : ''}` : ''}${row.slide ? ` card--slide-${row.slide}` : ''}` : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2794,7 +2819,7 @@ function renderLatestRow(psPost, contraPost, { rev = false, m2 = false, stacked 
       </section>`;
 }
 
-function renderHomepage({ essays = [], postscripts = [], contras = [], archives = [] }) {
+function renderHomepage({ essays = [], postscripts = [], contras = [], archives = [], pool = [] }) {
   // The lead essay (top-left, two thirds wide) is the first cover the
   // visitor sees — preloaded the way the old hero was.
   // (NOT PRELOADED since 2026-09-24: the page opens on the masthead a
@@ -2877,48 +2902,117 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // a postscript and a review side by side — newest first. The left
   // quarter holds THE LATEST's rail (latestRailHtml, below; style.css,
   // THE LATEST BESIDE THE ROWS).
-  const PAIRS = 7;
+  // FOUR SECTIONS, EACH WITH ITS COLUMN (2026-10-04, at the user's word:
+  // "I want the latest to just be the latest six posts ... the essay card
+  // being full width, and then if there's a postscript or a contra, they
+  // should sit on their own line horizontally centered ... a new section
+  // for essays ... exactly like the latest section, except essays, the
+  // column would be on the left ... the same format with postscripts and
+  // contras ... three rows ... two per row ... in contra, the card should
+  // be square"): THE LATEST (the six newest posts of every kind, one to a
+  // row), then ESSAYS (the six newest, one to a row), POSTSCRIPT (six,
+  // two to a row at their own proportions, one height to a row) and
+  // CONTRA (six, two to a row, square), each beside its own blue column
+  // listing its posts — right, left, right, left. Every row keeps the one
+  // group, numbered down the page, so the fitter seats it as before; the
+  // section rides on the card (card--sec-*, card--rail-*, and
+  // card--sec-first on a section's first row, which stands 108 under the
+  // last section's ink: duo-panel-fit.js, SECTION_GAP). In ESSAYS,
+  // POSTSCRIPT and CONTRA the rows alternate their words' side and the
+  // way the preview slides ("In essay/contra/postscript sections, preview
+  // direction/text alignment should alternate"); in THE LATEST every card
+  // sets its words left and slides left, under the far margin
+  // (card--slide-l/-r, duo-panel-fit.js, THE SLIDE UNDER THE MARGIN).
+  const SEC_N = 6;
   let rowsMade = 0;
   const rowAt = (r, side, extra) => ({ g: 'rows', i: r, r, side, all: '', fixedAt: new Set(), ...extra });
-  for (let i = 0; i < PAIRS && essays[i]; i++) {
-    blocks.push(renderMegaHero(essays[i], { rev: true, label: 'Essays', trueHeight: true, row: rowAt(rowsMade, 'a', { solo: true, big: true, ka: 1.5, kb: 0.0001 }) }));
-    rowsMade++;
-    const ps = postscripts[i], ct = contras[i];
-    if (ps && ct) {
-      blocks.push(renderMegaHero(ps, { rev: true, label: 'Postscript', kind: 'postscript', row: rowAt(rowsMade, 'a', { ka: 0.75, kb: 1 }) }));
-      blocks.push(renderMegaHero(ct, { rev: true, label: 'Contra', kind: 'contra', row: rowAt(rowsMade, 'b', { ka: 0.75, kb: 1 }) }));
+  const dated = (p) => p && p.date && !isNaN(p.date.getTime());
+  // (a post the homepage's lists do not hold — an editors' pick from the
+  // archive — takes its kind from any copy of it that names its section)
+  const labelOf = (p) => [p, ...pool.filter((q) => q && q.link === p.link)].map((q) => q.sectionLabel || '').join(' ');
+  const kindOf = (p) => postscripts.includes(p) ? 'postscript' : contras.includes(p) ? 'contra'
+    : /postscript/i.test(labelOf(p)) ? 'postscript' : /contra/i.test(labelOf(p)) ? 'contra' : 'essay';
+  // (a postscript's own proportions, width over height, read off the _WxH
+  // Substack writes into the file name — held between 3:5 and 5:4)
+  const ratioOf = (p) => {
+    const d = /_(\d+)x(\d+)\.[a-z]+$/i.exec(decodeURIComponent((p && p.image) || ''));
+    const k = d && +d[1] > 0 && +d[2] > 0 ? +d[1] / +d[2] : 0.8;
+    return Math.min(1.25, Math.max(0.6, k));
+  };
+  // (no post twice: each section's six are the newest of its kind not
+  // already in THE LATEST or among the editors' picks — "Have no repeats
+  // between sections")
+  const latestPosts = [...essays, ...postscripts, ...contras].filter(dated).sort((a, b) => b.date - a.date).slice(0, SEC_N);
+  // EDITORS' PICKS under CONTRA (2026-10-04, at the user's word: "Under
+  // contra section, add an Editor's Picks section. Use selections from the
+  // Archive Editor's picks"): the archive's own four (LEDGER_FEATURE_SLUGS)
+  // in the archive's order — the lead essay, the two postscripts as a
+  // pair, the closing essay.
+  // (from every post the build holds, the homepage's own objects first)
+  const bySlug = (slug) => [...essays, ...postscripts, ...contras, ...archives, ...pool].find((p) => p && slugOf(p.link) === slug) || null;
+  const pickRows = [[bySlug(LEDGER_FEATURE_SLUGS.lead)], LEDGER_FEATURE_SLUGS.pair.map(bySlug), [bySlug(LEDGER_FEATURE_SLUGS.close)]]
+    .map((r) => r.filter((p) => p && !latestPosts.includes(p))).filter((r) => r.length);
+  const taken = new Set([...latestPosts, ...pickRows.flat()]);
+  const fresh = (list) => list.filter((p) => p && !taken.has(p)).slice(0, SEC_N);
+  const ones = (list) => list.map((p) => [p]);
+  const twos = (list) => list.reduce((rs, p, i) => (i % 2 ? rs[rs.length - 1].push(p) : rs.push([p]), rs), []);
+  const SECTIONS = [
+    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'r', rows: ones(latestPosts) },
+    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'l', rows: ones(fresh(essays)) },
+    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'r', rows: twos(fresh(postscripts)) },
+    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: twos(fresh(contras)) },
+    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'r', rows: pickRows },
+  ].filter((sec) => sec.rows.length);
+  SECTIONS.forEach((sec) => { sec.posts = sec.rows.flat(); });
+  const LABEL = { essay: 'Essays', postscript: 'Postscript', contra: 'Contra' };
+  // (a picture's widths per height: a postscript at its own, a review
+  // square — or a postscript alone, 4:5)
+  const kOf = (p, two) => { const k = kindOf(p); return k === 'postscript' ? (two ? ratioOf(p) : 0.8) : 1; };
+  SECTIONS.forEach((sec) => {
+    sec.rows.forEach((row, j) => {
+      const at = (side, extra) => rowAt(rowsMade, side, { sec: sec.key, rail: sec.rail, secFirst: j === 0 && rowsMade > 0, secLast: j === sec.rows.length - 1, ...extra });
+      const card = (p, side, extra) => {
+        const kind = kindOf(p);
+        return kind === 'essay'
+          ? renderMegaHero(p, { rev: true, label: 'Essays', trueHeight: true, row: at(side, { solo: true, big: true, ka: 1.5, kb: 0.0001, ...extra }) })
+          : renderMegaHero(p, { rev: true, label: LABEL[kind], kind, row: at(side, extra) });
+      };
+      if (row.length === 1) {
+        // (THE LATEST: words left, sliding left, away from its column on
+        // the right; the other sections turn about row by row, the first
+        // row sliding away from the column, under the far margin)
+        const toR = sec.key === 'latest' ? false : (sec.rail === 'l') === (j % 2 === 0);
+        blocks.push(card(row[0], 'a', { solo: true, ka: kOf(row[0], false), kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
+      } else {
+        // (a pair's two slide toward one another on its section's first
+        // row, over the mate, apart on the next, under the margins, and so
+        // on; each card's words on the side it slides away from)
+        const inward = j % 2 === 0;
+        const ka = kOf(row[0], true), kb = kOf(row[1], true);
+        blocks.push(card(row[0], 'a', { ka, kb, pairRow: true, alignR: !inward, slide: inward ? 'r' : 'l' }));
+        blocks.push(card(row[1], 'b', { ka, kb, pairRow: true, alignR: inward, slide: inward ? 'l' : 'r' }));
+      }
       rowsMade++;
-    } else if (ps || ct) {
-      const one = ps || ct, kind = ps ? 'postscript' : 'contra';
-      blocks.push(renderMegaHero(one, { rev: true, label: ps ? 'Postscript' : 'Contra', kind, row: rowAt(rowsMade, 'a', { solo: true, ka: ps ? 0.75 : 1, kb: 0.0001 }) }));
-      rowsMade++;
-    }
-  }
-  // THE LATEST'S RAIL: THE LATEST in the meta's Work Sans, and under it
-  // the kickers of the most recent posts of every kind, newest first,
-  // each to its post — and under each kicker its writer in the dek's
-  // Garamond italic, "by" them, or "w/" them for a postscript (a
-  // conversation): at the user's word, 2026-10-04 ("I want The Latest to
-  // just say THE LATEST, then after the kicker, a garamond dek italics
-  // with by Author or w/ Author for postscripts").
-  const RAIL_KICKERS = 6;
-  const seenKick = new Set();
-  // (a post with no kicker stands by its title — content-overrides.js
-  // gives it one)
+    });
+  });
+  // EACH SECTION'S COLUMN: its name in the meta's Work Sans, under it the
+  // kicker of each of its posts in the order they stand, each to its post,
+  // its writer after it in the dek's Garamond italic — "by" them, or "w/"
+  // them for a postscript (a conversation) — and VIEW ALL under the list,
+  // to the archive (THE LATEST to all of it, the others to their section).
+  // The post standing in the window lights its line (latest-rail.js).
   const railWord = (p) => stripEmMarkers(p.kicker || p.title || '');
-  const railPosts = [...essays, ...postscripts, ...contras]
-    .filter((p) => p && railWord(p) && p.date && !isNaN(p.date.getTime()))
-    .sort((a, b) => b.date - a.date)
-    .filter((p) => { const k = railWord(p).toLowerCase(); if (seenKick.has(k)) return false; seenKick.add(k); return true; })
-    .slice(0, RAIL_KICKERS);
-  const latestRailHtml = `\n  <aside class="latest-rail" aria-label="The latest"><div class="latest-rail__hold"><div class="latest-rail__in">`
-    + `<p class="latest-rail__meta">The Latest</p>`
-    + `<ul class="latest-rail__list">${railPosts.map((p) => {
-      const who = p.author && p.author !== SITE_NAME ? `${postscripts.includes(p) ? 'w/' : 'by'} ${p.author}` : '';
-      return `<li><a href="${escapeHtml(p.link)}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span>${who ? ` <span class="latest-rail__by">${escapeHtml(who)}</span>` : ''}</a></li>`;
+  const railHtml = (sec) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold"><div class="latest-rail__in">`
+    + `<p class="latest-rail__meta">${escapeHtml(sec.word)}</p>`
+    + `<ul class="latest-rail__list">${sec.posts.map((p) => {
+      const who = p.author && p.author !== SITE_NAME ? `${kindOf(p) === 'postscript' ? 'w/' : 'by'} ${p.author}` : '';
+      return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span>${who ? ` <span class="latest-rail__by">${escapeHtml(who)}</span>` : ''}</a></li>`;
     }).join('')}</ul>`
+    + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + `</div></div></aside>`;
-  console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length}; rail ${railPosts.length})`);
+  const latestRailHtml = SECTIONS.map(railHtml).join('');
+  const railPosts = SECTIONS.flatMap((sec) => sec.posts);
+  console.log(`ROWS ${rowsMade} (${SECTIONS.map((sec) => `${sec.key} ${sec.posts.length}`).join(', ')}; columns ${railPosts.length})`);
   void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
@@ -3037,8 +3131,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }
     const m = MOVEMENTS[Math.min(movement, MOVEMENTS.length - 1)];
     if (!open) openMovement(m);
+    const secOf = /card--sec-(latest|essays|postscript|contra|picks)\b/.exec(block);
     duoHtml += `
-  <div class="wrap m--${m}">
+  <div class="wrap m--${m}${secOf ? ` wrap--sec wrap--sec-${secOf[1]}${/card--sec-last\b/.test(block) ? ' wrap--sec-end' : ''}` : ''}">
     ${block}
   </div>${last || nextIsWord ? '' : `\n  <div class="row-divider m--${m}"></div>`}`;
   });
@@ -5334,7 +5429,7 @@ async function main() {
   applyDekBylines(allPosts);
   applyTitleHyphenation(allPosts);
 
-  const html = renderHomepage({ essays: homeEssays, postscripts: homePostscripts, contras: homeContras, archives: heroArchive });
+  const html = renderHomepage({ essays: homeEssays, postscripts: homePostscripts, contras: homeContras, archives: heroArchive, pool: allPosts });
 
   // give.html is only mined for assets now (see GIVE_SRC_PATH): the
   // founders' Substack links and signature images, the latter written out
