@@ -594,7 +594,9 @@ document.addEventListener('click', function (e) {
 // (…and held at 144 since the words settle evenly between the name and
 // the bird, placed by THE NAME SETTLES IN THE BAND WITH THE BIRD: "center
 // nav bar items between bird and wordmark inks")
-window.__ncStripSide = function () { return 144; };
+// (72 since 2026-10-04, at the user's word — "Move the band margins to
+// 72px on open and settle")
+window.__ncStripSide = function () { return 72; };
 
 // THE STRIP'S ITEMS EASE OUT AS IT RISES (design/stacked-wordmark,
 // 2026-10-02, at the user's word — "When page opens, nav bar items should
@@ -613,8 +615,13 @@ window.__ncStripSide = function () { return 144; };
     // (its resting place on the page: the name's block and the air under it)
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
-    var p = rest > 0 ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
-    var v = window.__ncStripSide(p).toFixed(2) + 'px';
+    var p = rest > 0 && !main.classList.contains('wm-banded') ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
+    // (72 where the page opens on the band: the bird and THE LAST
+    // MAGAZINE 72 from the sides — 36 for a while, "The edge of the last
+    // magazine should stretch to 36px from side", then "Move bird to start
+    // 72px from side" / "Same with the last magazine", then 36 again,
+    // "Move band margins to 36px" — "Actually 54px")
+    var v = (main.classList.contains('wm-banded') ? 54 : window.__ncStripSide(p)).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };
@@ -685,6 +692,17 @@ window.__ncStripInk = function () {
   // whole shrank about its middle before)
   var colL = wm && wm.querySelector('.tn-col--l'), colR = wm && wm.querySelector('.tn-col--r');
   if (!main || !strip || !wm || !stack || !rail || !slot || !colL || !colR) return;
+  // (THE NAME IN THE BAND, 2026-10-04: where the page opens on the band the
+  // band carries its own name and the bird — build.js, bandLogoHtml — and
+  // the strip's words stand in the strip's own row; nothing settles)
+  if (main.classList.contains('wm-banded')) {
+    // (the strip at the band's height from the first pixel, from 1024 up:
+    // 108, "make whole band 36px shorter")
+    var wideB = window.matchMedia('(min-width: 1024px)');
+    var setH = function () { if (wideB.matches) strip.style.setProperty('height', '108px', 'important'); else strip.style.removeProperty('height'); };
+    setH(); addEventListener('resize', setH);
+    return;
+  }
   var wide = window.matchMedia('(min-width: 1024px)');
   // (the bird three quarters of the strip's height, an eighth of it over
   // and under: 108 in 144 — "I want bird to be bigger in band", 2026-10-02,
@@ -700,7 +718,8 @@ window.__ncStripInk = function () {
   // disregard 36px requirement"; "center nav bar items between bird and
   // wordmark inks"; "center dot between edge and CRITIC" — they settled
   // 36 from the edges, the words easing in, for a few minutes)
-  var BIRD_SHARE = 0.75, GUTTER = 144, STRIP_SETTLED = 144;
+  var BIRD_SHARE = 0.75, STRIP_SETTLED = 144;
+  var banded = main.classList.contains('wm-banded');
   var halves = [].slice.call(strip.querySelectorAll('.sub-ticker-run > .sub-ticker-half')).filter(function (h) { return h.querySelector(':scope > b'); });
   var dot = strip.querySelector('.sub-ticker-run > .sub-ticker-half--flip');
   var geo = null, raf = 0, applied = false;
@@ -745,49 +764,61 @@ window.__ncStripInk = function () {
     if (!geo) { var was = applied; if (was) clear(); geo = measure(); }
     if (!geo) return;
     var y = window.pageYOffset || 0, B = geo.b;
-    var p = clamp(y / geo.rest, 0, 1);
+    // (THE PAGE OPENS ON THE BAND, 2026-10-04: no opening — the settle is
+    // drawn at its end from the first pixel, main.wm-banded)
+    var p = banded ? 1 : clamp(y / geo.rest, 0, 1);
     if (p <= 0 && !applied) return;
-    // (the bird: from where it stands to its seat in the pinned strip, in
-    // the middle of the gap The Last Magazine left)
+    // THE WHOLE NAME SHRINKS TOGETHER INTO THE BAND'S MIDDLE (2026-10-04,
+    // at the user's word — "Have the whole wordmark/logo shrink together
+    // into center of the band"): THE/NEW, the bird and CRI/TIC go as one
+    // body — at every step the opening's own arrangement, scaled about its
+    // middle (the ink's, across from THE's left to CRITIC's right and top
+    // to bottom) and carried to the settled strip's middle — down to the
+    // scale that makes the bird three quarters of the strip. Before, the
+    // bird flew to the middle on its own and the two columns to the sides.
     var shEnd = Math.max(geo.sh, STRIP_SETTLED);
     strip.style.setProperty('height', (geo.sh + (shEnd - geo.sh) * p).toFixed(2) + 'px', 'important');
-    var seatH = shEnd * BIRD_SHARE, sw = seatH * B.w / B.h;
-    var S = { l: geo.vw / 2 - sw / 2, t: (shEnd - seatH) / 2, h: seatH };
-    var box = { l: B.l + (S.l - B.l) * p, t: B.t + (S.t - B.t) * p, h: B.h + (S.h - B.h) * p };
+    var sEnd = (shEnd * BIRD_SHARE) / B.h, s = 1 + (sEnd - 1) * p;
+    var SIDE = 72;
+    // (…and to the strip's left, THE's ink on the 72 margin, where the page
+    // opens on the band: "move wordmark/logo to the left", 2026-10-04)
+    var C = { x: (geo.lc.l + geo.rc.r) / 2, y: geo.iy };
+    var C1 = { x: banded ? SIDE + sEnd * (C.x - geo.lc.l) : geo.vw / 2, y: shEnd / 2 };
+    var Cp = { x: C.x + (C1.x - C.x) * p, y: C.y + (C1.y - C.y) * p };
+    // (an element whose box stands at x0, y0, scaled about that corner: the
+    // move that puts every point of it where the body's scale puts it)
+    var move = function (x0, y0) { return { x: Cp.x - x0 - s * (C.x - x0), y: Cp.y - y0 - s * (C.y - y0) }; };
+    var mb = move(B.l, B.t);
     stack.style.setProperty('transform-origin', '0 0');
-    stack.style.setProperty('transform', 'translate(' + (box.l - B.l).toFixed(2) + 'px, ' + (box.t - B.t).toFixed(2) + 'px) scale(' + (box.h / B.h).toFixed(4) + ')');
+    stack.style.setProperty('transform', 'translate(' + mb.x.toFixed(2) + 'px, ' + mb.y.toFixed(2) + 'px) scale(' + s.toFixed(4) + ')');
     rail.style.setProperty('z-index', '73', 'important');
-    // (the letters: at the bird's scale, THE/NEW about its left edge and
-    // CRI/TIC about its right, both about the letters' middle top to
-    // bottom, rising to the strip's and drifting out to 36 from the sides)
-    var sEnd = seatH / B.h, s = 1 + (sEnd - 1) * p;
-    var rise = ((shEnd / 2 - geo.iy) * p).toFixed(2) + 'px';
-    // (each column settled in the middle of its gutter, THE/NEW as wide as
-    // CRI/TIC there — "Match TheNEW final width in band to CRITIC" — and so
-    // a little shorter)
-    var wR = (geo.rc.r - geo.rc.l) * sEnd, wL = wR;
-    var sL = 1 + (wL / (geo.lc.r - geo.lc.l) - 1) * p;
-    var lEnd = (GUTTER - wL) / 2, rEnd = geo.vw - (GUTTER - wR) / 2;
-    colL.style.setProperty('transform-origin', '0 ' + (geo.iy - geo.lc.t).toFixed(2) + 'px');
-    colR.style.setProperty('transform-origin', (geo.rc.r - geo.rc.l).toFixed(2) + 'px ' + (geo.iy - geo.rc.t).toFixed(2) + 'px');
-    colL.style.setProperty('scale', sL.toFixed(4));
-    colR.style.setProperty('scale', s.toFixed(4));
-    colL.style.setProperty('translate', ((lEnd - geo.lc.l) * p).toFixed(2) + 'px ' + rise);
-    colR.style.setProperty('translate', ((rEnd - geo.rc.r) * p).toFixed(2) + 'px ' + rise);
-    // (the strip's words: the first half evenly between the name's ink and
-    // the bird's on the left, the second on the right — as many gaps as
-    // words and one)
-    var half = Math.ceil(geo.words.length / 2);
-    var spread = function (ws, from, to) {
-      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0);
-      var g = (to - from - tot) / (ws.length + 1), x = from, out = [];
+    [[colL, geo.lc], [colR, geo.rc]].forEach(function (q) {
+      var m = move(q[1].l, q[1].t);
+      q[0].style.setProperty('transform-origin', '0 0');
+      q[0].style.setProperty('scale', s.toFixed(4));
+      q[0].style.setProperty('translate', m.x.toFixed(2) + 'px ' + m.y.toFixed(2) + 'px');
+    });
+    // (the strip's words either side of the settled name: SUBSCRIBE from
+    // the 72 margin and ABOUT to it, the gaps even from word to word and
+    // on to the name's ink — "Move the band margins to 72px on open and
+    // settle")
+    var gL = C1.x + sEnd * (geo.lc.l - C.x), gR = C1.x + sEnd * (geo.rc.r - C.x);
+    var half = banded ? 0 : Math.ceil(geo.words.length / 2);
+    var fromLeft = function (ws, from, to) {
+      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0), g = (to - from - tot) / ws.length, x = from, out = [];
+      ws.forEach(function (w) { out.push(x); x += w.w + g; });
+      return out;
+    };
+    var toRight = function (ws, from, to) {
+      var tot = ws.reduce(function (a, w) { return a + w.w; }, 0), g = (to - from - tot) / ws.length, x = from, out = [];
       ws.forEach(function (w) { x += g; out.push(x); x += w.w; });
       return out;
     };
-    var to = spread(geo.words.slice(0, half), lEnd + wL, S.l).concat(spread(geo.words.slice(half), S.l + sw, rEnd - wR));
+    var to = fromLeft(geo.words.slice(0, half), SIDE, gL).concat(toRight(geo.words.slice(half), gR, geo.vw - SIDE));
     halves.forEach(function (h, i) { h.style.setProperty('translate', ((to[i] - geo.words[i].l) * p).toFixed(2) + 'px 0'); });
-    // (the circle keeps the sheet's -50% that centres it top to bottom)
-    if (dot && geo.dot != null) dot.style.setProperty('translate', (((rEnd + geo.vw) / 2 - geo.dot) * p).toFixed(2) + 'px -50%', 'important');
+    // (the circle between the margin and the window's edge; it keeps the
+    // sheet's -50% that centres it top to bottom)
+    if (dot && geo.dot != null) dot.style.setProperty('translate', ((geo.vw - SIDE / 2 - geo.dot) * p).toFixed(2) + 'px -50%', 'important');
     applied = true;
     land(p >= 1);
   }
@@ -802,7 +833,9 @@ window.__ncStripInk = function () {
     landed = on;
     stack.classList.toggle('is-on-band', on);
     wm.classList.toggle('is-on-band', on);
-    if (on && aboutHref) {
+    // (where the page opens on the band the name and the bird stay the
+    // front page's — About is the strip's last word, The Last Magazine)
+    if (on && aboutHref && !banded) {
       stack.setAttribute('href', aboutHref);
       stack.setAttribute('aria-label', 'About The New Critic');
       stack.classList.remove('is-pair-lit');
@@ -840,7 +873,8 @@ window.__ncStripInk = function () {
 // name's block and the air under it.)
 (function () {
   var main = document.querySelector('main.wm-opening');
-  if (!main) return;
+  // (no opening to collapse where the page opens on the band)
+  if (!main || main.classList.contains('wm-banded')) return;
   var wide = window.matchMedia('(min-width: 1024px)');
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)');
   var COLLAPSE_MS = 900, WHEEL_QUIET = 220;

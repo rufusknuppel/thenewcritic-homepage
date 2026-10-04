@@ -77,6 +77,9 @@ const WORDMARK_CAP_EM = 0.708; // the words' cap, in the name's em (Avenir Next'
 // (widthEm: the word set to a width rather than to the cap — THE NAME
 // STACKED, where the four words stand at one width and each takes the
 // cap that width gives it)
+// (ONE CAP FOR ALL FOUR, 2026-10-04, at the user's word — "THE NEW and
+// CRITIC should be same heights": the stacked words are set to the one cap,
+// each as wide as its letters make it, where each was set to a width)
 function wordmarkWord(word, widthEm = 0) {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
@@ -96,6 +99,41 @@ function wordmarkWord(word, widthEm = 0) {
   const dip = stated ? (+stated[1]).toFixed(4) : ((maxY - (vb[1] + vb[3])) / vb[3]).toFixed(4);
   return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
     `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${h}em"`);
+}
+// THE NAME IN THE BAND, TWO LINES AND THE BIRD (2026-10-04, at the user's
+// word — "I want to see the wordmark as THENEW/CRITIC as two stacks with
+// bird to the right"): where the page opens on the band, the band carries
+// the name itself — THE NEW over CRITIC, ranged left on the 72 margin, the
+// bird to their right — drawn at the band's own size (style.css, THE NAME
+// IN THE BAND). Each line is its drawing at a cap of 1em, as wide as its
+// letters make it; the bird is the masthead's own, its filter's id its own.
+function bandWord(word) {
+  const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
+  const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
+  return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
+    `<svg class="band-logo__line" aria-hidden="true" focusable="false" style="width:${(vb[2] / vb[3]).toFixed(4)}em;height:1em"`);
+}
+// The band's bird in a 4.5:5 outline ("put bird in 4.5:5 outline matching
+// the roughness of the bird"): a rectangle drawn inside the bird's own
+// filter group, so the same turbulence roughens its edges. In the bird's
+// units: its box is 323.28 × 340.76 about (224.99, 250); the outline's
+// stroke is 12, 30 clear of the bird at the sides, and its outer edge
+// stands 4.5 wide to 5 tall.
+const BAND_FRAME = (() => {
+  const cx = 63.35 + 323.28 / 2, cy = 79.62 + 340.76 / 2, sw = 12;
+  const wo = 323.28 + 2 * (30 + sw), ho = wo * 5 / 4.5;
+  const r = n => +n.toFixed(2);
+  return { sw, wo: r(wo), ho: r(ho), x: r(cx - wo / 2), y: r(cy - ho / 2), cx, cy };
+})();
+function bandLogoHtml() {
+  const F = BAND_FRAME;
+  const rect = `<rect class="band-logo__frame" x="${+(F.x + F.sw / 2).toFixed(2)}" y="${+(F.y + F.sw / 2).toFixed(2)}" width="${+(F.wo - F.sw).toFixed(2)}" height="${+(F.ho - F.sw).toFixed(2)}" fill="none" stroke="currentColor" stroke-width="${F.sw}"/>`;
+  const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, 'wm-stamp-ink-band').replace('class="wm-bird"', 'class="band-logo__bird"')
+    .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
+    .replace(/(<filter id="wm-stamp-ink-band" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"/, `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
+    .replace(/(<g filter="url\(#wm-stamp-ink-band\)">)/, `$1${rect}`);
+  if (!bird.includes('band-logo__frame') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band frame: bird SVG did not take the outline');
+  return `<a class="band-logo" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
   return `<svg class="nc-stamp-defs" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nc-stamp" viewBox="${STAMP.viewBox}">${STAMP.inner}</symbol></svg>`;
@@ -1376,7 +1414,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <span class="topbar-name tn-stacked"><span class="tn-col tn-col--l"><span class="tn-the">${wordmarkWord('the', 3)}</span><span class="tn-new">${wordmarkWord('new', 3)}</span></span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-gap" aria-hidden="true"></span><span class="tn-col tn-col--r tn-critic"><span class="tn-cri">${wordmarkWord('cri', 2.29166)}</span><span class="tn-tic">${wordmarkWord('tic', 2.29166)}</span></span></span>
+    <span class="topbar-name tn-stacked"><span class="tn-col tn-col--l"><span class="tn-the">${wordmarkWord('the')}</span><span class="tn-new">${wordmarkWord('new')}</span></span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-gap" aria-hidden="true"></span><span class="tn-col tn-col--r tn-critic"><span class="tn-cri">${wordmarkWord('cri')}</span><span class="tn-tic">${wordmarkWord('tic')}</span></span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
@@ -1634,12 +1672,16 @@ function navStrip() {
     link(by('archive'), 'Archive'),
     // (ABOUT in EVENTS' place, design/stacked-wordmark, at the user's word —
     // "Replace events with About")
-    link(by('about'), 'About'),
+    // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-04, at the user's word —
+    // "Move The Last Magazine from the left of the homepage to replace the
+    // About as Helvetica": the strip's last word, in the strip's face, to
+    // About as About went)
+    link(by('about'), SITE_TAGLINE, 'sub-ticker-half--tlm'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
     // 2026-09-30; on 2026-10-01 it left for a chip in the window's corner,
     // became one circle there, and came back as that circle, the strip's
-    // last thing — themeChip)
-    `<span class="sub-ticker-half sub-ticker-half--flip">${themeChip()}</span>`,
+    // last thing — themeChip; THE CIRCLE IS STRUCK, 2026-10-04, at the
+    // user's word: "Remove color change dot")
   ].join('')}</span></nav>`;
 }
 
@@ -2554,7 +2596,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // row can hold (style.css, THE LATEST'S POSTS STAND TWO TO A ROW).
   const styles = [row ? `--row-ka: ${row.ka.toFixed(4)}; --row-kb: ${row.kb.toFixed(4)}; ${row.all}${row.fixedAt && row.fixedAt.has(2 * row.r) ? '; --row-fa: 1' : ''}${row.fixedAt && row.fixedAt.has(2 * row.r + 1) ? '; --row-fb: 1' : ''}` : '', picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
   const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}${hasX ? ' card--ovx' : ''}"${styles ? ` style="${styles}"` : ''}${row ? ` data-group="${row.g}" data-row="${row.i}" data-side="${row.side}"` : ''} data-slug="${escapeHtml(slug)}`;
-  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}` : ''}${trueH}">
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}${row.big ? ' card--row-big' : ''}` : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2825,30 +2867,58 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the essay takes the rest of the row (style.css, TEN ROWS). The
   // sections' banners and THE LATEST's name are gone, so every row
   // stands in the first movement.
-  const ROWS = 14;
-  let psAt = 0, ctAt = 0;
+  // THE LATEST BESIDE THE ROWS (2026-10-03, at the user's word: "On the
+  // left ... a Garamond dek that says 'The Last Magazine' ... THE LATEST
+  // ON, then ... the kickers for the most recent posts ... On the right,
+  // there should be a big essay. Then the next line should have a
+  // Postscript and a Contra that sit next to each other. These lines
+  // should alternate"): the rows stand in the window's right three
+  // quarters, alternating — an essay alone across the whole column, then
+  // a postscript and a review side by side — newest first. The left
+  // quarter holds THE LATEST's rail (latestRailHtml, below; style.css,
+  // THE LATEST BESIDE THE ROWS).
+  const PAIRS = 7;
   let rowsMade = 0;
-  for (let i = 0; i < ROWS && essays[i]; i++) {
-    const wantPs = i % 2 === 0;
-    let comp = null, kind = '';
-    if (wantPs && postscripts[psAt]) { comp = postscripts[psAt++]; kind = 'postscript'; }
-    else if (!wantPs && contras[ctAt]) { comp = contras[ctAt++]; kind = 'contra'; }
-    else if (postscripts[psAt]) { comp = postscripts[psAt++]; kind = 'postscript'; }
-    else if (contras[ctAt]) { comp = contras[ctAt++]; kind = 'contra'; }
-    const kc = kind === 'postscript' ? 0.75 : 1;
-    const essayLeft = i % 2 === 0;
-    // (side a is the left card, which the fitter stands first; the
-    // companion's width is held at its shape and the essay's is the rest)
-    const ka = essayLeft ? 1.5 : kc, kb = essayLeft ? kc : 1.5;
-    const fixedAt = new Set(comp ? [2 * i + (essayLeft ? 1 : 0)] : []);
-    const rowFor = (side) => ({ g: 'rows', i, r: i, side, solo: !comp, ka, kb: comp ? kb : 0.0001, all: '', fixedAt });
-    const essayCard = renderMegaHero(essays[i], { rev: true, label: 'Essays', trueHeight: true, row: rowFor(essayLeft ? 'a' : 'b') });
-    const compCard = comp ? renderMegaHero(comp, { rev: true, label: kind === 'postscript' ? 'Postscript' : 'Contra', kind, trueWidth: kind === 'postscript', row: rowFor(essayLeft ? 'b' : 'a') }) : '';
-    if (essayLeft) { blocks.push(essayCard); if (compCard) blocks.push(compCard); }
-    else { if (compCard) blocks.push(compCard); blocks.push(essayCard); }
+  const rowAt = (r, side, extra) => ({ g: 'rows', i: r, r, side, all: '', fixedAt: new Set(), ...extra });
+  for (let i = 0; i < PAIRS && essays[i]; i++) {
+    blocks.push(renderMegaHero(essays[i], { rev: true, label: 'Essays', trueHeight: true, row: rowAt(rowsMade, 'a', { solo: true, big: true, ka: 1.5, kb: 0.0001 }) }));
     rowsMade++;
+    const ps = postscripts[i], ct = contras[i];
+    if (ps && ct) {
+      blocks.push(renderMegaHero(ps, { rev: true, label: 'Postscript', kind: 'postscript', row: rowAt(rowsMade, 'a', { ka: 0.75, kb: 1 }) }));
+      blocks.push(renderMegaHero(ct, { rev: true, label: 'Contra', kind: 'contra', row: rowAt(rowsMade, 'b', { ka: 0.75, kb: 1 }) }));
+      rowsMade++;
+    } else if (ps || ct) {
+      const one = ps || ct, kind = ps ? 'postscript' : 'contra';
+      blocks.push(renderMegaHero(one, { rev: true, label: ps ? 'Postscript' : 'Contra', kind, row: rowAt(rowsMade, 'a', { solo: true, ka: ps ? 0.75 : 1, kb: 0.0001 }) }));
+      rowsMade++;
+    }
   }
-  console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length})`);
+  // THE LATEST'S RAIL: THE LATEST in the meta's Work Sans, and under it
+  // the kickers of the most recent posts of every kind, newest first,
+  // each to its post — and under each kicker its writer in the dek's
+  // Garamond italic, "by" them, or "w/" them for a postscript (a
+  // conversation): at the user's word, 2026-10-04 ("I want The Latest to
+  // just say THE LATEST, then after the kicker, a garamond dek italics
+  // with by Author or w/ Author for postscripts").
+  const RAIL_KICKERS = 6;
+  const seenKick = new Set();
+  // (a post with no kicker stands by its title — content-overrides.js
+  // gives it one)
+  const railWord = (p) => stripEmMarkers(p.kicker || p.title || '');
+  const railPosts = [...essays, ...postscripts, ...contras]
+    .filter((p) => p && railWord(p) && p.date && !isNaN(p.date.getTime()))
+    .sort((a, b) => b.date - a.date)
+    .filter((p) => { const k = railWord(p).toLowerCase(); if (seenKick.has(k)) return false; seenKick.add(k); return true; })
+    .slice(0, RAIL_KICKERS);
+  const latestRailHtml = `\n  <aside class="latest-rail" aria-label="The latest"><div class="latest-rail__hold"><div class="latest-rail__in">`
+    + `<p class="latest-rail__meta">The Latest</p>`
+    + `<ul class="latest-rail__list">${railPosts.map((p) => {
+      const who = p.author && p.author !== SITE_NAME ? `${postscripts.includes(p) ? 'w/' : 'by'} ${p.author}` : '';
+      return `<li><a href="${escapeHtml(p.link)}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span>${who ? ` <span class="latest-rail__by">${escapeHtml(who)}</span>` : ''}</a></li>`;
+    }).join('')}</ul>`
+    + `</div></div></aside>`;
+  console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length}; rail ${railPosts.length})`);
   void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
@@ -2904,7 +2974,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a>${themeChip()}</div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top')}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="sub-ticker-run">${bandLogoHtml()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the
@@ -2912,6 +2982,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // (the ticker stands in the rows now, under the band — 2026-09-24)
     // (THE LATEST's name is struck with the sections' titles: TEN ROWS)
     const lead = '';
+    railHere = m === 'latest';
     duoHtml += `${head}\n  <div class="movement-body">${lead}`; open = true;
   };
   // EVERY MOVEMENT CLOSES ON AN EMPTY BAND — the section band's own
@@ -2921,7 +2992,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // closes it.
   // (The empty foot bands are retired: a movement closes on its body,
   // and the next banner overtakes the head band directly.)
-  const closeMovement = () => { if (open) { duoHtml += '\n  </div>\n  </div>'; open = false; } };
+  // (the rail stands last in the latest movement's body, out of the
+  // rows' flow — the sheet seats the first row as the body's first child)
+  let railHere = false;
+  const closeMovement = () => { if (open) { duoHtml += `${railHere ? latestRailHtml : ''}\n  </div>\n  </div>`; open = false; railHere = false; } };
   blocks.forEach((block, i) => {
     const isBanner = /class="page-banner/.test(block);
     const isWord = /class="ops-word/.test(block);
@@ -3088,6 +3162,7 @@ ${renderCopyLinkScript()}
 ${renderLineDrawScript()}
 ${renderRailFixScript()}
 ${renderBandMarkScript()}
+${renderLatestRailScript()}
 ${renderEditModeScript()}
 ${renderCoverCueScript()}
 ${renderCardRevealScript()}
@@ -3249,7 +3324,10 @@ function renderFontGateScript() {
     // (LIGHT IS THE DEFAULT on design/stacked-wordmark, at the user's word —
     // "have default site color be white": the page stands on white, a
     // reader's stored Dark kept)
-    paint(chosen === 'dark' ? 'dark' : 'light');
+    // (THE CIRCLE IS STRUCK, 2026-10-04 — "Remove color change dot": with
+    // no way to turn the page over, a stored Dark is not applied, as when
+    // the mode words were struck)
+    paint('light');
   } catch (e) {}
   // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
   // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from
@@ -3614,6 +3692,14 @@ ${js}
 // courier and title — as the reader scrolls it into the window, its
 // picture fetched and decoded before it is shown (src/card-reveal.js;
 // style.css, EACH CARD ARRIVES WHOLE).
+// THE LATEST'S RAIL RIDES UP WITH THE ROWS (src/latest-rail.js)
+function renderLatestRailScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/latest-rail.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
+
 function renderCardRevealScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/card-reveal.js'), 'utf8'));
   return `<script>
@@ -3827,7 +3913,7 @@ function markMega(html) {
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
-    .replace('<main id="main">', '<main id="main" class="has-mega wm-opening">');
+    .replace('<main id="main">', '<main id="main" class="has-mega wm-opening wm-banded">');
 }
 
 // ---------- THREE COVERS HOLD THE PAGE, NOT TWENTY-THREE (2026-09-21) ----

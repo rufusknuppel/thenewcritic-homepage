@@ -3908,7 +3908,10 @@
   // so wordmark edges are 144px from sides": the name sized down so its
   // ink, THE's left to CRITIC's right, stands 144 from each edge, from
   // 1024 up; the phone keeps WORDMARK_SIDE)
-  var MAST_SIDE_STAMP = 144;
+  // (72 FROM EACH SIDE, 2026-10-04, at the user's word — "Move the band
+  // margins to 72px on open and settle": the name's ink, THE's left to
+  // CRITIC's right, stands 72 from each edge)
+  var MAST_SIDE_STAMP = 72;
   // THE BAND'S GARAMOND STANDS 72 OFF THE NAME'S INK (2026-09-23): the
   // head band's line under the masthead's THE NEW CRITIC and the
   // colophon's over the reprint's, ink to ink — the name's air is the 72
@@ -4313,8 +4316,11 @@
         // even; the name refits, CRITIC still 36 from the window's right)
         // (…AND THEN 9 CLOSER, the same day, at the user's word — "I want C
         // to crowd 9px closer to bird": 31 from the bird's ink to the C's)
-        var CRITIC_NUDGE = 4 - 9;
-        var g1Err = (36 + sw + 36 + CRITIC_NUDGE) - (ib.left - ia.right);
+        // (72 EITHER SIDE OF THE BIRD, 2026-10-04, at the user's word —
+        // "want 72px between bird and words too in open state": NEW to
+        // the bird's ink 72, the bird's to CRITIC's 72, the nudge gone)
+        var BIRD_GAP = 72;
+        var g1Err = (BIRD_GAP + sw + BIRD_GAP) - (ib.left - ia.right);
         if (Math.abs(g0Err) <= 0.05 && Math.abs(g1Err) <= 0.05) break;
         gap0.style.marginLeft = ((parseFloat(gap0.style.marginLeft) || 0) + g0Err).toFixed(2) + 'px';
         gapEl.style.marginLeft = ((parseFloat(gapEl.style.marginLeft) || 0) + g1Err).toFixed(2) + 'px';
@@ -4380,14 +4386,15 @@
       }
     }
     varSet(document.documentElement, '--masthead-air', AIR.toFixed(2) + 'px');
-    // (the stamp across: its left 36 past NEW's ink — the stack is pinned
-    // by its right, so that right is moved by what the left is off; band-
-    // mark.js seats its top on the cap)
+    // (the stamp across: its left 72 past NEW's ink — 36 until 2026-10-04,
+    // "want 72px between bird and words too in open state" — the stack is
+    // pinned by its right, so that right is moved by what the left is off;
+    // band-mark.js seats its top on the cap)
     if (stamp) {
       var iNew = inkSpanOf(tnNew), sr = stamp.getBoundingClientRect();
       if (iNew && sr.width) {
         var curRight = parseFloat(getComputedStyle(stackEl).right) || 0;
-        stackEl.style.setProperty('right', (curRight - (iNew.right + 36 - sr.left)).toFixed(2) + 'px', 'important');
+        stackEl.style.setProperty('right', (curRight - (iNew.right + 72 - sr.left)).toFixed(2) + 'px', 'important');
       }
     }
     var wb = f.wb, inkBottom = f.inkBottom;
@@ -7173,6 +7180,7 @@
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
     step('seatRowTitles', seatRowTitles);
+    step('fitRowScreens', fitRowScreens);
     step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
@@ -7197,6 +7205,45 @@
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
+  // EVERY ROW FILLS THE WINDOW (design/latest-rail, 2026-10-04, at the
+  // user's words — "On first load, set card height so that image fits in
+  // viewport with 72px above and below"; "72px from bottom of ink of card
+  // content"; "should set height for other cards, make postscripts
+  // slightly portrait to match"; "Keep Contras square"): where the page
+  // opens on the band, each row's pictures stand the window less the
+  // band, 72 over them, 72 under the row's lowest ink, and the depth its
+  // words hang under them (--card-words: an essay's own, a pair's the
+  // deeper of its two, written on both; spent in style.css, EVERY ROW
+  // FILLS THE WINDOW). The depth does not hang on the pictures' height
+  // (the widths set the words' lines), so one more pass settles it:
+  // rowKDirty.
+  function fitRowScreens() {
+    if (!bandedInk()) return;
+    var body = document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+    if (!body) return;
+    var cards = [].slice.call(body.querySelectorAll(':scope > .wrap > .card--mega'));
+    var depthOf = function (row) {
+      var pb = picBoxOf(row), ink = rowInk(row), cur = rowCourier(row);
+      if (!pb || !ink) return NaN;
+      return Math.max(ink.b, cur ? cur.b : -Infinity) - pb.b;
+    };
+    var put = function (rows, d) {
+      if (!(d >= 0 && d < 600)) return;
+      rows.forEach(function (row) {
+        var was = parseFloat(row.style.getPropertyValue('--card-words'));
+        if (isNaN(was) || Math.abs(was - d) > 0.5) { row.style.setProperty('--card-words', d.toFixed(2) + 'px'); rowKDirty = true; }
+      });
+    };
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      if (c.classList.contains('card--row-big')) { put([c], depthOf(c)); continue; }
+      var nb = cards[i + 1];
+      if (c.classList.contains('card--row-a') && nb && nb.classList.contains('card--row-b')) {
+        put([c, nb], Math.max(depthOf(c), depthOf(nb)));
+        i++;
+      }
+    }
+  }
   var wmSizeKey = '';
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
   // courier lines standing in the gap (rowInk) — ink to ink before.
@@ -7236,12 +7283,52 @@
     if (!w) { main.style.removeProperty('--std-w'); return; }
     varSet(main, '--std-w', ((w - 2 * ROW_GAP) / 3).toFixed(2) + 'px');
   }
+  // THE TITLES' OWN INK (design/latest-rail, 2026-10-04, at the user's
+  // word — "there should be 72px between each row"): where the page opens
+  // on the band, a title's foot is the foot of its last line's glyphs, not
+  // of its line box — a line box hangs the font's whole descent under the
+  // baseline, 15 at the cards' 43.75, so a title with no descender stood
+  // 15 further off than the gap was counted. The last line's letters are
+  // found by their own boxes, and the canvas measures how far under the
+  // baseline (the box's foot less the font's descent) they reach.
+  var inkCtx = null, bandedPage = null;
+  function bandedInk() {
+    if (bandedPage === null) bandedPage = !!document.querySelector('main.wm-banded');
+    return bandedPage && !ONE_COL.matches;
+  }
+  function inkFoot(el, rb) {
+    try {
+      var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = tw.nextNode())) nodes.push(n);
+      var rg = document.createRange(), txt = '', host = null;
+      outer: for (var i = nodes.length - 1; i >= 0; i--) {
+        var s = nodes[i].data;
+        for (var k = s.length - 1; k >= 0; k--) {
+          rg.setStart(nodes[i], k); rg.setEnd(nodes[i], k + 1);
+          var cr = rg.getClientRects(), r0 = null;
+          for (var q = 0; q < cr.length; q++) if (cr[q].width > 0) { r0 = cr[q]; break; }
+          if (!r0) continue;
+          if (r0.bottom < rb - 1) break outer;
+          txt = s[k] + txt; host = host || nodes[i].parentElement;
+        }
+      }
+      if (!txt.trim() || !host) return rb;
+      var cs = getComputedStyle(host);
+      inkCtx = inkCtx || document.createElement('canvas').getContext('2d');
+      inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = inkCtx.measureText(txt);
+      if (!isFinite(m.fontBoundingBoxDescent) || !isFinite(m.actualBoundingBoxDescent)) return rb;
+      return rb - m.fontBoundingBoxDescent + m.actualBoundingBoxDescent;
+    } catch (e) { return rb; }
+  }
   function rowInk(row) {
     var t = Infinity, b = -Infinity;
+    var inked = bandedInk();
     var add = function (el) {
       var rg = document.createRange(); rg.selectNodeContents(el);
-      var rs = rg.getClientRects();
-      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > b) b = rs[i].bottom; }
+      var rs = rg.getClientRects(), eb = -Infinity;
+      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > eb) eb = rs[i].bottom; }
+      if (isFinite(eb)) { if (inked) eb = inkFoot(el, eb); if (eb > b) b = eb; }
     };
     // THE COURIER SITS IN THE GAP (2026-09-23): the row is its pictures
     // and its words — not its courier lines, which stand in the 72
@@ -7405,13 +7492,18 @@
   // stands over it, sharing width within 36)
   function wordsSpanOf(row) {
     var l = Infinity, r = -Infinity, b = -Infinity;
+    var inked = bandedInk();
     [].forEach.call(row.querySelectorAll('.cover-meta, .swap-line, .swap-dek-ink'), function (m) {
       if (getComputedStyle(m).visibility === 'hidden') return;
       var rg = document.createRange(); rg.selectNodeContents(m);
+      var mb = -Infinity;
       [].forEach.call(rg.getClientRects(), function (x) {
         if (!x.width || !x.height) return;
-        l = Math.min(l, x.left); r = Math.max(r, x.right); b = Math.max(b, x.bottom);
+        l = Math.min(l, x.left); r = Math.max(r, x.right); mb = Math.max(mb, x.bottom);
       });
+      // (a title's foot its glyphs' where the page opens on the band: THE
+      // TITLES' OWN INK)
+      if (isFinite(mb)) b = Math.max(b, inked && !m.classList.contains('cover-meta') ? inkFoot(m, mb) : mb);
     });
     return isFinite(l) ? { l: l, r: r, b: b } : null;
   }
@@ -7694,7 +7786,11 @@
           // where they stand over it — 36 AROUND THE INK)
           // (after the pair, from the lower of the two: prevFoot is already
           // the lower, and the last picture alone would not say it)
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--row-b'))) {
+          // (…and never for a row's first card in the stack: a pair under
+          // an essay alone across the column stands its 72 under it, as
+          // every row does — "there should be 72px between each row",
+          // design/latest-rail, 2026-10-04)
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && (prev.classList.contains('card--row-b') || row.classList.contains('card--row-a')))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: the 36 is
@@ -7759,6 +7855,15 @@
       // (a closing pair's lower card: 2026-09-23)
       var lastA = last.classList.contains('card--pair-b') && rows[rows.length - 2];
       if (lastA) { var a2 = rowCourier(lastA), b2 = rowInk(lastA); foot = Math.max(foot, a2 ? a2.b : -Infinity, b2 ? b2.b : -Infinity); }
+      // (and every card of the closing row: its left card's title can
+      // run lower than its right's — THE LATEST BESIDE THE ROWS,
+      // 2026-10-03)
+      var lastRow = last.getAttribute('data-row'), lastGroup = last.getAttribute('data-group');
+      if (lastRow != null) rows.forEach(function (r) {
+        if (r === last || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup) return;
+        var a4 = rowCourier(r), b4 = rowInk(r);
+        foot = Math.max(foot, a4 ? a4.b : -Infinity, b4 ? b4.b : -Infinity);
+      });
       if (!isFinite(foot)) return;
       var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
       // (the foot's subscribe ticker, over the colophon, is the edge
@@ -7893,7 +7998,12 @@
       // (144 for an hour — "Increase space above and below first and last
       // content rows to 144px" — then 72 again: "Space above first post
       // and below last post should be 72px")
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
+      // (36 where the page opens on the band for a few minutes, design/
+      // latest-rail, 2026-10-04 — then 72 again, to the glyphs' own ink:
+      // "Increase top and bottom gap above content to 72px")
+      // (…and 36 again where the page opens on the band: "Move white
+      // margins around posts to 36px" — "Actually 54px")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
