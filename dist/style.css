@@ -11374,4 +11374,4 @@ html body main.has-mega .sub-ticker--nav .sub-ticker-half:is(*, .r.r.r.r.r.r.r.r
     --row-wa: calc(var(--stack-w) - 36px - var(--pair-h)) !important;
   }
 }
-html body{ font-variation-settings: "wght" 460; }
+html body, html body *{ font-variation-settings: "wght" 500 !important; }

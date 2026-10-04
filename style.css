@@ -23557,10 +23557,14 @@ html body main.has-mega .sub-ticker--nav .sub-ticker-half:is(*, .r.r.r.r.r.r.r.r
 /* (EVERY ROW FILLS THE WINDOW ends) */
 
 /* ---------- THE METADATA'S FACE A SHADE HEAVIER (2026-10-04) ----------
-   At the user's word ("Increase the weight of all the work sans
-   slightly"): Work Sans — the courier lines, the nav, every label in
-   it, all set at 400 — drawn at 460 on its weight axis. It is the
-   page's one variable face, so the axis set from the root moves it
-   alone (the static faces have no axis to answer it). */
-html body{ font-variation-settings: "wght" 460; }
+   At the user's words ("Increase the weight of all the work sans
+   slightly"; then "All the work sans should be same weight, want it to
+   be 500 weight"): Work Sans — the courier lines, the nav, every label
+   in it, all set at 400 — drawn at 500 on its weight axis, one weight
+   wherever it stands. It is the page's one variable face, so the axis
+   set on every element moves it alone (the static faces have no axis to
+   answer it) — on every element, not from the root by inheritance: a
+   button takes its face from the browser's own rule and inherits
+   nothing, so the PREVIEW corners and the archive's sorts stood at 400. */
+html body, html body *{ font-variation-settings: "wght" 500 !important; }
 /* (THE METADATA'S FACE A SHADE HEAVIER ends) */
