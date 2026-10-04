@@ -23382,17 +23382,21 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 /* (…then, "Have kickers be 18px unitalic Garamond, have it over one
    line, break if needed": the kicker in the Garamond's roman at 18 and
    its writer after it in the italic, one line, the two breaking where
-   the column runs out) */
-.latest-rail__list li + li{ margin-top: 12px; }
+   the column runs out; then larger, "Increase font sizes to 24px for
+   kickers" — "27px actually" — the writer kept at 18, "keep italics at
+   18px", on the kicker's baseline) */
+.latest-rail__list li + li{ margin-top: 14px; }
 .latest-rail__kick, .latest-rail__by{
   display: inline;
   font-family: var(--excerpt);
   font-weight: 400;
-  font-size: 18px;
-  line-height: 1.3;
+  font-size: 27px;
+  line-height: 1.2;
 }
 .latest-rail__kick{ font-style: normal; }
-.latest-rail__by{ font-style: italic; }
+/* (the writer kept whole — "by" and "w/" with the name — so a line
+   breaks between the kicker and its writer, never inside the writer) */
+.latest-rail__by{ font-style: italic; font-size: 18px; white-space: nowrap; }
 /* (THE LATEST BESIDE THE ROWS ends) */
 /* ---------- THE PAGE OPENS ON THE BAND (2026-10-04) ----------
    At the user's word ("Remove opening phase, just keep final band, move
@@ -23459,6 +23463,9 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
        strip's 339 of words with 36 between each: the whole name shrinks
        together under 1185. */
     font-size: min(43.37px, (100vw - 564px) * 0.06988);
+    /* (the bird 18 from the band's left, the strip's 36 less 18 — "move
+       bird to sit 18px from side") */
+    margin-left: -18px;
     line-height: 0;
     color: #FFFFFF;
     text-decoration: none;
