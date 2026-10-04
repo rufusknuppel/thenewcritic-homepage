@@ -23388,3 +23388,52 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   }
 }
 /* (THE PAGE OPENS ON THE BAND ends) */
+/* ---------- THE NAME IN THE BAND (2026-10-04) ----------
+   At the user's word ("I want to see the wordmark as THENEW/CRITIC as two
+   stacks with bird to the right"): from 1024 up, where the page opens on
+   the band, the band carries the name itself — THE NEW over CRITIC,
+   ranged left on the 72 margin, each line at a cap of 41.5 (the two
+   lines 96 tall with the opening's own gap between them, 0.3136 of the
+   cap), and the bird to their right, 108 tall (three quarters of the
+   band), 21 clear of THE NEW — the opening's 72, in proportion. The
+   strip's words follow in the strip's row, its padding and its
+   space-between giving the even gaps from the name to the last word on
+   the right margin. White, the mark's blue under the hand. The opening's
+   name and bird keep their places, unseen: the page's lift is read off
+   them (THE PAGE OPENS ON THE BAND). */
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
+    height: 144px !important;
+  }
+  html body main.has-mega.wm-opening.wm-banded .site-nav--top .topbar-wordmark,
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .rail-stack{
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo{
+    display: flex;
+    align-items: center;
+    gap: 21px;
+    flex: 0 0 auto;
+    color: #FFFFFF;
+    text-decoration: none;
+    pointer-events: auto;
+  }
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo:is(:hover, :focus-visible){
+    color: var(--nc-mark, #458BD7);
+  }
+  .band-logo__name{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 13.01px;
+    font-size: 41.5px;
+    line-height: 0;
+  }
+  .band-logo__line{ display: block; overflow: visible; fill: currentColor; }
+  .band-logo__bird{ display: block; height: 108px; width: auto; aspect-ratio: 323.28 / 340.76; overflow: visible; fill: currentColor; color: inherit; }
+}
+@media (max-width: 1023.98px){
+  .band-logo{ display: none !important; }
+}
+/* (THE NAME IN THE BAND ends) */

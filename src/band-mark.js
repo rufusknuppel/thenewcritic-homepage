@@ -687,6 +687,16 @@ window.__ncStripInk = function () {
   // whole shrank about its middle before)
   var colL = wm && wm.querySelector('.tn-col--l'), colR = wm && wm.querySelector('.tn-col--r');
   if (!main || !strip || !wm || !stack || !rail || !slot || !colL || !colR) return;
+  // (THE NAME IN THE BAND, 2026-10-04: where the page opens on the band the
+  // band carries its own name and the bird — build.js, bandLogoHtml — and
+  // the strip's words stand in the strip's own row; nothing settles)
+  if (main.classList.contains('wm-banded')) {
+    // (the strip at its settled height from the first pixel, from 1024 up)
+    var wideB = window.matchMedia('(min-width: 1024px)');
+    var setH = function () { if (wideB.matches) strip.style.setProperty('height', '144px', 'important'); else strip.style.removeProperty('height'); };
+    setH(); addEventListener('resize', setH);
+    return;
+  }
   var wide = window.matchMedia('(min-width: 1024px)');
   // (the bird three quarters of the strip's height, an eighth of it over
   // and under: 108 in 144 — "I want bird to be bigger in band", 2026-10-02,

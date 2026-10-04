@@ -11298,3 +11298,38 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
     margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px))) !important;
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
+    height: 144px !important;
+  }
+  html body main.has-mega.wm-opening.wm-banded .site-nav--top .topbar-wordmark,
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .rail-stack{
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo{
+    display: flex;
+    align-items: center;
+    gap: 21px;
+    flex: 0 0 auto;
+    color: #FFFFFF;
+    text-decoration: none;
+    pointer-events: auto;
+  }
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo:is(:hover, :focus-visible){
+    color: var(--nc-mark, #458BD7);
+  }
+  .band-logo__name{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 13.01px;
+    font-size: 41.5px;
+    line-height: 0;
+  }
+  .band-logo__line{ display: block; overflow: visible; fill: currentColor; }
+  .band-logo__bird{ display: block; height: 108px; width: auto; aspect-ratio: 323.28 / 340.76; overflow: visible; fill: currentColor; color: inherit; }
+}
+@media (max-width: 1023.98px){
+  .band-logo{ display: none !important; }
+}
