@@ -17,7 +17,8 @@
     var body = rail.parentElement;
     var rest = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
-    if (!main.classList.contains('wm-opening')) rest = 0;
+    // (no rest where there is no opening: the page opens on the band, 2026-10-04)
+    if (!main.classList.contains('wm-opening') || main.classList.contains('wm-banded')) rest = 0;
     var bodyTop = body.getBoundingClientRect().top + (window.pageYOffset || 0);
     var top = Math.max(0, rest + STRIP_SETTLED - bodyTop);
     var cur = parseFloat(rail.style.top) || 0;

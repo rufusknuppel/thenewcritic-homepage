@@ -77,6 +77,9 @@ const WORDMARK_CAP_EM = 0.708; // the words' cap, in the name's em (Avenir Next'
 // (widthEm: the word set to a width rather than to the cap — THE NAME
 // STACKED, where the four words stand at one width and each takes the
 // cap that width gives it)
+// (ONE CAP FOR ALL FOUR, 2026-10-04, at the user's word — "THE NEW and
+// CRITIC should be same heights": the stacked words are set to the one cap,
+// each as wide as its letters make it, where each was set to a width)
 function wordmarkWord(word, widthEm = 0) {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
@@ -1376,7 +1379,7 @@ function renderNav(currentKey = 'home') {
   // two rules (see THE TOP HEADER in style.css).
   return `<nav class="site-nav site-nav--top">
   <a class="wordmark topbar-wordmark" href="${currentKey === 'home' ? '#top' : './#top'}" aria-label="The New Critic — to the top of the front page">
-    <span class="topbar-name tn-stacked"><span class="tn-col tn-col--l"><span class="tn-the">${wordmarkWord('the', 3)}</span><span class="tn-new">${wordmarkWord('new', 3)}</span></span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-gap" aria-hidden="true"></span><span class="tn-col tn-col--r tn-critic"><span class="tn-cri">${wordmarkWord('cri', 2.29166)}</span><span class="tn-tic">${wordmarkWord('tic', 2.29166)}</span></span></span>
+    <span class="topbar-name tn-stacked"><span class="tn-col tn-col--l"><span class="tn-the">${wordmarkWord('the')}</span><span class="tn-new">${wordmarkWord('new')}</span></span><span class="tn-gap0" aria-hidden="true"></span><span class="tn-gap" aria-hidden="true"></span><span class="tn-col tn-col--r tn-critic"><span class="tn-cri">${wordmarkWord('cri')}</span><span class="tn-tic">${wordmarkWord('tic')}</span></span></span>
   </a>
   ${currentKey === 'home'
     // MOVEMENT ONE'S RAIL IS A TRACK LIKE THE REST. It used to be the
@@ -1634,7 +1637,11 @@ function navStrip() {
     link(by('archive'), 'Archive'),
     // (ABOUT in EVENTS' place, design/stacked-wordmark, at the user's word —
     // "Replace events with About")
-    link(by('about'), 'About'),
+    // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-04, at the user's word —
+    // "Move The Last Magazine from the left of the homepage to replace the
+    // About as Helvetica": the strip's last word, in the strip's face, to
+    // About as About went)
+    link(by('about'), SITE_TAGLINE),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
     // 2026-09-30; on 2026-10-01 it left for a chip in the window's corner,
     // became one circle there, and came back as that circle, the strip's
@@ -2866,7 +2873,6 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     .filter((p) => { const k = railWord(p).toLowerCase(); if (seenKick.has(k)) return false; seenKick.add(k); return true; })
     .slice(0, RAIL_KICKERS);
   const latestRailHtml = `\n  <aside class="latest-rail" aria-label="The latest"><div class="latest-rail__hold"><div class="latest-rail__in">`
-    + `<p class="latest-rail__dek">${escapeHtml(SITE_TAGLINE)}</p>`
     + `<p class="latest-rail__meta">The Latest On</p>`
     + `<ul class="latest-rail__list">${railPosts.map((p) => `<li><a href="${escapeHtml(p.link)}">${escapeHtml(railWord(p))}</a></li>`).join('')}</ul>`
     + `</div></div></aside>`;
@@ -3862,7 +3868,7 @@ function markMega(html) {
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
-    .replace('<main id="main">', '<main id="main" class="has-mega wm-opening">');
+    .replace('<main id="main">', '<main id="main" class="has-mega wm-opening wm-banded">');
 }
 
 // ---------- THREE COVERS HOLD THE PAGE, NOT TWENTY-THREE (2026-09-21) ----

@@ -11271,7 +11271,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   line-height: 1.15;
 }
 .latest-rail__meta{
-  margin: 36px 0 0;
+  margin: 0;
   font-family: var(--byline-face);
   font-weight: 400;
   font-size: var(--courier-size);
@@ -11292,4 +11292,9 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
 .latest-rail__list a:hover{ color: var(--nc-mark, #458BD7); }
 @media (max-width: 1023.98px){
   .latest-rail{ display: none; }
+}
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded{
+    margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px))) !important;
+  }
 }

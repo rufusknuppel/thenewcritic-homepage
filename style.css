@@ -23350,7 +23350,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   line-height: 1.15;
 }
 .latest-rail__meta{
-  margin: 36px 0 0;
+  margin: 0;
   font-family: var(--byline-face);
   font-weight: 400;
   font-size: var(--courier-size);
@@ -23373,3 +23373,18 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   .latest-rail{ display: none; }
 }
 /* (THE LATEST BESIDE THE ROWS ends) */
+/* ---------- THE PAGE OPENS ON THE BAND (2026-10-04) ----------
+   At the user's word ("Remove opening phase, just keep final band, move
+   wordmark/logo to the left"): from 1024 up the opening screen is gone —
+   the page is lifted by the opening's own height (the name's block and
+   the air under it, the same sum the strip rests on) — main itself, so
+   its grounds go with it, so the strip stands
+   pinned at the top from the first pixel and the name and the bird stand
+   settled in it (band-mark.js, main.wm-banded: the settle drawn at its
+   end, the collapse stood down). */
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded{
+    margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px))) !important;
+  }
+}
+/* (THE PAGE OPENS ON THE BAND ends) */

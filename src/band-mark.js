@@ -615,7 +615,7 @@ window.__ncStripSide = function () { return 72; };
     // (its resting place on the page: the name's block and the air under it)
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
-    var p = rest > 0 ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
+    var p = rest > 0 && !main.classList.contains('wm-banded') ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
     var v = window.__ncStripSide(p).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
@@ -703,6 +703,7 @@ window.__ncStripInk = function () {
   // wordmark inks"; "center dot between edge and CRITIC" — they settled
   // 36 from the edges, the words easing in, for a few minutes)
   var BIRD_SHARE = 0.75, STRIP_SETTLED = 144;
+  var banded = main.classList.contains('wm-banded');
   var halves = [].slice.call(strip.querySelectorAll('.sub-ticker-run > .sub-ticker-half')).filter(function (h) { return h.querySelector(':scope > b'); });
   var dot = strip.querySelector('.sub-ticker-run > .sub-ticker-half--flip');
   var geo = null, raf = 0, applied = false;
@@ -747,7 +748,9 @@ window.__ncStripInk = function () {
     if (!geo) { var was = applied; if (was) clear(); geo = measure(); }
     if (!geo) return;
     var y = window.pageYOffset || 0, B = geo.b;
-    var p = clamp(y / geo.rest, 0, 1);
+    // (THE PAGE OPENS ON THE BAND, 2026-10-04: no opening — the settle is
+    // drawn at its end from the first pixel, main.wm-banded)
+    var p = banded ? 1 : clamp(y / geo.rest, 0, 1);
     if (p <= 0 && !applied) return;
     // THE WHOLE NAME SHRINKS TOGETHER INTO THE BAND'S MIDDLE (2026-10-04,
     // at the user's word — "Have the whole wordmark/logo shrink together
@@ -760,7 +763,11 @@ window.__ncStripInk = function () {
     var shEnd = Math.max(geo.sh, STRIP_SETTLED);
     strip.style.setProperty('height', (geo.sh + (shEnd - geo.sh) * p).toFixed(2) + 'px', 'important');
     var sEnd = (shEnd * BIRD_SHARE) / B.h, s = 1 + (sEnd - 1) * p;
-    var C = { x: (geo.lc.l + geo.rc.r) / 2, y: geo.iy }, C1 = { x: geo.vw / 2, y: shEnd / 2 };
+    var SIDE = 72;
+    // (…and to the strip's left, THE's ink on the 72 margin, where the page
+    // opens on the band: "move wordmark/logo to the left", 2026-10-04)
+    var C = { x: (geo.lc.l + geo.rc.r) / 2, y: geo.iy };
+    var C1 = { x: banded ? SIDE + sEnd * (C.x - geo.lc.l) : geo.vw / 2, y: shEnd / 2 };
     var Cp = { x: C.x + (C1.x - C.x) * p, y: C.y + (C1.y - C.y) * p };
     // (an element whose box stands at x0, y0, scaled about that corner: the
     // move that puts every point of it where the body's scale puts it)
@@ -779,9 +786,8 @@ window.__ncStripInk = function () {
     // the 72 margin and ABOUT to it, the gaps even from word to word and
     // on to the name's ink — "Move the band margins to 72px on open and
     // settle")
-    var SIDE = 72;
     var gL = C1.x + sEnd * (geo.lc.l - C.x), gR = C1.x + sEnd * (geo.rc.r - C.x);
-    var half = Math.ceil(geo.words.length / 2);
+    var half = banded ? 0 : Math.ceil(geo.words.length / 2);
     var fromLeft = function (ws, from, to) {
       var tot = ws.reduce(function (a, w) { return a + w.w; }, 0), g = (to - from - tot) / ws.length, x = from, out = [];
       ws.forEach(function (w) { out.push(x); x += w.w + g; });
@@ -811,7 +817,9 @@ window.__ncStripInk = function () {
     landed = on;
     stack.classList.toggle('is-on-band', on);
     wm.classList.toggle('is-on-band', on);
-    if (on && aboutHref) {
+    // (where the page opens on the band the name and the bird stay the
+    // front page's — About is the strip's last word, The Last Magazine)
+    if (on && aboutHref && !banded) {
       stack.setAttribute('href', aboutHref);
       stack.setAttribute('aria-label', 'About The New Critic');
       stack.classList.remove('is-pair-lit');
@@ -849,7 +857,8 @@ window.__ncStripInk = function () {
 // name's block and the air under it.)
 (function () {
   var main = document.querySelector('main.wm-opening');
-  if (!main) return;
+  // (no opening to collapse where the page opens on the band)
+  if (!main || main.classList.contains('wm-banded')) return;
   var wide = window.matchMedia('(min-width: 1024px)');
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)');
   var COLLAPSE_MS = 900, WHEEL_QUIET = 220;
