@@ -1676,7 +1676,7 @@ function navStrip() {
     // "Move The Last Magazine from the left of the homepage to replace the
     // About as Helvetica": the strip's last word, in the strip's face, to
     // About as About went)
-    link(by('about'), SITE_TAGLINE),
+    link(by('about'), SITE_TAGLINE, 'sub-ticker-half--tlm'),
     // (LIGHT / DARK / HEX stood here as the strip's last word from
     // 2026-09-30; on 2026-10-01 it left for a chip in the window's corner,
     // became one circle there, and came back as that circle, the strip's
