@@ -616,7 +616,10 @@ window.__ncStripSide = function () { return 72; };
     var rest = (parseFloat(getComputedStyle(root).getPropertyValue('--masthead-h')) || 0)
       + (parseFloat(main.style.getPropertyValue('--wm-under') || getComputedStyle(main).getPropertyValue('--wm-under')) || 0);
     var p = rest > 0 && !main.classList.contains('wm-banded') ? Math.min(1, Math.max(0, (window.pageYOffset || 0) / rest)) : 1;
-    var v = window.__ncStripSide(p).toFixed(2) + 'px';
+    // (36 where the page opens on the band: the name and THE LAST
+    // MAGAZINE 36 from the sides — "The edge of the last magazine should
+    // stretch to 36px from side")
+    var v = (main.classList.contains('wm-banded') ? 36 : window.__ncStripSide(p)).toFixed(2) + 'px';
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };
@@ -691,9 +694,10 @@ window.__ncStripInk = function () {
   // band carries its own name and the bird — build.js, bandLogoHtml — and
   // the strip's words stand in the strip's own row; nothing settles)
   if (main.classList.contains('wm-banded')) {
-    // (the strip at its settled height from the first pixel, from 1024 up)
+    // (the strip at the band's height from the first pixel, from 1024 up:
+    // 108, "make whole band 36px shorter")
     var wideB = window.matchMedia('(min-width: 1024px)');
-    var setH = function () { if (wideB.matches) strip.style.setProperty('height', '144px', 'important'); else strip.style.removeProperty('height'); };
+    var setH = function () { if (wideB.matches) strip.style.setProperty('height', '108px', 'important'); else strip.style.removeProperty('height'); };
     setH(); addEventListener('resize', setH);
     return;
   }

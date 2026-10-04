@@ -23384,9 +23384,13 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
    end, the collapse stood down). */
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded{
-    margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px))) !important;
+    margin-top: calc(-1 * (var(--masthead-h, 0px) + var(--wm-under, 0px)) - (144px - var(--strip-settled, 144px))) !important;
   }
 }
+/* (…and the band 36 shorter, 108 — "make whole band 36px shorter": the
+   rows were seated 72 under a 144 band, so the page lifts by the 36 the
+   band gave up, and the rows stand 72 under it still; --strip-settled,
+   THE NAME IN THE BAND) */
 /* (THE PAGE OPENS ON THE BAND ends) */
 /* ---------- THE NAME IN THE BAND (2026-10-04) ----------
    At the user's words ("I want to see the wordmark as THENEW/CRITIC as
@@ -23406,8 +23410,9 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
    name and bird keep their places, unseen: the page's lift is read off
    them (THE PAGE OPENS ON THE BAND). */
 @media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded{ --strip-settled: 108px; }
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
-    height: 144px !important;
+    height: 108px !important;
   }
   html body main.has-mega.wm-opening.wm-banded .site-nav--top .topbar-wordmark,
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .rail-stack{
@@ -23420,10 +23425,16 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
     column-gap: 0.6323em;
     align-items: center;
     flex: 0 0 auto;
-    /* (the cap: 41.5, or less where the band is too narrow for the name
-       — 14.41 caps wide — and the strip's 339 of words with 36 between
-       each: the whole name shrinks together under 1238) */
-    font-size: min(41.5px, (100vw - 640px) * 0.0694);
+    /* ("Make the whole wordmark/logo bigger so that stamp edges sit 18px
+       from the top/bottom of band and wordmark sits 36px from left
+       side"; then "make whole band 36px shorter"): the band 108, the
+       outline 72 tall (1.66 caps) in it, 18 from its top and foot, so
+       the cap is 43.37, the name 36 from the band's left (the strip's
+       side at 36, as THE LAST MAGAZINE's on the right). Less where the
+       band is too narrow for the name — 14.31 caps wide — and the
+       strip's 339 of words with 36 between each: the whole name shrinks
+       together under 1185. */
+    font-size: min(43.37px, (100vw - 564px) * 0.06988);
     line-height: 0;
     color: #FFFFFF;
     text-decoration: none;
