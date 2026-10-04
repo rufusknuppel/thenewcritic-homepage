@@ -7363,6 +7363,8 @@
   // dividers should actually be 54px and blue", "charcoal actually", "I
   // want dividers to be 36px", "Set section dividers to 9px")
   var SECTION_GAP = 117;
+  // (the blue rule hung under the band: style.css, --band-rule)
+  var BAND_RULE = 9;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -7643,7 +7645,11 @@
                   // above and below first and last content rows to 144px" —
                   // then 72 again: "Space above first post and below last
                   // post should be 72px")
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + Math.max(0, 144 - topStrip.offsetHeight) : COURIER_GAP);
+                  // (and the band's blue rule hung under it, the 54 taken from the
+                  // rule's foot — "Want a blue divider under the band and
+                  // above the colophon too", 2026-10-04: style.css, THE
+                  // UNDERLINE DRAWS)
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + Math.max(0, 144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
