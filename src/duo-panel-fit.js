@@ -7180,6 +7180,7 @@
     step('seatWordClips', seatWordClips);
     step('seatSwapCols', seatSwapCols);
     step('seatRowTitles', seatRowTitles);
+    step('fitRowScreens', fitRowScreens);
     step('seatRowGaps', seatRowGaps);
     // (again: the first can read the rows before an essay's words have
     // settled under its picture, and a second pass finds them)
@@ -7204,6 +7205,45 @@
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
+  // EVERY ROW FILLS THE WINDOW (design/latest-rail, 2026-10-04, at the
+  // user's words — "On first load, set card height so that image fits in
+  // viewport with 72px above and below"; "72px from bottom of ink of card
+  // content"; "should set height for other cards, make postscripts
+  // slightly portrait to match"; "Keep Contras square"): where the page
+  // opens on the band, each row's pictures stand the window less the
+  // band, 72 over them, 72 under the row's lowest ink, and the depth its
+  // words hang under them (--card-words: an essay's own, a pair's the
+  // deeper of its two, written on both; spent in style.css, EVERY ROW
+  // FILLS THE WINDOW). The depth does not hang on the pictures' height
+  // (the widths set the words' lines), so one more pass settles it:
+  // rowKDirty.
+  function fitRowScreens() {
+    if (!bandedInk()) return;
+    var body = document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+    if (!body) return;
+    var cards = [].slice.call(body.querySelectorAll(':scope > .wrap > .card--mega'));
+    var depthOf = function (row) {
+      var pb = picBoxOf(row), ink = rowInk(row), cur = rowCourier(row);
+      if (!pb || !ink) return NaN;
+      return Math.max(ink.b, cur ? cur.b : -Infinity) - pb.b;
+    };
+    var put = function (rows, d) {
+      if (!(d >= 0 && d < 600)) return;
+      rows.forEach(function (row) {
+        var was = parseFloat(row.style.getPropertyValue('--card-words'));
+        if (isNaN(was) || Math.abs(was - d) > 0.5) { row.style.setProperty('--card-words', d.toFixed(2) + 'px'); rowKDirty = true; }
+      });
+    };
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      if (c.classList.contains('card--row-big')) { put([c], depthOf(c)); continue; }
+      var nb = cards[i + 1];
+      if (c.classList.contains('card--row-a') && nb && nb.classList.contains('card--row-b')) {
+        put([c, nb], Math.max(depthOf(c), depthOf(nb)));
+        i++;
+      }
+    }
+  }
   var wmSizeKey = '';
   // 72 BETWEEN THE CARDS (2026-09-23): picture to picture now, the
   // courier lines standing in the gap (rowInk) — ink to ink before.

@@ -23528,3 +23528,39 @@ html body main.has-mega .sub-ticker--nav .sub-ticker-half:is(*, .r.r.r.r.r.r.r.r
   text-transform: uppercase !important;
 }
 /* (THE NAV IN THE METADATA'S FACE ends) */
+
+/* ---------- EVERY ROW FILLS THE WINDOW (2026-10-04) ----------
+   At the user's words ("On first load, set card height so that image
+   fits in viewport with 72px above and below"; "72px from bottom of ink
+   of card content"; "should set height for other cards, make
+   postscripts slightly portrait to match"; "Keep Contras square"):
+   where the page opens on the band, a row's pictures stand the window's
+   height less the band, 72 over them and 72 under the row's lowest ink
+   — less the depth its courier and title hang under the pictures, read
+   by the fitter (--card-words, duo-panel-fit.js, fitRowScreens). An
+   essay alone across the column, its cover cut to that shape. A pair:
+   the review square at the row's height, the postscript the rest of
+   the column beside it, portrait — and never narrower than 4 wide to 5
+   high, so where the column is too narrow for a pair a whole window
+   tall the pair stands shorter (the column less its 36, over 1.8). */
+@media (min-width: 1024px){
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .wrap > .card--mega.card--row-big:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --rows-h: calc(100svh - var(--strip-settled, 108px) - 144px - var(--card-words, 0px)) !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .wrap > .card--mega:is(.card--row-a, .card--row-b):not(.card--row-big):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    --pair-h: min(calc(100svh - var(--strip-settled, 108px) - 144px - var(--card-words, 0px)), calc((var(--stack-w) - 36px) / 1.8));
+    --rows-h: var(--pair-h) !important;
+    --row-wb: var(--pair-h) !important;
+    --row-wa: calc(var(--stack-w) - 36px - var(--pair-h)) !important;
+  }
+}
+/* (EVERY ROW FILLS THE WINDOW ends) */
+
+/* ---------- THE METADATA'S FACE A SHADE HEAVIER (2026-10-04) ----------
+   At the user's word ("Increase the weight of all the work sans
+   slightly"): Work Sans — the courier lines, the nav, every label in
+   it, all set at 400 — drawn at 460 on its weight axis. It is the
+   page's one variable face, so the axis set from the root moves it
+   alone (the static faces have no axis to answer it). */
+html body{ font-variation-settings: "wght" 460; }
+/* (THE METADATA'S FACE A SHADE HEAVIER ends) */
