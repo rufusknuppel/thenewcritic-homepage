@@ -2957,12 +2957,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   const fresh = (list) => list.filter((p) => p && !taken.has(p)).slice(0, SEC_N);
   const ones = (list) => list.map((p) => [p]);
   const SECTIONS = [
+    // (every column on the right since 2026-10-04 — "Switch it so all
+    // charcoal columns are on the right"; ESSAYS and CONTRA stood left)
     { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'r', rows: ones(latestPosts) },
-    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'l', rows: ones(fresh(essays)) },
+    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'r', rows: ones(fresh(essays)) },
     // (one to a row in every section now — "In postscript/contra sections,
     // make one a row and editor's")
     { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'r', rows: ones(fresh(postscripts)) },
-    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: ones(fresh(contras)) },
+    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'r', rows: ones(fresh(contras)) },
     { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'r', rows: ones(pickRows.flat()) },
   ].filter((sec) => sec.rows.length);
   SECTIONS.forEach((sec) => { sec.posts = sec.rows.flat(); });
