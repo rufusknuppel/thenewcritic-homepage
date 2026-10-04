@@ -3001,15 +3001,19 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   });
   // EACH SECTION'S COLUMN: its name in the meta's Work Sans, under it the
   // kicker of each of its posts in the order they stand, each to its post,
-  // its writer after it in the dek's Garamond italic — "by" them, or "w/"
-  // them for a postscript (a conversation) — and VIEW ALL under the list,
+  // its writer after it in the dek's Garamond italic — the name alone, or
+  // "w/" them for a postscript (a conversation) — and VIEW ALL under the
+  // list,
   // to the archive (THE LATEST to all of it, the others to their section).
   // The post standing in the window lights its line (latest-rail.js).
   const railWord = (p) => stripEmMarkers(p.kicker || p.title || '');
   const railHtml = (sec) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold"><div class="latest-rail__in">`
     + `<p class="latest-rail__meta">${escapeHtml(sec.word)}</p>`
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
-      const who = p.author && p.author !== SITE_NAME ? `${kindOf(p) === 'postscript' ? 'w/' : 'by'} ${p.author}` : '';
+      // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
+      // latest column. Keep w/"; "No keep authors. Just remove the word
+      // 'by'": a conversation's guest still "w/" them)
+      const who = p.author && p.author !== SITE_NAME ? `${kindOf(p) === 'postscript' ? 'w/ ' : ''}${p.author}` : '';
       return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span>${who ? ` <span class="latest-rail__by">${escapeHtml(who)}</span>` : ''}</a></li>`;
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
