@@ -86,11 +86,15 @@ function wordmarkWord(word, widthEm = 0) {
   // the fitter keeps the masthead's block open to it, so the Cs' bowls
   // are not shaved flat on the baseline — "The bottom of the cs in
   // Critic look cut off")
-  const nums = ((svg.match(/ d="([^"]+)"/) || [])[1] || '').match(/-?[\d.]+/g) || [];
+  // (a drawing with curves states its own dip — its arcs bottom out between
+  // their end points — as data-dip on the svg; a traced one is read off its
+  // points: THE LETTERS REDRAWN UPRIGHT, 2026-10-04)
+  const stated = svg.match(/^<svg[^>]* data-dip="([\d.]+)"/);
+  const nums = stated ? [] : ((svg.match(/ d="([^"]+)"/) || [])[1] || '').match(/-?[\d.]+/g) || [];
   let maxY = vb[1] + vb[3];
   for (let i = 1; i < nums.length; i += 2) maxY = Math.max(maxY, +nums[i]);
-  const dip = ((maxY - (vb[1] + vb[3])) / vb[3]).toFixed(4);
-  return svg.replace(/^<svg xmlns="[^"]*"/,
+  const dip = stated ? (+stated[1]).toFixed(4) : ((maxY - (vb[1] + vb[3])) / vb[3]).toFixed(4);
+  return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
     `<svg class="tn-svg" aria-hidden="true" focusable="false" data-dip="${dip}" style="width:${w}em;height:${h}em"`);
 }
 function renderStampDefs() {
