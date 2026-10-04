@@ -7243,12 +7243,52 @@
     if (!w) { main.style.removeProperty('--std-w'); return; }
     varSet(main, '--std-w', ((w - 2 * ROW_GAP) / 3).toFixed(2) + 'px');
   }
+  // THE TITLES' OWN INK (design/latest-rail, 2026-10-04, at the user's
+  // word — "there should be 72px between each row"): where the page opens
+  // on the band, a title's foot is the foot of its last line's glyphs, not
+  // of its line box — a line box hangs the font's whole descent under the
+  // baseline, 15 at the cards' 43.75, so a title with no descender stood
+  // 15 further off than the gap was counted. The last line's letters are
+  // found by their own boxes, and the canvas measures how far under the
+  // baseline (the box's foot less the font's descent) they reach.
+  var inkCtx = null, bandedPage = null;
+  function bandedInk() {
+    if (bandedPage === null) bandedPage = !!document.querySelector('main.wm-banded');
+    return bandedPage && !ONE_COL.matches;
+  }
+  function inkFoot(el, rb) {
+    try {
+      var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = tw.nextNode())) nodes.push(n);
+      var rg = document.createRange(), txt = '', host = null;
+      outer: for (var i = nodes.length - 1; i >= 0; i--) {
+        var s = nodes[i].data;
+        for (var k = s.length - 1; k >= 0; k--) {
+          rg.setStart(nodes[i], k); rg.setEnd(nodes[i], k + 1);
+          var cr = rg.getClientRects(), r0 = null;
+          for (var q = 0; q < cr.length; q++) if (cr[q].width > 0) { r0 = cr[q]; break; }
+          if (!r0) continue;
+          if (r0.bottom < rb - 1) break outer;
+          txt = s[k] + txt; host = host || nodes[i].parentElement;
+        }
+      }
+      if (!txt.trim() || !host) return rb;
+      var cs = getComputedStyle(host);
+      inkCtx = inkCtx || document.createElement('canvas').getContext('2d');
+      inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = inkCtx.measureText(txt);
+      if (!isFinite(m.fontBoundingBoxDescent) || !isFinite(m.actualBoundingBoxDescent)) return rb;
+      return rb - m.fontBoundingBoxDescent + m.actualBoundingBoxDescent;
+    } catch (e) { return rb; }
+  }
   function rowInk(row) {
     var t = Infinity, b = -Infinity;
+    var inked = bandedInk();
     var add = function (el) {
       var rg = document.createRange(); rg.selectNodeContents(el);
-      var rs = rg.getClientRects();
-      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > b) b = rs[i].bottom; }
+      var rs = rg.getClientRects(), eb = -Infinity;
+      for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > eb) eb = rs[i].bottom; }
+      if (isFinite(eb)) { if (inked) eb = inkFoot(el, eb); if (eb > b) b = eb; }
     };
     // THE COURIER SITS IN THE GAP (2026-09-23): the row is its pictures
     // and its words — not its courier lines, which stand in the 72
@@ -7412,13 +7452,18 @@
   // stands over it, sharing width within 36)
   function wordsSpanOf(row) {
     var l = Infinity, r = -Infinity, b = -Infinity;
+    var inked = bandedInk();
     [].forEach.call(row.querySelectorAll('.cover-meta, .swap-line, .swap-dek-ink'), function (m) {
       if (getComputedStyle(m).visibility === 'hidden') return;
       var rg = document.createRange(); rg.selectNodeContents(m);
+      var mb = -Infinity;
       [].forEach.call(rg.getClientRects(), function (x) {
         if (!x.width || !x.height) return;
-        l = Math.min(l, x.left); r = Math.max(r, x.right); b = Math.max(b, x.bottom);
+        l = Math.min(l, x.left); r = Math.max(r, x.right); mb = Math.max(mb, x.bottom);
       });
+      // (a title's foot its glyphs' where the page opens on the band: THE
+      // TITLES' OWN INK)
+      if (isFinite(mb)) b = Math.max(b, inked && !m.classList.contains('cover-meta') ? inkFoot(m, mb) : mb);
     });
     return isFinite(l) ? { l: l, r: r, b: b } : null;
   }
@@ -7701,7 +7746,11 @@
           // where they stand over it — 36 AROUND THE INK)
           // (after the pair, from the lower of the two: prevFoot is already
           // the lower, and the last picture alone would not say it)
-          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && prev.classList.contains('card--row-b'))) {
+          // (…and never for a row's first card in the stack: a pair under
+          // an essay alone across the column stands its 72 under it, as
+          // every row does — "there should be 72px between each row",
+          // design/latest-rail, 2026-10-04)
+          if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && (prev.classList.contains('card--row-b') || row.classList.contains('card--row-a')))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
             // (THE COURIER STANDS OVER THE PICTURE, 2026-09-30: the 36 is
@@ -7909,10 +7958,10 @@
       // (144 for an hour — "Increase space above and below first and last
       // content rows to 144px" — then 72 again: "Space above first post
       // and below last post should be 72px")
-      // (36 where the page opens on the band, design/latest-rail,
-      // 2026-10-04: "Want the content to start 36px from the top and end
-      // 36px from the bottom")
-      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 36 : 72) : COURIER_GAP;
+      // (36 where the page opens on the band for a few minutes, design/
+      // latest-rail, 2026-10-04 — then 72 again, to the glyphs' own ink:
+      // "Increase top and bottom gap above content to 72px")
+      var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? 72 : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
     edges.forEach(function (j) {
