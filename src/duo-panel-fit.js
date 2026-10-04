@@ -7759,6 +7759,15 @@
       // (a closing pair's lower card: 2026-09-23)
       var lastA = last.classList.contains('card--pair-b') && rows[rows.length - 2];
       if (lastA) { var a2 = rowCourier(lastA), b2 = rowInk(lastA); foot = Math.max(foot, a2 ? a2.b : -Infinity, b2 ? b2.b : -Infinity); }
+      // (and every card of the closing row: its left card's title can
+      // run lower than its right's — THE LATEST BESIDE THE ROWS,
+      // 2026-10-03)
+      var lastRow = last.getAttribute('data-row'), lastGroup = last.getAttribute('data-group');
+      if (lastRow != null) rows.forEach(function (r) {
+        if (r === last || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup) return;
+        var a4 = rowCourier(r), b4 = rowInk(r);
+        foot = Math.max(foot, a4 ? a4.b : -Infinity, b4 ? b4.b : -Infinity);
+      });
       if (!isFinite(foot)) return;
       var mv = body.parentElement, next = mv.nextElementSibling, target = null, line = null;
       // (the foot's subscribe ticker, over the colophon, is the edge

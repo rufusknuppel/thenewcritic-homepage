@@ -2554,7 +2554,7 @@ function renderMegaHero(post, { rev = false, label = 'The Latest', m2 = false, s
   // row can hold (style.css, THE LATEST'S POSTS STAND TWO TO A ROW).
   const styles = [row ? `--row-ka: ${row.ka.toFixed(4)}; --row-kb: ${row.kb.toFixed(4)}; ${row.all}${row.fixedAt && row.fixedAt.has(2 * row.r) ? '; --row-fa: 1' : ''}${row.fixedAt && row.fixedAt.has(2 * row.r + 1) ? '; --row-fb: 1' : ''}` : '', picR ? `--pic-r: ${picR.toFixed(4)}` : '', hasOv ? `--ov-w: ${(+ov.w).toFixed(5)}; --ov-r: ${(+ov.r).toFixed(5)}` : '', hasX ? `--ov-x: ${(+ov.x).toFixed(5)}` : '', hasOv && +ov.dy && !Number.isFinite(+ov.y) ? `--ov-dy: ${(+ov.dy).toFixed(5)}` : '', hasOv && ov.y != null && Number.isFinite(+ov.y) ? `--ov-y: ${(+ov.y).toFixed(5)}` : ''].filter(Boolean).join('; ');
   const trueH = `${picR ? ` ${kind ? 'card--true-w' : 'card--true-h'}` : ''}${hasOv ? ' card--ov' : ''}${hasX ? ' card--ovx' : ''}"${styles ? ` style="${styles}"` : ''}${row ? ` data-group="${row.g}" data-row="${row.i}" data-side="${row.side}"` : ''} data-slug="${escapeHtml(slug)}`;
-  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}` : ''}${trueH}">
+  return `<section class="card card--duo card--split card--mega${!rev ? ' card--mega-rev' : ''}${m2 ? ' card--m2' : ''}${kind ? ` card--kind-${kind}` : ''}${pair ? ` card--pair-${pair}` : ''}${flip ? ' card--pair-flip' : ''}${alignR ? ' card--align-r' : ''}${row ? ` card--row-${row.side}${row.solo ? ' card--row-solo' : ''}${row.big ? ' card--row-big' : ''}` : ''}${trueH}">
         ${half}${stack ? stackHtml(stack, stackSide, stackHref) : ''}</section>`;
 }
 
@@ -2825,30 +2825,52 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // the essay takes the rest of the row (style.css, TEN ROWS). The
   // sections' banners and THE LATEST's name are gone, so every row
   // stands in the first movement.
-  const ROWS = 14;
-  let psAt = 0, ctAt = 0;
+  // THE LATEST BESIDE THE ROWS (2026-10-03, at the user's word: "On the
+  // left ... a Garamond dek that says 'The Last Magazine' ... THE LATEST
+  // ON, then ... the kickers for the most recent posts ... On the right,
+  // there should be a big essay. Then the next line should have a
+  // Postscript and a Contra that sit next to each other. These lines
+  // should alternate"): the rows stand in the window's right three
+  // quarters, alternating — an essay alone across the whole column, then
+  // a postscript and a review side by side — newest first. The left
+  // quarter holds THE LATEST's rail (latestRailHtml, below; style.css,
+  // THE LATEST BESIDE THE ROWS).
+  const PAIRS = 7;
   let rowsMade = 0;
-  for (let i = 0; i < ROWS && essays[i]; i++) {
-    const wantPs = i % 2 === 0;
-    let comp = null, kind = '';
-    if (wantPs && postscripts[psAt]) { comp = postscripts[psAt++]; kind = 'postscript'; }
-    else if (!wantPs && contras[ctAt]) { comp = contras[ctAt++]; kind = 'contra'; }
-    else if (postscripts[psAt]) { comp = postscripts[psAt++]; kind = 'postscript'; }
-    else if (contras[ctAt]) { comp = contras[ctAt++]; kind = 'contra'; }
-    const kc = kind === 'postscript' ? 0.75 : 1;
-    const essayLeft = i % 2 === 0;
-    // (side a is the left card, which the fitter stands first; the
-    // companion's width is held at its shape and the essay's is the rest)
-    const ka = essayLeft ? 1.5 : kc, kb = essayLeft ? kc : 1.5;
-    const fixedAt = new Set(comp ? [2 * i + (essayLeft ? 1 : 0)] : []);
-    const rowFor = (side) => ({ g: 'rows', i, r: i, side, solo: !comp, ka, kb: comp ? kb : 0.0001, all: '', fixedAt });
-    const essayCard = renderMegaHero(essays[i], { rev: true, label: 'Essays', trueHeight: true, row: rowFor(essayLeft ? 'a' : 'b') });
-    const compCard = comp ? renderMegaHero(comp, { rev: true, label: kind === 'postscript' ? 'Postscript' : 'Contra', kind, trueWidth: kind === 'postscript', row: rowFor(essayLeft ? 'b' : 'a') }) : '';
-    if (essayLeft) { blocks.push(essayCard); if (compCard) blocks.push(compCard); }
-    else { if (compCard) blocks.push(compCard); blocks.push(essayCard); }
+  const rowAt = (r, side, extra) => ({ g: 'rows', i: r, r, side, all: '', fixedAt: new Set(), ...extra });
+  for (let i = 0; i < PAIRS && essays[i]; i++) {
+    blocks.push(renderMegaHero(essays[i], { rev: true, label: 'Essays', trueHeight: true, row: rowAt(rowsMade, 'a', { solo: true, big: true, ka: 1.5, kb: 0.0001 }) }));
     rowsMade++;
+    const ps = postscripts[i], ct = contras[i];
+    if (ps && ct) {
+      blocks.push(renderMegaHero(ps, { rev: true, label: 'Postscript', kind: 'postscript', row: rowAt(rowsMade, 'a', { ka: 0.75, kb: 1 }) }));
+      blocks.push(renderMegaHero(ct, { rev: true, label: 'Contra', kind: 'contra', row: rowAt(rowsMade, 'b', { ka: 0.75, kb: 1 }) }));
+      rowsMade++;
+    } else if (ps || ct) {
+      const one = ps || ct, kind = ps ? 'postscript' : 'contra';
+      blocks.push(renderMegaHero(one, { rev: true, label: ps ? 'Postscript' : 'Contra', kind, row: rowAt(rowsMade, 'a', { solo: true, ka: ps ? 0.75 : 1, kb: 0.0001 }) }));
+      rowsMade++;
+    }
   }
-  console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length})`);
+  // THE LATEST'S RAIL: the magazine's line in the dek's Garamond, THE
+  // LATEST ON in the meta's Work Sans, and under it the kickers of the
+  // most recent posts of every kind, newest first, each to its post.
+  const RAIL_KICKERS = 6;
+  const seenKick = new Set();
+  // (a post with no kicker stands by its title — content-overrides.js
+  // gives it one)
+  const railWord = (p) => stripEmMarkers(p.kicker || p.title || '');
+  const railPosts = [...essays, ...postscripts, ...contras]
+    .filter((p) => p && railWord(p) && p.date && !isNaN(p.date.getTime()))
+    .sort((a, b) => b.date - a.date)
+    .filter((p) => { const k = railWord(p).toLowerCase(); if (seenKick.has(k)) return false; seenKick.add(k); return true; })
+    .slice(0, RAIL_KICKERS);
+  const latestRailHtml = `\n  <aside class="latest-rail" aria-label="The latest"><div class="latest-rail__hold"><div class="latest-rail__in">`
+    + `<p class="latest-rail__dek">${escapeHtml(SITE_TAGLINE)}</p>`
+    + `<p class="latest-rail__meta">The Latest On</p>`
+    + `<ul class="latest-rail__list">${railPosts.map((p) => `<li><a href="${escapeHtml(p.link)}">${escapeHtml(railWord(p))}</a></li>`).join('')}</ul>`
+    + `</div></div></aside>`;
+  console.log(`ROWS ${rowsMade} (essays ${essays.length}, postscripts ${postscripts.length}, reviews ${contras.length}; rail ${railPosts.length})`);
   void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;
   // THE FOUR GROUNDS. Each movement stands on its own colour, and the
   // three chrome banners are the joins — a banner OPENS the movement
@@ -2912,6 +2934,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // (the ticker stands in the rows now, under the band — 2026-09-24)
     // (THE LATEST's name is struck with the sections' titles: TEN ROWS)
     const lead = '';
+    railHere = m === 'latest';
     duoHtml += `${head}\n  <div class="movement-body">${lead}`; open = true;
   };
   // EVERY MOVEMENT CLOSES ON AN EMPTY BAND — the section band's own
@@ -2921,7 +2944,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // closes it.
   // (The empty foot bands are retired: a movement closes on its body,
   // and the next banner overtakes the head band directly.)
-  const closeMovement = () => { if (open) { duoHtml += '\n  </div>\n  </div>'; open = false; } };
+  // (the rail stands last in the latest movement's body, out of the
+  // rows' flow — the sheet seats the first row as the body's first child)
+  let railHere = false;
+  const closeMovement = () => { if (open) { duoHtml += `${railHere ? latestRailHtml : ''}\n  </div>\n  </div>`; open = false; railHere = false; } };
   blocks.forEach((block, i) => {
     const isBanner = /class="page-banner/.test(block);
     const isWord = /class="ops-word/.test(block);
