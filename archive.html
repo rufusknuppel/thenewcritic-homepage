@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=7fceb562">
+<link rel="stylesheet" href="style.css?v=b11686af">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -392,11 +392,11 @@
   
   <section class="ledger" aria-label="Every post">
     <div class="ledger-body">
-  <div class="ledger-item" data-title="safe at slutcon" data-author="overlocked" data-date="1790872418796" data-kicker="bay area seduction camp" data-section="essays" data-slug="safe-at-slutcon">
+  <div class="ledger-item" data-title="safe at slutcon" data-author="overlocked" data-date="1790872418796" data-kicker="seduction camp" data-section="essays" data-slug="safe-at-slutcon">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/safe-at-slutcon" rel="noopener">
       <span class="ledger-cell lc-title">Safe at SlutCon</span>
       <span class="ledger-cell lc-author">overlocked</span>
-      <span class="ledger-cell lc-kicker">Bay Area Seduction Camp</span>
+      <span class="ledger-cell lc-kicker">Seduction Camp</span>
       <span class="ledger-cell lc-section">Essays</span>
       <span class="ledger-cell lc-date">Oct 1, 2026</span>
     </a>
@@ -410,11 +410,11 @@
       <span class="ledger-cell lc-date">Sep 28, 2026</span>
     </a>
   </div>
-  <div class="ledger-item" data-title="high school or claude?" data-author="eli goldfine" data-date="1790363988824" data-kicker="ai middle school" data-section="postscript" data-slug="high-school-or-claude">
+  <div class="ledger-item" data-title="high school or claude?" data-author="eli goldfine" data-date="1790363988824" data-kicker="middle school post-ai" data-section="postscript" data-slug="high-school-or-claude">
     <a class="ledger-row" href="https://www.thenewcritic.com/p/high-school-or-claude" rel="noopener">
       <span class="ledger-cell lc-title">High School or Claude?</span>
       <span class="ledger-cell lc-author">Eli Goldfine</span>
-      <span class="ledger-cell lc-kicker">AI Middle School</span>
+      <span class="ledger-cell lc-kicker">Middle School Post-AI</span>
       <span class="ledger-cell lc-section">Postscript</span>
       <span class="ledger-cell lc-date">Sep 25, 2026</span>
     </a>
@@ -5809,7 +5809,7 @@
   }
   var COURIER_GAP = 36;
   var ROWS_GAP = 54;
-  var ROW_STEP = 72;
+  var ROW_STEP = 108;
   var SECTION_GAP = ROW_STEP;
   var BAND_RULE = 9;
   function rowCourier(row) {
@@ -5987,7 +5987,7 @@
                     if (rEl === topStrip) break;
                   }
                   var opening = !!document.querySelector('main.wm-opening');
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + Math.max(0, 144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 var kInk = Infinity;
                 [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
