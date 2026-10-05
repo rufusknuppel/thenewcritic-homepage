@@ -9015,6 +9015,12 @@
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
     });
+    // (and the pictures laid afresh in their windows once seated: the
+    // window's own resize ran that before the fit had seated them, and a
+    // picture stayed the old window's size — "Why is image off on the
+    // right and bottom?"; card-open.js, recal)
+    clearTimeout(seatSlides.t);
+    seatSlides.t = setTimeout(function () { try { window.dispatchEvent(new Event('newcritic:seated')); } catch (e) {} }, 0);
   }
   // PREVIEW IN THE COURIER'S OTHER CORNER (2026-10-01): the hand on a
   // picture offers Read Now alone (essay-acts.js), and Preview stands on

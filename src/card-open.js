@@ -315,6 +315,9 @@
   };
   var due = 0;
   var later = function () { if (due) return; due = requestAnimationFrame(function () { due = 0; recal(); }); };
+  // (whenever the fitter seats the pictures afresh, too: duo-panel-fit.js,
+  // seatSlides)
+  addEventListener('newcritic:seated', later);
   ['newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(function () { rest(); later(); }, 0); }, { passive: true });
   });
