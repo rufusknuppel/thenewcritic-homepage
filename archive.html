@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=551a1326">
+<link rel="stylesheet" href="style.css?v=dc985ce2">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6611,6 +6611,7 @@
   var SLIDE_MARGIN = 36;
   var SLIDE_LESS = 108;
   var SOLO_COL = 290, SLIDE_GAP = 36, COLUMN_SIDE = 54;
+  var FRAME = 3, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
   function slideDir(card) {
     var sec = card.closest('section.card');
     return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
@@ -6647,8 +6648,10 @@
       var wc = Math.min(P.r - P.l, Q.r - Q.l);
       var right = Q.l > P.l;
       var gap = right ? Q.l - P.r : P.l - Q.r;
+      var framed = bandedInk() && !!seat.out;
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
+      if (framed) { wb += FRAME_W; dx = wb * (right ? 1 : -1); }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -6680,6 +6683,25 @@
       ss.top = (P.t - SLIDE_MARGIN - cr0.top).toFixed(2) + 'px';
       ss.width = (P.r - P.l + 2 * SLIDE_MARGIN).toFixed(2) + 'px';
       ss.height = (P.b - P.t + SLIDE_MARGIN).toFixed(2) + 'px';
+      var fr = card.querySelector(':scope > .card-frame');
+      if (framed) {
+        if (!fr) {
+          fr = document.createElement('span');
+          fr.className = 'card-frame';
+          fr.setAttribute('aria-hidden', 'true');
+          fr.innerHTML = '<span class="card-frame-seam"></span>';
+          card.appendChild(fr);
+        }
+        var Ec = columnEdge(card, seat.d);
+        var fl = right ? P.l : Ec, frr = right ? Ec : P.r;
+        var seamX = right ? P.l + wb - FRAME : P.r - wb;
+        var fs = fr.style;
+        fs.left = (fl - cr0.left).toFixed(2) + 'px';
+        fs.top = (P.t - cr0.top).toFixed(2) + 'px';
+        fs.width = (frr - fl).toFixed(2) + 'px';
+        fs.height = (P.b - P.t).toFixed(2) + 'px';
+        fr.firstChild.style.left = (seamX - fl - FRAME).toFixed(2) + 'px';
+      } else if (fr) fr.remove();
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -6835,7 +6857,7 @@
           var seat = slideSeat(j.card, { l: Fl, r: Fr, t: B.t, b: B.b });
           var Q = seat && seat.Q;
           if (Q) {
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS;
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_W : 0);
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
             j.slide = true;
@@ -6845,6 +6867,7 @@
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
+      if (j.slide && bandedInk()) j.bp = { l: FRAME + FRAME_PAD, r: FRAME + FRAME_PAD, t: SWAP_PAD, b: SWAP_PAD };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
