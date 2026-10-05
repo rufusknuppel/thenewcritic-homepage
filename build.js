@@ -1812,17 +1812,14 @@ function renderColophonBand(mk = '') {
 // COLOPHON IS THE BAND TURNED OVER). The band's track ends on its top
 // (latest-rail.js), so it pushes the band off as it comes up.
 function renderHomeColophon() {
-  // (the socials one run with commas between, centred between Est. and
-  // the copyright, which keep their places — "Same with social media at
-  // the bottom. Est. and Copyright should remain in their current
-  // position", 2026-10-05)
+  // (the socials stood as one run with commas for a day, 2026-10-05 — "Same
+  // with social media at the bottom" — and spread again at the user's word
+  // the next: "Remove comma spacing from colophon")
   const links = [
-    '<span class="colo-socials">' + [
-      '<a href="https://www.thenewcritic.com" rel="noopener">Substack</a>',
-      '<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>',
-      '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
-      '<a href="mailto:editors@thenewcritic.com">Email</a>',
-    ].join(', ') + '</span>',
+    '<a href="https://www.thenewcritic.com" rel="noopener">Substack</a>',
+    '<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>',
+    '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
+    '<a href="mailto:editors@thenewcritic.com">Email</a>',
     '<span>Copyright The New Critic, Inc.</span>',
   ];
   // (EST. MAY 2025 opens the row — "Move Est. to the left of the colophon")

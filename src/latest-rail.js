@@ -254,24 +254,42 @@
         var l = r.left - m.actualBoundingBoxLeft, rr = r.left + m.actualBoundingBoxRight + tr * (n - 1);
         return { l: l, r: rr, inL: l - bx.left, inR: bx.right - rr, w: bx.width };
       });
+      // (no margins on the words while they are read)
+      words.forEach(function (c) { c.style.removeProperty('margin-left'); });
+      var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
       if (run && low && frame && ink.length > 1) {
         var lb = low.getBBox(), lm = low.getScreenCTM();
         var fb = frame.getBBox(), fm = frame.getScreenCTM();
         var sw = parseFloat(frame.getAttribute('stroke-width')) || 0;
         var x0 = lm.a * (lb.x + lb.width) + lm.e;
         var x1 = fm.a * (fb.x - sw / 2) + fm.e;
+        // EVEN FROM THE NAME'S INK TO THE BIRD'S (2026-10-05, at the user's
+        // word — "space nav bar items equally between bird ink and wordmark
+        // ink"): the birds stand bare since that morning, so the far end is
+        // the swallow's own ink, not the frame's; one gap G from CRITIC's
+        // last stroke to SUBSCRIBE's ink, between each word's ink and the
+        // next's, and from THE LAST MAGAZINE's to the swallow's — the row
+        // set from its start (style.css, EVEN FROM INK TO INK), each word
+        // after the first given the margin that makes its ink gap G.
+        var bm = birdInk && birdInk.getScreenCTM && birdInk.getScreenCTM();
+        if (bm) { var bb = birdInk.getBBox(); x1 = bm.a * bb.x + bm.e; }
+        var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
+        var G = (x1 - x0 - inkAll) / (ink.length + 1);
         var inkW = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
         // (SUBSCRIBE 54 off the name's ink and THE LAST MAGAZINE 54 off the
         // stamp's outline since 2026-10-04 — "Set the lastmagazine and
         // subscribe 54px from stamp and wordmark" — the words between them
         // spread evenly in what is left: g is the ends' 54, and the row's
         // space-between spreads the middle)
-        var g = 54;
+        var g = G;
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
         var lead = (x0 + g - ink[0].inL) - (rb.left + padL);
         var trail = (rb.right - padR) - (x1 - g + ink[ink.length - 1].inR);
         if (g > 0 && lead > 0 && trail > 0) {
+          for (var wi = 1; wi < words.length; wi++) {
+            words[wi].style.setProperty('margin-left', (g - ink[wi - 1].inR - ink[wi].inL).toFixed(2) + 'px', 'important');
+          }
           st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
           st.style.setProperty('--band-trail', trail.toFixed(2) + 'px');
         } else {
