@@ -7385,7 +7385,9 @@
   // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
   // (4.5 since later that day: "Increase dividing line to 4.5px"; then 9,
   // "Increase to 9px")
-  var BAND_RULE = 9;
+  // (2 since later on 2026-10-04, in the frames' ink: "Reduce dividers to
+  // 2px. uncolor the dividers, should be same color as borders")
+  var BAND_RULE = 2;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
