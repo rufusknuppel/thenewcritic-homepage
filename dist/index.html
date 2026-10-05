@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=89fb1145">
+<link rel="stylesheet" href="style.css?v=c8e8282e">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7082,7 +7082,7 @@
       j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0;
       var hh = j.body.querySelector(':scope > .swap-body-head');
       if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
-      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE;
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * INK_GAP - HEAD_META_GAP - INK_GAP);
     });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
@@ -7123,7 +7123,7 @@
       j.bt.style.transform = 'none';
       if (j.pdk) j.pdk.style.transform = 'none';
       var h0 = j.body.querySelector(':scope > .swap-body-head');
-      if (h0) h0.style.transform = 'none';
+      if (h0) { h0.style.transform = 'none'; var m0 = h0.querySelector('.swap-body-meta'); if (m0) m0.style.removeProperty('transform'); }
     });
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
@@ -7144,6 +7144,12 @@
         j.dkT = firstInkTop(j.pdk);
       }
       j.hdB = j.hd ? titleInkFoot(j.hd.querySelector('.swap-body-title')) : null;
+      j.dkF = j.pkb ? titleInkFoot(j.pdk) : null;
+      j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
+      j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
+      j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
+      j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
+      if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
       if (j.pkb) {
         var dr = document.createRange(); dr.selectNodeContents(j.pdk);
         var drs = dr.getClientRects(), dl = Infinity, dR = -Infinity;
@@ -7158,14 +7164,24 @@
         var upY = j.bb.top + INK_GAP - j.inT;
         var ruleTop = null;
         var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
+        var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null;
+        var metaY = null;
         if (stacked) {
-          var sH = (j.hdB - j.inT) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkT) + INK_GAP + (j.inB - j.txT);
+          var dkF = j.dkF != null ? j.dkF : j.dkB;
+          var top0 = between ? j.ttT : j.inT;
+          var midH = between ? INK_GAP + (j.mB - j.mT) + INK_GAP : INK_GAP;
+          var sH = (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
-          upY = y0 - j.inT;
-          ruleTop = Math.round(y0 + (j.hdB - j.inT) + RULE_AIR);
-          var dekY = ruleTop + FRAME + RULE_AIR - j.dkT;
-          dnY = (j.dkB + dekY + INK_GAP) - j.txT;
+          upY = y0 - top0;
+          var dekY;
+          if (between) {
+            var mTop = y0 + (j.hdB - top0) + INK_GAP;
+            metaY = mTop - (j.mT + upY);
+            dekY = (mTop + (j.mB - j.mT) + INK_GAP) - j.dkT;
+          } else dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
+          ruleTop = Math.round(dkF + dekY + RULE_AIR);
+          dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
         } else {
           var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
           if (j.dkT != null) ruleTop = Math.round(j.dkT + dekY - INK_GAP - FRAME);
@@ -7174,6 +7190,7 @@
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
+        if (j.mmEl) { if (metaY != null) j.mmEl.style.transform = 'translateY(' + metaY.toFixed(2) + 'px)'; else j.mmEl.style.removeProperty('transform'); }
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
         var rlOld = j.body.querySelector(':scope > .swap-body-rule');
         if (rlOld) rlOld.remove();

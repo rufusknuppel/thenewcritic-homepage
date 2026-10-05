@@ -9505,7 +9505,9 @@
       // 2026-10-04: at the least 72 between them)
       // (and the room the pins and the rule take: INK_GAP at either end, and
       // the rule's 27 either side of its 2 for the dek's 36 to the text)
-      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE;
+      // (and since the byline stands between the title and the dek, 27
+      // either side of it where it stood 18 over the title: 9 more)
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * INK_GAP - HEAD_META_GAP - INK_GAP);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -9569,7 +9571,7 @@
       j.bt.style.transform = 'none';
       if (j.pdk) j.pdk.style.transform = 'none';
       var h0 = j.body.querySelector(':scope > .swap-body-head');
-      if (h0) h0.style.transform = 'none';
+      if (h0) { h0.style.transform = 'none'; var m0 = h0.querySelector('.swap-body-meta'); if (m0) m0.style.removeProperty('transform'); }
     });
     // READ: the ink
     twos.forEach(function (j) {
@@ -9598,6 +9600,15 @@
       }
       // (the head's lowest ink, for the rule's 54 under it: 2026-10-05)
       j.hdB = j.hd ? titleInkFoot(j.hd.querySelector('.swap-body-title')) : null;
+      // (and the dek's, for the rule's 54 under it: THE DEK UNDER THE TITLE)
+      j.dkF = j.pkb ? titleInkFoot(j.pdk) : null;
+      // (the title's first ink and the byline's ink, for the byline between
+      // the title and the dek: THE BYLINE BETWEEN)
+      j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
+      j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
+      j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
+      j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
+      if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
       // (the dek's ink across: its lines' farthest reach either way — the
       // rule under it goes no farther from the picture, 2026-10-04)
       if (j.pkb) {
@@ -9625,14 +9636,33 @@
         // nearer its top or foot than the 27 pins it stood on before
         var ruleTop = null;
         var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
+        // (THE DEK UNDER THE TITLE, later that day — "Move dek under
+        // title": the dek's first ink 27 under the title's lowest, over the
+        // rule with the head; the rule 54 under the dek's lowest ink and the
+        // text's first 54 under the rule — the same 137 of air as before)
+        // THE BYLINE BETWEEN (later still — "Move metadata to sit equally
+        // between title and dek"): the title first, the byline's ink 27
+        // under its lowest and the dek's first ink 27 under the byline's
+        // baseline; the head moved by the title's ink, the byline carried
+        // down past it on its own
+        var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null;
+        var metaY = null;
         if (stacked) {
-          var sH = (j.hdB - j.inT) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkT) + INK_GAP + (j.inB - j.txT);
+          var dkF = j.dkF != null ? j.dkF : j.dkB;
+          var top0 = between ? j.ttT : j.inT;
+          var midH = between ? INK_GAP + (j.mB - j.mT) + INK_GAP : INK_GAP;
+          var sH = (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
-          upY = y0 - j.inT;
-          ruleTop = Math.round(y0 + (j.hdB - j.inT) + RULE_AIR);
-          var dekY = ruleTop + FRAME + RULE_AIR - j.dkT;
-          dnY = (j.dkB + dekY + INK_GAP) - j.txT;
+          upY = y0 - top0;
+          var dekY;
+          if (between) {
+            var mTop = y0 + (j.hdB - top0) + INK_GAP;
+            metaY = mTop - (j.mT + upY);
+            dekY = (mTop + (j.mB - j.mT) + INK_GAP) - j.dkT;
+          } else dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
+          ruleTop = Math.round(dkF + dekY + RULE_AIR);
+          dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
         } else {
           var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
           if (j.dkT != null) ruleTop = Math.round(j.dkT + dekY - INK_GAP - FRAME);
@@ -9641,6 +9671,7 @@
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
+        if (j.mmEl) { if (metaY != null) j.mmEl.style.transform = 'translateY(' + metaY.toFixed(2) + 'px)'; else j.mmEl.style.removeProperty('transform'); }
         // (the dek's last baseline 27 over the text's first ink, and the rule
         // over the dek, a whole pixel — "move rule above dek", 2026-10-05;
         // it stood between the dek and the text for an hour)
