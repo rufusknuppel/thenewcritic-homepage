@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=bd65cbe3">
+<link rel="stylesheet" href="style.css?v=7ba1eaf4">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6654,8 +6654,14 @@
       rr = { left: rRight - rail.offsetWidth, right: rRight };
       shut = Math.round(rRight / 2);
     }
+    if (!railL && rail && rail.offsetWidth && document.querySelector('main.rail-is-shut')) {
+      var opR = rail.offsetParent;
+      var rLeft = (opR ? opR.getBoundingClientRect().left + opR.clientLeft : 0) + rail.offsetLeft;
+      rr = { left: rLeft, right: rLeft + rail.offsetWidth };
+      shut = -Math.round((vw - rLeft) / 2);
+    }
     if (d < 0) return (railL && rr ? (bandedInk() ? Math.ceil(rr.right - RAIL_EDGE) : rr.right + COLUMN_SIDE) : COLUMN_SIDE) - shut;
-    if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE);
+    if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE) - shut;
     return (!railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE) - shut;
   }
   function seatSlides() {
