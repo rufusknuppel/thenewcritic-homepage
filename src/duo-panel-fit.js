@@ -3578,6 +3578,21 @@
       // gradient the page's height drew its stops soft and a pixel or two
       // off, a grey line along the rule; boxes now)
       seats.push({ half: hf, y: Math.round(hr.top + hf.clientTop + rt - top) + FRAME / 2 });
+      // (the picture's frame takes the other colour on either side of the
+      // rule, so it reads against both fields — "change the color of the
+      // outline of the images when it's against its own colored
+      // background": --fld-split, its change in its own box, on the whole
+      // pixel the field's own falls on; style.css, THE FRAME AGAINST ITS
+      // FIELD)
+      var fr = hf.querySelector(':scope > .card-frame');
+      var frTop = fr ? parseFloat(fr.style.top) : NaN;
+      if (fr && isFinite(frTop)) {
+        // (by both seats in the half — the frame is laid out only once its
+        // card rests open — each on the page's whole pixels)
+        var split = Math.round(rt - frTop) + FRAME / 2;
+        var sv = split + 'px';
+        if (hf.style.getPropertyValue('--fld-split') !== sv) hf.style.setProperty('--fld-split', sv);
+      }
     });
     seats.sort(function (a, b) { return a.y - b.y; });
     [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
@@ -8970,6 +8985,7 @@
         // THE RULE FROM EDGE TO EDGE: "Line should not pass over image")
         card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
         card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
+        fieldsSoon();
       } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
