@@ -5816,6 +5816,18 @@
     if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE) - shut;
     return (!railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE) - shut;
   }
+  function picAspect(card) {
+    if (card.__ar !== undefined) return card.__ar;
+    var ar = null;
+    [].some.call(card.querySelectorAll('img'), function (im) {
+      var u = im.getAttribute('src') || im.getAttribute('data-src') || '';
+      var m = /_(\d+)x(\d+)\.\w+$/.exec(decodeURIComponent(u));
+      if (m && +m[2] > 0) { ar = m[1] / m[2]; return true; }
+      return false;
+    });
+    card.__ar = ar;
+    return ar;
+  }
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -5829,6 +5841,15 @@
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
       if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      var sh = 0;
+      if (framed) {
+        var ar = picAspect(card), E00 = columnEdge(card, seat.d);
+        var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
+        var give = ar ? V0 - (P.b - P.t) * ar : 0;
+        if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
+        dx += sh;
+      }
+      card.classList.toggle('is-true-size', sh !== 0);
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -5838,7 +5859,7 @@
           var cr1 = card.getBoundingClientRect();
           var tr0 = parseFloat((getComputedStyle(tEl).translate || '').split(' ')[0]) || 0;
           var T0 = tEl.getBoundingClientRect().left - (cr1.left - cr0.left) - tr0;
-          var E = columnEdge(card, seat.d);
+          var E = columnEdge(card, seat.d) - sh;
           var cut = function (x) {
             var v = x.toFixed(2) + 'px', far = '100000px', nfar = '-100000px';
             return seat.d < 0 ? 'polygon(' + v + ' ' + nfar + ', ' + far + ' ' + nfar + ', ' + far + ' ' + far + ', ' + v + ' ' + far + ')'
@@ -5869,8 +5890,8 @@
           fr.innerHTML = '<span class="card-frame-seam"></span>';
           card.appendChild(fr);
         }
-        var Ec = columnEdge(card, seat.d);
-        var seamX = right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb);
+        var Ec = columnEdge(card, seat.d) - sh;
+        var seamX = (right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb)) + sh;
         var fl = right ? seamX : Math.floor(Ec), frr = right ? Math.ceil(Ec) : seamX + FRAME;
         var ft = Math.floor(P.t), fb = Math.ceil(P.b);
         var fs = fr.style;
@@ -5886,7 +5907,7 @@
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
-        bs.left = ((right ? P.l : P.r - wb) - cr0.left).toFixed(2) + 'px';
+        bs.left = ((right ? P.l : P.r - wb) + sh - cr0.left).toFixed(2) + 'px';
         bs.top = (P.t - cr0.top).toFixed(2) + 'px';
         bs.width = wb.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
