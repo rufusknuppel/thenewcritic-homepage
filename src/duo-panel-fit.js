@@ -8597,6 +8597,9 @@
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
     var rail = key && document.querySelector('.latest-rail--' + key);
+    // (the sections' columns are one since 2026-10-04 — latest-rail.js, ONE
+    // COLUMN — the others empty and unseen: the edge is the one that stands)
+    if (!rail || !rail.offsetWidth) rail = [].filter.call(document.querySelectorAll('.latest-rail'), function (r) { return r.offsetWidth; })[0] || rail;
     var rr = rail && rail.offsetWidth ? rail.getBoundingClientRect() : null;
     var vw = document.documentElement.clientWidth;
     var railL = sec && sec.classList.contains('card--rail-l');
