@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=7ba1eaf4">
+<link rel="stylesheet" href="style.css?v=906cf4b9">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6727,7 +6727,9 @@
         fs.width = (frr - fl) + 'px';
         fs.height = (fb - ft) + 'px';
         fr.firstChild.style.left = (seamX - fl - FRAME) + 'px';
-      } else if (fr) fr.remove();
+        card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
+        card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
+      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -7084,6 +7086,7 @@
     });
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      j.hf = j.body.parentElement; j.hb = j.hf ? j.hf.getBoundingClientRect() : null;
       j.hd = j.body.querySelector(':scope > .swap-body-head');
       if (j.hd && !(j.hd.getBoundingClientRect().height > 0)) j.hd = null;
       var inT = j.hd ? firstInkTop(j.hd) : null;
@@ -7117,15 +7120,23 @@
         var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
         var ruleTop = (j.dkT != null) ? Math.round(j.dkT + dekY - INK_GAP - FRAME) : null;
-        var rl = j.body.querySelector(':scope > .swap-body-rule');
-        if (j.pkb) {
-          if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.body.appendChild(rl); }
+        var rlOld = j.body.querySelector(':scope > .swap-body-rule');
+        if (rlOld) rlOld.remove();
+        var rl = j.hf && j.hf.querySelector(':scope > .swap-body-rule');
+        if (j.pkb && j.hf && j.hb) {
+          if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.hf.appendChild(rl); }
           var mid = (j.pkb.bottom + j.tb.top) / 2 + dnY;
           var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
-          rl.style.top = (rTop - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
-          var picLeft = j.bp && j.bp.l > 0, bl0 = j.bb.left + j.body.clientLeft, br0 = j.bb.right - j.body.clientLeft;
-          rl.style.setProperty('left', !picLeft ? (Math.floor(j.tb.left) - bl0).toFixed(2) + 'px' : '0px', 'important');
-          rl.style.setProperty('right', picLeft ? (br0 - Math.ceil(j.tb.right)).toFixed(2) + 'px' : '0px', 'important');
+          rl.style.top = (rTop - j.hb.top - j.hf.clientTop).toFixed(2) + 'px';
+          var picLeft = j.bp && j.bp.l > 0, bl0 = j.hb.left + j.hf.clientLeft, br0 = j.hb.right - j.hf.clientLeft;
+          var mainEl = document.querySelector('main');
+          var slid = mainEl && mainEl.classList.contains('rail-is-shut') ? (parseFloat(mainEl.style.getPropertyValue('--rail-shift')) || 0) : 0;
+          var vwR = document.documentElement.clientWidth;
+          rl.style.setProperty('left', 'calc(' + (-(bl0 - slid)).toFixed(2) + 'px - var(--rule-slid, 0px))', 'important');
+          rl.style.setProperty('right', 'calc(' + ((br0 - slid) - vwR).toFixed(2) + 'px + var(--rule-slid, 0px))', 'important');
+          var h0 = (bl0 - slid).toFixed(2);
+          var fa = 'calc(' + h0 + 'px + var(--frame-l, -99999px) + var(--rule-slid, 0px))', fb = 'calc(' + h0 + 'px + var(--frame-r, -99999px) + var(--rule-slid, 0px))';
+          rl.style.setProperty('background', 'linear-gradient(to right, var(--rule-ink) 0 ' + fa + ', transparent ' + fa + ' ' + fb + ', var(--rule-ink) ' + fb + ')', 'important');
           rl.style.removeProperty('display');
         } else if (rl) rl.style.setProperty('display', 'none', 'important');
         return;

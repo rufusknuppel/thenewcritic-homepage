@@ -8860,7 +8860,11 @@
         fs.width = (frr - fl) + 'px';
         fs.height = (fb - ft) + 'px';
         fr.firstChild.style.left = (seamX - fl - FRAME) + 'px';
-      } else if (fr) fr.remove();
+        // (its sides handed to the rule over the dek, which parts there —
+        // THE RULE FROM EDGE TO EDGE: "Line should not pass over image")
+        card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
+        card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
+      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -9421,6 +9425,10 @@
     // READ: the ink
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      // (the card's half, where the rule over the dek stands since it runs
+      // under the picture: THE RULE FROM EDGE TO EDGE)
+      j.hf = j.body.parentElement; j.hb = j.hf ? j.hf.getBoundingClientRect() : null;
+
       // (from the byline's ink where the head stands over the dek: THE
       // BYLINE AND THE TITLE OVER THE DEK, 2026-10-04)
       j.hd = j.body.querySelector(':scope > .swap-body-head');
@@ -9472,23 +9480,48 @@
         // "place a 2px line between dek and body text that extends to edge
         // of title column from the image", 2026-10-04; style.css, THE
         // RULE UNDER THE DEK)
-        var rl = j.body.querySelector(':scope > .swap-body-rule');
-        if (j.pkb) {
-          if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.body.appendChild(rl); }
+        // (the rule the half's own, beside the picture rather than in the
+        // words' box, so the picture, a layer up, stands over it — "passing
+        // under the image", 2026-10-05)
+        var rlOld = j.body.querySelector(':scope > .swap-body-rule');
+        if (rlOld) rlOld.remove();
+        var rl = j.hf && j.hf.querySelector(':scope > .swap-body-rule');
+        if (j.pkb && j.hf && j.hb) {
+          if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.hf.appendChild(rl); }
           var mid = (j.pkb.bottom + j.tb.top) / 2 + dnY;
           // (on whole pixels of the page, as the frame is: 27 over the
           // text's first ink — EVERY GAP THE SIDES' 27)
           var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
-          rl.style.top = (rTop - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
+          rl.style.top = (rTop - j.hb.top - j.hf.clientTop).toFixed(2) + 'px';
           // (from the picture to the dek's farthest ink — "only extend rule
           // to the farthest ink of the dek": the picture on the column's
           // left (padding on that side), the rule runs right to the dek's
           // longest line; on its right, left to the dek's earliest start)
-          var picLeft = j.bp && j.bp.l > 0, bl0 = j.bb.left + j.body.clientLeft, br0 = j.bb.right - j.body.clientLeft;
+          var picLeft = j.bp && j.bp.l > 0, bl0 = j.hb.left + j.hf.clientLeft, br0 = j.hb.right - j.hf.clientLeft;
           // (to the body text's far edge since 2026-10-05 — "Justify the
           // body text and extend the rule to the edge of the body text")
-          rl.style.setProperty('left', !picLeft ? (Math.floor(j.tb.left) - bl0).toFixed(2) + 'px' : '0px', 'important');
-          rl.style.setProperty('right', picLeft ? (br0 - Math.ceil(j.tb.right)).toFixed(2) + 'px' : '0px', 'important');
+          // (from the window's edge to its other since later that day —
+          // "Rules on the side of images should stretch from edge to edge,
+          // passing under the image and under the latest": the picture and
+          // the column stand over it (style.css, THE RULE FROM EDGE TO
+          // EDGE); read off the rows' seat, not their slide when the column
+          // is shut, and carried back by the slide's own measure)
+          var mainEl = document.querySelector('main');
+          var slid = mainEl && mainEl.classList.contains('rail-is-shut') ? (parseFloat(mainEl.style.getPropertyValue('--rail-shift')) || 0) : 0;
+          var vwR = document.documentElement.clientWidth;
+          rl.style.setProperty('left', 'calc(' + (-(bl0 - slid)).toFixed(2) + 'px - var(--rule-slid, 0px))', 'important');
+          rl.style.setProperty('right', 'calc(' + ((br0 - slid) - vwR).toFixed(2) + 'px + var(--rule-slid, 0px))', 'important');
+          // (the picture over it: the rule's ink parts where the frame
+          // stands, its ends met under the frame's own 2 — the picture's
+          // halo of the page's ground stands over everything else beside
+          // it, so the rule is drawn over that and around the picture)
+          // (the frame's sides from the slide's seat, which lays it after
+          // this: --frame-l / --frame-r on the half, in its own measure;
+          // the rule starts at the window's left, so the half's left is
+          // added, the slide's measure on)
+          var h0 = (bl0 - slid).toFixed(2);
+          var fa = 'calc(' + h0 + 'px + var(--frame-l, -99999px) + var(--rule-slid, 0px))', fb = 'calc(' + h0 + 'px + var(--frame-r, -99999px) + var(--rule-slid, 0px))';
+          rl.style.setProperty('background', 'linear-gradient(to right, var(--rule-ink) 0 ' + fa + ', transparent ' + fa + ' ' + fb + ', var(--rule-ink) ' + fb + ')', 'important');
           rl.style.removeProperty('display');
         } else if (rl) rl.style.setProperty('display', 'none', 'important');
         return;

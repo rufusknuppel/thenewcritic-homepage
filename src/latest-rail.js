@@ -227,7 +227,10 @@
       var key = rail.getAttribute('data-sec');
       setImp(rail, 'top', top.toFixed(2) + 'px');
       setImp(rail, 'bottom', '0px');
-      setImp(rail, 'z-index', String(4 * i + 2));
+      // (the one column that stands, the first, over every section's rows
+      // since 2026-10-05, so the rule over a card's dek runs under it —
+      // "passing under the image and under the latest")
+      setImp(rail, 'z-index', String(i === 0 ? 4 * rails.length + 2 : 4 * i + 2));
       secWraps(key).forEach(function (w) {
         w.__z = 4 * i + 3;
         w.style.setProperty('position', 'relative');
