@@ -7376,7 +7376,8 @@
   var SECTION_GAP = ROW_STEP;
   // (the blue rule hung under the band: style.css, --band-rule)
   // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
-  var BAND_RULE = 2;
+  // (4.5 since later that day: "Increase dividing line to 4.5px")
+  var BAND_RULE = 4.5;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
