@@ -7358,6 +7358,10 @@
   // (between the rows where the posts stand two to a row: seatRowGaps —
   // 54 since 2026-10-04, at the user's word: "Have 54px between post rows")
   var ROWS_GAP = 54;
+  // (between one row and the next, 72 since 2026-10-04, at the user's
+  // word: "Increase space between rows to 72px" — the band's 54 over the
+  // first row and the colophon's 54 under the last stand as they were)
+  var ROW_STEP = 72;
   // (54 to the divider between the sections, its 9, and 54 past it, for a
   // day — "Have a 72px Charcoal Divider between the sections", then
   // "section dividers should actually be 54px and blue", "charcoal
@@ -7365,7 +7369,7 @@
   // 9px" — then the rows' 54, the divider in the column only, on the next
   // section's first picture's top: "Section divider should align with the
   // top of the content, so no double spacing between sections")
-  var SECTION_GAP = 54;
+  var SECTION_GAP = ROW_STEP;
   // (the blue rule hung under the band: style.css, --band-rule)
   var BAND_RULE = 9;
   function rowCourier(row) {
@@ -7804,7 +7808,7 @@
           // the lowest of the row over it — across, the two keep 36)
           // (a section's first row 144 under the last section's ink —
           // 54 to the divider, its 36, and 54 past it: FOUR SECTIONS, 2026-10-04)
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROWS_GAP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)
