@@ -173,6 +173,18 @@
       if (d < bestD) { bestD = d; best = sp; }
     });
     var now = best ? spans.filter(function (sp) { return sp.row === best.row; }).map(function (sp) { return sp.a; }) : [];
+    // (THE BRACKETS AS FAST AS THE PAGE, 2026-10-04, at the user's word —
+    // "Vary the bracket fade depending on scroll speed": each fade, out and
+    // then in, takes 300ms of travel's worth at the speed the page is going
+    // — 0.4s at a slow read and no slower ("I like .4 as the max"), down to
+    // 0.12s at a fling — read as the change happens; 0.4s before the page
+    // has moved. style.css, --bk-t)
+    var moved = now.length !== lit.length || now.some(function (a) { return lit.indexOf(a) < 0; });
+    if (moved) {
+      var bt = speed > 0 ? Math.max(0.12, Math.min(0.4, 300 / speed)) : 0.4;
+      var bv = bt.toFixed(3) + 's';
+      if (rails[0].style.getPropertyValue('--bk-t') !== bv) rails[0].style.setProperty('--bk-t', bv);
+    }
     lit.forEach(function (a) { if (now.indexOf(a) < 0) a.classList.remove('is-now'); });
     now.forEach(function (a) { a.classList.add('is-now'); });
     lit = now;
@@ -308,10 +320,22 @@
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
+  // (the page's speed, px a second, eased over the last frames; a pause
+  // of a fifth of a second starts it again — THE BRACKETS AS FAST AS THE
+  // PAGE, in light())
+  var speed = 0, lastY = null, lastT = 0;
+  var gauge = function () {
+    var t = performance.now(), y = window.pageYOffset || 0;
+    if (lastY !== null && t - lastT > 0 && t - lastT < 200) {
+      var v = Math.abs(y - lastY) / (t - lastT) * 1000;
+      speed = speed ? speed * 0.6 + v * 0.4 : v;
+    } else speed = 0;
+    lastY = y; lastT = t;
+  };
   addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () { ticking = false; light(); band(); });
+    requestAnimationFrame(function () { ticking = false; gauge(); light(); band(); });
   }, { passive: true });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
