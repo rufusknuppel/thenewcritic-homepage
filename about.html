@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=538e4e63">
+<link rel="stylesheet" href="style.css?v=47b7cf33">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -2747,6 +2747,46 @@
     });
   }
   window.addEventListener('newcritic:fit', fitGroundStops);
+  function fitFields() {
+    var mb = document.querySelector('main.wm-banded .page-rows > .movement.m--latest > .movement-body');
+    if (!mb) return;
+    var wide = window.matchMedia('(min-width: 1024px)').matches;
+    var rules = wide ? [].slice.call(mb.querySelectorAll('.duo-half--mega > .swap-body-rule')) : [];
+    var top = mb.getBoundingClientRect().top;
+    var seats = [];
+    rules.forEach(function (rl) {
+      var rt = parseFloat(rl.style.top);
+      if (!isFinite(rt)) return;
+      var hf = rl.parentElement, hr = hf.getBoundingClientRect();
+      if (!(hr.height > 0)) return;
+      seats.push({ half: hf, y: hr.top + hf.clientTop + rt - top + FRAME / 2 });
+    });
+    seats.sort(function (a, b) { return a.y - b.y; });
+    [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
+      var i = -1;
+      for (var k = 0; k < seats.length; k++) if (seats[k].half === h) { i = k; break; }
+      h.classList.toggle('fld-odd', i >= 0 && i % 2 === 1);
+      h.classList.toggle('fld', i >= 0);
+    });
+    if (!seats.length) { mb.style.removeProperty('background-image'); return; }
+    var INK = 'var(--div-ink, #121417)', GRD = 'var(--band-ground, #FFFFFF)';
+    var open0 = 'calc(var(--wm-under, 36px) + 108px)';
+    var stops = ['transparent 0', 'transparent ' + open0, INK + ' ' + open0];
+    seats.forEach(function (s, k) {
+      var y = s.y.toFixed(2) + 'px';
+      var was = k % 2 === 0 ? INK : GRD, now = k % 2 === 0 ? GRD : INK;
+      stops.push(was + ' ' + y, now + ' ' + y);
+    });
+    stops.push((seats.length % 2 === 1 ? GRD : INK) + ' 100%');
+    var fields = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
+    var under = 'linear-gradient(to bottom, transparent 0, transparent ' + open0 + ', var(--wm-ground, #121417) ' + open0 + ')';
+    var v = fields + ', ' + under;
+    if (mb.__fields !== v) { mb.__fields = v; mb.style.setProperty('background-image', v, 'important'); }
+  }
+  var fieldsT = 0;
+  function fieldsSoon() { clearTimeout(fieldsT); fieldsT = setTimeout(fitFields, 0); }
+  window.addEventListener('newcritic:fit', fitFields);
+  window.addEventListener('resize', function () { setTimeout(fitFields, 0); });
   function fitPickup() {}
   var stopsQueued = false;
   window.addEventListener('scroll', function () {
@@ -5365,6 +5405,28 @@
   var SWAP_PAD = 36, SWAP_OPEN = 0, SWAP_GAP = 36, SWAP_MAX = 40, SWAP_LINES = 6;
   var HEAD_META_GAP = 18;
   var headCtx = null;
+  function titleInkFoot(tt) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var tn = tt && tt.firstChild;
+    if (!tn || tn.nodeType !== 3) return null;
+    var txt = tn.nodeValue, rg = document.createRange(), lines = [], re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w;
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      var last = lines[lines.length - 1], piece = w[0].replace(/\u00AD$/, '-');
+      if (last && Math.abs(last.top - rr.top) < 2) last.words.push(piece);
+      else lines.push({ top: rr.top, words: [piece] });
+    }
+    if (!lines.length) return null;
+    var tc = getComputedStyle(tt);
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    var tm = headCtx.measureText(lines[lines.length - 1].words.join(' '));
+    var tlh = parseFloat(tc.lineHeight) || parseFloat(tc.fontSize);
+    var lineTop = tt.getBoundingClientRect().bottom - tlh;
+    var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
+    return tBase + Math.max(0, tm.actualBoundingBoxDescent);
+  }
   function headMetaMargin(tt, mm, gap) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
@@ -5697,8 +5759,10 @@
   var FRAME = 2, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
+  var NEAR_GAP = 54;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
+  var RULE_AIR = 54;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -5976,7 +6040,7 @@
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME_ONE, t: 0, b: 0 } : { l: FRAME_ONE, r: 0, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: 0, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -6182,6 +6246,7 @@
         j.txT = firstInkTop(j.bt);
         j.dkT = firstInkTop(j.pdk);
       }
+      j.hdB = j.hd ? titleInkFoot(j.hd.querySelector('.swap-body-title')) : null;
       if (j.pkb) {
         var dr = document.createRange(); dr.selectNodeContents(j.pdk);
         var drs = dr.getClientRects(), dl = Infinity, dR = -Infinity;
@@ -6193,13 +6258,26 @@
       if (!isFinite(j.inT)) return;
       if (j.hd && j.slide && bandedInk() && j.inB != null) {
         var dnY = j.bb.bottom - INK_GAP - j.inB;
-        var up = 'translateY(' + (j.bb.top + INK_GAP - j.inT).toFixed(2) + 'px)';
+        var upY = j.bb.top + INK_GAP - j.inT;
+        var ruleTop = null;
+        var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
+        if (stacked) {
+          var sH = (j.hdB - j.inT) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkT) + INK_GAP + (j.inB - j.txT);
+          var room = j.bb.height - 2 * INK_GAP;
+          var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
+          upY = y0 - j.inT;
+          ruleTop = Math.round(y0 + (j.hdB - j.inT) + RULE_AIR);
+          var dekY = ruleTop + FRAME + RULE_AIR - j.dkT;
+          dnY = (j.dkB + dekY + INK_GAP) - j.txT;
+        } else {
+          var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
+          if (j.dkT != null) ruleTop = Math.round(j.dkT + dekY - INK_GAP - FRAME);
+        }
+        var up = 'translateY(' + upY.toFixed(2) + 'px)';
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
-        var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
-        var ruleTop = (j.dkT != null) ? Math.round(j.dkT + dekY - INK_GAP - FRAME) : null;
         var rlOld = j.body.querySelector(':scope > .swap-body-rule');
         if (rlOld) rlOld.remove();
         var rl = j.hf && j.hf.querySelector(':scope > .swap-body-rule');
@@ -6208,6 +6286,7 @@
           var mid = (j.pkb.bottom + j.tb.top) / 2 + dnY;
           var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
           rl.style.top = (rTop - j.hb.top - j.hf.clientTop).toFixed(2) + 'px';
+          fieldsSoon();
           var picLeft = j.bp && j.bp.l > 0, bl0 = j.hb.left + j.hf.clientLeft, br0 = j.hb.right - j.hf.clientLeft;
           var mainEl = document.querySelector('main');
           var slid = mainEl && mainEl.classList.contains('rail-is-shut') ? (parseFloat(mainEl.style.getPropertyValue('--rail-shift')) || 0) : 0;
