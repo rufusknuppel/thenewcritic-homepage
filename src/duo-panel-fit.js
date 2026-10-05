@@ -8676,9 +8676,6 @@
   // text and image by 25%", 2026-10-04: the words as wide, the picture 9
   // wider)
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
-  // (the picture this much narrower than the row leaves it, centred:
-  // ACROSS THE QUADRANT, seatSlides)
-  var PIC_LESS = 54;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   // (and 5 in from either end: the head 5 under the picture's top, the
   // last baseline 5 over its foot — at the user's word, "Move metadate 5px
@@ -8795,21 +8792,6 @@
       // last pixel showed as a hairline beside the rule — "On the left of
       // this right edge")
       if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
-      // ACROSS THE QUADRANT (2026-10-05, at the user's words — "make images
-      // 54px narrower, and center images. Move titles/metadata to sit on
-      // the opposite side of the body text. in the top rather than the
-      // bottom"; "So diagonal across the quadrant"): framed, the picture
-      // stands PIC_LESS narrower in the middle of the row, the words'
-      // column on its one side and a column as wide on its other, cut on
-      // the margin's side that much in; the byline and title stand at the
-      // top of the far column (--head-x), the dek and text at the foot of
-      // the near one
-      var side = 0;
-      if (framed) {
-        side = (wb + PIC_LESS + FRAME) / 2;
-        wb = side;
-        dx = (wb - FRAME / 2) * (right ? 1 : -1);
-      }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8823,7 +8805,6 @@
           var tr0 = parseFloat((getComputedStyle(tEl).translate || '').split(' ')[0]) || 0;
           var T0 = tEl.getBoundingClientRect().left - (cr1.left - cr0.left) - tr0;
           var E = columnEdge(card, seat.d);
-          if (side) E -= (seat.d > 0 ? 1 : -1) * (side - FRAME);
           var cut = function (x) {
             var v = x.toFixed(2) + 'px', far = '100000px', nfar = '-100000px';
             return seat.d < 0 ? 'polygon(' + v + ' ' + nfar + ', ' + far + ' ' + nfar + ', ' + far + ' ' + far + ', ' + v + ' ' + far + ')'
@@ -8860,8 +8841,6 @@
           card.appendChild(fr);
         }
         var Ec = columnEdge(card, seat.d);
-        var Eo = Ec;
-        if (side) Ec -= (right ? 1 : -1) * (side - FRAME);
         // (ON WHOLE PIXELS, OUTWARD — "noticing a hairline on the edges
         // sometimes of the image": the cut on the margin falls on a
         // fraction, and a frame laid to the fraction let the picture's
@@ -8885,13 +8864,7 @@
         // THE RULE FROM EDGE TO EDGE: "Line should not pass over image")
         card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
         card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
-        // (the head carried to the far column, flush to its outer edge as it
-        // stood flush to the near one's: the column's own width less the
-        // frame and the 27 on the picture's side)
-        var hw = wb - FRAME_ONE;
-        var hx = right ? (Eo - hw) - P.l : Eo - (P.r - hw);
-        card.style.setProperty('--head-x', hx.toFixed(2) + 'px');
-      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); card.style.removeProperty('--head-x'); }
+      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -9152,8 +9125,6 @@
             // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
             // narrower, as the slide is shorter by it — seatSlides)
             var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE : 0);
-            // (the words' column as seatSlides lays it: ACROSS THE QUADRANT)
-            if (bandedInk()) wc = (wc + PIC_LESS + FRAME) / 2;
             j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
