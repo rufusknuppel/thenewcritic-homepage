@@ -1631,6 +1631,15 @@ function subTicker(where = 'head') {
 // MAGAZINE, 36 from the window's top and right — style.css, THE CIRCLE
 // IN THE NAME'S CORNER — and the strip's copy is not shown; under 1024
 // the strip's copy stands as before)
+// (THE DOT IN THE COLUMN'S CORNER, 2026-10-04, at the user's words —
+// "Move the dot to the top right corner of The Latest"; "Inset equally
+// from the top as from the side"; then, after a few minutes between
+// ARCHIVE and THE LAST MAGAZINE, "Keep in The Latest": from 1024 up the
+// light/dark dot stands in the column's sticky hold, its top right corner,
+// not in the band; the band's keeps the phone's)
+function railDot() {
+  return themeChip().replace('chip-dot--flip"', 'chip-dot--flip chip-dot--rail"');
+}
 function themeChip() {
   return `<button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button>`;
 }
@@ -3012,7 +3021,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // to the archive (THE LATEST to all of it, the others to their section).
   // The post standing in the window lights its line (latest-rail.js).
   const railWord = (p) => stripEmMarkers(p.kicker || p.title || '');
-  const railHtml = (sec) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold"><div class="latest-rail__in">`
+  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() : ''}<div class="latest-rail__in">`
     + `<p class="latest-rail__meta">${escapeHtml(sec.word)}</p>`
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
@@ -3024,7 +3033,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + `</div></div></aside>`;
-  const latestRailHtml = SECTIONS.map(railHtml).join('');
+  const latestRailHtml = SECTIONS.map((sec, si) => railHtml(sec, si)).join('');
   const railPosts = SECTIONS.flatMap((sec) => sec.posts);
   console.log(`ROWS ${rowsMade} (${SECTIONS.map((sec) => `${sec.key} ${sec.posts.length}`).join(', ')}; columns ${railPosts.length})`);
   void SUBSCRIBE_ABOVE; void SUBSCRIBE_BELOW;

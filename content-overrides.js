@@ -37,13 +37,13 @@ module.exports = {
   // Middle School' ... I like the current MrBeast 'Becoming a Journalist'
   // 'The Law School Elite'")
   'safe-at-slutcon': {
-    kicker: 'Bay Area Seduction Camp',
+    kicker: 'Seduction Camp',
   },
   'long-covid': {
     kicker: 'Who’s Still Masking?',
   },
   'high-school-or-claude': {
-    kicker: 'AI Middle School',
+    kicker: 'Middle School Post-AI',
     // the dek reads "Postscript No. 24 | 14-year-old Eli Goldfine on
     // self-educating through AI"; the card says the name alone
     byline: 'Eli Goldfine',

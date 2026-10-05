@@ -7361,7 +7361,8 @@
   // (between one row and the next, 72 since 2026-10-04, at the user's
   // word: "Increase space between rows to 72px" — the band's 54 over the
   // first row and the colophon's 54 under the last stand as they were)
-  var ROW_STEP = 72;
+  // (108 since later that day: "Increase space between posts to 108px")
+  var ROW_STEP = 108;
   // (54 to the divider between the sections, its 9, and 54 past it, for a
   // day — "Have a 72px Charcoal Divider between the sections", then
   // "section dividers should actually be 54px and blue", "charcoal
@@ -7656,7 +7657,10 @@
                   // rule's foot — "Want a blue divider under the band and
                   // above the colophon too", 2026-10-04: style.css, THE
                   // UNDERLINE DRAWS)
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + Math.max(0, 144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  // (no floor on the band's share since 2026-10-04: a band over 144 —
+                  // 151, "Have 54px above and below wordmark in top band" — took
+                  // the floor's 0 and stood the first row 7 low)
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its

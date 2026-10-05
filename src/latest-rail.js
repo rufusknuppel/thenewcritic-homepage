@@ -261,7 +261,12 @@
         var x0 = lm.a * (lb.x + lb.width) + lm.e;
         var x1 = fm.a * (fb.x - sw / 2) + fm.e;
         var inkW = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
-        var g = (x1 - x0 - inkW) / (ink.length + 1);
+        // (SUBSCRIBE 54 off the name's ink and THE LAST MAGAZINE 54 off the
+        // stamp's outline since 2026-10-04 — "Set the lastmagazine and
+        // subscribe 54px from stamp and wordmark" — the words between them
+        // spread evenly in what is left: g is the ends' 54, and the row's
+        // space-between spreads the middle)
+        var g = 54;
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
         var lead = (x0 + g - ink[0].inL) - (rb.left + padL);
