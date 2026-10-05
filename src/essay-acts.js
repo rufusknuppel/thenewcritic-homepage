@@ -17,6 +17,18 @@
     // side, which its computed insets do not carry)
     var wrap = parseFloat(getComputedStyle(t).getPropertyValue('--wrap')) || 0;
     var box = { l: r.left + (parseFloat(c.left) || 0) - wrap, r: r.right - (parseFloat(c.right) || 0) + wrap, t: r.top + (parseFloat(c.top) || 0), b: r.bottom - (parseFloat(c.bottom) || 0) };
+    // (READ ON THE WINDOW, 2026-10-04, "Adjust Read essay effect too": a
+    // card resting open shows only the picture's window — the rest has
+    // slid under the margin's line — so the scrim and the word take the
+    // window, cut where the line stands, as the picture's own centring
+    // does: card-open.js, recal)
+    if (card.classList.contains('is-rest-open')) {
+      var cv = (getComputedStyle(t).clipPath.match(/-?[\d.]+px/g) || []).map(parseFloat).filter(function (n) { return Math.abs(n) < 50000; })[0];
+      if (cv != null) {
+        var dx = parseFloat(card.style.getPropertyValue('--slide-x')) || 0, cut = r.left + cv;
+        if (dx < 0) box.l = Math.max(box.l, cut); else box.r = Math.min(box.r, cut);
+      }
+    }
     return box.r > box.l && box.b > box.t ? box : null;
   }
   // the card beside it in its row (duo-panel-fit.js, slideMate)

@@ -2975,18 +2975,23 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   SECTIONS.forEach((sec) => {
     sec.rows.forEach((row, j) => {
       const at = (side, extra) => rowAt(rowsMade, side, { sec: sec.key, rail: sec.rail, secFirst: j === 0 && rowsMade > 0, secLast: j === sec.rows.length - 1, ...extra });
+      // (a postscript and a review stand as an essay does, the row's width
+      // — "Postscript/contras should be aligned like essays", 2026-10-04)
       const card = (p, side, extra) => {
         const kind = kindOf(p);
+        const row = at(side, { solo: true, big: true, ka: 1.5, kb: 0.0001, ...extra });
         return kind === 'essay'
-          ? renderMegaHero(p, { rev: true, label: 'Essays', trueHeight: true, row: at(side, { solo: true, big: true, ka: 1.5, kb: 0.0001, ...extra }) })
-          : renderMegaHero(p, { rev: true, label: LABEL[kind], kind, row: at(side, extra) });
+          ? renderMegaHero(p, { rev: true, label: 'Essays', trueHeight: true, row })
+          : renderMegaHero(p, { rev: true, label: LABEL[kind], kind, trueHeight: true, row });
       };
       if (row.length === 1) {
-        // (THE LATEST: words left, sliding left, away from its column on
-        // the right; the other sections turn about row by row, the first
-        // row sliding away from the column, under the far margin)
-        const toR = sec.key === 'latest' ? false : (sec.rail === 'l') === (j % 2 === 0);
-        blocks.push(card(row[0], 'a', { solo: true, ka: kOf(row[0], false), kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
+        // (every section turns about row by row, the first row sliding away
+        // from the column, under the far margin)
+        // (THE LATEST turns about row by row too since 2026-10-04 — "should
+        // alternate side to side in The Latest"; every row the essay's
+        // proportions, 1, whatever its kind)
+        const toR = (sec.rail === 'l') === (j % 2 === 0);
+        blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first
         // row, over the mate, apart on the next, under the margins, and so

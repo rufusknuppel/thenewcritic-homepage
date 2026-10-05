@@ -267,8 +267,59 @@
     try { window.dispatchEvent(new Event('newcritic:travel')); } catch (err) {}
     requestAnimationFrame(function () { requestAnimationFrame(function () { mainEl.classList.remove('is-resting'); }); });
   };
+  // (…AND ITS PICTURE CENTRED IN ITS WINDOW, at the user's words — "But
+  // images should recalibrate / To be centered": an open card shows its
+  // picture through the window the margin leaves it — the box less the
+  // slide — and the picture, laid to cover the whole box, showed there
+  // only the part that had cleared the margin. It is laid afresh to cover
+  // the window alone, centred in it — its own proportions read off the
+  // image once loaded — the box, the slide and the cut standing as they
+  // were (style.css, --rest-bs / --rest-bp).)
+  var sizes = {}, asked = {};
+  var recal = function () {
+    [].forEach.call(document.querySelectorAll('.duo-half--mega.is-rest-open'), function (h) {
+      var t = h.querySelector('.card-title.hl-rect.rx');
+      if (!t) return;
+      var b = getComputedStyle(t, '::before');
+      var url = (/url\("?([^")]+)"?\)/.exec(b.backgroundImage) || [])[1];
+      var W = parseFloat(b.width), H = parseFloat(b.height);
+      if (!url || !(W > 0) || !(H > 0)) return;
+      var dims = sizes[url];
+      if (!dims) {
+        if (!asked[url]) {
+          asked[url] = true;
+          var im = new Image();
+          im.onload = function () { if (im.naturalWidth && im.naturalHeight) { sizes[url] = [im.naturalWidth, im.naturalHeight]; recal(); } };
+          im.src = url;
+        }
+        return;
+      }
+      // (the window: the painted box where it stands open — the title's
+      // left, the pseudo's left and its margin — cut where the margin's
+      // line stands, read off the cut itself)
+      var dx = parseFloat(h.style.getPropertyValue('--slide-x')) || 0;
+      var tr = t.getBoundingClientRect();
+      var boxL = tr.left + (parseFloat(b.left) || 0) + (parseFloat(b.marginLeft) || 0), boxR = boxL + W;
+      var cv = (getComputedStyle(t).clipPath.match(/-?[\d.]+px/g) || []).map(parseFloat).filter(function (n) { return Math.abs(n) < 50000; })[0];
+      var cut = cv == null ? null : tr.left + cv;
+      var winL = boxL, winR = boxR;
+      if (cut != null) { if (dx < 0) winL = Math.max(boxL, cut); else winR = Math.min(boxR, cut); }
+      var V = winR - winL, x0 = winL - boxL;
+      if (!(V > 0)) return;
+      var k = Math.max(V / dims[0], H / dims[1]), iw = dims[0] * k, ih = dims[1] * k;
+      var bs = iw.toFixed(2) + 'px ' + ih.toFixed(2) + 'px';
+      var bp = (x0 + (V - iw) / 2).toFixed(2) + 'px ' + ((H - ih) / 2).toFixed(2) + 'px';
+      if (t.style.getPropertyValue('--rest-bs') !== bs) t.style.setProperty('--rest-bs', bs);
+      if (t.style.getPropertyValue('--rest-bp') !== bp) t.style.setProperty('--rest-bp', bp);
+    });
+  };
+  var due = 0;
+  var later = function () { if (due) return; due = requestAnimationFrame(function () { due = 0; recal(); }); };
   ['newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
-    addEventListener(ev, function () { setTimeout(rest, 0); }, { passive: true });
+    addEventListener(ev, function () { setTimeout(function () { rest(); later(); }, 0); }, { passive: true });
   });
-  setTimeout(rest, 0);
+  // (a picture comes in late — the cards load theirs as they near the
+  // window — so any image's arrival lays the open pictures again)
+  document.addEventListener('load', function (e) { if (e.target && e.target.tagName === 'IMG') later(); }, true);
+  setTimeout(function () { rest(); later(); }, 0);
 })();
