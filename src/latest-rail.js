@@ -80,9 +80,12 @@
     // column's rule — the cards' edge — and at the window's 54 when the
     // column is shut, sliding between with it: "bird should move over into
     // band and slide", 2026-10-05; the words of the strip end there too)
-    var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
-    var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
-    var tgtR = rlW && !main.classList.contains('rail-is-shut') ? Math.floor(vw - rlW - 54) : vw - 54;
+    // (at the window's 54 whatever the column does since later that day —
+    // "have the latest column only sit next to content column, nav band
+    // and wordmark band should stretch all the way": both bands run the
+    // window's width over the column, the swallow and the strip's last
+    // word 54 off its edge, standing still as the column slides)
+    var tgtR = vw - 54;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;

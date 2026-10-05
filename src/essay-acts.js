@@ -120,6 +120,10 @@
   var lx = -1, ly = -1, pending = false;
   function run() {
     pending = false;
+    // (not while THE LATEST slides: the pictures pass under a still hand —
+    // "during the latest column slide, deactivate hover in kickers")
+    var mn = document.querySelector('main');
+    if (mn && mn.classList.contains('rail-anim')) { hide(); return; }
     var hitCard = null, hitBox = null;
     // (a card slid out over its mate is asked first, and the mate under
     // it not at all, 2026-10-01)

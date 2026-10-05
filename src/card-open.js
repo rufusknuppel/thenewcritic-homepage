@@ -103,7 +103,7 @@
       if (shutTimer) clearTimeout(shutTimer);
       shutTimer = setTimeout(function () { shutTimer = 0; card.classList.remove('is-shutting'); }, SHUT);
     };
-    card.addEventListener('mouseenter', function () { card.classList.add('is-lit'); });
+    card.addEventListener('mouseenter', function () { var mn = document.querySelector('main'); if (mn && mn.classList.contains('rail-anim')) return; card.classList.add('is-lit'); });
     card.addEventListener('mouseleave', function () { card.classList.remove('is-lit'); });
 
     // DELEGATED ON THE CARD, not bound to the controls themselves: the
