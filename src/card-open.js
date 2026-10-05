@@ -124,13 +124,13 @@
       var t = e.target;
       if (!t || !t.closest || !t.closest(COVER)) return;
       var vis = false; try { vis = t.matches(':focus-visible'); } catch (err) {}
-      if (!vis || card.classList.contains('is-open')) return;
+      if (!vis || card.classList.contains('is-open') || card.classList.contains('is-rest-open')) return;
       open();
       card.__openByFocus = true;
     });
     card.addEventListener('focusout', function (e) {
       var t = e.target;
-      if (!card.__openByFocus || !t || !t.closest || !t.closest(COVER)) return;
+      if (!card.__openByFocus || card.classList.contains('is-rest-open') || !t || !t.closest || !t.closest(COVER)) return;
       card.__openByFocus = false;
       shut();
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
@@ -141,6 +141,7 @@
       // (and Preview in the courier's other corner, 2026-10-01)
       if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
+        if (card.classList.contains('is-rest-open')) return;
         // (and a press on the mate's Preview while this card's picture is
         // out over it sends this one home and opens the mate's — ONE OUT
         // TO A ROW, in open(); 2026-10-01, "should disengage one preview,
@@ -224,7 +225,7 @@
     // (Esc slides an open preview home, 2026-10-01)
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape' && e.key !== 'Esc') return;
-      if (!card.classList.contains('is-open')) return;
+      if (!card.classList.contains('is-open') || card.classList.contains('is-rest-open')) return;
       shut();
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
@@ -238,4 +239,36 @@
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
   });
+  // EVERY POST RESTS OPEN (2026-10-04, at the user's word — "I want all
+  // posts to rest like this, no preview function"): from 1024 up, where
+  // the page opens on the band, every card that slides stands open from
+  // the first — its picture out under the margin, its words beside it —
+  // and there is no Preview to press (style.css, EVERY POST RESTS OPEN:
+  // the control stands unseen in its seat, which the fitter measures). The
+  // cards are opened once the fitter has stood them (.is-slide is its), at
+  // a stroke: main.is-resting holds the slide's easing off for the frame.
+  // Under 1024, where nothing slides, the cards stand shut.
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var mainEl = document.querySelector('main.wm-banded');
+  var rest = function () {
+    if (!mainEl) return;
+    var on = wide.matches;
+    var todo = [].filter.call(document.querySelectorAll('.duo-half--mega'), function (c) {
+      return on ? c.classList.contains('is-slide') && !c.classList.contains('is-rest-open') : c.classList.contains('is-rest-open');
+    });
+    if (!todo.length) return;
+    mainEl.classList.add('is-resting');
+    todo.forEach(function (c) {
+      c.classList.remove('is-opening', 'is-shutting', 'is-waiting');
+      c.classList.toggle('is-open', on);
+      c.classList.toggle('is-rest-open', on);
+    });
+    try { window.__ncTravel = performance.now() - 5000; } catch (err) {}
+    try { window.dispatchEvent(new Event('newcritic:travel')); } catch (err) {}
+    requestAnimationFrame(function () { requestAnimationFrame(function () { mainEl.classList.remove('is-resting'); }); });
+  };
+  ['newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
+    addEventListener(ev, function () { setTimeout(rest, 0); }, { passive: true });
+  });
+  setTimeout(rest, 0);
 })();

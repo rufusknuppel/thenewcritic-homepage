@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5a55a7d6">
+<link rel="stylesheet" href="style.css?v=cc8b3c68">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7628,13 +7628,13 @@
       var t = e.target;
       if (!t || !t.closest || !t.closest(COVER)) return;
       var vis = false; try { vis = t.matches(':focus-visible'); } catch (err) {}
-      if (!vis || card.classList.contains('is-open')) return;
+      if (!vis || card.classList.contains('is-open') || card.classList.contains('is-rest-open')) return;
       open();
       card.__openByFocus = true;
     });
     card.addEventListener('focusout', function (e) {
       var t = e.target;
-      if (!card.__openByFocus || !t || !t.closest || !t.closest(COVER)) return;
+      if (!card.__openByFocus || card.classList.contains('is-rest-open') || !t || !t.closest || !t.closest(COVER)) return;
       card.__openByFocus = false;
       shut();
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
@@ -7642,6 +7642,7 @@
     card.addEventListener('click', function (e) {
       if (hit(e, '.peek-open, .peek-corner')) {
         e.preventDefault(); e.stopPropagation();
+        if (card.classList.contains('is-rest-open')) return;
         if (waitTimer) {
           clearTimeout(waitTimer); waitTimer = 0; card.classList.remove('is-waiting');
           if (card.__under) { card.__under.classList.remove('is-under'); card.__under = null; }
@@ -7692,7 +7693,7 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape' && e.key !== 'Esc') return;
-      if (!card.classList.contains('is-open')) return;
+      if (!card.classList.contains('is-open') || card.classList.contains('is-rest-open')) return;
       shut();
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
@@ -7705,6 +7706,29 @@
       try { window.dispatchEvent(new Event('newcritic:closed')); } catch (err) {}
     });
   });
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var mainEl = document.querySelector('main.wm-banded');
+  var rest = function () {
+    if (!mainEl) return;
+    var on = wide.matches;
+    var todo = [].filter.call(document.querySelectorAll('.duo-half--mega'), function (c) {
+      return on ? c.classList.contains('is-slide') && !c.classList.contains('is-rest-open') : c.classList.contains('is-rest-open');
+    });
+    if (!todo.length) return;
+    mainEl.classList.add('is-resting');
+    todo.forEach(function (c) {
+      c.classList.remove('is-opening', 'is-shutting', 'is-waiting');
+      c.classList.toggle('is-open', on);
+      c.classList.toggle('is-rest-open', on);
+    });
+    try { window.__ncTravel = performance.now() - 5000; } catch (err) {}
+    try { window.dispatchEvent(new Event('newcritic:travel')); } catch (err) {}
+    requestAnimationFrame(function () { requestAnimationFrame(function () { mainEl.classList.remove('is-resting'); }); });
+  };
+  ['newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
+    addEventListener(ev, function () { setTimeout(rest, 0); }, { passive: true });
+  });
+  setTimeout(rest, 0);
 })();
 
 (function () {
