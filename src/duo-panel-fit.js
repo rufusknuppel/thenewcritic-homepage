@@ -8695,7 +8695,11 @@
       var wb = wc - SLIDE_LESS;
       // (framed, the column FRAME_W wider and the picture meeting it at the
       // seam's rule, no gutter: it travels the column's whole width)
-      if (framed) { wb += FRAME_W; dx = wb * (right ? 1 : -1); }
+      // (…less half the seam's rule, so the picture's edge ends under the
+      // middle of the rule whatever fraction it falls on: its part-painted
+      // last pixel showed as a hairline beside the rule — "On the left of
+      // this right edge")
+      if (framed) { wb += FRAME_W; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8745,14 +8749,22 @@
           card.appendChild(fr);
         }
         var Ec = columnEdge(card, seat.d);
-        var fl = right ? P.l : Ec, frr = right ? Ec : P.r;
-        var seamX = right ? P.l + wb - FRAME : P.r - wb;
+        // (ON WHOLE PIXELS, OUTWARD — "noticing a hairline on the edges
+        // sometimes of the image": the cut on the margin falls on a
+        // fraction, and a frame laid to the fraction let the picture's
+        // part-painted pixel show past it. The frame's sides go out to the
+        // whole pixel past the picture's, and the seam's rule to the whole
+        // pixel that covers the picture's edge beside it, so the frame's
+        // ink always lies over the picture's last pixel.)
+        var fl = Math.floor(right ? P.l : Ec), frr = Math.ceil(right ? Ec : P.r);
+        var ft = Math.floor(P.t), fb = Math.ceil(P.b);
+        var seamX = right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb);
         var fs = fr.style;
         fs.left = (fl - cr0.left).toFixed(2) + 'px';
-        fs.top = (P.t - cr0.top).toFixed(2) + 'px';
-        fs.width = (frr - fl).toFixed(2) + 'px';
-        fs.height = (P.b - P.t).toFixed(2) + 'px';
-        fr.firstChild.style.left = (seamX - fl - FRAME).toFixed(2) + 'px';
+        fs.top = (ft - cr0.top).toFixed(2) + 'px';
+        fs.width = (frr - fl) + 'px';
+        fs.height = (fb - ft) + 'px';
+        fr.firstChild.style.left = (seamX - fl - FRAME) + 'px';
       } else if (fr) fr.remove();
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {

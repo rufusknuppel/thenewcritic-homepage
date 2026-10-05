@@ -43,7 +43,7 @@ module.exports = {
     kicker: 'Who’s Still Masking?',
   },
   'high-school-or-claude': {
-    kicker: 'Middle School Post-AI',
+    kicker: 'AI in 8th Grade',
     // the dek reads "Postscript No. 24 | 14-year-old Eli Goldfine on
     // self-educating through AI"; the card says the name alone
     byline: 'Eli Goldfine',
@@ -407,7 +407,7 @@ module.exports = {
     zoom: 1.05,
   },
   'jasmine-suns-project-of-self-transformation': {
-    kicker: 'Becoming a Journalist',
+    kicker: 'Becoming a Tech Journalist',
     head: [0.38, 0.44],
     zoom: 1,
   },

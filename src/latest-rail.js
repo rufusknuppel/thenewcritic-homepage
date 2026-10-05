@@ -401,3 +401,33 @@
   addEventListener('resize', measure, { passive: true });
   addEventListener('load', measure);
 })();
+
+// THE COLUMN TAKES YOU TO THE CARD (2026-10-04, at the user's word — "When
+// you click an element in the latest column I want it to take you to that
+// post's card"): from 1024 up a post in the column, pressed, brings its
+// card up to the first card's seat — its frame (or its picture) the rule's
+// 9 and 54 under the band's foot — rather than leaving for the post; a
+// press with a modifier, or the middle button, still opens the post itself.
+(function () {
+  var wide = window.matchMedia('(min-width: 1024px)');
+  document.addEventListener('click', function (e) {
+    if (!wide.matches || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target && e.target.closest && e.target.closest('.latest-rail__list a[data-slug]');
+    if (!a) return;
+    var slug = a.getAttribute('data-slug');
+    var card = slug && document.querySelector('.page-rows section.card[data-slug="' + slug + '"]');
+    if (!card) return;
+    var top = null;
+    var fr = card.querySelector('.card-frame');
+    if (fr && fr.offsetWidth) top = fr.getBoundingClientRect().top;
+    if (top == null) {
+      var t = card.querySelector('.card-title.hl-rect.rx');
+      if (t) top = t.getBoundingClientRect().top + (parseFloat(getComputedStyle(t, '::before').top) || 0);
+    }
+    if (top == null) top = card.getBoundingClientRect().top;
+    var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    var foot = strip ? strip.offsetHeight : 0;
+    e.preventDefault();
+    window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - 9 - 54), behavior: 'smooth' });
+  });
+})();
