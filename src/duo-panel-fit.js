@@ -3546,6 +3546,63 @@
     });
   }
   window.addEventListener('newcritic:fit', fitGroundStops);
+  // THE RULES PART THE GROUND (2026-10-05, at the user's words — "I want
+  // rules on images to delineate between different colored sections. So
+  // on light mode, the area above the slutcon divider would charcoal, and
+  // the area below would be white. Then the next one would have charcoal
+  // below and white above, and alternate like that"): from 1024 up the
+  // rows' ground changes colour at every essay's rule, from the window's
+  // edge to its other — the ink (--div-ink) down to the first rule, the
+  // page's ground (--band-ground) to the next, the ink again, and so on —
+  // drawn as one gradient on the rows' body over the opening's own (which
+  // keeps the top clear for the name). The change of colour falls in the
+  // rule's own 2, which covers it, the picture over its gap. Each essay's
+  // half is told which side it stands (.fld-odd: its head on the ground,
+  // its dek and text on the ink; style.css, THE RULES PART THE GROUND).
+  function fitFields() {
+    var mb = document.querySelector('main.wm-banded .page-rows > .movement.m--latest > .movement-body');
+    if (!mb) return;
+    var wide = window.matchMedia('(min-width: 1024px)').matches;
+    var rules = wide ? [].slice.call(mb.querySelectorAll('.duo-half--mega > .swap-body-rule')) : [];
+    var top = mb.getBoundingClientRect().top;
+    var seats = [];
+    rules.forEach(function (rl) {
+      // (by its seat, not its paint: the rule is drawn only once its card
+      // rests open, after the fit's word; its 2 centred on the change)
+      var rt = parseFloat(rl.style.top);
+      if (!isFinite(rt)) return;
+      var hf = rl.parentElement, hr = hf.getBoundingClientRect();
+      if (!(hr.height > 0)) return;
+      seats.push({ half: hf, y: hr.top + hf.clientTop + rt - top + FRAME / 2 });
+    });
+    seats.sort(function (a, b) { return a.y - b.y; });
+    [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
+      var i = -1;
+      for (var k = 0; k < seats.length; k++) if (seats[k].half === h) { i = k; break; }
+      h.classList.toggle('fld-odd', i >= 0 && i % 2 === 1);
+      h.classList.toggle('fld', i >= 0);
+    });
+    if (!seats.length) { mb.style.removeProperty('background-image'); return; }
+    var INK = 'var(--div-ink, #121417)', GRD = 'var(--band-ground, #FFFFFF)';
+    var open0 = 'calc(var(--wm-under, 36px) + 108px)';
+    var stops = ['transparent 0', 'transparent ' + open0, INK + ' ' + open0];
+    seats.forEach(function (s, k) {
+      var y = s.y.toFixed(2) + 'px';
+      var was = k % 2 === 0 ? INK : GRD, now = k % 2 === 0 ? GRD : INK;
+      stops.push(was + ' ' + y, now + ' ' + y);
+    });
+    stops.push((seats.length % 2 === 1 ? GRD : INK) + ' 100%');
+    var fields = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
+    var under = 'linear-gradient(to bottom, transparent 0, transparent ' + open0 + ', var(--wm-ground, #121417) ' + open0 + ')';
+    var v = fields + ', ' + under;
+    if (mb.__fields !== v) { mb.__fields = v; mb.style.setProperty('background-image', v, 'important'); }
+  }
+  // (and once the rules are seated, whenever they are: the fit's own
+  // word can come before the last of them)
+  var fieldsT = 0;
+  function fieldsSoon() { clearTimeout(fieldsT); fieldsT = setTimeout(fitFields, 0); }
+  window.addEventListener('newcritic:fit', fitFields);
+  window.addEventListener('resize', function () { setTimeout(fitFields, 0); });
   // THE PICKUP. The masthead line stands in a fixed strip under the
   // wordmark; every band carries the same two lines, in the same box,
   // at the same height. The band's copy is hidden until the rising band
@@ -8191,6 +8248,31 @@
   // title's lowest ink: the title's last line found by its words' boxes,
   // that line's descent read off the face (the baseline where nothing
   // hangs under it), and the byline's cap height off its own.
+  // (the title's lowest ink: its last line's descenders where it has
+  // them, its baseline where it has none — the same reckoning as the
+  // byline's margin below; for the rule's 54 under the head, 2026-10-05)
+  function titleInkFoot(tt) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var tn = tt && tt.firstChild;
+    if (!tn || tn.nodeType !== 3) return null;
+    var txt = tn.nodeValue, rg = document.createRange(), lines = [], re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w;
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      var last = lines[lines.length - 1], piece = w[0].replace(/\u00AD$/, '-');
+      if (last && Math.abs(last.top - rr.top) < 2) last.words.push(piece);
+      else lines.push({ top: rr.top, words: [piece] });
+    }
+    if (!lines.length) return null;
+    var tc = getComputedStyle(tt);
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    var tm = headCtx.measureText(lines[lines.length - 1].words.join(' '));
+    var tlh = parseFloat(tc.lineHeight) || parseFloat(tc.fontSize);
+    var lineTop = tt.getBoundingClientRect().bottom - tlh;
+    var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
+    return tBase + Math.max(0, tm.actualBoundingBoxDescent);
+  }
   function headMetaMargin(tt, mm, gap) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
@@ -8680,6 +8762,9 @@
   // wider)
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
+  // (the words' gap off the frame, the margin the cards keep: 54 —
+  // "Match 54px margin on near side too", 2026-10-05)
+  var NEAR_GAP = 54;
   // (and 5 in from either end: the head 5 under the picture's top, the
   // last baseline 5 over its foot — at the user's word, "Move metadate 5px
   // down and body 5 px up", 2026-10-04)
@@ -8688,6 +8773,9 @@
   // the least 108 between them; 36 again later that day, the rule over the
   // dek by then — "Reduce gap between title and rule by 36px")
   var HEAD_DEK_MORE = 36;
+  // (the air either side of the rule over the dek, from the head's lowest
+  // ink and to the dek's first: 2026-10-05)
+  var RULE_AIR = 54;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -9145,7 +9233,9 @@
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       // (in its frame, the rule's 3 and 36 on the picture's side, 36 and
       // the frame's 3 on the other: THE CARD IN A FRAME)
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME_ONE, t: 0, b: 0 } : { l: FRAME_ONE, r: 0, t: 0, b: 0 };
+      // (54 off the frame since later on 2026-10-05 — "Match 54px margin on
+      // near side too": NEAR_GAP)
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: 0, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -9450,6 +9540,8 @@
         j.txT = firstInkTop(j.bt);
         j.dkT = firstInkTop(j.pdk);
       }
+      // (the head's lowest ink, for the rule's 54 under it: 2026-10-05)
+      j.hdB = j.hd ? titleInkFoot(j.hd.querySelector('.swap-body-title')) : null;
       // (the dek's ink across: its lines' farthest reach either way — the
       // rule under it goes no farther from the picture, 2026-10-04)
       if (j.pkb) {
@@ -9467,17 +9559,36 @@
       // ALONE)
       if (j.hd && j.slide && bandedInk() && j.inB != null) {
         var dnY = j.bb.bottom - INK_GAP - j.inB;
-        var up = 'translateY(' + (j.bb.top + INK_GAP - j.inT).toFixed(2) + 'px)';
+        var upY = j.bb.top + INK_GAP - j.inT;
+        // THE STACK CENTRED ON THE RULE'S 54s (2026-10-05, at the user's
+        // words — "Have 54px above and below rule on images. Vertically
+        // center text stack based on that rather than top margin pin, set
+        // that as a minimum"): the head's lowest ink 54 over the rule, the
+        // dek's first ink 54 under it, the dek's last baseline 27 over the
+        // text, and the whole stack centred in the picture's height — no
+        // nearer its top or foot than the 27 pins it stood on before
+        var ruleTop = null;
+        var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
+        if (stacked) {
+          var sH = (j.hdB - j.inT) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkT) + INK_GAP + (j.inB - j.txT);
+          var room = j.bb.height - 2 * INK_GAP;
+          var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
+          upY = y0 - j.inT;
+          ruleTop = Math.round(y0 + (j.hdB - j.inT) + RULE_AIR);
+          var dekY = ruleTop + FRAME + RULE_AIR - j.dkT;
+          dnY = (j.dkB + dekY + INK_GAP) - j.txT;
+        } else {
+          var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
+          if (j.dkT != null) ruleTop = Math.round(j.dkT + dekY - INK_GAP - FRAME);
+        }
+        var up = 'translateY(' + upY.toFixed(2) + 'px)';
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
         // (the dek's last baseline 27 over the text's first ink, and the rule
-        // over the dek, a whole pixel, 27 over its first ink — "move rule
-        // above dek", 2026-10-05; it stood between the dek and the text for
-        // an hour)
-        var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
+        // over the dek, a whole pixel — "move rule above dek", 2026-10-05;
+        // it stood between the dek and the text for an hour)
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
-        var ruleTop = (j.dkT != null) ? Math.round(j.dkT + dekY - INK_GAP - FRAME) : null;
         // (a 2 rule between the dek and the text, halfway between their
         // boxes, from the picture's frame to the column's outer edge —
         // "place a 2px line between dek and body text that extends to edge
@@ -9496,6 +9607,7 @@
           // text's first ink — EVERY GAP THE SIDES' 27)
           var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
           rl.style.top = (rTop - j.hb.top - j.hf.clientTop).toFixed(2) + 'px';
+          fieldsSoon();
           // (from the picture to the dek's farthest ink — "only extend rule
           // to the farthest ink of the dek": the picture on the column's
           // left (padding on that side), the rule runs right to the dek's

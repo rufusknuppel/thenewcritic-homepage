@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=538e4e63">
+<link rel="stylesheet" href="style.css?v=47b7cf33">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -3612,6 +3612,46 @@
     });
   }
   window.addEventListener('newcritic:fit', fitGroundStops);
+  function fitFields() {
+    var mb = document.querySelector('main.wm-banded .page-rows > .movement.m--latest > .movement-body');
+    if (!mb) return;
+    var wide = window.matchMedia('(min-width: 1024px)').matches;
+    var rules = wide ? [].slice.call(mb.querySelectorAll('.duo-half--mega > .swap-body-rule')) : [];
+    var top = mb.getBoundingClientRect().top;
+    var seats = [];
+    rules.forEach(function (rl) {
+      var rt = parseFloat(rl.style.top);
+      if (!isFinite(rt)) return;
+      var hf = rl.parentElement, hr = hf.getBoundingClientRect();
+      if (!(hr.height > 0)) return;
+      seats.push({ half: hf, y: hr.top + hf.clientTop + rt - top + FRAME / 2 });
+    });
+    seats.sort(function (a, b) { return a.y - b.y; });
+    [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
+      var i = -1;
+      for (var k = 0; k < seats.length; k++) if (seats[k].half === h) { i = k; break; }
+      h.classList.toggle('fld-odd', i >= 0 && i % 2 === 1);
+      h.classList.toggle('fld', i >= 0);
+    });
+    if (!seats.length) { mb.style.removeProperty('background-image'); return; }
+    var INK = 'var(--div-ink, #121417)', GRD = 'var(--band-ground, #FFFFFF)';
+    var open0 = 'calc(var(--wm-under, 36px) + 108px)';
+    var stops = ['transparent 0', 'transparent ' + open0, INK + ' ' + open0];
+    seats.forEach(function (s, k) {
+      var y = s.y.toFixed(2) + 'px';
+      var was = k % 2 === 0 ? INK : GRD, now = k % 2 === 0 ? GRD : INK;
+      stops.push(was + ' ' + y, now + ' ' + y);
+    });
+    stops.push((seats.length % 2 === 1 ? GRD : INK) + ' 100%');
+    var fields = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
+    var under = 'linear-gradient(to bottom, transparent 0, transparent ' + open0 + ', var(--wm-ground, #121417) ' + open0 + ')';
+    var v = fields + ', ' + under;
+    if (mb.__fields !== v) { mb.__fields = v; mb.style.setProperty('background-image', v, 'important'); }
+  }
+  var fieldsT = 0;
+  function fieldsSoon() { clearTimeout(fieldsT); fieldsT = setTimeout(fitFields, 0); }
+  window.addEventListener('newcritic:fit', fitFields);
+  window.addEventListener('resize', function () { setTimeout(fitFields, 0); });
   function fitPickup() {}
   var stopsQueued = false;
   window.addEventListener('scroll', function () {
@@ -6230,6 +6270,28 @@
   var SWAP_PAD = 36, SWAP_OPEN = 0, SWAP_GAP = 36, SWAP_MAX = 40, SWAP_LINES = 6;
   var HEAD_META_GAP = 18;
   var headCtx = null;
+  function titleInkFoot(tt) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var tn = tt && tt.firstChild;
+    if (!tn || tn.nodeType !== 3) return null;
+    var txt = tn.nodeValue, rg = document.createRange(), lines = [], re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w;
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      var last = lines[lines.length - 1], piece = w[0].replace(/\u00AD$/, '-');
+      if (last && Math.abs(last.top - rr.top) < 2) last.words.push(piece);
+      else lines.push({ top: rr.top, words: [piece] });
+    }
+    if (!lines.length) return null;
+    var tc = getComputedStyle(tt);
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    var tm = headCtx.measureText(lines[lines.length - 1].words.join(' '));
+    var tlh = parseFloat(tc.lineHeight) || parseFloat(tc.fontSize);
+    var lineTop = tt.getBoundingClientRect().bottom - tlh;
+    var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
+    return tBase + Math.max(0, tm.actualBoundingBoxDescent);
+  }
   function headMetaMargin(tt, mm, gap) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
@@ -6562,8 +6624,10 @@
   var FRAME = 2, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
+  var NEAR_GAP = 54;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
+  var RULE_AIR = 54;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -6841,7 +6905,7 @@
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME_ONE, t: 0, b: 0 } : { l: FRAME_ONE, r: 0, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: 0, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -7047,6 +7111,7 @@
         j.txT = firstInkTop(j.bt);
         j.dkT = firstInkTop(j.pdk);
       }
+      j.hdB = j.hd ? titleInkFoot(j.hd.querySelector('.swap-body-title')) : null;
       if (j.pkb) {
         var dr = document.createRange(); dr.selectNodeContents(j.pdk);
         var drs = dr.getClientRects(), dl = Infinity, dR = -Infinity;
@@ -7058,13 +7123,26 @@
       if (!isFinite(j.inT)) return;
       if (j.hd && j.slide && bandedInk() && j.inB != null) {
         var dnY = j.bb.bottom - INK_GAP - j.inB;
-        var up = 'translateY(' + (j.bb.top + INK_GAP - j.inT).toFixed(2) + 'px)';
+        var upY = j.bb.top + INK_GAP - j.inT;
+        var ruleTop = null;
+        var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
+        if (stacked) {
+          var sH = (j.hdB - j.inT) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkT) + INK_GAP + (j.inB - j.txT);
+          var room = j.bb.height - 2 * INK_GAP;
+          var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
+          upY = y0 - j.inT;
+          ruleTop = Math.round(y0 + (j.hdB - j.inT) + RULE_AIR);
+          var dekY = ruleTop + FRAME + RULE_AIR - j.dkT;
+          dnY = (j.dkB + dekY + INK_GAP) - j.txT;
+        } else {
+          var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
+          if (j.dkT != null) ruleTop = Math.round(j.dkT + dekY - INK_GAP - FRAME);
+        }
+        var up = 'translateY(' + upY.toFixed(2) + 'px)';
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
-        var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
-        var ruleTop = (j.dkT != null) ? Math.round(j.dkT + dekY - INK_GAP - FRAME) : null;
         var rlOld = j.body.querySelector(':scope > .swap-body-rule');
         if (rlOld) rlOld.remove();
         var rl = j.hf && j.hf.querySelector(':scope > .swap-body-rule');
@@ -7073,6 +7151,7 @@
           var mid = (j.pkb.bottom + j.tb.top) / 2 + dnY;
           var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
           rl.style.top = (rTop - j.hb.top - j.hf.clientTop).toFixed(2) + 'px';
+          fieldsSoon();
           var picLeft = j.bp && j.bp.l > 0, bl0 = j.hb.left + j.hf.clientLeft, br0 = j.hb.right - j.hf.clientLeft;
           var mainEl = document.querySelector('main');
           var slid = mainEl && mainEl.classList.contains('rail-is-shut') ? (parseFloat(mainEl.style.getPropertyValue('--rail-shift')) || 0) : 0;
@@ -10063,7 +10142,7 @@ window.__ncStripInk = function () {
     };
     var k = inkY();
     if (!isFinite(k.t)) return;
-    var wmH = k.b - k.t, H = Math.round(wmH + 54);
+    var wmH = k.b - k.t, H = 108 - 2;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -10072,7 +10151,7 @@ window.__ncStripInk = function () {
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    st.style.setProperty('--bird-s', ((wmH + 18) / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', ((H - 36) / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
@@ -10087,14 +10166,28 @@ window.__ncStripInk = function () {
     var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
-    st.style.setProperty('--bird-dx', '0px');
-    var bs = st.style.getPropertyValue('--bird-s');
-    if (bs) st.style.setProperty('--bird-s', '1');
-    var x1u = birdInk.getBoundingClientRect().left;
-    if (bs) st.style.setProperty('--bird-s', bs);
-    var br0 = birdInk.getBoundingClientRect();
-    if (!br0.width) return null;
-    var dx = (vw - 54) - br0.right;
+    var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
+    var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
+    var tgtR = rlW && !main.classList.contains('rail-is-shut') ? Math.floor(vw - rlW - 54) : vw - 54;
+    var sliding = main.classList.contains('rail-anim');
+    var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
+    var dx, x1u, br0;
+    if (sliding) {
+      br0 = birdInk.getBoundingClientRect();
+      if (!br0.width) return null;
+      dx = dxNow + (tgtR - br0.right);
+      x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
+    } else {
+      st.style.setProperty('--bird-dx', '0px');
+      var bs = st.style.getPropertyValue('--bird-s');
+      if (bs) st.style.setProperty('--bird-s', '1');
+      x1u = birdInk.getBoundingClientRect().left;
+      bandGeo.x1u = x1u;
+      if (bs) st.style.setProperty('--bird-s', bs);
+      br0 = birdInk.getBoundingClientRect();
+      if (!br0.width) return null;
+      dx = tgtR - br0.right;
+    }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
@@ -10115,7 +10208,7 @@ window.__ncStripInk = function () {
       var pr = pth.getBoundingClientRect(); if (pr.width) x0L = Math.min(x0L, pr.left);
     });
     var lr = low.getBoundingClientRect();
-    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: vw - 54 };
+    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: tgtR };
   };
   window.__ncEvenMid = function () {
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -10175,6 +10268,7 @@ window.__ncStripInk = function () {
     if (!main.classList.contains('wm-opening') || main.classList.contains('wm-banded')) rest = 0;
     var strip = document.querySelector('.sub-ticker--top');
     var settled = main.classList.contains('wm-banded') && strip ? strip.offsetHeight : STRIP_SETTLED;
+    if (main.classList.contains('wm-banded') && window.matchMedia('(min-width: 1024px)').matches) settled = 0;
     var br = body.getBoundingClientRect();
     var bodyTop = br.top + (window.pageYOffset || 0);
     var tops = rails.map(function (rail, i) {
@@ -10271,16 +10365,14 @@ window.__ncStripInk = function () {
       st.style.setProperty('--colo-p', '0');
       st.style.setProperty('--band-lead', '0px');
       st.style.setProperty('--band-trail', '0px');
+      var flip = main.classList.contains('rail-anim');
+      var runKids = run ? [].filter.call(run.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
+      var was0 = flip ? runKids.map(function (c) { return c.getBoundingClientRect().left; }) : null;
       var geo = bandGeo(st);
       var words = geo ? geo.words : [], ink = geo ? geo.ink : [];
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
       if (run && geo && ink.length > 1) {
         var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
-        var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
-        var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
-        var shutNow = main.classList.contains('rail-is-shut');
-        var vwB = document.documentElement.clientWidth;
-        if (rlW && !shutNow) geo.x1R = Math.floor(vwB - rlW - 54);
         var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
@@ -10302,6 +10394,15 @@ window.__ncStripInk = function () {
         st.style.removeProperty('--band-trail');
       }
       if (p0) st.style.setProperty('--colo-p', p0); else st.style.removeProperty('--colo-p');
+      if (flip && was0) {
+        runKids.forEach(function (c, i) {
+          var d = was0[i] - c.getBoundingClientRect().left;
+          c.style.setProperty('transition', 'none', 'important');
+          c.style.setProperty('translate', d.toFixed(2) + 'px 0', 'important');
+        });
+        void st.offsetWidth;
+        runKids.forEach(function (c) { c.style.removeProperty('transition'); c.style.setProperty('translate', '0px 0px', 'important'); });
+      }
       if (window.__ncRailEdge) window.__ncRailEdge();
     }
     var bw = st.clientWidth.toFixed(2) + 'px';
@@ -10317,6 +10418,11 @@ window.__ncStripInk = function () {
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
       if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
       if (main.style.getPropertyValue('--foot-cover') !== cv) main.style.setProperty('--foot-cover', cv);
+      var mbEl = co.parentElement && document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+      var push = mbEl ? Math.max(0, window.innerHeight - mbEl.getBoundingClientRect().bottom) : 0;
+      var ftv = (push - cover).toFixed(2) + 'px', fbv = (cover + push).toFixed(2) + 'px';
+      if (main.style.getPropertyValue('--fill-top') !== ftv) main.style.setProperty('--fill-top', ftv);
+      if (main.style.getPropertyValue('--fill-bot') !== fbv) main.style.setProperty('--fill-bot', fbv);
     }
     var fade = Math.min(1, pr / FADE_SHARE), spread = Math.max(0, (pr - FADE_SHARE) / (1 - FADE_SHARE));
     var v = spread.toFixed(4), vf = fade.toFixed(4);
@@ -10368,8 +10474,14 @@ window.__ncStripInk = function () {
     for (var i = 0; i < bs.length; i++) if (re.test(bs[i].textContent.trim())) return bs[i].getBoundingClientRect();
     return null;
   };
+  var measuring = false;
   var measure = function () {
-    if (!wide.matches) return;
+    if (!wide.matches || measuring) return;
+    if (main.classList.contains('rail-anim')) return;
+    measuring = true;
+    try { measure0(); } finally { measuring = false; }
+  };
+  var measure0 = function () {
     var p0 = strip.style.getPropertyValue('--colo-p');
     if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
     var mid = window.__ncEvenMid ? window.__ncEvenMid() : null;

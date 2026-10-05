@@ -49,7 +49,10 @@
     // (the strip under the name again since later that day — "Set band
     // below wordmark": the field the band's box, from the window's top to
     // the strip, the name 27 from either; THE NAV UNDER THE NAME, style.css)
-    var wmH = k.b - k.t, H = Math.round(wmH + 54);
+    // (108 with its rule since later still — "bottom band should be 54px.
+    // Top should be 108px": the field 106 over its 2, the name centred in
+    // it at its own size, the swallow's wings 18 from either edge)
+    var wmH = k.b - k.t, H = 108 - 2;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -58,7 +61,7 @@
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    st.style.setProperty('--bird-s', ((wmH + 18) / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', ((H - 36) / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
@@ -73,16 +76,36 @@
     var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
-    st.style.setProperty('--bird-dx', '0px');
-    // (x1 read at the swallow's old size, so the column's width holds:
-    // THE NAV OVER THE NAME draws it smaller)
-    var bs = st.style.getPropertyValue('--bird-s');
-    if (bs) st.style.setProperty('--bird-s', '1');
-    var x1u = birdInk.getBoundingClientRect().left;
-    if (bs) st.style.setProperty('--bird-s', bs);
-    var br0 = birdInk.getBoundingClientRect();
-    if (!br0.width) return null;
-    var dx = (vw - 54) - br0.right;
+    // (the swallow in the band beside THE LATEST, its ink 54 off the
+    // column's rule — the cards' edge — and at the window's 54 when the
+    // column is shut, sliding between with it: "bird should move over into
+    // band and slide", 2026-10-05; the words of the strip end there too)
+    var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
+    var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
+    var tgtR = rlW && !main.classList.contains('rail-is-shut') ? Math.floor(vw - rlW - 54) : vw - 54;
+    var sliding = main.classList.contains('rail-anim');
+    var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
+    var dx, x1u, br0;
+    if (sliding) {
+      // (mid-slide the swallow is carried from where it stands, so its
+      // easing runs from there and is not set back first)
+      br0 = birdInk.getBoundingClientRect();
+      if (!br0.width) return null;
+      dx = dxNow + (tgtR - br0.right);
+      x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
+    } else {
+      st.style.setProperty('--bird-dx', '0px');
+      // (x1 read at the swallow's old size, so the column's width holds:
+      // THE NAV OVER THE NAME draws it smaller)
+      var bs = st.style.getPropertyValue('--bird-s');
+      if (bs) st.style.setProperty('--bird-s', '1');
+      x1u = birdInk.getBoundingClientRect().left;
+      bandGeo.x1u = x1u;
+      if (bs) st.style.setProperty('--bird-s', bs);
+      br0 = birdInk.getBoundingClientRect();
+      if (!br0.width) return null;
+      dx = tgtR - br0.right;
+    }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
@@ -107,7 +130,7 @@
     var lr = low.getBoundingClientRect();
     // (x1 the swallow's first ink where it stood before it was carried to
     // the gutter, so the column's edge stands where it stood)
-    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: vw - 54 };
+    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: tgtR };
   };
   // (where STORE's right and ARCHIVE's left would stand were the words
   // evenly between CRITIC's last stroke and the swallow's first ink, one
@@ -187,6 +210,11 @@
     // (the band's own height where the page opens on it: 108, "make whole band 36px shorter")
     var strip = document.querySelector('.sub-ticker--top');
     var settled = main.classList.contains('wm-banded') && strip ? strip.offsetHeight : STRIP_SETTLED;
+    // (from the window's top since 2026-10-05, where it opens on the band
+    // from 1024 up — "Have the latest column stretch up into top band too";
+    // "Recenter what's in the latest column with new size": its hold the
+    // window's height, its words centred in it)
+    if (main.classList.contains('wm-banded') && window.matchMedia('(min-width: 1024px)').matches) settled = 0;
     var br = body.getBoundingClientRect();
     var bodyTop = br.top + (window.pageYOffset || 0);
     var tops = rails.map(function (rail, i) {
@@ -362,6 +390,13 @@
       // MAGAZINE's at the other, one gap between each word's ink and the
       // next (bandGeo; the column's edge is still read from where STORE and
       // ARCHIVE stood evenly between CRITIC and the swallow: evenMid).
+      // (through the column's slide the words are seated at once and
+      // carried from where they stood by a transform, on the column's own
+      // easing — not eased by their margins, which ran at the page's pace,
+      // not the column's: "band sliding at different pace from column")
+      var flip = main.classList.contains('rail-anim');
+      var runKids = run ? [].filter.call(run.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
+      var was0 = flip ? runKids.map(function (c) { return c.getBoundingClientRect().left; }) : null;
       var geo = bandGeo(st);
       var words = geo ? geo.words : [], ink = geo ? geo.ink : [];
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
@@ -372,11 +407,6 @@
         // words to the cards' edge, 54 off THE LATEST's, the strip under the
         // column; the column shut, the words the window's width — THE NAV
         // AT THE FOOT, style.css)
-        var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
-        var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
-        var shutNow = main.classList.contains('rail-is-shut');
-        var vwB = document.documentElement.clientWidth;
-        if (rlW && !shutNow) geo.x1R = Math.floor(vwB - rlW - 54);
         var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
@@ -401,6 +431,15 @@
         st.style.removeProperty('--band-trail');
       }
       if (p0) st.style.setProperty('--colo-p', p0); else st.style.removeProperty('--colo-p');
+      if (flip && was0) {
+        runKids.forEach(function (c, i) {
+          var d = was0[i] - c.getBoundingClientRect().left;
+          c.style.setProperty('transition', 'none', 'important');
+          c.style.setProperty('translate', d.toFixed(2) + 'px 0', 'important');
+        });
+        void st.offsetWidth;
+        runKids.forEach(function (c) { c.style.removeProperty('transition'); c.style.setProperty('translate', '0px 0px', 'important'); });
+      }
       // (the column's edge hangs on STORE and ARCHIVE: read it again)
       if (window.__ncRailEdge) window.__ncRailEdge();
     }
@@ -442,6 +481,16 @@
       // (and the strip at the window's foot, which stands in the rows'
       // layer under THE LATEST, goes down as far — THE NAV AT THE FOOT)
       if (main.style.getPropertyValue('--foot-cover') !== cv) main.style.setProperty('--foot-cover', cv);
+      // (the band's ground and the strip's stand on one sticky sheet in the
+      // rows' layer — so they move with the page's overscroll as the band
+      // does: "dividers should move on overscroll" — which the rows' end
+      // pushes up as it comes: the band's part goes up by the cover, the
+      // strip's down, read against that push)
+      var mbEl = co.parentElement && document.querySelector('.page-rows > .movement.m--latest > .movement-body');
+      var push = mbEl ? Math.max(0, window.innerHeight - mbEl.getBoundingClientRect().bottom) : 0;
+      var ftv = (push - cover).toFixed(2) + 'px', fbv = (cover + push).toFixed(2) + 'px';
+      if (main.style.getPropertyValue('--fill-top') !== ftv) main.style.setProperty('--fill-top', ftv);
+      if (main.style.getPropertyValue('--fill-bot') !== fbv) main.style.setProperty('--fill-bot', fbv);
     }
     // (the fade first, over the colophon's first quarter, and the words
     // spread only once it is done, over the rest — "Fade should occur
@@ -512,8 +561,16 @@
     for (var i = 0; i < bs.length; i++) if (re.test(bs[i].textContent.trim())) return bs[i].getBoundingClientRect();
     return null;
   };
+  var measuring = false;
   var measure = function () {
-    if (!wide.matches) return;
+    if (!wide.matches || measuring) return;
+    // (never through the column's slide, which moves the swallow it reads;
+    // and once at a time — the resize it sends brings it back)
+    if (main.classList.contains('rail-anim')) return;
+    measuring = true;
+    try { measure0(); } finally { measuring = false; }
+  };
+  var measure0 = function () {
     // (read with the band's words at rest, not spread for the colophon)
     var p0 = strip.style.getPropertyValue('--colo-p');
     if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
