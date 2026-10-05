@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=47b7cf33">
+<link rel="stylesheet" href="style.css?v=c3495fda">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -2752,14 +2752,14 @@
     if (!mb) return;
     var wide = window.matchMedia('(min-width: 1024px)').matches;
     var rules = wide ? [].slice.call(mb.querySelectorAll('.duo-half--mega > .swap-body-rule')) : [];
-    var top = mb.getBoundingClientRect().top;
+    var top = mb.getBoundingClientRect().top + mb.clientTop;
     var seats = [];
     rules.forEach(function (rl) {
       var rt = parseFloat(rl.style.top);
       if (!isFinite(rt)) return;
       var hf = rl.parentElement, hr = hf.getBoundingClientRect();
       if (!(hr.height > 0)) return;
-      seats.push({ half: hf, y: hr.top + hf.clientTop + rt - top + FRAME / 2 });
+      seats.push({ half: hf, y: Math.round(hr.top + hf.clientTop + rt - top) + FRAME / 2 });
     });
     seats.sort(function (a, b) { return a.y - b.y; });
     [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
@@ -2768,20 +2768,28 @@
       h.classList.toggle('fld-odd', i >= 0 && i % 2 === 1);
       h.classList.toggle('fld', i >= 0);
     });
-    if (!seats.length) { mb.style.removeProperty('background-image'); return; }
-    var INK = 'var(--div-ink, #121417)', GRD = 'var(--band-ground, #FFFFFF)';
-    var open0 = 'calc(var(--wm-under, 36px) + 108px)';
-    var stops = ['transparent 0', 'transparent ' + open0, INK + ' ' + open0];
-    seats.forEach(function (s, k) {
-      var y = s.y.toFixed(2) + 'px';
-      var was = k % 2 === 0 ? INK : GRD, now = k % 2 === 0 ? GRD : INK;
-      stops.push(was + ' ' + y, now + ' ' + y);
+    mb.style.removeProperty('background-image');
+    var box = mb.querySelector(':scope > .fld-ground');
+    if (!seats.length) { if (box) box.remove(); mb.__fields = null; return; }
+    var spans = [], open0 = 'calc(var(--wm-under, 36px) + 108px)';
+    spans.push({ top: open0, height: 'calc(' + seats[0].y + 'px - var(--wm-under, 36px) - 108px)' });
+    for (var k = 1; k < seats.length; k += 2) {
+      var y1 = seats[k].y, y2 = k + 1 < seats.length ? seats[k + 1].y : null;
+      spans.push(y2 == null ? { top: y1 + 'px', bottom: '0px' } : { top: y1 + 'px', height: (y2 - y1) + 'px' });
+    }
+    var key = JSON.stringify(spans);
+    if (mb.__fields === key && box) return;
+    mb.__fields = key;
+    if (!box) { box = document.createElement('div'); box.className = 'fld-ground'; box.setAttribute('aria-hidden', 'true'); }
+    if (mb.firstChild !== box) mb.insertBefore(box, mb.firstChild);
+    box.textContent = '';
+    spans.forEach(function (s) {
+      var f = document.createElement('span');
+      f.className = 'fld-ink';
+      f.style.top = s.top;
+      if (s.height) f.style.height = s.height; else f.style.bottom = s.bottom;
+      box.appendChild(f);
     });
-    stops.push((seats.length % 2 === 1 ? GRD : INK) + ' 100%');
-    var fields = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
-    var under = 'linear-gradient(to bottom, transparent 0, transparent ' + open0 + ', var(--wm-ground, #121417) ' + open0 + ')';
-    var v = fields + ', ' + under;
-    if (mb.__fields !== v) { mb.__fields = v; mb.style.setProperty('background-image', v, 'important'); }
   }
   var fieldsT = 0;
   function fieldsSoon() { clearTimeout(fieldsT); fieldsT = setTimeout(fitFields, 0); }

@@ -3554,8 +3554,8 @@
   // rows' ground changes colour at every essay's rule, from the window's
   // edge to its other — the ink (--div-ink) down to the first rule, the
   // page's ground (--band-ground) to the next, the ink again, and so on —
-  // drawn as one gradient on the rows' body over the opening's own (which
-  // keeps the top clear for the name). The change of colour falls in the
+  // drawn as boxes in the ink (.fld-ground > .fld-ink) at the foot of the
+  // rows' layer, the page's ground showing between. The change of colour falls in the
   // rule's own 2, which covers it, the picture over its gap. Each essay's
   // half is told which side it stands (.fld-odd: its head on the ground,
   // its dek and text on the ink; style.css, THE RULES PART THE GROUND).
@@ -3564,16 +3564,20 @@
     if (!mb) return;
     var wide = window.matchMedia('(min-width: 1024px)').matches;
     var rules = wide ? [].slice.call(mb.querySelectorAll('.duo-half--mega > .swap-body-rule')) : [];
-    var top = mb.getBoundingClientRect().top;
+    var top = mb.getBoundingClientRect().top + mb.clientTop;
     var seats = [];
     rules.forEach(function (rl) {
       // (by its seat, not its paint: the rule is drawn only once its card
-      // rests open, after the fit's word; its 2 centred on the change)
+      // rests open, after the fit's word)
       var rt = parseFloat(rl.style.top);
       if (!isFinite(rt)) return;
       var hf = rl.parentElement, hr = hf.getBoundingClientRect();
       if (!(hr.height > 0)) return;
-      seats.push({ half: hf, y: hr.top + hf.clientTop + rt - top + FRAME / 2 });
+      // (the change of colour on a whole pixel inside the rule's 2, which
+      // covers it — "seeing a hairline above rules that meet black": one
+      // gradient the page's height drew its stops soft and a pixel or two
+      // off, a grey line along the rule; boxes now)
+      seats.push({ half: hf, y: Math.round(hr.top + hf.clientTop + rt - top) + FRAME / 2 });
     });
     seats.sort(function (a, b) { return a.y - b.y; });
     [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
@@ -3582,20 +3586,31 @@
       h.classList.toggle('fld-odd', i >= 0 && i % 2 === 1);
       h.classList.toggle('fld', i >= 0);
     });
-    if (!seats.length) { mb.style.removeProperty('background-image'); return; }
-    var INK = 'var(--div-ink, #121417)', GRD = 'var(--band-ground, #FFFFFF)';
-    var open0 = 'calc(var(--wm-under, 36px) + 108px)';
-    var stops = ['transparent 0', 'transparent ' + open0, INK + ' ' + open0];
-    seats.forEach(function (s, k) {
-      var y = s.y.toFixed(2) + 'px';
-      var was = k % 2 === 0 ? INK : GRD, now = k % 2 === 0 ? GRD : INK;
-      stops.push(was + ' ' + y, now + ' ' + y);
+    mb.style.removeProperty('background-image');
+    var box = mb.querySelector(':scope > .fld-ground');
+    if (!seats.length) { if (box) box.remove(); mb.__fields = null; return; }
+    // the ink's fields, each a box from one change to the next: the first
+    // from where the opening's ground begins (under the name), the last,
+    // where the rules are odd in number, to the rows' end
+    var spans = [], open0 = 'calc(var(--wm-under, 36px) + 108px)';
+    spans.push({ top: open0, height: 'calc(' + seats[0].y + 'px - var(--wm-under, 36px) - 108px)' });
+    for (var k = 1; k < seats.length; k += 2) {
+      var y1 = seats[k].y, y2 = k + 1 < seats.length ? seats[k + 1].y : null;
+      spans.push(y2 == null ? { top: y1 + 'px', bottom: '0px' } : { top: y1 + 'px', height: (y2 - y1) + 'px' });
+    }
+    var key = JSON.stringify(spans);
+    if (mb.__fields === key && box) return;
+    mb.__fields = key;
+    if (!box) { box = document.createElement('div'); box.className = 'fld-ground'; box.setAttribute('aria-hidden', 'true'); }
+    if (mb.firstChild !== box) mb.insertBefore(box, mb.firstChild);
+    box.textContent = '';
+    spans.forEach(function (s) {
+      var f = document.createElement('span');
+      f.className = 'fld-ink';
+      f.style.top = s.top;
+      if (s.height) f.style.height = s.height; else f.style.bottom = s.bottom;
+      box.appendChild(f);
     });
-    stops.push((seats.length % 2 === 1 ? GRD : INK) + ' 100%');
-    var fields = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
-    var under = 'linear-gradient(to bottom, transparent 0, transparent ' + open0 + ', var(--wm-ground, #121417) ' + open0 + ')';
-    var v = fields + ', ' + under;
-    if (mb.__fields !== v) { mb.__fields = v; mb.style.setProperty('background-image', v, 'important'); }
   }
   // (and once the rules are seated, whenever they are: the fit's own
   // word can come before the last of them)
