@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5baf8846">
+<link rel="stylesheet" href="style.css?v=9ed6c921">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6778,6 +6778,8 @@
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
     });
+    clearTimeout(seatSlides.t);
+    seatSlides.t = setTimeout(function () { try { window.dispatchEvent(new Event('newcritic:seated')); } catch (e) {} }, 0);
   }
   var capMemo = {};
   var PK_ICON = 18;
@@ -8964,6 +8966,7 @@
   };
   var due = 0;
   var later = function () { if (due) return; due = requestAnimationFrame(function () { due = 0; recal(); }); };
+  addEventListener('newcritic:seated', later);
   ['newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(function () { rest(); later(); }, 0); }, { passive: true });
   });
