@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=29a3b94d">
+<link rel="stylesheet" href="style.css?v=e06f2aa5">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5760,7 +5760,7 @@
   var ROWS_GAP = 54;
   var ROW_STEP = 108;
   var SECTION_GAP = ROW_STEP;
-  var BAND_RULE = 36;
+  var BAND_RULE = 2;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -10276,6 +10276,12 @@ window.__ncStripInk = function () {
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
       if (run && geo && ink.length > 1) {
         var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
+        var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
+        var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
+        var shutNow = main.classList.contains('rail-is-shut');
+        var vwB = document.documentElement.clientWidth;
+        st.style.setProperty('--strip-r', (shutNow ? 0 : rlW).toFixed(2) + 'px');
+        if (rlW && !shutNow) geo.x1R = Math.floor(vwB - rlW - 54);
         var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
@@ -10336,6 +10342,7 @@ window.__ncStripInk = function () {
     ticking = true;
     requestAnimationFrame(function () { ticking = false; gauge(); light(); band(); });
   }, { passive: true });
+  addEventListener('newcritic:railshut', function () { band.seatLead = true; band(); });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
   });
@@ -10425,8 +10432,13 @@ window.__ncStripInk = function () {
     var v = Math.round(w / 2) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
   };
+  var animT = 0;
   var set = function (shut) {
     shift();
+    main.classList.add('rail-anim');
+    void main.offsetWidth;
+    clearTimeout(animT);
+    animT = setTimeout(function () { main.classList.remove('rail-anim'); }, 700);
     main.classList.toggle('rail-is-shut', shut);
     shutBtn.setAttribute('aria-expanded', String(!shut));
     openBtn.setAttribute('aria-expanded', String(!shut));

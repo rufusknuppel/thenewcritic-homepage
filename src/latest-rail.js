@@ -367,6 +367,17 @@
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
       if (run && geo && ink.length > 1) {
         var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
+        // (the strip at the window's foot across the rows' side alone —
+        // "have the band stetch only across left column", 2026-10-05: the
+        // words to the cards' edge, 54 off THE LATEST's, the strip to the
+        // column's rule (--strip-r); the column shut, the strip and the
+        // words the window's width — THE NAV AT THE FOOT, style.css)
+        var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
+        var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
+        var shutNow = main.classList.contains('rail-is-shut');
+        var vwB = document.documentElement.clientWidth;
+        st.style.setProperty('--strip-r', (shutNow ? 0 : rlW).toFixed(2) + 'px');
+        if (rlW && !shutNow) geo.x1R = Math.floor(vwB - rlW - 54);
         var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
@@ -461,6 +472,7 @@
     ticking = true;
     requestAnimationFrame(function () { ticking = false; gauge(); light(); band(); });
   }, { passive: true });
+  addEventListener('newcritic:railshut', function () { band.seatLead = true; band(); });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
   });
@@ -589,8 +601,16 @@
     var v = Math.round(w / 2) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
   };
+  // (the foot's strip and its words follow the column out and back —
+  // THE NAV AT THE FOOT: their easing on before they move, only while the
+  // column does)
+  var animT = 0;
   var set = function (shut) {
     shift();
+    main.classList.add('rail-anim');
+    void main.offsetWidth;
+    clearTimeout(animT);
+    animT = setTimeout(function () { main.classList.remove('rail-anim'); }, 700);
     main.classList.toggle('rail-is-shut', shut);
     shutBtn.setAttribute('aria-expanded', String(!shut));
     openBtn.setAttribute('aria-expanded', String(!shut));

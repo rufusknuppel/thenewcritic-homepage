@@ -7390,7 +7390,10 @@
   // (36 since later on 2026-10-05, a strip with the band's words in it —
   // "Expand top band divider to 36px and place the work sans nav labels
   // into this")
-  var BAND_RULE = 36;
+  // (2 again since later on 2026-10-05 — "Move band to the bottom of the
+  // site"; "keep 2px rule where it is now": the strip at the window's
+  // foot, a 2 rule at the name's — style.css, THE NAV AT THE FOOT)
+  var BAND_RULE = 2;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
