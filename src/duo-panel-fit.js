@@ -8722,7 +8722,10 @@
     var rr = rail && rail.offsetWidth ? rail.getBoundingClientRect() : null;
     var vw = document.documentElement.clientWidth;
     var railL = sec && sec.classList.contains('card--rail-l');
-    if (d < 0) return railL && rr ? rr.right + COLUMN_SIDE : COLUMN_SIDE;
+    // (the column on the left since later on 2026-10-04 — "move the latest
+    // column to the left": its rule down its right side, the cards 54 off
+    // it, on a whole pixel)
+    if (d < 0) return railL && rr ? (bandedInk() ? Math.ceil(rr.right - RAIL_EDGE) : rr.right + COLUMN_SIDE) : COLUMN_SIDE;
     // (into the column's old gutter and its edge's 9 where the page opens
     // on the band: the cards 63 wider, the column's divider gone —
     // "Remove vertical divider between The Latest and the post cards.

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a65b5c29">
+<link rel="stylesheet" href="style.css?v=269f8927">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -6646,7 +6646,7 @@
     var rr = rail && rail.offsetWidth ? rail.getBoundingClientRect() : null;
     var vw = document.documentElement.clientWidth;
     var railL = sec && sec.classList.contains('card--rail-l');
-    if (d < 0) return railL && rr ? rr.right + COLUMN_SIDE : COLUMN_SIDE;
+    if (d < 0) return railL && rr ? (bandedInk() ? Math.ceil(rr.right - RAIL_EDGE) : rr.right + COLUMN_SIDE) : COLUMN_SIDE;
     if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE);
     return !railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE;
   }

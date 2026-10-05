@@ -2968,13 +2968,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   const SECTIONS = [
     // (every column on the right since 2026-10-04 — "Switch it so all
     // charcoal columns are on the right"; ESSAYS and CONTRA stood left)
-    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'r', rows: ones(latestPosts) },
-    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'r', rows: ones(fresh(essays)) },
+    // (and every column on the left since later that day — "move the latest
+    // column to the left")
+    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'l', rows: ones(latestPosts) },
+    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'l', rows: ones(fresh(essays)) },
     // (one to a row in every section now — "In postscript/contra sections,
     // make one a row and editor's")
-    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'r', rows: ones(fresh(postscripts)) },
-    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'r', rows: ones(fresh(contras)) },
-    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'r', rows: ones(pickRows.flat()) },
+    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'l', rows: ones(fresh(postscripts)) },
+    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: ones(fresh(contras)) },
+    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'l', rows: ones(pickRows.flat()) },
   ].filter((sec) => sec.rows.length);
   SECTIONS.forEach((sec) => { sec.posts = sec.rows.flat(); });
   const LABEL = { essay: 'Essays', postscript: 'Postscript', contra: 'Contra' };
@@ -2999,7 +3001,11 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // (THE LATEST turns about row by row too since 2026-10-04 — "should
         // alternate side to side in The Latest"; every row the essay's
         // proportions, 1, whatever its kind)
-        const toR = (sec.rail === 'l') === (j % 2 === 0);
+        // (the page opening on a picture at the left, its words on the
+        // right, and turning about from there whichever side the column
+        // stands — "Start top of page with image on the left and text
+        // column on right. Alternate accordingly", 2026-10-04)
+        const toR = j % 2 === 1;
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first
