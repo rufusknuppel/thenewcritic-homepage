@@ -8874,6 +8874,21 @@
     if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE) - shut;
     return (!railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE) - shut;
   }
+  // (a picture's own proportions, read off its address — Substack names
+  // every upload by its size, …_1600x1200.png — so they are known before
+  // the picture comes in, which it does only as it nears the window)
+  function picAspect(card) {
+    if (card.__ar !== undefined) return card.__ar;
+    var ar = null;
+    [].some.call(card.querySelectorAll('img'), function (im) {
+      var u = im.getAttribute('src') || im.getAttribute('data-src') || '';
+      var m = /_(\d+)x(\d+)\.\w+$/.exec(decodeURIComponent(u));
+      if (m && +m[2] > 0) { ar = m[1] / m[2]; return true; }
+      return false;
+    });
+    card.__ar = ar;
+    return ar;
+  }
   function seatSlides() {
     [].forEach.call(document.querySelectorAll('.duo-half--mega.is-slide'), function (card) {
       if (card.matches('.is-opening, .is-shutting')) return;
@@ -8898,6 +8913,25 @@
       // last pixel showed as a hairline beside the rule — "On the left of
       // this right edge")
       if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      // EVERY PICTURE AT ITS TRUE SIZE (2026-10-05, at the user's words —
+      // "keep current image height, but set every image to true size,
+      // maxing out at current width"; "Recenter images and columns
+      // accordingly. Columns should keep current dimensions"): framed, the
+      // window is the picture's height by its own width at that height, no
+      // wider than the window the margin left it; what it gives up is
+      // shared either side, the picture and the words' column (its size
+      // unchanged) moved in together by half (sh) and the margin's cut
+      // brought in by the other half, so the pair stands centred where it
+      // stood. On whole pixels.
+      var sh = 0;
+      if (framed) {
+        var ar = picAspect(card), E00 = columnEdge(card, seat.d);
+        var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
+        var give = ar ? V0 - (P.b - P.t) * ar : 0;
+        if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
+        dx += sh;
+      }
+      card.classList.toggle('is-true-size', sh !== 0);
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8910,7 +8944,7 @@
           var cr1 = card.getBoundingClientRect();
           var tr0 = parseFloat((getComputedStyle(tEl).translate || '').split(' ')[0]) || 0;
           var T0 = tEl.getBoundingClientRect().left - (cr1.left - cr0.left) - tr0;
-          var E = columnEdge(card, seat.d);
+          var E = columnEdge(card, seat.d) - sh;
           var cut = function (x) {
             var v = x.toFixed(2) + 'px', far = '100000px', nfar = '-100000px';
             return seat.d < 0 ? 'polygon(' + v + ' ' + nfar + ', ' + far + ' ' + nfar + ', ' + far + ' ' + far + ', ' + v + ' ' + far + ')'
@@ -8946,7 +8980,7 @@
           fr.innerHTML = '<span class="card-frame-seam"></span>';
           card.appendChild(fr);
         }
-        var Ec = columnEdge(card, seat.d);
+        var Ec = columnEdge(card, seat.d) - sh;
         // (ON WHOLE PIXELS, OUTWARD — "noticing a hairline on the edges
         // sometimes of the image": the cut on the margin falls on a
         // fraction, and a frame laid to the fraction let the picture's
@@ -8954,7 +8988,7 @@
         // whole pixel past the picture's, and the seam's rule to the whole
         // pixel that covers the picture's edge beside it, so the frame's
         // ink always lies over the picture's last pixel.)
-        var seamX = right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb);
+        var seamX = (right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb)) + sh;
         // (round the picture alone: from the cut on the margin to the old
         // seam, whose rule is the frame's side now — THE FRAME ROUND THE
         // PICTURE ALONE)
@@ -8975,7 +9009,7 @@
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
-        bs.left = ((right ? P.l : P.r - wb) - cr0.left).toFixed(2) + 'px';
+        bs.left = ((right ? P.l : P.r - wb) + sh - cr0.left).toFixed(2) + 'px';
         bs.top = (P.t - cr0.top).toFixed(2) + 'px';
         bs.width = wb.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
