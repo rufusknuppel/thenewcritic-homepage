@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e06f2aa5">
+<link rel="stylesheet" href="style.css?v=538e4e63">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -10280,7 +10280,6 @@ window.__ncStripInk = function () {
         var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
         var shutNow = main.classList.contains('rail-is-shut');
         var vwB = document.documentElement.clientWidth;
-        st.style.setProperty('--strip-r', (shutNow ? 0 : rlW).toFixed(2) + 'px');
         if (rlW && !shutNow) geo.x1R = Math.floor(vwB - rlW - 54);
         var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
@@ -10317,6 +10316,7 @@ window.__ncStripInk = function () {
       var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
       if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
+      if (main.style.getPropertyValue('--foot-cover') !== cv) main.style.setProperty('--foot-cover', cv);
     }
     var fade = Math.min(1, pr / FADE_SHARE), spread = Math.max(0, (pr - FADE_SHARE) / (1 - FADE_SHARE));
     var v = spread.toFixed(4), vf = fade.toFixed(4);
@@ -10376,6 +10376,7 @@ window.__ncStripInk = function () {
     if (mid == null) { var s = word(/^store$/i), a = word(/^archive$/i); if (s && a && s.width && a.width) mid = (s.right + a.left) / 2; }
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
+    mid = Math.round(mid);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
     if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {
       main.style.setProperty('--rail-edge', mid.toFixed(2) + 'px');
