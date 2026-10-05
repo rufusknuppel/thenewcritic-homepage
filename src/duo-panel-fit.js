@@ -9424,6 +9424,7 @@
         var dcs = getComputedStyle(j.pdk);
         j.dkB = lastBaselineIn(j.pdk, { bottom: j.pkb.bottom, right: Infinity }, parseFloat(dcs.lineHeight) || 0);
         j.txT = firstInkTop(j.bt);
+        j.dkT = firstInkTop(j.pdk);
       }
       // (the dek's ink across: its lines' farthest reach either way — the
       // rule under it goes no farther from the picture, 2026-10-04)
@@ -9446,11 +9447,13 @@
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
-        // (the rule on a whole pixel 27 over the text's first ink, the dek's
-        // last baseline 27 over the rule)
-        var ruleTop = (j.txT != null) ? Math.round(j.txT + dnY - INK_GAP - FRAME) : null;
-        if (j.pdk) j.pdk.style.transform = (ruleTop != null && j.dkB != null)
-          ? 'translateY(' + (ruleTop - INK_GAP - j.dkB).toFixed(2) + 'px)' : dn;
+        // (the dek's last baseline 27 over the text's first ink, and the rule
+        // over the dek, a whole pixel, 27 over its first ink — "move rule
+        // above dek", 2026-10-05; it stood between the dek and the text for
+        // an hour)
+        var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
+        if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
+        var ruleTop = (j.dkT != null) ? Math.round(j.dkT + dekY - INK_GAP - FRAME) : null;
         // (a 2 rule between the dek and the text, halfway between their
         // boxes, from the picture's frame to the column's outer edge —
         // "place a 2px line between dek and body text that extends to edge

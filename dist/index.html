@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=be38493f">
+<link rel="stylesheet" href="style.css?v=4cd9219b">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7036,6 +7036,7 @@
         var dcs = getComputedStyle(j.pdk);
         j.dkB = lastBaselineIn(j.pdk, { bottom: j.pkb.bottom, right: Infinity }, parseFloat(dcs.lineHeight) || 0);
         j.txT = firstInkTop(j.bt);
+        j.dkT = firstInkTop(j.pdk);
       }
       if (j.pkb) {
         var dr = document.createRange(); dr.selectNodeContents(j.pdk);
@@ -7052,9 +7053,9 @@
         var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
-        var ruleTop = (j.txT != null) ? Math.round(j.txT + dnY - INK_GAP - FRAME) : null;
-        if (j.pdk) j.pdk.style.transform = (ruleTop != null && j.dkB != null)
-          ? 'translateY(' + (ruleTop - INK_GAP - j.dkB).toFixed(2) + 'px)' : dn;
+        var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
+        if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
+        var ruleTop = (j.dkT != null) ? Math.round(j.dkT + dekY - INK_GAP - FRAME) : null;
         var rl = j.body.querySelector(':scope > .swap-body-rule');
         if (j.pkb) {
           if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.body.appendChild(rl); }
