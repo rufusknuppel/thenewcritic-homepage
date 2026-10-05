@@ -7332,6 +7332,9 @@
     var t = Infinity, b = -Infinity;
     var inked = bandedInk();
     var add = function (el) {
+      // (words stood unseen take no room: the title under the picture,
+      // gone up into the preview's column since 2026-10-04)
+      if (getComputedStyle(el).visibility === 'hidden') return;
       var rg = document.createRange(); rg.selectNodeContents(el);
       var rs = rg.getClientRects(), eb = -Infinity;
       for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > eb) eb = rs[i].bottom; }
@@ -7777,14 +7780,17 @@
             if (c.side === side) rowDelta = Math.max(rowDelta, COURIER_GAP - (topNow - c.foot));
           });
           hasJob = true;
-        } else if (prev && cur && prevFoot != null
+        } else if (prev && (cur || ink) && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
+          // (or its picture alone, where its courier line has gone up into
+          // the preview's column: THE BYLINE AND THE TITLE OVER THE DEK,
+          // 2026-10-04)
           // (from the row over's lowest ink: an essay's title and dek hang
           // under its courier line now, a review's words under its own —
           // and a pair's, the lower of its two)
           // (to the row under's highest ink: its courier line, or an
           // essay's picture, whose courier stands under it)
-          var curT = Math.min(cur.t, ink ? ink.t : Infinity) + acc;
+          var curT = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity) + acc;
           // (a pair's first card standing for its second where the second
           // is the taller: centred on the first, the second rides up by
           // half the difference, and its ink, not the first's, is the
@@ -8159,6 +8165,51 @@
   // against the frame alone, the one edge that shows.
   // (the title's size capped at a moderate SWAP_MAX, 2026-09-22)
   var SWAP_PAD = 36, SWAP_OPEN = 0, SWAP_GAP = 36, SWAP_MAX = 40, SWAP_LINES = 6;
+  // (the byline's capitals under the title's lowest ink, in the preview's
+  // head: THE BYLINE 18 UNDER THE TITLE'S INK, 2026-10-04)
+  var HEAD_META_GAP = 18;
+  var headCtx = null;
+  // The margin the byline needs for its capitals to stand `gap` under the
+  // title's lowest ink: the title's last line found by its words' boxes,
+  // that line's descent read off the face (the baseline where nothing
+  // hangs under it), and the byline's cap height off its own.
+  function headMetaMargin(tt, mm, gap) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
+    var tn = tt.firstChild;
+    if (!tn || tn.nodeType !== 3) return NaN;
+    var txt = tn.nodeValue, rg = document.createRange();
+    // (a word broken at its hyphen or a soft one is two pieces, each on
+    // its own line)
+    var lines = [], re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w;
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      var last = lines[lines.length - 1];
+      var piece = w[0].replace(/\u00AD$/, '-');
+      if (last && Math.abs(last.top - rr.top) < 2) last.words.push(piece);
+      else lines.push({ top: rr.top, words: [piece] });
+    }
+    if (!lines.length) return NaN;
+    var ln = lines[lines.length - 1];
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    var tm = headCtx.measureText(ln.words.join(' '));
+    var tlh = parseFloat(tc.lineHeight) || parseFloat(tc.fontSize);
+    var tr = tt.getBoundingClientRect();
+    // (the last line's box: the title's foot less its line, the line's
+    // baseline half the leading and the face's ascent down it)
+    var lineTop = tr.bottom - tlh;
+    var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
+    var tInk = tBase + Math.max(0, tm.actualBoundingBoxDescent);
+    headCtx.font = mc.fontStyle + ' ' + mc.fontWeight + ' ' + mc.fontSize + ' ' + mc.fontFamily;
+    var mmz = headCtx.measureText('H');
+    var mlh = parseFloat(mc.lineHeight) || parseFloat(mc.fontSize);
+    var mr = mm.getBoundingClientRect();
+    var mBase = mr.top + (mlh - mmz.fontBoundingBoxAscent - mmz.fontBoundingBoxDescent) / 2 + mmz.fontBoundingBoxAscent;
+    var mCap = mBase - mmz.actualBoundingBoxAscent;
+    return (parseFloat(mc.marginTop) || 0) + gap - (mCap - tInk);
+  }
   var ESSAY_TITLE_GAP = 18, ESSAY_TITLE_H = 400, ESSAY_PREVIEW_PAD = 54, ESSAY_COURIER_GAP = 18, ESSAY_DEK_APART = 72;
   // (a card's words take their side only where the pairs stand two
   // across; under 1024 every card is set left — style.css, THE WORDS
@@ -9051,6 +9102,41 @@
               pdk.style.transform = 'none';
               pdk.style.marginBottom = SWAP_PAD + 'px';
               j.pdk = pdk;
+              // THE BYLINE AND THE TITLE OVER THE DEK (2026-10-04, at the
+              // user's words — "Move the metadate line and the title from
+              // under the image to above the dek"; "In the body preview"):
+              // the courier line (the writer, the date) and the title stand
+              // at the head of the preview's column, over its dek, the
+              // title the post's link; their twins under the picture stand
+              // unseen from 1024 up (style.css, THE BYLINE AND THE TITLE
+              // OVER THE DEK), and the head's depth comes off the text's
+              // rows as the dek's does (pdkH, below)
+              var hd = j.body.querySelector(':scope > .swap-body-head');
+              if (!hd) {
+                hd = document.createElement('span');
+                hd.className = 'swap-body-head';
+                var hm = document.createElement('span');
+                hm.className = 'swap-body-meta';
+                var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
+                var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
+                [mw, md].filter(Boolean).forEach(function (a0, k) {
+                  if (k) hm.appendChild(document.createTextNode(', '));
+                  var a1 = a0.cloneNode(true);
+                  a1.className = 'swap-body-meta-a';
+                  a1.removeAttribute('style');
+                  hm.appendChild(a1);
+                });
+                var stl = j.card.querySelector('.swap-title');
+                var lk = j.card.querySelector('a.card-image-link');
+                var ht = document.createElement(lk ? 'a' : 'span');
+                ht.className = 'swap-body-title';
+                if (lk) ht.href = lk.getAttribute('href');
+                ht.textContent = stl ? (stl.getAttribute('data-text') || stl.textContent).trim() : '';
+                hd.appendChild(ht);
+                // (the byline under the title — "Move metadata below titles")
+                hd.appendChild(hm);
+              }
+              if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
               // (two columns, filled in turn and cut on a whole line — or,
               // where the whole preview fits, balanced between the two at
               // its own height: either way the block stands centred in
@@ -9087,7 +9173,25 @@
     });
     var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
     // READ: the deks' heights
-    twos.forEach(function (j) { j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0; });
+    // THE BYLINE 18 UNDER THE TITLE'S INK (2026-10-04, at the user's word
+    // — "Readjust metadata based on descenders in last line or not"): the
+    // courier line's capitals stand 18 under the title's lowest ink — its
+    // last line's descenders where it has them, its baseline where it has
+    // none. READ every head, then WRITE every margin, then the heights.
+    var heads = twos.map(function (j) {
+      var hh = j.body.querySelector(':scope > .swap-body-head');
+      var tt = hh && hh.querySelector('.swap-body-title'), mm = hh && hh.querySelector('.swap-body-meta');
+      if (!tt || !mm || !(hh.getBoundingClientRect().height > 0)) return null;
+      var m = headMetaMargin(tt, mm, HEAD_META_GAP);
+      return isFinite(m) ? { mm: mm, m: m } : null;
+    });
+    heads.forEach(function (h) { if (h) h.mm.style.setProperty('margin-top', Math.max(0, h.m).toFixed(2) + 'px', 'important'); });
+    twos.forEach(function (j) {
+      j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0;
+      // (and the byline and title over it, where they stand: 2026-10-04)
+      var hh = j.body.querySelector(':scope > .swap-body-head');
+      if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
+    });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     // READ: the texts' natural heights
@@ -9146,11 +9250,21 @@
     // line as from the columns' last baseline to the box's
     // foot — PADDING EVEN OVER AND UNDER, 2026-09-24; it was
     // the dek's box and the last line's box)
-    twos.forEach(function (j) { j.bt.style.transform = 'none'; });
+    twos.forEach(function (j) {
+      j.bt.style.transform = 'none';
+      if (j.pdk) j.pdk.style.transform = 'none';
+      var h0 = j.body.querySelector(':scope > .swap-body-head');
+      if (h0) h0.style.transform = 'none';
+    });
     // READ: the ink
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
-      var inT = (j.pdk && j.pdkH) ? firstInkTop(j.pdk) : null;
+      // (from the byline's ink where the head stands over the dek: THE
+      // BYLINE AND THE TITLE OVER THE DEK, 2026-10-04)
+      j.hd = j.body.querySelector(':scope > .swap-body-head');
+      if (j.hd && !(j.hd.getBoundingClientRect().height > 0)) j.hd = null;
+      var inT = j.hd ? firstInkTop(j.hd) : null;
+      if (inT == null && j.pdk && j.pdkH) inT = firstInkTop(j.pdk);
       if (inT == null) inT = firstInkTop(j.bt);
       var inB = lastBaselineIn(j.bt, j.tb, j.blh);
       if (inT == null || inB == null) inT = Infinity;
@@ -9162,6 +9276,7 @@
         var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
         j.bt.style.transform = shY;
         if (j.pdk) j.pdk.style.transform = shY;
+        if (j.hd) j.hd.style.transform = shY;
       }
     });
     twos.forEach(function (j) { j.bt.__swapKey = j.key; });

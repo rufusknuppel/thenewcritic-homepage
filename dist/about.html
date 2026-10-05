@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=cb634948">
+<link rel="stylesheet" href="style.css?v=6bb4d2e9">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4873,6 +4873,7 @@
     var t = Infinity, b = -Infinity;
     var inked = bandedInk();
     var add = function (el) {
+      if (getComputedStyle(el).visibility === 'hidden') return;
       var rg = document.createRange(); rg.selectNodeContents(el);
       var rs = rg.getClientRects(), eb = -Infinity;
       for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > eb) eb = rs[i].bottom; }
@@ -5125,9 +5126,9 @@
             if (c.side === side) rowDelta = Math.max(rowDelta, COURIER_GAP - (topNow - c.foot));
           });
           hasJob = true;
-        } else if (prev && cur && prevFoot != null
+        } else if (prev && (cur || ink) && prevFoot != null
             && !row.classList.contains('card--contra-trio') && !prev.classList.contains('card--contra-trio')) {
-          var curT = Math.min(cur.t, ink ? ink.t : Infinity) + acc;
+          var curT = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity) + acc;
           var nb = rows[ri + 1];
           if (!ONE_COL.matches && !stacked && pic && nb && row.classList.contains('card--pair-a') && nb.classList.contains('card--pair-b')) {
             var nbPic = picBoxOf(nb), nbCur = rowCourier(nb), nbInk = rowInk(nb);
@@ -5359,6 +5360,41 @@
     });
   }
   var SWAP_PAD = 36, SWAP_OPEN = 0, SWAP_GAP = 36, SWAP_MAX = 40, SWAP_LINES = 6;
+  var HEAD_META_GAP = 18;
+  var headCtx = null;
+  function headMetaMargin(tt, mm, gap) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
+    var tn = tt.firstChild;
+    if (!tn || tn.nodeType !== 3) return NaN;
+    var txt = tn.nodeValue, rg = document.createRange();
+    var lines = [], re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w;
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      var last = lines[lines.length - 1];
+      var piece = w[0].replace(/\u00AD$/, '-');
+      if (last && Math.abs(last.top - rr.top) < 2) last.words.push(piece);
+      else lines.push({ top: rr.top, words: [piece] });
+    }
+    if (!lines.length) return NaN;
+    var ln = lines[lines.length - 1];
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    var tm = headCtx.measureText(ln.words.join(' '));
+    var tlh = parseFloat(tc.lineHeight) || parseFloat(tc.fontSize);
+    var tr = tt.getBoundingClientRect();
+    var lineTop = tr.bottom - tlh;
+    var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
+    var tInk = tBase + Math.max(0, tm.actualBoundingBoxDescent);
+    headCtx.font = mc.fontStyle + ' ' + mc.fontWeight + ' ' + mc.fontSize + ' ' + mc.fontFamily;
+    var mmz = headCtx.measureText('H');
+    var mlh = parseFloat(mc.lineHeight) || parseFloat(mc.fontSize);
+    var mr = mm.getBoundingClientRect();
+    var mBase = mr.top + (mlh - mmz.fontBoundingBoxAscent - mmz.fontBoundingBoxDescent) / 2 + mmz.fontBoundingBoxAscent;
+    var mCap = mBase - mmz.actualBoundingBoxAscent;
+    return (parseFloat(mc.marginTop) || 0) + gap - (mCap - tInk);
+  }
   var ESSAY_TITLE_GAP = 18, ESSAY_TITLE_H = 400, ESSAY_PREVIEW_PAD = 54, ESSAY_COURIER_GAP = 18, ESSAY_DEK_APART = 72;
   var SIDE_ALIGN_MQ = window.matchMedia('(min-width: 1024px)');
   var SWAP_CARDS = '.duo-half--mega, .latest-cell--ps, .latest-cell--contra';
@@ -5968,6 +6004,31 @@
               pdk.style.transform = 'none';
               pdk.style.marginBottom = SWAP_PAD + 'px';
               j.pdk = pdk;
+              var hd = j.body.querySelector(':scope > .swap-body-head');
+              if (!hd) {
+                hd = document.createElement('span');
+                hd.className = 'swap-body-head';
+                var hm = document.createElement('span');
+                hm.className = 'swap-body-meta';
+                var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
+                var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
+                [mw, md].filter(Boolean).forEach(function (a0, k) {
+                  if (k) hm.appendChild(document.createTextNode(', '));
+                  var a1 = a0.cloneNode(true);
+                  a1.className = 'swap-body-meta-a';
+                  a1.removeAttribute('style');
+                  hm.appendChild(a1);
+                });
+                var stl = j.card.querySelector('.swap-title');
+                var lk = j.card.querySelector('a.card-image-link');
+                var ht = document.createElement(lk ? 'a' : 'span');
+                ht.className = 'swap-body-title';
+                if (lk) ht.href = lk.getAttribute('href');
+                ht.textContent = stl ? (stl.getAttribute('data-text') || stl.textContent).trim() : '';
+                hd.appendChild(ht);
+                hd.appendChild(hm);
+              }
+              if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
               bt.style.removeProperty('-webkit-line-clamp');
               if (bt.__src == null) bt.__src = bt.innerHTML;
               else if (bt.innerHTML !== bt.__src) bt.innerHTML = bt.__src;
@@ -5994,7 +6055,19 @@
       }
     });
     var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
-    twos.forEach(function (j) { j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0; });
+    var heads = twos.map(function (j) {
+      var hh = j.body.querySelector(':scope > .swap-body-head');
+      var tt = hh && hh.querySelector('.swap-body-title'), mm = hh && hh.querySelector('.swap-body-meta');
+      if (!tt || !mm || !(hh.getBoundingClientRect().height > 0)) return null;
+      var m = headMetaMargin(tt, mm, HEAD_META_GAP);
+      return isFinite(m) ? { mm: mm, m: m } : null;
+    });
+    heads.forEach(function (h) { if (h) h.mm.style.setProperty('margin-top', Math.max(0, h.m).toFixed(2) + 'px', 'important'); });
+    twos.forEach(function (j) {
+      j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0;
+      var hh = j.body.querySelector(':scope > .swap-body-head');
+      if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
+    });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
     twos.forEach(function (j) {
@@ -6030,10 +6103,18 @@
       for (var t = tw.nextNode(); t; t = tw.nextNode()) if (t.nodeValue.trim()) tn = t;
       if (tn && !/\u2026\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(TRAIL_PUNCT, '') + '\u2026';
     });
-    twos.forEach(function (j) { j.bt.style.transform = 'none'; });
+    twos.forEach(function (j) {
+      j.bt.style.transform = 'none';
+      if (j.pdk) j.pdk.style.transform = 'none';
+      var h0 = j.body.querySelector(':scope > .swap-body-head');
+      if (h0) h0.style.transform = 'none';
+    });
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
-      var inT = (j.pdk && j.pdkH) ? firstInkTop(j.pdk) : null;
+      j.hd = j.body.querySelector(':scope > .swap-body-head');
+      if (j.hd && !(j.hd.getBoundingClientRect().height > 0)) j.hd = null;
+      var inT = j.hd ? firstInkTop(j.hd) : null;
+      if (inT == null && j.pdk && j.pdkH) inT = firstInkTop(j.pdk);
       if (inT == null) inT = firstInkTop(j.bt);
       var inB = lastBaselineIn(j.bt, j.tb, j.blh);
       if (inT == null || inB == null) inT = Infinity;
@@ -6044,6 +6125,7 @@
         var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
         j.bt.style.transform = shY;
         if (j.pdk) j.pdk.style.transform = shY;
+        if (j.hd) j.hd.style.transform = shY;
       }
     });
     twos.forEach(function (j) { j.bt.__swapKey = j.key; });
