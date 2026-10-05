@@ -10,6 +10,62 @@
 (function () {
   var rails = [].slice.call(document.querySelectorAll('.latest-rail'));
   var main = document.querySelector('main');
+  // THE BAND'S GEOMETRY (2026-10-05): the swallow's ink set on the 54 gutter
+  // (--bird-dx, style.css), and read: each word's ink inside its box, the
+  // name's first stroke (x0L) and CRITIC's last (x0), the swallow's first
+  // ink (x1) and last (x1R). Shared with the column's edge (evenMid).
+  var bandCtx = null;
+  var bandGeo = function (st) {
+    if (!st) return null;
+    var run = st.querySelector(':scope > .sub-ticker-run');
+    var low = st.querySelector('.band-logo__low svg path');
+    var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
+    if (!run || !low || !birdInk) return null;
+    var vw = document.documentElement.clientWidth;
+    st.style.setProperty('--bird-dx', '0px');
+    var br0 = birdInk.getBoundingClientRect();
+    if (!br0.width) return null;
+    var dx = (vw - 54) - br0.right;
+    st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
+    var words = [].filter.call(run.children, function (c) {
+      return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
+    });
+    bandCtx = bandCtx || document.createElement('canvas').getContext('2d');
+    var ink = words.map(function (c) {
+      // (a word's ink inside its box: the face's own bearings, and the
+      // tracking after its last letter, which the box keeps)
+      var b = c.querySelector('b'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
+      bandCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var t = cs.textTransform === 'uppercase' ? b.textContent.toUpperCase() : b.textContent;
+      var m = bandCtx.measureText(t), n = Array.from(t).length || 1;
+      var tr = (r.width - m.width) / n;
+      var bx = c.getBoundingClientRect();
+      var l = r.left - m.actualBoundingBoxLeft, rr = r.left + m.actualBoundingBoxRight + tr * (n - 1);
+      return { l: l, r: rr, inL: l - bx.left, inR: bx.right - rr, w: bx.width, bL: r.left - l, bR: r.right - rr, word: b.textContent.trim() };
+    });
+    var x0L = Infinity;
+    [].forEach.call(st.querySelectorAll('.band-logo svg:not(.band-logo__bird) path'), function (pth) {
+      var pr = pth.getBoundingClientRect(); if (pr.width) x0L = Math.min(x0L, pr.left);
+    });
+    var lr = low.getBoundingClientRect();
+    // (x1 the swallow's first ink where it stood before it was carried to
+    // the gutter, so the column's edge stands where it stood)
+    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: br0.left, x1R: vw - 54 };
+  };
+  // (where STORE's right and ARCHIVE's left would stand were the words
+  // evenly between CRITIC's last stroke and the swallow's first ink, one
+  // gap before, between and after them: the column's edge, halfway)
+  window.__ncEvenMid = function () {
+    var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    var geo = bandGeo(st);
+    if (!geo || geo.ink.length < 2) return null;
+    var ink = geo.ink, inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
+    var G = (geo.x1 - geo.x0 - inkAll) / (ink.length + 1);
+    var x = geo.x0, pos = ink.map(function (k) { x += G; var L = x; x += (k.r - k.l); return { L: L, R: x, k: k }; });
+    var s = pos.filter(function (q) { return /^store,?$/i.test(q.k.word); })[0], a = pos.filter(function (q) { return /^archive,?$/i.test(q.k.word); })[0];
+    if (!s || !a) return null;
+    return ((s.R + s.k.bR) + (a.L + a.k.bL)) / 2;
+  };
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
   // ONE COLUMN, ITS WORDS CHANGING (2026-10-04, at the user's words —
@@ -238,59 +294,33 @@
       st.style.setProperty('--colo-p', '0');
       st.style.setProperty('--band-lead', '0px');
       st.style.setProperty('--band-trail', '0px');
-      var words = run ? [].filter.call(run.children, function (c) {
-        return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
-      }) : [];
-      var ctx = band.ctx || (band.ctx = document.createElement('canvas').getContext('2d'));
-      var ink = words.map(function (c) {
-        // (a word's ink inside its box: the face's own bearings, and the
-        // tracking after its last letter, which the box keeps)
-        var b = c.querySelector('b'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
-        ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
-        var t = cs.textTransform === 'uppercase' ? b.textContent.toUpperCase() : b.textContent;
-        var m = ctx.measureText(t), n = Array.from(t).length || 1;
-        var tr = (r.width - m.width) / n;
-        var bx = c.getBoundingClientRect();
-        var l = r.left - m.actualBoundingBoxLeft, rr = r.left + m.actualBoundingBoxRight + tr * (n - 1);
-        return { l: l, r: rr, inL: l - bx.left, inR: bx.right - rr, w: bx.width };
-      });
-      // (no margins on the words while they are read)
+      // SPREAD FROM EDGE TO EDGE (2026-10-05, at the user's words — "Should
+      // be spread out between edges of wordmark/bird"; "Realign ink of bird
+      // with 54px gutter"): the words stand in the band's strip under the
+      // name now, from the name's first stroke to the swallow's last, its
+      // ink on the 54 gutter — SUBSCRIBE's ink at the one, THE LAST
+      // MAGAZINE's at the other, one gap between each word's ink and the
+      // next (bandGeo; the column's edge is still read from where STORE and
+      // ARCHIVE stood evenly between CRITIC and the swallow: evenMid).
+      var geo = bandGeo(st);
+      var words = geo ? geo.words : [], ink = geo ? geo.ink : [];
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
-      var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
-      if (run && low && frame && ink.length > 1) {
-        var lb = low.getBBox(), lm = low.getScreenCTM();
-        var fb = frame.getBBox(), fm = frame.getScreenCTM();
-        var sw = parseFloat(frame.getAttribute('stroke-width')) || 0;
-        var x0 = lm.a * (lb.x + lb.width) + lm.e;
-        var x1 = fm.a * (fb.x - sw / 2) + fm.e;
-        // EVEN FROM THE NAME'S INK TO THE BIRD'S (2026-10-05, at the user's
-        // word — "space nav bar items equally between bird ink and wordmark
-        // ink"): the birds stand bare since that morning, so the far end is
-        // the swallow's own ink, not the frame's; one gap G from CRITIC's
-        // last stroke to SUBSCRIBE's ink, between each word's ink and the
-        // next's, and from THE LAST MAGAZINE's to the swallow's — the row
-        // set from its start (style.css, EVEN FROM INK TO INK), each word
-        // after the first given the margin that makes its ink gap G.
-        var bm = birdInk && birdInk.getScreenCTM && birdInk.getScreenCTM();
-        if (bm) { var bb = birdInk.getBBox(); x1 = bm.a * bb.x + bm.e; }
+      if (run && geo && ink.length > 1) {
         var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
-        var G = (x1 - x0 - inkAll) / (ink.length + 1);
-        var inkW = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
-        // (SUBSCRIBE 54 off the name's ink and THE LAST MAGAZINE 54 off the
-        // stamp's outline since 2026-10-04 — "Set the lastmagazine and
-        // subscribe 54px from stamp and wordmark" — the words between them
-        // spread evenly in what is left: g is the ends' 54, and the row's
-        // space-between spreads the middle)
-        var g = G;
+        var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
         var padL = parseFloat(rcs.paddingLeft), padR = parseFloat(rcs.paddingRight);
-        var lead = (x0 + g - ink[0].inL) - (rb.left + padL);
-        var trail = (rb.right - padR) - (x1 - g + ink[ink.length - 1].inR);
-        if (g > 0 && lead > 0 && trail > 0) {
+        var lead = (geo.x0L - ink[0].inL) - (rb.left + padL);
+        var trail = Math.max(0, (rb.right - padR) - (geo.x1R + ink[ink.length - 1].inR));
+        if (g > 0) {
+          // (the first word's own margin carries the lead, which may be
+          // under nothing: SUBSCRIBE's ink can stand a hair left of the row's
+          // padding, where the name's first stroke is)
+          words[0].style.setProperty('margin-left', lead.toFixed(2) + 'px', 'important');
           for (var wi = 1; wi < words.length; wi++) {
             words[wi].style.setProperty('margin-left', (g - ink[wi - 1].inR - ink[wi].inL).toFixed(2) + 'px', 'important');
           }
-          st.style.setProperty('--band-lead', lead.toFixed(2) + 'px');
+          st.style.setProperty('--band-lead', '0px');
           st.style.setProperty('--band-trail', trail.toFixed(2) + 'px');
         } else {
           st.style.removeProperty('--band-lead');
@@ -413,10 +443,13 @@
     // (read with the band's words at rest, not spread for the colophon)
     var p0 = strip.style.getPropertyValue('--colo-p');
     if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
-    var s = word(/^store$/i), a = word(/^archive$/i);
+    // (read where STORE and ARCHIVE would stand evenly between CRITIC and
+    // the swallow, not where they are spread across the strip: SPREAD FROM
+    // EDGE TO EDGE, in band())
+    var mid = window.__ncEvenMid ? window.__ncEvenMid() : null;
+    if (mid == null) { var s = word(/^store$/i), a = word(/^archive$/i); if (s && a && s.width && a.width) mid = (s.right + a.left) / 2; }
     if (p0) strip.style.setProperty('--colo-p', p0);
-    if (!s || !a || !s.width || !a.width) return;
-    var mid = (s.right + a.left) / 2;
+    if (mid == null) return;
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
     if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {
       main.style.setProperty('--rail-edge', mid.toFixed(2) + 'px');

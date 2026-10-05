@@ -7387,7 +7387,10 @@
   // "Increase to 9px")
   // (2 since later on 2026-10-04, in the frames' ink: "Reduce dividers to
   // 2px. uncolor the dividers, should be same color as borders")
-  var BAND_RULE = 2;
+  // (36 since later on 2026-10-05, a strip with the band's words in it —
+  // "Expand top band divider to 36px and place the work sans nav labels
+  // into this")
+  var BAND_RULE = 36;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
