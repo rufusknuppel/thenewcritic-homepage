@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9d324e64">
+<link rel="stylesheet" href="style.css?v=89fb1145">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -8822,7 +8822,7 @@
       if (shutTimer) clearTimeout(shutTimer);
       shutTimer = setTimeout(function () { shutTimer = 0; card.classList.remove('is-shutting'); }, SHUT);
     };
-    card.addEventListener('mouseenter', function () { card.classList.add('is-lit'); });
+    card.addEventListener('mouseenter', function () { var mn = document.querySelector('main'); if (mn && mn.classList.contains('rail-anim')) return; card.classList.add('is-lit'); });
     card.addEventListener('mouseleave', function () { card.classList.remove('is-lit'); });
     var hit = function (e, sel) {
       return e.target && e.target.closest ? e.target.closest(sel) : null;
@@ -9055,6 +9055,8 @@
   var lx = -1, ly = -1, pending = false;
   function run() {
     pending = false;
+    var mn = document.querySelector('main');
+    if (mn && mn.classList.contains('rail-anim')) { hide(); return; }
     var hitCard = null, hitBox = null;
     var cards = [].slice.call(document.querySelectorAll(ESSAYS));
     var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
@@ -10199,9 +10201,7 @@ window.__ncStripInk = function () {
     var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
-    var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
-    var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
-    var tgtR = rlW && !main.classList.contains('rail-is-shut') ? Math.floor(vw - rlW - 54) : vw - 54;
+    var tgtR = vw - 54;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;

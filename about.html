@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9d324e64">
+<link rel="stylesheet" href="style.css?v=89fb1145">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7910,7 +7910,7 @@
       if (shutTimer) clearTimeout(shutTimer);
       shutTimer = setTimeout(function () { shutTimer = 0; card.classList.remove('is-shutting'); }, SHUT);
     };
-    card.addEventListener('mouseenter', function () { card.classList.add('is-lit'); });
+    card.addEventListener('mouseenter', function () { var mn = document.querySelector('main'); if (mn && mn.classList.contains('rail-anim')) return; card.classList.add('is-lit'); });
     card.addEventListener('mouseleave', function () { card.classList.remove('is-lit'); });
     var hit = function (e, sel) {
       return e.target && e.target.closest ? e.target.closest(sel) : null;
@@ -8143,6 +8143,8 @@
   var lx = -1, ly = -1, pending = false;
   function run() {
     pending = false;
+    var mn = document.querySelector('main');
+    if (mn && mn.classList.contains('rail-anim')) { hide(); return; }
     var hitCard = null, hitBox = null;
     var cards = [].slice.call(document.querySelectorAll(ESSAYS));
     var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
