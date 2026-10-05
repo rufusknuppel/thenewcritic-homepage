@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=99a45781">
+<link rel="stylesheet" href="style.css?v=14e6d1fa">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -7045,8 +7045,8 @@
           var mid = (j.pkb.bottom + j.tb.top) / 2 + (j.bb.bottom - PIN_IN - BODY_UP - j.inB);
           rl.style.top = (Math.round(mid - 1) - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
           var picLeft = j.bp && j.bp.l > 0, bl0 = j.bb.left + j.body.clientLeft, br0 = j.bb.right - j.body.clientLeft;
-          rl.style.setProperty('left', j.pkx && !picLeft ? (Math.floor(j.pkx.l) - bl0).toFixed(2) + 'px' : '0px', 'important');
-          rl.style.setProperty('right', j.pkx && picLeft ? (br0 - Math.ceil(j.pkx.r)).toFixed(2) + 'px' : '0px', 'important');
+          rl.style.setProperty('left', !picLeft ? (Math.floor(j.tb.left) - bl0).toFixed(2) + 'px' : '0px', 'important');
+          rl.style.setProperty('right', picLeft ? (br0 - Math.ceil(j.tb.right)).toFixed(2) + 'px' : '0px', 'important');
           rl.style.removeProperty('display');
         } else if (rl) rl.style.setProperty('display', 'none', 'important');
         return;

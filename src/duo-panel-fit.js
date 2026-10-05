@@ -9435,8 +9435,10 @@
           // left (padding on that side), the rule runs right to the dek's
           // longest line; on its right, left to the dek's earliest start)
           var picLeft = j.bp && j.bp.l > 0, bl0 = j.bb.left + j.body.clientLeft, br0 = j.bb.right - j.body.clientLeft;
-          rl.style.setProperty('left', j.pkx && !picLeft ? (Math.floor(j.pkx.l) - bl0).toFixed(2) + 'px' : '0px', 'important');
-          rl.style.setProperty('right', j.pkx && picLeft ? (br0 - Math.ceil(j.pkx.r)).toFixed(2) + 'px' : '0px', 'important');
+          // (to the body text's far edge since 2026-10-05 — "Justify the
+          // body text and extend the rule to the edge of the body text")
+          rl.style.setProperty('left', !picLeft ? (Math.floor(j.tb.left) - bl0).toFixed(2) + 'px' : '0px', 'important');
+          rl.style.setProperty('right', picLeft ? (br0 - Math.ceil(j.tb.right)).toFixed(2) + 'px' : '0px', 'important');
           rl.style.removeProperty('display');
         } else if (rl) rl.style.setProperty('display', 'none', 'important');
         return;
