@@ -303,10 +303,21 @@
     // window's top, the band gone under it (--band-foot, --band-cover, on
     // the head rail, the band's own small box: style.css, THE RULE COMES
     // UP). Read off the band's foot and the colophon's top each frame.
+    // THE BAND RELEASES AT THE COLOPHON (2026-10-04, later, at the user's
+    // word — "Let top band release and scroll away, including divider at
+    // the colophon reveal"): the band no longer holds while the rule comes
+    // up over it; from the colophon's top at the window's foot the band
+    // and its rule go up the window together a pixel for a pixel (the band
+    // carried up by --band-cover — style.css, THE BAND RELEASES — the rule
+    // seated at its foot less the same), till both are gone over the top.
+    // (the band's foot read where it rests: less the cover it is carried
+    // up by)
     var hr = st.parentElement;
     if (hr) {
-      var foot = Math.max(0, st.getBoundingClientRect().bottom);
-      var cover = Math.max(0, Math.min(foot, window.innerHeight - co.getBoundingClientRect().top));
+      var was = parseFloat(hr.style.getPropertyValue('--band-cover')) || 0;
+      var foot = Math.max(0, st.getBoundingClientRect().bottom + was);
+      var rule = parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 0;
+      var cover = Math.max(0, Math.min(foot + rule, window.innerHeight - co.getBoundingClientRect().top));
       var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
       if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
