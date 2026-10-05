@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=c0f0c407">
+<link rel="stylesheet" href="style.css?v=5baf8846">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -2760,13 +2760,6 @@
       var hf = rl.parentElement, hr = hf.getBoundingClientRect();
       if (!(hr.height > 0)) return;
       seats.push({ half: hf, y: Math.round(hr.top + hf.clientTop + rt - top) + FRAME / 2 });
-      var fr = hf.querySelector(':scope > .card-frame');
-      var frTop = fr ? parseFloat(fr.style.top) : NaN;
-      if (fr && isFinite(frTop)) {
-        var split = Math.round(rt - frTop) + FRAME / 2;
-        var sv = split + 'px';
-        if (hf.style.getPropertyValue('--fld-split') !== sv) hf.style.setProperty('--fld-split', sv);
-      }
     });
     seats.sort(function (a, b) { return a.y - b.y; });
     [].forEach.call(mb.querySelectorAll('.duo-half--mega'), function (h) {
