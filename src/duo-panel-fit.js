@@ -7346,7 +7346,14 @@
     // one and the head's over the other. Each picture is its title's
     // box (::before, wider by its side margins), where the title's words
     // are the column's (.swap-line, .swap-dek-ink).
-    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink'), add);
+    // (a resting card's preview words are pinned inside its picture's
+    // height — THE FRAME ROUND THE PICTURE ALONE, 2026-10-04 — so the
+    // picture is the row; read here they may stand where the last pass
+    // left them)
+    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink'), function (el) {
+      if (inked && el.closest('.duo-half--mega.is-rest-open.is-slide > .swap-body')) return;
+      add(el);
+    });
     [].forEach.call(row.querySelectorAll('.card-title.hl-rect.rx, .latest-title.hl-rect.rx'), function (ttl) {
       var r = ttl.getBoundingClientRect(), c = getComputedStyle(ttl, '::before');
       if (c.content === 'none') return;
@@ -8649,12 +8656,42 @@
   // picture's window.
   // (2 since later that day: "Reduce border weight from 3 to 2px")
   var FRAME = 2, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
+  // THE FRAME ROUND THE PICTURE ALONE (2026-10-04, at the user's word:
+  // "Keep border around image. Remove border around preview columns.
+  // Remove color box behind preview columns pin metadata and title to top
+  // of the image. Pin dek and body to bottom of the image. expand images by
+  // 36px to replace missing margin"): the frame goes round the picture
+  // only, its side on the column's side the old seam; the column keeps the
+  // frame's 2 and 36 on the picture's side and nothing on its far side,
+  // its text as wide as it was and running to the card's edge, so the
+  // picture gains the 36 and the far border's 2 (FRAME_ONE); the column's
+  // head stands with its ink on the picture's top, its dek and text with
+  // the last baseline on the picture's foot.
+  // (27 between the words and the frame, not 36 — "Reduce margin between
+  // text and image by 25%", 2026-10-04: the words as wide, the picture 9
+  // wider)
+  var TEXT_PIC_GAP = FRAME_PAD * 0.75;
+  var FRAME_ONE = FRAME + TEXT_PIC_GAP;
+  // (and 5 in from either end: the head 5 under the picture's top, the
+  // last baseline 5 over its foot — at the user's word, "Move metadate 5px
+  // down and body 5 px up", 2026-10-04)
+  var PIN_IN = 5;
+  var HEAD_DEK_MORE = 36;
+  // (the dek and text 3 more over the foot — "Move body text another 3px
+  // up", 2026-10-04: the last baseline 8 over the picture's foot)
+  var BODY_UP = 3;
+  // (and the head 3 more under the top — "move metadata down 3px too": the
+  // byline's ink 8 under the picture's top)
+  var HEAD_DOWN = 3;
   // (the column's old edge, which the cards now reach over: columnEdge)
   // (0 since later that day — "Actually give that 9px back to the latest
   // column": the cards stop where the column starts)
   // (−18 since later still: "reduce card size by 18px" — the cards stop
   // 18 short of the column)
-  var RAIL_EDGE = -18;
+  // (-54 again since later on 2026-10-04: the column's 9 rule is back down
+  // its left side, the cards 54 off it — "Add 9px vertical divider back
+  // between the two, making sure there's 54px margin" "on the left")
+  var RAIL_EDGE = -54;
   function slideDir(card) {
     var sec = card.closest('section.card');
     return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
@@ -8689,7 +8726,7 @@
     // "Remove vertical divider between The Latest and the post cards.
     // Expand cards by 54px proportionally"; "Actually 54+9px for the
     // divider", 2026-10-04)
-    if (!railL && rr && bandedInk()) return rr.left + RAIL_EDGE;
+    if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE);
     return !railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE;
   }
   function seatSlides() {
@@ -8715,7 +8752,7 @@
       // middle of the rule whatever fraction it falls on: its part-painted
       // last pixel showed as a hairline beside the rule — "On the left of
       // this right edge")
-      if (framed) { wb += FRAME_W; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8772,9 +8809,12 @@
         // whole pixel past the picture's, and the seam's rule to the whole
         // pixel that covers the picture's edge beside it, so the frame's
         // ink always lies over the picture's last pixel.)
-        var fl = Math.floor(right ? P.l : Ec), frr = Math.ceil(right ? Ec : P.r);
-        var ft = Math.floor(P.t), fb = Math.ceil(P.b);
         var seamX = right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb);
+        // (round the picture alone: from the cut on the margin to the old
+        // seam, whose rule is the frame's side now — THE FRAME ROUND THE
+        // PICTURE ALONE)
+        var fl = right ? seamX : Math.floor(Ec), frr = right ? Math.ceil(Ec) : seamX + FRAME;
+        var ft = Math.floor(P.t), fb = Math.ceil(P.b);
         var fs = fr.style;
         fs.left = (fl - cr0.left).toFixed(2) + 'px';
         fs.top = (ft - cr0.top).toFixed(2) + 'px';
@@ -9041,7 +9081,8 @@
           if (Q) {
             // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
             // narrower, as the slide is shorter by it — seatSlides)
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_W : 0);
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE : 0);
+            j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
             j.slide = true;
@@ -9058,10 +9099,14 @@
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       // (in its frame, the rule's 3 and 36 on the picture's side, 36 and
       // the frame's 3 on the other: THE CARD IN A FRAME)
-      if (j.slide && bandedInk()) j.bp = { l: FRAME + FRAME_PAD, r: FRAME + FRAME_PAD, t: SWAP_PAD, b: SWAP_PAD };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME_ONE, t: 0, b: 0 } : { l: FRAME_ONE, r: 0, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
+      // (set to the picture: a column on the picture's left is set flush
+      // right, against the picture — "Right align text that's on the left
+      // of the image", 2026-10-04; style.css, FLUSH TO THE PICTURE)
+      if (j.body) j.body.classList.toggle('swap-body--flush-r', !!(j.slide && bandedInk() && j.picR));
       if (j.body) {
         var pp0 = j.card.querySelector('.card-preview-block .card-preview, .latest-plate .latest-plate-p');
         if (pp0) {
@@ -9262,6 +9307,11 @@
       // (and the byline and title over it, where they stand: 2026-10-04)
       var hh = j.body.querySelector(':scope > .swap-body-head');
       if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
+      // (pinned in a frame, the head 5 in from the picture's top and the
+      // words 5 in from its foot, and 36 more kept between the title and
+      // the dek — "Add another 36px padding between title and dek",
+      // 2026-10-04: at the least 72 between them)
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * PIN_IN + BODY_UP + HEAD_DOWN + HEAD_DEK_MORE;
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -9340,15 +9390,54 @@
       var inB = lastBaselineIn(j.bt, j.tb, j.blh);
       if (inT == null || inB == null) inT = Infinity;
       j.inT = inT; j.inB = inB;
+      j.pkb = j.pdk && j.pdkH ? j.pdk.getBoundingClientRect() : null;
+      // (the dek's ink across: its lines' farthest reach either way — the
+      // rule under it goes no farther from the picture, 2026-10-04)
+      if (j.pkb) {
+        var dr = document.createRange(); dr.selectNodeContents(j.pdk);
+        var drs = dr.getClientRects(), dl = Infinity, dR = -Infinity;
+        for (var di = 0; di < drs.length; di++) if (drs[di].width > 0) { dl = Math.min(dl, drs[di].left); dR = Math.max(dR, drs[di].right); }
+        j.pkx = isFinite(dl) ? { l: dl, r: dR } : null;
+      }
     });
     // WRITE: the centring, and the bodies set
     twos.forEach(function (j) {
-      if (isFinite(j.inT)) {
-        var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
-        j.bt.style.transform = shY;
-        if (j.pdk) j.pdk.style.transform = shY;
-        if (j.hd) j.hd.style.transform = shY;
+      if (!isFinite(j.inT)) return;
+      // (pinned, in its frame: the head's ink on the picture's top, the dek
+      // and text's last baseline on its foot — THE FRAME ROUND THE PICTURE
+      // ALONE)
+      if (j.hd && j.slide && bandedInk() && j.inB != null) {
+        var up = 'translateY(' + (j.bb.top + PIN_IN + HEAD_DOWN - j.inT).toFixed(2) + 'px)';
+        var dn = 'translateY(' + (j.bb.bottom - PIN_IN - BODY_UP - j.inB).toFixed(2) + 'px)';
+        j.hd.style.transform = up;
+        j.bt.style.transform = dn;
+        if (j.pdk) j.pdk.style.transform = dn;
+        // (a 2 rule between the dek and the text, halfway between their
+        // boxes, from the picture's frame to the column's outer edge —
+        // "place a 2px line between dek and body text that extends to edge
+        // of title column from the image", 2026-10-04; style.css, THE
+        // RULE UNDER THE DEK)
+        var rl = j.body.querySelector(':scope > .swap-body-rule');
+        if (j.pkb) {
+          if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.body.appendChild(rl); }
+          var mid = (j.pkb.bottom + j.tb.top) / 2 + (j.bb.bottom - PIN_IN - BODY_UP - j.inB);
+          // (on whole pixels of the page, as the frame is)
+          rl.style.top = (Math.round(mid - 1) - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
+          // (from the picture to the dek's farthest ink — "only extend rule
+          // to the farthest ink of the dek": the picture on the column's
+          // left (padding on that side), the rule runs right to the dek's
+          // longest line; on its right, left to the dek's earliest start)
+          var picLeft = j.bp && j.bp.l > 0, bl0 = j.bb.left + j.body.clientLeft, br0 = j.bb.right - j.body.clientLeft;
+          rl.style.setProperty('left', j.pkx && !picLeft ? (Math.floor(j.pkx.l) - bl0).toFixed(2) + 'px' : '0px', 'important');
+          rl.style.setProperty('right', j.pkx && picLeft ? (br0 - Math.ceil(j.pkx.r)).toFixed(2) + 'px' : '0px', 'important');
+          rl.style.removeProperty('display');
+        } else if (rl) rl.style.setProperty('display', 'none', 'important');
+        return;
       }
+      var shY = 'translateY(' + (((j.bb.bottom - j.inB) - (j.inT - j.bb.top)) / 2).toFixed(2) + 'px)';
+      j.bt.style.transform = shY;
+      if (j.pdk) j.pdk.style.transform = shY;
+      if (j.hd) j.hd.style.transform = shY;
     });
     twos.forEach(function (j) { j.bt.__swapKey = j.key; });
     jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
