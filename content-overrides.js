@@ -32,7 +32,18 @@
 //   mat     — the colour of the frame's ground round a zoomed-out drawing
 
 module.exports = {
+  // (The Latest's kickers, 2026-10-04, at the user's word: "Set top 6
+  // kickers to 'Bay Area Seduction Camp', 'Who's Still Masking?', 'AI
+  // Middle School' ... I like the current MrBeast 'Becoming a Journalist'
+  // 'The Law School Elite'")
+  'safe-at-slutcon': {
+    kicker: 'Bay Area Seduction Camp',
+  },
+  'long-covid': {
+    kicker: 'Who’s Still Masking?',
+  },
   'high-school-or-claude': {
+    kicker: 'AI Middle School',
     // the dek reads "Postscript No. 24 | 14-year-old Eli Goldfine on
     // self-educating through AI"; the card says the name alone
     byline: 'Eli Goldfine',
@@ -385,7 +396,7 @@ module.exports = {
     author: 'Rufus Knuppel',
   },
   'the-striver-class': {
-    kicker: 'Law School Elites',
+    kicker: 'The Law School Elite',
   },
   'mrbeast-slop-auteur': {
     kicker: 'The Art of YouTube',
@@ -396,7 +407,7 @@ module.exports = {
     zoom: 1.05,
   },
   'jasmine-suns-project-of-self-transformation': {
-    kicker: 'Journalistic Becoming',
+    kicker: 'Becoming a Journalist',
     head: [0.38, 0.44],
     zoom: 1,
   },
