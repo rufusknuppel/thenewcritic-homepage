@@ -2985,13 +2985,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // charcoal columns are on the right"; ESSAYS and CONTRA stood left)
     // (and every column on the left since later that day — "move the latest
     // column to the left")
-    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'l', rows: ones(latestPosts) },
-    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'l', rows: ones(fresh(essays)) },
+    // (and on the right again since 2026-10-05 — "Move The Latest to the
+    // right, and invert posts accordingly")
+    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'r', rows: ones(latestPosts) },
+    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'r', rows: ones(fresh(essays)) },
     // (one to a row in every section now — "In postscript/contra sections,
     // make one a row and editor's")
-    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'l', rows: ones(fresh(postscripts)) },
-    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: ones(fresh(contras)) },
-    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'l', rows: ones(pickRows.flat()) },
+    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'r', rows: ones(fresh(postscripts)) },
+    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'r', rows: ones(fresh(contras)) },
+    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'r', rows: ones(pickRows.flat()) },
   ].filter((sec) => sec.rows.length);
   SECTIONS.forEach((sec) => { sec.posts = sec.rows.flat(); });
   const LABEL = { essay: 'Essays', postscript: 'Postscript', contra: 'Contra' };
@@ -3020,7 +3022,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // right, and turning about from there whichever side the column
         // stands — "Start top of page with image on the left and text
         // column on right. Alternate accordingly", 2026-10-04)
-        const toR = j % 2 === 1;
+        // (the page mirrored with the column on the right again: the picture
+        // at the right first, its words on the left — "Move The Latest to
+        // the right, and invert posts accordingly", 2026-10-05)
+        const toR = j % 2 === 0;
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first

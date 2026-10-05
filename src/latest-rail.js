@@ -14,15 +14,72 @@
   // (--bird-dx, style.css), and read: each word's ink inside its box, the
   // name's first stroke (x0L) and CRITIC's last (x0), the swallow's first
   // ink (x1) and last (x1R). Shared with the column's edge (evenMid).
+  // THE NAV OVER THE NAME (2026-10-05, at the user's words — "Move nav band
+  // above the wordmark/logo. set bird wings 18px from top and bottm and
+  // wordmark 27px from top and bottom"): from 1024 up the 36 strip stands
+  // at the band's head (style.css, THE NAV OVER THE NAME) and the name and
+  // the swallow under it, in a field the name's ink and 27 over and under
+  // it (a whole pixel: --strip-settled, the strip's height); the swallow
+  // drawn to the name's ink and 18 more, so its wings stand 18 from the
+  // field's top and foot, the two on one middle (--logo-dy, --bird-s,
+  // --bird-dy). Read again only when the window's width changes.
+  var logoW = -1;
+  var wideLogo = window.matchMedia('(min-width: 1024px)');
+  var seatLogo = function (st) {
+    var vw = document.documentElement.clientWidth;
+    if (!st || !main || vw === logoW) return;
+    logoW = vw;
+    var props = ['--logo-dy', '--bird-s', '--bird-dy'];
+    if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
+      props.forEach(function (p) { st.style.removeProperty(p); });
+      main.style.removeProperty('--strip-settled');
+      return;
+    }
+    var bird = st.querySelector('.band-logo__bird .wm-bird-only');
+    var paths = st.querySelectorAll('.band-logo svg:not(.band-logo__bird) path');
+    if (!bird || !paths.length) return;
+    st.style.setProperty('--logo-dy', '0px'); st.style.setProperty('--bird-s', '1'); st.style.setProperty('--bird-dy', '0px');
+    var inkY = function () {
+      var t = Infinity, b = -Infinity;
+      [].forEach.call(paths, function (q) { var r = q.getBoundingClientRect(); if (r.width) { t = Math.min(t, r.top); b = Math.max(b, r.bottom); } });
+      return { t: t, b: b };
+    };
+    var k = inkY();
+    if (!isFinite(k.t)) return;
+    // (and a 2 rule at the field's foot, the 27 kept above it — "add rule
+    // back below the wordmark logo"; "Connect rule with rule on divider
+    // between The Latest and the main site")
+    var wmH = k.b - k.t, H = Math.round(wmH + 54 + 2);
+    main.style.setProperty('--strip-settled', H + 'px', 'important');
+    st.style.setProperty('height', H + 'px', 'important');
+    var top = st.getBoundingClientRect().top;
+    k = inkY();
+    var want = 36 + (H - 2 - wmH) / 2;
+    st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
+    var bi = bird.getBoundingClientRect();
+    if (!bi.height) return;
+    st.style.setProperty('--bird-s', ((wmH + 18) / bi.height).toFixed(4));
+    bi = bird.getBoundingClientRect();
+    st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+  };
+  seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top'));
+  addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
   var bandCtx = null;
   var bandGeo = function (st) {
     if (!st) return null;
+    seatLogo(st);
     var run = st.querySelector(':scope > .sub-ticker-run');
     var low = st.querySelector('.band-logo__low svg path');
     var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
     st.style.setProperty('--bird-dx', '0px');
+    // (x1 read at the swallow's old size, so the column's width holds:
+    // THE NAV OVER THE NAME draws it smaller)
+    var bs = st.style.getPropertyValue('--bird-s');
+    if (bs) st.style.setProperty('--bird-s', '1');
+    var x1u = birdInk.getBoundingClientRect().left;
+    if (bs) st.style.setProperty('--bird-s', bs);
     var br0 = birdInk.getBoundingClientRect();
     if (!br0.width) return null;
     var dx = (vw - 54) - br0.right;
@@ -50,7 +107,7 @@
     var lr = low.getBoundingClientRect();
     // (x1 the swallow's first ink where it stood before it was carried to
     // the gutter, so the column's edge stands where it stood)
-    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: br0.left, x1R: vw - 54 };
+    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: vw - 54 };
   };
   // (where STORE's right and ARCHIVE's left would stand were the words
   // evenly between CRITIC's last stroke and the swallow's first ink, one
@@ -522,8 +579,11 @@
   if (!shutBtn || !openBtn) return;
   var shift = function () {
     var op = rail.offsetParent;
-    var right = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft + rail.offsetWidth;
-    var v = Math.round(right / 2) + 'px';
+    var left = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft;
+    // (the column on the right again since later on 2026-10-05: the rows
+    // go half its width right — THE LATEST ON THE RIGHT AGAIN, style.css)
+    var w = rail.classList.contains('latest-rail--r') ? document.documentElement.clientWidth - left : left + rail.offsetWidth;
+    var v = Math.round(w / 2) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
   };
   var set = function (shut) {

@@ -8747,6 +8747,15 @@
       rr = { left: rRight - rail.offsetWidth, right: rRight };
       shut = Math.round(rRight / 2);
     }
+    // (and on the right, since later on 2026-10-05 — "Move The Latest to the
+    // right": the rows carried half its width right, its left read off its
+    // seat)
+    if (!railL && rail && rail.offsetWidth && document.querySelector('main.rail-is-shut')) {
+      var opR = rail.offsetParent;
+      var rLeft = (opR ? opR.getBoundingClientRect().left + opR.clientLeft : 0) + rail.offsetLeft;
+      rr = { left: rLeft, right: rLeft + rail.offsetWidth };
+      shut = -Math.round((vw - rLeft) / 2);
+    }
     // (the column on the left since later on 2026-10-04 — "move the latest
     // column to the left": its rule down its right side, the cards 54 off
     // it, on a whole pixel)
@@ -8756,7 +8765,7 @@
     // "Remove vertical divider between The Latest and the post cards.
     // Expand cards by 54px proportionally"; "Actually 54+9px for the
     // divider", 2026-10-04)
-    if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE);
+    if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE) - shut;
     return (!railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE) - shut;
   }
   function seatSlides() {
