@@ -8644,11 +8644,14 @@
   // the rule and 36, and 36 and the frame — its text as wide as it was,
   // and the picture travels that much further, so the room comes off the
   // picture's window.
-  var FRAME = 3, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
+  // (2 since later that day: "Reduce border weight from 3 to 2px")
+  var FRAME = 2, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
   // (the column's old edge, which the cards now reach over: columnEdge)
   // (0 since later that day — "Actually give that 9px back to the latest
   // column": the cards stop where the column starts)
-  var RAIL_EDGE = 0;
+  // (−18 since later still: "reduce card size by 18px" — the cards stop
+  // 18 short of the column)
+  var RAIL_EDGE = -18;
   function slideDir(card) {
     var sec = card.closest('section.card');
     return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
