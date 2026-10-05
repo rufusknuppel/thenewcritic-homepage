@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=7c77a6c5">
+<link rel="stylesheet" href="style.css?v=3f58c635">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4892,7 +4892,7 @@
   var ROWS_GAP = 54;
   var ROW_STEP = 108;
   var SECTION_GAP = ROW_STEP;
-  var BAND_RULE = 9;
+  var BAND_RULE = 2;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -6051,8 +6051,8 @@
                 ht.className = 'swap-body-title';
                 if (lk) ht.href = lk.getAttribute('href');
                 ht.textContent = stl ? (stl.getAttribute('data-text') || stl.textContent).trim() : '';
-                hd.appendChild(ht);
                 hd.appendChild(hm);
+                hd.appendChild(ht);
               }
               if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
               bt.style.removeProperty('-webkit-line-clamp');
@@ -6085,6 +6085,7 @@
       var hh = j.body.querySelector(':scope > .swap-body-head');
       var tt = hh && hh.querySelector('.swap-body-title'), mm = hh && hh.querySelector('.swap-body-meta');
       if (!tt || !mm || !(hh.getBoundingClientRect().height > 0)) return null;
+      if (mm.compareDocumentPosition(tt) & Node.DOCUMENT_POSITION_FOLLOWING) return null;
       var m = headMetaMargin(tt, mm, HEAD_META_GAP);
       return isFinite(m) ? { mm: mm, m: m } : null;
     });

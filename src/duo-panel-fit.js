@@ -7375,7 +7375,8 @@
   // top of the content, so no double spacing between sections")
   var SECTION_GAP = ROW_STEP;
   // (the blue rule hung under the band: style.css, --band-rule)
-  var BAND_RULE = 9;
+  // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
+  var BAND_RULE = 2;
   function rowCourier(row) {
     var t = Infinity, b = -Infinity;
     [].forEach.call(row.querySelectorAll('.cover-meta'), function (m) {
@@ -9197,9 +9198,10 @@
                 ht.className = 'swap-body-title';
                 if (lk) ht.href = lk.getAttribute('href');
                 ht.textContent = stl ? (stl.getAttribute('data-text') || stl.textContent).trim() : '';
-                hd.appendChild(ht);
-                // (the byline under the title — "Move metadata below titles")
+                // (the byline over the title again — "move metadata above
+                // Titles", after an hour under it)
                 hd.appendChild(hm);
+                hd.appendChild(ht);
               }
               if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
               // (two columns, filled in turn and cut on a whole line — or,
@@ -9247,6 +9249,8 @@
       var hh = j.body.querySelector(':scope > .swap-body-head');
       var tt = hh && hh.querySelector('.swap-body-title'), mm = hh && hh.querySelector('.swap-body-meta');
       if (!tt || !mm || !(hh.getBoundingClientRect().height > 0)) return null;
+      // (only where the byline stands under the title)
+      if (mm.compareDocumentPosition(tt) & Node.DOCUMENT_POSITION_FOLLOWING) return null;
       var m = headMetaMargin(tt, mm, HEAD_META_GAP);
       return isFinite(m) ? { mm: mm, m: m } : null;
     });

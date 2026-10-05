@@ -428,6 +428,7 @@
     var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     var foot = strip ? strip.offsetHeight : 0;
     e.preventDefault();
-    window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - 9 - 54), behavior: 'smooth' });
+    var rule = parseFloat(getComputedStyle(document.querySelector('main') || document.body).getPropertyValue('--band-rule')) || 0;
+    window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - 54), behavior: 'smooth' });
   });
 })();
