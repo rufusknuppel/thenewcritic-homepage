@@ -3038,7 +3038,28 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span></a></li>`;
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
+    + railCues(si)
     + `</div></div></aside>`;
+  // THE NEXT SECTION FORETOLD (2026-10-04, at the user's words — "36px from
+  // the bottom in The Latest column, I want a work sans that's a
+  // premonition of the next section, so Essays. then on a line below a
+  // carrot pointing down. When you're in essays, the same should appear
+  // above for 'The Latest'"; "Carrot should be 36px from bottom, not
+  // label"): each section's words carry the next section's name over a
+  // caret pointing down at the column's foot, and the last's name under a
+  // caret pointing up at its head — each a way to that section's first
+  // card (latest-rail.js, THE COLUMN TAKES YOU TO THE CARD; style.css,
+  // THE NEXT SECTION FORETOLD).
+  function railCues(si) {
+    const caret = (up) => `<svg class="latest-rail__caret" viewBox="0 0 14 8" width="14" height="8" aria-hidden="true"><path d="${up ? 'M1 7L7 1L13 7' : 'M1 1L7 7L13 1'}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const cue = (sec, dir) => {
+      const first = sec && sec.posts[0];
+      if (!first) return '';
+      const word = `<span class="latest-rail__cue-word">${escapeHtml(sec.word)}</span>`;
+      return `<a class="latest-rail__cue latest-rail__cue--${dir}" href="${escapeHtml(first.link)}" data-slug="${escapeHtml(slugOf(first.link))}" aria-label="${escapeHtml(sec.word)}">${dir === 'prev' ? caret(true) + word : word + caret(false)}</a>`;
+    };
+    return cue(SECTIONS[si - 1], 'prev') + cue(SECTIONS[si + 1], 'next');
+  }
   const latestRailHtml = SECTIONS.map((sec, si) => railHtml(sec, si)).join('');
   const railPosts = SECTIONS.flatMap((sec) => sec.posts);
   console.log(`ROWS ${rowsMade} (${SECTIONS.map((sec) => `${sec.key} ${sec.posts.length}`).join(', ')}; columns ${railPosts.length})`);
