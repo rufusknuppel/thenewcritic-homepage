@@ -8881,6 +8881,7 @@
   // (a picture's own proportions, read off its address — Substack names
   // every upload by its size, …_1600x1200.png — so they are known before
   // the picture comes in, which it does only as it nears the window)
+  var PS_SHAPE = 0.8;
   function picAspect(card) {
     if (card.__ar !== undefined) return card.__ar;
     var ar = null;
@@ -8931,7 +8932,18 @@
       if (framed) {
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
         var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
-        var give = ar ? V0 - (P.b - P.t) * ar : 0;
+        // EACH KIND ITS SHAPE (later that day — "I want all postscripts to
+        // have a less than square proportion with the face as the focal
+        // point (no zoom tho). I want all contras to be square, and all
+        // essays more than square at least"): a postscript's window 4:5, or
+        // its picture's own where that is narrower; a contra's square; an
+        // essay's its picture's own, square at the least — each still no
+        // wider than the margin leaves it. What a window crops is its
+        // picture's sides or head and foot, laid at its height, never
+        // larger (card-open.js, recal: the face at the middle)
+        var kind = card.classList.contains('duo-half--kind-postscript') ? 'ps' : card.classList.contains('duo-half--kind-contra') ? 'co' : 'es';
+        var want = ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : kind === 'co' ? 1 : Math.max(ar, 1)) : null;
+        var give = want ? V0 - (P.b - P.t) * want : 0;
         if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
         dx += sh;
       }

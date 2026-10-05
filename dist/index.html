@@ -6682,6 +6682,7 @@
     if (!railL && rr && bandedInk()) return Math.floor(rr.left + RAIL_EDGE) - shut;
     return (!railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE) - shut;
   }
+  var PS_SHAPE = 0.8;
   function picAspect(card) {
     if (card.__ar !== undefined) return card.__ar;
     var ar = null;
@@ -6711,7 +6712,9 @@
       if (framed) {
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
         var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
-        var give = ar ? V0 - (P.b - P.t) * ar : 0;
+        var kind = card.classList.contains('duo-half--kind-postscript') ? 'ps' : card.classList.contains('duo-half--kind-contra') ? 'co' : 'es';
+        var want = ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : kind === 'co' ? 1 : Math.max(ar, 1)) : null;
+        var give = want ? V0 - (P.b - P.t) * want : 0;
         if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
         dx += sh;
       }
@@ -8977,7 +8980,14 @@
       if (!(V > 0)) return;
       var k = Math.max(V / dims[0], H / dims[1]), iw = dims[0] * k, ih = dims[1] * k;
       var bs = iw.toFixed(2) + 'px ' + ih.toFixed(2) + 'px';
-      var bp = (x0 + (V - iw) / 2).toFixed(2) + 'px ' + ((H - ih) / 2).toFixed(2) + 'px';
+      var fx = 0.5, fy = 0.5;
+      if (h.classList.contains('duo-half--kind-postscript')) {
+        var op = [].map.call(h.querySelectorAll('img[style*="object-position"]'), function (im) { return im.style.objectPosition; })[0] || '';
+        var mm = /(-?[\d.]+)%\s+(-?[\d.]+)%/.exec(op);
+        if (mm) { fx = mm[1] / 100; fy = mm[2] / 100; }
+      }
+      var px = Math.min(0, Math.max(V - iw, V / 2 - fx * iw)), py = Math.min(0, Math.max(H - ih, H / 2 - fy * ih));
+      var bp = (x0 + px).toFixed(2) + 'px ' + py.toFixed(2) + 'px';
       if (t.style.getPropertyValue('--rest-bs') !== bs) t.style.setProperty('--rest-bs', bs);
       if (t.style.getPropertyValue('--rest-bp') !== bp) t.style.setProperty('--rest-bp', bp);
     });

@@ -308,7 +308,19 @@
       if (!(V > 0)) return;
       var k = Math.max(V / dims[0], H / dims[1]), iw = dims[0] * k, ih = dims[1] * k;
       var bs = iw.toFixed(2) + 'px ' + ih.toFixed(2) + 'px';
-      var bp = (x0 + (V - iw) / 2).toFixed(2) + 'px ' + ((H - ih) / 2).toFixed(2) + 'px';
+      // (a postscript's face at the window's middle where the window crops
+      // it — "with the face as the focal point (no zoom tho)": the face's
+      // place in the picture, read off its <img>'s object-position (the
+      // post's own head, content-overrides.js), the picture held to the
+      // window's edges; anything else centred)
+      var fx = 0.5, fy = 0.5;
+      if (h.classList.contains('duo-half--kind-postscript')) {
+        var op = [].map.call(h.querySelectorAll('img[style*="object-position"]'), function (im) { return im.style.objectPosition; })[0] || '';
+        var mm = /(-?[\d.]+)%\s+(-?[\d.]+)%/.exec(op);
+        if (mm) { fx = mm[1] / 100; fy = mm[2] / 100; }
+      }
+      var px = Math.min(0, Math.max(V - iw, V / 2 - fx * iw)), py = Math.min(0, Math.max(H - ih, H / 2 - fy * ih));
+      var bp = (x0 + px).toFixed(2) + 'px ' + py.toFixed(2) + 'px';
       if (t.style.getPropertyValue('--rest-bs') !== bs) t.style.setProperty('--rest-bs', bs);
       if (t.style.getPropertyValue('--rest-bp') !== bp) t.style.setProperty('--rest-bp', bp);
     });
