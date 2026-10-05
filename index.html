@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e2b589d6">
+<link rel="stylesheet" href="style.css?v=1f72f491">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -9887,6 +9887,12 @@ window.__ncStripInk = function () {
       if (d < bestD) { bestD = d; best = sp; }
     });
     var now = best ? spans.filter(function (sp) { return sp.row === best.row; }).map(function (sp) { return sp.a; }) : [];
+    var moved = now.length !== lit.length || now.some(function (a) { return lit.indexOf(a) < 0; });
+    if (moved) {
+      var bt = speed > 0 ? Math.max(0.12, Math.min(0.4, 300 / speed)) : 0.4;
+      var bv = bt.toFixed(3) + 's';
+      if (rails[0].style.getPropertyValue('--bk-t') !== bv) rails[0].style.setProperty('--bk-t', bv);
+    }
     lit.forEach(function (a) { if (now.indexOf(a) < 0) a.classList.remove('is-now'); });
     now.forEach(function (a) { a.classList.add('is-now'); });
     lit = now;
@@ -9983,10 +9989,19 @@ window.__ncStripInk = function () {
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
+  var speed = 0, lastY = null, lastT = 0;
+  var gauge = function () {
+    var t = performance.now(), y = window.pageYOffset || 0;
+    if (lastY !== null && t - lastT > 0 && t - lastT < 200) {
+      var v = Math.abs(y - lastY) / (t - lastT) * 1000;
+      speed = speed ? speed * 0.6 + v * 0.4 : v;
+    } else speed = 0;
+    lastY = y; lastT = t;
+  };
   addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () { ticking = false; light(); band(); });
+    requestAnimationFrame(function () { ticking = false; gauge(); light(); band(); });
   }, { passive: true });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
     addEventListener(ev, function () { setTimeout(seat, 0); }, { passive: true });
