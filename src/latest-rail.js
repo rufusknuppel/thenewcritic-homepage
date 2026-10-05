@@ -46,15 +46,15 @@
     };
     var k = inkY();
     if (!isFinite(k.t)) return;
-    // (and a 2 rule at the field's foot, the 27 kept above it — "add rule
-    // back below the wordmark logo"; "Connect rule with rule on divider
-    // between The Latest and the main site")
-    var wmH = k.b - k.t, H = Math.round(wmH + 54 + 2);
+    // (the strip under the name again since later that day — "Set band
+    // below wordmark": the field the band's box, from the window's top to
+    // the strip, the name 27 from either; THE NAV UNDER THE NAME, style.css)
+    var wmH = k.b - k.t, H = Math.round(wmH + 54);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
-    var want = 36 + (H - 2 - wmH) / 2;
+    var want = (H - wmH) / 2;
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
