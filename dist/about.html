@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=ab4f6883">
+<link rel="stylesheet" href="style.css?v=3f9d6b1b">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5692,6 +5692,7 @@
   var SLIDE_LESS = 108;
   var SOLO_COL = 290, SLIDE_GAP = 36, COLUMN_SIDE = 54;
   var FRAME = 3, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
+  var RAIL_EDGE = 0;
   function slideDir(card) {
     var sec = card.closest('section.card');
     return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
@@ -5717,6 +5718,7 @@
     var vw = document.documentElement.clientWidth;
     var railL = sec && sec.classList.contains('card--rail-l');
     if (d < 0) return railL && rr ? rr.right + COLUMN_SIDE : COLUMN_SIDE;
+    if (!railL && rr && bandedInk()) return rr.left + RAIL_EDGE;
     return !railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE;
   }
   function seatSlides() {

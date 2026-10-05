@@ -8645,6 +8645,10 @@
   // and the picture travels that much further, so the room comes off the
   // picture's window.
   var FRAME = 3, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
+  // (the column's old edge, which the cards now reach over: columnEdge)
+  // (0 since later that day — "Actually give that 9px back to the latest
+  // column": the cards stop where the column starts)
+  var RAIL_EDGE = 0;
   function slideDir(card) {
     var sec = card.closest('section.card');
     return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
@@ -8674,6 +8678,12 @@
     var vw = document.documentElement.clientWidth;
     var railL = sec && sec.classList.contains('card--rail-l');
     if (d < 0) return railL && rr ? rr.right + COLUMN_SIDE : COLUMN_SIDE;
+    // (into the column's old gutter and its edge's 9 where the page opens
+    // on the band: the cards 63 wider, the column's divider gone —
+    // "Remove vertical divider between The Latest and the post cards.
+    // Expand cards by 54px proportionally"; "Actually 54+9px for the
+    // divider", 2026-10-04)
+    if (!railL && rr && bandedInk()) return rr.left + RAIL_EDGE;
     return !railL && rr ? rr.left - COLUMN_SIDE : vw - COLUMN_SIDE;
   }
   function seatSlides() {
