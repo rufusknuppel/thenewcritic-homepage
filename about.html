@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dc985ce2">
+<link rel="stylesheet" href="style.css?v=ab4f6883">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5731,7 +5731,7 @@
       var framed = bandedInk() && !!seat.out;
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
-      if (framed) { wb += FRAME_W; dx = wb * (right ? 1 : -1); }
+      if (framed) { wb += FRAME_W; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -5773,14 +5773,15 @@
           card.appendChild(fr);
         }
         var Ec = columnEdge(card, seat.d);
-        var fl = right ? P.l : Ec, frr = right ? Ec : P.r;
-        var seamX = right ? P.l + wb - FRAME : P.r - wb;
+        var fl = Math.floor(right ? P.l : Ec), frr = Math.ceil(right ? Ec : P.r);
+        var ft = Math.floor(P.t), fb = Math.ceil(P.b);
+        var seamX = right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb);
         var fs = fr.style;
         fs.left = (fl - cr0.left).toFixed(2) + 'px';
-        fs.top = (P.t - cr0.top).toFixed(2) + 'px';
-        fs.width = (frr - fl).toFixed(2) + 'px';
-        fs.height = (P.b - P.t).toFixed(2) + 'px';
-        fr.firstChild.style.left = (seamX - fl - FRAME).toFixed(2) + 'px';
+        fs.top = (ft - cr0.top).toFixed(2) + 'px';
+        fs.width = (frr - fl) + 'px';
+        fs.height = (fb - ft) + 'px';
+        fr.firstChild.style.left = (seamX - fl - FRAME) + 'px';
       } else if (fr) fr.remove();
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
