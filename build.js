@@ -3064,7 +3064,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       const word = `<span class="latest-rail__cue-word">${escapeHtml(sec.word)}</span>`;
       return `<a class="latest-rail__cue latest-rail__cue--${dir}" href="${escapeHtml(first.link)}" data-slug="${escapeHtml(slugOf(first.link))}" aria-label="${escapeHtml(sec.word)}">${dir === 'prev' ? caret(true) + word : word + caret(false)}</a>`;
     };
-    return cue(SECTIONS[si - 1], 'prev') + cue(SECTIONS[si + 1], 'next');
+    // (the last section's foot foretells the colophon, and takes you to the
+    // page's end — "add a Colophon arrow in the latest column that takes
+    // you to the bottom of the site", 2026-10-05)
+    const colo = si === SECTIONS.length - 1
+      ? `<a class="latest-rail__cue latest-rail__cue--next" href="#colophon" data-to="colophon" aria-label="Colophon"><span class="latest-rail__cue-word">Colophon</span>${caret(false)}</a>`
+      : '';
+    return cue(SECTIONS[si - 1], 'prev') + (colo || cue(SECTIONS[si + 1], 'next'));
   }
   const latestRailHtml = SECTIONS.map((sec, si) => railHtml(sec, si)).join('');
   const railPosts = SECTIONS.flatMap((sec) => sec.posts);

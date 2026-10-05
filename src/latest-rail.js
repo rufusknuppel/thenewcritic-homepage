@@ -425,6 +425,13 @@
     if (!wide.matches || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     // (and the next section's name at the column's foot, the last's at its
     // head: THE NEXT SECTION FORETOLD, build.js)
+    // (the last section's Colophon cue: to the page's end)
+    var toEnd = e.target && e.target.closest && e.target.closest('a.latest-rail__cue[data-to="colophon"]');
+    if (toEnd) {
+      e.preventDefault();
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      return;
+    }
     var a = e.target && e.target.closest && e.target.closest('.latest-rail__list a[data-slug], a.latest-rail__cue[data-slug]');
     if (!a) return;
     var slug = a.getAttribute('data-slug');
