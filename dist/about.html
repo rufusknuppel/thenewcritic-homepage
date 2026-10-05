@@ -16,13 +16,13 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a349fd33">
+<link rel="stylesheet" href="style.css?v=be38493f">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   var WHITE = '#FFFFFF', CHARCOAL = '#121417';
-  var YELLOW = '#d9654f';
+  var YELLOW = '#b03a2e';
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
     if (!m) return null;
@@ -5700,6 +5700,7 @@
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 72;
   var BODY_UP = 3;
+  var INK_GAP = 27;
   var HEAD_DOWN = 3;
   var RAIL_EDGE = -54;
   function slideDir(card) {
@@ -6112,7 +6113,7 @@
       j.pdkH = j.pdk.textContent.trim() ? j.pdk.getBoundingClientRect().height + SWAP_PAD : 0;
       var hh = j.body.querySelector(':scope > .swap-body-head');
       if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
-      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * PIN_IN + BODY_UP + HEAD_DOWN + HEAD_DEK_MORE;
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE;
     });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
@@ -6167,6 +6168,11 @@
       j.inT = inT; j.inB = inB;
       j.pkb = j.pdk && j.pdkH ? j.pdk.getBoundingClientRect() : null;
       if (j.pkb) {
+        var dcs = getComputedStyle(j.pdk);
+        j.dkB = lastBaselineIn(j.pdk, { bottom: j.pkb.bottom, right: Infinity }, parseFloat(dcs.lineHeight) || 0);
+        j.txT = firstInkTop(j.bt);
+      }
+      if (j.pkb) {
         var dr = document.createRange(); dr.selectNodeContents(j.pdk);
         var drs = dr.getClientRects(), dl = Infinity, dR = -Infinity;
         for (var di = 0; di < drs.length; di++) if (drs[di].width > 0) { dl = Math.min(dl, drs[di].left); dR = Math.max(dR, drs[di].right); }
@@ -6176,16 +6182,20 @@
     twos.forEach(function (j) {
       if (!isFinite(j.inT)) return;
       if (j.hd && j.slide && bandedInk() && j.inB != null) {
-        var up = 'translateY(' + (j.bb.top + PIN_IN + HEAD_DOWN - j.inT).toFixed(2) + 'px)';
-        var dn = 'translateY(' + (j.bb.bottom - PIN_IN - BODY_UP - j.inB).toFixed(2) + 'px)';
+        var dnY = j.bb.bottom - INK_GAP - j.inB;
+        var up = 'translateY(' + (j.bb.top + INK_GAP - j.inT).toFixed(2) + 'px)';
+        var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
-        if (j.pdk) j.pdk.style.transform = dn;
+        var ruleTop = (j.txT != null) ? Math.round(j.txT + dnY - INK_GAP - FRAME) : null;
+        if (j.pdk) j.pdk.style.transform = (ruleTop != null && j.dkB != null)
+          ? 'translateY(' + (ruleTop - INK_GAP - j.dkB).toFixed(2) + 'px)' : dn;
         var rl = j.body.querySelector(':scope > .swap-body-rule');
         if (j.pkb) {
           if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.body.appendChild(rl); }
-          var mid = (j.pkb.bottom + j.tb.top) / 2 + (j.bb.bottom - PIN_IN - BODY_UP - j.inB);
-          rl.style.top = (Math.round(mid - 1) - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
+          var mid = (j.pkb.bottom + j.tb.top) / 2 + dnY;
+          var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
+          rl.style.top = (rTop - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
           var picLeft = j.bp && j.bp.l > 0, bl0 = j.bb.left + j.body.clientLeft, br0 = j.bb.right - j.body.clientLeft;
           rl.style.setProperty('left', !picLeft ? (Math.floor(j.tb.left) - bl0).toFixed(2) + 'px' : '0px', 'important');
           rl.style.setProperty('right', picLeft ? (br0 - Math.ceil(j.tb.right)).toFixed(2) + 'px' : '0px', 'important');

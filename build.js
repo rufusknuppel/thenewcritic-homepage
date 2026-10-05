@@ -3385,11 +3385,11 @@ function renderFontGateScript() {
   // "A dartmouth college green", then Pompeian red, #B03A2E, 2026-10-05,
   // "What is a red that matches mediterranean blue?", then a lighter
   // terracotta, #D9654F, "make the red a lighter so black stands out
-  // more". It must match
+  // more", then #B03A2E again, "Revert to terracotta red". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#d9654f';
+  var YELLOW = '#b03a2e';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;

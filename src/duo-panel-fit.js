@@ -8684,6 +8684,15 @@
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
+  // EVERY GAP THE SIDES' 27 (2026-10-05, at the user's words — "Have equal
+  // padding above and below rule as on sides of body text. Also match this
+  // padding below body text to image bottom and above metadata to image
+  // top"): the byline's ink 27 under the picture's top, the text's last
+  // baseline 27 over its foot, the dek's last baseline 27 over the rule and
+  // the rule 27 over the text's first ink — the 27 the words keep off the
+  // frame and the card's edge (TEXT_PIC_GAP). The 5s and 3s above stood
+  // till then.
+  var INK_GAP = 27;
   // (and the head 3 more under the top — "move metadata down 3px too": the
   // byline's ink 8 under the picture's top)
   var HEAD_DOWN = 3;
@@ -9328,7 +9337,9 @@
       // words 5 in from its foot, and 36 more kept between the title and
       // the dek — "Add another 36px padding between title and dek",
       // 2026-10-04: at the least 72 between them)
-      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * PIN_IN + BODY_UP + HEAD_DOWN + HEAD_DEK_MORE;
+      // (and the room the pins and the rule take: INK_GAP at either end, and
+      // the rule's 27 either side of its 2 for the dek's 36 to the text)
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE;
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -9408,6 +9419,12 @@
       if (inT == null || inB == null) inT = Infinity;
       j.inT = inT; j.inB = inB;
       j.pkb = j.pdk && j.pdkH ? j.pdk.getBoundingClientRect() : null;
+      // (the dek's last baseline and the text's first ink, for the rule's 27s)
+      if (j.pkb) {
+        var dcs = getComputedStyle(j.pdk);
+        j.dkB = lastBaselineIn(j.pdk, { bottom: j.pkb.bottom, right: Infinity }, parseFloat(dcs.lineHeight) || 0);
+        j.txT = firstInkTop(j.bt);
+      }
       // (the dek's ink across: its lines' farthest reach either way — the
       // rule under it goes no farther from the picture, 2026-10-04)
       if (j.pkb) {
@@ -9424,11 +9441,16 @@
       // and text's last baseline on its foot — THE FRAME ROUND THE PICTURE
       // ALONE)
       if (j.hd && j.slide && bandedInk() && j.inB != null) {
-        var up = 'translateY(' + (j.bb.top + PIN_IN + HEAD_DOWN - j.inT).toFixed(2) + 'px)';
-        var dn = 'translateY(' + (j.bb.bottom - PIN_IN - BODY_UP - j.inB).toFixed(2) + 'px)';
+        var dnY = j.bb.bottom - INK_GAP - j.inB;
+        var up = 'translateY(' + (j.bb.top + INK_GAP - j.inT).toFixed(2) + 'px)';
+        var dn = 'translateY(' + dnY.toFixed(2) + 'px)';
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
-        if (j.pdk) j.pdk.style.transform = dn;
+        // (the rule on a whole pixel 27 over the text's first ink, the dek's
+        // last baseline 27 over the rule)
+        var ruleTop = (j.txT != null) ? Math.round(j.txT + dnY - INK_GAP - FRAME) : null;
+        if (j.pdk) j.pdk.style.transform = (ruleTop != null && j.dkB != null)
+          ? 'translateY(' + (ruleTop - INK_GAP - j.dkB).toFixed(2) + 'px)' : dn;
         // (a 2 rule between the dek and the text, halfway between their
         // boxes, from the picture's frame to the column's outer edge —
         // "place a 2px line between dek and body text that extends to edge
@@ -9437,9 +9459,11 @@
         var rl = j.body.querySelector(':scope > .swap-body-rule');
         if (j.pkb) {
           if (!rl) { rl = document.createElement('span'); rl.className = 'swap-body-rule'; rl.setAttribute('aria-hidden', 'true'); j.body.appendChild(rl); }
-          var mid = (j.pkb.bottom + j.tb.top) / 2 + (j.bb.bottom - PIN_IN - BODY_UP - j.inB);
-          // (on whole pixels of the page, as the frame is)
-          rl.style.top = (Math.round(mid - 1) - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
+          var mid = (j.pkb.bottom + j.tb.top) / 2 + dnY;
+          // (on whole pixels of the page, as the frame is: 27 over the
+          // text's first ink — EVERY GAP THE SIDES' 27)
+          var rTop = ruleTop != null ? ruleTop : Math.round(mid - 1);
+          rl.style.top = (rTop - j.bb.top - j.body.clientTop).toFixed(2) + 'px';
           // (from the picture to the dek's farthest ink — "only extend rule
           // to the farthest ink of the dek": the picture on the column's
           // left (padding on that side), the rule runs right to the dek's
