@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=636421ee">
+<link rel="stylesheet" href="style.css?v=aa4c4356">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5696,6 +5696,7 @@
   var SOLO_COL = 290, SLIDE_GAP = 36, COLUMN_SIDE = 54;
   var FRAME = 2, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
+  var PIC_LESS = 54;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
@@ -5757,6 +5758,12 @@
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
       if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      var side = 0;
+      if (framed) {
+        side = (wb + PIC_LESS + FRAME) / 2;
+        wb = side;
+        dx = (wb - FRAME / 2) * (right ? 1 : -1);
+      }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -5767,6 +5774,7 @@
           var tr0 = parseFloat((getComputedStyle(tEl).translate || '').split(' ')[0]) || 0;
           var T0 = tEl.getBoundingClientRect().left - (cr1.left - cr0.left) - tr0;
           var E = columnEdge(card, seat.d);
+          if (side) E -= (seat.d > 0 ? 1 : -1) * (side - FRAME);
           var cut = function (x) {
             var v = x.toFixed(2) + 'px', far = '100000px', nfar = '-100000px';
             return seat.d < 0 ? 'polygon(' + v + ' ' + nfar + ', ' + far + ' ' + nfar + ', ' + far + ' ' + far + ', ' + v + ' ' + far + ')'
@@ -5798,6 +5806,8 @@
           card.appendChild(fr);
         }
         var Ec = columnEdge(card, seat.d);
+        var Eo = Ec;
+        if (side) Ec -= (right ? 1 : -1) * (side - FRAME);
         var seamX = right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb);
         var fl = right ? seamX : Math.floor(Ec), frr = right ? Math.ceil(Ec) : seamX + FRAME;
         var ft = Math.floor(P.t), fb = Math.ceil(P.b);
@@ -5809,7 +5819,10 @@
         fr.firstChild.style.left = (seamX - fl - FRAME) + 'px';
         card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
         card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
-      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
+        var hw = wb - FRAME_ONE;
+        var hx = right ? (Eo - hw) - P.l : Eo - (P.r - hw);
+        card.style.setProperty('--head-x', hx.toFixed(2) + 'px');
+      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); card.style.removeProperty('--head-x'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -5966,6 +5979,7 @@
           var Q = seat && seat.Q;
           if (Q) {
             var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE : 0);
+            if (bandedInk()) wc = (wc + PIC_LESS + FRAME) / 2;
             j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
