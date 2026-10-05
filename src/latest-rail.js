@@ -369,14 +369,13 @@
         var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
         // (the strip at the window's foot across the rows' side alone —
         // "have the band stetch only across left column", 2026-10-05: the
-        // words to the cards' edge, 54 off THE LATEST's, the strip to the
-        // column's rule (--strip-r); the column shut, the strip and the
-        // words the window's width — THE NAV AT THE FOOT, style.css)
+        // words to the cards' edge, 54 off THE LATEST's, the strip under the
+        // column; the column shut, the words the window's width — THE NAV
+        // AT THE FOOT, style.css)
         var rlEl = document.querySelector('.latest-rail:not(.is-merged)');
         var rlW = rlEl && rlEl.offsetWidth ? rlEl.getBoundingClientRect().width : 0;
         var shutNow = main.classList.contains('rail-is-shut');
         var vwB = document.documentElement.clientWidth;
-        st.style.setProperty('--strip-r', (shutNow ? 0 : rlW).toFixed(2) + 'px');
         if (rlW && !shutNow) geo.x1R = Math.floor(vwB - rlW - 54);
         var g = (geo.x1R - geo.x0L - inkAll) / (ink.length - 1);
         var rb = run.getBoundingClientRect(), rcs = getComputedStyle(run);
@@ -440,6 +439,9 @@
       var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
       if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
+      // (and the strip at the window's foot, which stands in the rows'
+      // layer under THE LATEST, goes down as far — THE NAV AT THE FOOT)
+      if (main.style.getPropertyValue('--foot-cover') !== cv) main.style.setProperty('--foot-cover', cv);
     }
     // (the fade first, over the colophon's first quarter, and the words
     // spread only once it is done, over the rest — "Fade should occur
@@ -522,6 +524,11 @@
     if (mid == null) { var s = word(/^store$/i), a = word(/^archive$/i); if (s && a && s.width && a.width) mid = (s.right + a.left) / 2; }
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
+    // (on a whole pixel, so the column's rule and the strip's end stand on
+    // whole pixels, the same raster on the page and in the slide's own
+    // layer — "Seeing a flash on column collapse in vertical rule",
+    // 2026-10-05)
+    mid = Math.round(mid);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
     if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {
       main.style.setProperty('--rail-edge', mid.toFixed(2) + 'px');
