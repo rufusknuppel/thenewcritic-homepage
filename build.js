@@ -3018,8 +3018,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
       // latest column. Keep w/"; "No keep authors. Just remove the word
       // 'by'": a conversation's guest still "w/" them)
-      const who = p.author && p.author !== SITE_NAME ? `${kindOf(p) === 'postscript' ? 'w/ ' : ''}${p.author}` : '';
-      return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span>${who ? ` <span class="latest-rail__by">${escapeHtml(who)}</span>` : ''}</a></li>`;
+      // (no credit in the column since 2026-10-04: "Remove the garamond
+      // italics from the right column")
+      return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span></a></li>`;
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + `</div></div></aside>`;
