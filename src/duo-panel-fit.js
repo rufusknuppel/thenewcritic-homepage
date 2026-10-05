@@ -8634,6 +8634,17 @@
   // column's edge, the picture cut on that line (style.css, THE SLIDE
   // UNDER THE MARGIN). Q is the seat it slides over, real or not.
   var SOLO_COL = 290, SLIDE_GAP = 36, COLUMN_SIDE = 54;
+  // THE CARD IN A FRAME (2026-10-04, at the user's word: "Add a 3px border
+  // (white on charcoal or inverse) around the image and associated text,
+  // as well as a 3px border between the text and the image. There should
+  // be 36px margins on either side of text to the border, take this space
+  // from the image"): where the page opens on the band, a resting card's
+  // picture and its preview's column stand in one 3 frame (.card-frame,
+  // seatSlides), a 3 rule at their seam; the column is FRAME_W wider —
+  // the rule and 36, and 36 and the frame — its text as wide as it was,
+  // and the picture travels that much further, so the room comes off the
+  // picture's window.
+  var FRAME = 3, FRAME_PAD = 36, FRAME_W = 2 * (FRAME + FRAME_PAD);
   function slideDir(card) {
     var sec = card.closest('section.card');
     return !sec ? 0 : sec.classList.contains('card--slide-l') ? -1 : sec.classList.contains('card--slide-r') ? 1 : 0;
@@ -8679,8 +8690,12 @@
       // SLIDE_LESS, and the preview column it reveals is that much
       // narrower too, so the gutter still stands between the column's
       // end and the picture's edge
+      var framed = bandedInk() && !!seat.out;
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
+      // (framed, the column FRAME_W wider and the picture meeting it at the
+      // seam's rule, no gutter: it travels the column's whole width)
+      if (framed) { wb += FRAME_W; dx = wb * (right ? 1 : -1); }
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -8717,6 +8732,28 @@
       // (the picture alone travels since later the same day: its sheet is
       // the picture and the 36 over and beside it, the words left standing)
       ss.height = (P.b - P.t + SLIDE_MARGIN).toFixed(2) + 'px';
+      // (the frame: from the picture's cut on the margin to the column's
+      // far side, the picture's height; the seam's rule at the column's
+      // edge on the picture's side — THE CARD IN A FRAME)
+      var fr = card.querySelector(':scope > .card-frame');
+      if (framed) {
+        if (!fr) {
+          fr = document.createElement('span');
+          fr.className = 'card-frame';
+          fr.setAttribute('aria-hidden', 'true');
+          fr.innerHTML = '<span class="card-frame-seam"></span>';
+          card.appendChild(fr);
+        }
+        var Ec = columnEdge(card, seat.d);
+        var fl = right ? P.l : Ec, frr = right ? Ec : P.r;
+        var seamX = right ? P.l + wb - FRAME : P.r - wb;
+        var fs = fr.style;
+        fs.left = (fl - cr0.left).toFixed(2) + 'px';
+        fs.top = (P.t - cr0.top).toFixed(2) + 'px';
+        fs.width = (frr - fl).toFixed(2) + 'px';
+        fs.height = (P.b - P.t).toFixed(2) + 'px';
+        fr.firstChild.style.left = (seamX - fl - FRAME).toFixed(2) + 'px';
+      } else if (fr) fr.remove();
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -8976,7 +9013,7 @@
           if (Q) {
             // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
             // narrower, as the slide is shorter by it — seatSlides)
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS;
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_W : 0);
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
             j.slide = true;
@@ -8991,6 +9028,9 @@
       // with the picture's edges, and its whole height)
       // (36 over it and under it, at the user's word, 2026-10-01)
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
+      // (in its frame, the rule's 3 and 36 on the picture's side, 36 and
+      // the frame's 3 on the other: THE CARD IN A FRAME)
+      if (j.slide && bandedInk()) j.bp = { l: FRAME + FRAME_PAD, r: FRAME + FRAME_PAD, t: SWAP_PAD, b: SWAP_PAD };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
