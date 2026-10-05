@@ -3332,11 +3332,13 @@ function renderFontGateScript() {
   // banana again that night, "Use FFE135 for hex", and #458BD7 from
   // 2026-10-01, "Want highlight color to be 458bd7", and the banana again
   // from 2026-10-04, "Change all blues to banana yellow", and #3B2923 later
-  // that day, "#3B2923. Use this as highlight color". It must match
+  // that day, "#3B2923. Use this as highlight color", then forest green,
+  // #228B22, "Use a forest green instead", then Dartmouth green, #00693E,
+  // "A dartmouth college green". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#3b2923';
+  var YELLOW = '#00693e';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
