@@ -8679,8 +8679,9 @@
   // down and body 5 px up", 2026-10-04)
   var PIN_IN = 5;
   // (72 since 2026-10-05 — "Add another 36px between title and dek": at
-  // the least 108 between them)
-  var HEAD_DEK_MORE = 72;
+  // the least 108 between them; 36 again later that day, the rule over the
+  // dek by then — "Reduce gap between title and rule by 36px")
+  var HEAD_DEK_MORE = 36;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
