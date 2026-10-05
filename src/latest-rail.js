@@ -452,3 +452,41 @@
     window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - 54), behavior: 'smooth' });
   });
 })();
+
+// THE COLUMN SHUTS (2026-10-05, at the user's words — "I want to add a
+// caret that closes the column, sliding it out of view and pulling the
+// content into the center. A caret of a different position should then
+// fade in that allows the viewer to expand the latest column again"): from
+// 1024 up the caret in the column's corner slides the column out past the
+// window's left and carries the rows half its width left, so they stand
+// centred in the window (main.rail-is-shut; --rail-shift, a whole pixel so
+// the frames keep their pixels); the caret at the window's edge brings it
+// back. Only transforms move: the fitter's seats stand, and its column edge
+// reads the same shift (duo-panel-fit.js, columnEdge).
+(function () {
+  var main = document.querySelector('main.wm-banded');
+  var rail = document.querySelector('.latest-rail:not(.is-merged)') || document.querySelector('.latest-rail');
+  if (!main || !rail) return;
+  var shutBtn = rail.querySelector('.rail-shut'), openBtn = rail.querySelector('.rail-open');
+  if (!shutBtn || !openBtn) return;
+  var shift = function () {
+    var op = rail.offsetParent;
+    var right = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft + rail.offsetWidth;
+    var v = Math.round(right / 2) + 'px';
+    if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
+  };
+  var set = function (shut) {
+    shift();
+    main.classList.toggle('rail-is-shut', shut);
+    shutBtn.setAttribute('aria-expanded', String(!shut));
+    openBtn.setAttribute('aria-expanded', String(!shut));
+    shutBtn.tabIndex = shut ? -1 : 0;
+    openBtn.tabIndex = shut ? 0 : -1;
+    (shut ? openBtn : shutBtn).focus({ preventScroll: true });
+    try { window.dispatchEvent(new Event('newcritic:railshut')); } catch (e) {}
+  };
+  shutBtn.addEventListener('click', function (e) { e.preventDefault(); set(true); });
+  openBtn.addEventListener('click', function (e) { e.preventDefault(); set(false); });
+  shift();
+  addEventListener('resize', shift, { passive: true });
+})();

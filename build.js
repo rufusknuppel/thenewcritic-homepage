@@ -1638,7 +1638,19 @@ function subTicker(where = 'head') {
 // light/dark dot stands in the column's sticky hold, its top right corner,
 // not in the band; the band's keeps the phone's)
 function railDot() {
-  return themeChip().replace('chip-dot--flip"', 'chip-dot--flip chip-dot--rail"');
+  return themeChip().replace('chip-dot--flip"', 'chip-dot--flip chip-dot--rail"') + railCarets();
+}
+// THE COLUMN SHUTS (2026-10-05, at the user's words — "I want to add a
+// caret that closes the column, sliding it out of view and pulling the
+// content into the center. A caret of a different position should then
+// fade in that allows the viewer to expand the latest column again"): in
+// the column's top left corner a caret pointing left shuts it; once it has
+// slid away, a caret pointing right fades in at the window's left edge and
+// opens it again (latest-rail.js, THE COLUMN SHUTS; style.css).
+function railCarets() {
+  const caret = (d) => `<svg viewBox="0 0 8 14" width="8" height="14" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<button type="button" class="rail-shut" aria-label="Close the column" aria-expanded="true">${caret('M7 1L1 7L7 13')}</button>`
+    + `<button type="button" class="rail-open" aria-label="Open the column" aria-expanded="false" tabindex="-1">${caret('M1 1L7 7L1 13')}</button>`;
 }
 function themeChip() {
   return `<button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button>`;
@@ -3373,11 +3385,14 @@ function renderFontGateScript() {
   // from 2026-10-04, "Change all blues to banana yellow", and #3B2923 later
   // that day, "#3B2923. Use this as highlight color", then forest green,
   // #228B22, "Use a forest green instead", then Dartmouth green, #00693E,
-  // "A dartmouth college green". It must match
+  // "A dartmouth college green", then Pompeian red, #B03A2E, 2026-10-05,
+  // "What is a red that matches mediterranean blue?", then a lighter
+  // terracotta, #D9654F, "make the red a lighter so black stands out
+  // more". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#00693e';
+  var YELLOW = '#d9654f';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
