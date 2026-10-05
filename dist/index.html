@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=3d67dfc7">
+<link rel="stylesheet" href="style.css?v=7fceb562">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -9677,7 +9677,11 @@ window.__ncStripInk = function () {
   if (!main || !strip || !wm || !stack || !rail || !slot || !colL || !colR) return;
   if (main.classList.contains('wm-banded')) {
     var wideB = window.matchMedia('(min-width: 1024px)');
-    var setH = function () { if (wideB.matches) strip.style.setProperty('height', '108px', 'important'); else strip.style.removeProperty('height'); };
+    var setH = function () {
+      if (!wideB.matches) { strip.style.removeProperty('height'); return; }
+      var h = parseFloat(getComputedStyle(main).getPropertyValue('--strip-settled')) || 108;
+      strip.style.setProperty('height', h + 'px', 'important');
+    };
     setH(); addEventListener('resize', setH);
     return;
   }

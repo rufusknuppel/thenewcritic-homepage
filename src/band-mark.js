@@ -697,9 +697,15 @@ window.__ncStripInk = function () {
   // the strip's words stand in the strip's own row; nothing settles)
   if (main.classList.contains('wm-banded')) {
     // (the strip at the band's height from the first pixel, from 1024 up:
-    // 108, "make whole band 36px shorter")
+    // 108, "make whole band 36px shorter"; read off --strip-settled since
+    // 2026-10-04 — 126, "Increase top band size by 18px" — so the sheet
+    // alone says how tall the band stands)
     var wideB = window.matchMedia('(min-width: 1024px)');
-    var setH = function () { if (wideB.matches) strip.style.setProperty('height', '108px', 'important'); else strip.style.removeProperty('height'); };
+    var setH = function () {
+      if (!wideB.matches) { strip.style.removeProperty('height'); return; }
+      var h = parseFloat(getComputedStyle(main).getPropertyValue('--strip-settled')) || 108;
+      strip.style.setProperty('height', h + 'px', 'important');
+    };
     setH(); addEventListener('resize', setH);
     return;
   }
