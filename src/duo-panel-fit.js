@@ -8791,6 +8791,10 @@
   // (the air either side of the rule over the dek, from the head's lowest
   // ink and to the dek's first: 2026-10-05)
   var RULE_AIR = 54;
+  // (the air either side of the byline between the title and the dek:
+  // 27, and 9 more either side since — "add 9px on either side of
+  // metadata", 2026-10-05)
+  var META_AIR = 36;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -9507,7 +9511,7 @@
       // the rule's 27 either side of its 2 for the dek's 36 to the text)
       // (and since the byline stands between the title and the dek, 27
       // either side of it where it stood 18 over the title: 9 more)
-      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * INK_GAP - HEAD_META_GAP - INK_GAP);
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -9641,25 +9645,25 @@
         // rule with the head; the rule 54 under the dek's lowest ink and the
         // text's first 54 under the rule — the same 137 of air as before)
         // THE BYLINE BETWEEN (later still — "Move metadata to sit equally
-        // between title and dek"): the title first, the byline's ink 27
-        // under its lowest and the dek's first ink 27 under the byline's
-        // baseline; the head moved by the title's ink, the byline carried
+        // between title and dek"): the title first, the byline's ink
+        // META_AIR under its lowest and the dek's first ink META_AIR under
+        // the byline's baseline; the head moved by the title's ink, the byline carried
         // down past it on its own
         var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null;
         var metaY = null;
         if (stacked) {
           var dkF = j.dkF != null ? j.dkF : j.dkB;
           var top0 = between ? j.ttT : j.inT;
-          var midH = between ? INK_GAP + (j.mB - j.mT) + INK_GAP : INK_GAP;
+          var midH = between ? META_AIR + (j.mB - j.mT) + META_AIR : INK_GAP;
           var sH = (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
           if (between) {
-            var mTop = y0 + (j.hdB - top0) + INK_GAP;
+            var mTop = y0 + (j.hdB - top0) + META_AIR;
             metaY = mTop - (j.mT + upY);
-            dekY = (mTop + (j.mB - j.mT) + INK_GAP) - j.dkT;
+            dekY = (mTop + (j.mB - j.mT) + META_AIR) - j.dkT;
           } else dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
           ruleTop = Math.round(dkF + dekY + RULE_AIR);
           dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
