@@ -9020,8 +9020,13 @@
         // THE RULE FROM EDGE TO EDGE: "Line should not pass over image")
         card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
         card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
+        // (THE RULE ON THE WORDS' SIDE ALONE, 2026-10-06 — "Remove the far
+        // rule, the one on the side of the image with no text": the rule's
+        // run past the frame on the side away from the words is clear)
+        card.style.setProperty(right ? '--rule-ink-r' : '--rule-ink-l', 'transparent');
+        card.style.removeProperty(right ? '--rule-ink-l' : '--rule-ink-r');
         fieldsSoon();
-      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
+      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); card.style.removeProperty('--rule-ink-l'); card.style.removeProperty('--rule-ink-r'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -9739,7 +9744,7 @@
           // added, the slide's measure on)
           var h0 = (bl0 - slid).toFixed(2);
           var fa = 'calc(' + h0 + 'px + var(--frame-l, -99999px) + var(--rule-slid, 0px))', fb = 'calc(' + h0 + 'px + var(--frame-r, -99999px) + var(--rule-slid, 0px))';
-          rl.style.setProperty('background', 'linear-gradient(to right, var(--rule-ink) 0 ' + fa + ', transparent ' + fa + ' ' + fb + ', var(--rule-ink) ' + fb + ')', 'important');
+          rl.style.setProperty('background', 'linear-gradient(to right, var(--rule-ink-l, var(--rule-ink)) 0 ' + fa + ', transparent ' + fa + ' ' + fb + ', var(--rule-ink-r, var(--rule-ink)) ' + fb + ')', 'important');
           rl.style.removeProperty('display');
         } else if (rl) rl.style.setProperty('display', 'none', 'important');
         return;
