@@ -14,6 +14,15 @@ const CONTENT_OVERRIDES = require('./content-overrides.js');
 // The wordmark's words (THE, NEW, CRITIC, CRI, TIC), each in the files'
 // old contract, read off the one editable drawing (wordmark.js).
 const WORDMARK_WORDS = require('./wordmark.js').wordmarkWords(path.join(__dirname, 'assets', 'wordmark.svg'));
+// (THE WORDS AS FAR APART AS THEIR DRAWING SETS THEM, 2026-10-06 — "Use
+// this as the site wordmark", the MAILLE lettering: its letters stand
+// half a cap apart, wider than the band's 27 between words (0.498 of its
+// 54.21 cap) and the colophon's 0.6226, so the name read as twelve even
+// letters. The rows now part the words by the drawing's own word space
+// where it is the wider — 1.28 caps for MAILLE; the traced drawing's 0.41
+// left the site's spaces as they were. --wm-space on :root, style.css,
+// THE WORDS AS FAR APART AS THEIR DRAWING SETS THEM.)
+const WM_SPACE = require('./wordmark.js').wordmarkSpace(path.join(__dirname, 'assets', 'wordmark.svg'));
 // THE STAMP (2026-09-25, at the user's word): the hand-cut bird in its
 // frame, traced to one path from the print (assets/stamp.svg) and
 // stated once a page as a <symbol>; every stamp on the page is a <use>
@@ -129,8 +138,21 @@ const COLO_SPAN = (() => {
     const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
     return vb[2] / vb[3];
   };
-  return (1.66 * 4.5 / 5 + 3 * 0.6226 + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  return (1.66 * 4.5 / 5 + 3 * 0.6226 + 2 * Math.max(0, WM_SPACE - 0.6226) + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
+// The band's name, THE, NEW and CRITIC, in caps across: the words, the two
+// spaces between them (27 at the 54.21 cap, or the drawing's own where that
+// is wider) and the 0.248 of slack the band's old 10.89 carried over the
+// traced drawing's 9.646 and its two 0.498s. Under the width where the cap
+// reaches 54.21, the name takes the band less its 655 of air, words and bird.
+const BAND_SPAN = (() => {
+  const capsAcross = (w) => {
+    const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+    return vb[2] / vb[3];
+  };
+  return (capsAcross('the') + capsAcross('new') + capsAcross('critic') + 2 * Math.max(27 / 54.21, WM_SPACE) + 0.248).toFixed(4);
+})();
+const WM_ROOT_VARS = `--colo-span:${COLO_SPAN};--band-span:${BAND_SPAN};--wm-space:${WM_SPACE.toFixed(4)}`;
 // The band's bird in a 4.5:5 outline ("put bird in 4.5:5 outline matching
 // the roughness of the bird"): a rectangle drawn inside the bird's own
 // filter group, so the same turbulence roughens its edges. In the bird's
@@ -3326,7 +3348,7 @@ ${leadPreload}
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
-<style>:root{--colo-span:${COLO_SPAN}}</style>
+<style>:root{${WM_ROOT_VARS}}</style>
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
@@ -4229,7 +4251,7 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
-<style>:root{--colo-span:${COLO_SPAN}}</style>
+<style>:root{${WM_ROOT_VARS}}</style>
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>

@@ -4,8 +4,8 @@
 // letters as outlines — and the one source of it. It may be re-saved by
 // any editor (Illustrator, Figma, Inkscape): this reads its shapes
 // (path, polygon, polyline, rect) through their transforms, finds the
-// letters (shapes whose spans across overlap), the words (letters parted
-// by more than WORD_BREAK of the cap), each word's cap line and baseline
+// letters (shapes whose spans across overlap), the words (parted at the
+// two widest spaces between letters), each word's cap line and baseline
 // (its lowest letter top and its highest letter bottom: the flat letters
 // stand on them, the round and pointed ones overshoot), and gives each word in the files'
 // old contract: an svg whose box is its ink across by the flat cap 300
@@ -15,9 +15,12 @@
 
 const fs = require('fs');
 
-// (0.25 since the traced drawing, 2026-10-06: its word spaces are 0.38 and
-// 0.43 of the cap, its letter gaps under 0.09)
-const WORD_BREAK = 0.25;
+// The words are parted at the two widest spaces (THE NEW CRITIC has three),
+// not at a set share of the cap: the MAILLE lettering, 2026-10-06, sets its
+// letters 0.42-0.51 of the cap apart and its words 1.28, where the traced
+// drawing before it had word spaces of 0.38 and letter gaps under 0.09. A
+// word space must still be WORD_CLEAR times the widest letter gap.
+const WORD_CLEAR = 1.5;
 
 // ---- transforms: [a b c d e f] maps (x, y) to (ax + cy + e, bx + dy + f)
 const IDENT = [1, 0, 0, 1, 0, 0];
@@ -175,11 +178,6 @@ function readShapes(svgText) {
   return subs;
 }
 
-const median = (a) => {
-  const s = [...a].sort((p, q) => p - q), k = s.length >> 1;
-  return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2;
-};
-
 // letters: subpaths whose spans across overlap (a counter sits in its bowl)
 function letters(subs) {
   const items = subs.map((s) => ({ subs: [s], b: subBounds(s) })).sort((p, q) => p.b[0] - q.b[0]);
@@ -220,15 +218,17 @@ function wordmarkWords(file) {
   if (cache && cache.file === file) return cache.words;
   const ls = letters(readShapes(fs.readFileSync(file, 'utf8')));
   if (!ls.length) throw new Error(`${file}: no letters found (keep the letters as outlines)`);
-  const cap = median(ls.map((l) => l.b[3] - l.b[1]));
-  const words = [[ls[0]]];
-  for (let i = 1; i < ls.length; i++) {
-    if (ls[i].b[0] - ls[i - 1].b[2] > WORD_BREAK * cap) words.push([]);
-    words[words.length - 1].push(ls[i]);
+  if (ls.length < 3) throw new Error(`${file}: found ${ls.length} letters — THE NEW CRITIC has 12`);
+  const gaps = ls.slice(1).map((l, i) => ({ at: i + 1, w: l.b[0] - ls[i].b[2] }));
+  const wide = [...gaps].sort((p, q) => q.w - p.w);
+  const breaks = wide.slice(0, 2).map((g) => g.at).sort((p, q) => p - q);
+  if (wide.length > 2 && wide[1].w < WORD_CLEAR * Math.max(0, wide[2].w)) {
+    throw new Error(`${file}: the spaces between the words are not clearly wider than those between the letters — keep a clear space between the words`);
   }
-  if (words.length !== 3) {
-    throw new Error(`${file}: found ${words.length} words where THE NEW CRITIC has 3 — keep a clear space between the words and none inside them`);
-  }
+  const words = [ls.slice(0, breaks[0]), ls.slice(breaks[0], breaks[1]), ls.slice(breaks[1])];
+  // the drawing's own word space, in its flat cap (the flat letters' height)
+  const capFlat = Math.min(...ls.map((l) => l.b[3])) - Math.max(...ls.map((l) => l.b[1]));
+  const space = (wide[0].w + wide[1].w) / 2 / capFlat;
   const critic = words[2];
   const mid = (critic[0].b[0] + critic[critic.length - 1].b[2]) / 2;
   let cut = 1;
@@ -244,8 +244,15 @@ function wordmarkWords(file) {
     cri: wordSvg(critic.slice(0, cut)),
     tic: wordSvg(critic.slice(cut)),
   };
-  cache = { file, words: out };
+  cache = { file, words: out, space };
   return out;
 }
 
-module.exports = { wordmarkWords };
+// the space between the drawing's words, in caps (build.js sets the name's
+// rows no tighter than this)
+function wordmarkSpace(file) {
+  wordmarkWords(file);
+  return cache.space;
+}
+
+module.exports = { wordmarkWords, wordmarkSpace };
