@@ -116,6 +116,21 @@ function bandWord(word) {
   return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
     `<svg class="band-logo__line" aria-hidden="true" focusable="false" style="width:${(vb[2] / vb[3]).toFixed(4)}em;height:1em"`);
 }
+// THE COLOPHON'S NAME ACROSS (2026-10-06 — "Why is Critic in the Colophon
+// smaller than THE NEW?"): the colophon sets the whole name — the bird
+// (1.66 caps tall at 4.5:5, so 1.494 across), THE, NEW and CRITIC, 0.6226
+// of a cap apart — to the window's width, so its size is the width over
+// how many caps wide the name is. That count was written into style.css
+// (14.378) and went stale when the drawing widened: the row overran, the
+// grid squeezed CRITIC's column and its drawing shrank to fit. It is now
+// read off the drawing and stated on :root as --colo-span.
+const COLO_SPAN = (() => {
+  const capsAcross = (w) => {
+    const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+    return vb[2] / vb[3];
+  };
+  return (1.66 * 4.5 / 5 + 3 * 0.6226 + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+})();
 // The band's bird in a 4.5:5 outline ("put bird in 4.5:5 outline matching
 // the roughness of the bird"): a rectangle drawn inside the bird's own
 // filter group, so the same turbulence roughens its edges. In the bird's
@@ -3303,6 +3318,7 @@ ${leadPreload}
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
+<style>:root{--colo-span:${COLO_SPAN}}</style>
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
@@ -4197,6 +4213,7 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
+<style>:root{--colo-span:${COLO_SPAN}}</style>
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
 </head>
