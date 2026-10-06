@@ -10217,7 +10217,7 @@ window.__ncStripInk = function () {
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    st.style.setProperty('--bird-s', (1.25 * wmH / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', (1.375 * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
@@ -10234,7 +10234,9 @@ window.__ncStripInk = function () {
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
     var tgtR = vw - 54;
-    var BIRD_GAP = 36, nameR = low.getBoundingClientRect().right;
+    var pThe = st.querySelector('.band-logo__top svg path'), pNew = st.querySelector('.band-logo__mid svg path');
+    var wsp = pThe && pNew ? pNew.getBoundingClientRect().left - pThe.getBoundingClientRect().right : 0;
+    var BIRD_GAP = wsp > 0 ? wsp : 36, nameR = low.getBoundingClientRect().right;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;

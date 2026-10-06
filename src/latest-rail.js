@@ -76,8 +76,9 @@
     // (a tenth smaller since 2026-10-06 — "Make bird 10% smaller"; then a
     // tenth taller than the name's ink, the same hour — "have the bird be
     // 10% bigger than the wordmark"; then a quarter — "bird should be 25%
-    // bigger than wordmark")
-    st.style.setProperty('--bird-s', (1.25 * wmH / bi.height).toFixed(4));
+    // bigger than wordmark"; and a tenth more — "Make bird another 10%
+    // bigger": 1.25 x 1.1)
+    st.style.setProperty('--bird-s', (1.375 * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
@@ -106,7 +107,12 @@
     // (THE SWALLOW AFTER THE NAME, 2026-10-06 — "move bird to the right of
     // the wordmark": its first ink 36 past CRITIC's last stroke, not on the
     // window's gutter; tgtR still names the gutter, where the list ends)
-    var BIRD_GAP = 36, nameR = low.getBoundingClientRect().right;
+    // (the gap the name's own word space since the same hour — "Want the
+    // same distance between bird and C as between E and N": NEW's first
+    // ink less THE's last, read off the name)
+    var pThe = st.querySelector('.band-logo__top svg path'), pNew = st.querySelector('.band-logo__mid svg path');
+    var wsp = pThe && pNew ? pNew.getBoundingClientRect().left - pThe.getBoundingClientRect().right : 0;
+    var BIRD_GAP = wsp > 0 ? wsp : 36, nameR = low.getBoundingClientRect().right;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;
