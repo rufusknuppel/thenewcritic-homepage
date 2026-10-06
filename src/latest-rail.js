@@ -52,16 +52,21 @@
     // (108 with its rule since later still — "bottom band should be 54px.
     // Top should be 108px": the field 106 over its 2, the name centred in
     // it at its own size, the swallow's wings 18 from either edge)
-    var wmH = k.b - k.t, H = 108 - 2;
+    // (THE NAV OVER THE NAME, 2026-10-06 — "Move bottom band above the
+    // wordmark/logo": the strip's 52 and its 2 rule at the window's top,
+    // the name's 106 under them, one head of 160 — everything reckoned off
+    // --strip-settled follows; style.css, THE NAV OVER THE NAME)
+    var NAV = 54, F = 108 - 2;
+    var wmH = k.b - k.t, H = NAV + F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
-    var want = (H - wmH) / 2;
+    var want = NAV + (F - wmH) / 2;
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    st.style.setProperty('--bird-s', ((H - 36) / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', ((F - 36) / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
