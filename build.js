@@ -3055,10 +3055,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // flat cap 300 to the baseline, the round letters overshooting it), set
   // at the cap of the meta's Work Sans (RAIL_CAP_EM) and sitting on its
   // baseline, the words a space apart so the name still wraps between
-  // them. A name with a word not drawn (EDITORS' PICKS) keeps the text.
+  // them (a word's apostrophe is in its drawing; the file is named by its
+  // letters — EDITORS’ in section-editors.svg). A name with a word not
+  // drawn keeps the text.
   const RAIL_CAP_EM = 0.66;
   const railSvg = (w) => {
-    const f = path.join(__dirname, 'assets', `section-${w.toLowerCase()}.svg`);
+    const f = path.join(__dirname, 'assets', `section-${w.toLowerCase().replace(/[^a-z]/g, '')}.svg`);
     if (!fs.existsSync(f)) return null;
     const svg = fs.readFileSync(f, 'utf8').trim();
     const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
