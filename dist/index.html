@@ -10234,13 +10234,14 @@ window.__ncStripInk = function () {
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
     var tgtR = vw - 54;
+    var BIRD_GAP = 36, nameR = low.getBoundingClientRect().right;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;
     if (sliding) {
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = dxNow + (tgtR - br0.right);
+      dx = dxNow + (nameR + BIRD_GAP - br0.left);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
       st.style.setProperty('--bird-dx', '0px');
@@ -10251,7 +10252,7 @@ window.__ncStripInk = function () {
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = tgtR - br0.right;
+      dx = nameR + BIRD_GAP - br0.left;
     }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     var words = [].filter.call(run.children, function (c) {
@@ -10439,10 +10440,9 @@ window.__ncStripInk = function () {
       var words = geo ? geo.words : [], ink = geo ? geo.ink : [];
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
       if (run && geo && words.length && LIST_NAV) {
-        var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
-        var bi0 = st.querySelector('.band-logo__bird .wm-bird-only').getBoundingClientRect();
-        var midX = (geo.x0 + bi0.left) / 2;
-        var lead0 = Math.round(midX - (fb0.left + lb0.right) / 2);
+        var lastW = words[words.length - 1], lastB = lastW.querySelector('b') || lastW;
+        var inkR = lastB.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].bR : 0);
+        var lead0 = Math.round(geo.x1R - inkR);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');

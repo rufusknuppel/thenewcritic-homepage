@@ -100,6 +100,10 @@
     // window's width over the column, the swallow and the strip's last
     // word 54 off its edge, standing still as the column slides)
     var tgtR = vw - 54;
+    // (THE SWALLOW AFTER THE NAME, 2026-10-06 — "move bird to the right of
+    // the wordmark": its first ink 36 past CRITIC's last stroke, not on the
+    // window's gutter; tgtR still names the gutter, where the list ends)
+    var BIRD_GAP = 36, nameR = low.getBoundingClientRect().right;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;
@@ -108,7 +112,7 @@
       // easing runs from there and is not set back first)
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = dxNow + (tgtR - br0.right);
+      dx = dxNow + (nameR + BIRD_GAP - br0.left);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
       st.style.setProperty('--bird-dx', '0px');
@@ -121,7 +125,7 @@
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = tgtR - br0.right;
+      dx = nameR + BIRD_GAP - br0.left;
     }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     var words = [].filter.call(run.children, function (c) {
@@ -429,10 +433,11 @@
       // last stroke and the swallow's first ink (style.css, THE NAV IN THE
       // NAME'S BAND, sets them and their commas)
       if (run && geo && words.length && LIST_NAV) {
-        var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
-        var bi0 = st.querySelector('.band-logo__bird .wm-bird-only').getBoundingClientRect();
-        var midX = (geo.x0 + bi0.left) / 2;
-        var lead0 = Math.round(midX - (fb0.left + lb0.right) / 2);
+        // (at the far right since 2026-10-06 — "move nav items to the far
+        // right": THE LAST MAGAZINE's last ink on the window's 54 gutter)
+        var lastW = words[words.length - 1], lastB = lastW.querySelector('b') || lastW;
+        var inkR = lastB.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].bR : 0);
+        var lead0 = Math.round(geo.x1R - inkR);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
