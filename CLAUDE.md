@@ -119,6 +119,9 @@ branch, commits there, and leaves merging to the command center. The rules:
 - `content-overrides.js` — hand-edited per-post card text (kicker, title,
   dek, author/date meta, paragraph preview), keyed by post URL slug;
   overrides whatever the feed provides
+- `assets/wordmark.svg` — the wordmark (THE NEW CRITIC, letters as
+  outlines), the one editable source of the name; `wordmark.js` reads it
+  and hands `build.js` each word (THE, NEW, CRITIC, CRI, TIC)
 - `style.css` — copied as-is into `dist/` on build
 - `cloudflare/worker.js` — the apex edge router (deployed, unrouted)
 - `README.md` — how it is hosted and how to flip the apex
