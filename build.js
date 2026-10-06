@@ -3067,8 +3067,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
       `<svg class="latest-rail__word" aria-hidden="true" focusable="false" style="width:${(RAIL_CAP_EM * vb[2] / vb[3]).toFixed(4)}em;height:${RAIL_CAP_EM}em"`);
   };
+  // (THE LATEST BACK IN WORK SANS, 2026-10-06, at the user's word — "Turn
+  // the latest back to work sans": its name keeps the text, the other
+  // sections their drawings)
+  const RAIL_TEXT = new Set(['The Latest']);
   const railName = (word) => {
-    const svgs = word.split(/\s+/).map(railSvg);
+    const svgs = RAIL_TEXT.has(word) ? [null] : word.split(/\s+/).map(railSvg);
     if (svgs.some((s) => !s)) return `<p class="latest-rail__meta">${escapeHtml(word)}</p>`;
     return `<p class="latest-rail__meta latest-rail__meta--drawn" role="img" aria-label="${escapeHtml(word)}">${svgs.join(' ')}</p>`;
   };
