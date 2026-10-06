@@ -59,8 +59,12 @@
     // (and under it since the same hour — "Make nav band charcoal with
     // white text, move below wordmark/logo": the name's 106 and its rule at
     // the top, the strip's 52 and its rule under them)
-    var NAV = 54, F = 108 - 2;
-    var wmH = k.b - k.t, H = F + NAV;
+    // (the band 27 taller and the strip gone since 2026-10-06 — "Expand
+    // top band by 18px" / "I want it to grow 27px actually"; "Remove the
+    // nav band": the name's field 133 over its 2, the nav's words a list
+    // in it between the name and the swallow — THE NAV IN THE NAME'S BAND)
+    var F = 108 - 2 + 27;
+    var wmH = k.b - k.t, H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -75,6 +79,7 @@
   };
   seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top'));
   addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
+  var LIST_NAV = true;
   var bandCtx = null;
   var bandGeo = function (st) {
     if (!st) return null;
@@ -148,7 +153,12 @@
   // gap before, between and after them: the column's edge, halfway)
   window.__ncEvenMid = function () {
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-    var geo = bandGeo(st);
+    // (the words read in their old face — the strip's capitals — so the
+    // column's edge stands where it stood when they became a list in the
+    // Garamond: THE NAV IN THE NAME'S BAND, 2026-10-06)
+    if (st && LIST_NAV) st.classList.add('nav-measure');
+    var geo;
+    try { geo = bandGeo(st); } finally { if (st && LIST_NAV) st.classList.remove('nav-measure'); }
     if (!geo || geo.ink.length < 2) return null;
     var ink = geo.ink, inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
     var G = (geo.x1 - geo.x0 - inkAll) / (ink.length + 1);
@@ -411,7 +421,21 @@
       var geo = bandGeo(st);
       var words = geo ? geo.words : [], ink = geo ? geo.ink : [];
       words.forEach(function (c) { c.style.removeProperty('margin-left'); });
-      if (run && geo && ink.length > 1) {
+      // THE NAV IN THE NAME'S BAND (2026-10-06, at the user's words — "Move
+      // the nav band elements into a comma separated Garamond italic list
+      // between the wordmark and logo. Same size as the deks"): the words
+      // stand together as one line, its middle halfway between CRITIC's
+      // last stroke and the swallow's first ink (style.css, THE NAV IN THE
+      // NAME'S BAND, sets them and their commas)
+      if (run && geo && words.length && LIST_NAV) {
+        var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
+        var bi0 = st.querySelector('.band-logo__bird .wm-bird-only').getBoundingClientRect();
+        var midX = (geo.x0 + bi0.left) / 2;
+        var lead0 = Math.round(midX - (fb0.left + lb0.right) / 2);
+        words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
+        st.style.setProperty('--band-lead', '0px');
+        st.style.setProperty('--band-trail', '0px');
+      } else if (run && geo && ink.length > 1) {
         var inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
         // (the strip at the window's foot across the rows' side alone —
         // "have the band stetch only across left column", 2026-10-05: the
