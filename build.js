@@ -3447,11 +3447,12 @@ function renderFontGateScript() {
   // pink as the highlight color", then navy, #000080, "#000080 use this
   // for highlight color", then the navy lightened, #1A1AB0, "Lighten the
   // highlight blue", then dodger blue, #1E90FF, "I want highlight color
-  // to be 1E90FF". It must match
+  // to be 1E90FF", then red, #F01E2C, "use f01e2c for hex color", then Yves Klein
+  // blue, #002FA7, "use yves blue as the highlight color". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#1e90ff';
+  var YELLOW = '#002fa7';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -3569,7 +3570,11 @@ function renderFontGateScript() {
     // 2026-10-04, at the user's words — "Turn the whole site to charcoal";
     // "Add dot back in top band to light/dark toggle": the page stands on
     // the charcoal, a reader's stored Light kept)
-    paint(chosen === 'light' ? 'light' : 'dark');
+    // (LIGHT THE DEFAULT AGAIN, 2026-10-06 — "Dot is inert": the page had
+    // stood white on either side, so it opens on the light side, as it has
+    // looked, and the dot turns it to the charcoal; a reader's stored Dark
+    // kept)
+    paint(chosen === 'dark' ? 'dark' : 'light');
   } catch (e) {}
   // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
   // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from

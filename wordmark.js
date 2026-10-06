@@ -15,7 +15,9 @@
 
 const fs = require('fs');
 
-const WORD_BREAK = 0.4;
+// (0.25 since the traced drawing, 2026-10-06: its word spaces are 0.38 and
+// 0.43 of the cap, its letter gaps under 0.09)
+const WORD_BREAK = 0.25;
 
 // ---- transforms: [a b c d e f] maps (x, y) to (ax + cy + e, bx + dy + f)
 const IDENT = [1, 0, 0, 1, 0, 0];

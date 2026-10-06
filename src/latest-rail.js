@@ -221,7 +221,12 @@
     // first stroke (THE, NEW and CRITIC as they then stood, 11.8886 caps,
     // and the two 0.6226 gaps) — so the column holds whatever the drawing
     // does; the words in the band still spread from CRITIC itself, x0)
-    var capPx = (low.ownerSVGElement || low).getBoundingClientRect().height;
+    // (and of the cap as it then stood, since 2026-10-06 — "make
+    // wordmark/bird larger in top band" / "keep the latest column at its
+    // old size": the band's cap grew a quarter, so the column's edge reads
+    // the cap the column was set at, min(43.37, (window − 655) × 0.07992),
+    // not the band's own)
+    var capPx = Math.min(43.37, (document.documentElement.clientWidth - 655) * 0.07992);
     return { words: words, ink: ink, x0L: x0L, x0: lr.right, x0Rail: x0L + RAIL_NAME_CAPS * capPx, x1: x1u, x1R: tgtR };
   };
   // (where STORE's right and ARCHIVE's left would stand were the words
