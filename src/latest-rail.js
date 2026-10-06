@@ -73,15 +73,15 @@
     var top = st.getBoundingClientRect().top;
     k = inkY();
     var want = (F - wmH) / 2;
-    // (THE COLOPHON'S AIR THE BAND'S IN PROPORTION, 2026-10-06 — "Make sure
-    // padding matches top band proprotionally": the colophon stands its air
-    // to its name's ink as the band does, so it is told the band's — the
-    // name's own 44.66 from 1440 up, smaller at 1024; style.css, THE
-    // COLOPHON IN THE CHARCOAL)
+    // (THE COLOPHON'S AIR THE BAND'S, 2026-10-06 — "Make sure padding
+    // matches top band proprotionally", then "I want padding to match the
+    // top band, despite larger sizes": the colophon stands the band's own
+    // air over and under its name's ink, in pixels, whatever its name's
+    // size; style.css, THE COLOPHON IN THE CHARCOAL)
     var coA = document.querySelector('.page-rows > .section-band--colophon.colo');
     if (coA && wmH > 0) {
-      var air = (want / wmH).toFixed(5);
-      if (coA.style.getPropertyValue('--band-air') !== air) coA.style.setProperty('--band-air', air);
+      var air = want.toFixed(2) + 'px';
+      if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
