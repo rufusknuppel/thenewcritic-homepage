@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=108dedd9">
+<link rel="stylesheet" href="style.css?v=e13119cb">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -10479,9 +10479,7 @@ window.__ncStripInk = function () {
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
       if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
       if (main.style.getPropertyValue('--foot-cover') !== cv) main.style.setProperty('--foot-cover', cv);
-      var mbEl = co.parentElement && document.querySelector('.page-rows > .movement.m--latest > .movement-body');
-      var push = mbEl ? Math.max(0, window.innerHeight - mbEl.getBoundingClientRect().bottom) : 0;
-      var ftv = (push - cover).toFixed(2) + 'px', fbv = (cover + push).toFixed(2) + 'px';
+      var ftv = (-cover).toFixed(2) + 'px', fbv = cover.toFixed(2) + 'px';
       if (main.style.getPropertyValue('--fill-top') !== ftv) main.style.setProperty('--fill-top', ftv);
       if (main.style.getPropertyValue('--fill-bot') !== fbv) main.style.setProperty('--fill-bot', fbv);
     }
