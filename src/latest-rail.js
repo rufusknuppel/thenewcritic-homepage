@@ -99,6 +99,7 @@
   addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
   var LIST_NAV = true;
   var bandCtx = null;
+  var RAIL_NAME_CAPS = 13.1338;
   var bandGeo = function (st) {
     if (!st) return null;
     seatLogo(st);
@@ -168,7 +169,16 @@
     // earlier the same day)
     // (x1 the swallow's first ink where it stood before it was carried to
     // the gutter, so the column's edge stands where it stood)
-    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: tgtR };
+    // (THE COLUMN'S WIDTH HELD, 2026-10-06 — "Why is the Latest column
+    // shrinking?" / "Fix the column's width": the column's edge was read
+    // from CRITIC's last stroke, so each widening of the drawing narrowed
+    // the column. It is read instead from where CRITIC ended when the
+    // column was set — RAIL_NAME_CAPS of the band's cap from the name's
+    // first stroke (THE, NEW and CRITIC as they then stood, 11.8886 caps,
+    // and the two 0.6226 gaps) — so the column holds whatever the drawing
+    // does; the words in the band still spread from CRITIC itself, x0)
+    var capPx = (low.ownerSVGElement || low).getBoundingClientRect().height;
+    return { words: words, ink: ink, x0L: x0L, x0: lr.right, x0Rail: x0L + RAIL_NAME_CAPS * capPx, x1: x1u, x1R: tgtR };
   };
   // (where STORE's right and ARCHIVE's left would stand were the words
   // evenly between CRITIC's last stroke and the swallow's first ink, one
@@ -189,8 +199,8 @@
     }
     if (!geo || geo.ink.length < 2) return null;
     var ink = geo.ink, inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
-    var G = (geo.x1 - geo.x0 - inkAll) / (ink.length + 1);
-    var x = geo.x0, pos = ink.map(function (k) { x += G; var L = x; x += (k.r - k.l); return { L: L, R: x, k: k }; });
+    var G = (geo.x1 - geo.x0Rail - inkAll) / (ink.length + 1);
+    var x = geo.x0Rail, pos = ink.map(function (k) { x += G; var L = x; x += (k.r - k.l); return { L: L, R: x, k: k }; });
     var s = pos.filter(function (q) { return /^store,?$/i.test(q.k.word); })[0], a = pos.filter(function (q) { return /^archive,?$/i.test(q.k.word); })[0];
     if (!s || !a) return null;
     return ((s.R + s.k.bR) + (a.L + a.k.bL)) / 2;
