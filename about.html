@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=64ecd98b">
+<link rel="stylesheet" href="style.css?v=1759acf6">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5906,8 +5906,10 @@
         fr.firstChild.style.left = (seamX - fl - FRAME) + 'px';
         card.style.setProperty('--frame-l', (fl - cr0.left).toFixed(2) + 'px');
         card.style.setProperty('--frame-r', (frr - cr0.left).toFixed(2) + 'px');
+        card.style.setProperty(right ? '--rule-ink-r' : '--rule-ink-l', 'transparent');
+        card.style.removeProperty(right ? '--rule-ink-l' : '--rule-ink-r');
         fieldsSoon();
-      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); }
+      } else if (fr) { fr.remove(); card.style.removeProperty('--frame-l'); card.style.removeProperty('--frame-r'); card.style.removeProperty('--rule-ink-l'); card.style.removeProperty('--rule-ink-r'); }
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
@@ -6348,7 +6350,7 @@
           rl.style.setProperty('right', 'calc(' + ((br0 - slid) - vwR).toFixed(2) + 'px + var(--rule-slid, 0px))', 'important');
           var h0 = (bl0 - slid).toFixed(2);
           var fa = 'calc(' + h0 + 'px + var(--frame-l, -99999px) + var(--rule-slid, 0px))', fb = 'calc(' + h0 + 'px + var(--frame-r, -99999px) + var(--rule-slid, 0px))';
-          rl.style.setProperty('background', 'linear-gradient(to right, var(--rule-ink) 0 ' + fa + ', transparent ' + fa + ' ' + fb + ', var(--rule-ink) ' + fb + ')', 'important');
+          rl.style.setProperty('background', 'linear-gradient(to right, var(--rule-ink-l, var(--rule-ink)) 0 ' + fa + ', transparent ' + fa + ' ' + fb + ', var(--rule-ink-r, var(--rule-ink)) ' + fb + ')', 'important');
           rl.style.removeProperty('display');
         } else if (rl) rl.style.setProperty('display', 'none', 'important');
         return;
