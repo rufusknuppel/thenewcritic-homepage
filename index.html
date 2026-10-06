@@ -10217,7 +10217,7 @@ window.__ncStripInk = function () {
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    st.style.setProperty('--bird-s', ((F - 36) / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', (0.9 * (F - 36) / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
