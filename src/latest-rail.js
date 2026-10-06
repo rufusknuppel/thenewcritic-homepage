@@ -73,8 +73,11 @@
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    // (a tenth smaller since 2026-10-06 — "Make bird 10% smaller")
-    st.style.setProperty('--bird-s', (0.9 * (F - 36) / bi.height).toFixed(4));
+    // (a tenth smaller since 2026-10-06 — "Make bird 10% smaller"; then a
+    // tenth taller than the name's ink, the same hour — "have the bird be
+    // 10% bigger than the wordmark"; then a quarter — "bird should be 25%
+    // bigger than wordmark")
+    st.style.setProperty('--bird-s', (1.25 * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
   };
