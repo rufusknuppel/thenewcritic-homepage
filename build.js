@@ -3092,13 +3092,16 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // "Turn the other section names back to Work Sans too": every name keeps
   // its text; the drawings stay in assets/ should RAIL_DRAWN come back on)
   const RAIL_DRAWN = false;
-  const railName = (word) => {
+  // (the name a way to the archive, filtered to its section, since
+  // 2026-10-06 — "Essays should hover, and send you to the archive with a
+  // filter": THE LATEST to the whole archive, the others to their own)
+  const railName = (word, href) => {
     const svgs = RAIL_DRAWN ? word.split(/\s+/).map(railSvg) : [null];
-    if (svgs.some((s) => !s)) return `<p class="latest-rail__meta">${escapeHtml(word)}</p>`;
+    if (svgs.some((s) => !s)) return `<p class="latest-rail__meta"><a class="latest-rail__meta-link" href="${escapeHtml(href || 'archive.html')}">${escapeHtml(word)}</a></p>`;
     return `<p class="latest-rail__meta latest-rail__meta--drawn" role="img" aria-label="${escapeHtml(word)}">${svgs.join(' ')}</p>`;
   };
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() : ''}<div class="latest-rail__in">`
-    + railName(sec.word)
+    + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
       // latest column. Keep w/"; "No keep authors. Just remove the word
@@ -3126,7 +3129,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       const first = sec && sec.posts[0];
       if (!first) return '';
       const word = `<span class="latest-rail__cue-word">${escapeHtml(sec.word)}</span>`;
-      return `<a class="latest-rail__cue latest-rail__cue--${dir}" href="${escapeHtml(first.link)}" data-slug="${escapeHtml(slugOf(first.link))}" aria-label="${escapeHtml(sec.word)}">${dir === 'prev' ? caret(true) + word : word + caret(false)}</a>`;
+      // (the word to the archive, filtered to its section, since 2026-10-06
+      // — "Essays should hover, and send you to the archive with a
+      // filter": the cue's link is the section's own (archive.html
+      // #section=…); its caret still brings the section's first card up,
+      // latest-rail.js)
+      return `<a class="latest-rail__cue latest-rail__cue--${dir}" href="${escapeHtml(sec.href || first.link)}" data-slug="${escapeHtml(slugOf(first.link))}" aria-label="${escapeHtml(sec.word)} in the archive">${dir === 'prev' ? caret(true) + word : word + caret(false)}</a>`;
     };
     // (the last section's foot foretells the colophon, and takes you to the
     // page's end — "add a Colophon arrow in the latest column that takes
@@ -3448,11 +3456,12 @@ function renderFontGateScript() {
   // for highlight color", then the navy lightened, #1A1AB0, "Lighten the
   // highlight blue", then dodger blue, #1E90FF, "I want highlight color
   // to be 1E90FF", then red, #F01E2C, "use f01e2c for hex color", then Yves Klein
-  // blue, #002FA7, "use yves blue as the highlight color". It must match
+  // blue, #002FA7, "use yves blue as the highlight color", then red
+  // again, #F01E2C, "Want highlight color to be red". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#002fa7';
+  var YELLOW = '#f01e2c';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;

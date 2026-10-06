@@ -757,6 +757,10 @@
     }
     var a = e.target && e.target.closest && e.target.closest('.latest-rail__list a[data-slug], a.latest-rail__cue[data-slug]');
     if (!a) return;
+    // (a section's cue goes to the archive, filtered, from its word since
+    // 2026-10-06 — "Essays should hover, and send you to the archive with
+    // a filter"; only its caret still brings the section's first card up)
+    if (a.classList.contains('latest-rail__cue') && !e.target.closest('.latest-rail__caret')) return;
     var slug = a.getAttribute('data-slug');
     var card = slug && document.querySelector('.page-rows section.card[data-slug="' + slug + '"]');
     if (!card) return;
