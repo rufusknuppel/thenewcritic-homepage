@@ -11,6 +11,9 @@ const path = require('path');
 // Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
+// The wordmark's words (THE, NEW, CRITIC, CRI, TIC), each in the files'
+// old contract, read off the one editable drawing (wordmark.js).
+const WORDMARK_WORDS = require('./wordmark.js').wordmarkWords(path.join(__dirname, 'assets', 'wordmark.svg'));
 // THE STAMP (2026-09-25, at the user's word): the hand-cut bird in its
 // frame, traced to one path from the print (assets/stamp.svg) and
 // stated once a page as a <symbol>; every stamp on the page is a <use>
@@ -81,7 +84,7 @@ const WORDMARK_CAP_EM = 0.708; // the words' cap, in the name's em (Avenir Next'
 // CRITIC should be same heights": the stacked words are set to the one cap,
 // each as wide as its letters make it, where each was set to a width)
 function wordmarkWord(word, widthEm = 0) {
-  const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
+  const svg = WORDMARK_WORDS[word];
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
   const w = widthEm ? widthEm.toFixed(4) : (WORDMARK_CAP_EM * vb[2] / vb[3]).toFixed(4);
   const h = widthEm ? (widthEm * vb[3] / vb[2]).toFixed(4) : WORDMARK_CAP_EM;
@@ -108,7 +111,7 @@ function wordmarkWord(word, widthEm = 0) {
 // IN THE BAND). Each line is its drawing at a cap of 1em, as wide as its
 // letters make it; the bird is the masthead's own, its filter's id its own.
 function bandWord(word) {
-  const svg = fs.readFileSync(path.join(__dirname, 'assets', `wordmark-${word}.svg`), 'utf8').trim();
+  const svg = WORDMARK_WORDS[word];
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
   return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
     `<svg class="band-logo__line" aria-hidden="true" focusable="false" style="width:${(vb[2] / vb[3]).toFixed(4)}em;height:1em"`);
