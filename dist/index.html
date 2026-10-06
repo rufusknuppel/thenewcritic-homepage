@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=cd495b36">
+<link rel="stylesheet" href="style.css?v=88d2ad4f">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -10207,7 +10207,7 @@ window.__ncStripInk = function () {
     };
     var k = inkY();
     if (!isFinite(k.t)) return;
-    var F = 108 - 2 + 27;
+    var F = 108 - 2 + 27 - 18;
     var wmH = k.b - k.t, H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
@@ -10260,6 +10260,7 @@ window.__ncStripInk = function () {
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
     });
+    var bAt = sliding ? dxNow : 0, bbr = br0;
     bandCtx = bandCtx || document.createElement('canvas').getContext('2d');
     var ink = words.map(function (c) {
       var b = c.querySelector('b'), r = b.getBoundingClientRect(), cs = getComputedStyle(b);
@@ -10276,13 +10277,26 @@ window.__ncStripInk = function () {
       var pr = pth.getBoundingClientRect(); if (pr.width) x0L = Math.min(x0L, pr.left);
     });
     var lr = low.getBoundingClientRect();
+    if (LIST_NAV && words.length && ink.length === words.length && !st.classList.contains('nav-measure')) {
+      var fbw = words[0].getBoundingClientRect(), lbw = words[words.length - 1].getBoundingClientRect();
+      var listW = (lbw.right - ink[ink.length - 1].inR) - (fbw.left + ink[0].inL);
+      var listL = tgtR - listW;
+      var bmid = (bbr.left + bbr.right) / 2;
+      var cdx = bAt + ((nameR + listL) / 2 - bmid);
+      st.style.setProperty('--bird-dx', cdx.toFixed(2) + 'px');
+    }
     return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: tgtR };
   };
   window.__ncEvenMid = function () {
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     if (st && LIST_NAV) st.classList.add('nav-measure');
-    var geo;
-    try { geo = bandGeo(st); } finally { if (st && LIST_NAV) st.classList.remove('nav-measure'); }
+    var geo, bdx0 = st ? st.style.getPropertyValue('--bird-dx') : '';
+    try { geo = bandGeo(st); } finally {
+      if (st && LIST_NAV) {
+        st.classList.remove('nav-measure');
+        if (bdx0) st.style.setProperty('--bird-dx', bdx0);
+      }
+    }
     if (!geo || geo.ink.length < 2) return null;
     var ink = geo.ink, inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
     var G = (geo.x1 - geo.x0 - inkAll) / (ink.length + 1);

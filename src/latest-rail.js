@@ -63,7 +63,10 @@
     // top band by 18px" / "I want it to grow 27px actually"; "Remove the
     // nav band": the name's field 133 over its 2, the nav's words a list
     // in it between the name and the swallow — THE NAV IN THE NAME'S BAND)
-    var F = 108 - 2 + 27;
+    // (9 less over and under since 2026-10-06 — "Reduce band margins by
+    // 18px on top and bottom", then "Actually only 9px on both sides": the
+    // field 115)
+    var F = 108 - 2 + 27 - 18;
     var wmH = k.b - k.t, H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
@@ -140,6 +143,7 @@
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
     });
+    var bAt = sliding ? dxNow : 0, bbr = br0;
     bandCtx = bandCtx || document.createElement('canvas').getContext('2d');
     var ink = words.map(function (c) {
       // (a word's ink inside its box: the face's own bearings, and the
@@ -158,6 +162,20 @@
       var pr = pth.getBoundingClientRect(); if (pr.width) x0L = Math.min(x0L, pr.left);
     });
     var lr = low.getBoundingClientRect();
+    // (THE SWALLOW BETWEEN THE NAME AND THE LIST, 2026-10-06 — "Center bird
+    // between wordmark and nav items": the list's ink ends on the gutter
+    // (band(), LIST_NAV), so its first ink is the gutter less the list's
+    // own ink width, which the words' places do not change; the swallow's
+    // middle halfway between that and CRITIC's last stroke. Not while the
+    // words stand in their old face for the column's reckoning.)
+    if (LIST_NAV && words.length && ink.length === words.length && !st.classList.contains('nav-measure')) {
+      var fbw = words[0].getBoundingClientRect(), lbw = words[words.length - 1].getBoundingClientRect();
+      var listW = (lbw.right - ink[ink.length - 1].inR) - (fbw.left + ink[0].inL);
+      var listL = tgtR - listW;
+      var bmid = (bbr.left + bbr.right) / 2;
+      var cdx = bAt + ((nameR + listL) / 2 - bmid);
+      st.style.setProperty('--bird-dx', cdx.toFixed(2) + 'px');
+    }
     // (x1 the swallow's first ink where it stood before it was carried to
     // the gutter, so the column's edge stands where it stood)
     return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: tgtR };
@@ -171,8 +189,14 @@
     // column's edge stands where it stood when they became a list in the
     // Garamond: THE NAV IN THE NAME'S BAND, 2026-10-06)
     if (st && LIST_NAV) st.classList.add('nav-measure');
-    var geo;
-    try { geo = bandGeo(st); } finally { if (st && LIST_NAV) st.classList.remove('nav-measure'); }
+    var geo, bdx0 = st ? st.style.getPropertyValue('--bird-dx') : '';
+    try { geo = bandGeo(st); } finally {
+      if (st && LIST_NAV) {
+        st.classList.remove('nav-measure');
+        // (and the swallow back where band() seated it)
+        if (bdx0) st.style.setProperty('--bird-dx', bdx0);
+      }
+    }
     if (!geo || geo.ink.length < 2) return null;
     var ink = geo.ink, inkAll = ink.reduce(function (a, k) { return a + (k.r - k.l); }, 0);
     var G = (geo.x1 - geo.x0 - inkAll) / (ink.length + 1);
