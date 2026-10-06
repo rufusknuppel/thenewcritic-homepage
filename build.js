@@ -3070,9 +3070,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // (THE LATEST BACK IN WORK SANS, 2026-10-06, at the user's word — "Turn
   // the latest back to work sans": its name keeps the text, the other
   // sections their drawings)
-  const RAIL_TEXT = new Set(['The Latest']);
+  // (ALL THE NAMES BACK IN WORK SANS, 2026-10-06, at the user's word —
+  // "Turn the other section names back to Work Sans too": every name keeps
+  // its text; the drawings stay in assets/ should RAIL_DRAWN come back on)
+  const RAIL_DRAWN = false;
   const railName = (word) => {
-    const svgs = RAIL_TEXT.has(word) ? [null] : word.split(/\s+/).map(railSvg);
+    const svgs = RAIL_DRAWN ? word.split(/\s+/).map(railSvg) : [null];
     if (svgs.some((s) => !s)) return `<p class="latest-rail__meta">${escapeHtml(word)}</p>`;
     return `<p class="latest-rail__meta latest-rail__meta--drawn" role="img" aria-label="${escapeHtml(word)}">${svgs.join(' ')}</p>`;
   };
