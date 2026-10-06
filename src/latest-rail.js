@@ -107,15 +107,6 @@
     // window's width over the column, the swallow and the strip's last
     // word 54 off its edge, standing still as the column slides)
     var tgtR = vw - 54;
-    // (THE SWALLOW AFTER THE NAME, 2026-10-06 — "move bird to the right of
-    // the wordmark": its first ink 36 past CRITIC's last stroke, not on the
-    // window's gutter; tgtR still names the gutter, where the list ends)
-    // (the gap the name's own word space since the same hour — "Want the
-    // same distance between bird and C as between E and N": NEW's first
-    // ink less THE's last, read off the name)
-    var pThe = st.querySelector('.band-logo__top svg path'), pNew = st.querySelector('.band-logo__mid svg path');
-    var wsp = pThe && pNew ? pNew.getBoundingClientRect().left - pThe.getBoundingClientRect().right : 0;
-    var BIRD_GAP = wsp > 0 ? wsp : 36, nameR = low.getBoundingClientRect().right;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;
@@ -124,7 +115,7 @@
       // easing runs from there and is not set back first)
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = dxNow + (nameR + BIRD_GAP - br0.left);
+      dx = dxNow + (tgtR - br0.right);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
       st.style.setProperty('--bird-dx', '0px');
@@ -137,13 +128,12 @@
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = nameR + BIRD_GAP - br0.left;
+      dx = tgtR - br0.right;
     }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
     });
-    var bAt = sliding ? dxNow : 0, bbr = br0;
     bandCtx = bandCtx || document.createElement('canvas').getContext('2d');
     var ink = words.map(function (c) {
       // (a word's ink inside its box: the face's own bearings, and the
@@ -162,20 +152,10 @@
       var pr = pth.getBoundingClientRect(); if (pr.width) x0L = Math.min(x0L, pr.left);
     });
     var lr = low.getBoundingClientRect();
-    // (THE SWALLOW BETWEEN THE NAME AND THE LIST, 2026-10-06 — "Center bird
-    // between wordmark and nav items": the list's ink ends on the gutter
-    // (band(), LIST_NAV), so its first ink is the gutter less the list's
-    // own ink width, which the words' places do not change; the swallow's
-    // middle halfway between that and CRITIC's last stroke. Not while the
-    // words stand in their old face for the column's reckoning.)
-    if (LIST_NAV && words.length && ink.length === words.length && !st.classList.contains('nav-measure')) {
-      var fbw = words[0].getBoundingClientRect(), lbw = words[words.length - 1].getBoundingClientRect();
-      var listW = (lbw.right - ink[ink.length - 1].inR) - (fbw.left + ink[0].inL);
-      var listL = tgtR - listW;
-      var bmid = (bbr.left + bbr.right) / 2;
-      var cdx = bAt + ((nameR + listL) / 2 - bmid);
-      st.style.setProperty('--bird-dx', cdx.toFixed(2) + 'px');
-    }
+    // (THE SWALLOW AT THE FAR RIGHT AGAIN, 2026-10-06 — "Mover bird to far
+    // right and nav items to center": its last ink on the window's 54
+    // gutter; it stood after the name, then between the name and the list,
+    // earlier the same day)
     // (x1 the swallow's first ink where it stood before it was carried to
     // the gutter, so the column's edge stands where it stood)
     return { words: words, ink: ink, x0L: x0L, x0: lr.right, x1: x1u, x1R: tgtR };
@@ -466,11 +446,15 @@
       // last stroke and the swallow's first ink (style.css, THE NAV IN THE
       // NAME'S BAND, sets them and their commas)
       if (run && geo && words.length && LIST_NAV) {
-        // (at the far right since 2026-10-06 — "move nav items to the far
-        // right": THE LAST MAGAZINE's last ink on the window's 54 gutter)
-        var lastW = words[words.length - 1], lastB = lastW.querySelector('b') || lastW;
-        var inkR = lastB.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].bR : 0);
-        var lead0 = Math.round(geo.x1R - inkR);
+        // (at the far right for a while that day — "move nav items to the
+        // far right" — and centred between the name and the swallow again
+        // since: "Mover bird to far right and nav items to center", the
+        // list's ink halfway between CRITIC's last stroke and the swallow's
+        // first ink)
+        var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
+        var inkL0 = fb0.left + (ink[0] ? ink[0].inL : 0), inkR0 = lb0.right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
+        var bi0 = st.querySelector('.band-logo__bird .wm-bird-only').getBoundingClientRect();
+        var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
