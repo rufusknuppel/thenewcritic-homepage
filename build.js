@@ -3047,8 +3047,33 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // to the archive (THE LATEST to all of it, the others to their section).
   // The post standing in the window lights its line (latest-rail.js).
   const railWord = (p) => stripEmMarkers(p.kicker || p.title || '');
+  // THE SECTION'S NAME DRAWN (2026-10-06, at the user's word — "Create
+  // SVGs for THE LATEST, ESSAYS, POSTSCRIPT, CONTRA too and replace the
+  // current work sans white title in the Latest Column with those / In the
+  // rachmaninoff font"): each word of the name is its drawing in the
+  // wordmark's lettering (assets/section-<word>.svg — its ink across, the
+  // flat cap 300 to the baseline, the round letters overshooting it), set
+  // at the cap of the meta's Work Sans (RAIL_CAP_EM) and sitting on its
+  // baseline, the words a space apart so the name still wraps between
+  // them (a word's apostrophe is in its drawing; the file is named by its
+  // letters — EDITORS’ in section-editors.svg). A name with a word not
+  // drawn keeps the text.
+  const RAIL_CAP_EM = 0.66;
+  const railSvg = (w) => {
+    const f = path.join(__dirname, 'assets', `section-${w.toLowerCase().replace(/[^a-z]/g, '')}.svg`);
+    if (!fs.existsSync(f)) return null;
+    const svg = fs.readFileSync(f, 'utf8').trim();
+    const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
+    return svg.replace(/ data-dip="[\d.]+"/, '').replace(/^<svg xmlns="[^"]*"/,
+      `<svg class="latest-rail__word" aria-hidden="true" focusable="false" style="width:${(RAIL_CAP_EM * vb[2] / vb[3]).toFixed(4)}em;height:${RAIL_CAP_EM}em"`);
+  };
+  const railName = (word) => {
+    const svgs = word.split(/\s+/).map(railSvg);
+    if (svgs.some((s) => !s)) return `<p class="latest-rail__meta">${escapeHtml(word)}</p>`;
+    return `<p class="latest-rail__meta latest-rail__meta--drawn" role="img" aria-label="${escapeHtml(word)}">${svgs.join(' ')}</p>`;
+  };
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() : ''}<div class="latest-rail__in">`
-    + `<p class="latest-rail__meta">${escapeHtml(sec.word)}</p>`
+    + railName(sec.word)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
       // latest column. Keep w/"; "No keep authors. Just remove the word
