@@ -18,14 +18,14 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9b7153ff">
+<link rel="stylesheet" href="style.css?v=a837f3d4">
 <style>:root{--colo-span:14.6934}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
   var root = document.documentElement;
   var WHITE = '#FFFFFF', CHARCOAL = '#121417';
-  var YELLOW = '#1a1ab0';
+  var YELLOW = '#1e90ff';
   var hexOf = function (v) {
     var m = /^s*#?([0-9a-f]{3}|[0-9a-f]{6})s*$/i.exec(v || '');
     if (!m) return null;
@@ -10226,8 +10226,44 @@ window.__ncStripInk = function () {
     st.style.setProperty('--bird-s', (1.375 * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+    seatColo();
+  };
+  var capCx = null;
+  var capsOf = function (el) {
+    var cs = getComputedStyle(el), r = el.getClientRects()[0];
+    if (!r) return null;
+    capCx = capCx || document.createElement('canvas').getContext('2d');
+    capCx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var m = capCx.measureText('H');
+    var lead = (r.height - m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
+    return { cap: r.top + lead + m.fontBoundingBoxAscent - m.actualBoundingBoxAscent, base: r.top + lead + m.fontBoundingBoxAscent };
+  };
+  var seatColo = function () {
+    var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    var co = document.querySelector('.page-rows > .section-band--colophon.colo');
+    var dek = st && st.querySelector('.sub-ticker-run b');
+    var name = co && co.querySelector('.colo-name');
+    var ink = name && name.querySelector('.band-logo__line');
+    var run = co && co.querySelector('.colo-run');
+    var row = run && run.querySelector('span');
+    if (!dek || !ink || !row) return;
+    var props = ['--colo-name-mt', '--colo-run-mt', '--colo-run-mb'];
+    if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
+      props.forEach(function (p) { co.style.removeProperty(p); });
+      return;
+    }
+    var d = capsOf(dek), w = capsOf(row);
+    if (!d || !w) return;
+    var air = d.cap - st.getBoundingClientRect().top;
+    var c = co.getBoundingClientRect(), k = ink.getBoundingClientRect();
+    var ns = getComputedStyle(name), rs = getComputedStyle(run);
+    var set = function (p, v) { v = v.toFixed(2) + 'px'; if (co.style.getPropertyValue(p) !== v) co.style.setProperty(p, v); };
+    set(props[0], parseFloat(ns.marginTop) + air - (k.top - c.top));
+    set(props[1], parseFloat(rs.marginTop) + air - (w.cap - k.bottom));
+    set(props[2], parseFloat(rs.marginBottom) + air - (c.bottom - w.base));
   };
   seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top'));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(seatColo);
   addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
   var LIST_NAV = true;
   var bandCtx = null;

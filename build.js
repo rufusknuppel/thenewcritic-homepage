@@ -3446,11 +3446,12 @@ function renderFontGateScript() {
   // that blue. This should be one token", then hot pink, #FF69B4, "Use hot
   // pink as the highlight color", then navy, #000080, "#000080 use this
   // for highlight color", then the navy lightened, #1A1AB0, "Lighten the
-  // highlight blue". It must match
+  // highlight blue", then dodger blue, #1E90FF, "I want highlight color
+  // to be 1E90FF". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#1a1ab0';
+  var YELLOW = '#1e90ff';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;

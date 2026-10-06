@@ -94,8 +94,52 @@
     st.style.setProperty('--bird-s', (1.375 * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+    seatColo();
+  };
+  // (THE COLOPHON'S AIR THE DEK'S, 2026-10-06 — "Padding in the colophon
+  // seems off. Should match the padding above garamond dek in nav bar":
+  // the air from the band's top to the dek's capitals stands from the
+  // colophon's top to its name's ink, from the name's ink to the row's
+  // capitals, and from the row's baseline to the foot. Read from the
+  // fonts themselves, so it holds whatever the name's face: each margin
+  // moves by what the air it makes is off; style.css, THE COLOPHON IN
+  // THE CHARCOAL)
+  var capCx = null;
+  var capsOf = function (el) {
+    var cs = getComputedStyle(el), r = el.getClientRects()[0];
+    if (!r) return null;
+    capCx = capCx || document.createElement('canvas').getContext('2d');
+    capCx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var m = capCx.measureText('H');
+    var lead = (r.height - m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
+    return { cap: r.top + lead + m.fontBoundingBoxAscent - m.actualBoundingBoxAscent, base: r.top + lead + m.fontBoundingBoxAscent };
+  };
+  var seatColo = function () {
+    var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    var co = document.querySelector('.page-rows > .section-band--colophon.colo');
+    var dek = st && st.querySelector('.sub-ticker-run b');
+    var name = co && co.querySelector('.colo-name');
+    var ink = name && name.querySelector('.band-logo__line');
+    var run = co && co.querySelector('.colo-run');
+    var row = run && run.querySelector('span');
+    if (!dek || !ink || !row) return;
+    var props = ['--colo-name-mt', '--colo-run-mt', '--colo-run-mb'];
+    if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
+      props.forEach(function (p) { co.style.removeProperty(p); });
+      return;
+    }
+    var d = capsOf(dek), w = capsOf(row);
+    if (!d || !w) return;
+    var air = d.cap - st.getBoundingClientRect().top;
+    var c = co.getBoundingClientRect(), k = ink.getBoundingClientRect();
+    var ns = getComputedStyle(name), rs = getComputedStyle(run);
+    var set = function (p, v) { v = v.toFixed(2) + 'px'; if (co.style.getPropertyValue(p) !== v) co.style.setProperty(p, v); };
+    set(props[0], parseFloat(ns.marginTop) + air - (k.top - c.top));
+    set(props[1], parseFloat(rs.marginTop) + air - (w.cap - k.bottom));
+    set(props[2], parseFloat(rs.marginBottom) + air - (c.bottom - w.base));
   };
   seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top'));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(seatColo);
   addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
   var LIST_NAV = true;
   var bandCtx = null;
