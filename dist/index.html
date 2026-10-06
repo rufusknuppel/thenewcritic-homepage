@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=0b0daff6">
+<link rel="stylesheet" href="style.css?v=45bdc839">
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -10208,12 +10208,12 @@ window.__ncStripInk = function () {
     var k = inkY();
     if (!isFinite(k.t)) return;
     var NAV = 54, F = 108 - 2;
-    var wmH = k.b - k.t, H = NAV + F;
+    var wmH = k.b - k.t, H = F + NAV;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
-    var want = NAV + (F - wmH) / 2;
+    var want = (F - wmH) / 2;
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;

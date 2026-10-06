@@ -56,13 +56,16 @@
     // wordmark/logo": the strip's 52 and its 2 rule at the window's top,
     // the name's 106 under them, one head of 160 — everything reckoned off
     // --strip-settled follows; style.css, THE NAV OVER THE NAME)
+    // (and under it since the same hour — "Make nav band charcoal with
+    // white text, move below wordmark/logo": the name's 106 and its rule at
+    // the top, the strip's 52 and its rule under them)
     var NAV = 54, F = 108 - 2;
-    var wmH = k.b - k.t, H = NAV + F;
+    var wmH = k.b - k.t, H = F + NAV;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
-    var want = NAV + (F - wmH) / 2;
+    var want = (F - wmH) / 2;
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
