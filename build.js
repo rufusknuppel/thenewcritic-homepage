@@ -3392,11 +3392,12 @@ function renderFontGateScript() {
   // terracotta, #D9654F, "make the red a lighter so black stands out
   // more", then #B03A2E again, "Revert to terracotta red", then
   // Mediterranean blue, #1478A7, 2026-10-06, "change all terracottas to
-  // that blue. This should be one token". It must match
+  // that blue. This should be one token", then hot pink, #FF69B4, "Use hot
+  // pink as the highlight color". It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#1478a7';
+  var YELLOW = '#ff69b4';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
