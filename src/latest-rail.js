@@ -487,11 +487,12 @@
       // (the band's ground and the strip's stand on one sticky sheet in the
       // rows' layer — so they move with the page's overscroll as the band
       // does: "dividers should move on overscroll" — which the rows' end
-      // pushes up as it comes: the band's part goes up by the cover, the
-      // strip's down, read against that push)
-      var mbEl = co.parentElement && document.querySelector('.page-rows > .movement.m--latest > .movement-body');
-      var push = mbEl ? Math.max(0, window.innerHeight - mbEl.getBoundingClientRect().bottom) : 0;
-      var ftv = (push - cover).toFixed(2) + 'px', fbv = (cover + push).toFixed(2) + 'px';
+      // the band's part goes up by the cover, the strip's down)
+      // (by the cover alone: the sheet's margin takes back its whole height,
+      // so the rows' end never pushes it — read against a push it was set
+      // down by the push and stood mid-window as the colophon came:
+      // "colophon reveal is broken", 2026-10-05)
+      var ftv = (-cover).toFixed(2) + 'px', fbv = cover.toFixed(2) + 'px';
       if (main.style.getPropertyValue('--fill-top') !== ftv) main.style.setProperty('--fill-top', ftv);
       if (main.style.getPropertyValue('--fill-bot') !== fbv) main.style.setProperty('--fill-bot', fbv);
     }
