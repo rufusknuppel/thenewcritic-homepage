@@ -478,6 +478,13 @@
       var foot = Math.max(0, st.getBoundingClientRect().bottom + was);
       var rule = parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 0;
       var cover = Math.max(0, Math.min(foot + rule, window.innerHeight - co.getBoundingClientRect().top));
+      // (where the page has scroll-driven animations the band, its ground
+      // and the strip ride the colophon's own timeline on the compositor —
+      // style.css, THE BAND SCROLLS AWAY ON THE PAGE'S OWN CLOCK: "Colophon
+      // reveal still glitchy. Top band phases out", 2026-10-05 — so nothing
+      // is carried from here, and the band's foot is read only while it
+      // rests)
+      if (RIDES && RIDES_W.matches) { if (cover > 0) foot = parseFloat(hr.style.getPropertyValue('--band-foot')) || foot; cover = 0; }
       var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);
       if (hr.style.getPropertyValue('--band-cover') !== cv) hr.style.setProperty('--band-cover', cv);
@@ -507,6 +514,7 @@
     st.classList.toggle('is-giving', fade > 0.5);
   };
   var FADE_SHARE = 0.25;
+  var RIDES = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: view()')), RIDES_W = window.matchMedia('(min-width: 1024px)');
   band.seatLead = true;
   window.__ncBand = band;
   var ticking = false;
