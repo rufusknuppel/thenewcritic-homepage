@@ -85,8 +85,10 @@
     // name's ink; the name grows to 27 from its top and foot (style.css,
     // the cap 83, then 110 — "match wordmark margin with the bird margin"), and the swallow keeps its size, 1.7875 of that old cap
     // rather than of the name's ink, 20 from the band's edges)
-    // (155 since later that day — "Expand the top band by 18px")
-    var F = 155;
+    // (155 for a few minutes — "Expand the top band by 18px" — but the
+    // opening's scroll and the rule under the band are reckoned off the
+    // band's height elsewhere, and the rule fell away from it: 137 again)
+    var F = 137;
     // ("give the bird the same 27px margins", then "Have bird stretch to
     // 13.5px margins on top and bottom": the bird's box the band less 13.5
     // over and under, 110 in the 137)

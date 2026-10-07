@@ -27383,8 +27383,7 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
 
 /* ---------- THE NAME 27 FROM THE BAND'S TOP AND FOOT (2026-10-07) ----------
    At the user's word ("Make wordmark in top band bigger so it has 27px
-   margins on top and bottom"): in the head's band of 137 (155 since
-   "Expand the top band by 18px", the name and the stamp centred in it) the name's cap
+   margins on top and bottom"): in the head's band of 137 the name's cap
    is 83 — 137 less 27 over and 27 under — where it was 54.21 (THE NAME
    IN THE BAND). The band no longer grows with the name's ink: seatLogo
    (latest-rail.js) holds it at 137 and the swallow's box 13.5 from its

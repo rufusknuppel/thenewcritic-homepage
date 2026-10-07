@@ -7753,13 +7753,7 @@
                   // (no floor on the band's share since 2026-10-04: a band over 144 —
                   // 151, "Have 54px above and below wordmark in top band" — took
                   // the floor's 0 and stood the first row 7 low)
-                  // (THE ROW 54 UNDER THE RULE AT ANY BAND, 2026-10-07 — "Expand the
-                  // top band by 18px": the band is sticky and stands outside this
-                  // sum, so the budget of 144 and 72 held the row still as the band
-                  // grew and the band ate the 54 under its rule; the band of 137
-                  // stood the row 54 under the rule, and a taller band now stands
-                  // it lower by what it grew)
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - 137) + (bandedInk() ? BAND_RULE + (topStrip.offsetHeight - 137) : 0) : COURIER_GAP);
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
