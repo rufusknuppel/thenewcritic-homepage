@@ -27355,3 +27355,14 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
     padding-bottom: 0px !important;
   }
 }
+
+/* ---------- THE BIRD IN A DIAMOND (2026-10-07) ----------
+   At the user's word ("Put the bird in a diamond shaped background,
+   charcoal on white, and make the bird white within the charcoal"): the
+   bird's box holds a diamond in the ink with the bird cut out of it
+   (build.js, THE BIRD IN A DIAMOND). The diamond's points touch the box's
+   sides, so the colophon's bird stands the word space from CRITIC with no
+   ink inset to take off (THE BIRD A WORD SPACE FROM CRITIC took 0.0204). */
+html body main.has-mega .page-rows > nav.section-band--colophon.colo .colo-logo > .band-logo__bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-left: max(0px, calc((var(--wm-space, 0) - 0.6226) * 1em)) !important;
+}

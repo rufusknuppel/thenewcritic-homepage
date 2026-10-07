@@ -13574,3 +13574,6 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
     padding-bottom: 0px !important;
   }
 }
+html body main.has-mega .page-rows > nav.section-band--colophon.colo .colo-logo > .band-logo__bird:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r):is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+  margin-left: max(0px, calc((var(--wm-space, 0) - 0.6226) * 1em)) !important;
+}

@@ -139,7 +139,7 @@ const COLO_SPAN = (() => {
     const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
     return vb[2] / vb[3];
   };
-  return (1.66 * 4.5 / 5 + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - (WM_SPACE > 0.6226 ? 0.0204 : 0) + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  return (1.66 * 4.5 / 5 + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
 // The band's name, THE, NEW and CRITIC, in caps across: the words, the two
 // spaces between them (27 at the 54.21 cap, or the drawing's own where that
@@ -166,14 +166,37 @@ const BAND_FRAME = (() => {
   const r = n => +n.toFixed(2);
   return { sw, wo: r(wo), ho: r(ho), x: r(cx - wo / 2), y: r(cy - ho / 2), cx, cy };
 })();
+// THE BIRD IN A DIAMOND (2026-10-07, at the user's word — "Put the bird in
+// a diamond shaped background, charcoal on white, and make the bird white
+// within the charcoal"): a square on its point in the ink, as wide as the
+// 4.5:5 box (so the box, its aspect and every measure made on it stand),
+// with the bird cut out of it — the ground shows through as the bird, white
+// on the white band, and whatever the ground is elsewhere. The bird is
+// drawn at 0.65 inside it, its own diamond (250.5 of its units from its
+// middle to each point) four-fifths of the ground's, centred on the box.
+// Drawn inside the bird's filter group, so the stamp's turbulence roughens
+// the diamond's edges and the bird's together. latest-rail.js seats the
+// diamond where it seated the bird.
+const BAND_DIAMOND = (() => {
+  const F = BAND_FRAME, D = F.wo / 2, s = +(0.8 * D / 250.5).toFixed(4);
+  const r = n => +n.toFixed(2);
+  return { D: r(D), s, birdT: `translate(${r(F.cx)} ${r(F.cy)}) scale(${s}) translate(-226.56 -226.92)`,
+    d: `M${r(F.cx)} ${r(F.cy - D)}L${r(F.cx + D)} ${r(F.cy)}L${r(F.cx)} ${r(F.cy + D)}L${r(F.cx - D)} ${r(F.cy)}Z` };
+})();
 function bandLogoHtml(id = 'band', cls = '') {
-  const F = BAND_FRAME;
-  const rect = `<rect class="band-logo__frame" x="${+(F.x + F.sw / 2).toFixed(2)}" y="${+(F.y + F.sw / 2).toFixed(2)}" width="${+(F.wo - F.sw).toFixed(2)}" height="${+(F.ho - F.sw).toFixed(2)}" fill="none" stroke="currentColor" stroke-width="${F.sw}"/>`;
+  const F = BAND_FRAME, Dm = BAND_DIAMOND;
+  const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
+  const cut = `band-bird-cut-${id}`;
+  const mask = `<mask id="${cut}" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><path d="${birdD}" fill="#000" fill-rule="evenodd" transform="${Dm.birdT}"/></mask>`;
+  const diamond = `<path class="band-logo__diamond" d="${Dm.d}" fill="currentColor" mask="url(#${cut})"/>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
-    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${rect}`);
-  if (!bird.includes('band-logo__frame') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band frame: bird SVG did not take the outline');
+    .replace('</defs>', `${mask}</defs>`)
+    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${diamond}`)
+    // (the bird's own path stays, unpainted, where it now stands in the diamond)
+    .replace(/(class="wm-bird-only") fill="currentColor"/, `$1 fill="none" transform="${Dm.birdT}"`);
+  if (!bird.includes('band-logo__diamond') || !bird.includes(`mask id="${cut}"`) || !bird.includes('fill="none" transform=') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band diamond: bird SVG did not take the diamond');
   return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {

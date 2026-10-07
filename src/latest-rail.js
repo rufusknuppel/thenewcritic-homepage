@@ -10,6 +10,10 @@
 (function () {
   var rails = [].slice.call(document.querySelectorAll('.latest-rail'));
   var main = document.querySelector('main');
+  // (the swallow's ink is its diamond's since 2026-10-07 — "Put the bird in
+  // a diamond shaped background": the diamond is sized, set on its middle
+  // and on the 54 gutter where the bird was; build.js, THE BIRD IN A DIAMOND)
+  var BIRD_INK = '.band-logo__bird .band-logo__diamond, .band-logo__bird .wm-bird-only';
   // THE BAND'S GEOMETRY (2026-10-05): the swallow's ink set on the 54 gutter
   // (--bird-dx, style.css), and read: each word's ink inside its box, the
   // name's first stroke (x0L) and CRITIC's last (x0), the swallow's first
@@ -35,7 +39,7 @@
       main.style.removeProperty('--strip-settled');
       return;
     }
-    var bird = st.querySelector('.band-logo__bird .wm-bird-only');
+    var bird = st.querySelector(BIRD_INK);
     var paths = st.querySelectorAll('.band-logo svg:not(.band-logo__bird) path');
     if (!bird || !paths.length) return;
     st.style.setProperty('--logo-dy', '0px'); st.style.setProperty('--bird-s', '1'); st.style.setProperty('--bird-dy', '0px');
@@ -149,7 +153,7 @@
     seatLogo(st);
     var run = st.querySelector(':scope > .sub-ticker-run');
     var low = st.querySelector('.band-logo__low svg path');
-    var birdInk = st.querySelector('.band-logo__bird .wm-bird-only');
+    var birdInk = st.querySelector(BIRD_INK);
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
     // (the swallow in the band beside THE LATEST, its ink 54 off the
@@ -567,7 +571,7 @@
         // first ink)
         var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
         var inkL0 = fb0.left + (ink[0] ? ink[0].inL : 0), inkR0 = lb0.right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
-        var bi0 = st.querySelector('.band-logo__bird .wm-bird-only').getBoundingClientRect();
+        var bi0 = st.querySelector(BIRD_INK).getBoundingClientRect();
         var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
