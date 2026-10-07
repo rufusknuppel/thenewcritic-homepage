@@ -227,6 +227,10 @@
       if (railMid != null) tgtR = railMid + br0.width / 2;
       dx = tgtL != null ? tgtL - br0.left : tgtR - br0.right;
     }
+    // (the name's left the swallow's distance from the window's right —
+    // "match wordmark margin with the bird margin" / "I meant side margin")
+    var lg = st.querySelector('.band-logo');
+    if (lg) { if (railMid != null) lg.style.setProperty('left', (vw - tgtR).toFixed(2) + 'px', 'important'); else lg.style.removeProperty('left'); }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     if (lowEl) {
       // (CRITIC's shift read off where it stands unshifted, so the gap after

@@ -27393,7 +27393,9 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
     /* (110 since later that day — "match wordmark margin with the bird margin": 13.5 over and under, as the bird's box) */
     /* (the band's air 540 now, not 655, so the cap reaches 110 at 1440: the name, 27, the bird's 99, 27 and the list's
        ~340 between two 54s) */
-    font-size: min(110px, (100vw - 540px) / var(--band-span, 8.07));
+    /* (83 again — "By Match margins with the wordmark I meant side margin not top/bottom margins": the name 27 over and
+       under; its left set by latest-rail.js to the bird's distance from the right edge) */
+    font-size: min(83px, (100vw - 540px) / var(--band-span, 8.07));
   }
 }
 

@@ -13576,7 +13576,7 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
 }
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo{
-    font-size: min(110px, (100vw - 540px) / var(--band-span, 8.07));
+    font-size: min(83px, (100vw - 540px) / var(--band-span, 8.07));
   }
 }
 @media (min-width: 1024px){
