@@ -86,9 +86,10 @@
     // the cap 83), and the swallow keeps its size, 1.7875 of that old cap
     // rather than of the name's ink, 20 from the band's edges)
     var F = 137;
-    // ("give the bird the same 27px margins": the bird's box as tall as the
-    // name's cap, the band less 27 over and under)
-    var birdH = F - 54;
+    // ("give the bird the same 27px margins", then "Have bird stretch to
+    // 13.5px margins on top and bottom": the bird's box the band less 13.5
+    // over and under, 110 in the 137)
+    var birdH = F - 27;
     var H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
