@@ -124,6 +124,15 @@
     // "during the latest column slide, deactivate hover in kickers")
     var mn = document.querySelector('main');
     if (mn && mn.classList.contains('rail-anim')) { hide(); return; }
+    // (NOT UNDER THE FONT GATE, 2026-10-07 — "On first load sometimes,
+    // this glitch appears": a hand resting on the picture as the page
+    // loads is reported while the page is still held and being laid out,
+    // and the scrim was seated on that first layout, over the words and
+    // the picture together, Read Essay in the middle of both, and stayed
+    // there while the hand stayed still. The hand is asked once the page
+    // is shown, and again whenever the fitter finishes, on the page as it
+    // stands then.)
+    if (!window.__ncShown) { hide(); return; }
     var hitCard = null, hitBox = null;
     // (a card slid out over its mate is asked first, and the mate under
     // it not at all, 2026-10-01)
@@ -184,6 +193,7 @@
   document.addEventListener('pointermove', function (e) { lx = e.clientX; ly = e.clientY; ask(); }, { passive: true });
   document.addEventListener('pointerleave', function () { lx = ly = -1; ask(); });
   addEventListener('scroll', ask, { passive: true });
-  addEventListener('newcritic:fit', ask);
-  addEventListener('newcritic:closed', ask);
+  ['newcritic:fit', 'newcritic:closed', 'newcritic:shown', 'newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
+    addEventListener(ev, ask);
+  });
 })();
