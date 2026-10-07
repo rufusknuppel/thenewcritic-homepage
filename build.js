@@ -223,12 +223,15 @@ function bandLogoHtml(id = 'band', cls = '') {
   // past the box into the band's 18s: 2 seen, all inside — "Make border
   // 2px"; the clip in the shield's own units, the path's transform
   // carrying both)
-  const seal = `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><path d="${Se.d}"/></clipPath><path class="band-logo__shield" d="${Se.d}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke" clip-path="url(#${cut}-in)" transform="${Se.T}"/>`;
+  // (straight since later that day — "make border straight": a plain
+  // rectangle on the box, outside the stamp's roughening filter, where it
+  // was the roughened shield; the clip keeps the line's 2 inside it)
+  const seal = `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke" shape-rendering="crispEdges" clip-path="url(#${cut}-in)"/>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
     .replace('</defs>', `${mask}</defs>`)
-    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${seal}`)
+    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `${seal}$1`)
     // (the bird's own path stays, unpainted, where it stands in the box:
     // the ground shows through the cut — in the mark's colour for a few
     // minutes on 2026-10-07, "fill bird in stamp with Highlight color",
