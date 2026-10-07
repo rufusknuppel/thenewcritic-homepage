@@ -27382,7 +27382,8 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
    margins on top and bottom"): in the head's band of 137 the name's cap
    is 83 — 137 less 27 over and 27 under — where it was 54.21 (THE NAME
    IN THE BAND). The band no longer grows with the name's ink: seatLogo
-   (latest-rail.js) holds it at 137 and the swallow at its size, and
+   (latest-rail.js) holds it at 137 and the swallow's box 27 from its
+   top and foot too ("give the bird the same 27px margins"), and
    centres both. Under 1325 the name, the LODÉHO drawing's 8.07 caps
    across with the bird and the 27s, takes the band less its 655 of air,
    words and bird, as before. */
