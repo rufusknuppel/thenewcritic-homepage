@@ -11338,7 +11338,7 @@ html body .sub-ticker-half--slot:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.
   .band-logo__mid{ grid-area: 1 / 3; display: block; }
   .band-logo__low{ grid-area: 1 / 4; display: block; }
   .band-logo__line{ display: block; overflow: visible; fill: currentColor; }
-  .band-logo__bird{ grid-area: 1 / 1; transform: scaleX(-1); align-self: center; display: block; height: 1.66em; width: auto; aspect-ratio: 4.5 / 5; overflow: visible; fill: currentColor; color: inherit; }
+  .band-logo__bird{ grid-area: 1 / 1; transform: scaleX(-1); align-self: center; display: block; height: 1.66em; width: auto; aspect-ratio: var(--bird-ar, 4.5 / 5); overflow: visible; fill: currentColor; color: inherit; }
 }
 @media (max-width: 1023.98px){
   .band-logo{ display: none !important; }
@@ -11571,7 +11571,7 @@ html body main.has-mega .page-rows > nav.section-band--colophon.colo .colo-logo 
   display: block !important;
   height: 1.66em !important;
   width: auto !important;
-  aspect-ratio: 4.5 / 5 !important;
+  aspect-ratio: var(--bird-ar, 4.5 / 5) !important;
   overflow: visible !important;
   fill: currentColor !important;
   color: inherit !important;
