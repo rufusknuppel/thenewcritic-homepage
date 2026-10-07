@@ -45,6 +45,18 @@
         "8766"
       ],
       "port": 8766
+    },
+    {
+      "name": "wordmark-trial",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8912",
+        "-d",
+        "/private/tmp/claude-501/-Users-rufusknuppel-projects-thenewcritic-homepage/5b70c2c9-ec97-4dd9-b2e1-f5e0d66848d5/scratchpad"
+      ],
+      "port": 8912
     }
   ]
 }
