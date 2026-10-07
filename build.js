@@ -214,7 +214,16 @@ function bandLogoHtml(id = 'band', cls = '') {
   const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
   const cut = `band-bird-cut-${id}`;
   const mask = `<mask id="${cut}" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><path d="${birdD}" fill="#000" fill-rule="evenodd" transform="${Se.birdT}"/></mask>`;
-  const seal = `<g mask="url(#${cut})"><path class="band-logo__shield" d="${Se.d}" fill="currentColor" transform="${Se.T}"/></g>`;
+  // THE BIRD IN AN OUTLINE (2026-10-07, at the user's word — "Have the bird
+  // sit an outline, not solid background"): the box drawn as a line, 2 on
+  // the page whatever the stamp's size (4 about the box's edge, the half
+  // outside it clipped by the box's own shape), and the bird in the ink in
+  // it; the cut (mask) stays defined, unused
+  // (clipped to the box itself, so the line's outer half never reaches
+  // past the box into the band's 18s: 2 seen, all inside — "Make border
+  // 2px"; the clip in the shield's own units, the path's transform
+  // carrying both)
+  const seal = `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><path d="${Se.d}"/></clipPath><path class="band-logo__shield" d="${Se.d}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke" clip-path="url(#${cut}-in)" transform="${Se.T}"/>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
@@ -224,8 +233,8 @@ function bandLogoHtml(id = 'band', cls = '') {
     // the ground shows through the cut — in the mark's colour for a few
     // minutes on 2026-10-07, "fill bird in stamp with Highlight color",
     // then "Remove highlight color from the bird")
-    .replace(/class="wm-bird-only" fill="currentColor"/, `class="wm-bird-only" fill="none" transform="${Se.birdT}"`);
-  if (!bird.includes('band-logo__shield') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="none" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band shield: bird SVG did not take the shield');
+    .replace(/class="wm-bird-only" fill="currentColor"/, `class="wm-bird-only" fill="currentColor" transform="${Se.birdT}"`);
+  if (!bird.includes('band-logo__shield') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="currentColor" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band shield: bird SVG did not take the shield');
   return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
