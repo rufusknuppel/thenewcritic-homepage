@@ -166,49 +166,46 @@ const BAND_FRAME = (() => {
   const r = n => +n.toFixed(2);
   return { sw, wo: r(wo), ho: r(ho), x: r(cx - wo / 2), y: r(cy - ho / 2), cx, cy };
 })();
-// THE BIRD IN A DIAMOND (2026-10-07, at the user's word — "Put the bird in
-// a diamond shaped background, charcoal on white, and make the bird white
-// within the charcoal"): a square on its point in the ink, as wide as the
-// 4.5:5 box (so the box, its aspect and every measure made on it stand),
-// with the bird cut out of it — the ground shows through as the bird, white
-// on the white band, and whatever the ground is elsewhere. Drawn inside the
-// bird's filter group, so the stamp's turbulence roughens the diamond's
-// edges and the bird's together. latest-rail.js seats the diamond where it
-// seated the bird.
-// (WIDER THAN TALL, the same day — "I want the diamond to be wider than it
-// is tall": 4 across to 3 down, as wide as the box, so the band, which sets
-// it by its height, draws it as tall as before and a third wider. The bird
-// is fitted to the flatter diamond, its farthest ink four-fifths of the way
-// from the middle to the edge, read off its own path.)
-const BAND_DIAMOND = (() => {
-  const F = BAND_FRAME, A = F.wo / 2, B = A * 3 / 4;
-  const d = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
-  const n = d.match(/-?[\d.]+/g).map(Number);
-  let u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
-  for (let i = 0; i + 1 < n.length; i += 2) {
-    const u = n[i] / A + n[i + 1] / B, v = n[i] / A - n[i + 1] / B;
-    u0 = Math.min(u0, u); u1 = Math.max(u1, u); v0 = Math.min(v0, v); v1 = Math.max(v1, v);
-  }
-  const uc = (u0 + u1) / 2, vc = (v0 + v1) / 2, M = Math.max(u1 - u0, v1 - v0) / 2;
-  const bx = A * (uc + vc) / 2, by = B * (uc - vc) / 2, s = +(0.8 / M).toFixed(4);
-  const r = n => +n.toFixed(2);
-  return { A: r(A), B: r(B), s, birdT: `translate(${r(F.cx)} ${r(F.cy)}) scale(${s}) translate(${r(-bx)} ${r(-by)})`,
-    d: `M${r(F.cx)} ${r(F.cy - B)}L${r(F.cx + A)} ${r(F.cy)}L${r(F.cx)} ${r(F.cy + B)}L${r(F.cx - A)} ${r(F.cy)}Z` };
+// THE BIRD IN A SEAL (2026-10-07, at the user's word — "Remove the diamond.
+// give the bird a background/outline like this", with a carved seal of
+// swallows among willow): the bird stands in the seal's border, in the
+// ink, inside the bird's filter group, so the stamp's turbulence roughens
+// border and bird together. The border is the seal's own, traced from the
+// photograph (assets/seal-outline.svg — "Want the outline to match the
+// outline shape exactly of that seal I sent"), set as wide as the 4.5:5
+// box, so the box, its aspect and every measure made on it stand;
+// latest-rail.js seats the seal where it seated the diamond (and before it
+// the bird).
+// (It stood in a diamond for an hour, charcoal with the bird cut out of it,
+// then 4 across to 3 down, then a third bigger — "Put the bird in a diamond
+// shaped background"; "wider than it is tall"; "30% bigger". The seal's
+// willow switches, drawn across it at first, went at "Remove branches".)
+const BAND_SEAL = (() => {
+  const F = BAND_FRAME;
+  const src = fs.readFileSync(path.join(__dirname, 'assets', 'seal-outline.svg'), 'utf8');
+  const [vw, vh] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
+  const d = src.match(/<path[^>]*\sd="([^"]+)"/)[1];
+  // (a little taller than wide — "Have the seal be slightly taller than
+  // width": 1.08 down to 1 across, where the photograph's stands 0.97;
+  // then "make it slightly wider": 1.04)
+  const TALL = 1.04;
+  const k = F.wo / vw, ky = TALL * F.wo / vh, r = n => +n.toFixed(4);
+  const tx = F.cx - F.wo / 2, ty = F.cy - TALL * F.wo / 2;
+  return {
+    d,
+    T: `translate(${r(tx)} ${r(ty)}) scale(${r(k)} ${r(ky)})`,
+    birdT: `translate(${r(F.cx)} ${r(F.cy)}) scale(0.88) translate(${r(-F.cx)} ${r(-F.cy)})`,
+  };
 })();
 function bandLogoHtml(id = 'band', cls = '') {
-  const F = BAND_FRAME, Dm = BAND_DIAMOND;
-  const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
-  const cut = `band-bird-cut-${id}`;
-  const mask = `<mask id="${cut}" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><path d="${birdD}" fill="#000" fill-rule="evenodd" transform="${Dm.birdT}"/></mask>`;
-  const diamond = `<path class="band-logo__diamond" d="${Dm.d}" fill="currentColor" mask="url(#${cut})"/>`;
+  const F = BAND_FRAME, Se = BAND_SEAL;
+  const seal = `<path class="band-logo__seal" d="${Se.d}" fill="currentColor" transform="${Se.T}"/>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
-    .replace('</defs>', `${mask}</defs>`)
-    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${diamond}`)
-    // (the bird's own path stays, unpainted, where it now stands in the diamond)
-    .replace(/(class="wm-bird-only") fill="currentColor"/, `$1 fill="none" transform="${Dm.birdT}"`);
-  if (!bird.includes('band-logo__diamond') || !bird.includes(`mask id="${cut}"`) || !bird.includes('fill="none" transform=') || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band diamond: bird SVG did not take the diamond');
+    .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${seal}`)
+    .replace(/(class="wm-bird-only" fill="currentColor")/, `$1 transform="${Se.birdT}"`);
+  if (!bird.includes('band-logo__seal') || !bird.includes(`transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band seal: bird SVG did not take the seal');
   return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
