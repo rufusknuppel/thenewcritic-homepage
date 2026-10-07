@@ -280,9 +280,14 @@ function bandLogoHtml(id = 'band', cls = '') {
   // its right. Straight runs are collinear points, so the smoothing keeps
   // them straight and rounds only the turns. The drawing sets the bird
   // where the stamp does, its upper wing tip at 0.255, 0.126. Before it:
-  // a second drawing, then an even 18 off the bird)
-  const upper = [[0.39, -0.03], [0.362, 0.006], [0.28, 0.04], [0.225, 0.11], [0.195, 0.215], [0.188, 0.3], [0.188, 0.4], [0.188, 0.5], [0.18, 0.548], [0.15, 0.572], [0.075, 0.591], [0, 0.61], [-0.05, 0.622]].map(q => fp(...q));
-  const lower = [[-0.05, 0.66], [0, 0.66], [0.12, 0.66], [0.24, 0.661], [0.3, 0.672], [0.338, 0.703], [0.425, 0.775], [0.512, 0.847], [0.6, 0.92], [0.72, 0.963], [0.886, 0.996], [1, 1], [1.05, 1]].map(q => fp(...q));
+  // a second drawing, then an even 18 off the bird. The trail since on the
+  // beak's own path — "This area should better follow the bath of the
+  // beak": both its edges at the beak's slope, 0.312 of the box's height
+  // per width leftward, centred on the beak's line, 0.648 to 0.698 down at
+  // the box's edge, bending round the head's top and underside with about
+  // 12 of the box's units of air)
+  const upper = [[0.39, -0.03], [0.362, 0.006], [0.28, 0.04], [0.225, 0.11], [0.195, 0.215], [0.188, 0.3], [0.188, 0.4], [0.188, 0.5], [0.178, 0.545], [0.15, 0.572], [0.115, 0.598], [0.07, 0.626], [0, 0.648], [-0.05, 0.664]].map(q => fp(...q));
+  const lower = [[-0.05, 0.714], [0, 0.698], [0.05, 0.682], [0.1, 0.668], [0.17, 0.662], [0.24, 0.664], [0.3, 0.677], [0.338, 0.703], [0.425, 0.775], [0.512, 0.847], [0.6, 0.92], [0.72, 0.963], [0.886, 0.996], [1, 1], [1.05, 1]].map(q => fp(...q));
   const far = (fx, fy) => fp(fx, fy).join(' ');
   const fieldD = `M${far(-0.05, -0.05)}L${upper[0].join(' ')}${smoothRun(upper)}Z`
     + `M${lower[0].join(' ')}${smoothRun(lower)}L${far(1.05, 1.05)}L${far(-0.05, 1.05)}Z`;
@@ -311,7 +316,7 @@ function bandLogoHtml(id = 'band', cls = '') {
   // back and 6.5 either side, so the grown outline's square end becomes a
   // spike)
   const field = jag + `<mask id="${cut}-halo" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><g filter="url(#${cut}-jag)"><path d="${birdD.split(/(?=M)/)[0]}" transform="${Se.birdT}" fill="#000"/></g><path d="M50.1 318.3L74.9 316.6L70.7 304.3Z" transform="${Se.birdT}" fill="#000"/></mask><g clip-path="url(#${cut}-in)" mask="url(#${cut}-halo)"><path class="band-logo__field" d="${fieldD}" fill="currentColor" filter="url(#${cut}-edge)"/></g>`;
-  const seal = field + `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><mask id="${cut}-gap" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><rect x="${F.x - 10}" y="${r2(F.y + 0.61 * F.ho)}" width="30" height="${r2(0.05 * F.ho)}" fill="#000"/></mask><g clip-path="url(#${cut}-in)" mask="url(#${cut}-gap)"><g filter="url(#${cut}-boxr)"><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke"/></g></g>`;
+  const seal = field + `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><mask id="${cut}-gap" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><rect x="${F.x - 10}" y="${r2(F.y + 0.648 * F.ho)}" width="30" height="${r2(0.05 * F.ho)}" fill="#000"/></mask><g clip-path="url(#${cut}-in)" mask="url(#${cut}-gap)"><g filter="url(#${cut}-boxr)"><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke"/></g></g>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
