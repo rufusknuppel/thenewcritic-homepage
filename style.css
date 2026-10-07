@@ -27434,5 +27434,7 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
    swallow cut out of the stamp's box is painted in the mark's colour
    (build.js, bandLogoHtml) where the ground showed through; under the
    hand, when the box itself takes the mark's colour, the swallow turns
-   white so it does not vanish into it. */
-.band-logo:is(:hover, :focus-visible) .wm-bird-only{ fill: #FFFFFF !important; }
+   white so it does not vanish into it. Struck minutes later — "Remove
+   highlight color from the bird": the cut shows the ground again, and
+   the rule below is kept only for the record. */
+/* .band-logo:is(:hover, :focus-visible) .wm-bird-only{ fill: #FFFFFF !important; } */

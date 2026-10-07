@@ -219,11 +219,12 @@ function bandLogoHtml(id = 'band', cls = '') {
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
     .replace('</defs>', `${mask}</defs>`)
     .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${seal}`)
-    // (the bird's own path stays where it stands in the box, in the mark's
-    // colour — "fill bird in stamp with Highlight color", 2026-10-07; it
-    // was unpainted, the ground showing through the cut)
-    .replace(/class="wm-bird-only" fill="currentColor"/, `class="wm-bird-only" fill="var(--nc-mark, #D52B05)" transform="${Se.birdT}"`);
-  if (!bird.includes('band-logo__shield') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="var(--nc-mark, #D52B05)" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band shield: bird SVG did not take the shield');
+    // (the bird's own path stays, unpainted, where it stands in the box:
+    // the ground shows through the cut — in the mark's colour for a few
+    // minutes on 2026-10-07, "fill bird in stamp with Highlight color",
+    // then "Remove highlight color from the bird")
+    .replace(/class="wm-bird-only" fill="currentColor"/, `class="wm-bird-only" fill="none" transform="${Se.birdT}"`);
+  if (!bird.includes('band-logo__shield') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="none" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band shield: bird SVG did not take the shield');
   return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
