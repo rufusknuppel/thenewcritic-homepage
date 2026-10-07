@@ -9729,19 +9729,29 @@
           // above the titles"): the byline's capitals at the stack's top,
           // the title's first ink META_AIR under the byline's baseline, and
           // the rule RULE_AIR under the title's lowest ink
-          if (between) top0 = j.mT;
-          var midH = between ? (j.mB - j.mT) + META_AIR : INK_GAP;
-          var sH = between ? midH + (j.hdB - j.ttT) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
+          // (under the title again since later still — "move metadate under
+          // titles": the byline's capitals META_AIR under the title's last
+          // baseline, the rule RULE_AIR under the byline's)
+          var metaOver = false;
+          if (between && metaOver) top0 = j.mT;
+          var midH = between ? (metaOver ? (j.mB - j.mT) + META_AIR : META_AIR + (j.mB - j.mT)) : INK_GAP;
+          var sH = between ? (metaOver ? midH + (j.hdB - j.ttT) : (j.ttB - top0) + midH) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
-          if (between) {
+          if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop - j.ttT;
             metaY = y0 - (j.mT + upY);
             ruleTop = Math.round(tTop + (j.hdB - j.ttT) + RULE_AIR);
+            dekY = (ruleTop + FRAME + RULE_AIR) - j.dkC;
+            dnY = (j.dkB + dekY + META_AIR) - j.txT;
+          } else if (between) {
+            var mTop = y0 + (j.ttB - top0) + META_AIR;
+            metaY = mTop - (j.mT + upY);
+            ruleTop = Math.round(mTop + (j.mB - j.mT) + RULE_AIR);
             dekY = (ruleTop + FRAME + RULE_AIR) - j.dkC;
             dnY = (j.dkB + dekY + META_AIR) - j.txT;
           } else {
