@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=59492775">
+<link rel="stylesheet" href="style.css?v=ea1876aa">
 <style>:root{--colo-span:16.9897;--band-span:15.1211;--wm-space:1.0256}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10340,6 +10340,17 @@ window.__ncStripInk = function () {
   if (!rails.length || !main) return;
   var STRIP_SETTLED = 144;
   var hold0 = rails[0].querySelector('.latest-rail__hold');
+  var openH = function () {
+    if (!hold0) return;
+    [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list, :scope > .latest-rail__in > .latest-rail__all'), function (el) {
+      var h = el.scrollHeight + 'px';
+      if (el.style.getPropertyValue('--open-h') !== h) el.style.setProperty('--open-h', h);
+    });
+  };
+  ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
+    addEventListener(ev, openH, { passive: true });
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(openH);
   rails.forEach(function (r, i) {
     var inn = r.querySelector('.latest-rail__in');
     if (!inn) return;
@@ -10458,11 +10469,6 @@ window.__ncStripInk = function () {
     }
   };
   var curKey = rails[0].getAttribute('data-sec');
-  var resting = function () {
-    if (hold0) hold0.classList.toggle('is-resting', (window.pageYOffset || 0) < 10);
-  };
-  resting();
-  addEventListener('scroll', resting, { passive: true });
   var lift = function () {
     allWraps().forEach(function (w) {
       if (w.__z == null) return;
