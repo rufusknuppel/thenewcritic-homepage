@@ -71,7 +71,6 @@
     // (9 less over and under since 2026-10-06 — "Reduce band margins by
     // 18px on top and bottom", then "Actually only 9px on both sides": the
     // field 115)
-    var F = 108 - 2 + 27 - 18;
     var wmH = k.b - k.t;
     // (THE DIAMOND A THIRD BIGGER, 2026-10-07 — "Make the diamond 30%
     // bigger, and expand the height of the top band to match": the diamond
@@ -79,7 +78,15 @@
     // taller by just what the diamond gained, in whole pixels, so the air
     // over and under the diamond stands as it was)
     var BIRD_K = 1.375 * 1.3;
-    F += Math.round((BIRD_K - 1.375) * wmH);
+    // (THE NAME 27 FROM THE BAND'S TOP AND FOOT, 2026-10-07, at the user's
+    // word — "Make wordmark in top band bigger so it has 27px margins on
+    // top and bottom": the band stays 137 — the 115 and the 22 the diamond's
+    // growth added at the cap of 54.21 — where it was reckoned off the
+    // name's ink; the name grows to 27 from its top and foot (style.css,
+    // the cap 83), and the swallow keeps its size, 1.7875 of that old cap
+    // rather than of the name's ink, 20 from the band's edges)
+    var F = 137;
+    var birdH = BIRD_K * 54.21;
     var H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
@@ -104,7 +111,7 @@
     // 10% bigger than the wordmark"; then a quarter — "bird should be 25%
     // bigger than wordmark"; and a tenth more — "Make bird another 10%
     // bigger": 1.25 x 1.1)
-    st.style.setProperty('--bird-s', (BIRD_K * wmH / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', (birdH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();

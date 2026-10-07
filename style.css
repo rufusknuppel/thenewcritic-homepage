@@ -27376,3 +27376,18 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
    Its top is reckoned off the band's height: the band's half and 37, so its
    middle is 27 under the rule (2) at every height — set in that block's own
    rule, which nothing written after it can outweigh. */
+
+/* ---------- THE NAME 27 FROM THE BAND'S TOP AND FOOT (2026-10-07) ----------
+   At the user's word ("Make wordmark in top band bigger so it has 27px
+   margins on top and bottom"): in the head's band of 137 the name's cap
+   is 83 — 137 less 27 over and 27 under — where it was 54.21 (THE NAME
+   IN THE BAND). The band no longer grows with the name's ink: seatLogo
+   (latest-rail.js) holds it at 137 and the swallow at its size, and
+   centres both. Under 1325 the name, the LODÉHO drawing's 8.07 caps
+   across with the bird and the 27s, takes the band less its 655 of air,
+   words and bird, as before. */
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo{
+    font-size: min(83px, (100vw - 655px) / var(--band-span, 8.07));
+  }
+}

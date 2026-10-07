@@ -80,7 +80,11 @@ const BIRD_STAMP = (() => {
 // shield-outline.svg); its width over its height sets the bird's box (the
 // band's and the colophon's), which was 4.5:5 — --bird-ar on :root.
 const SHIELD = (() => {
-  const src = fs.readFileSync(path.join(__dirname, 'assets', 'shield-outline.svg'), 'utf8');
+  // (THE BOX, 2026-10-07, at the user's word — "Put the bird in a 4:5/5 box
+  // with the same roughness as the letters": the shield gives way to a
+  // 4.5:5 box whose edge carries the wordmark's print raggedness, assets/
+  // box-outline.svg; the shield stays in assets/shield-outline.svg)
+  const src = fs.readFileSync(path.join(__dirname, 'assets', 'box-outline.svg'), 'utf8');
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   return { w, h, ar: w / h, d: src.match(/<path id="shield" d="([^"]+)"/)[1] };
 })();
@@ -194,7 +198,10 @@ const BAND_FRAME = (() => {
 // seal-outline.svg keeps that seal.)
 const BAND_SHIELD = (() => {
   const F = BAND_FRAME, k = F.wo / SHIELD.w, r = n => +n.toFixed(4);
-  const bx = F.x + 0.525 * F.wo, by = F.y + 0.464 * F.ho, s = 0.796 * F.wo / 323.28;
+  // (in the box the bird stands in the middle, 0.796 of the box's width as
+  // it was of the shield's; in the shield it stood 0.525 across and 0.464
+  // down, where the drawing set it)
+  const bx = F.x + 0.5 * F.wo, by = F.y + 0.5 * F.ho, s = 0.796 * F.wo / 323.28;
   return {
     d: SHIELD.d,
     T: `translate(${r(F.x)} ${r(F.y)}) scale(${r(k)})`,
