@@ -171,17 +171,29 @@ const BAND_FRAME = (() => {
 // within the charcoal"): a square on its point in the ink, as wide as the
 // 4.5:5 box (so the box, its aspect and every measure made on it stand),
 // with the bird cut out of it — the ground shows through as the bird, white
-// on the white band, and whatever the ground is elsewhere. The bird is
-// drawn at 0.65 inside it, its own diamond (250.5 of its units from its
-// middle to each point) four-fifths of the ground's, centred on the box.
-// Drawn inside the bird's filter group, so the stamp's turbulence roughens
-// the diamond's edges and the bird's together. latest-rail.js seats the
-// diamond where it seated the bird.
+// on the white band, and whatever the ground is elsewhere. Drawn inside the
+// bird's filter group, so the stamp's turbulence roughens the diamond's
+// edges and the bird's together. latest-rail.js seats the diamond where it
+// seated the bird.
+// (WIDER THAN TALL, the same day — "I want the diamond to be wider than it
+// is tall": 4 across to 3 down, as wide as the box, so the band, which sets
+// it by its height, draws it as tall as before and a third wider. The bird
+// is fitted to the flatter diamond, its farthest ink four-fifths of the way
+// from the middle to the edge, read off its own path.)
 const BAND_DIAMOND = (() => {
-  const F = BAND_FRAME, D = F.wo / 2, s = +(0.8 * D / 250.5).toFixed(4);
+  const F = BAND_FRAME, A = F.wo / 2, B = A * 3 / 4;
+  const d = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
+  const n = d.match(/-?[\d.]+/g).map(Number);
+  let u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
+  for (let i = 0; i + 1 < n.length; i += 2) {
+    const u = n[i] / A + n[i + 1] / B, v = n[i] / A - n[i + 1] / B;
+    u0 = Math.min(u0, u); u1 = Math.max(u1, u); v0 = Math.min(v0, v); v1 = Math.max(v1, v);
+  }
+  const uc = (u0 + u1) / 2, vc = (v0 + v1) / 2, M = Math.max(u1 - u0, v1 - v0) / 2;
+  const bx = A * (uc + vc) / 2, by = B * (uc - vc) / 2, s = +(0.8 / M).toFixed(4);
   const r = n => +n.toFixed(2);
-  return { D: r(D), s, birdT: `translate(${r(F.cx)} ${r(F.cy)}) scale(${s}) translate(-226.56 -226.92)`,
-    d: `M${r(F.cx)} ${r(F.cy - D)}L${r(F.cx + D)} ${r(F.cy)}L${r(F.cx)} ${r(F.cy + D)}L${r(F.cx - D)} ${r(F.cy)}Z` };
+  return { A: r(A), B: r(B), s, birdT: `translate(${r(F.cx)} ${r(F.cy)}) scale(${s}) translate(${r(-bx)} ${r(-by)})`,
+    d: `M${r(F.cx)} ${r(F.cy - B)}L${r(F.cx + A)} ${r(F.cy)}L${r(F.cx)} ${r(F.cy + B)}L${r(F.cx - A)} ${r(F.cy)}Z` };
 })();
 function bandLogoHtml(id = 'band', cls = '') {
   const F = BAND_FRAME, Dm = BAND_DIAMOND;
