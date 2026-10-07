@@ -877,8 +877,16 @@
     // (read where STORE and ARCHIVE would stand evenly between CRITIC and
     // the swallow, not where they are spread across the strip: SPREAD FROM
     // EDGE TO EDGE, in band())
-    var mid = window.__ncEvenMid ? window.__ncEvenMid() : null;
-    if (mid == null) { var s = word(/^store$/i), a = word(/^archive$/i); if (s && a && s.width && a.width) mid = (s.right + a.left) / 2; }
+    // THE COLUMN AT ITS OLD WIDTH (2026-10-07, at the user's word — "the
+    // sidebar should go back to its old width"): the name and the stamp
+    // moved to the window's 18s, which moved where the band's words would
+    // stand evenly, so the edge is no longer read off them: it is the
+    // edge they gave before, measured at 1024 to 2560 (617 at 1024, 949
+    // at 1440, 1269 at 1920) — two thirds of the window less 11 from about
+    // 1200 up, and the steeper line under that.
+    var vwE = document.documentElement.clientWidth;
+    var mid = Math.min(vwE * 2 / 3 - 11, 0.9773 * vwE - 383.75);
+    void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
     // (on a whole pixel, so the column's rule and the strip's end stand on
