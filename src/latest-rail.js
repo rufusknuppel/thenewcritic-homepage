@@ -83,7 +83,7 @@
     // top and bottom": the band stays 137 — the 115 and the 22 the diamond's
     // growth added at the cap of 54.21 — where it was reckoned off the
     // name's ink; the name grows to 27 from its top and foot (style.css,
-    // the cap 83), and the swallow keeps its size, 1.7875 of that old cap
+    // the cap 83, then 110 — "match wordmark margin with the bird margin"), and the swallow keeps its size, 1.7875 of that old cap
     // rather than of the name's ink, 20 from the band's edges)
     var F = 137;
     // ("give the bird the same 27px margins", then "Have bird stretch to
@@ -196,6 +196,12 @@
     // (back at the right the same day — "move bird back to the right": no target inside the name)
     var tgtL = null; void mr;
     var lowEl = st.querySelector('.band-logo__low');
+    // (THE STAMP OVER THE COLUMN, 2026-10-07, at the user's word — "center
+    // stamp above the The Latest column": the swallow's box centred on the
+    // column's middle rather than its ink on the window's 54; the window's
+    // 54 still where there is no column)
+    var railEl = document.querySelector('.page-rows .latest-rail--latest'), rrc = railEl && railEl.getBoundingClientRect();
+    var railMid = rrc && rrc.width ? (rrc.left + rrc.right) / 2 : null;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;
@@ -204,6 +210,7 @@
       // easing runs from there and is not set back first)
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
+      if (railMid != null) tgtR = railMid + br0.width / 2;
       dx = dxNow + (tgtL != null ? tgtL - br0.left : tgtR - br0.right);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
@@ -217,6 +224,7 @@
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
+      if (railMid != null) tgtR = railMid + br0.width / 2;
       dx = tgtL != null ? tgtL - br0.left : tgtR - br0.right;
     }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
