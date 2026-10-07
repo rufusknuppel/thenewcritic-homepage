@@ -13581,6 +13581,11 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
 }
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
-    --strip-side: 27px;
+    --strip-side: 54px; 
+  }
+}
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo .band-logo__low{
+    margin-left: var(--low-shift, 0px) !important;
   }
 }
