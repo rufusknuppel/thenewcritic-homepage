@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=0f2b512d">
+<link rel="stylesheet" href="style.css?v=59492775">
 <style>:root{--colo-span:19.2153;--band-span:17.3467;--wm-space:1.2821}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10458,6 +10458,11 @@ window.__ncStripInk = function () {
     }
   };
   var curKey = rails[0].getAttribute('data-sec');
+  var resting = function () {
+    if (hold0) hold0.classList.toggle('is-resting', (window.pageYOffset || 0) < 10);
+  };
+  resting();
+  addEventListener('scroll', resting, { passive: true });
   var lift = function () {
     allWraps().forEach(function (w) {
       if (w.__z == null) return;
@@ -10637,6 +10642,8 @@ window.__ncStripInk = function () {
       return;
     }
     var a = e.target && e.target.closest && e.target.closest('.latest-rail__list a[data-slug], a.latest-rail__cue[data-slug]');
+    var name = !a && e.target && e.target.closest && e.target.closest('.latest-rail__in > .latest-rail__meta');
+    if (name) a = name.parentElement.querySelector('.latest-rail__list a[data-slug]');
     if (!a) return;
     if (a.classList.contains('latest-rail__cue') && !e.target.closest('.latest-rail__caret')) return;
     var slug = a.getAttribute('data-slug');
