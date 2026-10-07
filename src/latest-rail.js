@@ -184,7 +184,9 @@
     // and wordmark band should stretch all the way": both bands run the
     // window's width over the column, the swallow and the strip's last
     // word 54 off its edge, standing still as the column slides)
-    var tgtR = vw - 54;
+    // (27 since 2026-10-07 — "Have the wordmark and the bird sit 27px from
+    // the sides in the top band": the swallow's box 27 off the window's edge)
+    var tgtR = vw - 27;
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;

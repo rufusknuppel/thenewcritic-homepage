@@ -27393,3 +27393,16 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
     font-size: min(83px, (100vw - 655px) / var(--band-span, 8.07));
   }
 }
+
+/* ---------- THE NAME AND THE BIRD 27 FROM THE BAND'S SIDES (2026-10-07) ----------
+   At the user's word ("Have the wordmark and the bird sit 27px from the
+   sides in the top band"): the head band's side, --strip-side, which every
+   rule of the band reads (the name's left, the bird's right, the words'
+   run), is 27: band-mark.js writes it on the band where the page opens on
+   the band (54 before), and this rule says the same for any moment before
+   it has. */
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
+    --strip-side: 27px;
+  }
+}
