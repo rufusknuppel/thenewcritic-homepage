@@ -49,8 +49,47 @@
       [].forEach.call(paths, function (q) { var r = q.getBoundingClientRect(); if (r.width) { t = Math.min(t, r.top); b = Math.max(b, r.bottom); } });
       return { t: t, b: b };
     };
+    var logoEl = st.querySelector('.band-logo');
+    // (measured only once the column and the list are laid out: till then
+    // the next seating asks again — bandGeo calls this each time)
+    var fitMeasured = false;
+    if (logoEl) logoEl.style.removeProperty('font-size');
     var k = inkY();
     if (!isFinite(k.t)) return;
+    // THE LIST KEEPS ITS 36s (2026-10-07): the name at the sheet's size
+    // stands 18 over and under in the band of 155 ("Reduce space above
+    // and below stamp/wordmark to 18px") where the list between CRITIC
+    // and the swallow keeps 36 clear either side; where it would not, the
+    // name comes down just so far. The name's left is the swallow's right
+    // margin and the swallow is centred on the column (bandGeo), so the
+    // swallow's width falls out: CRITIC may end at 2 x the column's middle
+    // less the window, the list and its two 36s.
+    var railEl = document.querySelector('.page-rows .latest-rail--latest');
+    void railEl;
+    var runEl = st.querySelector(':scope > .sub-ticker-run');
+    if (logoEl && runEl) {
+      var rr = { width: 1 };
+      var lk = [].filter.call(runEl.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); });
+      var nl = Infinity, nr = -Infinity, ll = Infinity, lr = -Infinity;
+      [].forEach.call(paths, function (q) { var r = q.getBoundingClientRect(); if (r.width) { nl = Math.min(nl, r.left); nr = Math.max(nr, r.right); } });
+      lk.forEach(function (c) { var r = c.getBoundingClientRect(); ll = Math.min(ll, r.left); lr = Math.max(lr, r.right); });
+      if (rr.width && isFinite(nl) && isFinite(ll)) {
+        fitMeasured = true;
+        // (the name and the swallow 18 off the window's sides since later
+        // that day — "Move stamp and wordmark to sit 18px from the sides":
+        // the name's width and the swallow's, as tall as the name's ink at
+        // the swallow's own proportion, share the window less the two 18s,
+        // the list and its two 36s)
+        var bb0 = bird.getBoundingClientRect();
+        var bAr = bb0.height ? bb0.width / bb0.height : 0.9;
+        var nW = (nr - nl) + bAr * (k.b - k.t);
+        var maxW = vw - 36 - 72 - (lr - ll);
+        if (maxW > 0 && nW > maxW + 0.5) {
+          var fs0 = parseFloat(getComputedStyle(logoEl).fontSize) || 0;
+          if (fs0) { logoEl.style.setProperty('font-size', (fs0 * maxW / nW).toFixed(2) + 'px', 'important'); k = inkY(); }
+        }
+      }
+    }
     // (the strip under the name again since later that day — "Set band
     // below wordmark": the field the band's box, from the window's top to
     // the strip, the name 27 from either; THE NAV UNDER THE NAME, style.css)
@@ -88,7 +127,12 @@
     // (155 for a few minutes — "Expand the top band by 18px" — but the
     // opening's scroll and the rule under the band are reckoned off the
     // band's height elsewhere, and the rule fell away from it: 137 again)
-    var F = 137;
+    // (155 again — "Expand the top band by 18px, find the other height
+    // assumptions first": everything else reads the band's height off
+    // --strip-settled and the strip's own height, which this writes, and
+    // the opening's lift and the first row's seat follow it; checked
+    // headless at 1440 x 900, the rule at 155, the first picture 18 lower)
+    var F = 155;
     // ("give the bird the same 27px margins", then "Have bird stretch to
     // 13.5px margins on top and bottom": the bird's box the band less 13.5
     // over and under, 110 in the 137)
@@ -123,6 +167,7 @@
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();
+    if (!fitMeasured) logoW = -1;
   };
   // (THE COLOPHON'S AIR THE DEK'S, 2026-10-06 — "Padding in the colophon
   // seems off. Should match the padding above garamond dek in nav bar":
@@ -167,7 +212,7 @@
     set(props[2], parseFloat(rs.marginBottom) + air - (c.bottom - w.base));
   };
   seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top'));
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(seatColo);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { logoW = -1; seatColo(); });
   addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
   var LIST_NAV = true;
   var bandCtx = null;
@@ -191,7 +236,10 @@
     // word 54 off its edge, standing still as the column slides)
     // (27 since 2026-10-07 — "Have the wordmark and the bird sit 27px from
     // the sides in the top band": the swallow's box 27 off the window's edge)
-    var tgtR = vw - 54;   // (27 for a moment, then "move side margins back to 54px")
+    // (18 since 2026-10-07 — "Move stamp and wordmark to sit 18px from the
+    // sides": the swallow's box 18 off the window's right edge, no longer
+    // centred on the column, and the name 18 off its left)
+    var tgtR = vw - 18;   // (27 for a moment, then "move side margins back to 54px")
     // (THE BIRD BETWEEN THE NEW AND CRITIC, 2026-10-07, at the user's word —
     // "Move the bird between THE NEW and CRITIC": the swallow's box 27
     // after NEW's last stroke, and CRITIC 27 after the box — --low-shift
@@ -215,7 +263,6 @@
       // easing runs from there and is not set back first)
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      if (railMid != null) tgtR = railMid + br0.width / 2;
       dx = dxNow + (tgtL != null ? tgtL - br0.left : tgtR - br0.right);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
@@ -229,13 +276,13 @@
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      if (railMid != null) tgtR = railMid + br0.width / 2;
       dx = tgtL != null ? tgtL - br0.left : tgtR - br0.right;
     }
     // (the name's left the swallow's distance from the window's right —
     // "match wordmark margin with the bird margin" / "I meant side margin")
     var lg = st.querySelector('.band-logo');
-    if (lg) { if (railMid != null) lg.style.setProperty('left', (vw - tgtR).toFixed(2) + 'px', 'important'); else lg.style.removeProperty('left'); }
+    if (lg) lg.style.setProperty('left', (vw - tgtR).toFixed(2) + 'px', 'important');
+    void railMid;
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     if (lowEl) {
       // (CRITIC's shift read off where it stands unshifted, so the gap after

@@ -9716,8 +9716,17 @@
         if (stacked) {
           var dkF = j.dkF != null ? j.dkF : j.dkB;
           var top0 = between ? j.ttT : j.inT;
-          var midH = between ? META_AIR + (j.mB - j.mT) + META_AIR : INK_GAP;
-          var sH = between ? (j.ttB - top0) + midH + (dkF - j.dkC) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT)
+          // THE DEK IN THE BODY'S SECTION (2026-10-07, at the user's words —
+          // "Move deks into Body text section, left align above body text";
+          // "space the same distance between Titles and metadata"): the head
+          // over the rule is the title and its byline alone, the rule
+          // RULE_AIR under the byline's baseline; the dek's capitals
+          // RULE_AIR under the rule, ranged left over the text (style.css,
+          // THE DEK OVER THE BODY TEXT), and the text's first ink META_AIR
+          // under the dek's last baseline — the title's own distance from
+          // its byline
+          var midH = between ? META_AIR + (j.mB - j.mT) : INK_GAP;
+          var sH = between ? (j.ttB - top0) + midH + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
@@ -9726,10 +9735,14 @@
           if (between) {
             var mTop = y0 + (j.ttB - top0) + META_AIR;
             metaY = mTop - (j.mT + upY);
-            dekY = (mTop + (j.mB - j.mT) + META_AIR) - j.dkC;
-          } else dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
-          ruleTop = Math.round(dkF + dekY + RULE_AIR);
-          dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
+            ruleTop = Math.round(mTop + (j.mB - j.mT) + RULE_AIR);
+            dekY = (ruleTop + FRAME + RULE_AIR) - j.dkC;
+            dnY = (j.dkB + dekY + META_AIR) - j.txT;
+          } else {
+            dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
+            ruleTop = Math.round(dkF + dekY + RULE_AIR);
+            dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
+          }
         } else {
           var dekY = (j.txT != null && j.dkB != null) ? (j.txT + dnY - INK_GAP) - j.dkB : dnY;
           if (j.dkT != null) ruleTop = Math.round(j.dkT + dekY - INK_GAP - FRAME);
