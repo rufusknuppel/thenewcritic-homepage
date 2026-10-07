@@ -17,7 +17,8 @@ const fs = require('fs');
 
 // The words are parted at the two widest spaces (THE NEW CRITIC has three),
 // not at a set share of the cap: the MAILLE lettering, 2026-10-06, sets its
-// letters 0.42-0.51 of the cap apart and its words 1.28, where the traced
+// letters 0.25-0.31 of the cap apart and its words 1.03 (0.42-0.51 and 1.28
+// before "Move letters closer together"), where the traced
 // drawing before it had word spaces of 0.38 and letter gaps under 0.09. A
 // word space must still be WORD_CLEAR times the widest letter gap.
 const WORD_CLEAR = 1.5;
