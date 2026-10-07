@@ -153,7 +153,8 @@ const COLO_SPAN = (() => {
     const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
     return vb[2] / vb[3];
   };
-  return (1.66 * SHIELD.ar + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  // (the bird 1 cap tall in the colophon since 2026-10-07 — "Stamp in colophon should be the same height as the words" — where it was 1.66)
+  return (1 * SHIELD.ar + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
 // The band's name, THE, NEW and CRITIC, in caps across: the words, the two
 // spaces between them (27 at the 54.21 cap, or the drawing's own where that
