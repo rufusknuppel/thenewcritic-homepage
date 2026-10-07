@@ -13589,4 +13589,3 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
     margin-left: var(--low-shift, 0px) !important;
   }
 }
-.band-logo:is(:hover, :focus-visible) .wm-bird-only{ fill: #FFFFFF !important; }
