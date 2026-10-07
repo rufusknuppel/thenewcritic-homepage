@@ -10212,7 +10212,10 @@ window.__ncStripInk = function () {
     var k = inkY();
     if (!isFinite(k.t)) return;
     var F = 108 - 2 + 27 - 18;
-    var wmH = k.b - k.t, H = F;
+    var wmH = k.b - k.t;
+    var BIRD_K = 1.375 * 1.3;
+    F += Math.round((BIRD_K - 1.375) * wmH);
+    var H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -10226,7 +10229,7 @@ window.__ncStripInk = function () {
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
-    st.style.setProperty('--bird-s', (1.375 * wmH / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', (BIRD_K * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();

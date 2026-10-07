@@ -71,7 +71,15 @@
     // 18px on top and bottom", then "Actually only 9px on both sides": the
     // field 115)
     var F = 108 - 2 + 27 - 18;
-    var wmH = k.b - k.t, H = F;
+    var wmH = k.b - k.t;
+    // (THE DIAMOND A THIRD BIGGER, 2026-10-07 — "Make the diamond 30%
+    // bigger, and expand the height of the top band to match": the diamond
+    // 1.3 times what it was, 1.375 x 1.3 of the name's ink, and the band
+    // taller by just what the diamond gained, in whole pixels, so the air
+    // over and under the diamond stands as it was)
+    var BIRD_K = 1.375 * 1.3;
+    F += Math.round((BIRD_K - 1.375) * wmH);
+    var H = F;
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -95,7 +103,7 @@
     // 10% bigger than the wordmark"; then a quarter — "bird should be 25%
     // bigger than wordmark"; and a tenth more — "Make bird another 10%
     // bigger": 1.25 x 1.1)
-    st.style.setProperty('--bird-s', (1.375 * wmH / bi.height).toFixed(4));
+    st.style.setProperty('--bird-s', (BIRD_K * wmH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();
