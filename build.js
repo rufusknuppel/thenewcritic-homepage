@@ -75,6 +75,15 @@ const BIRD_STAMP = (() => {
   const svg = fs.readFileSync(path.join(__dirname, 'assets', 'bird-stamp.svg'), 'utf8').trim();
   return svg.replace(/^<svg xmlns="[^"]*"/, '<svg class="wm-bird" aria-hidden="true" focusable="false"');
 })();
+// THE SHIELD (2026-10-07, "Use this as the shape. Keep the bird as is"): the
+// outline the bird stands in, traced from the user's drawing (assets/
+// shield-outline.svg); its width over its height sets the bird's box (the
+// band's and the colophon's), which was 4.5:5 — --bird-ar on :root.
+const SHIELD = (() => {
+  const src = fs.readFileSync(path.join(__dirname, 'assets', 'shield-outline.svg'), 'utf8');
+  const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
+  return { w, h, ar: w / h, d: src.match(/<path id="shield" d="([^"]+)"/)[1] };
+})();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
 // masthead's THE NEW CRITIC is three vector words, each traced from the
@@ -128,7 +137,8 @@ function bandWord(word) {
 }
 // THE COLOPHON'S NAME ACROSS (2026-10-06 — "Why is Critic in the Colophon
 // smaller than THE NEW?"): the colophon sets the whole name — the bird
-// (1.66 caps tall at 4.5:5, so 1.494 across), THE, NEW and CRITIC, 0.6226
+// (1.66 caps tall at the shield's width to its height — 4.5:5, so 1.494
+// across, till 2026-10-07), THE, NEW and CRITIC, 0.6226
 // of a cap apart — to the window's width, so its size is the width over
 // how many caps wide the name is. That count was written into style.css
 // (14.378) and went stale when the drawing widened: the row overran, the
@@ -139,7 +149,7 @@ const COLO_SPAN = (() => {
     const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
     return vb[2] / vb[3];
   };
-  return (1.66 * 4.5 / 5 + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  return (1.66 * SHIELD.ar + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
 // The band's name, THE, NEW and CRITIC, in caps across: the words, the two
 // spaces between them (27 at the 54.21 cap, or the drawing's own where that
@@ -153,7 +163,7 @@ const BAND_SPAN = (() => {
   };
   return (capsAcross('the') + capsAcross('new') + capsAcross('critic') + 2 * Math.max(27 / 54.21, WM_SPACE) + 0.248).toFixed(4);
 })();
-const WM_ROOT_VARS = `--colo-span:${COLO_SPAN};--band-span:${BAND_SPAN};--wm-space:${WM_SPACE.toFixed(4)}`;
+const WM_ROOT_VARS = `--colo-span:${COLO_SPAN};--band-span:${BAND_SPAN};--wm-space:${WM_SPACE.toFixed(4)};--bird-ar:${SHIELD.ar.toFixed(4)}`;
 // The band's bird in a 4.5:5 outline ("put bird in 4.5:5 outline matching
 // the roughness of the bird"): a rectangle drawn inside the bird's own
 // filter group, so the same turbulence roughens its edges. In the bird's
@@ -162,51 +172,41 @@ const WM_ROOT_VARS = `--colo-span:${COLO_SPAN};--band-span:${BAND_SPAN};--wm-spa
 // stands 4.5 wide to 5 tall.
 const BAND_FRAME = (() => {
   const cx = 63.35 + 323.28 / 2, cy = 79.62 + 340.76 / 2, sw = 12;
-  const wo = 323.28 + 2 * (30 + sw), ho = wo * 5 / 4.5;
+  // (as tall as it stood at 4.5:5, and the shield's width to that height
+  // since 2026-10-07 — THE BIRD IN A SHIELD)
+  const ho = (323.28 + 2 * (30 + sw)) * 5 / 4.5, wo = ho * SHIELD.ar;
   const r = n => +n.toFixed(2);
   return { sw, wo: r(wo), ho: r(ho), x: r(cx - wo / 2), y: r(cy - ho / 2), cx, cy };
 })();
-// THE BIRD IN A SEAL (2026-10-07, at the user's word — "Remove the diamond.
-// give the bird a background/outline like this", with a carved seal of
-// swallows among willow): the bird stands in the seal's border, in the
-// ink, inside the bird's filter group, so the stamp's turbulence roughens
-// border and bird together. The border is the seal's own, traced from the
-// photograph (assets/seal-outline.svg — "Want the outline to match the
-// outline shape exactly of that seal I sent"), set as wide as the 4.5:5
-// box, so the box, its aspect and every measure made on it stand;
-// latest-rail.js seats the seal where it seated the diamond (and before it
-// the bird).
-// (It stood in a diamond for an hour, charcoal with the bird cut out of it,
-// then 4 across to 3 down, then a third bigger — "Put the bird in a diamond
-// shaped background"; "wider than it is tall"; "30% bigger". The seal's
-// willow switches, drawn across it at first, went at "Remove branches".)
-const BAND_SEAL = (() => {
-  const F = BAND_FRAME;
-  const src = fs.readFileSync(path.join(__dirname, 'assets', 'seal-outline.svg'), 'utf8');
-  const [vw, vh] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
-  // (filled since "Fill in the seal, and reverse the color of the bird": the
-  // seal's outer edge, closed, the bird cut out of it so the ground shows
-  // through as the bird, as it did in the diamond; the ring's gaps go under
-  // the fill)
-  const d = src.match(/<path id="seal-fill" d="([^"]+)"/)[1];
-  // (a little taller than wide — "Have the seal be slightly taller than
-  // width": 1.08 down to 1 across, where the photograph's stands 0.97;
-  // then "make it slightly wider": 1.04)
-  const TALL = 1.04;
-  const k = F.wo / vw, ky = TALL * F.wo / vh, r = n => +n.toFixed(4);
-  const tx = F.cx - F.wo / 2, ty = F.cy - TALL * F.wo / 2;
+// THE BIRD IN A SHIELD (2026-10-07, at the user's word — "Use this as the
+// shape. Keep the bird as is", with a drawing of the swallow on a shield):
+// the shield (THE SHIELD, above) fills the bird's box, in the ink, with the
+// bird cut out of it by a mask so the ground shows through as the bird —
+// white in charcoal on the light page — set where the drawing sets it: its
+// middle 0.525 across and 0.464 down the shield, 0.796 of its width. Inside
+// the bird's filter group, so the stamp's turbulence roughens both.
+// latest-rail.js seats the shield where it seated the seal.
+// (Before it the same day: a diamond — "Put the bird in a diamond shaped
+// background", "wider than it is tall", "30% bigger" — then a seal traced
+// from a carved one — "give the bird a background/outline like this", its
+// outline "exactly", gaps in its ring, "slightly taller", "slightly wider",
+// then filled, the bird reversed, its divots softened. assets/
+// seal-outline.svg keeps that seal.)
+const BAND_SHIELD = (() => {
+  const F = BAND_FRAME, k = F.wo / SHIELD.w, r = n => +n.toFixed(4);
+  const bx = F.x + 0.525 * F.wo, by = F.y + 0.464 * F.ho, s = 0.796 * F.wo / 323.28;
   return {
-    d,
-    T: `translate(${r(tx)} ${r(ty)}) scale(${r(k)} ${r(ky)})`,
-    birdT: `translate(${r(F.cx)} ${r(F.cy)}) scale(0.88) translate(${r(-F.cx)} ${r(-F.cy)})`,
+    d: SHIELD.d,
+    T: `translate(${r(F.x)} ${r(F.y)}) scale(${r(k)})`,
+    birdT: `translate(${r(bx)} ${r(by)}) scale(${r(s)}) translate(-224.99 -250)`,
   };
 })();
 function bandLogoHtml(id = 'band', cls = '') {
-  const F = BAND_FRAME, Se = BAND_SEAL;
+  const F = BAND_FRAME, Se = BAND_SHIELD;
   const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
   const cut = `band-bird-cut-${id}`;
   const mask = `<mask id="${cut}" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><path d="${birdD}" fill="#000" fill-rule="evenodd" transform="${Se.birdT}"/></mask>`;
-  const seal = `<g mask="url(#${cut})"><path class="band-logo__seal" d="${Se.d}" fill="currentColor" transform="${Se.T}"/></g>`;
+  const seal = `<g mask="url(#${cut})"><path class="band-logo__shield" d="${Se.d}" fill="currentColor" transform="${Se.T}"/></g>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
@@ -214,7 +214,7 @@ function bandLogoHtml(id = 'band', cls = '') {
     .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${seal}`)
     // (the bird's own path stays, unpainted, where it stands in the seal)
     .replace(/class="wm-bird-only" fill="currentColor"/, `class="wm-bird-only" fill="none" transform="${Se.birdT}"`);
-  if (!bird.includes('band-logo__seal') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="none" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band seal: bird SVG did not take the seal');
+  if (!bird.includes('band-logo__shield') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="none" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band shield: bird SVG did not take the shield');
   return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {

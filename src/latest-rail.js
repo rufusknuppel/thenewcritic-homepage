@@ -10,10 +10,11 @@
 (function () {
   var rails = [].slice.call(document.querySelectorAll('.latest-rail'));
   var main = document.querySelector('main');
-  // (the swallow's ink is its diamond's since 2026-10-07 — "Put the bird in
-  // a diamond shaped background": the diamond is sized, set on its middle
-  // and on the 54 gutter where the bird was; build.js, THE BIRD IN A DIAMOND)
-  var BIRD_INK = '.band-logo__bird .band-logo__seal, .band-logo__bird .wm-bird-only';
+  // (the swallow's ink is its shield's since 2026-10-07 — a diamond, then a
+  // seal, then "Use this as the shape": the shield is sized, set on its
+  // middle and on the 54 gutter where the bird was; build.js, THE BIRD IN A
+  // SHIELD)
+  var BIRD_INK = '.band-logo__bird .band-logo__shield, .band-logo__bird .wm-bird-only';
   // THE BAND'S GEOMETRY (2026-10-05): the swallow's ink set on the 54 gutter
   // (--bird-dx, style.css), and read: each word's ink inside its box, the
   // name's first stroke (x0L) and CRITIC's last (x0), the swallow's first
