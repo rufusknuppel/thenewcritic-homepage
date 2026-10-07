@@ -13574,3 +13574,8 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
     padding-bottom: 0px !important;
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo{
+    font-size: min(83px, (100vw - 655px) / var(--band-span, 8.07));
+  }
+}
