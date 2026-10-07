@@ -265,6 +265,19 @@
   // and then the next in (style.css, ONE COLUMN). The other columns stand
   // empty and unseen.
   var hold0 = rails[0].querySelector('.latest-rail__hold');
+  // (each section's list and View all open to their own height, --open-h,
+  // so the opening runs smooth: THE OPENING SMOOTHER, style.css)
+  var openH = function () {
+    if (!hold0) return;
+    [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list, :scope > .latest-rail__in > .latest-rail__all'), function (el) {
+      var h = el.scrollHeight + 'px';
+      if (el.style.getPropertyValue('--open-h') !== h) el.style.setProperty('--open-h', h);
+    });
+  };
+  ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
+    addEventListener(ev, openH, { passive: true });
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(openH);
   rails.forEach(function (r, i) {
     var inn = r.querySelector('.latest-rail__in');
     if (!inn) return;
@@ -450,14 +463,6 @@
     }
   };
   var curKey = rails[0].getAttribute('data-sec');
-  // (every section shut to its name at the page's top, the one in view
-  // opening once the page moves: EVERY SECTION SHUT TILL THE PAGE MOVES,
-  // style.css)
-  var resting = function () {
-    if (hold0) hold0.classList.toggle('is-resting', (window.pageYOffset || 0) < 10);
-  };
-  resting();
-  addEventListener('scroll', resting, { passive: true });
   // (a card out on its slide stands a level over its row's other wrap,
   // so it can go over its mate: each pinned wrap is a stacking context)
   var lift = function () {
