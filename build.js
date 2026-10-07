@@ -139,7 +139,7 @@ const COLO_SPAN = (() => {
     const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
     return vb[2] / vb[3];
   };
-  return (1.66 * 4.5 / 5 + 3 * 0.6226 + 2 * Math.max(0, WM_SPACE - 0.6226) + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  return (1.66 * 4.5 / 5 + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - (WM_SPACE > 0.6226 ? 0.0204 : 0) + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
 // The band's name, THE, NEW and CRITIC, in caps across: the words, the two
 // spaces between them (27 at the 54.21 cap, or the drawing's own where that
