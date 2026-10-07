@@ -245,15 +245,15 @@ function bandLogoHtml(id = 'band', cls = '') {
   // outline follow the curve of the wings"): the field's edge the wings'
   // own leading edges, read off the bird's silhouette in its own units —
   // the upper wing from its tip down to the neck, a straight bridge
-  // behind the head, the lower wing from the throat to its tip — and each
-  // wing's last direction carried on past the box, which clips it. The
+  // behind the head, the lower wing from the throat to its tip — and past
+  // each tip the curve carried on along its own track, a quadratic through
+  // the wing's last eight points, to the box's edge and its tangent beyond
+  // ("have the curve continue along its track, not inch inward": it ran
+  // straight from the tips, and fell inside the curve), the box clipping it. The
   // field the box LEFT of that edge, the side the wings bow into ("so
   // charcoal is the concave not convex"; "Reverse dark/light part of
   // Bird"): the ground right of the wings, the tail on it
-  const WING_EDGE = [[146, -100], [124, 80], [123, 92], [122, 104], [120, 112], [118, 128], [117, 144], [117, 188], [118, 200],
-    [120, 212], [122, 220], [125, 228], [127, 236], [128, 244], [130, 252], [134, 260], [136, 264], [166, 320], [173, 328],
-    [178, 336], [184, 344], [190, 352], [198, 360], [208, 368], [217, 376], [226, 384], [236, 392], [247, 400], [261, 408],
-    [272, 416], [278, 420], [282.4, 421], [550, 600], [-200, 600], [-200, -100]];
+  const WING_EDGE = [[176.4, -100], [140.4, 16], [138, 24], [135.7, 32], [133.5, 40], [131.5, 48], [129.6, 56], [127.8, 64], [126.2, 72], [124, 80], [123, 92], [122, 104], [120, 112], [118, 128], [117, 144], [117, 188], [118, 200], [120, 212], [122, 220], [125, 228], [127, 236], [128, 244], [130, 252], [134, 260], [136, 264], [166, 320], [173, 328], [178, 336], [184, 344], [190, 352], [198, 360], [208, 368], [217, 376], [226, 384], [236, 392], [247, 400], [261, 408], [272, 416], [278, 420], [282.4, 421], [293.8, 428], [309.1, 436], [325.4, 444], [342.5, 452], [360.6, 460], [379.6, 468], [399.6, 476], [420.4, 484], [729.7, 600], [-200, 600], [-200, -100]];
   const fieldD = 'M' + WING_EDGE.map(q => q.join(' ')).join('L') + 'Z';
   // THE OUTLINE SHARP AND JAGGED (later that day — "I want outline to be
   // sharp. and jagged like the bird"): not a stroke round the smooth path
