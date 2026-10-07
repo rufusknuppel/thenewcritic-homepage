@@ -270,7 +270,15 @@
   var openH = function () {
     if (!hold0) return;
     [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list, :scope > .latest-rail__in > .latest-rail__all'), function (el) {
-      var h = el.scrollHeight + 'px';
+      // (the content's own extent, its first box's top to its last's
+      // bottom: scrollHeight ran 6-7 past it, so the opening list reached
+      // its height before the shutting one reached 0 and the names settled
+      // a pixel back at the end — NO WOBBLE, style.css)
+      var kids = el.children, h;
+      if (kids.length) {
+        var top = el.getBoundingClientRect().top + (parseFloat(getComputedStyle(el).paddingTop) || 0);
+        h = Math.ceil(kids[kids.length - 1].getBoundingClientRect().bottom - top) + 'px';
+      } else h = el.scrollHeight + 'px';
       if (el.style.getPropertyValue('--open-h') !== h) el.style.setProperty('--open-h', h);
     });
   };
