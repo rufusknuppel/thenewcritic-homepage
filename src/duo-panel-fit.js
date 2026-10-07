@@ -8288,6 +8288,41 @@
     var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
     return tBase + Math.max(0, tm.actualBoundingBoxDescent);
   }
+  // (the title's last baseline alone, its descenders not counted — THE
+  // BYLINE ON THE BASELINE AND THE CAPITALS, 2026-10-07)
+  function titleBaseline(tt) {
+    var foot = titleInkFoot(tt);
+    if (foot == null) return null;
+    var tc = getComputedStyle(tt), tn = tt.firstChild;
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    // (titleInkFoot measured the last line's words; their descent is what
+    // stands under the baseline)
+    var txt = tn.nodeValue, rg = document.createRange(), re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w, lastTop = null, words = [];
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      if (lastTop == null || Math.abs(lastTop - rr.top) >= 2) { lastTop = rr.top; words = []; }
+      words.push(w[0].replace(/\u00AD$/, '-'));
+    }
+    return foot - Math.max(0, headCtx.measureText(words.join(' ')).actualBoundingBoxDescent);
+  }
+  // (an element's first line's capitals' top — not its first ink, which an
+  // opening quotation mark or an ascender stands over)
+  function firstCapTop(el) {
+    var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), rg = document.createRange();
+    for (var n = tw.nextNode(); n; n = tw.nextNode()) {
+      var m = /\S+/.exec(n.nodeValue);
+      if (!m) continue;
+      rg.setStart(n, m.index); rg.setEnd(n, m.index + m[0].length);
+      var r = rg.getClientRects()[0];
+      if (!r || !r.height) continue;
+      var fb = faceBox(n), cs = fb.cs;
+      measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      return r.top + fb.a - (measureCtx.measureText('H').actualBoundingBoxAscent || 0);
+    }
+    return null;
+  }
   function headMetaMargin(tt, mm, gap) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
@@ -9628,6 +9663,8 @@
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
+      j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
+      j.dkC = j.pdk ? firstCapTop(j.pdk) : null;
       j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
       if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
       // (the dek's ink across: its lines' farthest reach either way — the
@@ -9666,21 +9703,30 @@
         // META_AIR under its lowest and the dek's first ink META_AIR under
         // the byline's baseline; the head moved by the title's ink, the byline carried
         // down past it on its own
-        var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null;
+        // THE BYLINE ON THE BASELINE AND THE CAPITALS (2026-10-07, at the
+        // user's word — "Make sure that metadata is centered between Titles
+        // and deks"): the byline's capitals META_AIR under the title's last
+        // baseline, and the dek's capitals META_AIR under the byline's —
+        // where they stood under the title's lowest ink and over the dek's
+        // first, so a title with a descender (Long Covid's g) stood its
+        // byline 10 lower, and a dek opening on a quotation mark took its
+        // gap to the mark's top
+        var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null && j.ttB != null && j.dkC != null;
         var metaY = null;
         if (stacked) {
           var dkF = j.dkF != null ? j.dkF : j.dkB;
           var top0 = between ? j.ttT : j.inT;
           var midH = between ? META_AIR + (j.mB - j.mT) + META_AIR : INK_GAP;
-          var sH = (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
+          var sH = between ? (j.ttB - top0) + midH + (dkF - j.dkC) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT)
+            : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
           if (between) {
-            var mTop = y0 + (j.hdB - top0) + META_AIR;
+            var mTop = y0 + (j.ttB - top0) + META_AIR;
             metaY = mTop - (j.mT + upY);
-            dekY = (mTop + (j.mB - j.mT) + META_AIR) - j.dkT;
+            dekY = (mTop + (j.mB - j.mT) + META_AIR) - j.dkC;
           } else dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
           ruleTop = Math.round(dkF + dekY + RULE_AIR);
           dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;

@@ -6356,6 +6356,35 @@
     var tBase = lineTop + (tlh - tm.fontBoundingBoxAscent - tm.fontBoundingBoxDescent) / 2 + tm.fontBoundingBoxAscent;
     return tBase + Math.max(0, tm.actualBoundingBoxDescent);
   }
+  function titleBaseline(tt) {
+    var foot = titleInkFoot(tt);
+    if (foot == null) return null;
+    var tc = getComputedStyle(tt), tn = tt.firstChild;
+    headCtx.font = tc.fontStyle + ' ' + tc.fontWeight + ' ' + tc.fontSize + ' ' + tc.fontFamily;
+    var txt = tn.nodeValue, rg = document.createRange(), re = /[^\s\-\u00AD]+[\-\u00AD]?/g, w, lastTop = null, words = [];
+    while ((w = re.exec(txt))) {
+      rg.setStart(tn, w.index); rg.setEnd(tn, w.index + w[0].length);
+      var rr = rg.getClientRects()[0];
+      if (!rr) continue;
+      if (lastTop == null || Math.abs(lastTop - rr.top) >= 2) { lastTop = rr.top; words = []; }
+      words.push(w[0].replace(/\u00AD$/, '-'));
+    }
+    return foot - Math.max(0, headCtx.measureText(words.join(' ')).actualBoundingBoxDescent);
+  }
+  function firstCapTop(el) {
+    var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), rg = document.createRange();
+    for (var n = tw.nextNode(); n; n = tw.nextNode()) {
+      var m = /\S+/.exec(n.nodeValue);
+      if (!m) continue;
+      rg.setStart(n, m.index); rg.setEnd(n, m.index + m[0].length);
+      var r = rg.getClientRects()[0];
+      if (!r || !r.height) continue;
+      var fb = faceBox(n), cs = fb.cs;
+      measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      return r.top + fb.a - (measureCtx.measureText('H').actualBoundingBoxAscent || 0);
+    }
+    return null;
+  }
   function headMetaMargin(tt, mm, gap) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tc = getComputedStyle(tt), mc = getComputedStyle(mm);
@@ -7210,6 +7239,8 @@
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
+      j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
+      j.dkC = j.pdk ? firstCapTop(j.pdk) : null;
       j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
       if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
       if (j.pkb) {
@@ -7226,21 +7257,22 @@
         var upY = j.bb.top + INK_GAP - j.inT;
         var ruleTop = null;
         var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
-        var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null;
+        var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null && j.ttB != null && j.dkC != null;
         var metaY = null;
         if (stacked) {
           var dkF = j.dkF != null ? j.dkF : j.dkB;
           var top0 = between ? j.ttT : j.inT;
           var midH = between ? META_AIR + (j.mB - j.mT) + META_AIR : INK_GAP;
-          var sH = (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
+          var sH = between ? (j.ttB - top0) + midH + (dkF - j.dkC) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT)
+            : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
           if (between) {
-            var mTop = y0 + (j.hdB - top0) + META_AIR;
+            var mTop = y0 + (j.ttB - top0) + META_AIR;
             metaY = mTop - (j.mT + upY);
-            dekY = (mTop + (j.mB - j.mT) + META_AIR) - j.dkT;
+            dekY = (mTop + (j.mB - j.mT) + META_AIR) - j.dkC;
           } else dekY = (y0 + (j.hdB - top0) + INK_GAP) - j.dkT;
           ruleTop = Math.round(dkF + dekY + RULE_AIR);
           dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
