@@ -265,7 +265,9 @@ function bandLogoHtml(id = 'band', cls = '') {
   // half its cover, so the outline's edge is as ragged as the bird's and
   // has no soft rim; the box's line takes the bird's roughness lighter
   // ("I also what the outline of the box itself to share some of the
-  // birds roughness")
+  // birds roughness"); roughened first and clipped to the box after, so
+  // its outer edge is the box's own straight one and only its inner edge
+  // is rough ("smooth outer edge of box")
   const jag = `<filter id="${cut}-jag" filterUnits="userSpaceOnUse" x="${F.x - 20}" y="${F.y - 20}" width="${F.wo + 40}" height="${F.ho + 40}" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="4" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="3" xChannelSelector="R" yChannelSelector="G" result="rough"/><feMorphology in="rough" operator="dilate" radius="3" result="grown"/><feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="2" seed="9" result="tear"/><feDisplacementMap in="grown" in2="tear" scale="2" xChannelSelector="R" yChannelSelector="G" result="torn"/><feComponentTransfer in="torn"><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter>`
     // (the field's edge along the wings torn too, lighter than the outline
     // — "Also roughen the curve around wings"; the outline itself a little
@@ -278,7 +280,7 @@ function bandLogoHtml(id = 'band', cls = '') {
   // back and 6.5 either side, so the grown outline's square end becomes a
   // spike)
   const field = jag + `<mask id="${cut}-halo" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><g filter="url(#${cut}-jag)"><path d="${birdD.split(/(?=M)/)[0]}" transform="${Se.birdT}" fill="#000"/></g><path d="M50.1 318.3L74.9 316.6L70.7 304.3Z" transform="${Se.birdT}" fill="#000"/></mask><g clip-path="url(#${cut}-in)" mask="url(#${cut}-halo)"><path class="band-logo__field" d="${fieldD}" fill="currentColor" transform="${Se.birdT}" filter="url(#${cut}-edge)"/></g>`;
-  const seal = field + `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><g filter="url(#${cut}-boxr)"><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke" clip-path="url(#${cut}-in)"/></g>`;
+  const seal = field + `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><g clip-path="url(#${cut}-in)"><g filter="url(#${cut}-boxr)"><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke"/></g></g>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
