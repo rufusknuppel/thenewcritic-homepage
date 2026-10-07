@@ -3480,11 +3480,13 @@ function renderFontGateScript() {
   // highlight blue", then dodger blue, #1E90FF, "I want highlight color
   // to be 1E90FF", then red, #F01E2C, "use f01e2c for hex color", then Yves Klein
   // blue, #002FA7, "use yves blue as the highlight color", then red
-  // again, #F01E2C, "Want highlight color to be red". It must match
+  // again, #F01E2C, "Want highlight color to be red", then the lighter
+  // navy again, #1A1AB0, "Use that lighter navy as the highlight color".
+  // It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#f01e2c';
+  var YELLOW = '#1a1ab0';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
