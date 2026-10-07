@@ -450,6 +450,14 @@
     }
   };
   var curKey = rails[0].getAttribute('data-sec');
+  // (every section shut to its name at the page's top, the one in view
+  // opening once the page moves: EVERY SECTION SHUT TILL THE PAGE MOVES,
+  // style.css)
+  var resting = function () {
+    if (hold0) hold0.classList.toggle('is-resting', (window.pageYOffset || 0) < 10);
+  };
+  resting();
+  addEventListener('scroll', resting, { passive: true });
   // (a card out on its slide stands a level over its row's other wrap,
   // so it can go over its mate: each pinned wrap is a stacking context)
   var lift = function () {
@@ -756,6 +764,10 @@
       return;
     }
     var a = e.target && e.target.closest && e.target.closest('.latest-rail__list a[data-slug], a.latest-rail__cue[data-slug]');
+    // (a section's name, pressed, to its first card: EVERY SECTION IN THE
+    // COLUMN, style.css)
+    var name = !a && e.target && e.target.closest && e.target.closest('.latest-rail__in > .latest-rail__meta');
+    if (name) a = name.parentElement.querySelector('.latest-rail__list a[data-slug]');
     if (!a) return;
     // (a section's cue goes to the archive, filtered, from its word since
     // 2026-10-06 — "Essays should hover, and send you to the archive with
