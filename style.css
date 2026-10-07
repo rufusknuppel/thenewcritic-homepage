@@ -27415,7 +27415,9 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
    band's words are centred between CRITIC's last stroke and the window's
    27. The column's edge still reads where the bird stood before. (The
    script writes the margin on CRITIC itself too: the sheet's own margin
-   on it outweighed this rule.) */
+   on it outweighed this rule.) The same day, "move bird back to the
+   right": the swallow stands at the window's 54 again and the script
+   writes nothing on CRITIC; this block stays for the record. */
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo .band-logo__low{
     margin-left: var(--low-shift, 0px) !important;

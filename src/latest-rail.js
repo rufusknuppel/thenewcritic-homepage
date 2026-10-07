@@ -193,7 +193,8 @@
     // on CRITIC, style.css — the list then centred between CRITIC's last
     // stroke and the window's 27, x1R)
     var mid = st.querySelector('.band-logo__mid svg path'), mr = mid && mid.getBoundingClientRect();
-    var tgtL = mr && mr.width ? mr.right + 27 : null;
+    // (back at the right the same day — "move bird back to the right": no target inside the name)
+    var tgtL = null; void mr;
     var lowEl = st.querySelector('.band-logo__low');
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
@@ -222,12 +223,15 @@
     if (lowEl) {
       // (CRITIC's shift read off where it stands unshifted, so the gap after
       // the box is 27 whatever the grid gives)
-      // (written on CRITIC itself, over whatever margin the sheet gives it)
-      lowEl.style.setProperty('margin-left', '0px', 'important');
-      var lr0 = low.getBoundingClientRect();
-      var shift = (tgtL != null && lr0.width ? Math.max(0, tgtL + br0.width + 27 - lr0.left) : 0).toFixed(2) + 'px';
-      lowEl.style.setProperty('--low-shift', shift);
-      lowEl.style.setProperty('margin-left', shift, 'important');
+      // (written on CRITIC itself, over whatever margin the sheet gives it;
+      // nothing written while the bird stands at the right)
+      if (tgtL != null) {
+        lowEl.style.setProperty('margin-left', '0px', 'important');
+        var lr0 = low.getBoundingClientRect();
+        var shift = (lr0.width ? Math.max(0, tgtL + br0.width + 27 - lr0.left) : 0).toFixed(2) + 'px';
+        lowEl.style.setProperty('--low-shift', shift);
+        lowEl.style.setProperty('margin-left', shift, 'important');
+      } else { lowEl.style.removeProperty('margin-left'); lowEl.style.removeProperty('--low-shift'); }
     }
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
@@ -320,7 +324,13 @@
       var kids = el.children, h;
       if (kids.length) {
         var top = el.getBoundingClientRect().top + (parseFloat(getComputedStyle(el).paddingTop) || 0);
-        h = Math.ceil(kids[kids.length - 1].getBoundingClientRect().bottom - top) + 'px';
+        // (to the last item's deepest inline box, not its own: the words
+        // stand 20 on an 18 line, so the link's box runs under the item's
+        // and the list, overflow hidden, shaved the descenders — "g's
+        // getting cut off in the latest column", 2026-10-07)
+        var lastK = kids[kids.length - 1], bot = lastK.getBoundingClientRect().bottom;
+        [].forEach.call(lastK.querySelectorAll('*'), function (d) { var dr = d.getBoundingClientRect(); if (dr.height) bot = Math.max(bot, dr.bottom); });
+        h = Math.ceil(bot - top) + 'px';
       } else h = el.scrollHeight + 'px';
       if (el.style.getPropertyValue('--open-h') !== h) el.style.setProperty('--open-h', h);
     });
@@ -610,9 +620,10 @@
         // first ink)
         var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
         var inkL0 = fb0.left + (ink[0] ? ink[0].inL : 0), inkR0 = lb0.right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
-        // (between CRITIC's last stroke and the window's 27 since the swallow
-        // stands inside the name: THE BIRD BETWEEN THE NEW AND CRITIC)
-        var lead0 = Math.round((geo.x0 + geo.x1R) / 2 - (inkL0 + inkR0) / 2);
+        // (between CRITIC's last stroke and the swallow's first ink again,
+        // the swallow back at the right: "move bird back to the right")
+        var bi0 = st.querySelector(BIRD_INK).getBoundingClientRect();
+        var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
