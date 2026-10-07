@@ -19,8 +19,8 @@ const WORDMARK_WORDS = require('./wordmark.js').wordmarkWords(path.join(__dirnam
 // half a cap apart, wider than the band's 27 between words (0.498 of its
 // 54.21 cap) and the colophon's 0.6226, so the name read as twelve even
 // letters. The rows now part the words by the drawing's own word space
-// where it is the wider — 1.03 caps for MAILLE (1.28 before its letters
-// closed up); the traced drawing's 0.41
+// where it is the wider — 0.92 caps for MAILLE (1.28, then 1.03, before
+// its letters closed up); the traced drawing's 0.41
 // left the site's spaces as they were. --wm-space on :root, style.css,
 // THE WORDS AS FAR APART AS THEIR DRAWING SETS THEM.)
 const WM_SPACE = require('./wordmark.js').wordmarkSpace(path.join(__dirname, 'assets', 'wordmark.svg'));
