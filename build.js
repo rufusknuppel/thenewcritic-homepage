@@ -184,7 +184,11 @@ const BAND_SEAL = (() => {
   const F = BAND_FRAME;
   const src = fs.readFileSync(path.join(__dirname, 'assets', 'seal-outline.svg'), 'utf8');
   const [vw, vh] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
-  const d = src.match(/<path[^>]*\sd="([^"]+)"/)[1];
+  // (filled since "Fill in the seal, and reverse the color of the bird": the
+  // seal's outer edge, closed, the bird cut out of it so the ground shows
+  // through as the bird, as it did in the diamond; the ring's gaps go under
+  // the fill)
+  const d = src.match(/<path id="seal-fill" d="([^"]+)"/)[1];
   // (a little taller than wide — "Have the seal be slightly taller than
   // width": 1.08 down to 1 across, where the photograph's stands 0.97;
   // then "make it slightly wider": 1.04)
@@ -199,13 +203,18 @@ const BAND_SEAL = (() => {
 })();
 function bandLogoHtml(id = 'band', cls = '') {
   const F = BAND_FRAME, Se = BAND_SEAL;
-  const seal = `<path class="band-logo__seal" d="${Se.d}" fill="currentColor" transform="${Se.T}"/>`;
+  const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
+  const cut = `band-bird-cut-${id}`;
+  const mask = `<mask id="${cut}" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><path d="${birdD}" fill="#000" fill-rule="evenodd" transform="${Se.birdT}"/></mask>`;
+  const seal = `<g mask="url(#${cut})"><path class="band-logo__seal" d="${Se.d}" fill="currentColor" transform="${Se.T}"/></g>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
+    .replace('</defs>', `${mask}</defs>`)
     .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `$1${seal}`)
-    .replace(/(class="wm-bird-only" fill="currentColor")/, `$1 transform="${Se.birdT}"`);
-  if (!bird.includes('band-logo__seal') || !bird.includes(`transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band seal: bird SVG did not take the seal');
+    // (the bird's own path stays, unpainted, where it stands in the seal)
+    .replace(/class="wm-bird-only" fill="currentColor"/, `class="wm-bird-only" fill="none" transform="${Se.birdT}"`);
+  if (!bird.includes('band-logo__seal') || !bird.includes(`mask id="${cut}"`) || !bird.includes(`fill="none" transform="${Se.birdT}"`) || !bird.includes(`x="${F.x - 10}"`)) throw new Error('band seal: bird SVG did not take the seal');
   return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${bird}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
 }
 function renderStampDefs() {
