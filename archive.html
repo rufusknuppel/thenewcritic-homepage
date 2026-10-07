@@ -9096,6 +9096,7 @@
     pending = false;
     var mn = document.querySelector('main');
     if (mn && mn.classList.contains('rail-anim')) { hide(); return; }
+    if (!window.__ncShown) { hide(); return; }
     var hitCard = null, hitBox = null;
     var cards = [].slice.call(document.querySelectorAll(ESSAYS));
     var out = cards.filter(function (c) { return c.classList.contains('is-slide') && c.matches('.is-open, .is-opening, .is-shutting'); });
@@ -9141,8 +9142,9 @@
   document.addEventListener('pointermove', function (e) { lx = e.clientX; ly = e.clientY; ask(); }, { passive: true });
   document.addEventListener('pointerleave', function () { lx = ly = -1; ask(); });
   addEventListener('scroll', ask, { passive: true });
-  addEventListener('newcritic:fit', ask);
-  addEventListener('newcritic:closed', ask);
+  ['newcritic:fit', 'newcritic:closed', 'newcritic:shown', 'newcritic:fitdone', 'newcritic:settled', 'load', 'resize'].forEach(function (ev) {
+    addEventListener(ev, ask);
+  });
 })();
 
 </script><script>
