@@ -463,14 +463,38 @@
     lit = now;
     // (the column's words the lit post's section's: ONE COLUMN)
     var key = best ? best.rail.getAttribute('data-sec') : null;
-    if (key && key !== curKey && hold0) {
-      curKey = key;
-      [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in'), function (w) {
-        w.classList.toggle('is-current', w.getAttribute('data-sec') === key);
-      });
-    }
+    if (key && !goKey) openSec(key);
   };
   var curKey = rails[0].getAttribute('data-sec');
+  var openSec = function (key) {
+    if (key === curKey || !hold0) return;
+    curKey = key;
+    [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in'), function (w) {
+      w.classList.toggle('is-current', w.getAttribute('data-sec') === key);
+    });
+  };
+  // (ONE SECTION OPENS ON THE WAY, 2026-10-06 — "When you're in the latest,
+  // and you click editor's picks, editor's picks opens and closes twice":
+  // the smooth scroll to a pressed section passed every section between,
+  // and the column opened and shut each in turn. A press now opens its
+  // section at once (newcritic:railgo, THE COLUMN TAKES YOU TO THE CARD)
+  // and the column holds it while the page travels, taking up the page
+  // again once the scroll has been still a moment.)
+  var goKey = null, goT = 0;
+  var goEnd = function () { goKey = null; light(); };
+  addEventListener('newcritic:railgo', function (ev) {
+    var k = ev.detail;
+    if (!k) return;
+    goKey = k;
+    openSec(k);
+    clearTimeout(goT);
+    goT = setTimeout(goEnd, 600);
+  });
+  addEventListener('scroll', function () {
+    if (!goKey) return;
+    clearTimeout(goT);
+    goT = setTimeout(goEnd, 180);
+  }, { passive: true });
   // (a card out on its slide stands a level over its row's other wrap,
   // so it can go over its mate: each pinned wrap is a stacking context)
   var lift = function () {
@@ -800,6 +824,10 @@
     var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     var foot = strip ? strip.offsetHeight : 0;
     e.preventDefault();
+    // (the column opens the pressed section now and holds it on the way:
+    // ONE SECTION OPENS ON THE WAY)
+    var sec = a.closest('.latest-rail__in');
+    try { window.dispatchEvent(new CustomEvent('newcritic:railgo', { detail: sec && sec.getAttribute('data-sec') })); } catch (er) {}
     var rule = parseFloat(getComputedStyle(document.querySelector('main') || document.body).getPropertyValue('--band-rule')) || 0;
     window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - 54), behavior: 'smooth' });
   });
