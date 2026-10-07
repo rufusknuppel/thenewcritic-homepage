@@ -213,6 +213,7 @@ function bandLogoHtml(id = 'band', cls = '') {
   const F = BAND_FRAME, Se = BAND_SHIELD;
   const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
   const cut = `band-bird-cut-${id}`;
+  const r2 = n => +n.toFixed(2);
   const mask = `<mask id="${cut}" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><path d="${birdD}" fill="#000" fill-rule="evenodd" transform="${Se.birdT}"/></mask>`;
   // THE BIRD IN AN OUTLINE (2026-10-07, at the user's word — "Have the bird
   // sit an outline, not solid background"): the box drawn as a line, 2 on
@@ -226,7 +227,53 @@ function bandLogoHtml(id = 'band', cls = '') {
   // (straight since later that day — "make border straight": a plain
   // rectangle on the box, outside the stamp's roughening filter, where it
   // was the roughened shield; the clip keeps the line's 2 inside it)
-  const seal = `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke" shape-rendering="crispEdges" clip-path="url(#${cut}-in)"/>`;
+  // THE WINGS' FIELD (2026-10-07, at the user's words — "Turn the part to
+  // the right of the wings of the bird in the stamp to charcoal background.
+  // leaving an outline around the bird"): the box right of the wings
+  // filled in the ink (the straight line through the two wing tips for a
+  // few minutes; their curves since, below) — with
+  // the bird cut out of it and 2 on the page round it (a 4 line about its
+  // edge, non-scaling), so the bird and its tail stand outlined in the
+  // ground where they cross it. The cut is the bird's main silhouette
+  // alone, its first subpath: its holes stay as drawn, and the two loose
+  // specks of the drawing (one right of the body, one by the upper wing)
+  // take no ring and go under the field ("Remove outline from speck").
+  // The cut goes through the bird's own roughening filter, its joins
+  // sharp, so the outline is as ragged as the bird's edge ("Make outline
+  // as detailed as bird is")
+  // THE FIELD'S EDGE ON THE WINGS (later that day — "have the edge of the
+  // outline follow the curve of the wings"): the field's edge the wings'
+  // own leading edges, read off the bird's silhouette in its own units —
+  // the upper wing from its tip down to the neck, a straight bridge
+  // behind the head, the lower wing from the throat to its tip — and each
+  // wing's last direction carried on past the box, which clips it. The
+  // field the box LEFT of that edge, the side the wings bow into ("so
+  // charcoal is the concave not convex"; "Reverse dark/light part of
+  // Bird"): the ground right of the wings, the tail on it
+  const WING_EDGE = [[146, -100], [124, 80], [123, 92], [122, 104], [120, 112], [118, 128], [117, 144], [117, 188], [118, 200],
+    [120, 212], [122, 220], [125, 228], [127, 236], [128, 244], [130, 252], [134, 260], [136, 264], [166, 320], [173, 328],
+    [178, 336], [184, 344], [190, 352], [198, 360], [208, 368], [217, 376], [226, 384], [236, 392], [247, 400], [261, 408],
+    [272, 416], [278, 420], [282.4, 421], [550, 600], [-200, 600], [-200, -100]];
+  const fieldD = 'M' + WING_EDGE.map(q => q.join(' ')).join('L') + 'Z';
+  // THE OUTLINE SHARP AND JAGGED (later that day — "I want outline to be
+  // sharp. and jagged like the bird"): not a stroke round the smooth path
+  // but the bird's own roughened shape grown by 4.5 of its units (about
+  // 0.8 on the page at 1440 — 7.5 for a moment, then 4.5, "Make the
+  // outline around the bird thinner and more detailed", then 3, "Make
+  // outline of bird thinner still and smoother"), its outer edge torn by
+  // a fine noise, lightly, and cut hard at
+  // half its cover, so the outline's edge is as ragged as the bird's and
+  // has no soft rim; the box's line takes the bird's roughness lighter
+  // ("I also what the outline of the box itself to share some of the
+  // birds roughness")
+  const jag = `<filter id="${cut}-jag" filterUnits="userSpaceOnUse" x="${F.x - 20}" y="${F.y - 20}" width="${F.wo + 40}" height="${F.ho + 40}" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="4" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="3" xChannelSelector="R" yChannelSelector="G" result="rough"/><feMorphology in="rough" operator="dilate" radius="3" result="grown"/><feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="2" seed="9" result="tear"/><feDisplacementMap in="grown" in2="tear" scale="2" xChannelSelector="R" yChannelSelector="G" result="torn"/><feComponentTransfer in="torn"><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter>`
+    // (the field's edge along the wings torn too, lighter than the outline
+    // — "Also roughen the curve around wings"; the outline itself a little
+    // less torn since, "make it slightly less rough": 3.5 where it was 5)
+    + `<filter id="${cut}-edge" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1200" height="1000" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.3" numOctaves="3" seed="11" result="tear"/><feDisplacementMap in="SourceGraphic" in2="tear" scale="5" xChannelSelector="R" yChannelSelector="G" result="torn"/><feComponentTransfer in="torn"><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter>`
+    + `<filter id="${cut}-boxr" filterUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.12" numOctaves="2" seed="5" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="4" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+  const field = jag + `<mask id="${cut}-halo" maskUnits="userSpaceOnUse" x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"><rect x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}" fill="#fff"/><g filter="url(#${cut}-jag)"><path d="${birdD.split(/(?=M)/)[0]}" transform="${Se.birdT}" fill="#000"/></g></mask><g clip-path="url(#${cut}-in)" mask="url(#${cut}-halo)"><path class="band-logo__field" d="${fieldD}" fill="currentColor" transform="${Se.birdT}" filter="url(#${cut}-edge)"/></g>`;
+  const seal = field + `<clipPath id="${cut}-in" clipPathUnits="userSpaceOnUse"><rect x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}"/></clipPath><g filter="url(#${cut}-boxr)"><rect class="band-logo__shield" x="${F.x}" y="${F.y}" width="${F.wo}" height="${F.ho}" fill="none" stroke="currentColor" stroke-width="4" vector-effect="non-scaling-stroke" clip-path="url(#${cut}-in)"/></g>`;
   const bird = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
     .replace(/viewBox="[^"]*"/, `viewBox="${F.x} ${F.y} ${F.wo} ${F.ho}"`)
     .replace(new RegExp(`(<filter id="wm-stamp-ink-${id}" filterUnits="userSpaceOnUse") x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"`), `$1 x="${F.x - 10}" y="${F.y - 10}" width="${F.wo + 20}" height="${F.ho + 20}"`)
