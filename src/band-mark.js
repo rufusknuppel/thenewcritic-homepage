@@ -624,7 +624,7 @@ window.__ncStripSide = function () { return 72; };
     // (27 since 2026-10-07 — "Have the wordmark and the bird sit 27px from
     // the sides in the top band"; THE NAME AND THE BIRD 27 FROM THE BAND'S
     // SIDES, style.css)
-    var v = (main.classList.contains('wm-banded') ? 27 : window.__ncStripSide(p)).toFixed(2) + 'px';
+    var v = (main.classList.contains('wm-banded') ? 54 : window.__ncStripSide(p)).toFixed(2) + 'px';   // (27 for a moment, then "move side margins back to 54px")
     if (v !== last) { strip.style.setProperty('--strip-side', v); last = v; }
   };
   var ask = function () { if (!raf) raf = requestAnimationFrame(update); };

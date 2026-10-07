@@ -27403,6 +27403,21 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
    it has. */
 @media (min-width: 1024px){
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top{
-    --strip-side: 27px;
+    --strip-side: 54px; /* (27 for a moment, then "move side margins back to 54px") */
+  }
+}
+
+/* ---------- THE BIRD BETWEEN THE NEW AND CRITIC (2026-10-07) ----------
+   At the user's word ("Move the bird between THE NEW and CRITIC"): the
+   swallow's box stands 27 after NEW's last stroke and CRITIC 27 after the
+   box — latest-rail.js (bandGeo) carries the bird there by --bird-dx and
+   writes CRITIC's shift, the box's width and 27, as --low-shift; the
+   band's words are centred between CRITIC's last stroke and the window's
+   27. The column's edge still reads where the bird stood before. (The
+   script writes the margin on CRITIC itself too: the sheet's own margin
+   on it outweighed this rule.) */
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top .band-logo .band-logo__low{
+    margin-left: var(--low-shift, 0px) !important;
   }
 }

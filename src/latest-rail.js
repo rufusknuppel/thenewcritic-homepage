@@ -186,7 +186,15 @@
     // word 54 off its edge, standing still as the column slides)
     // (27 since 2026-10-07 — "Have the wordmark and the bird sit 27px from
     // the sides in the top band": the swallow's box 27 off the window's edge)
-    var tgtR = vw - 27;
+    var tgtR = vw - 54;   // (27 for a moment, then "move side margins back to 54px")
+    // (THE BIRD BETWEEN THE NEW AND CRITIC, 2026-10-07, at the user's word —
+    // "Move the bird between THE NEW and CRITIC": the swallow's box 27
+    // after NEW's last stroke, and CRITIC 27 after the box — --low-shift
+    // on CRITIC, style.css — the list then centred between CRITIC's last
+    // stroke and the window's 27, x1R)
+    var mid = st.querySelector('.band-logo__mid svg path'), mr = mid && mid.getBoundingClientRect();
+    var tgtL = mr && mr.width ? mr.right + 27 : null;
+    var lowEl = st.querySelector('.band-logo__low');
     var sliding = main.classList.contains('rail-anim');
     var dxNow = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
     var dx, x1u, br0;
@@ -195,7 +203,7 @@
       // easing runs from there and is not set back first)
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = dxNow + (tgtR - br0.right);
+      dx = dxNow + (tgtL != null ? tgtL - br0.left : tgtR - br0.right);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
       st.style.setProperty('--bird-dx', '0px');
@@ -208,9 +216,19 @@
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = tgtR - br0.right;
+      dx = tgtL != null ? tgtL - br0.left : tgtR - br0.right;
     }
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
+    if (lowEl) {
+      // (CRITIC's shift read off where it stands unshifted, so the gap after
+      // the box is 27 whatever the grid gives)
+      // (written on CRITIC itself, over whatever margin the sheet gives it)
+      lowEl.style.setProperty('margin-left', '0px', 'important');
+      var lr0 = low.getBoundingClientRect();
+      var shift = (tgtL != null && lr0.width ? Math.max(0, tgtL + br0.width + 27 - lr0.left) : 0).toFixed(2) + 'px';
+      lowEl.style.setProperty('--low-shift', shift);
+      lowEl.style.setProperty('margin-left', shift, 'important');
+    }
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
     });
@@ -592,8 +610,9 @@
         // first ink)
         var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
         var inkL0 = fb0.left + (ink[0] ? ink[0].inL : 0), inkR0 = lb0.right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
-        var bi0 = st.querySelector(BIRD_INK).getBoundingClientRect();
-        var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
+        // (between CRITIC's last stroke and the window's 27 since the swallow
+        // stands inside the name: THE BIRD BETWEEN THE NEW AND CRITIC)
+        var lead0 = Math.round((geo.x0 + geo.x1R) / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
