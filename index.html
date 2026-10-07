@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9824616b">
+<link rel="stylesheet" href="style.css?v=8d176b3d">
 <style>:root{--colo-span:17.3724;--band-span:15.1211;--wm-space:1.0256}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10343,7 +10343,11 @@ window.__ncStripInk = function () {
   var openH = function () {
     if (!hold0) return;
     [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list, :scope > .latest-rail__in > .latest-rail__all'), function (el) {
-      var h = el.scrollHeight + 'px';
+      var kids = el.children, h;
+      if (kids.length) {
+        var top = el.getBoundingClientRect().top + (parseFloat(getComputedStyle(el).paddingTop) || 0);
+        h = Math.ceil(kids[kids.length - 1].getBoundingClientRect().bottom - top) + 'px';
+      } else h = el.scrollHeight + 'px';
       if (el.style.getPropertyValue('--open-h') !== h) el.style.setProperty('--open-h', h);
     });
   };
