@@ -245,6 +245,9 @@ function bandLogoHtml(id = 'band', cls = '') {
       + `<path class="band-logo__counter" d="${FR.under || FR.counter}" fill="currentColor"/>`
       // (the bird clipped to the fill's edge, halfway under the border: moved so its wing tips touch two corners)
       + `<clipPath id="band-box-${id}">${FR.under || FR.outer ? `<path d="${FR.under || FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
+      // (the right half of the box behind the bird in the highlight — "Set the right half of the image, behind the
+      // bird's wings to highlight color" — clipped to the fill's edge like the bird)
+      + `<rect class="band-logo__half" x="${FR.w / 2}" y="0" width="${FR.w / 2}" height="${FR.h}" style="fill: var(--nc-mark, #D52B05)" clip-path="url(#band-box-${id})"/>`
       // (the bird the fill's opposite — "Turn bird to white on charcoal and charcoal on white": white on the
       // charcoal box on the light side, charcoal on the white box on the dark, --nc-stamp-bird set in style.css)
       + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-stamp-bird, #FFFFFF)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
