@@ -27502,3 +27502,27 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run > .chip-dot--flip:not(.chip-dot--rail){ transition: none !important; }
 }
 
+
+/* ---------- THE DOT SCROLLS AWAY WITH THE BAND (2026-10-07) ----------
+   At the user's word ("have the dot scroll away with the top band near
+   colophon"): the dot rides the band up as the colophon comes, but it
+   stands under the band's foot, so when the band was gone it stayed
+   23px from the window's top. It now goes on, a pixel for a pixel with
+   the page, the last 48px past the band's own run, till it is over the
+   window's top too. The lift is a registered length (--dot-y) on the
+   colophon's timeline, read by a transform: two older rules hold the
+   dot's transform at none !important, which an animation cannot beat,
+   so the id in the :is() outranks them; its slide with the column
+   stays on translate. */
+@property --dot-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-dot-off { from { --dot-y: 0px; } to { --dot-y: -48px; } }
+@supports (animation-timeline: view()){
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run > :is(.chip-dot--flip, #nc-dot-lift):not(.chip-dot--rail){
+    transform: translateY(var(--dot-y)) !important;
+    animation: nc-dot-off linear both !important;
+    animation-timeline: --nc-colo !important;
+    animation-range: cover calc(var(--strip-settled, 106px) + var(--band-rule, 2px)) cover calc(var(--strip-settled, 106px) + var(--band-rule, 2px) + 48px) !important;
+  }
+}
+}

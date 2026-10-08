@@ -290,8 +290,11 @@ function bandLogoHtml(id = 'band', cls = '') {
   // the lower wing ends at 0.512, 0.847 and rounds out to meet the box's
   // foot about 0.8 across, at the shallow angle the top curve leaves the
   // box's top by (24 degrees), where it trailed along the foot to the
-  // corner)
-  const upper = [[0.39, -0.03], [0.362, 0.006], [0.28, 0.04], [0.225, 0.11], [0.195, 0.215], [0.188, 0.3], [0.188, 0.4], [0.188, 0.5], [0.178, 0.545], [0.15, 0.572], [0.115, 0.598], [0.07, 0.626], [0, 0.648], [-0.05, 0.664]].map(q => fp(...q));
+  // corner). Its head since smaller — "Reduce the top part of the top
+  // curve in the bird outline": it leaves the box's top about 0.29
+  // across, where it was 0.36, and is straight by 0.22 down, where it
+  // was 0.3)
+  const upper = [[0.31, -0.03], [0.29, 0.006], [0.24, 0.035], [0.208, 0.08], [0.192, 0.145], [0.188, 0.22], [0.188, 0.3], [0.188, 0.4], [0.188, 0.5], [0.178, 0.545], [0.15, 0.572], [0.115, 0.598], [0.07, 0.626], [0, 0.648], [-0.05, 0.664]].map(q => fp(...q));
   const lower = [[-0.05, 0.714], [0, 0.698], [0.05, 0.682], [0.1, 0.668], [0.17, 0.662], [0.24, 0.664], [0.3, 0.677], [0.338, 0.703], [0.425, 0.775], [0.512, 0.847], [0.57, 0.893], [0.63, 0.934], [0.69, 0.965], [0.75, 0.99], [0.8, 1.01], [0.9, 1.05]].map(q => fp(...q));
   const far = (fx, fy) => fp(fx, fy).join(' ');
   const fieldD = `M${far(-0.05, -0.05)}L${upper[0].join(' ')}${smoothRun(upper)}Z`

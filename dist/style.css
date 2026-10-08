@@ -13614,3 +13614,15 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
 @media (min-width: 1024px) and (prefers-reduced-motion: reduce){
   html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run > .chip-dot--flip:not(.chip-dot--rail){ transition: none !important; }
 }
+@property --dot-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-dot-off { from { --dot-y: 0px; } to { --dot-y: -48px; } }
+@supports (animation-timeline: view()){
+@media (min-width: 1024px){
+  html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run > :is(.chip-dot--flip, #nc-dot-lift):not(.chip-dot--rail){
+    transform: translateY(var(--dot-y)) !important;
+    animation: nc-dot-off linear both !important;
+    animation-timeline: --nc-colo !important;
+    animation-range: cover calc(var(--strip-settled, 106px) + var(--band-rule, 2px)) cover calc(var(--strip-settled, 106px) + var(--band-rule, 2px) + 48px) !important;
+  }
+}
+}
