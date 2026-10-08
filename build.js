@@ -88,6 +88,18 @@ const SHIELD = (() => {
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   return { w, h, ar: w / h, d: src.match(/<path id="shield" d="([^"]+)"/)[1] };
 })();
+// THE STAMP'S FRAME (2026-10-07): the bird in a rounded box drawn at the
+// wordmark's own weights, with an opening along the bird's spine
+// (assets/stamp-frame.svg, which says how it is drawn). Where the file is,
+// the band's and the colophon's stamp is this, in place of the box and
+// the wings' field; its width over its height is the stamp's aspect.
+const STAMP_FRAME = (() => {
+  const file = path.join(__dirname, 'assets', 'stamp-frame.svg');
+  if (!fs.existsSync(file)) return null;
+  const src = fs.readFileSync(file, 'utf8');
+  const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
+  return { w, h, ar: w / h, d: src.match(/<path id="frame" d="([^"]+)"/)[1], birdT: src.match(/<g id="bird-seat" transform="([^"]+)"/)[1] };
+})();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
 // masthead's THE NEW CRITIC is three vector words, each traced from the
@@ -168,7 +180,7 @@ const BAND_SPAN = (() => {
   };
   return (capsAcross('the') + capsAcross('new') + capsAcross('critic') + 2 * Math.max(27 / 54.21, WM_SPACE) + 0.248).toFixed(4);
 })();
-const WM_ROOT_VARS = `--colo-span:${COLO_SPAN};--band-span:${BAND_SPAN};--wm-space:${WM_SPACE.toFixed(4)};--bird-ar:${SHIELD.ar.toFixed(4)}`;
+const WM_ROOT_VARS = `--colo-span:${COLO_SPAN};--band-span:${BAND_SPAN};--wm-space:${WM_SPACE.toFixed(4)};--bird-ar:${(STAMP_FRAME || SHIELD).ar.toFixed(4)}`;
 // The band's bird in a 4.5:5 outline ("put bird in 4.5:5 outline matching
 // the roughness of the bird"): a rectangle drawn inside the bird's own
 // filter group, so the same turbulence roughens its edges. In the bird's
@@ -210,6 +222,15 @@ const BAND_SHIELD = (() => {
   };
 })();
 function bandLogoHtml(id = 'band', cls = '') {
+  if (STAMP_FRAME) {
+    const FR = STAMP_FRAME;
+    const framed = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
+      .replace(/viewBox="[^"]*"/, `viewBox="0 0 ${FR.w} ${FR.h}"`)
+      .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor"/><g transform="${FR.birdT}">$1`)
+      .replace(/<\/svg>\s*$/, '</g></svg>');
+    if (!framed.includes('band-logo__frame') || !framed.includes(`<g transform="${FR.birdT}">`)) throw new Error('band stamp: bird SVG did not take the frame');
+    return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${framed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
+  }
   const F = BAND_FRAME, Se = BAND_SHIELD;
   const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
   const cut = `band-bird-cut-${id}`;
