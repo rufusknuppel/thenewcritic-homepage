@@ -98,7 +98,11 @@ const STAMP_FRAME = (() => {
   if (!fs.existsSync(file)) return null;
   const src = fs.readFileSync(file, 'utf8');
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
-  return { w, h, ar: w / h, d: src.match(/<path id="frame" d="([^"]+)"/)[1], birdT: src.match(/<g id="bird-seat" transform="([^"]+)"/)[1] };
+  const get = id => { const m = src.match(new RegExp(`<path id="${id}" d="([^"]+)"`)); return m ? m[1] : null; };
+  const seat = src.match(/<g id="bird-seat" transform="([^"]+)"/);
+  // (the box from the user's picture carries its own bird and its fills —
+  // #bird, #counter, #below — in place of a seat for the site's drawing)
+  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), counter: get('counter'), below: get('below') };
 })();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
@@ -222,6 +226,22 @@ const BAND_SHIELD = (() => {
   };
 })();
 function bandLogoHtml(id = 'band', cls = '') {
+  if (STAMP_FRAME && STAMP_FRAME.bird) {
+    // THE BIRD IN THE DRAWN BOX (2026-10-08, "I want the bird to be in a box
+    // of this shape. The bird and border should be in the highlight color,
+    // with black below the wings filled in and white above the wings filled
+    // in"): the box, its bird and the fills all traced from the user's
+    // picture (assets/stamp-frame.svg); the white and the charcoal fixed, the
+    // same on the page's light side and its dark one, the border and the
+    // bird in the highlight
+    const FR = STAMP_FRAME;
+    const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
+      + `<path class="band-logo__counter" d="${FR.counter}" fill="#FFFFFF" fill-rule="evenodd"/>`
+      + `<path class="band-logo__below" d="${FR.below}" fill="#121417" fill-rule="evenodd"/>`
+      + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/>`
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/></svg>`;
+    return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${boxed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
+  }
   if (STAMP_FRAME) {
     const FR = STAMP_FRAME;
     // (the bird over the frame — "Make the bird bigger, and have it cut
