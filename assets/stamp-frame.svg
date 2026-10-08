@@ -6,13 +6,13 @@
      bird, adjust accordingly"; "I want the opening to be larger and to line
      up with the direction of the beak, along that curve of the bird's
      spine. I want the outer corners to be as round as the inner corners";
-     "make the border 10-15% thinner. Bird feels too small rn"; "Make the border more square at the corners, like the corners of the N"; "Make the bird bigger, and have it cut into the sides", "do this by flipping the color where it cuts in"; "Make it bigger still. Make the bird the highlight color"; "I want the opening to stay open").
+     "make the border 10-15% thinner. Bird feels too small rn"; "Make the border more square at the corners, like the corners of the N"; "Make the bird bigger, and have it cut into the sides", "do this by flipping the color where it cuts in"; "Make it bigger still. Make the bird the highlight color"; "I want the opening to stay open"; "Make the outline highlight color and the bird black").
      In the wordmark's cap units (600 tall, as the letters are): a rounded
      box at seven-eighths of the O's own weights (sides 107, top 96, foot
      94), its corners square as the N's, softened only as the letters' are by the tracing.
      The bird is 1.5 times the size that would sit in the counter with 24 of
      air, on the counter's middle, so its wings and tail run into the frame,
-     drawn whole over it in the highlight (#bird-seat, the transform build.js
+     drawn whole over it, the frame in the highlight and the bird in the ink (#bird-seat, the transform build.js
      puts on the bird's own drawing).
      The opening goes through the left side along the bird's spine (a curve
      fitted to the neck and the tail, carried on past the beak), 156
