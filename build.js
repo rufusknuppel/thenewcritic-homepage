@@ -102,7 +102,7 @@ const STAMP_FRAME = (() => {
   const seat = src.match(/<g id="bird-seat" transform="([^"]+)"/);
   // (the box from the user's picture carries its own bird and its fills —
   // #bird, #counter, #below — in place of a seat for the site's drawing)
-  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), half: get('half'), holes: get('holes'), counter: get('counter'), below: get('below'), outer: get('outer'), under: get('under') };
+  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), half: get('half'), holes: get('holes'), beak: get('beak'), counter: get('counter'), below: get('below'), outer: get('outer'), under: get('under') };
 })();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
@@ -258,6 +258,8 @@ function bandLogoHtml(id = 'band', cls = '') {
       // (the bird's pinholes in the right half's colour — "I want this speck to be the color of the right half" —
       // stroked 4 wide so a hole smaller than a pixel still comes out the ink, not grey; the bird hides the overlap)
       + (FR.holes ? `<path class="band-logo__holes" d="${FR.holes}" fill="currentColor" stroke="currentColor" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
+      // (the slit in the beak charcoal in both themes — "this should be dark too")
+      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" fill="#121417" stroke="#121417" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
       + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
