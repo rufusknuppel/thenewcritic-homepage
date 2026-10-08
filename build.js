@@ -102,7 +102,7 @@ const STAMP_FRAME = (() => {
   const seat = src.match(/<g id="bird-seat" transform="([^"]+)"/);
   // (the box from the user's picture carries its own bird and its fills —
   // #bird, #counter, #below — in place of a seat for the site's drawing)
-  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), half: get('half'), counter: get('counter'), below: get('below'), outer: get('outer'), under: get('under') };
+  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), half: get('half'), holes: get('holes'), counter: get('counter'), below: get('below'), outer: get('outer'), under: get('under') };
 })();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
@@ -239,22 +239,28 @@ function bandLogoHtml(id = 'band', cls = '') {
     // again and the whole inside of the box in the ink, charcoal on the
     // light side and light on the dark (#below kept in the file, unused)
     const FR = STAMP_FRAME;
+    // (the colours flipped since — "Flip the colors so that bird is highlight color, and outline right half color
+    // is the opposite of theme background": the bird in the highlight, the border and the right of the box in the
+    // ink, charcoal on the light side and white on the dark, the left of the box in the page's own ground,
+    // --nc-stamp-ground in style.css)
     const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
       // (the fill to the border's midline, so its edge lies under the border: traced on its own, the counter's
       // edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
-      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" fill="currentColor"/>`
-      // (the bird clipped to the fill's edge, halfway under the border: moved so its wing tips touch two corners)
+      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" style="fill: var(--nc-stamp-ground, #FFFFFF)"/>`
+      // (the bird clipped to the fill's edge, halfway under the border)
       + `<clipPath id="band-box-${id}">${FR.under || FR.outer ? `<path d="${FR.under || FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
-      // (the right of the box behind the bird in the highlight — "Set the right half of the image, behind the
-      // bird's wings to highlight color", "highlight should reach all the way to wings": #half, everything right of
-      // a line up the wings' middle, so the gaps between the feathers on their right show red, "only to the right") — clipped to the fill's edge like the bird)
-      + (FR.half ? `<path class="band-logo__half" d="${FR.half}" style="fill: var(--nc-mark, #D52B05)" clip-path="url(#band-box-${id})"/>`
-        : `<rect class="band-logo__half" x="${FR.w / 2}" y="0" width="${FR.w / 2}" height="${FR.h}" style="fill: var(--nc-mark, #D52B05)" clip-path="url(#band-box-${id})"/>`)
-      // (the bird the fill's opposite — "Turn bird to white on charcoal and charcoal on white": white on the
-      // charcoal box on the light side, charcoal on the white box on the dark, --nc-stamp-bird set in style.css)
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-stamp-bird, #FFFFFF)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
-      // (the red border drawn last, over the bird's wing tips, so it runs unbroken round the box)
-      + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/></svg>`;
+      // (the right of the box behind the bird — "Set the right half of the image, behind the bird's wings to
+      // highlight color", "highlight should reach all the way to wings": #half, everything right of a line up the
+      // wings' middle, so the gaps between the feathers on their right are filled, "only to the right" — clipped
+      // to the fill's edge like the bird)
+      + (FR.half ? `<path class="band-logo__half" d="${FR.half}" fill="currentColor" clip-path="url(#band-box-${id})"/>`
+        : `<rect class="band-logo__half" x="${FR.w / 2}" y="0" width="${FR.w / 2}" height="${FR.h}" fill="currentColor" clip-path="url(#band-box-${id})"/>`)
+      // (the bird's pinholes in the right half's colour — "I want this speck to be the color of the right half" —
+      // stroked 4 wide so a hole smaller than a pixel still comes out the ink, not grey; the bird hides the overlap)
+      + (FR.holes ? `<path class="band-logo__holes" d="${FR.holes}" fill="currentColor" stroke="currentColor" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
+      // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
+      + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${boxed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
   if (STAMP_FRAME) {

@@ -27527,6 +27527,8 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
 }
 }
 
-/* 2026-10-08 — the stamp's bird the opposite of its box: white on charcoal, charcoal on white in the dark theme */
-:root{ --nc-stamp-bird: #FFFFFF; }
-html[data-theme="dark"]{ --nc-stamp-bird: #121417; }
+/* 2026-10-08 — the stamp's left side in the page's own ground: white, charcoal in the dark theme */
+:root{ --nc-stamp-ground: #FFFFFF; }
+html[data-theme="dark"]{ --nc-stamp-ground: #121417; }
+/* 2026-10-08 — on hover or focus the stamp's bird flips to the box's right-hand colour, the ink ("On highlight, bird should flip to right half color") */
+.band-logo:is(:hover, :focus-visible) .band-logo__bird .wm-bird-only{ fill: currentColor !important; }
