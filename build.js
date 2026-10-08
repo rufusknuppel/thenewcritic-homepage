@@ -258,8 +258,9 @@ function bandLogoHtml(id = 'band', cls = '') {
       // (the bird's pinholes in the right half's colour — "I want this speck to be the color of the right half" —
       // stroked 4 wide so a hole smaller than a pixel still comes out the ink, not grey; the bird hides the overlap)
       + (FR.holes ? `<path class="band-logo__holes" d="${FR.holes}" fill="currentColor" stroke="currentColor" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
-      // (the slit in the beak charcoal in both themes — "this should be dark too")
-      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" fill="#121417" stroke="#121417" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
+      // (the slit in the beak in the ground it sits on, the box's left: charcoal on the dark side — "this should be
+      // dark too" — and white on the light, "Should be white on white background tho")
+      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #FFFFFF); stroke: var(--nc-stamp-ground, #FFFFFF)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
       + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
