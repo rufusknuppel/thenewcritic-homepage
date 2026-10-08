@@ -104,6 +104,22 @@ const STAMP_FRAME = (() => {
   // #bird, #counter, #below — in place of a seat for the site's drawing)
   return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), half: get('half'), holes: get('holes'), beak: get('beak'), counter: get('counter'), below: get('below'), outer: get('outer'), under: get('under') };
 })();
+// THE TNC MONOGRAM IN THE BAND (2026-10-08, "Replace the stamp with this in
+// the top right of the site"): the band's stamp gives way to assets/
+// monogram-tnc.svg - T, N and C in the square's top right, the stamp's bird
+// big in its middle, both knocked out of it - its square in the ink, so it is
+// charcoal on the light side and light on the dark, the ground showing
+// through the letters and the bird. Its path carries the frame's classes, so
+// the band measures and seats it as it did the stamp's frame (latest-rail.js,
+// BIRD_INK); --bird-ar on the svg itself makes its box square. The
+// colophon keeps the stamp.
+const TNC_MARK = (() => {
+  const file = path.join(__dirname, 'assets', 'monogram-tnc.svg');
+  if (!fs.existsSync(file)) return null;
+  const src = fs.readFileSync(file, 'utf8');
+  const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
+  return { w, h, d: src.match(/<path[^>]* d="([^"]+)"/)[1] };
+})();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
 // masthead's THE NEW CRITIC is three vector words, each traced from the
@@ -264,7 +280,12 @@ function bandLogoHtml(id = 'band', cls = '') {
       + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
-    return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${boxed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
+    // (the band's own: the TNC monogram in the stamp's place - THE TNC MONOGRAM IN THE BAND)
+    const mark = id === 'band' && TNC_MARK
+      ? `<svg class="band-logo__bird band-logo__bird--tnc" aria-hidden="true" focusable="false" viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}" overflow="visible">`
+        + `<path class="band-logo__shield band-logo__frame" d="${TNC_MARK.d}" fill="currentColor" fill-rule="evenodd"/></svg>`
+      : boxed;
+    return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${mark}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
   if (STAMP_FRAME) {
     const FR = STAMP_FRAME;
