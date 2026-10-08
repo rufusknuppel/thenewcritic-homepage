@@ -240,8 +240,8 @@ function bandLogoHtml(id = 'band', cls = '') {
     // light side and light on the dark (#below kept in the file, unused)
     const FR = STAMP_FRAME;
     const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
-      // (the fill to the border's outer edge pulled 4 in, so its edge lies under the border: traced on its own, the
-      // counter's edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
+      // (the fill to the border's midline, so its edge lies under the border: traced on its own, the counter's
+      // edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
       + `<path class="band-logo__counter" d="${FR.under || FR.counter}" fill="currentColor"/>`
       // (the bird clipped to the fill's edge, halfway under the border: moved so its wing tips touch two corners)
       + `<clipPath id="band-box-${id}">${FR.under || FR.outer ? `<path d="${FR.under || FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
