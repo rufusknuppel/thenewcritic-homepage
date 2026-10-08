@@ -111,8 +111,8 @@ const STAMP_FRAME = (() => {
 // charcoal on the light side and light on the dark, the ground showing
 // through the letters and the bird. Its path carries the frame's classes, so
 // the band measures and seats it as it did the stamp's frame (latest-rail.js,
-// BIRD_INK); --bird-ar on the svg itself makes its box square. The
-// colophon keeps the stamp.
+// BIRD_INK); --bird-ar on the svg itself makes its box square. In the
+// colophon too since ("add to colophon too"), a cap tall as the stamp was.
 const TNC_MARK = (() => {
   const file = path.join(__dirname, 'assets', 'monogram-tnc.svg');
   if (!fs.existsSync(file)) return null;
@@ -186,7 +186,7 @@ const COLO_SPAN = (() => {
     return vb[2] / vb[3];
   };
   // (the bird 1 cap tall in the colophon since 2026-10-07 — "Stamp in colophon should be the same height as the words" — where it was 1.66)
-  return (1 * SHIELD.ar + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  return (1 * (TNC_MARK ? TNC_MARK.w / TNC_MARK.h : SHIELD.ar) + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
 // The band's name, THE, NEW and CRITIC, in caps across: the words, the two
 // spaces between them (27 at the 54.21 cap, or the drawing's own where that
@@ -280,8 +280,8 @@ function bandLogoHtml(id = 'band', cls = '') {
       + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
-    // (the band's own: the TNC monogram in the stamp's place - THE TNC MONOGRAM IN THE BAND)
-    const mark = id === 'band' && TNC_MARK
+    // (the TNC monogram in the stamp's place, the band's and the colophon's - THE TNC MONOGRAM IN THE BAND)
+    const mark = TNC_MARK
       ? `<svg class="band-logo__bird band-logo__bird--tnc" aria-hidden="true" focusable="false" viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}" overflow="visible">`
         + `<path class="band-logo__shield band-logo__frame" d="${TNC_MARK.d}" fill="currentColor" fill-rule="evenodd"/></svg>`
       : boxed;
