@@ -220,7 +220,6 @@
   var LIST_NAV = true;
   var bandCtx = null;
   var RAIL_NAME_CAPS = 13.1338;
-  var BAND_MIRROR = true;   // THE BAND MIRRORED, in bandGeo
   var bandGeo = function (st) {
     if (!st) return null;
     seatLogo(st);
@@ -244,15 +243,6 @@
     // sides": the swallow's box 18 off the window's right edge, no longer
     // centred on the column, and the name 18 off its left)
     var tgtR = vw - 18;   // (27 for a moment, then "move side margins back to 54px")
-    // THE BAND MIRRORED (2026-10-08, at the user's word — "Flip the stamp
-    // and the wordmark on the homepage and colophon too"): the mark's box
-    // 18 off the window's left, the name's box ending 18 off its right,
-    // the list centred between the mark's right and THE's first stroke.
-    // The name is seated first: the mark stands inside it, so it moves
-    // with it, and is read after.
-    var lg = st.querySelector('.band-logo');
-    if (lg) lg.style.setProperty('left', (BAND_MIRROR ? tgtR - lg.getBoundingClientRect().width : vw - tgtR).toFixed(2) + 'px', 'important');
-    var bandTo = function (r) { return BAND_MIRROR ? (vw - tgtR) - r.left : tgtR - r.right; };
     // (THE BIRD BETWEEN THE NEW AND CRITIC, 2026-10-07, at the user's word —
     // "Move the bird between THE NEW and CRITIC": the swallow's box 27
     // after NEW's last stroke, and CRITIC 27 after the box — --low-shift
@@ -276,7 +266,7 @@
       // easing runs from there and is not set back first)
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = dxNow + (tgtL != null ? tgtL - br0.left : bandTo(br0));
+      dx = dxNow + (tgtL != null ? tgtL - br0.left : tgtR - br0.right);
       x1u = bandGeo.x1u != null ? bandGeo.x1u : br0.left - dxNow;
     } else {
       st.style.setProperty('--bird-dx', '0px');
@@ -289,11 +279,12 @@
       if (bs) st.style.setProperty('--bird-s', bs);
       br0 = birdInk.getBoundingClientRect();
       if (!br0.width) return null;
-      dx = tgtL != null ? tgtL - br0.left : bandTo(br0);
+      dx = tgtL != null ? tgtL - br0.left : tgtR - br0.right;
     }
     // (the name's left the swallow's distance from the window's right —
     // "match wordmark margin with the bird margin" / "I meant side margin")
-    // (seated above since THE BAND MIRRORED)
+    var lg = st.querySelector('.band-logo');
+    if (lg) lg.style.setProperty('left', (vw - tgtR).toFixed(2) + 'px', 'important');
     void railMid;
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     if (lowEl) {
@@ -699,8 +690,7 @@
         // (between CRITIC's last stroke and the swallow's first ink again,
         // the swallow back at the right: "move bird back to the right")
         var bi0 = st.querySelector(BIRD_INK).getBoundingClientRect();
-        // (between the mark's right and THE's first stroke since THE BAND MIRRORED)
-        var lead0 = Math.round((BAND_MIRROR ? (bi0.right + geo.x0L) / 2 : (geo.x0 + bi0.left) / 2) - (inkL0 + inkR0) / 2);
+        var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
