@@ -14,7 +14,10 @@
   // seal, then "Use this as the shape": the shield is sized, set on its
   // middle and on the 54 gutter where the bird was; build.js, THE BIRD IN A
   // SHIELD)
-  var BIRD_INK = '.band-logo__bird .band-logo__shield, .band-logo__bird .wm-bird-only';
+  // (the shield alone since the bird went under the frame — "Tuck wings and
+  // tail under the outline", 2026-10-07: the bird now comes first in the
+  // stamp's drawing, and a list of the two found it, not the frame)
+  var BIRD_INK = '.band-logo__bird .band-logo__shield';
   // THE BAND'S GEOMETRY (2026-10-05): the swallow's ink set on the 54 gutter
   // (--bird-dx, style.css), and read: each word's ink inside its box, the
   // name's first stroke (x0L) and CRITIC's last (x0), the swallow's first
