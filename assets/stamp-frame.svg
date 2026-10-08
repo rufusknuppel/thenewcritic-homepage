@@ -6,16 +6,18 @@
      bird, adjust accordingly"; "I want the opening to be larger and to line
      up with the direction of the beak, along that curve of the bird's
      spine. I want the outer corners to be as round as the inner corners";
-     "make the border 10-15% thinner. Bird feels too small rn"; "Make the border more square at the corners, like the corners of the N").
+     "make the border 10-15% thinner. Bird feels too small rn"; "Make the border more square at the corners, like the corners of the N"; "Make the bird bigger, and have it cut into the sides", "do this by flipping the color where it cuts in"; "Make it bigger still. Make the bird the highlight color").
      In the wordmark's cap units (600 tall, as the letters are): a rounded
      box at seven-eighths of the O's own weights (sides 107, top 96, foot
      94), its corners square as the N's, softened only as the letters' are by the tracing.
-     The bird sits in the counter with 24 of air all round, scaled to fit
-     (#bird-seat, the transform build.js puts on the bird's own drawing).
+     The bird is 1.5 times the size that would sit in the counter with 24 of
+     air, on the counter's middle, so its wings and tail run into the frame,
+     drawn whole over it in the highlight (#bird-seat, the transform build.js
+     puts on the bird's own drawing).
      The opening goes through the left side along the bird's spine (a curve
      fitted to the neck and the tail, carried on past the beak), 87
      across. build.js reads #frame and #bird-seat; the box's width over its
      height sets the stamp's aspect (--bird-ar). -->
-<path id="frame" d="M1.9 1.6L4.5 0.4 11.9 0.0 589.6 0.0 599.3 0.2 603.6 1.9 605.3 6.2 605.5 15.9 605.5 587.6 605.0 595.1 603.8 597.8 599.7 599.7 590.1 600.0 12.4 600.0 4.9 599.5 2.2 598.3 0.7 595.8 0.0 588.5 0.0 467.4 1.4 458.7 6.4 455.2 70.4 437.6 101.6 427.5 105.1 427.8 106.7 431.3 107.1 498.3 108.1 503.2 111.6 505.7 486.3 506.2 493.7 505.8 496.4 504.5 497.9 502.0 498.5 494.7 498.5 111.5 498.4 103.7 497.3 98.8 495.2 97.0 490.2 96.0 121.0 96.0 110.1 97.0 107.6 100.4 107.0 105.8 107.0 312.2 106.0 321.3 104.2 323.8 101.4 325.6 84.5 331.9 18.6 352.1 7.2 355.0 3.0 354.9 0.6 351.9 0.0 342.7 0.0 11.2 0.6 4.0Z"/>
-<g id="bird-seat" transform="translate(63.61 35.26) scale(1.0635)"/>
+<path id="frame" d="M1.9 1.6L4.5 0.4 11.9 0.0 589.6 0.0 599.3 0.2 603.6 1.9 605.3 6.2 605.5 15.9 605.5 587.6 605.0 595.1 603.8 597.8 599.7 599.7 590.1 600.0 12.4 600.0 4.9 599.5 2.2 598.3 0.3 594.2 0.0 586.5 0.0 475.4 1.6 466.9 6.5 463.2 87.9 434.0 100.9 427.8 102.6 424.4 100.7 417.6 74.0 349.2 70.9 342.4 68.9 340.2 66.4 339.4 63.6 339.8 37.4 350.0 5.1 361.0 1.6 360.4 0.5 358.0 0.0 11.1 0.6 3.9ZM108.9 504.5L111.5 505.8 118.9 506.2 474.3 506.3 491.9 506.0 496.4 504.5 498.2 500.4 498.5 490.8 498.5 107.7 497.9 100.3 496.5 97.8 493.8 96.5 486.4 96.0 131.0 96.0 113.4 96.2 109.0 97.8 107.3 102.0 107.0 111.6 107.0 494.8 107.5 502.1Z"/>
+<g id="bird-seat" transform="translate(-56.72 -97.67) scale(1.5953)"/>
 </svg>

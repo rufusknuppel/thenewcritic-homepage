@@ -224,11 +224,23 @@ const BAND_SHIELD = (() => {
 function bandLogoHtml(id = 'band', cls = '') {
   if (STAMP_FRAME) {
     const FR = STAMP_FRAME;
+    // (the bird over the frame — "Make the bird bigger, and have it cut
+    // into the sides": the frame with the bird cut out of it, the cut the
+    // bird as drawn, its ink roughening and all; the bird in the highlight
+    // and whole since — "Make it bigger still. Make the bird the highlight
+    // color" — where for a few minutes it was flipped to the ground over
+    // the frame, "do this by flipping the color where it cuts in")
+    const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
+    const fx = `band-frame-${id}`, box = `x="-50" y="-50" width="${FR.w + 100}" height="${FR.h + 100}"`;
+    const masks = `<mask id="${fx}-f" maskUnits="userSpaceOnUse" ${box}><rect ${box} fill="#fff"/><g transform="${FR.birdT}"><g filter="url(#wm-stamp-ink-${id})"><path d="${birdD}" fill="#000" fill-rule="evenodd"/></g></g></mask>`;
     const framed = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
       .replace(/viewBox="[^"]*"/, `viewBox="0 0 ${FR.w} ${FR.h}"`)
-      .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor"/><g transform="${FR.birdT}">$1`)
-      .replace(/<\/svg>\s*$/, '</g></svg>');
-    if (!framed.includes('band-logo__frame') || !framed.includes(`<g transform="${FR.birdT}">`)) throw new Error('band stamp: bird SVG did not take the frame');
+      .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" mask="url(#${fx}-f)"/><g transform="${FR.birdT}">$1`)
+      .replace(/class="wm-bird-only" fill="currentColor"/, 'class="wm-bird-only" style="fill: var(--nc-mark, #D52B05)"')
+      .replace(/<\/svg>\s*$/, '</g></svg>')
+      // (the masks in after the bird is wrapped, so the wrap finds the bird and not its copy in a mask)
+      .replace('</defs>', `${masks}</defs>`);
+    if (!framed.includes('band-logo__frame') || !framed.includes(`<g transform="${FR.birdT}">`) || !framed.includes(`id="${fx}-f"`)) throw new Error('band stamp: bird SVG did not take the frame');
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${framed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
   const F = BAND_FRAME, Se = BAND_SHIELD;
