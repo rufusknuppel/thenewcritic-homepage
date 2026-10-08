@@ -102,7 +102,7 @@ const STAMP_FRAME = (() => {
   const seat = src.match(/<g id="bird-seat" transform="([^"]+)"/);
   // (the box from the user's picture carries its own bird and its fills —
   // #bird, #counter, #below — in place of a seat for the site's drawing)
-  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), counter: get('counter'), below: get('below') };
+  return { w, h, ar: w / h, d: get('frame'), birdT: seat ? seat[1] : null, bird: get('bird'), counter: get('counter'), below: get('below'), outer: get('outer'), under: get('under') };
 })();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
@@ -240,9 +240,13 @@ function bandLogoHtml(id = 'band', cls = '') {
     // light side and light on the dark (#below kept in the file, unused)
     const FR = STAMP_FRAME;
     const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
-      + `<path class="band-logo__counter" d="${FR.counter}" fill="currentColor" fill-rule="evenodd"/>`
+      // (the fill to the border's outer edge pulled 4 in, so its edge lies under the border: traced on its own, the
+      // counter's edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
+      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" fill="currentColor"/>`
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/>`
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/></svg>`;
+      // (the bird clipped to the box: moved so its wing tips touch two corners, its tail runs past the top)
+      + `<clipPath id="band-box-${id}">${FR.outer ? `<path d="${FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/></svg>`;
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${boxed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
   if (STAMP_FRAME) {
