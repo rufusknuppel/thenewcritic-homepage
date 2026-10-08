@@ -27526,3 +27526,7 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
   }
 }
 }
+
+/* 2026-10-08 — the stamp's bird the opposite of its box: white on charcoal, charcoal on white in the dark theme */
+:root{ --nc-stamp-bird: #FFFFFF; }
+html[data-theme="dark"]{ --nc-stamp-bird: #121417; }

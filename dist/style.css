@@ -13626,3 +13626,5 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
   }
 }
 }
+:root{ --nc-stamp-bird: #FFFFFF; }
+html[data-theme="dark"]{ --nc-stamp-bird: #121417; }

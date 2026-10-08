@@ -243,10 +243,13 @@ function bandLogoHtml(id = 'band', cls = '') {
       // (the fill to the border's outer edge pulled 4 in, so its edge lies under the border: traced on its own, the
       // counter's edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
       + `<path class="band-logo__counter" d="${FR.under || FR.counter}" fill="currentColor"/>`
-      + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/>`
-      // (the bird clipped to the box: moved so its wing tips touch two corners, its tail runs past the top)
-      + `<clipPath id="band-box-${id}">${FR.outer ? `<path d="${FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/></svg>`;
+      // (the bird clipped to the fill's edge, halfway under the border: moved so its wing tips touch two corners)
+      + `<clipPath id="band-box-${id}">${FR.under || FR.outer ? `<path d="${FR.under || FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
+      // (the bird the fill's opposite — "Turn bird to white on charcoal and charcoal on white": white on the
+      // charcoal box on the light side, charcoal on the white box on the dark, --nc-stamp-bird set in style.css)
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-stamp-bird, #FFFFFF)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
+      // (the red border drawn last, over the bird's wing tips, so it runs unbroken round the box)
+      + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/></svg>`;
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${boxed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
   if (STAMP_FRAME) {
