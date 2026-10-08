@@ -239,14 +239,15 @@ function bandLogoHtml(id = 'band', cls = '') {
     // the frame and the bird both in the ink again, the frame with the bird
     // cut out of it and the bird with the frame cut out of it, both cuts the
     // bird as drawn, its ink roughening and all, so where the two cross the
-    // colour flips to the ground)
+    // colour flips to the ground; the border the red seal's since, in the
+    // highlight — "Replace the outline of the bird with the red here")
     const birdD = BIRD_STAMP.match(/class="wm-bird-only"[^>]*\sd="([^"]+)"/)[1];
     const fx = `band-frame-${id}`, box = `x="-50" y="-50" width="${FR.w + 100}" height="${FR.h + 100}"`;
     const masks = `<mask id="${fx}-f" maskUnits="userSpaceOnUse" ${box}><rect ${box} fill="#fff"/><g transform="${FR.birdT}"><g filter="url(#wm-stamp-ink-${id})"><path d="${birdD}" fill="#000" fill-rule="evenodd"/></g></g></mask>`
       + `<mask id="${fx}-b" maskUnits="userSpaceOnUse" ${box}><rect ${box} fill="#fff"/><path d="${FR.d}" fill="#000"/></mask>`;
     const framed = BIRD_STAMP.replace(/wm-stamp-ink/g, `wm-stamp-ink-${id}`).replace('class="wm-bird"', 'class="band-logo__bird"')
       .replace(/viewBox="[^"]*"/, `viewBox="0 0 ${FR.w} ${FR.h}"`)
-      .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" mask="url(#${fx}-f)"/><g mask="url(#${fx}-b)"><g transform="${FR.birdT}">$1`)
+      .replace(new RegExp(`(<g filter="url\\(#wm-stamp-ink-${id}\\)">)`), `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" mask="url(#${fx}-f)"/><g mask="url(#${fx}-b)"><g transform="${FR.birdT}">$1`)
       .replace(/<\/svg>\s*$/, '</g></g></svg>')
       // (the masks in after the bird is wrapped, so the wrap finds the bird and not its copy in a mask)
       .replace('</defs>', `${masks}</defs>`);
