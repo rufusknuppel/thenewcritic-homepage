@@ -232,14 +232,15 @@ function bandLogoHtml(id = 'band', cls = '') {
     // with black below the wings filled in and white above the wings filled
     // in"): the box, its bird and the fills all traced from the user's
     // picture (assets/stamp-frame.svg); the white and the charcoal fixed, the
-    // same on the page's light side and its dark one, the border and the
-    // bird in the highlight
+    // same on the page's light side and its dark one, the border in the
+    // highlight; the bird charcoal since ("Fill in the whole bird with the
+    // charcoal"), where it was the highlight
     const FR = STAMP_FRAME;
     const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
       + `<path class="band-logo__counter" d="${FR.counter}" fill="#FFFFFF" fill-rule="evenodd"/>`
       + `<path class="band-logo__below" d="${FR.below}" fill="#121417" fill-rule="evenodd"/>`
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/>`
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd"/></svg>`;
+      + `<path class="wm-bird-only" d="${FR.bird}" fill="#121417" fill-rule="evenodd"/></svg>`;
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${boxed}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
   if (STAMP_FRAME) {
