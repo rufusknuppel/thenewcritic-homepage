@@ -38,9 +38,17 @@
     var m = navCx.measureText(t);
     return { l: r.left - m.actualBoundingBoxLeft, r: r.left + m.actualBoundingBoxRight };
   };
+  // (two lines since — "Have two lines, Subscribe, Store, Archive/The Last Magazine": the words before THE LAST
+  // MAGAZINE one line, with their commas, and it the other)
+  var navLines = function (st) {
+    var w = navWords(st);
+    // (THE LAST MAGAZINE the top line — "Put The Last Magazine on top tho")
+    if (w.length > 1 && w[w.length - 1].classList.contains('sub-ticker-half--tlm')) return [w.slice(-1), w.slice(0, -1)];
+    return w.map(function (c) { return [c]; });
+  };
   var navStackW = function (st) {
     var w = 0;
-    navWords(st).forEach(function (c) { var k = navInk(c); w = Math.max(w, k.r - k.l); });
+    navLines(st).forEach(function (ln) { w = Math.max(w, navInk(ln[ln.length - 1]).r - navInk(ln[0]).l); });
     return w;
   };
   // THE BAND'S GEOMETRY (2026-10-05): the swallow's ink set on the 54 gutter
@@ -146,7 +154,7 @@
       if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
       // (and smaller again by the stack and a word's gap before it, the nav stacked at the right)
       if (NAV_STACK && coSpan > 0) {
-        navWords(st).forEach(function (c) { c.classList.add('nav-stack'); });
+        navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
         var sW = navStackW(st);
         if (sW > 0) coFs = (vw - 2 * 20 - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
       }
@@ -251,10 +259,11 @@
         if (NAV_STACK) {
           // (stacked: the first word's capitals level with the name's, the last's baseline with its foot, the lines
           // evenly between)
-          var pitch = navEls.length > 1 ? (wmH - navCap) / (navEls.length - 1) : 0;
-          navEls.forEach(function (c, i) {
-            var nci = capsOf(c.querySelector('b'));
-            if (nci) c.style.setProperty('top', (top + want + i * pitch - nci.cap).toFixed(2) + 'px', 'important');
+          var lines = navLines(st);
+          var pitch = lines.length > 1 ? (wmH - navCap) / (lines.length - 1) : 0;
+          lines.forEach(function (ln, i) {
+            var nci = capsOf(ln[0].querySelector('b'));
+            if (nci) ln.forEach(function (c) { c.style.setProperty('top', (top + want + i * pitch - nci.cap).toFixed(2) + 'px', 'important'); });
           });
         } else {
           var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
@@ -891,7 +900,12 @@
           // (stacked at the right: each word's last ink on the band's 20 — THE NAV STACKED AT THE RIGHT)
           var vwS = document.documentElement.clientWidth;
           words.forEach(function (c) { c.style.setProperty('left', '0px', 'important'); });
-          words.forEach(function (c) { c.style.setProperty('left', (vwS - 20 - navInk(c).r).toFixed(2) + 'px', 'important'); });
+          // (every line's commas settled first: a comma lost on one line moves the words after it on another)
+          navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
+          navLines(st).forEach(function (ln) {
+            var dl = (vwS - 20 - navInk(ln[ln.length - 1]).r).toFixed(2) + 'px';
+            ln.forEach(function (c) { c.style.setProperty('left', dl, 'important'); });
+          });
         } else
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         // (THE LAST MAGAZINE stood apart at the right for a while that day — under CRITIC's last C, then as far from
