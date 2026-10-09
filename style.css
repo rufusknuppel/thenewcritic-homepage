@@ -27732,10 +27732,6 @@ html body main.has-mega .page-rows .latest-rail .rail-nav__row > * {
   color: inherit !important;
   text-decoration: none !important;
 }
-html body main.has-mega .page-rows .latest-rail .rail-nav a:hover {
-  text-decoration: underline !important;
-  text-underline-offset: 3px !important;
-}
 }
 @media (max-width: 1023.98px) {
 html body main .rail-nav { display: none !important; }
