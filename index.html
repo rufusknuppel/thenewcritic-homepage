@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=fab7f1d5">
+<link rel="stylesheet" href="style.css?v=1e6088a5">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10917,9 +10917,9 @@ window.__ncStripInk = function () {
     var vwE = document.documentElement.clientWidth;
     var mid = Math.min(vwE * 2 / 3 - 11, 0.9773 * vwE - 383.75);
     if (document.querySelector('.latest-rail--l')) {
-      var theR = -Infinity;
-      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
-      if (isFinite(theR)) mid = vwE - 252 - (theR + 20);
+      var newL = Infinity;
+      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
+      if (isFinite(newL)) mid = vwE - 252 - (newL + 2);
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
