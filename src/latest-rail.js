@@ -911,6 +911,14 @@
             var dl = (vwS - 20 - navInk(ln[ln.length - 1]).r).toFixed(2) + 'px';
             ln.forEach(function (c) { c.style.setProperty('left', dl, 'important'); });
           });
+          // (THE LAST MAGAZINE centred over the line under it, which keeps the 20 — "Center The Last Magazine on top of
+          // Subscribe line")
+          var nls = navLines(st);
+          if (nls.length === 2 && nls[0].length === 1 && nls[0][0].classList.contains('sub-ticker-half--tlm')) {
+            var tl = nls[0][0], lo = nls[1], tk = navInk(tl), lk0 = navInk(lo[0]), lk1 = navInk(lo[lo.length - 1]);
+            var tlL = parseFloat(tl.style.getPropertyValue('left')) || 0;
+            tl.style.setProperty('left', (tlL + (lk0.l + lk1.r) / 2 - (tk.l + tk.r) / 2).toFixed(2) + 'px', 'important');
+          }
         } else
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         // (THE LAST MAGAZINE stood apart at the right for a while that day — under CRITIC's last C, then as far from
