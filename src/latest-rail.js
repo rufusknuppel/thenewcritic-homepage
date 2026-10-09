@@ -266,10 +266,22 @@
           var pitch = 27.5;
           var liA = document.querySelector('.latest-rail__in.is-current .latest-rail__list > li'), liB = liA && liA.nextElementSibling;
           if (liA && liB) { var pA = liB.getBoundingClientRect().top - liA.getBoundingClientRect().top; if (pA > 0) pitch = pA; }
-          var capTop0 = top + want + wmH / 2 - ((lines.length - 1) * pitch + navCap) / 2;
+          // (baseline to baseline since the lines are two sizes — "Make it as big as The Latest. make subscribe, store,
+          // etc. small as the kickers", 2026-10-09: the stack's ink, the first line's capitals to the last's baseline,
+          // centred on the name's middle; each baseline read off the page with a hairline set on it, not reckoned from
+          // the font's box, which lands a pixel apart between the sizes)
+          var baseOf = function (el) {
+            var pr = document.createElement('span');
+            pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            el.appendChild(pr); var y = pr.getBoundingClientRect().top; el.removeChild(pr); return y;
+          };
+          var c0 = capsOf(lines[0][0].querySelector('b')), cap0 = c0 ? c0.base - c0.cap : navCap;
+          var base0 = top + want + wmH / 2 + (cap0 - (lines.length - 1) * pitch) / 2;
           lines.forEach(function (ln, i) {
-            var nci = capsOf(ln[0].querySelector('b'));
-            if (nci) ln.forEach(function (c) { c.style.setProperty('top', (capTop0 + i * pitch - nci.cap).toFixed(2) + 'px', 'important'); });
+            var bEl = ln[0].querySelector('b');
+            if (!bEl) return;
+            var dy = base0 + i * pitch - baseOf(bEl);
+            ln.forEach(function (c) { c.style.setProperty('top', ((parseFloat(c.style.getPropertyValue('top')) || 0) + dy).toFixed(2) + 'px', 'important'); });
           });
         } else {
           var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
