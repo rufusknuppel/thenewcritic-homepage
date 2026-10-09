@@ -8824,7 +8824,7 @@
     var sel = window.getSelection && window.getSelection();
     if (sel && String(sel)) return;
     var scope = t.closest('.panel-col, .duo-panel, .card, .latest-stack, .ticker-item') || document.body;
-    var titles = scope.querySelectorAll('.card-title.hl-rect, .latest-title.hl-rect');
+    var titles = scope.querySelectorAll('.card-title.hl-rect:not(.rx), .latest-title.hl-rect:not(.rx)');
     for (var i = 0; i < titles.length; i++) {
       var title = titles[i];
       var dek = title.nextElementSibling;
