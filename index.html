@@ -10512,7 +10512,9 @@ window.__ncStripInk = function () {
         var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
         var bL = vw - 20 - oBl.width;
         var sWL = NAV_STACK ? navStackW(st) : 0;
-        st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
+        var birdSvg = st.querySelector('.band-logo__bird');
+        var txNow = birdSvg ? parseFloat((getComputedStyle(birdSvg).translate || '0').split(' ')[0]) || 0 : bdxL;
+        st.style.setProperty('--bird-dx', (bL - (oBl.left - txNow)).toFixed(2) + 'px');
         var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l) - sWL) / (sWL ? 4 : 3);
         navRightX = sWL ? bL - gL : null;
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
