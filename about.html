@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4a092009">
-<style>:root{--colo-span:9.4628;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
+<link rel="stylesheet" href="style.css?v=5e2e8724">
+<style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5120,7 +5120,7 @@
                     if (rEl === topStrip) break;
                   }
                   var opening = !!document.querySelector('main.wm-opening');
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 var kInk = Infinity;
                 [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {

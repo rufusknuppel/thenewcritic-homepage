@@ -18,8 +18,8 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4a092009">
-<style>:root{--colo-span:9.4628;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
+<link rel="stylesheet" href="style.css?v=5e2e8724">
+<style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5985,7 +5985,7 @@
                     if (rEl === topStrip) break;
                   }
                   var opening = !!document.querySelector('main.wm-opening');
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 var kInk = Infinity;
                 [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -10282,27 +10282,35 @@ window.__ncStripInk = function () {
         var tX = inkX0('.band-logo__top svg path'), mX = inkX0('.band-logo__mid svg path'), cX = inkX0('.band-logo__low svg path');
         if (tX && mX && cX) nW = (mX.r - tX.l) + 2 * (mX.l - tX.r) + bAr * (k.b - k.t) + (cX.r - cX.l);
         var maxW = vw - 36 - 72 - (lr - ll);
-        if (maxW > 0 && nW > maxW + 0.5) {
-          var fs0 = parseFloat(getComputedStyle(logoEl).fontSize) || 0;
-          if (fs0) { logoEl.style.setProperty('font-size', (fs0 * maxW / nW).toFixed(2) + 'px', 'important'); k = inkY(); }
-        }
+        void maxW; void nW;
       }
+    }
+    if (logoEl) {
+      var coLogo = document.querySelector('.page-rows > .section-band--colophon.colo .colo-logo');
+      var coFs = coLogo && parseFloat(getComputedStyle(coLogo).fontSize);
+      if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
+      logoEl.style.setProperty('column-gap', '0.6226em', 'important');
+      var midEl = logoEl.querySelector('.band-logo__mid');
+      if (midEl) midEl.style.setProperty('margin-left', '0px', 'important');
+      k = inkY();
     }
     var wmH = k.b - k.t;
     var BIRD_K = 1.375 * 1.3;
     var F = 155;
     var birdH = wmH;
+    birdH = wmH * 1.03;
     var H = F;
     var navEls = runEl ? [].filter.call(runEl.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
     var navCap = 0;
     navEls.forEach(function (c) { c.style.setProperty('position', 'relative', 'important'); c.style.setProperty('top', '0px', 'important'); });
     if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
-    if (navCap > 0) H = Math.round(3 * (F - wmH) / 2 + wmH + navCap);
+    var AIR = 20;
+    H = Math.round(navCap > 0 ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
-    var want = (F - wmH) / 2;
+    var want = AIR;
     var coA = document.querySelector('.page-rows > .section-band--colophon.colo');
     if (coA && wmH > 0) {
       var air = want.toFixed(2) + 'px';
