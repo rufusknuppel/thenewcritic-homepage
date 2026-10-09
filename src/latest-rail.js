@@ -341,6 +341,15 @@
     var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
     var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
     var tgtL = newX ? newX.r + WORD_GAP : null;
+    // (THE BIRD AFTER CRITIC, 2026-10-09 — "Move the bird to the right of Critic": CRITIC straight after NEW, a word's
+    // gap, and the bird's box as far after CRITIC's last stroke)
+    var BIRD_LAST = true;
+    if (BIRD_LAST) {
+      var lowE0 = st.querySelector('.band-logo__low');
+      if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
+      var lowX0 = inkX('.band-logo__low svg path');
+      tgtL = lowX0 ? lowX0.r + WORD_GAP : null;
+    }
     void mr;
     var lowEl = st.querySelector('.band-logo__low');
     // (THE STAMP OVER THE COLUMN, 2026-10-07, at the user's word — "center
@@ -384,7 +393,9 @@
       // the box is 27 whatever the grid gives)
       // (written on CRITIC itself, over whatever margin the sheet gives it;
       // nothing written while the bird stands at the right)
-      if (tgtL != null) {
+      if (BIRD_LAST) {
+        lowEl.style.setProperty('margin-left', '0px', 'important');
+      } else if (tgtL != null) {
         lowEl.style.setProperty('margin-left', '0px', 'important');
         var lr0 = low.getBoundingClientRect();
         var shift = (lr0.width ? Math.max(0, tgtL + br0.width + WORD_GAP - lr0.left) : 0).toFixed(2) + 'px';
@@ -403,11 +414,22 @@
       };
       var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
       if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
+      // (the bird last since — THE BIRD AFTER CRITIC: THE at the left's 20 and the bird's box at the right's, NEW and
+      // CRITIC evenly between, the three gaps one, ink to ink)
+      var oBl = birdInk.getBoundingClientRect(), midL = st.querySelector('.band-logo__mid'), oTl = outX('.band-logo__top svg path'), oNl = outX('.band-logo__mid svg path');
+      if (BIRD_LAST && lowEl && oC && oBl.width && midL && oTl && oNl) {
+        var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
+        var bL = vw - 20 - oBl.width;
+        st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
+        var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l)) / 3;
+        midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
+        lowEl.style.setProperty('translate', (oTl.r + gL + (oNl.r - oNl.l) + gL - oC.l).toFixed(2) + 'px 0px', 'important');
+      } else
       if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
       // (and NEW and the bird evenly between them since — "Space NEW and the bird evenly between THE and CRITIC": the
       // three gaps, THE to NEW, NEW to the bird and the bird to CRITIC, one, ink to ink)
       var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();
-      if (midOut && oT2 && oC2 && oN && oB.width) {
+      if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
         var gEven = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width) / 3;
         midOut.style.setProperty('translate', (oT2.r + gEven - oN.l).toFixed(2) + 'px 0px', 'important');
         var bdx = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;

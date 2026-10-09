@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=bd120e69">
+<link rel="stylesheet" href="style.css?v=b1c32684">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10411,6 +10411,13 @@ window.__ncStripInk = function () {
     var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
     var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
     var tgtL = newX ? newX.r + WORD_GAP : null;
+    var BIRD_LAST = true;
+    if (BIRD_LAST) {
+      var lowE0 = st.querySelector('.band-logo__low');
+      if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
+      var lowX0 = inkX('.band-logo__low svg path');
+      tgtL = lowX0 ? lowX0.r + WORD_GAP : null;
+    }
     void mr;
     var lowEl = st.querySelector('.band-logo__low');
     var railEl = document.querySelector('.page-rows .latest-rail--latest'), rrc = railEl && railEl.getBoundingClientRect();
@@ -10439,7 +10446,9 @@ window.__ncStripInk = function () {
     void railMid;
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     if (lowEl) {
-      if (tgtL != null) {
+      if (BIRD_LAST) {
+        lowEl.style.setProperty('margin-left', '0px', 'important');
+      } else if (tgtL != null) {
         lowEl.style.setProperty('margin-left', '0px', 'important');
         var lr0 = low.getBoundingClientRect();
         var shift = (lr0.width ? Math.max(0, tgtL + br0.width + WORD_GAP - lr0.left) : 0).toFixed(2) + 'px';
@@ -10455,9 +10464,18 @@ window.__ncStripInk = function () {
       };
       var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
       if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
+      var oBl = birdInk.getBoundingClientRect(), midL = st.querySelector('.band-logo__mid'), oTl = outX('.band-logo__top svg path'), oNl = outX('.band-logo__mid svg path');
+      if (BIRD_LAST && lowEl && oC && oBl.width && midL && oTl && oNl) {
+        var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
+        var bL = vw - 20 - oBl.width;
+        st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
+        var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l)) / 3;
+        midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
+        lowEl.style.setProperty('translate', (oTl.r + gL + (oNl.r - oNl.l) + gL - oC.l).toFixed(2) + 'px 0px', 'important');
+      } else
       if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
       var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();
-      if (midOut && oT2 && oC2 && oN && oB.width) {
+      if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
         var gEven = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width) / 3;
         midOut.style.setProperty('translate', (oT2.r + gEven - oN.l).toFixed(2) + 'px 0px', 'important');
         var bdx = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
