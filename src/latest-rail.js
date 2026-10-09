@@ -481,7 +481,11 @@
         // the right's 20, the stack before it, NEW, CRITIC and the stack evenly between THE and the bird, all four
         // gaps one; the stack's right edge left for band() to set the lines on, navRightX)
         var sWL = NAV_STACK ? navStackW(st) : 0;
-        st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
+        // (read from where the bird stands unslid: through the column's slide its translate is on its way, so
+        // its box is not where --bird-dx says — "Bird is moving with column collapse")
+        var birdSvg = st.querySelector('.band-logo__bird');
+        var txNow = birdSvg ? parseFloat((getComputedStyle(birdSvg).translate || '0').split(' ')[0]) || 0 : bdxL;
+        st.style.setProperty('--bird-dx', (bL - (oBl.left - txNow)).toFixed(2) + 'px');
         var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l) - sWL) / (sWL ? 4 : 3);
         navRightX = sWL ? bL - gL : null;
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
