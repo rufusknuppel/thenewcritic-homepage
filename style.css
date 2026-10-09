@@ -27623,5 +27623,7 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
   font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   text-transform: uppercase !important;
   letter-spacing: 0.02em !important;
+  /* (at the other Work Sans's 13 — "Reduce size of kickers to other work sans") */
+  font-size: 13px !important;
 }
 }
