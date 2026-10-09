@@ -413,7 +413,9 @@
     var tgtL = newX ? newX.r + WORD_GAP : null;
     // (THE BIRD AFTER CRITIC, 2026-10-09 — "Move the bird to the right of Critic": CRITIC straight after NEW, a word's
     // gap, and the bird's box as far after CRITIC's last stroke)
-    var BIRD_LAST = true;
+    // (and back between THE NEW and CRITIC the same day, once the stack had gone to the column — "Move the bird
+    // between THE NEW and CRITIC": THE and CRITIC at the 20s, NEW and the bird evenly between)
+    var BIRD_LAST = false;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
@@ -512,8 +514,11 @@
       if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
         var gEven = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width) / 3;
         midOut.style.setProperty('translate', (oT2.r + gEven - oN.l).toFixed(2) + 'px 0px', 'important');
-        var bdx = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
-        st.style.setProperty('--bird-dx', (bdx + (oT2.r + gEven + (oN.r - oN.l) + gEven) - oB.left).toFixed(2) + 'px');
+        // (read from where the bird stands unslid, as with the bird last: through the column's slide its translate
+        // is on its way — "Bird is moving with column collapse")
+        var birdSv2 = st.querySelector('.band-logo__bird');
+        var txNow2 = birdSv2 ? parseFloat((getComputedStyle(birdSv2).translate || '0').split(' ')[0]) || 0 : (parseFloat(st.style.getPropertyValue('--bird-dx')) || 0);
+        st.style.setProperty('--bird-dx', ((oT2.r + gEven + (oN.r - oN.l) + gEven) - (oB.left - txNow2)).toFixed(2) + 'px');
       }
     }
     var words = [].filter.call(run.children, function (c) {
