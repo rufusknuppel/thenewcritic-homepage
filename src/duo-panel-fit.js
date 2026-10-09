@@ -7753,7 +7753,11 @@
                   // (no floor on the band's share since 2026-10-04: a band over 144 —
                   // 151, "Have 54px above and below wordmark in top band" — took
                   // the floor's 0 and stood the first row 7 low)
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  // (and the band's height over 162 added back since 2026-10-09 — the list a line under the name, the
+                  // band 188 and more: the page's lift stops at 162 — style.css, THE NAV UNDER THE NAME — so the
+                  // first row stood that much high, 28 under the band where it wants 54: "The top posting isn't
+                  // loading with 54px top and bottom")
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its

@@ -205,7 +205,9 @@ const COLO_SPAN = (() => {
     return vb[2] / vb[3];
   };
   // (the bird 1 cap tall in the colophon since 2026-10-07 — "Stamp in colophon should be the same height as the words" — where it was 1.66)
-  return (1 * (TNC_MARK ? TNC_MARK.w / TNC_MARK.h : SHIELD.ar) + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
+  // (and 1.03 of a cap since 2026-10-09 — "Make bird 3% bigger, keeping margins the same": the row a thirtieth of
+  // the bird's width wider, its gaps as they were; style.css, THE BIRD BETWEEN THE NEW AND CRITIC IN THE COLOPHON TOO)
+  return (1.03 * (TNC_MARK ? TNC_MARK.w / TNC_MARK.h : SHIELD.ar) + 3 * 0.6226 + 3 * Math.max(0, WM_SPACE - 0.6226) - 0 /* the diamond's point on its box's edge: no ink inset, 2026-10-07 */ + capsAcross('the') + capsAcross('new') + capsAcross('critic')).toFixed(4);
 })();
 // The band's name, THE, NEW and CRITIC, in caps across: the words, the two
 // spaces between them (27 at the 54.21 cap, or the drawing's own where that

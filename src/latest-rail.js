@@ -99,11 +99,21 @@
         var tX = inkX0('.band-logo__top svg path'), mX = inkX0('.band-logo__mid svg path'), cX = inkX0('.band-logo__low svg path');
         if (tX && mX && cX) nW = (mX.r - tX.l) + 2 * (mX.l - tX.r) + bAr * (k.b - k.t) + (cX.r - cX.l);
         var maxW = vw - 36 - 72 - (lr - ll);
-        if (maxW > 0 && nW > maxW + 0.5) {
-          var fs0 = parseFloat(getComputedStyle(logoEl).fontSize) || 0;
-          if (fs0) { logoEl.style.setProperty('font-size', (fs0 * maxW / nW).toFixed(2) + 'px', 'important'); k = inkY(); }
-        }
+        // (no longer: the name spaced and sized as the colophon's since 2026-10-09, below)
+        void maxW; void nW;
       }
+    }
+    // THE NAME AS THE COLOPHON'S (2026-10-09, at the user's word — "Space the top wordmark like the colophon, with
+    // bigger text"): the name at the colophon's size, the window less two 54s, and its words the colophon's 0.6226
+    // of a cap apart, ink to ink
+    if (logoEl) {
+      var coLogo = document.querySelector('.page-rows > .section-band--colophon.colo .colo-logo');
+      var coFs = coLogo && parseFloat(getComputedStyle(coLogo).fontSize);
+      if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
+      logoEl.style.setProperty('column-gap', '0.6226em', 'important');
+      var midEl = logoEl.querySelector('.band-logo__mid');
+      if (midEl) midEl.style.setProperty('margin-left', '0px', 'important');
+      k = inkY();
     }
     // (the strip under the name again since later that day — "Set band
     // below wordmark": the field the band's box, from the window's top to
@@ -154,6 +164,9 @@
     // (as tall as the name's cap again — "match stamp height with wordmark height": the name's own ink height, so
     // the two stay matched whatever the band's height)
     var birdH = wmH;
+    // (a thirtieth bigger since 2026-10-09 — "Make bird 3% bigger, keeping margins the same": 1.03 of the name's
+    // ink, on its middle; the band's air still read off the name's ink)
+    birdH = wmH * 1.03;
     // (THE BIRD BETWEEN THE NEW AND CRITIC AGAIN, 2026-10-09 — "Move the bird betwen THE NEW and Critic": as tall as
     // the name's ink, on the same middle — a few minutes 1.07 of it, "make the bird 7% bigger than the text", then
     // "actually make bird same height as letters")
@@ -166,12 +179,15 @@
     var navCap = 0;
     navEls.forEach(function (c) { c.style.setProperty('position', 'relative', 'important'); c.style.setProperty('top', '0px', 'important'); });
     if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
-    if (navCap > 0) H = Math.round(3 * (F - wmH) / 2 + wmH + navCap);
+    // (the air 20 over the name, between it and the list and under the list, whatever the name's size, since it took
+    // the colophon's: "Keep padding the same above top and bottom as above wordmark")
+    var AIR = 20;
+    H = Math.round(navCap > 0 ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
-    var want = (F - wmH) / 2;
+    var want = AIR;
     // (THE COLOPHON'S AIR THE BAND'S, 2026-10-06 — "Make sure padding
     // matches top band proprotionally", then "I want padding to match the
     // top band, despite larger sizes": the colophon stands the band's own
