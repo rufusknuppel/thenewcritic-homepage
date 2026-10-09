@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5e2e8724">
+<link rel="stylesheet" href="style.css?v=bd120e69">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10382,6 +10382,7 @@ window.__ncStripInk = function () {
     var vw = document.documentElement.clientWidth;
     var tgtR = vw - 18;   // (27 for a moment, then "move side margins back to 54px")
     var lgC = st.querySelector('.band-logo');
+    [].forEach.call(st.querySelectorAll('.band-logo__top, .band-logo__low'), function (el) { el.style.removeProperty('translate'); });
     if (lgC) {
       var inkC = function (sel) {
         var l = Infinity, r = -Infinity;
@@ -10440,6 +10441,16 @@ window.__ncStripInk = function () {
         lowEl.style.setProperty('--low-shift', shift);
         lowEl.style.setProperty('margin-left', shift, 'important');
       } else { lowEl.style.removeProperty('margin-left'); lowEl.style.removeProperty('--low-shift'); }
+    }
+    if (wideLogo.matches) {
+      var outX = function (sel) {
+        var l = Infinity, r = -Infinity;
+        [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+        return isFinite(l) ? { l: l, r: r } : null;
+      };
+      var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
+      if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
+      if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
     }
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
@@ -10672,7 +10683,27 @@ window.__ncStripInk = function () {
         var rightB = bi0.left > geo.x0 ? bi0.left : geo.x1R;
         void rightB;
         var lead0 = Math.round(document.documentElement.clientWidth / 2 - (inkL0 + inkR0) / 2);
+        var tPath = st.querySelector('.band-logo__top svg path');
+        if (tPath && tPath.isPointInFill && tPath.getScreenCTM) {
+          var tb = tPath.getBBox(), ty = tb.y + 0.7 * tb.height, tm = tPath.getScreenCTM(), tx = null;
+          for (var sx = tb.x; sx <= tb.x + tb.width; sx += tb.width / 2000) {
+            if (tPath.isPointInFill(new DOMPoint(sx, ty))) { tx = sx; break; }
+          }
+          if (tx != null && tm) lead0 = +((tm.a * tx + tm.c * ty + tm.e) - inkL0).toFixed(2);
+        }
+        words.forEach(function (c) { c.classList.remove('nav-before-tlm'); });
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
+        var tlmW = words[words.length - 1];
+        if (words.length > 1 && tlmW.classList.contains('sub-ticker-half--tlm')) {
+          words[words.length - 2].classList.add('nav-before-tlm');
+          var cInk = -Infinity;
+          [].forEach.call(st.querySelectorAll('.band-logo__low svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) cInk = Math.max(cInk, qr.right); });
+          if (isFinite(cInk)) {
+            var tlmM = parseFloat(getComputedStyle(tlmW).marginLeft) || 0;
+            var tlmR = tlmW.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
+            tlmW.style.setProperty('margin-left', (tlmM + cInk - tlmR).toFixed(2) + 'px', 'important');
+          }
+        }
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
       } else if (run && geo && ink.length > 1) {
