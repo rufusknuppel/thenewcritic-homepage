@@ -10902,6 +10902,11 @@ window.__ncStripInk = function () {
     if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
     var vwE = document.documentElement.clientWidth;
     var mid = Math.min(vwE * 2 / 3 - 11, 0.9773 * vwE - 383.75);
+    if (document.querySelector('.latest-rail--l')) {
+      var theR = -Infinity;
+      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
+      if (isFinite(theR)) mid = vwE - 252 - (theR + 20);
+    }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
