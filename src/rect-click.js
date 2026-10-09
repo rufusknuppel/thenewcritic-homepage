@@ -75,7 +75,14 @@
     // title does not contain it — so a preview lying over a card does
     // not become a way into that card by accident.
     var scope = t.closest('.panel-col, .duo-panel, .card, .latest-stack, .ticker-item') || document.body;
-    var titles = scope.querySelectorAll('.card-title.hl-rect, .latest-title.hl-rect');
+    // (NOT A TITLE THAT IS A PICTURE, 2026-10-09 — "If i click around the
+    // dot and miss the dot it takes me to the top post url": a title
+    // carrying its card's picture in its ::before (.rx) has its words
+    // unseen, and the rectangle squared off them stood out over the air
+    // round the picture — round the dot, past the window's left. The
+    // picture answers its own click, by where it fell (card-open.js,
+    // THE PICTURE IN THE BOX OPENS THE POST); this takes the rest)
+    var titles = scope.querySelectorAll('.card-title.hl-rect:not(.rx), .latest-title.hl-rect:not(.rx)');
     for (var i = 0; i < titles.length; i++) {
       var title = titles[i];
       var dek = title.nextElementSibling;
