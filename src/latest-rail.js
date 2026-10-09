@@ -1130,6 +1130,16 @@
     // 1200 up, and the steeper line under that.
     var vwE = document.documentElement.clientWidth;
     var mid = Math.min(vwE * 2 / 3 - 11, 0.9773 * vwE - 383.75);
+    // (THE LATEST ON THE LEFT TO 20 PAST THE, 2026-10-09 — "Have the Latest
+    // column stretch to 20px to the right of THE": with the column on the
+    // left its right edge, the rule, stands 20 past THE's last ink. The
+    // column is 100vw − 252 − the edge wide (--rail-col + 108), so the edge
+    // is the window less 252 less that)
+    if (document.querySelector('.latest-rail--l')) {
+      var theR = -Infinity;
+      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
+      if (isFinite(theR)) mid = vwE - 252 - (theR + 20);
+    }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
