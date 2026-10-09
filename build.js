@@ -3434,6 +3434,8 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       + (ab ? `<a class="rail-nav__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="rail-nav__tlm">${escapeHtml(SITE_TAGLINE)}</span>`)
       + `<span class="rail-nav__row"><a class="rail-nav__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>${sep}<span class="rail-nav__a rail-nav__dead">Store</span>`
       + (ar ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ar.href)}">Archive</a>` : '')
+      // (and About after it — "Add about after Archive", 2026-10-09)
+      + (ab ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ab.href)}">About</a>` : '')
       + `</span></nav>`;
   };
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() : ''}<div class="latest-rail__in">`
