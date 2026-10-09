@@ -41,6 +41,8 @@
     if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
       props.forEach(function (p) { st.style.removeProperty(p); });
       main.style.removeProperty('--strip-settled');
+      // (and the list's line under the name let go: THE NAV UNDER THE NAME is from 1024 up)
+      [].forEach.call(st.querySelectorAll(':scope > .sub-ticker-run > *'), function (c) { c.style.removeProperty('top'); c.style.removeProperty('position'); });
       return;
     }
     var bird = st.querySelector(BIRD_INK);
@@ -86,6 +88,16 @@
         var bb0 = bird.getBoundingClientRect();
         var bAr = bb0.height ? bb0.width / bb0.height : 0.9;
         var nW = (nr - nl) + bAr * (k.b - k.t);
+        // (the bird in the name since 2026-10-09 — "Move the bird betwen THE NEW and Critic": the name's width read
+        // word by word, THE and NEW as they stand, then a word's gap, the bird, a gap and CRITIC, whatever shift
+        // CRITIC carries from the last seating)
+        var inkX0 = function (sel) {
+          var l = Infinity, r = -Infinity;
+          [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+          return isFinite(l) ? { l: l, r: r } : null;
+        };
+        var tX = inkX0('.band-logo__top svg path'), mX = inkX0('.band-logo__mid svg path'), cX = inkX0('.band-logo__low svg path');
+        if (tX && mX && cX) nW = (mX.r - tX.l) + 2 * (mX.l - tX.r) + bAr * (k.b - k.t) + (cX.r - cX.l);
         var maxW = vw - 36 - 72 - (lr - ll);
         if (maxW > 0 && nW > maxW + 0.5) {
           var fs0 = parseFloat(getComputedStyle(logoEl).fontSize) || 0;
@@ -142,7 +154,19 @@
     // (as tall as the name's cap again — "match stamp height with wordmark height": the name's own ink height, so
     // the two stay matched whatever the band's height)
     var birdH = wmH;
+    // (THE BIRD BETWEEN THE NEW AND CRITIC AGAIN, 2026-10-09 — "Move the bird betwen THE NEW and Critic": as tall as
+    // the name's ink, on the same middle — a few minutes 1.07 of it, "make the bird 7% bigger than the text", then
+    // "actually make bird same height as letters")
     var H = F;
+    // THE NAV UNDER THE NAME (2026-10-09, at the user's words — "Center the wordmark and move the nav into a line
+    // beneath the wordmark", "Keep padding the same above top and bottom as above wordmark", "Keep wordmark the
+    // current size"): the name where it stood, its air over it as before, and the list a line under it, as far under
+    // the name's ink as the name is under the band's top; the band then as much again under the list's baseline
+    var navEls = runEl ? [].filter.call(runEl.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
+    var navCap = 0;
+    navEls.forEach(function (c) { c.style.setProperty('position', 'relative', 'important'); c.style.setProperty('top', '0px', 'important'); });
+    if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
+    if (navCap > 0) H = Math.round(3 * (F - wmH) / 2 + wmH + navCap);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -159,6 +183,13 @@
       if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
+    if (navCap > 0) {
+      var nc1 = capsOf(navEls[0].querySelector('b'));
+      if (nc1) {
+        var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
+        navEls.forEach(function (c) { c.style.setProperty('top', dyN, 'important'); });
+      }
+    }
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
     // (a tenth smaller since 2026-10-06 — "Make bird 10% smaller"; then a
@@ -248,9 +279,36 @@
     // after NEW's last stroke, and CRITIC 27 after the box — --low-shift
     // on CRITIC, style.css — the list then centred between CRITIC's last
     // stroke and the window's 27, x1R)
+    // (the name centred in the window since 2026-10-09 — "Center the wordmark": its ink, THE's first stroke to
+    // CRITIC's last with the bird between, halfway across; read before the bird's seat below, which follows it)
+    var lgC = st.querySelector('.band-logo');
+    if (lgC) {
+      var inkC = function (sel) {
+        var l = Infinity, r = -Infinity;
+        [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+        return isFinite(l) ? { l: l, r: r } : null;
+      };
+      var cT = inkC('.band-logo__top svg path'), cM = inkC('.band-logo__mid svg path'), cL = inkC('.band-logo__low svg path');
+      var cB = birdInk.getBoundingClientRect();
+      if (cT && cM && cL && cB.width) {
+        var wAll = (cM.r - cT.l) + 2 * (cM.l - cT.r) + cB.width + (cL.r - cL.l);
+        var left0 = parseFloat(getComputedStyle(lgC).left) || 0;
+        lgC.style.setProperty('left', (left0 + (vw - wAll) / 2 - cT.l).toFixed(2) + 'px', 'important');
+      }
+    }
     var mid = st.querySelector('.band-logo__mid svg path'), mr = mid && mid.getBoundingClientRect();
     // (back at the right the same day — "move bird back to the right": no target inside the name)
-    var tgtL = null; void mr;
+    // (and between them again since 2026-10-09 — "Move the bird betwen THE NEW and Critic": the bird's box as far
+    // after NEW's last stroke as NEW's first stands after THE's last, and CRITIC as far after the box)
+    var inkX = function (sel) {
+      var l = Infinity, r = -Infinity;
+      [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+      return isFinite(l) ? { l: l, r: r } : null;
+    };
+    var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
+    var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
+    var tgtL = newX ? newX.r + WORD_GAP : null;
+    void mr;
     var lowEl = st.querySelector('.band-logo__low');
     // (THE STAMP OVER THE COLUMN, 2026-10-07, at the user's word — "center
     // stamp above the The Latest column": the swallow's box centred on the
@@ -284,7 +342,8 @@
     // (the name's left the swallow's distance from the window's right —
     // "match wordmark margin with the bird margin" / "I meant side margin")
     var lg = st.querySelector('.band-logo');
-    if (lg) lg.style.setProperty('left', (vw - tgtR).toFixed(2) + 'px', 'important');
+    // (no longer: the name is centred above — "Center the wordmark")
+    void lg;
     void railMid;
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     if (lowEl) {
@@ -295,7 +354,7 @@
       if (tgtL != null) {
         lowEl.style.setProperty('margin-left', '0px', 'important');
         var lr0 = low.getBoundingClientRect();
-        var shift = (lr0.width ? Math.max(0, tgtL + br0.width + 27 - lr0.left) : 0).toFixed(2) + 'px';
+        var shift = (lr0.width ? Math.max(0, tgtL + br0.width + WORD_GAP - lr0.left) : 0).toFixed(2) + 'px';
         lowEl.style.setProperty('--low-shift', shift);
         lowEl.style.setProperty('margin-left', shift, 'important');
       } else { lowEl.style.removeProperty('margin-left'); lowEl.style.removeProperty('--low-shift'); }
@@ -690,7 +749,13 @@
         // (between CRITIC's last stroke and the swallow's first ink again,
         // the swallow back at the right: "move bird back to the right")
         var bi0 = st.querySelector(BIRD_INK).getBoundingClientRect();
-        var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
+        // (the bird in the name since 2026-10-09 — "Move the bird betwen THE NEW and Critic": the list then halfway
+        // between CRITIC's last stroke and the window's 18)
+        var rightB = bi0.left > geo.x0 ? bi0.left : geo.x1R;
+        void rightB;
+        // (and centred in the window on its own line under the name since 2026-10-09 — "move the nav into a line
+        // beneath the wordmark": seatLogo sets it down)
+        var lead0 = Math.round(document.documentElement.clientWidth / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
