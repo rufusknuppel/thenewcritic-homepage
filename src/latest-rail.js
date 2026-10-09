@@ -298,6 +298,8 @@
     // (the name centred in the window since 2026-10-09 — "Center the wordmark": its ink, THE's first stroke to
     // CRITIC's last with the bird between, halfway across; read before the bird's seat below, which follows it)
     var lgC = st.querySelector('.band-logo');
+    // (THE and CRITIC read where the grid sets them: their carry out to the sides, below, let go first)
+    [].forEach.call(st.querySelectorAll('.band-logo__top, .band-logo__low'), function (el) { el.style.removeProperty('translate'); });
     if (lgC) {
       var inkC = function (sel) {
         var l = Infinity, r = -Infinity;
@@ -374,6 +376,19 @@
         lowEl.style.setProperty('--low-shift', shift);
         lowEl.style.setProperty('margin-left', shift, 'important');
       } else { lowEl.style.removeProperty('margin-left'); lowEl.style.removeProperty('--low-shift'); }
+    }
+    // (THE and CRITIC carried out to the sides since 2026-10-09 — "Move THE and CRITIC out to sit the same distance
+    // from the top as the sides": THE's first ink and CRITIC's last as far from the window's edges as the name's ink
+    // is from the band's top, 20 — seatLogo's air; NEW and the bird stay where the centring set them)
+    if (wideLogo.matches) {
+      var outX = function (sel) {
+        var l = Infinity, r = -Infinity;
+        [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+        return isFinite(l) ? { l: l, r: r } : null;
+      };
+      var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
+      if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
+      if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
     }
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
@@ -772,7 +787,31 @@
         // (and centred in the window on its own line under the name since 2026-10-09 — "move the nav into a line
         // beneath the wordmark": seatLogo sets it down)
         var lead0 = Math.round(document.documentElement.clientWidth / 2 - (inkL0 + inkR0) / 2);
+        // (then its first ink on the left of the T's stem — "Left align the nav items with the ink of the stem of the
+        // T": read off THE's drawing, across from its left 0.7 of the way down, past the crossbar, to the first ink)
+        var tPath = st.querySelector('.band-logo__top svg path');
+        if (tPath && tPath.isPointInFill && tPath.getScreenCTM) {
+          var tb = tPath.getBBox(), ty = tb.y + 0.7 * tb.height, tm = tPath.getScreenCTM(), tx = null;
+          for (var sx = tb.x; sx <= tb.x + tb.width; sx += tb.width / 2000) {
+            if (tPath.isPointInFill(new DOMPoint(sx, ty))) { tx = sx; break; }
+          }
+          if (tx != null && tm) lead0 = +((tm.a * tx + tm.c * ty + tm.e) - inkL0).toFixed(2);
+        }
+        words.forEach(function (c) { c.classList.remove('nav-before-tlm'); });
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
+        // (THE LAST MAGAZINE apart at the right since 2026-10-09 — "Move THE LAST MAGAZINE to sit on the right, in line
+        // with the edge of the last C of Critic": its last ink under CRITIC's, the comma before it gone — style.css)
+        var tlmW = words[words.length - 1];
+        if (words.length > 1 && tlmW.classList.contains('sub-ticker-half--tlm')) {
+          words[words.length - 2].classList.add('nav-before-tlm');
+          var cInk = -Infinity;
+          [].forEach.call(st.querySelectorAll('.band-logo__low svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) cInk = Math.max(cInk, qr.right); });
+          if (isFinite(cInk)) {
+            var tlmM = parseFloat(getComputedStyle(tlmW).marginLeft) || 0;
+            var tlmR = tlmW.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
+            tlmW.style.setProperty('margin-left', (tlmM + cInk - tlmR).toFixed(2) + 'px', 'important');
+          }
+        }
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
       } else if (run && geo && ink.length > 1) {
