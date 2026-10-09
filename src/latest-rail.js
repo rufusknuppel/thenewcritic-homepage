@@ -260,10 +260,15 @@
           // (stacked: the first word's capitals level with the name's, the last's baseline with its foot, the lines
           // evenly between)
           var lines = navLines(st);
-          var pitch = lines.length > 1 ? (wmH - navCap) / (lines.length - 1) : 0;
+          // (the lines as far apart as the items in THE LATEST's column, the two centred on the name's middle — "have the
+          // two be vertically centered on top of each other with the spacing between kickers in the latest column")
+          var pitch = 27.5;
+          var liA = document.querySelector('.latest-rail__in.is-current .latest-rail__list > li'), liB = liA && liA.nextElementSibling;
+          if (liA && liB) { var pA = liB.getBoundingClientRect().top - liA.getBoundingClientRect().top; if (pA > 0) pitch = pA; }
+          var capTop0 = top + want + wmH / 2 - ((lines.length - 1) * pitch + navCap) / 2;
           lines.forEach(function (ln, i) {
             var nci = capsOf(ln[0].querySelector('b'));
-            if (nci) ln.forEach(function (c) { c.style.setProperty('top', (top + want + i * pitch - nci.cap).toFixed(2) + 'px', 'important'); });
+            if (nci) ln.forEach(function (c) { c.style.setProperty('top', (capTop0 + i * pitch - nci.cap).toFixed(2) + 'px', 'important'); });
           });
         } else {
           var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
