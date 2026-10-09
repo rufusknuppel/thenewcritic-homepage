@@ -1186,7 +1186,8 @@
     // column's right, stands on NEW's first ink, its left edge on the N's)
     // (and midway between THE and NEW since — "Move The Latest column edge to between THE and NEW": the rule's
     // middle halfway from THE's last ink to NEW's first)
-    if (document.querySelector('.latest-rail--l')) {
+    // (the same width with the column on the right again — "Move The Latest column back to the right", 2026-10-09)
+    if (document.querySelector('.latest-rail--l, .latest-rail--r')) {
       var newL = Infinity, theR = -Infinity;
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
@@ -1203,7 +1204,8 @@
     // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
     // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
     // OVERSCROLL: its left edge, the column's width less its 2)
-    var rx = (vwE - mid - 252 - 2).toFixed(2) + 'px';
+    // (on the right the rule is the column's left edge, the window less the column's width)
+    var rx = (document.querySelector('.latest-rail--l') ? vwE - mid - 252 - 2 : mid + 252).toFixed(2) + 'px';
     if (document.documentElement.style.getPropertyValue('--nc-rule-x') !== rx) document.documentElement.style.setProperty('--nc-rule-x', rx);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
     if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {

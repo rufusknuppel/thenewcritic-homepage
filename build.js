@@ -498,6 +498,11 @@ const BUILD_STAMP = crypto.createHash('sha1')
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
 const SITE_TAGLINE = 'The Last Magazine';
+// THE COLUMN'S SIDE (2026-10-09): every section's column on this side of the
+// page, 'l' or 'r' — the root carries it as rail-side-l / rail-side-r for the
+// rules that differ by side (style.css). On the right again since "Move The
+// Latest column back to the right", after an afternoon on the left.
+const RAIL_SIDE = 'r';
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
 // deploy by cloudflare/worker.js. Social cards need absolute URLs, and
@@ -3322,13 +3327,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // right, and invert posts accordingly")
     // (and on the left again since 2026-10-09 — "Move The latest column to
     // the left side": style.css, THE LATEST ON THE LEFT)
-    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: 'l', rows: ones(latestPosts) },
-    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: 'l', rows: ones(fresh(essays)) },
+    // (and on the right again the same evening — "Move The Latest column
+    // back to the right": RAIL_SIDE, which the root carries too, rail-side-r)
+    { key: 'latest', word: 'The Latest', href: 'archive.html', rail: RAIL_SIDE, rows: ones(latestPosts) },
+    { key: 'essays', word: 'Essays', href: 'archive.html#section=essays', rail: RAIL_SIDE, rows: ones(fresh(essays)) },
     // (one to a row in every section now — "In postscript/contra sections,
     // make one a row and editor's")
-    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: 'l', rows: ones(fresh(postscripts)) },
-    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: 'l', rows: ones(fresh(contras)) },
-    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: 'l', rows: ones(pickRows.flat()) },
+    { key: 'postscript', word: 'Postscript', href: 'archive.html#section=postscript', rail: RAIL_SIDE, rows: ones(fresh(postscripts)) },
+    { key: 'contra', word: 'Contra', href: 'archive.html#section=contra', rail: RAIL_SIDE, rows: ones(fresh(contras)) },
+    { key: 'picks', word: 'Editors’ Picks', href: 'archive.html', rail: RAIL_SIDE, rows: ones(pickRows.flat()) },
   ].filter((sec) => sec.rows.length);
   SECTIONS.forEach((sec) => { sec.posts = sec.rows.flat(); });
   const LABEL = { essay: 'Essays', postscript: 'Postscript', contra: 'Contra' };
@@ -3363,7 +3370,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // (and flipped again with the column on the left, its first picture in
         // the middle of the page, by its words — "Flip top post so image is in
         // the center and alternate others accordingly", 2026-10-09)
-        const toR = j % 2 === 1;
+        // (with the column on the right the first picture stands at the
+        // right, by the column, still in the middle of the page — "Move The
+        // Latest column back to the right")
+        const toR = RAIL_SIDE === 'r' ? j % 2 === 0 : j % 2 === 1;
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first
@@ -4506,8 +4516,8 @@ function markMega(html) {
   // root's own background (style.css, html.has-mega).
   return html
     .replace(/<html(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
-      ? m.replace('class="', 'class="has-mega ')
-      : `<html${attrs || ''} class="has-mega">`)
+      ? m.replace('class="', `class="has-mega rail-side-${RAIL_SIDE} `)
+      : `<html${attrs || ''} class="has-mega rail-side-${RAIL_SIDE}">`)
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
