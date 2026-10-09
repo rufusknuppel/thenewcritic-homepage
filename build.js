@@ -3420,7 +3420,23 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     if (svgs.some((s) => !s)) return `<p class="latest-rail__meta"><a class="latest-rail__meta-link" href="${escapeHtml(href || 'archive.html')}">${escapeHtml(word)}</a></p>`;
     return `<p class="latest-rail__meta latest-rail__meta--drawn" role="img" aria-label="${escapeHtml(word)}">${svgs.join(' ')}</p>`;
   };
-  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() : ''}<div class="latest-rail__in">`
+  // THE LAST MAGAZINE STACK IN THE COLUMN (2026-10-09, at the user's word —
+  // "Move THE LAST MAGAZINE stack to the The Latest column"): the band's two
+  // lines — The Last Magazine over Subscribe, Store, Archive — at the head
+  // of the column's stack, over THE LATEST; the band keeps its own for the
+  // phone, hidden from 1024 up (style.css, THE LAST MAGAZINE STACK IN THE
+  // COLUMN)
+  const railNav = () => {
+    const by = (key) => SITE_LINKS.find((l) => l.key === key);
+    const ab = by('about'), ar = by('archive');
+    const sep = '<span class="rail-nav__sep">, </span>';
+    return `<nav class="rail-nav" aria-label="The New Critic">`
+      + (ab ? `<a class="rail-nav__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="rail-nav__tlm">${escapeHtml(SITE_TAGLINE)}</span>`)
+      + `<span class="rail-nav__row"><a class="rail-nav__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>${sep}<span class="rail-nav__a rail-nav__dead">Store</span>`
+      + (ar ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ar.href)}">Archive</a>` : '')
+      + `</span></nav>`;
+  };
+  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() : ''}<div class="latest-rail__in">`
     + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
