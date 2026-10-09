@@ -106,10 +106,11 @@ const STAMP_FRAME = (() => {
 })();
 // THE TNC MONOGRAM IN THE BAND (2026-10-08, "Replace the stamp with this in
 // the top right of the site"): the band's stamp gives way to assets/
-// monogram-tnc.svg - T, N and C in the square's top right, the stamp's bird
-// big in its middle, both knocked out of it - its square in the ink, so it is
-// charcoal on the light side and light on the dark, the ground showing
-// through the letters and the bird. Its path carries the frame's classes, so
+// monogram-tnc.svg - the stamp's bird knocked out of a square, in its top
+// right since 2026-10-09 (the letters T, N and C taken out: "Remove the
+// letters and move the bird to the top right") - its square in the ink, so
+// it is charcoal on the light side and light on the dark, the ground showing
+// through the bird. Its path carries the frame's classes, so
 // the band measures and seats it as it did the stamp's frame (latest-rail.js,
 // BIRD_INK); --bird-ar on the svg itself makes its box square. In the
 // colophon too since ("add to colophon too"), a cap tall as the stamp was.
