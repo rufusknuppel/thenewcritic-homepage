@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4407040a">
+<link rel="stylesheet" href="style.css?v=26f0b18e">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10361,10 +10361,18 @@ window.__ncStripInk = function () {
           var pitch = 27.5;
           var liA = document.querySelector('.latest-rail__in.is-current .latest-rail__list > li'), liB = liA && liA.nextElementSibling;
           if (liA && liB) { var pA = liB.getBoundingClientRect().top - liA.getBoundingClientRect().top; if (pA > 0) pitch = pA; }
-          var capTop0 = top + want + wmH / 2 - ((lines.length - 1) * pitch + navCap) / 2;
+          var baseOf = function (el) {
+            var pr = document.createElement('span');
+            pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            el.appendChild(pr); var y = pr.getBoundingClientRect().top; el.removeChild(pr); return y;
+          };
+          var c0 = capsOf(lines[0][0].querySelector('b')), cap0 = c0 ? c0.base - c0.cap : navCap;
+          var base0 = top + want + wmH / 2 + (cap0 - (lines.length - 1) * pitch) / 2;
           lines.forEach(function (ln, i) {
-            var nci = capsOf(ln[0].querySelector('b'));
-            if (nci) ln.forEach(function (c) { c.style.setProperty('top', (capTop0 + i * pitch - nci.cap).toFixed(2) + 'px', 'important'); });
+            var bEl = ln[0].querySelector('b');
+            if (!bEl) return;
+            var dy = base0 + i * pitch - baseOf(bEl);
+            ln.forEach(function (c) { c.style.setProperty('top', ((parseFloat(c.style.getPropertyValue('top')) || 0) + dy).toFixed(2) + 'px', 'important'); });
           });
         } else {
           var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
