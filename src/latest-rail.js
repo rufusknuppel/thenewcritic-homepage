@@ -113,9 +113,17 @@
       // to reduce spacing": THE and CRITIC stand at the 20s, so the name at the colophon's proportions across the
       // window less two 20s brings the gaps between its words back to the colophon's 0.6226 of a cap)
       var coSpan = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--colo-span'));
+      // (and bigger still, its gaps the drawing's own word space, as the band had them before it took the colophon's
+      // — "Make bigger still to return to old spacing": the colophon's three 0.6226s in its span the name's three
+      // --wm-space)
+      var wmSp = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-space'));
+      if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
       if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
-      logoEl.style.setProperty('column-gap', '0.6226em', 'important');
+      // (the grid's gap the drawing's word space since the name took it — 0.6226, the colophon's, before — and the
+      // name at its own width, so no word is squeezed when it runs wide)
+      logoEl.style.setProperty('column-gap', (wmSp > 0 ? wmSp : 0.6226) + 'em', 'important');
+      logoEl.style.setProperty('width', 'max-content', 'important');
       var midEl = logoEl.querySelector('.band-logo__mid');
       if (midEl) midEl.style.setProperty('margin-left', '0px', 'important');
       k = inkY();
