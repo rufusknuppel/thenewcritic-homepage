@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5d4c20e2">
+<link rel="stylesheet" href="style.css?v=73efe294">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10853,6 +10853,7 @@ window.__ncStripInk = function () {
       var foot = Math.max(0, st.getBoundingClientRect().bottom + was);
       var rule = parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 0;
       var cover = Math.max(0, Math.min(foot + rule, window.innerHeight - co.getBoundingClientRect().top));
+      cover = 0;
       if (RIDES && RIDES_W.matches) { if (cover > 0) foot = parseFloat(hr.style.getPropertyValue('--band-foot')) || foot; cover = 0; }
       var fv = foot.toFixed(2) + 'px', cv = cover.toFixed(2) + 'px';
       if (hr.style.getPropertyValue('--band-foot') !== fv) hr.style.setProperty('--band-foot', fv);

@@ -1054,6 +1054,9 @@
       var foot = Math.max(0, st.getBoundingClientRect().bottom + was);
       var rule = parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 0;
       var cover = Math.max(0, Math.min(foot + rule, window.innerHeight - co.getBoundingClientRect().top));
+      // (none since 2026-10-09 — "Top band shouldn't scroll away on footer, everything should hold as normal": the
+      // band holds at the colophon; style.css, THE BAND HOLDS AT THE FOOTER)
+      cover = 0;
       // (where the page has scroll-driven animations the band, its ground
       // and the strip ride the colophon's own timeline on the compositor —
       // style.css, THE BAND SCROLLS AWAY ON THE PAGE'S OWN CLOCK: "Colophon
