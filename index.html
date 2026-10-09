@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=3b3ece7d">
+<link rel="stylesheet" href="style.css?v=4a092009">
 <style>:root{--colo-span:9.4628;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10243,6 +10243,7 @@ window.__ncStripInk = function () {
     if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
       props.forEach(function (p) { st.style.removeProperty(p); });
       main.style.removeProperty('--strip-settled');
+      [].forEach.call(st.querySelectorAll(':scope > .sub-ticker-run > *'), function (c) { c.style.removeProperty('top'); c.style.removeProperty('position'); });
       return;
     }
     var bird = st.querySelector(BIRD_INK);
@@ -10273,6 +10274,13 @@ window.__ncStripInk = function () {
         var bb0 = bird.getBoundingClientRect();
         var bAr = bb0.height ? bb0.width / bb0.height : 0.9;
         var nW = (nr - nl) + bAr * (k.b - k.t);
+        var inkX0 = function (sel) {
+          var l = Infinity, r = -Infinity;
+          [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+          return isFinite(l) ? { l: l, r: r } : null;
+        };
+        var tX = inkX0('.band-logo__top svg path'), mX = inkX0('.band-logo__mid svg path'), cX = inkX0('.band-logo__low svg path');
+        if (tX && mX && cX) nW = (mX.r - tX.l) + 2 * (mX.l - tX.r) + bAr * (k.b - k.t) + (cX.r - cX.l);
         var maxW = vw - 36 - 72 - (lr - ll);
         if (maxW > 0 && nW > maxW + 0.5) {
           var fs0 = parseFloat(getComputedStyle(logoEl).fontSize) || 0;
@@ -10285,6 +10293,11 @@ window.__ncStripInk = function () {
     var F = 155;
     var birdH = wmH;
     var H = F;
+    var navEls = runEl ? [].filter.call(runEl.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
+    var navCap = 0;
+    navEls.forEach(function (c) { c.style.setProperty('position', 'relative', 'important'); c.style.setProperty('top', '0px', 'important'); });
+    if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
+    if (navCap > 0) H = Math.round(3 * (F - wmH) / 2 + wmH + navCap);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -10296,6 +10309,13 @@ window.__ncStripInk = function () {
       if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
+    if (navCap > 0) {
+      var nc1 = capsOf(navEls[0].querySelector('b'));
+      if (nc1) {
+        var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
+        navEls.forEach(function (c) { c.style.setProperty('top', dyN, 'important'); });
+      }
+    }
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
     st.style.setProperty('--bird-s', (birdH / bi.height).toFixed(4));
@@ -10353,8 +10373,31 @@ window.__ncStripInk = function () {
     if (!run || !low || !birdInk) return null;
     var vw = document.documentElement.clientWidth;
     var tgtR = vw - 18;   // (27 for a moment, then "move side margins back to 54px")
+    var lgC = st.querySelector('.band-logo');
+    if (lgC) {
+      var inkC = function (sel) {
+        var l = Infinity, r = -Infinity;
+        [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+        return isFinite(l) ? { l: l, r: r } : null;
+      };
+      var cT = inkC('.band-logo__top svg path'), cM = inkC('.band-logo__mid svg path'), cL = inkC('.band-logo__low svg path');
+      var cB = birdInk.getBoundingClientRect();
+      if (cT && cM && cL && cB.width) {
+        var wAll = (cM.r - cT.l) + 2 * (cM.l - cT.r) + cB.width + (cL.r - cL.l);
+        var left0 = parseFloat(getComputedStyle(lgC).left) || 0;
+        lgC.style.setProperty('left', (left0 + (vw - wAll) / 2 - cT.l).toFixed(2) + 'px', 'important');
+      }
+    }
     var mid = st.querySelector('.band-logo__mid svg path'), mr = mid && mid.getBoundingClientRect();
-    var tgtL = null; void mr;
+    var inkX = function (sel) {
+      var l = Infinity, r = -Infinity;
+      [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } });
+      return isFinite(l) ? { l: l, r: r } : null;
+    };
+    var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
+    var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
+    var tgtL = newX ? newX.r + WORD_GAP : null;
+    void mr;
     var lowEl = st.querySelector('.band-logo__low');
     var railEl = document.querySelector('.page-rows .latest-rail--latest'), rrc = railEl && railEl.getBoundingClientRect();
     var railMid = rrc && rrc.width ? (rrc.left + rrc.right) / 2 : null;
@@ -10378,14 +10421,14 @@ window.__ncStripInk = function () {
       dx = tgtL != null ? tgtL - br0.left : tgtR - br0.right;
     }
     var lg = st.querySelector('.band-logo');
-    if (lg) lg.style.setProperty('left', (vw - tgtR).toFixed(2) + 'px', 'important');
+    void lg;
     void railMid;
     st.style.setProperty('--bird-dx', dx.toFixed(2) + 'px');
     if (lowEl) {
       if (tgtL != null) {
         lowEl.style.setProperty('margin-left', '0px', 'important');
         var lr0 = low.getBoundingClientRect();
-        var shift = (lr0.width ? Math.max(0, tgtL + br0.width + 27 - lr0.left) : 0).toFixed(2) + 'px';
+        var shift = (lr0.width ? Math.max(0, tgtL + br0.width + WORD_GAP - lr0.left) : 0).toFixed(2) + 'px';
         lowEl.style.setProperty('--low-shift', shift);
         lowEl.style.setProperty('margin-left', shift, 'important');
       } else { lowEl.style.removeProperty('margin-left'); lowEl.style.removeProperty('--low-shift'); }
@@ -10618,7 +10661,9 @@ window.__ncStripInk = function () {
         var fb0 = words[0].getBoundingClientRect(), lb0 = words[words.length - 1].getBoundingClientRect();
         var inkL0 = fb0.left + (ink[0] ? ink[0].inL : 0), inkR0 = lb0.right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
         var bi0 = st.querySelector(BIRD_INK).getBoundingClientRect();
-        var lead0 = Math.round((geo.x0 + bi0.left) / 2 - (inkL0 + inkR0) / 2);
+        var rightB = bi0.left > geo.x0 ? bi0.left : geo.x1R;
+        void rightB;
+        var lead0 = Math.round(document.documentElement.clientWidth / 2 - (inkL0 + inkR0) / 2);
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
