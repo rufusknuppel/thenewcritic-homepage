@@ -13743,14 +13743,14 @@ html body main.has-mega .page-rows .latest-rail .rail-nav > .rail-nav__tlm {
 }
 html body main.has-mega .page-rows .latest-rail .rail-nav > .rail-nav__row {
   display: block !important;
-  margin-top: 7.4px !important;
-  font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  font-size: 13px !important;
-  font-style: normal !important;
+  margin-top: 6.9px !important;
+  font-family: garamond-premier-pro, "Playfair Display", Georgia, serif !important;
+  font-size: 18px !important;
+  font-style: italic !important;
   font-weight: 400 !important;
   line-height: 19.5px !important;
-  letter-spacing: 0.02em !important;
-  text-transform: uppercase !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
   white-space: nowrap !important;
 }
 html body main.has-mega .page-rows .latest-rail .rail-nav__row > * {

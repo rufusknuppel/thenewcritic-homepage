@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4f6e5138">
+<link rel="stylesheet" href="style.css?v=d67e470f">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10463,7 +10463,7 @@ window.__ncStripInk = function () {
     var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
     var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
     var tgtL = newX ? newX.r + WORD_GAP : null;
-    var BIRD_LAST = true;
+    var BIRD_LAST = false;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
@@ -10534,8 +10534,9 @@ window.__ncStripInk = function () {
       if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
         var gEven = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width) / 3;
         midOut.style.setProperty('translate', (oT2.r + gEven - oN.l).toFixed(2) + 'px 0px', 'important');
-        var bdx = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
-        st.style.setProperty('--bird-dx', (bdx + (oT2.r + gEven + (oN.r - oN.l) + gEven) - oB.left).toFixed(2) + 'px');
+        var birdSv2 = st.querySelector('.band-logo__bird');
+        var txNow2 = birdSv2 ? parseFloat((getComputedStyle(birdSv2).translate || '0').split(' ')[0]) || 0 : (parseFloat(st.style.getPropertyValue('--bird-dx')) || 0);
+        st.style.setProperty('--bird-dx', ((oT2.r + gEven + (oN.r - oN.l) + gEven) - (oB.left - txNow2)).toFixed(2) + 'px');
       }
     }
     var words = [].filter.call(run.children, function (c) {
