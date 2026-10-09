@@ -24,6 +24,7 @@
   // baseline with its foot, no commas; the name smaller, so it, a word's gap and the stack fill the band between its
   // two 20s
   var NAV_STACK = true;
+  var navRightX = null;
   var navWords = function (st) {
     var run = st && st.querySelector(':scope > .sub-ticker-run');
     return run ? [].filter.call(run.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
@@ -476,9 +477,13 @@
         var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
         var bL = vw - 20 - oBl.width;
         // (the stack and a word's gap at the right since — THE NAV STACKED AT THE RIGHT)
-        if (NAV_STACK) bL -= navStackW(st) + (oNl.l - oTl.r > 0 ? WORD_GAP : 0);
+        // (and the bird after the stack since — "Move bird to the right of The last magazine stack": the bird's box at
+        // the right's 20, the stack before it, NEW, CRITIC and the stack evenly between THE and the bird, all four
+        // gaps one; the stack's right edge left for band() to set the lines on, navRightX)
+        var sWL = NAV_STACK ? navStackW(st) : 0;
         st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
-        var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l)) / 3;
+        var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l) - sWL) / (sWL ? 4 : 3);
+        navRightX = sWL ? bL - gL : null;
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
         lowEl.style.setProperty('translate', (oTl.r + gL + (oNl.r - oNl.l) + gL - oC.l).toFixed(2) + 'px 0px', 'important');
       } else
@@ -908,7 +913,7 @@
           // (every line's commas settled first: a comma lost on one line moves the words after it on another)
           navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
           navLines(st).forEach(function (ln) {
-            var dl = (vwS - 20 - navInk(ln[ln.length - 1]).r).toFixed(2) + 'px';
+            var dl = ((navRightX != null ? navRightX : vwS - 20) - navInk(ln[ln.length - 1]).r).toFixed(2) + 'px';
             ln.forEach(function (c) { c.style.setProperty('left', dl, 'important'); });
           });
           // (THE LAST MAGAZINE centred over the line under it, which keeps the 20 — "Center The Last Magazine on top of
