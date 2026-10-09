@@ -299,7 +299,7 @@
     // CRITIC's last with the bird between, halfway across; read before the bird's seat below, which follows it)
     var lgC = st.querySelector('.band-logo');
     // (THE and CRITIC read where the grid sets them: their carry out to the sides, below, let go first)
-    [].forEach.call(st.querySelectorAll('.band-logo__top, .band-logo__low'), function (el) { el.style.removeProperty('translate'); });
+    [].forEach.call(st.querySelectorAll('.band-logo__top, .band-logo__mid, .band-logo__low'), function (el) { el.style.removeProperty('translate'); });
     if (lgC) {
       var inkC = function (sel) {
         var l = Infinity, r = -Infinity;
@@ -389,6 +389,15 @@
       var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
       if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
       if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
+      // (and NEW and the bird evenly between them since — "Space NEW and the bird evenly between THE and CRITIC": the
+      // three gaps, THE to NEW, NEW to the bird and the bird to CRITIC, one, ink to ink)
+      var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();
+      if (midOut && oT2 && oC2 && oN && oB.width) {
+        var gEven = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width) / 3;
+        midOut.style.setProperty('translate', (oT2.r + gEven - oN.l).toFixed(2) + 'px 0px', 'important');
+        var bdx = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
+        st.style.setProperty('--bird-dx', (bdx + (oT2.r + gEven + (oN.r - oN.l) + gEven) - oB.left).toFixed(2) + 'px');
+      }
     }
     var words = [].filter.call(run.children, function (c) {
       return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b');
