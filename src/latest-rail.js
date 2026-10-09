@@ -24,6 +24,10 @@
   // baseline with its foot, no commas; the name smaller, so it, a word's gap and the stack fill the band between its
   // two 20s
   var NAV_STACK = true;
+  // (the gaps either side of the bird, between NEW and CRITIC, this much short of the words' gap — seatLogo, bandGeo)
+  var BIRD_TUCK = 20;
+  // (whether the band still shows its stack: from 1024 up it stands in the column since 2026-10-09)
+  var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
   var navWords = function (st) {
     var run = st && st.querySelector(':scope > .sub-ticker-run');
@@ -155,6 +159,10 @@
       var wmSp = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-space'));
       if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
       if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
+      // (the bird's gaps 20 short of the words' on either side — "Reduce the gap between W and bird and C and bird by
+      // 20 px on either side", 2026-10-09: the 40 they give up goes to the name, THE and CRITIC still at the 20s;
+      // bandGeo, BIRD_TUCK)
+      if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * 20 + 2 * BIRD_TUCK) / coSpan;
       // (and smaller again by the stack and a word's gap before it, the nav stacked at the right)
       if (NAV_STACK && coSpan > 0) {
         navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
@@ -512,13 +520,14 @@
       // three gaps, THE to NEW, NEW to the bird and the bird to CRITIC, one, ink to ink)
       var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();
       if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
-        var gEven = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width) / 3;
-        midOut.style.setProperty('translate', (oT2.r + gEven - oN.l).toFixed(2) + 'px 0px', 'important');
+        // (THE to NEW the words' gap, NEW to the bird and the bird to CRITIC BIRD_TUCK short of it)
+        var gW = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width + 2 * BIRD_TUCK) / 3, gB = gW - BIRD_TUCK;
+        midOut.style.setProperty('translate', (oT2.r + gW - oN.l).toFixed(2) + 'px 0px', 'important');
         // (read from where the bird stands unslid, as with the bird last: through the column's slide its translate
         // is on its way — "Bird is moving with column collapse")
         var birdSv2 = st.querySelector('.band-logo__bird');
         var txNow2 = birdSv2 ? parseFloat((getComputedStyle(birdSv2).translate || '0').split(' ')[0]) || 0 : (parseFloat(st.style.getPropertyValue('--bird-dx')) || 0);
-        st.style.setProperty('--bird-dx', ((oT2.r + gEven + (oN.r - oN.l) + gEven) - (oB.left - txNow2)).toFixed(2) + 'px');
+        st.style.setProperty('--bird-dx', ((oT2.r + gW + (oN.r - oN.l) + gB) - (oB.left - txNow2)).toFixed(2) + 'px');
       }
     }
     var words = [].filter.call(run.children, function (c) {
