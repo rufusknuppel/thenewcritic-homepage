@@ -1200,6 +1200,11 @@
     // layer — "Seeing a flash on column collapse in vertical rule",
     // 2026-10-05)
     mid = Math.round(mid);
+    // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
+    // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
+    // OVERSCROLL: its left edge, the column's width less its 2)
+    var rx = (vwE - mid - 252 - 2).toFixed(2) + 'px';
+    if (document.documentElement.style.getPropertyValue('--nc-rule-x') !== rx) document.documentElement.style.setProperty('--nc-rule-x', rx);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
     if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {
       main.style.setProperty('--rail-edge', mid.toFixed(2) + 'px');
@@ -1302,6 +1307,8 @@
     clearTimeout(animT);
     animT = setTimeout(function () { main.classList.remove('rail-anim'); }, 700);
     main.classList.toggle('rail-is-shut', shut);
+    // (and on the root, whose overscroll carries the column's rule — none with the column shut)
+    document.documentElement.classList.toggle('nc-rail-shut', shut);
     shutBtn.setAttribute('aria-expanded', String(!shut));
     openBtn.setAttribute('aria-expanded', String(!shut));
     shutBtn.tabIndex = shut ? -1 : 0;

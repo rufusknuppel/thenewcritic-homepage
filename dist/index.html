@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=73efe294">
+<link rel="stylesheet" href="style.css?v=656c7051">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10936,6 +10936,8 @@ window.__ncStripInk = function () {
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
     mid = Math.round(mid);
+    var rx = (vwE - mid - 252 - 2).toFixed(2) + 'px';
+    if (document.documentElement.style.getPropertyValue('--nc-rule-x') !== rx) document.documentElement.style.setProperty('--nc-rule-x', rx);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
     if (isNaN(cur) || Math.abs(cur - mid) > 0.5) {
       main.style.setProperty('--rail-edge', mid.toFixed(2) + 'px');
@@ -11005,6 +11007,7 @@ window.__ncStripInk = function () {
     clearTimeout(animT);
     animT = setTimeout(function () { main.classList.remove('rail-anim'); }, 700);
     main.classList.toggle('rail-is-shut', shut);
+    document.documentElement.classList.toggle('nc-rail-shut', shut);
     shutBtn.setAttribute('aria-expanded', String(!shut));
     openBtn.setAttribute('aria-expanded', String(!shut));
     shutBtn.tabIndex = shut ? -1 : 0;
