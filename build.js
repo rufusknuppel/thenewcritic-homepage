@@ -106,14 +106,16 @@ const STAMP_FRAME = (() => {
 })();
 // THE TNC MONOGRAM IN THE BAND (2026-10-08, "Replace the stamp with this in
 // the top right of the site"): the band's stamp gives way to assets/
-// monogram-tnc.svg, which says how it is drawn - since 2026-10-09 ("I want
-// this, but with the more detailed bird, and white/charcoal only") the
-// stamp's bird in white across a charcoal square with a thin white border.
-// (It carried T, N and C for a day, then the bird alone knocked out of a
-// square, then the bird in a white square, the corner under its wings
-// filled.) The file's shapes are drawn as they stand, its white in the
-// page's ground and its charcoal and black in the ink, so it is white on
-// charcoal on the light side and the other way on the dark. The shape that
+// monogram-tnc.svg, which says how it is drawn - since 2026-10-09 the
+// stamp's bird in a charcoal box outlined in the highlight, white inside it
+// and charcoal where its wings run out over the outline. (It carried T, N
+// and C for a day; it has been the bird knocked out of a square, the bird
+// in a white square with the corner under its wings filled, and a traced
+// bird in a border.) The file's shapes are drawn as they stand, its white
+// in the page's ground, its highlight red in the page's highlight and its
+// other colours in the ink, so the charcoal and white swap on the dark
+// side. Its ids are suffixed per copy (the band's, the colophon's), so a
+// clip-path finds its own. The shape that
 // spans the square - #border, else #frame, else #ground - carries the
 // frame's classes, so the band measures and seats it as it did the stamp's
 // frame (latest-rail.js, BIRD_INK); --bird-ar on the svg itself makes its
@@ -125,7 +127,8 @@ const TNC_MARK = (() => {
   const src = fs.readFileSync(file, 'utf8').replace(/<!--[\s\S]*?-->/g, '');
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   const inner = src.slice(src.indexOf('>', src.indexOf('<svg')) + 1, src.lastIndexOf('</svg>'));
-  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FFFFFF)' : v === 'none' ? 'none' : 'currentColor');
+  // (white the ground, the highlight's red the page's highlight, anything else the ink)
+  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FFFFFF)' : /^#D52B05$/i.test(v) ? 'var(--nc-mark, #D52B05)' : v === 'none' ? 'none' : 'currentColor');
   const spans = ['border', 'frame', 'ground'].find((k) => new RegExp(`id="${k}"`).test(inner));
   const body = inner.replace(/<(path|rect)\b([^>]*?)\/?>/g, (m0, tag, attrs) => {
     const id = (attrs.match(/\sid="([^"]+)"/) || [])[1];
@@ -298,7 +301,7 @@ function bandLogoHtml(id = 'band', cls = '') {
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
     // (the TNC monogram in the stamp's place, the band's and the colophon's - THE TNC MONOGRAM IN THE BAND)
     const mark = TNC_MARK
-      ? `<svg class="band-logo__bird band-logo__bird--tnc" aria-hidden="true" focusable="false" viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}" overflow="visible">${TNC_MARK.body}</svg>`
+      ? `<svg class="band-logo__bird band-logo__bird--tnc" aria-hidden="true" focusable="false" viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, `id="$1-${id}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${id})`)}</svg>`
       : boxed;
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${mark}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
