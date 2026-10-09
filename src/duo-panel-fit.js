@@ -9810,6 +9810,8 @@
           // is shut, and carried back by the slide's own measure)
           var mainEl = document.querySelector('main');
           var slid = mainEl && mainEl.classList.contains('rail-is-shut') ? (parseFloat(mainEl.style.getPropertyValue('--rail-shift')) || 0) : 0;
+          // (the rows carried left, not right, as a column on the left shuts — THE LATEST ON THE LEFT, 2026-10-09)
+          if (slid && document.querySelector('.latest-rail--l')) slid = -slid;
           var vwR = document.documentElement.clientWidth;
           rl.style.setProperty('left', 'calc(' + (-(bl0 - slid)).toFixed(2) + 'px - var(--rule-slid, 0px))', 'important');
           rl.style.setProperty('right', 'calc(' + ((br0 - slid) - vwR).toFixed(2) + 'px + var(--rule-slid, 0px))', 'important');
