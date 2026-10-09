@@ -43,8 +43,6 @@
       main.style.removeProperty('--strip-settled');
       // (and the list's line under the name let go: THE NAV UNDER THE NAME is from 1024 up)
       [].forEach.call(st.querySelectorAll(':scope > .sub-ticker-run > *'), function (c) { c.style.removeProperty('top'); c.style.removeProperty('position'); });
-      var mr0 = st.querySelector(':scope > .band-midrule');
-      if (mr0) mr0.remove();
       return;
     }
     var bird = st.querySelector(BIRD_INK);
@@ -111,6 +109,11 @@
     if (logoEl) {
       var coLogo = document.querySelector('.page-rows > .section-band--colophon.colo .colo-logo');
       var coFs = coLogo && parseFloat(getComputedStyle(coLogo).fontSize);
+      // (bigger since, to the band's 20 from either side rather than the colophon's 54 — "Make logo wordmark bigger
+      // to reduce spacing": THE and CRITIC stand at the 20s, so the name at the colophon's proportions across the
+      // window less two 20s brings the gaps between its words back to the colophon's 0.6226 of a cap)
+      var coSpan = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--colo-span'));
+      if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
       logoEl.style.setProperty('column-gap', '0.6226em', 'important');
       var midEl = logoEl.querySelector('.band-logo__mid');
@@ -184,10 +187,9 @@
     // (the air 20 over the name, between it and the list and under the list, whatever the name's size, since it took
     // the colophon's: "Keep padding the same above top and bottom as above wordmark")
     var AIR = 20;
-    // (a rule between the name and the list since 2026-10-09 — "Add a Line above the nav to separate that from the
-    // wordmark": the band's own 2, the air over and under it as everywhere else in the band)
-    var MID_RULE = 2;
-    H = Math.round(navCap > 0 ? 4 * AIR + wmH + MID_RULE + navCap : 2 * AIR + wmH);
+    // (a rule between the name and the list for a few minutes that day — "Add a Line above the nav to separate that
+    // from the wordmark", then edge to edge, then "Remove rule")
+    H = Math.round(navCap > 0 ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -207,18 +209,8 @@
     if (navCap > 0) {
       var nc1 = capsOf(navEls[0].querySelector('b'));
       if (nc1) {
-        var dyN = (top + want + wmH + want + MID_RULE + want - nc1.cap).toFixed(2) + 'px';
+        var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
         navEls.forEach(function (c) { c.style.setProperty('top', dyN, 'important'); });
-        // (the rule itself, the band's width, edge to edge — "Rule should stretch edge to edge"; it ran THE's first ink
-        // to CRITIC's last for a few minutes)
-        var midRule = st.querySelector(':scope > .band-midrule');
-        if (!midRule) {
-          midRule = document.createElement('div');
-          midRule.className = 'band-midrule';
-          midRule.setAttribute('aria-hidden', 'true');
-          st.appendChild(midRule);
-        }
-        midRule.style.cssText = 'position:absolute;left:0;right:0;top:' + (want + wmH + want).toFixed(2) + 'px;height:' + MID_RULE + 'px;background:var(--nc-rule, var(--tc, #121417));pointer-events:none;';
       }
     }
     var bi = bird.getBoundingClientRect();
