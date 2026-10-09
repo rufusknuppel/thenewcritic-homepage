@@ -106,11 +106,13 @@ const STAMP_FRAME = (() => {
 })();
 // THE TNC MONOGRAM IN THE BAND (2026-10-08, "Replace the stamp with this in
 // the top right of the site"): the band's stamp gives way to assets/
-// monogram-tnc.svg - the stamp's bird knocked out of a square, in its top
-// right since 2026-10-09 (the letters T, N and C taken out: "Remove the
-// letters and move the bird to the top right") - its square in the ink, so
-// it is charcoal on the light side and light on the dark, the ground showing
-// through the bird. Its path carries the frame's classes, so
+// monogram-tnc.svg - since 2026-10-09 ("Udpate it with smth like this", "but
+// smooth it", "Remove that outer border tho") the stamp's bird in a square,
+// its beak into the bottom left corner and that corner filled in under its
+// wings, a white outline between them (the file says how it is drawn). The
+// fill and the bird in the ink and the square in the page's ground, so it is
+// charcoal on white on the light side and the other way on the dark. (It
+// carried T, N and C for a day, then the bird alone knocked out of a square.) Its path carries the frame's classes, so
 // the band measures and seats it as it did the stamp's frame (latest-rail.js,
 // BIRD_INK); --bird-ar on the svg itself makes its box square. In the
 // colophon too since ("add to colophon too"), a cap tall as the stamp was.
@@ -119,7 +121,10 @@ const TNC_MARK = (() => {
   if (!fs.existsSync(file)) return null;
   const src = fs.readFileSync(file, 'utf8');
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
-  return { w, h, d: src.match(/<path[^>]* d="([^"]+)"/)[1] };
+  const get = (id) => { const m = src.match(new RegExp(`<path id="${id}"[^>]* d="([^"]+)"`)); return m ? m[1] : null; };
+  const ground = src.match(/<rect id="ground" x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"/);
+  const halo = src.match(/<path id="halo"[^>]* stroke-width="([\d.]+)"/);
+  return { w, h, frame: get('frame'), wedge: get('wedge'), halo: get('halo'), haloW: halo ? +halo[1] : 0, bird: get('bird'), ground: ground ? ground.slice(1).map(Number) : null };
 })();
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
@@ -284,7 +289,15 @@ function bandLogoHtml(id = 'band', cls = '') {
     // (the TNC monogram in the stamp's place, the band's and the colophon's - THE TNC MONOGRAM IN THE BAND)
     const mark = TNC_MARK
       ? `<svg class="band-logo__bird band-logo__bird--tnc" aria-hidden="true" focusable="false" viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}" overflow="visible">`
-        + `<path class="band-logo__shield band-logo__frame" d="${TNC_MARK.d}" fill="currentColor" fill-rule="evenodd"/></svg>`
+        // (since 2026-10-09 - "Udpate it with smth like this", "but smooth it" - the bird framed, the corner under its
+        // wings filled: the ground and the white round the bird in the page's ground, the rest in the ink)
+        // (no frame since - "Remove that outer border tho" - so the ground's square carries the frame's classes, which
+        // the band measures the mark by)
+        + (TNC_MARK.ground ? `<rect${TNC_MARK.frame ? '' : ' class="band-logo__shield band-logo__frame"'} x="${TNC_MARK.ground[0]}" y="${TNC_MARK.ground[1]}" width="${TNC_MARK.ground[2]}" height="${TNC_MARK.ground[3]}" style="fill: var(--nc-stamp-ground, #FFFFFF)"/>` : '')
+        + (TNC_MARK.wedge ? `<path d="${TNC_MARK.wedge}" fill="currentColor"/>` : '')
+        + (TNC_MARK.halo ? `<path d="${TNC_MARK.halo}" fill="none" style="stroke: var(--nc-stamp-ground, #FFFFFF)" stroke-width="${TNC_MARK.haloW}" stroke-linejoin="round" stroke-linecap="round"/>` : '')
+        + (TNC_MARK.bird ? `<path d="${TNC_MARK.bird}" fill="currentColor" fill-rule="evenodd"/>` : '')
+        + (TNC_MARK.frame ? `<path class="band-logo__shield band-logo__frame" d="${TNC_MARK.frame}" fill="currentColor" fill-rule="evenodd"/>` : '') + '</svg>'
       : boxed;
     return `<a class="band-logo${cls ? ' ' + cls : ''}" href="#top" aria-label="The New Critic — to the top of the front page"><span class="band-logo__top">${bandWord('the')}</span><span class="band-logo__mid">${bandWord('new')}</span>${mark}<span class="band-logo__low">${bandWord('critic')}</span></a>`;
   }
