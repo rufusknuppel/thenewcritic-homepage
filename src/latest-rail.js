@@ -209,7 +209,8 @@
       if (nc1) {
         var dyN = (top + want + wmH + want + MID_RULE + want - nc1.cap).toFixed(2) + 'px';
         navEls.forEach(function (c) { c.style.setProperty('top', dyN, 'important'); });
-        // (the rule itself, THE's first ink to CRITIC's last — the band's air in from either side)
+        // (the rule itself, the band's width, edge to edge — "Rule should stretch edge to edge"; it ran THE's first ink
+        // to CRITIC's last for a few minutes)
         var midRule = st.querySelector(':scope > .band-midrule');
         if (!midRule) {
           midRule = document.createElement('div');
@@ -217,7 +218,7 @@
           midRule.setAttribute('aria-hidden', 'true');
           st.appendChild(midRule);
         }
-        midRule.style.cssText = 'position:absolute;left:' + AIR + 'px;right:' + AIR + 'px;top:' + (want + wmH + want).toFixed(2) + 'px;height:' + MID_RULE + 'px;background:var(--nc-rule, var(--tc, #121417));pointer-events:none;';
+        midRule.style.cssText = 'position:absolute;left:0;right:0;top:' + (want + wmH + want).toFixed(2) + 'px;height:' + MID_RULE + 'px;background:var(--nc-rule, var(--tc, #121417));pointer-events:none;';
       }
     }
     var bi = bird.getBoundingClientRect();
@@ -827,8 +828,9 @@
         var tlmW = words[words.length - 1];
         if (words.length > 1 && tlmW.classList.contains('sub-ticker-half--tlm')) {
           words[words.length - 2].classList.add('nav-before-tlm');
-          var cInk = -Infinity;
-          [].forEach.call(st.querySelectorAll('.band-logo__low svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) cInk = Math.max(cInk, qr.right); });
+          // (then as far in from the window's right as SUBSCRIBE's first ink is from its left — "THE last magazine
+          // should sit with equal margin as Subscribe")
+          var cInk = document.documentElement.clientWidth - (words[0].getBoundingClientRect().left + (ink[0] ? ink[0].inL : 0));
           if (isFinite(cInk)) {
             var tlmM = parseFloat(getComputedStyle(tlmW).marginLeft) || 0;
             var tlmR = tlmW.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
