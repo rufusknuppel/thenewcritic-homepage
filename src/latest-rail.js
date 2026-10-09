@@ -35,6 +35,8 @@
     var b = c.querySelector('b'), cs = getComputedStyle(b), r = b.getBoundingClientRect();
     navCx = navCx || document.createElement('canvas').getContext('2d');
     navCx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    // (the letters' spacing too, since the line under THE LAST MAGAZINE wears the bylines' — 2026-10-09)
+    try { navCx.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing; } catch (e) {}
     var t = cs.textTransform === 'uppercase' ? b.textContent.toUpperCase() : b.textContent;
     var m = navCx.measureText(t);
     return { l: r.left - m.actualBoundingBoxLeft, r: r.left + m.actualBoundingBoxRight };
@@ -937,6 +939,13 @@
           var nls = navLines(st);
           if (nls.length === 2 && nls[0].length === 1 && nls[0][0].classList.contains('sub-ticker-half--tlm')) {
             var tl = nls[0][0], lo = nls[1], tk = navInk(tl), lk0 = navInk(lo[0]), lk1 = navInk(lo[lo.length - 1]);
+            // (and the line under it in by half the difference when THE LAST MAGAZINE is the wider, so the wider line
+            // keeps the 20 — the line under it in the bylines' small capitals since 2026-10-09)
+            var over = (tk.r - tk.l) - (lk1.r - lk0.l);
+            if (over > 0) {
+              lo.forEach(function (c) { c.style.setProperty('left', ((parseFloat(c.style.getPropertyValue('left')) || 0) - over / 2).toFixed(2) + 'px', 'important'); });
+              lk0 = navInk(lo[0]); lk1 = navInk(lo[lo.length - 1]);
+            }
             var tlL = parseFloat(tl.style.getPropertyValue('left')) || 0;
             tl.style.setProperty('left', (tlL + (lk0.l + lk1.r) / 2 - (tk.l + tk.r) / 2).toFixed(2) + 'px', 'important');
           }
