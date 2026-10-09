@@ -1156,10 +1156,12 @@
     // left its right edge, the rule, stands 20 past THE's last ink. The
     // column is 100vw − 252 − the edge wide (--rail-col + 108), so the edge
     // is the window less 252 less that)
+    // (OUT TO THE N, the same day — "Expand the latest to line up with the edge of the N": the rule, 2 wide at the
+    // column's right, stands on NEW's first ink, its left edge on the N's)
     if (document.querySelector('.latest-rail--l')) {
-      var theR = -Infinity;
-      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
-      if (isFinite(theR)) mid = vwE - 252 - (theR + 20);
+      var newL = Infinity;
+      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
+      if (isFinite(newL)) mid = vwE - 252 - (newL + 2);
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
