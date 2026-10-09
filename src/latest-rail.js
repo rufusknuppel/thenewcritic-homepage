@@ -823,20 +823,9 @@
         }
         words.forEach(function (c) { c.classList.remove('nav-before-tlm'); });
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
-        // (THE LAST MAGAZINE apart at the right since 2026-10-09 — "Move THE LAST MAGAZINE to sit on the right, in line
-        // with the edge of the last C of Critic": its last ink under CRITIC's, the comma before it gone — style.css)
-        var tlmW = words[words.length - 1];
-        if (words.length > 1 && tlmW.classList.contains('sub-ticker-half--tlm')) {
-          words[words.length - 2].classList.add('nav-before-tlm');
-          // (then as far in from the window's right as SUBSCRIBE's first ink is from its left — "THE last magazine
-          // should sit with equal margin as Subscribe")
-          var cInk = document.documentElement.clientWidth - (words[0].getBoundingClientRect().left + (ink[0] ? ink[0].inL : 0));
-          if (isFinite(cInk)) {
-            var tlmM = parseFloat(getComputedStyle(tlmW).marginLeft) || 0;
-            var tlmR = tlmW.getBoundingClientRect().right - (ink[ink.length - 1] ? ink[ink.length - 1].inR : 0);
-            tlmW.style.setProperty('margin-left', (tlmM + cInk - tlmR).toFixed(2) + 'px', 'important');
-          }
-        }
+        // (THE LAST MAGAZINE stood apart at the right for a while that day — under CRITIC's last C, then as far from
+        // the window's right as SUBSCRIBE from its left — and back in the list after ARCHIVE since: "Move the last
+        // magazine back")
         st.style.setProperty('--band-lead', '0px');
         st.style.setProperty('--band-trail', '0px');
       } else if (run && geo && ink.length > 1) {
