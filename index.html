@@ -10235,6 +10235,7 @@ window.__ncStripInk = function () {
   var main = document.querySelector('main');
   var BIRD_INK = '.band-logo__bird .band-logo__shield';
   var NAV_STACK = true;
+  var navRightX = null;
   var navWords = function (st) {
     var run = st && st.querySelector(':scope > .sub-ticker-run');
     return run ? [].filter.call(run.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
@@ -10510,9 +10511,10 @@ window.__ncStripInk = function () {
       if (BIRD_LAST && lowEl && oC && oBl.width && midL && oTl && oNl) {
         var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
         var bL = vw - 20 - oBl.width;
-        if (NAV_STACK) bL -= navStackW(st) + (oNl.l - oTl.r > 0 ? WORD_GAP : 0);
+        var sWL = NAV_STACK ? navStackW(st) : 0;
         st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
-        var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l)) / 3;
+        var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l) - sWL) / (sWL ? 4 : 3);
+        navRightX = sWL ? bL - gL : null;
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
         lowEl.style.setProperty('translate', (oTl.r + gL + (oNl.r - oNl.l) + gL - oC.l).toFixed(2) + 'px 0px', 'important');
       } else
@@ -10770,7 +10772,7 @@ window.__ncStripInk = function () {
           words.forEach(function (c) { c.style.setProperty('left', '0px', 'important'); });
           navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
           navLines(st).forEach(function (ln) {
-            var dl = (vwS - 20 - navInk(ln[ln.length - 1]).r).toFixed(2) + 'px';
+            var dl = ((navRightX != null ? navRightX : vwS - 20) - navInk(ln[ln.length - 1]).r).toFixed(2) + 'px';
             ln.forEach(function (c) { c.style.setProperty('left', dl, 'important'); });
           });
           var nls = navLines(st);
