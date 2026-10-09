@@ -13698,6 +13698,8 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
   font-weight: 400 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
+  padding-left: 0.2em !important;
+  padding-right: 0.2em !important;
 }
 }
 @media (min-width: 1024px) {
@@ -13724,8 +13726,9 @@ html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-tick
 html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav {
   display: block !important;
   flex: none !important;
-  margin: 0 0 45px !important;
-  padding: 0 !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 36px 0 !important;
   text-align: center !important;
   color: var(--ink, currentColor) !important;
 }
@@ -13763,4 +13766,21 @@ html body main.has-mega .page-rows .latest-rail .rail-nav__row > * {
 }
 @media (max-width: 1023.98px) {
 html body main .rail-nav { display: none !important; }
+}
+@media (min-width: 1024px) {
+html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav::after {
+  content: "" !important;
+  position: absolute !important;
+  left: calc(-1 * var(--rail-pad, 36px)) !important;
+  right: calc(-1 * var(--rail-pad, 36px)) !important;
+  bottom: 0 !important;
+  height: 2px !important;
+  background: currentColor !important;
+}
+html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav ~ .latest-rail__in:first-of-type {
+  margin-top: auto !important;
+}
+html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav ~ .latest-rail__in:last-of-type {
+  margin-bottom: auto !important;
+}
 }

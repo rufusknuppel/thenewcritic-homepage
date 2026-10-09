@@ -27650,6 +27650,10 @@ html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--late
   font-weight: 400 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
+  /* (its last l leans past its box in the italic, and the section clips there — "Far l being cut off": room
+     either side, so it stays centred) */
+  padding-left: 0.2em !important;
+  padding-right: 0.2em !important;
 }
 }
 
@@ -27696,8 +27700,13 @@ html body main.has-mega.wm-opening.wm-banded .page-rows > .head-rail > .sub-tick
 html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav {
   display: block !important;
   flex: none !important;
-  margin: 0 0 45px !important;
-  padding: 0 !important;
+  /* (in a box of its own at the column's head since the same day, a rule under it and the sections centred in what
+     is left — "Add a rule to separate The last Magazine box from The Latest section. Vertically center both": 36
+     over and under the two lines; the rule 2, the column's vertical rule's weight, from the window's edge to that
+     rule) */
+  position: relative !important;
+  margin: 0 !important;
+  padding: 36px 0 !important;
   text-align: center !important;
   color: var(--ink, currentColor) !important;
 }
@@ -27737,4 +27746,29 @@ html body main.has-mega .page-rows .latest-rail .rail-nav__row > * {
 }
 @media (max-width: 1023.98px) {
 html body main .rail-nav { display: none !important; }
+}
+
+/* THE LAST MAGAZINE'S BOX RULED OFF (2026-10-09 — "Add a rule to separate
+   The last Magazine box from The Latest section. Vertically center both"):
+   the box at the column's head, 36 over and under its two lines; a rule
+   under it, 2 like the column's own, from the window's edge to that rule
+   (the hold stands 36 in from the one and 36 from the other); the
+   sections centred in the column under it, their first and last taking
+   the air between them evenly */
+@media (min-width: 1024px) {
+html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav::after {
+  content: "" !important;
+  position: absolute !important;
+  left: calc(-1 * var(--rail-pad, 36px)) !important;
+  right: calc(-1 * var(--rail-pad, 36px)) !important;
+  bottom: 0 !important;
+  height: 2px !important;
+  background: currentColor !important;
+}
+html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav ~ .latest-rail__in:first-of-type {
+  margin-top: auto !important;
+}
+html body main.has-mega .page-rows .latest-rail .latest-rail__hold > .rail-nav ~ .latest-rail__in:last-of-type {
+  margin-bottom: auto !important;
+}
 }

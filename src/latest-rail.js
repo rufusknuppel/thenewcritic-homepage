@@ -1172,10 +1172,13 @@
     // is the window less 252 less that)
     // (OUT TO THE N, the same day — "Expand the latest to line up with the edge of the N": the rule, 2 wide at the
     // column's right, stands on NEW's first ink, its left edge on the N's)
+    // (and midway between THE and NEW since — "Move The Latest column edge to between THE and NEW": the rule's
+    // middle halfway from THE's last ink to NEW's first)
     if (document.querySelector('.latest-rail--l')) {
-      var newL = Infinity;
+      var newL = Infinity, theR = -Infinity;
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
-      if (isFinite(newL)) mid = vwE - 252 - (newL + 2);
+      [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
+      if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1);
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
