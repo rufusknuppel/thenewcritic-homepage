@@ -18,6 +18,31 @@
   // tail under the outline", 2026-10-07: the bird now comes first in the
   // stamp's drawing, and a list of the two found it, not the frame)
   var BIRD_INK = '.band-logo__bird .band-logo__shield';
+  // THE NAV STACKED AT THE RIGHT (2026-10-09, at the user's words — "Right align Subscribe, ... nav items in a vertica
+  // stack to the right of the bird, reduce height of Wordmark/logo accordingly"): the list's words one over another,
+  // their last ink on the band's 20 from the right, the first's capitals level with the name's and the last's
+  // baseline with its foot, no commas; the name smaller, so it, a word's gap and the stack fill the band between its
+  // two 20s
+  var NAV_STACK = true;
+  var navWords = function (st) {
+    var run = st && st.querySelector(':scope > .sub-ticker-run');
+    return run ? [].filter.call(run.children, function (c) { return !c.classList.contains('band-logo') && c.offsetWidth && c.querySelector('b'); }) : [];
+  };
+  var navCx = null;
+  // (a word's ink across, its own bearings read from the face)
+  var navInk = function (c) {
+    var b = c.querySelector('b'), cs = getComputedStyle(b), r = b.getBoundingClientRect();
+    navCx = navCx || document.createElement('canvas').getContext('2d');
+    navCx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var t = cs.textTransform === 'uppercase' ? b.textContent.toUpperCase() : b.textContent;
+    var m = navCx.measureText(t);
+    return { l: r.left - m.actualBoundingBoxLeft, r: r.left + m.actualBoundingBoxRight };
+  };
+  var navStackW = function (st) {
+    var w = 0;
+    navWords(st).forEach(function (c) { var k = navInk(c); w = Math.max(w, k.r - k.l); });
+    return w;
+  };
   // THE BAND'S GEOMETRY (2026-10-05): the swallow's ink set on the 54 gutter
   // (--bird-dx, style.css), and read: each word's ink inside its box, the
   // name's first stroke (x0L) and CRITIC's last (x0), the swallow's first
@@ -42,7 +67,7 @@
       props.forEach(function (p) { st.style.removeProperty(p); });
       main.style.removeProperty('--strip-settled');
       // (and the list's line under the name let go: THE NAV UNDER THE NAME is from 1024 up)
-      [].forEach.call(st.querySelectorAll(':scope > .sub-ticker-run > *'), function (c) { c.style.removeProperty('top'); c.style.removeProperty('position'); });
+      [].forEach.call(st.querySelectorAll(':scope > .sub-ticker-run > *'), function (c) { c.style.removeProperty('top'); c.style.removeProperty('position'); c.style.removeProperty('left'); c.classList.remove('nav-stack'); });
       return;
     }
     var bird = st.querySelector(BIRD_INK);
@@ -119,6 +144,12 @@
       var wmSp = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-space'));
       if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
       if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
+      // (and smaller again by the stack and a word's gap before it, the nav stacked at the right)
+      if (NAV_STACK && coSpan > 0) {
+        navWords(st).forEach(function (c) { c.classList.add('nav-stack'); });
+        var sW = navStackW(st);
+        if (sW > 0) coFs = (vw - 2 * 20 - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
+      }
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
       // (the grid's gap the drawing's word space since the name took it — 0.6226, the colophon's, before — and the
       // name at its own width, so no word is squeezed when it runs wide)
@@ -197,7 +228,7 @@
     var AIR = 20;
     // (a rule between the name and the list for a few minutes that day — "Add a Line above the nav to separate that
     // from the wordmark", then edge to edge, then "Remove rule")
-    H = Math.round(navCap > 0 ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
+    H = Math.round(navCap > 0 && !NAV_STACK ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -217,8 +248,18 @@
     if (navCap > 0) {
       var nc1 = capsOf(navEls[0].querySelector('b'));
       if (nc1) {
-        var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
-        navEls.forEach(function (c) { c.style.setProperty('top', dyN, 'important'); });
+        if (NAV_STACK) {
+          // (stacked: the first word's capitals level with the name's, the last's baseline with its foot, the lines
+          // evenly between)
+          var pitch = navEls.length > 1 ? (wmH - navCap) / (navEls.length - 1) : 0;
+          navEls.forEach(function (c, i) {
+            var nci = capsOf(c.querySelector('b'));
+            if (nci) c.style.setProperty('top', (top + want + i * pitch - nci.cap).toFixed(2) + 'px', 'important');
+          });
+        } else {
+          var dyN = (top + want + wmH + want - nc1.cap).toFixed(2) + 'px';
+          navEls.forEach(function (c) { c.style.setProperty('top', dyN, 'important'); });
+        }
       }
     }
     var bi = bird.getBoundingClientRect();
@@ -420,6 +461,8 @@
       if (BIRD_LAST && lowEl && oC && oBl.width && midL && oTl && oNl) {
         var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
         var bL = vw - 20 - oBl.width;
+        // (the stack and a word's gap at the right since — THE NAV STACKED AT THE RIGHT)
+        if (NAV_STACK) bL -= navStackW(st) + (oNl.l - oTl.r > 0 ? WORD_GAP : 0);
         st.style.setProperty('--bird-dx', (bdxL + bL - oBl.left).toFixed(2) + 'px');
         var gL = (bL - oTl.r - (oNl.r - oNl.l) - (oC.r - oC.l)) / 3;
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
@@ -844,6 +887,12 @@
           if (tx != null && tm) lead0 = +((tm.a * tx + tm.c * ty + tm.e) - inkL0).toFixed(2);
         }
         words.forEach(function (c) { c.classList.remove('nav-before-tlm'); });
+        if (NAV_STACK) {
+          // (stacked at the right: each word's last ink on the band's 20 — THE NAV STACKED AT THE RIGHT)
+          var vwS = document.documentElement.clientWidth;
+          words.forEach(function (c) { c.style.setProperty('left', '0px', 'important'); });
+          words.forEach(function (c) { c.style.setProperty('left', (vwS - 20 - navInk(c).r).toFixed(2) + 'px', 'important'); });
+        } else
         words[0].style.setProperty('margin-left', lead0 + 'px', 'important');
         // (THE LAST MAGAZINE stood apart at the right for a while that day — under CRITIC's last C, then as far from
         // the window's right as SUBSCRIBE from its left — and back in the list after ARCHIVE since: "Move the last
