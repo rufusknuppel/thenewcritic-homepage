@@ -10278,6 +10278,11 @@ window.__ncStripInk = function () {
     var bird = st.querySelector(BIRD_INK);
     var paths = st.querySelectorAll('.band-logo svg:not(.band-logo__bird) path');
     if (!bird || !paths.length) return;
+    var birdSvg0 = st.querySelector('.band-logo__bird');
+    if (birdSvg0) {
+      birdSvg0.style.setProperty('transition', 'none', 'important');
+      setTimeout(function () { void birdSvg0.getBoundingClientRect(); birdSvg0.style.removeProperty('transition'); }, 0);
+    }
     st.style.setProperty('--logo-dy', '0px'); st.style.setProperty('--bird-s', '1'); st.style.setProperty('--bird-dy', '0px');
     var inkY = function () {
       var t = Infinity, b = -Infinity;

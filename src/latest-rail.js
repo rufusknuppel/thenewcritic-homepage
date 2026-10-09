@@ -88,6 +88,15 @@
     var bird = st.querySelector(BIRD_INK);
     var paths = st.querySelectorAll('.band-logo svg:not(.band-logo__bird) path');
     if (!bird || !paths.length) return;
+    // (the bird held still while it is set back and read: its translate and scale move on a transition, so set back
+    // to nothing it was read where it still stood, part way home, and seated from there — its rise came out 0 and
+    // it jumped up as the column shut, "Bird moves up on column collapse", 2026-10-09. The transition is let back
+    // once the seat is written and drawn, so nothing runs between the two)
+    var birdSvg0 = st.querySelector('.band-logo__bird');
+    if (birdSvg0) {
+      birdSvg0.style.setProperty('transition', 'none', 'important');
+      setTimeout(function () { void birdSvg0.getBoundingClientRect(); birdSvg0.style.removeProperty('transition'); }, 0);
+    }
     st.style.setProperty('--logo-dy', '0px'); st.style.setProperty('--bird-s', '1'); st.style.setProperty('--bird-dy', '0px');
     var inkY = function () {
       var t = Infinity, b = -Infinity;
