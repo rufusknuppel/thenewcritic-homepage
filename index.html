@@ -10289,9 +10289,12 @@ window.__ncStripInk = function () {
       var coLogo = document.querySelector('.page-rows > .section-band--colophon.colo .colo-logo');
       var coFs = coLogo && parseFloat(getComputedStyle(coLogo).fontSize);
       var coSpan = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--colo-span'));
+      var wmSp = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-space'));
+      if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
       if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
-      logoEl.style.setProperty('column-gap', '0.6226em', 'important');
+      logoEl.style.setProperty('column-gap', (wmSp > 0 ? wmSp : 0.6226) + 'em', 'important');
+      logoEl.style.setProperty('width', 'max-content', 'important');
       var midEl = logoEl.querySelector('.band-logo__mid');
       if (midEl) midEl.style.setProperty('margin-left', '0px', 'important');
       k = inkY();
