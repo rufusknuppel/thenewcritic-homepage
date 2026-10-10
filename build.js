@@ -2167,6 +2167,24 @@ function renderHomeColophon() {
     <div class="colo-name">${bandLogoHtml('colo', 'colo-logo')}</div>
   </nav>`;
 }
+// THE COLOPHON A BOX AT THE COLUMN'S FOOT (2026-10-09, at the user's words
+// — "I would like the Colophon instead to be a stack that's a box in The
+// Latest Column, like the last magazine box that scrolls up when the left
+// column runs out. Stack Copyright on top, then Est. May 2025 in Metadata
+// work sans style, then Socials in italics"): the copyright as a section's
+// name, Est. as a kicker, the socials as View all, in a box at the foot of
+// the front page's column that comes up with the page's end (style.css,
+// THE COLOPHON A BOX AT THE COLUMN'S FOOT; latest-rail.js, --rail-colo-h).
+// Under 1024 the colophon band stands as before.
+function railColo() {
+  const socials = [
+    ['https://www.thenewcritic.com', 'Substack'],
+    ['https://www.instagram.com/thenewcritic', 'Instagram'],
+    ['https://x.com/thenewcritic', 'X'],
+    ['mailto:editors@thenewcritic.com', 'Email'],
+  ].map(([href, label]) => `<a class="rail-colo__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
+  return `<footer class="rail-colo" aria-label="Colophon"><span class="rail-colo__copy">Copyright The New Critic, Inc.</span><span class="rail-colo__est">Est. May 2025</span><span class="rail-colo__soc">${socials}</span></footer>`;
+}
 function renderPageRail({ side, word, href, after, before, categories }) {
   // THREES, like the masthead's own THE/NEW/CRI/TIC — whatever is
   // left over stands alone on the last line (POS/TSC/RIP/T), centred
@@ -3460,7 +3478,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + railCues(si)
-    + `</div></div></aside>`;
+    + `</div></div>${si === 0 ? railColo() : ''}</aside>`;
   // THE NEXT SECTION FORETOLD (2026-10-04, at the user's words — "36px from
   // the bottom in The Latest column, I want a work sans that's a
   // premonition of the next section, so Essays. then on a line below a

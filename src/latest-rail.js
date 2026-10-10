@@ -1369,3 +1369,19 @@
   if (window.ResizeObserver) new ResizeObserver(put).observe(nav);
   else addEventListener('resize', put, { passive: true });
 })();
+// THE COLOPHON A BOX AT THE COLUMN'S FOOT (2026-10-09): the box's depth
+// handed to its column as --rail-colo-h, the column's foot kept clear of
+// its hold by it, so the hold rides up over the box as the page ends
+// (style.css, THE COLOPHON A BOX AT THE COLUMN'S FOOT)
+(function () {
+  var box = document.querySelector('.latest-rail > .rail-colo');
+  if (!box) return;
+  var rail = box.parentElement;
+  var put = function () {
+    var v = box.getBoundingClientRect().height.toFixed(2) + 'px';
+    if (rail.style.getPropertyValue('--rail-colo-h') !== v) rail.style.setProperty('--rail-colo-h', v);
+  };
+  put();
+  if (window.ResizeObserver) new ResizeObserver(put).observe(box);
+  else addEventListener('resize', put, { passive: true });
+})();
