@@ -8135,6 +8135,19 @@
       // "Increase top and bottom gap above content to 72px")
       // (…and 36 again where the page opens on the band: "Move white
       // margins around posts to 36px" — "Actually 54px")
+      // THE ROWS END 54 UNDER THE LAST PICTURE (2026-10-09, at the user's
+      // words — "left column should end 54px after last post image"): with
+      // the colophon a box in the column, the rows' foot over it is the
+      // last row's pictures' foot as well as its words'
+      if (next.classList.contains('section-band--colophon') && !ONE_COL.matches && document.querySelector('.latest-rail > .rail-colo')) {
+        rows.forEach(function (r) {
+          if (r !== last && (lastRow == null || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup)) return;
+          [].forEach.call(r.querySelectorAll('.card-image-frame'), function (fr) {
+            var fb = fr.getBoundingClientRect();
+            if (fb.height > 0) foot = Math.max(foot, fb.bottom);
+          });
+        });
+      }
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
     });
