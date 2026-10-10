@@ -6352,6 +6352,13 @@
   var SWAP_PAD = 36, SWAP_OPEN = 0, SWAP_GAP = 36, SWAP_MAX = 40, SWAP_LINES = 6;
   var HEAD_META_GAP = 18;
   var headCtx = null;
+  function inkDescentOf(el) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var c = getComputedStyle(el), t = (el.textContent || '').trim();
+    if (c.textTransform === 'uppercase') t = t.toUpperCase();
+    headCtx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily;
+    return t ? Math.max(0, headCtx.measureText(t).actualBoundingBoxDescent) : 0;
+  }
   function titleInkFoot(tt) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tn = tt && tt.firstChild;
@@ -7295,6 +7302,13 @@
             upY = tTop1 - j.ttT;
             metaY = y0 - (j.mT + upY);
             dekY = (tTop1 + (j.ttB - j.ttT) + META_AIR) - j.dkC;
+            if (j.hdB != null && j.dkT != null) {
+              var mFoot = j.mB + inkDescentOf(j.mmEl);
+              var gT = (j.ttT + upY) - (mFoot + upY + metaY);
+              var gB = (j.dkT + dekY) - (j.hdB + upY);
+              var dl = (gB - gT) / 2;
+              upY += dl; metaY -= dl;
+            }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
           } else if (between && metaOver) {
