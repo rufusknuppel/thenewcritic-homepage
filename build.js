@@ -2015,7 +2015,7 @@ function bandUnder() {
   ].map(([href, label]) => `<a class="band-under__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(sep);
   // (each piece from its word's first stroke since — "Left align under each word. Move copyright to the right of
   // CRITIC": the copyright out of the colophon's box to the line's end, its last letter on CRITIC's last stroke)
-  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">Copyright The New Critic, Inc.</span>`;
+  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">© The New Critic, Inc.</span>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
@@ -2158,7 +2158,7 @@ function renderPageFoot(onHome = false, onMark = false) {
 function renderColophonBand(mk = '') {
   return `<nav class="section-band section-band--colophon section-band--three${mk}" aria-label="Colophon">
     <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
-    <p class="band-deks band-dek"><span class="band-copyright">Copyright The New Critic, Inc.</span></p>
+    <p class="band-deks band-dek"><span class="band-copyright">© The New Critic, Inc.</span></p>
     ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
 }
@@ -2182,7 +2182,7 @@ function renderHomeColophon() {
     '<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>',
     '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
     '<a href="mailto:editors@thenewcritic.com">Email</a>',
-    '<span>Copyright The New Critic, Inc.</span>',
+    '<span>© The New Critic, Inc.</span>',
   ];
   // (EST. MAY 2025 opens the row — "Move Est. to the left of the colophon")
   links.unshift('<span>Est. May 2025</span>');
@@ -2209,7 +2209,7 @@ function railColo() {
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="rail-colo__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
-  return `<footer class="rail-colo" aria-label="Colophon"><span class="rail-colo__top">Est. May 2025</span><span class="rail-colo__mid">Copyright The New Critic, Inc.</span><span class="rail-colo__soc">${socials}</span></footer>`;
+  return `<footer class="rail-colo" aria-label="Colophon"><span class="rail-colo__top">Est. May 2025</span><span class="rail-colo__mid">© The New Critic, Inc.</span><span class="rail-colo__soc">${socials}</span></footer>`;
 }
 function renderPageRail({ side, word, href, after, before, categories }) {
   // THREES, like the masthead's own THE/NEW/CRI/TIC — whatever is
