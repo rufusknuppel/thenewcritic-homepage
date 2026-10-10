@@ -8283,6 +8283,15 @@
   // (the title's lowest ink: its last line's descenders where it has
   // them, its baseline where it has none — the same reckoning as the
   // byline's margin below; for the rule's 54 under the head, 2026-10-05)
+  // (how far a line's ink runs under its baseline: its commas', its
+  // descenders' — THE TITLE MIDWAY BY ITS INK)
+  function inkDescentOf(el) {
+    headCtx = headCtx || document.createElement('canvas').getContext('2d');
+    var c = getComputedStyle(el), t = (el.textContent || '').trim();
+    if (c.textTransform === 'uppercase') t = t.toUpperCase();
+    headCtx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily;
+    return t ? Math.max(0, headCtx.measureText(t).actualBoundingBoxDescent) : 0;
+  }
   function titleInkFoot(tt) {
     headCtx = headCtx || document.createElement('canvas').getContext('2d');
     var tn = tt && tt.firstChild;
@@ -9770,6 +9779,19 @@
             upY = tTop1 - j.ttT;
             metaY = y0 - (j.mT + upY);
             dekY = (tTop1 + (j.ttB - j.ttT) + META_AIR) - j.dkC;
+            // THE TITLE MIDWAY BY ITS INK (2026-10-10, at the user's words —
+            // "Center titles between Meta and dek based on ink"): the byline
+            // and the dek kept where they stand, the title moved so the air
+            // from the byline's lowest ink (its commas') to the title's first
+            // and from the title's lowest ink (its descenders) to the dek's
+            // first (its quotation marks) are the same
+            if (j.hdB != null && j.dkT != null) {
+              var mFoot = j.mB + inkDescentOf(j.mmEl);
+              var gT = (j.ttT + upY) - (mFoot + upY + metaY);
+              var gB = (j.dkT + dekY) - (j.hdB + upY);
+              var dl = (gB - gT) / 2;
+              upY += dl; metaY -= dl;
+            }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
           } else if (between && metaOver) {
