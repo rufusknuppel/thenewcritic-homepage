@@ -1993,6 +1993,30 @@ function railCarets() {
 function themeChip() {
   return `<button type="button" class="theme-toggle chip-dot chip-dot--flip" aria-label="Light or dark"></button>`;
 }
+// THE LINE UNDER THE NAME (2026-10-10, at the user's words — "Move The Last
+// Magazine to Under THE, nave items to under NEW and Socials to under
+// CRITIC"): from 1024 up a line under the band's name, each piece centred
+// under its word on one baseline (latest-rail.js, seatUnder; style.css, THE
+// LINE UNDER THE NAME) — The Last Magazine out of the column's box, the
+// nav with it, and the socials out of the colophon's.
+function bandUnder() {
+  const by = (key) => SITE_LINKS.find((l) => l.key === key);
+  const ab = by('about'), ar = by('archive');
+  const sep = '<span class="band-under__sep">, </span>';
+  const tlm = ab ? `<a class="band-under__a band-under__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="band-under__tlm">${escapeHtml(SITE_TAGLINE)}</span>`;
+  const nav = [`<a class="band-under__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="band-under__a band-under__dead">Store</span>']
+    .concat(ar ? [`<a class="band-under__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
+    .concat(ab ? [`<a class="band-under__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join(sep);
+  const soc = [
+    ['https://www.thenewcritic.com', 'Substack'],
+    ['https://www.instagram.com/thenewcritic', 'Instagram'],
+    ['https://x.com/thenewcritic', 'X'],
+    ['mailto:editors@thenewcritic.com', 'Email'],
+  ].map(([href, label]) => `<a class="band-under__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(sep);
+  // (each piece from its word's first stroke since — "Left align under each word. Move copyright to the right of
+  // CRITIC": the copyright out of the colophon's box to the line's end, its last letter on CRITIC's last stroke)
+  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">Copyright The New Critic, Inc.</span>`;
+}
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
   const link = (l, word, cls = '') => l ? `<a class="sub-ticker-half${cls ? ' ' + cls : ''}" href="${escapeHtml(l.href)}"><b>${escapeHtml(word)}</b></a>` : '';
@@ -3570,7 +3594,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="sub-ticker-run">${bandLogoHtml()}${themeChip()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="sub-ticker-run">${bandLogoHtml()}${themeChip()}${bandUnder()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the

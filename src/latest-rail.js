@@ -257,6 +257,10 @@
     // (a rule between the name and the list for a few minutes that day — "Add a Line above the nav to separate that
     // from the wordmark", then edge to edge, then "Remove rule")
     H = Math.round(navCap > 0 && !NAV_STACK ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
+    // (and the line under the name — THE LINE UNDER THE NAME, 2026-10-10: The Last Magazine's capitals AIR under the
+    // name's ink, the band AIR under the line's baseline; seatUnder sets the line)
+    var undT = st.querySelector('.band-under--the > *');
+    if (undT && undT.offsetWidth) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -319,6 +323,7 @@
     bi = bird.getBoundingClientRect();
     st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();
+    seatUnder(st);
     if (!fitMeasured) logoW = -1;
   };
   // (THE COLOPHON'S AIR THE DEK'S, 2026-10-06 — "Padding in the colophon
@@ -338,6 +343,76 @@
     var m = capCx.measureText('H');
     var lead = (r.height - m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2;
     return { cap: r.top + lead + m.fontBoundingBoxAscent - m.actualBoundingBoxAscent, base: r.top + lead + m.fontBoundingBoxAscent };
+  };
+  // THE LINE UNDER THE NAME (2026-10-10, at the user's words — "Move The Last Magazine to Under THE, nave items to
+  // under NEW and Socials to under CRITIC"): each piece under its word's ink — from its first stroke, the copyright
+  // ending on CRITIC's last — all on one baseline — The Last
+  // Magazine's capitals 20 under the name's ink (seatLogo makes the band room for it)
+  var stemOfT = function (path) {
+    if (!path) return null;
+    var sp = ((path.getAttribute('d') || '').match(/M[^M]*/) || [])[0];
+    var n = sp && sp.match(/-?\d*\.?\d+(?:e-?\d+)?/gi);
+    var m = path.getScreenCTM && path.getScreenCTM();
+    if (!n || !m) return null;
+    var y0 = Infinity, y1 = -Infinity, k;
+    for (k = 1; k < n.length; k += 2) { y0 = Math.min(y0, +n[k]); y1 = Math.max(y1, +n[k]); }
+    var x = Infinity;
+    for (k = 0; k + 1 < n.length; k += 2) if (+n[k + 1] > (y0 + y1) / 2) x = Math.min(x, +n[k]);
+    return isFinite(x) ? m.a * x + m.e : null;
+  };
+  var seatUnder = function (st) {
+    if (!st) return;
+    var items = st.querySelectorAll('.sub-ticker-run > .band-under');
+    if (!items.length) return;
+    if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
+      [].forEach.call(items, function (u) { u.style.removeProperty('left'); u.style.removeProperty('top'); });
+      return;
+    }
+    var run = st.querySelector(':scope > .sub-ticker-run');
+    var inkOf = function (sel) {
+      var l = Infinity, r = -Infinity, b = -Infinity;
+      [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); b = Math.max(b, qr.bottom); } });
+      return isFinite(l) ? { l: l, r: r, b: b } : null;
+    };
+    var words = { the: inkOf('.band-logo__top svg path'), new: inkOf('.band-logo__mid svg path'), critic: inkOf('.band-logo__low svg path') };
+    var tlm = st.querySelector('.band-under--the > *');
+    var c0 = tlm && capsOf(tlm);
+    if (!run || !words.the || !words.new || !words.critic || !c0) return;
+    var foot = Math.max(words.the.b, words.new.b, words.critic.b);
+    var base = foot + 20 + (c0.base - c0.cap);
+    var rr = run.getBoundingClientRect();
+    var probe = function (el) {
+      var pr = document.createElement('span');
+      pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      el.appendChild(pr); var y = pr.getBoundingClientRect().top; el.removeChild(pr); return y;
+    };
+    [].forEach.call(items, function (u) {
+      var key = u.classList.contains('band-under--the') ? 'the' : u.classList.contains('band-under--new') ? 'new' : 'critic';
+      var w = words[key], ur = u.getBoundingClientRect();
+      // (from the word's first stroke since — "Left align under each word"; the copyright to CRITIC's last — "Move
+      // copyright to the right of CRITIC". Read off the text's own run, not the box, which a font's side bearing
+      // pads)
+      var tr = document.createRange(); tr.selectNodeContents(u); var tb = tr.getBoundingClientRect();
+      var right = u.classList.contains('band-under--copy');
+      // (The Last Magazine from the T's stem since — "Left align with stem of T": THE's first outline, the T, its
+      // leftmost point in its lower half, under the bar)
+      var x0 = w.l;
+      if (key === 'the') { var sx = stemOfT(st.querySelector('.band-logo__top svg path')); if (sx != null) x0 = sx; }
+      var left = (parseFloat(u.style.getPropertyValue('left')) || 0) + (right ? w.r - tb.right : x0 - tb.left);
+      void ur;
+      var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + (base - probe(u));
+      u.style.setProperty('left', left.toFixed(2) + 'px', 'important');
+      u.style.setProperty('top', top.toFixed(2) + 'px', 'important');
+    });
+    void rr;
+    // (the copyright under CRITIC only where it clears the socials by 20 — "Copyright to colophon" where it does
+    // not: back in the colophon's box under Est.; style.css, main.band-copy-colo)
+    var soc = st.querySelector('.sub-ticker-run > .band-under--critic'), cpy = st.querySelector('.sub-ticker-run > .band-under--copy');
+    if (soc && cpy) {
+      var rg = document.createRange(); rg.selectNodeContents(soc); var sR = rg.getBoundingClientRect().right;
+      rg.selectNodeContents(cpy); var cL = rg.getBoundingClientRect().left;
+      main.classList.toggle('band-copy-colo', cL - sR < 20);
+    }
   };
   var seatColo = function () {
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -580,6 +655,7 @@
     // the cap the column was set at, min(43.37, (window − 655) × 0.07992),
     // not the band's own)
     var capPx = Math.min(43.37, (document.documentElement.clientWidth - 655) * 0.07992);
+    seatUnder(st);
     return { words: words, ink: ink, x0L: x0L, x0: lr.right, x0Rail: x0L + RAIL_NAME_CAPS * capPx, x1: x1u, x1R: tgtR };
   };
   // (where STORE's right and ARCHIVE's left would stand were the words
