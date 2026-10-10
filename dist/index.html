@@ -10302,6 +10302,7 @@ window.__ncStripInk = function () {
   };
   var logoW = -1;
   var wideLogo = window.matchMedia('(min-width: 1024px)');
+  var WM_SCALE = 0.9;
   var seatLogo = function (st) {
     var vw = document.documentElement.clientWidth;
     if (!st || !main || vw === logoW) return;
@@ -10365,6 +10366,7 @@ window.__ncStripInk = function () {
       if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
       if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
       if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * 20 + 2 * BIRD_TUCK) / coSpan;
+      if (coFs) coFs *= WM_SCALE;
       if (NAV_STACK && coSpan > 0) {
         navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
         var sW = navStackW(st);

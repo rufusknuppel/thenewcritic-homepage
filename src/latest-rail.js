@@ -73,6 +73,7 @@
   // --bird-dy). Read again only when the window's width changes.
   var logoW = -1;
   var wideLogo = window.matchMedia('(min-width: 1024px)');
+  var WM_SCALE = 0.9;
   var seatLogo = function (st) {
     var vw = document.documentElement.clientWidth;
     if (!st || !main || vw === logoW) return;
@@ -172,6 +173,10 @@
       // 20 px on either side", 2026-10-09: the 40 they give up goes to the name, THE and CRITIC still at the 20s;
       // bandGeo, BIRD_TUCK)
       if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * 20 + 2 * BIRD_TUCK) / coSpan;
+      // (a tenth smaller since 2026-10-10 — "Increase the spacing between the words and bird in the wordmark to
+      // decrease size of wordmark by 10%": THE and CRITIC still on the 20s, the room the letters give up gone to the
+      // gaps between the words and the bird — bandGeo spreads them)
+      if (coFs) coFs *= WM_SCALE;
       // (and smaller again by the stack and a word's gap before it, the nav stacked at the right)
       if (NAV_STACK && coSpan > 0) {
         navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
