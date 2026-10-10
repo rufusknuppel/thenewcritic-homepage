@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4a0ea621">
+<link rel="stylesheet" href="style.css?v=1beb1fbf">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11027,6 +11027,18 @@ window.__ncStripInk = function () {
   openBtn.addEventListener('click', function (e) { e.preventDefault(); set(false); });
   shift();
   addEventListener('resize', shift, { passive: true });
+})();
+(function () {
+  var nav = document.querySelector('.latest-rail__hold > .rail-nav');
+  if (!nav) return;
+  var hold = nav.parentElement;
+  var put = function () {
+    var v = nav.getBoundingClientRect().height.toFixed(2) + 'px';
+    if (hold.style.getPropertyValue('--rail-nav-h') !== v) hold.style.setProperty('--rail-nav-h', v);
+  };
+  put();
+  if (window.ResizeObserver) new ResizeObserver(put).observe(nav);
+  else addEventListener('resize', put, { passive: true });
 })();
 
 </script>
