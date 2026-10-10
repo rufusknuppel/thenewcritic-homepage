@@ -512,7 +512,9 @@
     // gap, and the bird's box as far after CRITIC's last stroke)
     // (and back between THE NEW and CRITIC the same day, once the stack had gone to the column — "Move the bird
     // between THE NEW and CRITIC": THE and CRITIC at the 20s, NEW and the bird evenly between)
-    var BIRD_LAST = false;
+    // (and after CRITIC again since 2026-10-10 — "move bird to the right of CRITIC": THE at the left's 20, the bird's
+    // box at the right's, NEW and CRITIC evenly between, the three gaps one)
+    var BIRD_LAST = true;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
