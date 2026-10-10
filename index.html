@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=53a600f1">
+<link rel="stylesheet" href="style.css?v=27e67b14">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11081,22 +11081,6 @@ window.__ncStripInk = function () {
   put();
   if (window.ResizeObserver) new ResizeObserver(put).observe(box);
   else addEventListener('resize', put, { passive: true });
-  var band = document.querySelector('.page-rows > .section-band--colophon');
-  var wide = window.matchMedia('(min-width: 1024px)');
-  if (!band) return;
-  var pin = function () {
-    var o = 0;
-    if (wide.matches && !host.classList.contains('rail-is-shut')) {
-      var h = box.getBoundingClientRect().height;
-      o = Math.max(0, Math.min(h, window.innerHeight - band.getBoundingClientRect().top));
-    }
-    var v = o.toFixed(2) + 'px';
-    if (host.style.getPropertyValue('--colo-pin') !== v) host.style.setProperty('--colo-pin', v);
-  };
-  pin();
-  addEventListener('scroll', pin, { passive: true });
-  addEventListener('resize', pin, { passive: true });
-  addEventListener('newcritic:railshut', function () { setTimeout(pin, 0); });
 })();
 
 </script>
