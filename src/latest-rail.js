@@ -1387,4 +1387,27 @@
   put();
   if (window.ResizeObserver) new ResizeObserver(put).observe(box);
   else addEventListener('resize', put, { passive: true });
+  // THE ROWS HELD AS THE BOX COMES UP (2026-10-09, at the user's words — "I
+  // want the left column to end 54px under the last image. Then I want the
+  // colophon box to rise in the right column"; "It should be hidden until
+  // left column ends"): once the band under the rows (the rows' end, 54
+  // under the last picture) reaches the window's foot, the page's going on
+  // over it is handed back to the rows as --colo-pin, so they stand still
+  // and only the column moves, the box coming up into it
+  var band = document.querySelector('.page-rows > .section-band--colophon');
+  var wide = window.matchMedia('(min-width: 1024px)');
+  if (!band) return;
+  var pin = function () {
+    var o = 0;
+    if (wide.matches && !host.classList.contains('rail-is-shut')) {
+      var h = box.getBoundingClientRect().height;
+      o = Math.max(0, Math.min(h, window.innerHeight - band.getBoundingClientRect().top));
+    }
+    var v = o.toFixed(2) + 'px';
+    if (host.style.getPropertyValue('--colo-pin') !== v) host.style.setProperty('--colo-pin', v);
+  };
+  pin();
+  addEventListener('scroll', pin, { passive: true });
+  addEventListener('resize', pin, { passive: true });
+  addEventListener('newcritic:railshut', function () { setTimeout(pin, 0); });
 })();
