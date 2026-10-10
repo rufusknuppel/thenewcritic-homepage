@@ -8143,14 +8143,27 @@
       if (next.classList.contains('section-band--colophon') && !ONE_COL.matches && document.querySelector('main.wm-banded')) {
         rows.forEach(function (r) {
           if (r !== last && (lastRow == null || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup)) return;
-          [].forEach.call(r.querySelectorAll('.card-image-frame'), function (fr) {
+          // (the picture as it is painted — its frame, .card-frame — not the
+          // image's own box, which runs past it where the picture is slid
+          // out: "Not seeing 54px under the last post", 2026-10-10)
+          // (the frame alone, where it is laid by then; before it is, the
+          // rows' ink already ends on the painted picture's foot — the
+          // image's own box, which ran 35 past it, is not read)
+          var frs = r.querySelectorAll('.card-frame');
+          [].forEach.call(frs, function (fr) {
             var fb = fr.getBoundingClientRect();
             if (fb.height > 0) foot = Math.max(foot, fb.bottom);
           });
         });
       }
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
-      edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: parseFloat(getComputedStyle(body).paddingBottom) || 0 });
+      // (over the page's end the rows' foot may want less than no padding —
+      // the last row's box runs a few pixels past the painted frame — so
+      // there the rest is taken from the last row's wrap, a margin under it:
+      // "Not seeing 54px under the last post", 2026-10-10)
+      var tail = next.classList.contains('section-band--colophon') && !ONE_COL.matches ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
+      var tailM = tail ? Math.min(0, parseFloat(tail.style.marginBottom) || 0) : 0;
+      edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: (parseFloat(getComputedStyle(body).paddingBottom) || 0) + tailM, tail: tail });
     });
     edges.forEach(function (j) {
       if (j.exact) {
@@ -8164,6 +8177,10 @@
       if (Math.abs(j.delta) < 0.25) return;
       moved = Math.max(moved, Math.abs(j.delta));
       j.el.style.setProperty(j.prop, Math.max(0, j.m + j.delta).toFixed(2) + 'px', 'important');
+      if (j.tail) {
+        if (j.m + j.delta < 0) j.tail.style.setProperty('margin-bottom', (j.m + j.delta).toFixed(2) + 'px', 'important');
+        else j.tail.style.removeProperty('margin-bottom');
+      }
     });
     // (pinned pictures in a section the edges pass has just moved are put
     // back on their pins — a run for each section, the one under it
