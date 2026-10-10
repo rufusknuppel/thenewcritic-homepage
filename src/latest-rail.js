@@ -742,7 +742,9 @@
       if (top == null) return;
       var key = rail.getAttribute('data-sec');
       setImp(rail, 'top', top.toFixed(2) + 'px');
-      setImp(rail, 'bottom', '0px');
+      // (on the colophon's top from 1024 up, the colophon under the whole
+      // site — style.css, THE COLOPHON UNDER THE WHOLE SITE: --rail-foot)
+      setImp(rail, 'bottom', 'var(--rail-foot, 0px)');
       // (the one column that stands, the first, over every section's rows
       // since 2026-10-05, so the rule over a card's dek runs under it —
       // "passing under the image and under the latest")
@@ -1177,6 +1179,26 @@
     // 1200 up, and the steeper line under that.
     var vwE = document.documentElement.clientWidth;
     var mid = Math.min(vwE * 2 / 3 - 11, 0.9773 * vwE - 383.75);
+    // (a word's letters across the window, left to right: each outline's
+    // run of x, the runs that overlap — a letter and its counter — as one)
+    function letterRuns(path) {
+      var d = path.getAttribute('d') || '';
+      if (path.__runsD !== d) {
+        path.__runsD = d;
+        path.__runs = (d.match(/M[^M]*/g) || []).map(function (sp) {
+          var n = sp.match(/-?\d*\.?\d+(?:e-?\d+)?/gi) || [], lo = Infinity, hi = -Infinity;
+          for (var k = 0; k < n.length; k += 2) { var x = +n[k]; if (x < lo) lo = x; if (x > hi) hi = x; }
+          return [lo, hi];
+        }).sort(function (u, v) { return u[0] - v[0]; }).reduce(function (acc, r) {
+          var last = acc[acc.length - 1];
+          if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]); else acc.push([r[0], r[1]]);
+          return acc;
+        }, []);
+      }
+      var m = path.getScreenCTM && path.getScreenCTM();
+      if (!m || !path.__runs.length) return null;
+      return path.__runs.map(function (r) { return [m.a * r[0] + m.e, m.a * r[1] + m.e]; });
+    }
     // (THE LATEST ON THE LEFT TO 20 PAST THE, 2026-10-09 — "Have the Latest
     // column stretch to 20px to the right of THE": with the column on the
     // left its right edge, the rule, stands 20 past THE's last ink. The
@@ -1192,6 +1214,14 @@
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
       if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1);
+      // (and on the right, between CRITIC's R and its first I since —
+      // "Have the edge of the latest column stretch to between the R and
+      // the I of critic", 2026-10-09: the rule's middle halfway from the R's
+      // last ink to the I's first, the letters read off the word's outline,
+      // its pieces merged where they overlap across)
+      var lowP = document.querySelector('.latest-rail--r') && document.querySelector('.sub-ticker--top .band-logo__low svg path');
+      var runs = lowP && letterRuns(lowP);
+      if (runs && runs.length > 2) mid = (runs[1][1] + runs[2][0]) / 2 - 1 - 252;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
