@@ -1304,7 +1304,10 @@
       // its pieces merged where they overlap across)
       var lowP = document.querySelector('.latest-rail--r') && document.querySelector('.sub-ticker--top .band-logo__low svg path');
       var runs = lowP && letterRuns(lowP);
-      if (runs && runs.length > 2) mid = (runs[1][1] + runs[2][0]) / 2 - 1 - 252;
+      // (at that width still since the bird went after CRITIC — "Keep previous width", 2026-10-10: the R/I gap read
+      // as if CRITIC ended on the window's 20, CRITIC's own reach from the gap to its last stroke off the window less
+      // the 20, so the column holds where it stood whatever CRITIC's place)
+      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) - 1 - 252;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
