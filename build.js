@@ -2202,6 +2202,9 @@ function renderHomeColophon() {
 // Under 1024 the colophon band stands as before. (Est. over the copyright
 // since — "Flip Est. and Copyright lines, keeping styles in order they are
 // now": Est. in the name's Garamond, the copyright in the kickers' capitals.)
+// (REMOVED 2026-10-10 at the user's word — "remove colophon": Est. went with
+// it; The Last Magazine, the nav, the socials and the copyright stand in the
+// line under the name — bandUnder. Kept for the record, unused.)
 function railColo() {
   const socials = [
     ['https://www.thenewcritic.com', 'Substack'],
@@ -3504,7 +3507,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + railCues(si)
-    + `</div></div>${si === 0 ? railColo() : ''}</aside>`;
+    + `</div></div></aside>`;
   // THE NEXT SECTION FORETOLD (2026-10-04, at the user's words — "36px from
   // the bottom in The Latest column, I want a work sans that's a
   // premonition of the next section, so Essays. then on a line below a

@@ -8138,8 +8138,9 @@
       // THE ROWS END 54 UNDER THE LAST PICTURE (2026-10-09, at the user's
       // words — "left column should end 54px after last post image"): with
       // the colophon a box in the column, the rows' foot over it is the
-      // last row's pictures' foot as well as its words'
-      if (next.classList.contains('section-band--colophon') && !ONE_COL.matches && document.querySelector('.latest-rail > .rail-colo')) {
+      // last row's pictures' foot as well as its words' (and with no
+      // colophon at all since 2026-10-10, "remove colophon": the page's end)
+      if (next.classList.contains('section-band--colophon') && !ONE_COL.matches && document.querySelector('main.wm-banded')) {
         rows.forEach(function (r) {
           if (r !== last && (lastRow == null || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup)) return;
           [].forEach.call(r.querySelectorAll('.card-image-frame'), function (fr) {

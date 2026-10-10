@@ -5329,7 +5329,7 @@
         next.style.setProperty('margin-top', '0px', 'important');
         next.style.removeProperty('--step-over');
       }
-      if (next.classList.contains('section-band--colophon') && !ONE_COL.matches && document.querySelector('.latest-rail > .rail-colo')) {
+      if (next.classList.contains('section-band--colophon') && !ONE_COL.matches && document.querySelector('main.wm-banded')) {
         rows.forEach(function (r) {
           if (r !== last && (lastRow == null || r.getAttribute('data-row') !== lastRow || r.getAttribute('data-group') !== lastGroup)) return;
           [].forEach.call(r.querySelectorAll('.card-image-frame'), function (fr) {
