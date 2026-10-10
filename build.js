@@ -2013,9 +2013,9 @@ function bandUnder() {
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="band-under__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(sep);
-  // (each piece from its word's first stroke since — "Left align under each word. Move copyright to the right of
-  // CRITIC": the copyright out of the colophon's box to the line's end, its last letter on CRITIC's last stroke)
-  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">© The New Critic, Inc.</span>`;
+  // (each piece from its word's first stroke since — "Left align under each word"; the copyright stood at the
+  // line's end under CRITIC's last stroke for a day, then went to the column's foot — railCopy)
+  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
@@ -2205,6 +2205,14 @@ function renderHomeColophon() {
 // (REMOVED 2026-10-10 at the user's word — "remove colophon": Est. went with
 // it; The Last Magazine, the nav, the socials and the copyright stand in the
 // line under the name — bandUnder. Kept for the record, unused.)
+// THE COPYRIGHT AT THE COLUMN'S FOOT (2026-10-10, at the user's words —
+// "move the copyright to the bottom of the latest column, put in work sans
+// metadata"): the last thing in the column's hold, so it stands at the foot
+// of the column as it holds in the window, in the kickers' Work Sans
+// capitals (style.css, THE COPYRIGHT AT THE COLUMN'S FOOT).
+function railCopy() {
+  return '<p class="rail-copy">© The New Critic, Inc.</p>';
+}
 function railColo() {
   const socials = [
     ['https://www.thenewcritic.com', 'Substack'],
@@ -3507,7 +3515,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     }).join('')}</ul>`
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + railCues(si)
-    + `</div></div></aside>`;
+    + `</div>${si === 0 ? railCopy() : ''}</div></aside>`;
   // THE NEXT SECTION FORETOLD (2026-10-04, at the user's words — "36px from
   // the bottom in The Latest column, I want a work sans that's a
   // premonition of the next section, so Essays. then on a line below a
