@@ -73,7 +73,8 @@
   // --bird-dy). Read again only when the window's width changes.
   var logoW = -1;
   var wideLogo = window.matchMedia('(min-width: 1024px)');
-  var WM_SCALE = 0.9;
+  // (a tenth smaller again since 2026-10-10 — "Make wordmark 10% smaller": 0.9 of the 0.9)
+  var WM_SCALE = 0.81;
   var seatLogo = function (st) {
     var vw = document.documentElement.clientWidth;
     if (!st || !main || vw === logoW) return;
