@@ -1323,3 +1323,19 @@
   shift();
   addEventListener('resize', shift, { passive: true });
 })();
+// THE DOT AT THE LATEST'S TOP LEFT (2026-10-09, at the user's words — "move
+// the dot to the top left of The Latest"): the box over The Latest's depth
+// handed to the column's hold as --rail-nav-h, so the dot stands 18 under
+// that box's rule (style.css, THE DOT AT THE LATEST'S TOP LEFT)
+(function () {
+  var nav = document.querySelector('.latest-rail__hold > .rail-nav');
+  if (!nav) return;
+  var hold = nav.parentElement;
+  var put = function () {
+    var v = nav.getBoundingClientRect().height.toFixed(2) + 'px';
+    if (hold.style.getPropertyValue('--rail-nav-h') !== v) hold.style.setProperty('--rail-nav-h', v);
+  };
+  put();
+  if (window.ResizeObserver) new ResizeObserver(put).observe(nav);
+  else addEventListener('resize', put, { passive: true });
+})();
