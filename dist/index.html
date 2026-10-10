@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e1a93972">
+<link rel="stylesheet" href="style.css?v=d4d19959">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11064,10 +11064,10 @@ window.__ncStripInk = function () {
 (function () {
   var box = document.querySelector('.latest-rail > .rail-colo');
   if (!box) return;
-  var rail = box.parentElement;
+  var host = box.closest('main') || box.parentElement;
   var put = function () {
     var v = box.getBoundingClientRect().height.toFixed(2) + 'px';
-    if (rail.style.getPropertyValue('--rail-colo-h') !== v) rail.style.setProperty('--rail-colo-h', v);
+    if (host.style.getPropertyValue('--rail-colo-h') !== v) host.style.setProperty('--rail-colo-h', v);
   };
   put();
   if (window.ResizeObserver) new ResizeObserver(put).observe(box);

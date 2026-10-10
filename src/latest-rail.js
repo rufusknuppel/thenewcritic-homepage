@@ -1376,10 +1376,13 @@
 (function () {
   var box = document.querySelector('.latest-rail > .rail-colo');
   if (!box) return;
-  var rail = box.parentElement;
+  // (on the page's main, so the colophon's band under the rows takes the
+  // box's depth too — the rows end, then the column brings the box up:
+  // "Wait for left column to end before right column reveals colophon")
+  var host = box.closest('main') || box.parentElement;
   var put = function () {
     var v = box.getBoundingClientRect().height.toFixed(2) + 'px';
-    if (rail.style.getPropertyValue('--rail-colo-h') !== v) rail.style.setProperty('--rail-colo-h', v);
+    if (host.style.getPropertyValue('--rail-colo-h') !== v) host.style.setProperty('--rail-colo-h', v);
   };
   put();
   if (window.ResizeObserver) new ResizeObserver(put).observe(box);
