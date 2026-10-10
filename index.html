@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=2369da08">
+<link rel="stylesheet" href="style.css?v=e7464c9c">
 <style>:root{--colo-span:9.4919;--band-span:7.8711;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10672,7 +10672,7 @@ window.__ncStripInk = function () {
       if (top == null) return;
       var key = rail.getAttribute('data-sec');
       setImp(rail, 'top', top.toFixed(2) + 'px');
-      setImp(rail, 'bottom', '0px');
+      setImp(rail, 'bottom', 'var(--rail-foot, 0px)');
       setImp(rail, 'z-index', String(i === 0 ? 4 * rails.length + 2 : 4 * i + 2));
       secWraps(key).forEach(function (w) {
         w.__z = 4 * i + 3;
@@ -10934,11 +10934,32 @@ window.__ncStripInk = function () {
     if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
     var vwE = document.documentElement.clientWidth;
     var mid = Math.min(vwE * 2 / 3 - 11, 0.9773 * vwE - 383.75);
+    function letterRuns(path) {
+      var d = path.getAttribute('d') || '';
+      if (path.__runsD !== d) {
+        path.__runsD = d;
+        path.__runs = (d.match(/M[^M]*/g) || []).map(function (sp) {
+          var n = sp.match(/-?\d*\.?\d+(?:e-?\d+)?/gi) || [], lo = Infinity, hi = -Infinity;
+          for (var k = 0; k < n.length; k += 2) { var x = +n[k]; if (x < lo) lo = x; if (x > hi) hi = x; }
+          return [lo, hi];
+        }).sort(function (u, v) { return u[0] - v[0]; }).reduce(function (acc, r) {
+          var last = acc[acc.length - 1];
+          if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]); else acc.push([r[0], r[1]]);
+          return acc;
+        }, []);
+      }
+      var m = path.getScreenCTM && path.getScreenCTM();
+      if (!m || !path.__runs.length) return null;
+      return path.__runs.map(function (r) { return [m.a * r[0] + m.e, m.a * r[1] + m.e]; });
+    }
     if (document.querySelector('.latest-rail--l, .latest-rail--r')) {
       var newL = Infinity, theR = -Infinity;
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
       if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1);
+      var lowP = document.querySelector('.latest-rail--r') && document.querySelector('.sub-ticker--top .band-logo__low svg path');
+      var runs = lowP && letterRuns(lowP);
+      if (runs && runs.length > 2) mid = (runs[1][1] + runs[2][0]) / 2 - 1 - 252;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
