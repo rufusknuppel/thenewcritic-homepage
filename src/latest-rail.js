@@ -75,6 +75,7 @@
   var wideLogo = window.matchMedia('(min-width: 1024px)');
   // (a tenth smaller again since 2026-10-10 — "Make wordmark 10% smaller": 0.9 of the 0.9)
   var WM_SCALE = 0.81;
+  window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
     var vw = document.documentElement.clientWidth;
     if (!st || !main || vw === logoW) return;
@@ -1309,7 +1310,10 @@
       // (at that width still since the bird went after CRITIC — "Keep previous width", 2026-10-10: the R/I gap read
       // as if CRITIC ended on the window's 20, CRITIC's own reach from the gap to its last stroke off the window less
       // the 20, so the column holds where it stood whatever CRITIC's place)
-      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) - 1 - 252;
+      // (and at the width it had with the name at 0.9 since the name went to 0.81 — "Widen the Latest column to
+      // previous size", 2026-10-10: CRITIC's reach from the gap read at the 0.9 name's size, so the column holds
+      // where it stood whatever the name's size)
+      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);

@@ -10303,6 +10303,7 @@ window.__ncStripInk = function () {
   var logoW = -1;
   var wideLogo = window.matchMedia('(min-width: 1024px)');
   var WM_SCALE = 0.81;
+  window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
     var vw = document.documentElement.clientWidth;
     if (!st || !main || vw === logoW) return;
@@ -11054,7 +11055,7 @@ window.__ncStripInk = function () {
       if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1);
       var lowP = document.querySelector('.latest-rail--r') && document.querySelector('.sub-ticker--top .band-logo__low svg path');
       var runs = lowP && letterRuns(lowP);
-      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) - 1 - 252;
+      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
