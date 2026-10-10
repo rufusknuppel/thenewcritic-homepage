@@ -10431,13 +10431,11 @@ window.__ncStripInk = function () {
         }
       }
     }
-    var birdMid = top + want + wmH / 2;
-    if (H - 2 * AIR > wmH) { birdH = H - 2 * AIR; birdMid = top + AIR + birdH / 2; }
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
     st.style.setProperty('--bird-s', (birdH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
-    st.style.setProperty('--bird-dy', (birdMid - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+    st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();
     seatUnder(st);
     if (!fitMeasured) logoW = -1;
