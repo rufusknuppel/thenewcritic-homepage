@@ -514,7 +514,8 @@
     // between THE NEW and CRITIC": THE and CRITIC at the 20s, NEW and the bird evenly between)
     // (and after CRITIC again since 2026-10-10 — "move bird to the right of CRITIC": THE at the left's 20, the bird's
     // box at the right's, NEW and CRITIC evenly between, the three gaps one)
-    var BIRD_LAST = true;
+    // (and back between NEW and CRITIC 2026-10-10 — "Move bird back to between NEW and Critic")
+    var BIRD_LAST = false;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
