@@ -2171,11 +2171,13 @@ function renderHomeColophon() {
 // — "I would like the Colophon instead to be a stack that's a box in The
 // Latest Column, like the last magazine box that scrolls up when the left
 // column runs out. Stack Copyright on top, then Est. May 2025 in Metadata
-// work sans style, then Socials in italics"): the copyright as a section's
-// name, Est. as a kicker, the socials as View all, in a box at the foot of
+// work sans style, then Socials in italics"): the top line as a section's
+// name, the middle as a kicker, the socials as View all, in a box at the foot of
 // the front page's column that comes up with the page's end (style.css,
 // THE COLOPHON A BOX AT THE COLUMN'S FOOT; latest-rail.js, --rail-colo-h).
-// Under 1024 the colophon band stands as before.
+// Under 1024 the colophon band stands as before. (Est. over the copyright
+// since — "Flip Est. and Copyright lines, keeping styles in order they are
+// now": Est. in the name's Garamond, the copyright in the kickers' capitals.)
 function railColo() {
   const socials = [
     ['https://www.thenewcritic.com', 'Substack'],
@@ -2183,7 +2185,7 @@ function railColo() {
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="rail-colo__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
-  return `<footer class="rail-colo" aria-label="Colophon"><span class="rail-colo__copy">Copyright The New Critic, Inc.</span><span class="rail-colo__est">Est. May 2025</span><span class="rail-colo__soc">${socials}</span></footer>`;
+  return `<footer class="rail-colo" aria-label="Colophon"><span class="rail-colo__top">Est. May 2025</span><span class="rail-colo__mid">Copyright The New Critic, Inc.</span><span class="rail-colo__soc">${socials}</span></footer>`;
 }
 function renderPageRail({ side, word, href, after, before, categories }) {
   // THREES, like the masthead's own THE/NEW/CRI/TIC — whatever is
