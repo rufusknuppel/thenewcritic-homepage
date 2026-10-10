@@ -317,6 +317,11 @@
         }
       }
     }
+    // (THE BIRD DOWN TO THE RULE, 2026-10-10 — "keep wordmark the same size, Make Bird bigger so its 20px from
+    // rule": the name as it stands, the bird's box from the name's top, AIR under the band's top, down to AIR over
+    // the rule at the band's foot, the line under the name included; bandGeo spreads NEW, the bird and CRITIC)
+    var birdMid = top + want + wmH / 2;
+    if (H - 2 * AIR > wmH) { birdH = H - 2 * AIR; birdMid = top + AIR + birdH / 2; }
     var bi = bird.getBoundingClientRect();
     if (!bi.height) return;
     // (a tenth smaller since 2026-10-06 — "Make bird 10% smaller"; then a
@@ -326,7 +331,7 @@
     // bigger": 1.25 x 1.1)
     st.style.setProperty('--bird-s', (birdH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
-    st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+    st.style.setProperty('--bird-dy', (birdMid - (bi.top + bi.height / 2)).toFixed(2) + 'px');
     seatColo();
     seatUnder(st);
     if (!fitMeasured) logoW = -1;
