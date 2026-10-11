@@ -399,6 +399,8 @@
     if (!items.length) return;
     if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
       [].forEach.call(items, function (u) { u.style.removeProperty('left'); u.style.removeProperty('top'); });
+      // (and no foot band under 1024 — THE LINE IN THE FOOT BAND)
+      main.classList.remove('has-foot-band');
       return;
     }
     var run = st.querySelector(':scope > .sub-ticker-run');

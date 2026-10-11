@@ -7444,6 +7444,10 @@
   // (between the rows where the posts stand two to a row: seatRowGaps —
   // 54 since 2026-10-04, at the user's word: "Have 54px between post rows")
   var ROWS_GAP = 54;
+  // (the air between the bands and the rows, over the first picture and under the last, where the line stands in the
+  // foot band: 36 since 2026-10-11 — "Reduce gap from 54px to 36px"; 54 before. THE LINE IN THE FOOT BAND,
+  // latest-rail.js)
+  var BAND_AIR = 36;
   // (between one row and the next, 72 since 2026-10-04, at the user's
   // word: "Increase space between rows to 72px" — the band's 54 over the
   // first row and the colophon's 54 under the last stand as they were)
@@ -7761,7 +7765,12 @@
                   // band 188 and more: the page's lift stops at 162 — style.css, THE NAV UNDER THE NAME — so the
                   // first row stood that much high, 28 under the band where it wants 54: "The top posting isn't
                   // loading with 54px top and bottom")
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  // (BAND_AIR, not 54, where the line stands in the foot band: the 72 here less what BAND_AIR is short of
+                  // 54)
+                  // (and a pixel lower: the picture's frame stands 35 in from its box's top, a pixel short of the 36 under
+                  // it — style.css, the rows' pictures a pixel shorter to match)
+                  var airK = document.querySelector('main.has-foot-band') ? 54 - BAND_AIR - 1 : 0;
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 - airK + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 // (THE COURIER STARTS UNDER THE NAME'S AIR, 2026-09-30, at
                 // the user's word: the first row's courier ink, not its
@@ -8161,9 +8170,9 @@
         });
       }
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
-      // (and the foot band's height and its rule over that, the last picture 54 over the band at the window's foot —
-      // THE LINE IN THE FOOT BAND, latest-rail.js)
-      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb) edgeGap += (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
+      // (and the foot band's height and its rule over that, the last picture BAND_AIR over the band at the window's
+      // foot — THE LINE IN THE FOOT BAND, latest-rail.js)
+      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb) edgeGap = BAND_AIR + (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
       // (over the page's end the rows' foot may want less than no padding —
       // the last row's box runs a few pixels past the painted frame — so
       // there the rest is taken from the last row's wrap, a margin under it:
@@ -8866,6 +8875,9 @@
   // (the words' gap off the frame, the margin the cards keep: 54 —
   // "Match 54px margin on near side too", 2026-10-05)
   var NEAR_GAP = 54;
+  // (36 since 2026-10-11 — "Do the same for the margins of text around the posts", after "Reduce gap from 54px to
+  // 36px")
+  NEAR_GAP = 36;
   // (and 5 in from either end: the head 5 under the picture's top, the
   // last baseline 5 over its foot — at the user's word, "Move metadate 5px
   // down and body 5 px up", 2026-10-04)
