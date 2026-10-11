@@ -86,6 +86,11 @@
   // THE NAME OPENS BIG, finding nothing to grow, stands down)
   var WM_SCALE = 1;
   var FOOT_BAND = true;
+  // (and the band over the name since 2026-10-11 — "Move the bottom band on top of the wordmark": the line's band at
+  // the window's top, its rule at its foot, the name's band under it, the two one head — --strip-settled — its
+  // height the line's band, the rule, and the name with its air; THE LINE IN THE FOOT BAND, now at the head)
+  var FOOT_TOP = true;
+  var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
     if (window.__ncOpenClear) window.__ncOpenClear();
@@ -297,6 +302,12 @@
     // (the line gone to the band at the window's foot since — THE LINE IN THE FOOT BAND, seatUnder: the name AIR from
     // the band's top and foot)
     if (FOOT_BAND) H = Math.round(2 * AIR + wmH);
+    // (the line's band over the name: its own height, 20 over and under the line's capitals, and its rule)
+    var topB = 0;
+    if (FOOT_BAND && FOOT_TOP && undT && undT.offsetWidth) {
+      var cuT = capsOf(undT);
+      if (cuT) { var fbT = Math.round(40 + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+    }
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -312,6 +323,8 @@
       var air = want.toFixed(2) + 'px';
       if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
+    // (the name under the line's band and its rule)
+    want += topB;
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     if (navCap > 0) {
       var nc1 = capsOf(navEls[0].querySelector('b'));
@@ -425,9 +438,10 @@
     // stands at the window's top: each top a calc on the window's height, so a window grown taller needs no seating
     var vh = window.innerHeight, capH = c0.base - c0.cap;
     if (FOOT_BAND) {
-      base = st.getBoundingClientRect().top + vh - 20;
+      base = FOOT_TOP ? st.getBoundingClientRect().top + 20 + capH : st.getBoundingClientRect().top + vh - 20;
       main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
       main.classList.add('has-foot-band');
+      main.classList.toggle('foot-band-top', FOOT_TOP);
       [].forEach.call(items, function (u) { u.style.setProperty('top', '0px', 'important'); });
     }
     var rr = run.getBoundingClientRect();
@@ -470,7 +484,7 @@
       void ur;
       var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + (base - probe(u));
       u.style.setProperty('left', left.toFixed(2) + 'px', 'important');
-      u.style.setProperty('top', FOOT_BAND ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
+      u.style.setProperty('top', FOOT_BAND && !FOOT_TOP ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
     });
     void rr;
     // (THE DOT UNDER CRITIC'S LAST C, 2026-10-11 — "Move the theme dot under the final C in the nav bar vertically
@@ -496,7 +510,7 @@
         var dl = (parseFloat(ds.left) || 0) + (fbX ? fbX.mid - (dr.left + dr.width / 2) : cx - dr.right);
         var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
         st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
-        st.style.setProperty('--dot-t', FOOT_BAND ? 'calc(100svh + ' + (dt - vh).toFixed(2) + 'px)' : dt.toFixed(2) + 'px');
+        st.style.setProperty('--dot-t', FOOT_BAND && !FOOT_TOP ? 'calc(100svh + ' + (dt - vh).toFixed(2) + 'px)' : dt.toFixed(2) + 'px');
       }
     }
     // (the copyright under CRITIC only where it clears the socials by 20 — "Copyright to colophon" where it does
@@ -982,7 +996,7 @@
     var strip = document.querySelector('.sub-ticker--top');
     var band = strip ? Math.max(0, strip.getBoundingClientRect().bottom) : 0;
     // (the window less the foot band too — THE LINE IN THE FOOT BAND)
-    var fb = parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0;
+    var fb = main.classList.contains('foot-band-top') ? 0 : parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0;
     var y = (window.pageYOffset || 0) + band + (window.innerHeight - fb - band) / 2;
     var best = null, bestD = Infinity;
     spans.forEach(function (sp) {
