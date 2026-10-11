@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8112a030">
+<link rel="stylesheet" href="style.css?v=9be8d1a2">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6208,7 +6208,7 @@
         });
       }
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
-      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb) edgeGap = BAND_AIR + (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
+      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb && mFb.classList.contains('foot-band-top')) edgeGap = BAND_AIR; else if (mFb) edgeGap = BAND_AIR + (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
       var tail = next.classList.contains('section-band--colophon') && !ONE_COL.matches ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
       var tailM = tail ? Math.min(0, parseFloat(tail.style.marginBottom) || 0) : 0;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: (parseFloat(getComputedStyle(body).paddingBottom) || 0) + tailM, tail: tail });
@@ -10309,6 +10309,8 @@ window.__ncStripInk = function () {
   var wideLogo = window.matchMedia('(min-width: 1024px)');
   var WM_SCALE = 1;
   var FOOT_BAND = true;
+  var FOOT_TOP = true;
+  var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
     if (window.__ncOpenClear) window.__ncOpenClear();
@@ -10412,6 +10414,11 @@ window.__ncStripInk = function () {
     var undT = st.querySelector('.band-under--the > *');
     if (undT && undT.offsetWidth && !FOOT_BAND) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
     if (FOOT_BAND) H = Math.round(2 * AIR + wmH);
+    var topB = 0;
+    if (FOOT_BAND && FOOT_TOP && undT && undT.offsetWidth) {
+      var cuT = capsOf(undT);
+      if (cuT) { var fbT = Math.round(40 + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+    }
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -10422,6 +10429,7 @@ window.__ncStripInk = function () {
       var air = want.toFixed(2) + 'px';
       if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
+    want += topB;
     st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
     if (navCap > 0) {
       var nc1 = capsOf(navEls[0].querySelector('b'));
@@ -10504,9 +10512,10 @@ window.__ncStripInk = function () {
     var base = foot + 20 + (c0.base - c0.cap);
     var vh = window.innerHeight, capH = c0.base - c0.cap;
     if (FOOT_BAND) {
-      base = st.getBoundingClientRect().top + vh - 20;
+      base = FOOT_TOP ? st.getBoundingClientRect().top + 20 + capH : st.getBoundingClientRect().top + vh - 20;
       main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
       main.classList.add('has-foot-band');
+      main.classList.toggle('foot-band-top', FOOT_TOP);
       [].forEach.call(items, function (u) { u.style.setProperty('top', '0px', 'important'); });
     }
     var rr = run.getBoundingClientRect();
@@ -10537,7 +10546,7 @@ window.__ncStripInk = function () {
       void ur;
       var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + (base - probe(u));
       u.style.setProperty('left', left.toFixed(2) + 'px', 'important');
-      u.style.setProperty('top', FOOT_BAND ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
+      u.style.setProperty('top', FOOT_BAND && !FOOT_TOP ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
     });
     void rr;
     var dot = run && run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)');
@@ -10557,7 +10566,7 @@ window.__ncStripInk = function () {
         var dl = (parseFloat(ds.left) || 0) + (fbX ? fbX.mid - (dr.left + dr.width / 2) : cx - dr.right);
         var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
         st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
-        st.style.setProperty('--dot-t', FOOT_BAND ? 'calc(100svh + ' + (dt - vh).toFixed(2) + 'px)' : dt.toFixed(2) + 'px');
+        st.style.setProperty('--dot-t', FOOT_BAND && !FOOT_TOP ? 'calc(100svh + ' + (dt - vh).toFixed(2) + 'px)' : dt.toFixed(2) + 'px');
       }
     }
     var soc = st.querySelector('.sub-ticker-run > .band-under--critic'), cpy = st.querySelector('.sub-ticker-run > .band-under--copy');
@@ -10864,7 +10873,7 @@ window.__ncStripInk = function () {
     if (!spans.length) return;
     var strip = document.querySelector('.sub-ticker--top');
     var band = strip ? Math.max(0, strip.getBoundingClientRect().bottom) : 0;
-    var fb = parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0;
+    var fb = main.classList.contains('foot-band-top') ? 0 : parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0;
     var y = (window.pageYOffset || 0) + band + (window.innerHeight - fb - band) / 2;
     var best = null, bestD = Infinity;
     spans.forEach(function (sp) {
