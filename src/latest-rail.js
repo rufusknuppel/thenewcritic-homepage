@@ -34,6 +34,9 @@
   // 1.21, the name and the band lower by what the letters give up)
   // (and 15% again with the bird back between NEW and CRITIC — "expand gaps by 15%")
   var GAP_K = 1.21 * 1.15 * 1.15;
+  // (the air round the name — over it, under it and off the window's sides, one — 15% more since 2026-10-11:
+  // "increase gaps around wordmark logo by 15%", 23 where it was 20)
+  var WM_SIDE = 20 * 1.15;
   // (whether the band still shows its stack: from 1024 up it stands in the column since 2026-10-09)
   var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
@@ -90,6 +93,11 @@
   // the window's top, its rule at its foot, the name's band under it, the two one head — --strip-settled — its
   // height the line's band, the rule, and the name with its air; THE LINE IN THE FOOT BAND, now at the head)
   var FOOT_TOP = true;
+  // (and the name in a band at the window's foot since 2026-10-11 — "Move wordmark to the bottom": the line's band
+  // alone the head, --strip-settled; the name in its band at the foot, its air 20 over and under it, the band's rule
+  // over it — its ground .foot-band, its height --foot-band; each of the name's and the bird's rises a calc on the
+  // window's height, so a window grown taller needs no seating)
+  var NAME_FOOT = true;
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
@@ -187,11 +195,11 @@
       // --wm-space)
       var wmSp = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-space'));
       if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
-      if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
+      if (coSpan > 0) coFs = (vw - 2 * WM_SIDE) / coSpan;
       // (the bird's gaps 20 short of the words' on either side — "Reduce the gap between W and bird and C and bird by
       // 20 px on either side", 2026-10-09: the 40 they give up goes to the name, THE and CRITIC still at the 20s;
       // bandGeo, BIRD_TUCK)
-      if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * 20 + 2 * BIRD_TUCK) / coSpan;
+      if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * WM_SIDE + 2 * BIRD_TUCK) / coSpan;
       // (a tenth smaller since 2026-10-10 — "Increase the spacing between the words and bird in the wordmark to
       // decrease size of wordmark by 10%": THE and CRITIC still on the 20s, the room the letters give up gone to the
       // gaps between the words and the bird — bandGeo spreads them)
@@ -200,7 +208,7 @@
       if (NAV_STACK && coSpan > 0) {
         navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
         var sW = navStackW(st);
-        if (sW > 0) coFs = (vw - 2 * 20 - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
+        if (sW > 0) coFs = (vw - 2 * WM_SIDE - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
       }
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
       // (no wider than leaves the bird 24 clear of NEW and of CRITIC, as the opening was held where the window is
@@ -210,10 +218,10 @@
         var kF = inkY(), bbF = bird.getBoundingClientRect();
         var wF = function (sel) { var l = Infinity, r = -Infinity; [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } }); return isFinite(l) ? r - l : 0; };
         var W1 = wF('.band-logo__top svg path') + wF('.band-logo__mid svg path') + wF('.band-logo__low svg path') + (bbF.height ? bbF.width / bbF.height : 0.9) * 1.03 * (kF.b - kF.t);
-        var room = (vw - 40) - BIRD_TUCK - 3 * 24;
+        var room = (vw - 2 * WM_SIDE) - BIRD_TUCK - 3 * 24;
         var fK = W1 > room && W1 > 0 ? room / W1 : 1;
         // (and the gaps GAP_K of what they come to at that size: the room the name gives up theirs)
-        var gS = (vw - 40) - W1 * fK;
+        var gS = (vw - 2 * WM_SIDE) - W1 * fK;
         if (W1 > 0 && gS > 0) fK *= (W1 * fK - (GAP_K - 1) * gS) / (W1 * fK);
         if (fK !== 1) { coFs *= fK; logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important'); }
       }
@@ -291,7 +299,7 @@
     if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
     // (the air 20 over the name, between it and the list and under the list, whatever the name's size, since it took
     // the colophon's: "Keep padding the same above top and bottom as above wordmark")
-    var AIR = 20;
+    var AIR = WM_SIDE;
     // (a rule between the name and the list for a few minutes that day — "Add a Line above the nav to separate that
     // from the wordmark", then edge to edge, then "Remove rule")
     H = Math.round(navCap > 0 && !NAV_STACK ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
@@ -308,6 +316,13 @@
       var cuT = capsOf(undT);
       if (cuT) { var fbT = Math.round(40 + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
+    var vhN = window.innerHeight, nameB = 0;
+    if (NAME_FOOT && topB) {
+      nameB = Math.round(2 * AIR + wmH);
+      H = topB - ruleW();
+      main.style.setProperty('--foot-band', nameB + 'px');
+    }
+    var vcalc = function (v) { return nameB ? 'calc(100svh + ' + (v - vhN).toFixed(2) + 'px)' : v.toFixed(2) + 'px'; };
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -324,8 +339,10 @@
       if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
     // (the name under the line's band and its rule)
+    // (or at the window's foot, AIR into its band — NAME_FOOT)
     want += topB;
-    st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
+    if (nameB) want = vhN - nameB + AIR;
+    st.style.setProperty('--logo-dy', vcalc(want - (k.t - top)));
     if (navCap > 0) {
       var nc1 = capsOf(navEls[0].querySelector('b'));
       if (nc1) {
@@ -370,7 +387,7 @@
     // bigger": 1.25 x 1.1)
     st.style.setProperty('--bird-s', (birdH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
-    st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+    st.style.setProperty('--bird-dy', vcalc((top + want + wmH / 2) - (bi.top + bi.height / 2)));
     seatColo();
     seatUnder(st);
     if (!fitMeasured) logoW = -1;
@@ -439,9 +456,9 @@
     var vh = window.innerHeight, capH = c0.base - c0.cap;
     if (FOOT_BAND) {
       base = FOOT_TOP ? st.getBoundingClientRect().top + 20 + capH : st.getBoundingClientRect().top + vh - 20;
-      main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
+      if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
       main.classList.add('has-foot-band');
-      main.classList.toggle('foot-band-top', FOOT_TOP);
+      main.classList.toggle('foot-band-top', FOOT_TOP && !NAME_FOOT);
       [].forEach.call(items, function (u) { u.style.setProperty('top', '0px', 'important'); });
     }
     var rr = run.getBoundingClientRect();
@@ -695,13 +712,13 @@
         return isFinite(l) ? { l: l, r: r } : null;
       };
       var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
-      if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
+      if (topOut && oT) topOut.style.setProperty('translate', (WM_SIDE - oT.l).toFixed(2) + 'px 0px', 'important');
       // (the bird last since — THE BIRD AFTER CRITIC: THE at the left's 20 and the bird's box at the right's, NEW and
       // CRITIC evenly between, the three gaps one, ink to ink)
       var oBl = birdInk.getBoundingClientRect(), midL = st.querySelector('.band-logo__mid'), oTl = outX('.band-logo__top svg path'), oNl = outX('.band-logo__mid svg path');
       if (BIRD_LAST && lowEl && oC && oBl.width && midL && oTl && oNl) {
         var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
-        var bL = vw - 20 - oBl.width;
+        var bL = vw - WM_SIDE - oBl.width;
         // (the stack and a word's gap at the right since — THE NAV STACKED AT THE RIGHT)
         // (and the bird after the stack since — "Move bird to the right of The last magazine stack": the bird's box at
         // the right's 20, the stack before it, NEW, CRITIC and the stack evenly between THE and the bird, all four
@@ -717,7 +734,7 @@
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
         lowEl.style.setProperty('translate', (oTl.r + gL + (oNl.r - oNl.l) + gL - oC.l).toFixed(2) + 'px 0px', 'important');
       } else
-      if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
+      if (lowEl && oC) lowEl.style.setProperty('translate', (vw - WM_SIDE - oC.r).toFixed(2) + 'px 0px', 'important');
       // (and NEW and the bird evenly between them since — "Space NEW and the bird evenly between THE and CRITIC": the
       // three gaps, THE to NEW, NEW to the bird and the bird to CRITIC, one, ink to ink)
       var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();

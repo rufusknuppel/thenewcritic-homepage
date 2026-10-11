@@ -10279,6 +10279,7 @@ window.__ncStripInk = function () {
   var NAV_STACK = true;
   var BIRD_TUCK = 20;
   var GAP_K = 1.21 * 1.15 * 1.15;
+  var WM_SIDE = 20 * 1.15;
   var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
   var navWords = function (st) {
@@ -10310,6 +10311,7 @@ window.__ncStripInk = function () {
   var WM_SCALE = 1;
   var FOOT_BAND = true;
   var FOOT_TOP = true;
+  var NAME_FOOT = true;
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
@@ -10374,22 +10376,22 @@ window.__ncStripInk = function () {
       var coSpan = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--colo-span'));
       var wmSp = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--wm-space'));
       if (coSpan > 0 && wmSp > 0) coSpan -= 3 * (0.6226 - wmSp);
-      if (coSpan > 0) coFs = (vw - 2 * 20) / coSpan;
-      if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * 20 + 2 * BIRD_TUCK) / coSpan;
+      if (coSpan > 0) coFs = (vw - 2 * WM_SIDE) / coSpan;
+      if (coSpan > 0 && BIRD_TUCK && !NAV_STACK_SHOWN(st)) coFs = (vw - 2 * WM_SIDE + 2 * BIRD_TUCK) / coSpan;
       if (coFs) coFs *= WM_SCALE;
       if (NAV_STACK && coSpan > 0) {
         navLines(st).forEach(function (ln) { ln.forEach(function (c, i) { c.classList.toggle('nav-before-tlm', i === ln.length - 1); }); });
         var sW = navStackW(st);
-        if (sW > 0) coFs = (vw - 2 * 20 - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
+        if (sW > 0) coFs = (vw - 2 * WM_SIDE - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
       }
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
       if (coFs && WM_SCALE === 1) {
         var kF = inkY(), bbF = bird.getBoundingClientRect();
         var wF = function (sel) { var l = Infinity, r = -Infinity; [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } }); return isFinite(l) ? r - l : 0; };
         var W1 = wF('.band-logo__top svg path') + wF('.band-logo__mid svg path') + wF('.band-logo__low svg path') + (bbF.height ? bbF.width / bbF.height : 0.9) * 1.03 * (kF.b - kF.t);
-        var room = (vw - 40) - BIRD_TUCK - 3 * 24;
+        var room = (vw - 2 * WM_SIDE) - BIRD_TUCK - 3 * 24;
         var fK = W1 > room && W1 > 0 ? room / W1 : 1;
-        var gS = (vw - 40) - W1 * fK;
+        var gS = (vw - 2 * WM_SIDE) - W1 * fK;
         if (W1 > 0 && gS > 0) fK *= (W1 * fK - (GAP_K - 1) * gS) / (W1 * fK);
         if (fK !== 1) { coFs *= fK; logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important'); }
       }
@@ -10409,7 +10411,7 @@ window.__ncStripInk = function () {
     var navCap = 0;
     navEls.forEach(function (c) { c.style.setProperty('position', 'relative', 'important'); c.style.setProperty('top', '0px', 'important'); });
     if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
-    var AIR = 20;
+    var AIR = WM_SIDE;
     H = Math.round(navCap > 0 && !NAV_STACK ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
     var undT = st.querySelector('.band-under--the > *');
     if (undT && undT.offsetWidth && !FOOT_BAND) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
@@ -10419,6 +10421,13 @@ window.__ncStripInk = function () {
       var cuT = capsOf(undT);
       if (cuT) { var fbT = Math.round(40 + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
+    var vhN = window.innerHeight, nameB = 0;
+    if (NAME_FOOT && topB) {
+      nameB = Math.round(2 * AIR + wmH);
+      H = topB - ruleW();
+      main.style.setProperty('--foot-band', nameB + 'px');
+    }
+    var vcalc = function (v) { return nameB ? 'calc(100svh + ' + (v - vhN).toFixed(2) + 'px)' : v.toFixed(2) + 'px'; };
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -10430,7 +10439,8 @@ window.__ncStripInk = function () {
       if (coA.style.getPropertyValue('--band-pad') !== air) coA.style.setProperty('--band-pad', air);
     }
     want += topB;
-    st.style.setProperty('--logo-dy', (want - (k.t - top)).toFixed(2) + 'px');
+    if (nameB) want = vhN - nameB + AIR;
+    st.style.setProperty('--logo-dy', vcalc(want - (k.t - top)));
     if (navCap > 0) {
       var nc1 = capsOf(navEls[0].querySelector('b'));
       if (nc1) {
@@ -10462,7 +10472,7 @@ window.__ncStripInk = function () {
     if (!bi.height) return;
     st.style.setProperty('--bird-s', (birdH / bi.height).toFixed(4));
     bi = bird.getBoundingClientRect();
-    st.style.setProperty('--bird-dy', ((top + want + wmH / 2) - (bi.top + bi.height / 2)).toFixed(2) + 'px');
+    st.style.setProperty('--bird-dy', vcalc((top + want + wmH / 2) - (bi.top + bi.height / 2)));
     seatColo();
     seatUnder(st);
     if (!fitMeasured) logoW = -1;
@@ -10513,9 +10523,9 @@ window.__ncStripInk = function () {
     var vh = window.innerHeight, capH = c0.base - c0.cap;
     if (FOOT_BAND) {
       base = FOOT_TOP ? st.getBoundingClientRect().top + 20 + capH : st.getBoundingClientRect().top + vh - 20;
-      main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
+      if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
       main.classList.add('has-foot-band');
-      main.classList.toggle('foot-band-top', FOOT_TOP);
+      main.classList.toggle('foot-band-top', FOOT_TOP && !NAME_FOOT);
       [].forEach.call(items, function (u) { u.style.setProperty('top', '0px', 'important'); });
     }
     var rr = run.getBoundingClientRect();
@@ -10694,11 +10704,11 @@ window.__ncStripInk = function () {
         return isFinite(l) ? { l: l, r: r } : null;
       };
       var topOut = st.querySelector('.band-logo__top'), oT = outX('.band-logo__top svg path'), oC = outX('.band-logo__low svg path');
-      if (topOut && oT) topOut.style.setProperty('translate', (20 - oT.l).toFixed(2) + 'px 0px', 'important');
+      if (topOut && oT) topOut.style.setProperty('translate', (WM_SIDE - oT.l).toFixed(2) + 'px 0px', 'important');
       var oBl = birdInk.getBoundingClientRect(), midL = st.querySelector('.band-logo__mid'), oTl = outX('.band-logo__top svg path'), oNl = outX('.band-logo__mid svg path');
       if (BIRD_LAST && lowEl && oC && oBl.width && midL && oTl && oNl) {
         var bdxL = parseFloat(st.style.getPropertyValue('--bird-dx')) || 0;
-        var bL = vw - 20 - oBl.width;
+        var bL = vw - WM_SIDE - oBl.width;
         var sWL = NAV_STACK ? navStackW(st) : 0;
         var birdSvg = st.querySelector('.band-logo__bird');
         var txNow = birdSvg ? parseFloat((getComputedStyle(birdSvg).translate || '0').split(' ')[0]) || 0 : bdxL;
@@ -10708,7 +10718,7 @@ window.__ncStripInk = function () {
         midL.style.setProperty('translate', (oTl.r + gL - oNl.l).toFixed(2) + 'px 0px', 'important');
         lowEl.style.setProperty('translate', (oTl.r + gL + (oNl.r - oNl.l) + gL - oC.l).toFixed(2) + 'px 0px', 'important');
       } else
-      if (lowEl && oC) lowEl.style.setProperty('translate', (vw - 20 - oC.r).toFixed(2) + 'px 0px', 'important');
+      if (lowEl && oC) lowEl.style.setProperty('translate', (vw - WM_SIDE - oC.r).toFixed(2) + 'px 0px', 'important');
       var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();
       if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
         var tuck = BIRD_TUCK * (WM_SCALE === 1 ? GAP_K : 1);
