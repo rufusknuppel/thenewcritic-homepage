@@ -10522,8 +10522,9 @@ window.__ncStripInk = function () {
       var dotF = run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)'), dW = dotF ? dotF.getBoundingClientRect().width : 0;
       var wT = txw(st.querySelector('.sub-ticker-run > .band-under--the')), wN = txw(st.querySelector('.sub-ticker-run > .band-under--new'));
       var wS = txw(st.querySelector('.sub-ticker-run > .band-under--critic')), wC = txw(st.querySelector('.sub-ticker-run > .band-under--copy'));
-      var dL = vwF / 2 - dW / 2, dR = vwF / 2 + dW / 2;
-      fbX = { the: 20, new: (20 + wT + dL - wN) / 2, critic: (dR + (vwF - 20 - wC) - wS) / 2, copy: vwF - 20 - wC, mid: vwF / 2 };
+      var gF = (vwF - 40 - wT - wN - wS - dW - wC) / 4;
+      var xN = 20 + wT + gF, xS = xN + wN + gF, xD = xS + wS + gF;
+      fbX = { the: 20, new: xN, critic: xS, copy: vwF - 20 - wC, mid: xD + dW / 2 };
     }
     [].forEach.call(items, function (u) {
       var key = u.classList.contains('band-under--the') ? 'the' : u.classList.contains('band-under--new') ? 'new' : 'critic';
