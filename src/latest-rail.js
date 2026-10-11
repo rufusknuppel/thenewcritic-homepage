@@ -1605,7 +1605,8 @@
     // the column's words — each on its own, by its translate, which nothing else here uses: the rows' own transform
     // is their slide and the rules' their drawing. Not the page's container, with the copyright carried back inside
     // it: two moves against each other, each set on whole pixels apart, and the copyright shook — "only thing that
-    // wobbles on expansion is the copyright", 2026-10-11. It stands still now, at the window's foot)
+    // wobbles on expansion is the copyright", 2026-10-11. It moves with the column's words now, like them — "Copyright
+    // should move exactly like other elements in the latest column")
     var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
     var mb = document.querySelector('.page-rows > .movement > .movement-body');
     var sy0 = window.pageYOffset || 0, reach = window.innerHeight + 400;
@@ -1613,7 +1614,7 @@
     geo = { D: D, all: row.concat(under, dot),
       page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail'))
         .concat(mb ? [].filter.call(mb.children, function (c) { return !c.classList.contains('latest-rail') && shown(c); }) : [])
-        .concat(hold ? [].filter.call(hold.children, function (c) { return !c.classList.contains('rail-copy') && getComputedStyle(c).display !== 'none'; }) : []) };
+        .concat(hold ? [].filter.call(hold.children, function (c) { return getComputedStyle(c).display !== 'none'; }) : []) };
     // (the band's own ground and its rule at its foot: the band's ground and rule are painted by the first movement's
     // sticky cover, its ::before, held at the window's top by the sheet's !important — the band's ground hides that
     // rule and draws its own where the band ends, the same where it settles; and its container over the rows, which

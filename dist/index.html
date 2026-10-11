@@ -11265,7 +11265,7 @@ window.__ncStripInk = function () {
     geo = { D: D, all: row.concat(under, dot),
       page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail'))
         .concat(mb ? [].filter.call(mb.children, function (c) { return !c.classList.contains('latest-rail') && shown(c); }) : [])
-        .concat(hold ? [].filter.call(hold.children, function (c) { return !c.classList.contains('rail-copy') && getComputedStyle(c).display !== 'none'; }) : []) };
+        .concat(hold ? [].filter.call(hold.children, function (c) { return getComputedStyle(c).display !== 'none'; }) : []) };
     main.classList.add('nc-opening');
   };
   var start = function (t, r) {
