@@ -1448,7 +1448,8 @@
       // (and at the width it had with the name at 0.9 since the name went to 0.81 — "Widen the Latest column to
       // previous size", 2026-10-10: CRITIC's reach from the gap read at the 0.9 name's size, so the column holds
       // where it stood whatever the name's size)
-      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252;
+      // (18 wider since 2026-10-11 — "expand the latest column by 18px")
+      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
