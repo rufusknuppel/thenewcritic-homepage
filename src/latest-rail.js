@@ -418,6 +418,7 @@
     // outline — its subpath that starts furthest right — and on the middle of the line's capitals, which is the
     // middle of the air from the name's foot to the band's; style.css, THE DOT UNDER CRITIC'S LAST C)
     // (under THE's E since — "move dot to under e of THE", 2026-10-11: the same, off THE's outline)
+    // (its right on the E's right since — "have the dot align with the right of E", 2026-10-11)
     var dot = run && run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)');
     var lowPath = st.querySelector('.band-logo__top svg path');
     var cm = lowPath && lowPath.getScreenCTM && lowPath.getScreenCTM();
@@ -429,10 +430,10 @@
         if (!lastC || lo > lastC[0]) lastC = [lo, hi];
       });
       if (lastC) {
-        var cx = cm.a * (lastC[0] + lastC[1]) / 2 + cm.e;
+        var cx = cm.a * lastC[1] + cm.e;
         var cy = base - (c0.base - c0.cap) / 2;
         var dr = dot.getBoundingClientRect(), ds = getComputedStyle(dot);
-        var dl = (parseFloat(ds.left) || 0) + (cx - (dr.left + dr.width / 2));
+        var dl = (parseFloat(ds.left) || 0) + (cx - dr.right);
         var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
         st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
         st.style.setProperty('--dot-t', dt.toFixed(2) + 'px');
@@ -1603,7 +1604,8 @@
       pin(t, wordOf(c.contains('band-under--the') ? 'band-logo__top' : c.contains('band-under--new') ? 'band-logo__mid' : 'band-logo__low'));
     });
     // (the dot's middle, under the C's)
-    dot.forEach(function (t) { var w = wordOf('band-logo__top'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
+    // (its right on the E's right since — "have the dot align with the right of E", 2026-10-11)
+    dot.forEach(function (t) { var w = wordOf('band-logo__top'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w - w.l) - t.w : t.l; });
     // (the copyright's end on CRITIC's last stroke, the opening's too; and it is the opening's alone — "Have copyright
     // fade out on band collapse", 2026-10-11 — shown there where it clears the socials by 20, fading as the band
     // shuts)
@@ -1623,7 +1625,11 @@
     var mb = document.querySelector('.page-rows > .movement > .movement-body');
     var sy0 = window.pageYOffset || 0, reach = window.innerHeight + 400;
     var shown = function (c) { var r = c.getBoundingClientRect(); return r.height > 0 && getComputedStyle(c).display !== 'none' && r.top + sy0 < reach; };
-    geo = { D: D, all: row.concat(under, dot), fade: cpy && soc && cpy.X - (soc.X + soc.w) >= 20 ? cpy.el : null,
+    // (gone before the socials reach it — "Have the copyright fade out before the socials get to it", 2026-10-11: the
+    // gap between them closes evenly with the pieces' progress, and the copyright is out where it comes to 20)
+    var g0 = cpy && soc ? cpy.X - (soc.X + soc.w) : 0, g1 = cpy && soc ? cpy.l - (soc.l + soc.w) : 0;
+    var fadeAt = g0 > g1 ? Math.max(0.05, Math.min(1, (g0 - 20) / (g0 - g1))) : 1;
+    geo = { D: D, all: row.concat(under, dot), fade: cpy && soc && g0 >= 20 ? cpy.el : null, fadeAt: fadeAt,
       page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail'))
         .concat(mb ? [].filter.call(mb.children, function (c) { return !c.classList.contains('latest-rail') && shown(c); }) : [])
         .concat(hold ? [].filter.call(hold.children, function (c) { return getComputedStyle(c).display !== 'none'; }) : []) };
@@ -1651,7 +1657,12 @@
       g.mv.forEach(function (m) { add(m, k0, k1); });
     });
     geo.page.forEach(function (el) { add(el, { translate: '0px ' + geo.D + 'px' }, { translate: '0px 0px' }); });
-    if (geo.fade) add(geo.fade, { opacity: 1 }, { opacity: 0 });
+    if (geo.fade) {
+      // (keyframe offsets ride the eased progress, the pieces' own: out at fadeAt of the way to the settled band)
+      var fz = geo.fadeAt, fk = rev ? [{ opacity: 0, offset: 0 }, { opacity: 0, offset: 1 - fz }, { opacity: 1, offset: 1 }]
+        : [{ opacity: 1, offset: 0 }, { opacity: 0, offset: fz }, { opacity: 0, offset: 1 }];
+      var fa = geo.fade.animate(fk, opt); fa.pause(); fa.currentTime = c; anims.push(fa);
+    }
     anims.rev = rev;
     dir = r;
     if (!r || !anims.length) return;
