@@ -8875,9 +8875,8 @@
   // (the words' gap off the frame, the margin the cards keep: 54 —
   // "Match 54px margin on near side too", 2026-10-05)
   var NEAR_GAP = 54;
-  // (36 since 2026-10-11 — "Do the same for the margins of text around the posts", after "Reduce gap from 54px to
-  // 36px")
-  NEAR_GAP = 36;
+  // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
+  // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
   // last baseline 5 over its foot — at the user's word, "Move metadate 5px
   // down and body 5 px up", 2026-10-04)
