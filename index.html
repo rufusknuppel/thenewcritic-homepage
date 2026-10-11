@@ -10633,7 +10633,7 @@ window.__ncStripInk = function () {
     var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
     var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
     var tgtL = newX ? newX.r + WORD_GAP : null;
-    var BIRD_LAST = false;
+    var BIRD_LAST = true;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
