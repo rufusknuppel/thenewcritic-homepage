@@ -33,10 +33,11 @@
   // (and 15% on that — "increase gaps between words in wordmarks by 15% to lower height", 2026-10-11: 1.15 of the
   // 1.21, the name and the band lower by what the letters give up)
   // (and 15% again with the bird back between NEW and CRITIC — "expand gaps by 15%")
-  var GAP_K = 1.21 * 1.15 * 1.15;
-  // (the air round the name — over it, under it and off the window's sides, one — 15% more since 2026-10-11:
-  // "increase gaps around wordmark logo by 15%", 23 where it was 20)
-  var WM_SIDE = 20 * 1.15;
+  // (and 15% again — "increase gaps around wordmark logo by 15%", "I meant gaps between words", the same day)
+  var GAP_K = 1.21 * 1.15 * 1.15 * 1.15;
+  // (the air round the name — over it, under it and off the window's sides, one: 23 for a few minutes on 2026-10-11,
+  // the gaps' 15% taken for the air's, then 20 again)
+  var WM_SIDE = 20;
   // (whether the band still shows its stack: from 1024 up it stands in the column since 2026-10-09)
   var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
