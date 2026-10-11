@@ -1510,9 +1510,9 @@
     var slug = a.getAttribute('data-slug');
     var card = slug && document.querySelector('.page-rows section.card[data-slug="' + slug + '"]');
     if (!card) return;
-    var top = null;
+    var top = null, bot = null;
     var fr = card.querySelector('.card-frame');
-    if (fr && fr.offsetWidth) top = fr.getBoundingClientRect().top;
+    if (fr && fr.offsetWidth) { top = fr.getBoundingClientRect().top; bot = fr.getBoundingClientRect().bottom; }
     if (top == null) {
       var t = card.querySelector('.card-title.hl-rect.rx');
       if (t) top = t.getBoundingClientRect().top + (parseFloat(getComputedStyle(t, '::before').top) || 0);
@@ -1526,7 +1526,14 @@
     var sec = a.closest('.latest-rail__in');
     try { window.dispatchEvent(new CustomEvent('newcritic:railgo', { detail: sec && sec.getAttribute('data-sec') })); } catch (er) {}
     var rule = parseFloat(getComputedStyle(document.querySelector('main') || document.body).getPropertyValue('--band-rule')) || 0;
-    window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - 54), behavior: 'smooth' });
+    // (the post's picture on the middle of the room between the head and the foot band since 2026-10-11 — "When I press
+    // on a post, I want it to be vertically centered in viewport": the same air over and under it, where it stood 54
+    // under the head; THE LINE IN THE FOOT BAND)
+    var mn = document.querySelector('main');
+    var fb = mn && mn.classList.contains('has-foot-band') && !mn.classList.contains('foot-band-top') ? (parseFloat(getComputedStyle(mn).getPropertyValue('--foot-band')) || 0) + rule : 0;
+    var room = window.innerHeight - fb - (foot + rule);
+    var air = bot != null && bot - top < room ? (room - (bot - top)) / 2 : 54;
+    window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - air), behavior: 'smooth' });
   });
 })();
 
