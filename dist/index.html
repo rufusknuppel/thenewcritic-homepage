@@ -10278,7 +10278,7 @@ window.__ncStripInk = function () {
   var BIRD_INK = '.band-logo__bird .band-logo__shield';
   var NAV_STACK = true;
   var BIRD_TUCK = 20;
-  var GAP_K = 1.21 * 1.15;
+  var GAP_K = 1.21 * 1.15 * 1.15;
   var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
   var navWords = function (st) {
@@ -10633,7 +10633,7 @@ window.__ncStripInk = function () {
     var theX = inkX('.band-logo__top svg path'), newX = inkX('.band-logo__mid svg path');
     var WORD_GAP = theX && newX ? newX.l - theX.r : 27;
     var tgtL = newX ? newX.r + WORD_GAP : null;
-    var BIRD_LAST = true;
+    var BIRD_LAST = false;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }

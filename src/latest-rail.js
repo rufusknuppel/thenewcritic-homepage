@@ -32,7 +32,8 @@
   // (and a tenth again — "Add another 10% to the gaps": 1.1 of the 1.1)
   // (and 15% on that — "increase gaps between words in wordmarks by 15% to lower height", 2026-10-11: 1.15 of the
   // 1.21, the name and the band lower by what the letters give up)
-  var GAP_K = 1.21 * 1.15;
+  // (and 15% again with the bird back between NEW and CRITIC — "expand gaps by 15%")
+  var GAP_K = 1.21 * 1.15 * 1.15;
   // (whether the band still shows its stack: from 1024 up it stands in the column since 2026-10-09)
   var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
@@ -607,8 +608,9 @@
     // (and after CRITIC again since 2026-10-10 — "move bird to the right of CRITIC": THE at the left's 20, the bird's
     // box at the right's, NEW and CRITIC evenly between, the three gaps one)
     // (and back between NEW and CRITIC 2026-10-10 — "Move bird back to between NEW and Critic")
-    // (and after CRITIC again since 2026-10-11 — "move the bird to the right of Critic")
-    var BIRD_LAST = true;
+    // (and after CRITIC again 2026-10-11 — "move the bird to the right of Critic"; then back between the same day —
+    // "Move bird back to between New and Critic and expand gaps by 15%")
+    var BIRD_LAST = false;
     if (BIRD_LAST) {
       var lowE0 = st.querySelector('.band-logo__low');
       if (lowE0) { lowE0.style.setProperty('margin-left', '0px', 'important'); lowE0.style.removeProperty('--low-shift'); }
