@@ -93,12 +93,15 @@
   // (and the band over the name since 2026-10-11 — "Move the bottom band on top of the wordmark": the line's band at
   // the window's top, its rule at its foot, the name's band under it, the two one head — --strip-settled — its
   // height the line's band, the rule, and the name with its air; THE LINE IN THE FOOT BAND, now at the head)
-  var FOOT_TOP = true;
+  // (back at the foot the same day — "Revert wordmark on top and nav band on bottom")
+  var FOOT_TOP = false;
   // (and the name in a band at the window's foot since 2026-10-11 — "Move wordmark to the bottom": the line's band
   // alone the head, --strip-settled; the name in its band at the foot, its air 20 over and under it, the band's rule
   // over it — its ground .foot-band, its height --foot-band; each of the name's and the bird's rises a calc on the
   // window's height, so a window grown taller needs no seating)
-  var NAME_FOOT = true;
+  // (and the name back at the head with the line's band at the foot the same day — "Revert wordmark on top and nav
+  // band on bottom")
+  var NAME_FOOT = false;
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
