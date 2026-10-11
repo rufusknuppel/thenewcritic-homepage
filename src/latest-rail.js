@@ -417,8 +417,9 @@
     // centered and centered under C": the dot's middle under the middle of the last C's ink, read off CRITIC's
     // outline — its subpath that starts furthest right — and on the middle of the line's capitals, which is the
     // middle of the air from the name's foot to the band's; style.css, THE DOT UNDER CRITIC'S LAST C)
+    // (under THE's E since — "move dot to under e of THE", 2026-10-11: the same, off THE's outline)
     var dot = run && run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)');
-    var lowPath = st.querySelector('.band-logo__low svg path');
+    var lowPath = st.querySelector('.band-logo__top svg path');
     var cm = lowPath && lowPath.getScreenCTM && lowPath.getScreenCTM();
     if (dot && cm) {
       var lastC = null;
@@ -443,7 +444,9 @@
     if (soc && cpy) {
       var rg = document.createRange(); rg.selectNodeContents(soc); var sR = rg.getBoundingClientRect().right;
       rg.selectNodeContents(cpy); var cL = rg.getBoundingClientRect().left;
-      main.classList.toggle('band-copy-colo', cL - sR < 20);
+      // (no longer: the copyright stands only in the opening since 2026-10-11, and fades as the band shuts — THE NAME
+      // OPENS BIG)
+      void cL; void sR; main.classList.remove('band-copy-colo');
     }
   };
   var seatColo = function () {
@@ -1600,7 +1603,16 @@
       pin(t, wordOf(c.contains('band-under--the') ? 'band-logo__top' : c.contains('band-under--new') ? 'band-logo__mid' : 'band-logo__low'));
     });
     // (the dot's middle, under the C's)
-    dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
+    dot.forEach(function (t) { var w = wordOf('band-logo__top'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
+    // (the copyright's end on CRITIC's last stroke, the opening's too; and it is the opening's alone — "Have copyright
+    // fade out on band collapse", 2026-10-11 — shown there where it clears the socials by 20, fading as the band
+    // shuts)
+    var cpy = null, soc = null;
+    under.forEach(function (t) {
+      var w = wordOf('band-logo__low');
+      if (t.el.classList.contains('band-under--critic')) soc = t;
+      if (w && t.el.classList.contains('band-under--copy')) { t.X = w.X + K * w.w - ((w.l + w.w) - t.l); cpy = t; }
+    });
     // (what is carried down by the growth: the band's container, the rows that can be in the window near the top, and
     // the column's words — each on its own, by its translate, which nothing else here uses: the rows' own transform
     // is their slide and the rules' their drawing. Not the page's container, with the copyright carried back inside
@@ -1611,7 +1623,7 @@
     var mb = document.querySelector('.page-rows > .movement > .movement-body');
     var sy0 = window.pageYOffset || 0, reach = window.innerHeight + 400;
     var shown = function (c) { var r = c.getBoundingClientRect(); return r.height > 0 && getComputedStyle(c).display !== 'none' && r.top + sy0 < reach; };
-    geo = { D: D, all: row.concat(under, dot),
+    geo = { D: D, all: row.concat(under, dot), fade: cpy && soc && cpy.X - (soc.X + soc.w) >= 20 ? cpy.el : null,
       page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail'))
         .concat(mb ? [].filter.call(mb.children, function (c) { return !c.classList.contains('latest-rail') && shown(c); }) : [])
         .concat(hold ? [].filter.call(hold.children, function (c) { return getComputedStyle(c).display !== 'none'; }) : []) };
@@ -1639,6 +1651,7 @@
       g.mv.forEach(function (m) { add(m, k0, k1); });
     });
     geo.page.forEach(function (el) { add(el, { translate: '0px ' + geo.D + 'px' }, { translate: '0px 0px' }); });
+    if (geo.fade) add(geo.fade, { opacity: 1 }, { opacity: 0 });
     anims.rev = rev;
     dir = r;
     if (!r || !anims.length) return;

@@ -2014,8 +2014,10 @@ function bandUnder() {
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="band-under__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(sep);
   // (each piece from its word's first stroke since — "Left align under each word"; the copyright stood at the
-  // line's end under CRITIC's last stroke for a day, then went to the column's foot — railCopy)
-  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span>`;
+  // line's end under CRITIC's last stroke for a day, then went to the column's foot — railCopy — and back under
+  // CRITIC's last C since 2026-10-11, "move copyright into nav band under final C of critic", its end on the C's
+  // last stroke; in the column's foot still where it would not clear the socials by 20 — latest-rail.js, seatUnder)
+  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">© The New Critic, Inc.</span>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);
