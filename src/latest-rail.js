@@ -26,6 +26,11 @@
   var NAV_STACK = true;
   // (the gaps either side of the bird, between NEW and CRITIC, this much short of the words' gap — seatLogo, bandGeo)
   var BIRD_TUCK = 20;
+  // (the gaps between the words and the bird a tenth wider since 2026-10-11 — "Add 10% more space between words in
+  // wordmark", "words and logo": the name that much smaller, THE and CRITIC still on the 20s, every gap 1.1 of what
+  // it was, the bird's tuck with them)
+  // (and a tenth again — "Add another 10% to the gaps": 1.1 of the 1.1)
+  var GAP_K = 1.21;
   // (whether the band still shows its stack: from 1024 up it stands in the column since 2026-10-09)
   var NAV_STACK_SHOWN = function (st) { return navStackW(st) > 0; };
   var navRightX = null;
@@ -74,7 +79,10 @@
   var logoW = -1;
   var wideLogo = window.matchMedia('(min-width: 1024px)');
   // (a tenth smaller again since 2026-10-10 — "Make wordmark 10% smaller": 0.9 of the 0.9)
-  var WM_SCALE = 0.81;
+  // (whole again since 2026-10-11 — "Keep top band always in expanded size": the name at the size it opened at, and
+  // THE NAME OPENS BIG, finding nothing to grow, stands down)
+  var WM_SCALE = 1;
+  var FOOT_BAND = true;
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
     if (window.__ncOpenClear) window.__ncOpenClear();
@@ -187,6 +195,20 @@
         if (sW > 0) coFs = (vw - 2 * 20 - sW) / (coSpan + (wmSp > 0 ? wmSp : 0.6226));
       }
       if (coFs) logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important');
+      // (no wider than leaves the bird 24 clear of NEW and of CRITIC, as the opening was held where the window is
+      // narrow — "Keep top band always in expanded size", 2026-10-11: the words' gaps the bird's and the tuck, the
+      // name's and the bird's widths read at this size, the bird as tall as the name's ink)
+      if (coFs && WM_SCALE === 1) {
+        var kF = inkY(), bbF = bird.getBoundingClientRect();
+        var wF = function (sel) { var l = Infinity, r = -Infinity; [].forEach.call(st.querySelectorAll(sel), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) { l = Math.min(l, qr.left); r = Math.max(r, qr.right); } }); return isFinite(l) ? r - l : 0; };
+        var W1 = wF('.band-logo__top svg path') + wF('.band-logo__mid svg path') + wF('.band-logo__low svg path') + (bbF.height ? bbF.width / bbF.height : 0.9) * 1.03 * (kF.b - kF.t);
+        var room = (vw - 40) - BIRD_TUCK - 3 * 24;
+        var fK = W1 > room && W1 > 0 ? room / W1 : 1;
+        // (and the gaps GAP_K of what they come to at that size: the room the name gives up theirs)
+        var gS = (vw - 40) - W1 * fK;
+        if (W1 > 0 && gS > 0) fK *= (W1 * fK - (GAP_K - 1) * gS) / (W1 * fK);
+        if (fK !== 1) { coFs *= fK; logoEl.style.setProperty('font-size', coFs.toFixed(2) + 'px', 'important'); }
+      }
       // (the grid's gap the drawing's word space since the name took it — 0.6226, the colophon's, before — and the
       // name at its own width, so no word is squeezed when it runs wide)
       logoEl.style.setProperty('column-gap', (wmSp > 0 ? wmSp : 0.6226) + 'em', 'important');
@@ -268,7 +290,10 @@
     // (and the line under the name — THE LINE UNDER THE NAME, 2026-10-10: The Last Magazine's capitals AIR under the
     // name's ink, the band AIR under the line's baseline; seatUnder sets the line)
     var undT = st.querySelector('.band-under--the > *');
-    if (undT && undT.offsetWidth) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
+    if (undT && undT.offsetWidth && !FOOT_BAND) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
+    // (the line gone to the band at the window's foot since — THE LINE IN THE FOOT BAND, seatUnder: the name AIR from
+    // the band's top and foot)
+    if (FOOT_BAND) H = Math.round(2 * AIR + wmH);
     main.style.setProperty('--strip-settled', H + 'px', 'important');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
@@ -388,12 +413,37 @@
     if (!run || !words.the || !words.new || !words.critic || !c0) return;
     var foot = Math.max(words.the.b, words.new.b, words.critic.b);
     var base = foot + 20 + (c0.base - c0.cap);
+    // THE LINE IN THE FOOT BAND (2026-10-11, at the user's words — "Move the nav line to a bottom band that stretches
+    // edge to edge with 20px above and below"): the line's capitals 20 under the foot band's top, its baseline 20 over
+    // the window's foot, each piece where it stood across the window; the band as tall as that (--foot-band; its
+    // ground and rule, .foot-band, style.css THE LINE IN THE FOOT BAND). Held to the window's foot by the strip, which
+    // stands at the window's top: each top a calc on the window's height, so a window grown taller needs no seating
+    var vh = window.innerHeight, capH = c0.base - c0.cap;
+    if (FOOT_BAND) {
+      base = st.getBoundingClientRect().top + vh - 20;
+      main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
+      main.classList.add('has-foot-band');
+      [].forEach.call(items, function (u) { u.style.setProperty('top', '0px', 'important'); });
+    }
     var rr = run.getBoundingClientRect();
     var probe = function (el) {
       var pr = document.createElement('span');
       pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
       el.appendChild(pr); var y = pr.getBoundingClientRect().top; el.removeChild(pr); return y;
     };
+    // (across the foot band since — "Align the last magazine with the margin on the copyright, move dot to the center,
+    // and space out elements evenly within bottom band", 2026-10-11: The Last Magazine from the window's 20, the
+    // copyright to its 20 from the right, the dot on the window's middle, and the list and the socials each evenly
+    // between its neighbours, the same air either side)
+    var fbX = null;
+    if (FOOT_BAND) {
+      var vwF = document.documentElement.clientWidth, txw = function (el) { if (!el) return 0; var g = document.createRange(); g.selectNodeContents(el); return g.getBoundingClientRect().width; };
+      var dotF = run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)'), dW = dotF ? dotF.getBoundingClientRect().width : 0;
+      var wT = txw(st.querySelector('.sub-ticker-run > .band-under--the')), wN = txw(st.querySelector('.sub-ticker-run > .band-under--new'));
+      var wS = txw(st.querySelector('.sub-ticker-run > .band-under--critic')), wC = txw(st.querySelector('.sub-ticker-run > .band-under--copy'));
+      var dL = vwF / 2 - dW / 2, dR = vwF / 2 + dW / 2;
+      fbX = { the: 20, new: (20 + wT + dL - wN) / 2, critic: (dR + (vwF - 20 - wC) - wS) / 2, copy: vwF - 20 - wC, mid: vwF / 2 };
+    }
     [].forEach.call(items, function (u) {
       var key = u.classList.contains('band-under--the') ? 'the' : u.classList.contains('band-under--new') ? 'new' : 'critic';
       var w = words[key], ur = u.getBoundingClientRect();
@@ -407,10 +457,11 @@
       var x0 = w.l;
       if (key === 'the') { var sx = stemOfT(st.querySelector('.band-logo__top svg path')); if (sx != null) x0 = sx; }
       var left = (parseFloat(u.style.getPropertyValue('left')) || 0) + (right ? w.r - tb.right : x0 - tb.left);
+      if (fbX) left = (parseFloat(u.style.getPropertyValue('left')) || 0) + ((right ? fbX.copy : fbX[key]) - tb.left);
       void ur;
       var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + (base - probe(u));
       u.style.setProperty('left', left.toFixed(2) + 'px', 'important');
-      u.style.setProperty('top', top.toFixed(2) + 'px', 'important');
+      u.style.setProperty('top', FOOT_BAND ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
     });
     void rr;
     // (THE DOT UNDER CRITIC'S LAST C, 2026-10-11 — "Move the theme dot under the final C in the nav bar vertically
@@ -433,10 +484,10 @@
         var cx = cm.a * lastC[1] + cm.e;
         var cy = base - (c0.base - c0.cap) / 2;
         var dr = dot.getBoundingClientRect(), ds = getComputedStyle(dot);
-        var dl = (parseFloat(ds.left) || 0) + (cx - dr.right);
+        var dl = (parseFloat(ds.left) || 0) + (fbX ? fbX.mid - (dr.left + dr.width / 2) : cx - dr.right);
         var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
         st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
-        st.style.setProperty('--dot-t', dt.toFixed(2) + 'px');
+        st.style.setProperty('--dot-t', FOOT_BAND ? 'calc(100svh + ' + (dt - vh).toFixed(2) + 'px)' : dt.toFixed(2) + 'px');
       }
     }
     // (the copyright under CRITIC only where it clears the socials by 20 — "Copyright to colophon" where it does
@@ -448,6 +499,8 @@
       // (no longer: the copyright stands only in the opening since 2026-10-11, and fades as the band shuts — THE NAME
       // OPENS BIG)
       void cL; void sR; main.classList.remove('band-copy-colo');
+      // (in the foot band, standing always, only where it clears the socials by 20 — THE LINE IN THE FOOT BAND)
+      if (FOOT_BAND) cpy.style.setProperty('visibility', cL - sR >= 20 ? 'visible' : 'hidden', 'important');
     }
   };
   var seatColo = function () {
@@ -645,7 +698,8 @@
       var midOut = st.querySelector('.band-logo__mid'), oT2 = outX('.band-logo__top svg path'), oC2 = outX('.band-logo__low svg path'), oN = outX('.band-logo__mid svg path'), oB = birdInk.getBoundingClientRect();
       if (!BIRD_LAST && midOut && oT2 && oC2 && oN && oB.width) {
         // (THE to NEW the words' gap, NEW to the bird and the bird to CRITIC BIRD_TUCK short of it)
-        var gW = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width + 2 * BIRD_TUCK) / 3, gB = gW - BIRD_TUCK;
+        var tuck = BIRD_TUCK * (WM_SCALE === 1 ? GAP_K : 1);
+        var gW = (oC2.l - oT2.r - (oN.r - oN.l) - oB.width + 2 * tuck) / 3, gB = gW - tuck;
         midOut.style.setProperty('translate', (oT2.r + gW - oN.l).toFixed(2) + 'px 0px', 'important');
         // (read from where the bird stands unslid, as with the bird last: through the column's slide its translate
         // is on its way — "Bird is moving with column collapse")
@@ -916,7 +970,9 @@
     if (!spans.length) return;
     var strip = document.querySelector('.sub-ticker--top');
     var band = strip ? Math.max(0, strip.getBoundingClientRect().bottom) : 0;
-    var y = (window.pageYOffset || 0) + band + (window.innerHeight - band) / 2;
+    // (the window less the foot band too — THE LINE IN THE FOOT BAND)
+    var fb = parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0;
+    var y = (window.pageYOffset || 0) + band + (window.innerHeight - fb - band) / 2;
     var best = null, bestD = Infinity;
     spans.forEach(function (sp) {
       var d = y < sp.t ? sp.t - y : y > sp.b ? y - sp.b : 0;

@@ -3607,7 +3607,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pass under this one the way the wordmark does.
   const openMovement = (m) => {
     const head = m === 'latest'
-      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="sub-ticker-run">${bandLogoHtml()}${themeChip()}${bandUnder()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
+      ? `\n  ${renderSectionBand(m, { home: true })}\n  <div class="head-rail"><div class="rail-stack"><a class="wm-stack" href="#top" aria-label="The New Critic — to the top of the front page">${BIRD_STAMP}</a></div><div class="rail-line" aria-hidden="true"></div>${navStrip().replace('sub-ticker--foot sub-ticker--pin', 'sub-ticker--top').replace('<span class="sub-ticker-run">', `<span class="foot-band" aria-hidden="true"></span><span class="sub-ticker-run">${bandLogoHtml()}${themeChip()}${bandUnder()}`)}</div>\n  <div class="head-field" aria-hidden="true"></div>\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">\n${renderHeader()}`
       : `\n  <div class="movement m--${m}${ON_MARK.includes(m) ? ' on-mark' : ''}">`;
     // THE LATEST, over the first row (2026-09-23): the section's name in
     // the body's Garamond, seated by the fitter (seatRowGaps) 36 under the

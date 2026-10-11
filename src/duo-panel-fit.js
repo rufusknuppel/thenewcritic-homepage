@@ -8161,6 +8161,9 @@
         });
       }
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
+      // (and the foot band's height and its rule over that, the last picture 54 over the band at the window's foot —
+      // THE LINE IN THE FOOT BAND, latest-rail.js)
+      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb) edgeGap += (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
       // (over the page's end the rows' foot may want less than no padding —
       // the last row's box runs a few pixels past the painted frame — so
       // there the rest is taken from the last row's wrap, a margin under it:
