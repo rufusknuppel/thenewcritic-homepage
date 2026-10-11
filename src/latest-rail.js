@@ -449,7 +449,8 @@
       // (the dot after the socials since — "Move the theme dot to the other side of socials", 2026-10-11: the five
       // evenly from the 20 to the 20, every gap one)
       var gF = (vwF - 40 - wT - wN - wS - dW - wC) / 4;
-      var xN = 20 + wT + gF, xS = xN + wN + gF, xD = xS + wS + gF;
+      // (between the nav's items and the socials since — "move the dot between nav items and socials", the same day)
+      var xN = 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
       fbX = { the: 20, new: xN, critic: xS, copy: vwF - 20 - wC, mid: xD + dW / 2 };
     }
     [].forEach.call(items, function (u) {

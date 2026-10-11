@@ -10522,7 +10522,7 @@ window.__ncStripInk = function () {
       var wT = txw(st.querySelector('.sub-ticker-run > .band-under--the')), wN = txw(st.querySelector('.sub-ticker-run > .band-under--new'));
       var wS = txw(st.querySelector('.sub-ticker-run > .band-under--critic')), wC = txw(st.querySelector('.sub-ticker-run > .band-under--copy'));
       var gF = (vwF - 40 - wT - wN - wS - dW - wC) / 4;
-      var xN = 20 + wT + gF, xS = xN + wN + gF, xD = xS + wS + gF;
+      var xN = 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
       fbX = { the: 20, new: xN, critic: xS, copy: vwF - 20 - wC, mid: xD + dW / 2 };
     }
     [].forEach.call(items, function (u) {
