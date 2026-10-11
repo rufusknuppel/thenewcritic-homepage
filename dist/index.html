@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=169b4fd2">
+<link rel="stylesheet" href="style.css?v=d5f81033">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10503,6 +10503,26 @@ window.__ncStripInk = function () {
       u.style.setProperty('top', top.toFixed(2) + 'px', 'important');
     });
     void rr;
+    var dot = run && run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)');
+    var lowPath = st.querySelector('.band-logo__low svg path');
+    var cm = lowPath && lowPath.getScreenCTM && lowPath.getScreenCTM();
+    if (dot && cm) {
+      var lastC = null;
+      ((lowPath.getAttribute('d') || '').match(/M[^M]*/g) || []).forEach(function (sp) {
+        var n = sp.match(/-?\d*\.?\d+(?:e-?\d+)?/gi) || [], lo = Infinity, hi = -Infinity;
+        for (var k = 0; k < n.length; k += 2) { var x = +n[k]; if (x < lo) lo = x; if (x > hi) hi = x; }
+        if (!lastC || lo > lastC[0]) lastC = [lo, hi];
+      });
+      if (lastC) {
+        var cx = cm.a * (lastC[0] + lastC[1]) / 2 + cm.e;
+        var cy = base - (c0.base - c0.cap) / 2;
+        var dr = dot.getBoundingClientRect(), ds = getComputedStyle(dot);
+        var dl = (parseFloat(ds.left) || 0) + (cx - (dr.left + dr.width / 2));
+        var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
+        st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
+        st.style.setProperty('--dot-t', dt.toFixed(2) + 'px');
+      }
+    }
     var soc = st.querySelector('.sub-ticker-run > .band-under--critic'), cpy = st.querySelector('.sub-ticker-run > .band-under--copy');
     if (soc && cpy) {
       var rg = document.createRange(); rg.selectNodeContents(soc); var sR = rg.getBoundingClientRect().right;

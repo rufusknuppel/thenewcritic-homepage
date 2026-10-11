@@ -412,6 +412,30 @@
       u.style.setProperty('top', top.toFixed(2) + 'px', 'important');
     });
     void rr;
+    // (THE DOT UNDER CRITIC'S LAST C, 2026-10-11 — "Move the theme dot under the final C in the nav bar vertically
+    // centered and centered under C": the dot's middle under the middle of the last C's ink, read off CRITIC's
+    // outline — its subpath that starts furthest right — and on the middle of the line's capitals, which is the
+    // middle of the air from the name's foot to the band's; style.css, THE DOT UNDER CRITIC'S LAST C)
+    var dot = run && run.querySelector(':scope > .theme-toggle.chip-dot:not(.chip-dot--rail)');
+    var lowPath = st.querySelector('.band-logo__low svg path');
+    var cm = lowPath && lowPath.getScreenCTM && lowPath.getScreenCTM();
+    if (dot && cm) {
+      var lastC = null;
+      ((lowPath.getAttribute('d') || '').match(/M[^M]*/g) || []).forEach(function (sp) {
+        var n = sp.match(/-?\d*\.?\d+(?:e-?\d+)?/gi) || [], lo = Infinity, hi = -Infinity;
+        for (var k = 0; k < n.length; k += 2) { var x = +n[k]; if (x < lo) lo = x; if (x > hi) hi = x; }
+        if (!lastC || lo > lastC[0]) lastC = [lo, hi];
+      });
+      if (lastC) {
+        var cx = cm.a * (lastC[0] + lastC[1]) / 2 + cm.e;
+        var cy = base - (c0.base - c0.cap) / 2;
+        var dr = dot.getBoundingClientRect(), ds = getComputedStyle(dot);
+        var dl = (parseFloat(ds.left) || 0) + (cx - (dr.left + dr.width / 2));
+        var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
+        st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
+        st.style.setProperty('--dot-t', dt.toFixed(2) + 'px');
+      }
+    }
     // (the copyright under CRITIC only where it clears the socials by 20 — "Copyright to colophon" where it does
     // not: back in the colophon's box under Est.; style.css, main.band-copy-colo)
     var soc = st.querySelector('.sub-ticker-run > .band-under--critic'), cpy = st.querySelector('.sub-ticker-run > .band-under--copy');
