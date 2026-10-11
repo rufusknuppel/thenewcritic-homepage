@@ -1601,10 +1601,19 @@
     });
     // (the dot's middle, under the C's)
     dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
+    // (what is carried down by the growth: the band's container, the rows that can be in the window near the top, and
+    // the column's words — each on its own, by its translate, which nothing else here uses: the rows' own transform
+    // is their slide and the rules' their drawing. Not the page's container, with the copyright carried back inside
+    // it: two moves against each other, each set on whole pixels apart, and the copyright shook — "only thing that
+    // wobbles on expansion is the copyright", 2026-10-11. It stands still now, at the window's foot)
     var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
+    var mb = document.querySelector('.page-rows > .movement > .movement-body');
+    var sy0 = window.pageYOffset || 0, reach = window.innerHeight + 400;
+    var shown = function (c) { var r = c.getBoundingClientRect(); return r.height > 0 && getComputedStyle(c).display !== 'none' && r.top + sy0 < reach; };
     geo = { D: D, all: row.concat(under, dot),
-      page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement')),
-      copy: hold ? [].slice.call(hold.querySelectorAll(':scope > .rail-copy')) : [] };
+      page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail'))
+        .concat(mb ? [].filter.call(mb.children, function (c) { return !c.classList.contains('latest-rail') && shown(c); }) : [])
+        .concat(hold ? [].filter.call(hold.children, function (c) { return !c.classList.contains('rail-copy') && getComputedStyle(c).display !== 'none'; }) : []) };
     // (the band's own ground and its rule at its foot: the band's ground and rule are painted by the first movement's
     // sticky cover, its ::before, held at the window's top by the sheet's !important — the band's ground hides that
     // rule and draws its own where the band ends, the same where it settles; and its container over the rows, which
@@ -1617,21 +1626,25 @@
   var start = function (t, r) {
     drop();
     if (!geo) return;
+    // (opening runs forward too, on keyframes from the settled band to the opening: run backward from a set start,
+    // the browser's own drawing of it went its own way — the band open at once, then back — "Expansion still broken.
+    // Everything moves together on collapse, not so on expansion. Sometimes glitches too", 2026-10-11)
+    var rev = r < 0, c = rev ? dur() - t : t;
     var opt = { duration: dur(), easing: EASE, fill: 'both' };
-    var add = function (el, kf) { var a = el.animate(kf, opt); a.pause(); a.currentTime = t; anims.push(a); };
+    var add = function (el, a0, a1) { var a = el.animate(rev ? [a1, a0] : [a0, a1], opt); a.pause(); a.currentTime = c; anims.push(a); };
     geo.all.forEach(function (g) {
       var prop = g.tr ? 'translate' : 'transform', k0 = {}, k1 = {};
       k0[prop] = tfAt(g, 0); k1[prop] = tfAt(g, 1);
-      g.mv.forEach(function (m) { add(m, [k0, k1]); });
+      g.mv.forEach(function (m) { add(m, k0, k1); });
     });
-    geo.page.forEach(function (el) { add(el, [{ transform: 'translateY(' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
-    geo.copy.forEach(function (el) { add(el, [{ transform: 'translateY(-' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
+    geo.page.forEach(function (el) { add(el, { translate: '0px ' + geo.D + 'px' }, { translate: '0px 0px' }); });
+    anims.rev = rev;
     dir = r;
     if (!r || !anims.length) return;
-    // (running from t at once, all on one start: a fresh play() waits a frame to begin, and restarted every time the
+    // (running from c at once, all on one start: a fresh play() waits a frame to begin, and restarted every time the
     // band is read it would stand still)
     var t0 = document.timeline.currentTime;
-    anims.forEach(function (a) { a.playbackRate = r; a.startTime = t0 - t / r; });
+    anims.forEach(function (a) { a.startTime = t0 - c; });
     var mine = anims;
     anims[0].onfinish = function () {
       if (anims !== mine) return;
@@ -1640,8 +1653,12 @@
       dir = 0;
     };
   };
-  // (where the name stands now: the time on the animations, which way they run)
-  var now = function () { return anims.length ? { t: anims[0].currentTime || 0, r: dir } : null; };
+  // (where the name stands now — the time from the opening toward the settled band — and which way it runs)
+  var now = function () {
+    if (!anims.length) return null;
+    var c = anims[0].currentTime || 0;
+    return { t: anims.rev ? dur() - c : c, r: dir };
+  };
   window.__ncOpenBusy = function () { return anims.length > 0; };
   // (anything that reads the band — seatLogo, bandGeo, the column's edge — reads it with nothing carried: the opening
   // stands down for the reading and comes back where it stood, at the same time, before the page is drawn again;

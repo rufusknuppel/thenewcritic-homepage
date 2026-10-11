@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4f7ec21d">
+<link rel="stylesheet" href="style.css?v=0396fbf8">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -5615,6 +5615,7 @@
     try { window.dispatchEvent(new Event('newcritic:fitdone')); } catch (e) {}
   }
   function fitAllSteps() {
+    if (window.__ncOpenClear) window.__ncOpenClear();
     var seatLast = true;
     if (window.__ncPullClear && !rowKAgain) window.__ncPullClear();
     step('resetPlateBody', resetPlateBody);
@@ -11258,27 +11259,32 @@ window.__ncStripInk = function () {
     });
     dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
     var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
+    var mb = document.querySelector('.page-rows > .movement > .movement-body');
+    var sy0 = window.pageYOffset || 0, reach = window.innerHeight + 400;
+    var shown = function (c) { var r = c.getBoundingClientRect(); return r.height > 0 && getComputedStyle(c).display !== 'none' && r.top + sy0 < reach; };
     geo = { D: D, all: row.concat(under, dot),
-      page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement')),
-      copy: hold ? [].slice.call(hold.querySelectorAll(':scope > .rail-copy')) : [] };
+      page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail'))
+        .concat(mb ? [].filter.call(mb.children, function (c) { return !c.classList.contains('latest-rail') && shown(c); }) : [])
+        .concat(hold ? [].filter.call(hold.children, function (c) { return !c.classList.contains('rail-copy') && getComputedStyle(c).display !== 'none'; }) : []) };
     main.classList.add('nc-opening');
   };
   var start = function (t, r) {
     drop();
     if (!geo) return;
+    var rev = r < 0, c = rev ? dur() - t : t;
     var opt = { duration: dur(), easing: EASE, fill: 'both' };
-    var add = function (el, kf) { var a = el.animate(kf, opt); a.pause(); a.currentTime = t; anims.push(a); };
+    var add = function (el, a0, a1) { var a = el.animate(rev ? [a1, a0] : [a0, a1], opt); a.pause(); a.currentTime = c; anims.push(a); };
     geo.all.forEach(function (g) {
       var prop = g.tr ? 'translate' : 'transform', k0 = {}, k1 = {};
       k0[prop] = tfAt(g, 0); k1[prop] = tfAt(g, 1);
-      g.mv.forEach(function (m) { add(m, [k0, k1]); });
+      g.mv.forEach(function (m) { add(m, k0, k1); });
     });
-    geo.page.forEach(function (el) { add(el, [{ transform: 'translateY(' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
-    geo.copy.forEach(function (el) { add(el, [{ transform: 'translateY(-' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
+    geo.page.forEach(function (el) { add(el, { translate: '0px ' + geo.D + 'px' }, { translate: '0px 0px' }); });
+    anims.rev = rev;
     dir = r;
     if (!r || !anims.length) return;
     var t0 = document.timeline.currentTime;
-    anims.forEach(function (a) { a.playbackRate = r; a.startTime = t0 - t / r; });
+    anims.forEach(function (a) { a.startTime = t0 - c; });
     var mine = anims;
     anims[0].onfinish = function () {
       if (anims !== mine) return;
@@ -11286,7 +11292,11 @@ window.__ncStripInk = function () {
       dir = 0;
     };
   };
-  var now = function () { return anims.length ? { t: anims[0].currentTime || 0, r: dir } : null; };
+  var now = function () {
+    if (!anims.length) return null;
+    var c = anims[0].currentTime || 0;
+    return { t: anims.rev ? dur() - c : c, r: dir };
+  };
   window.__ncOpenBusy = function () { return anims.length > 0; };
   var back = null;
   window.__ncOpenClear = function () {

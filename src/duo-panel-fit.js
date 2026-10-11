@@ -7091,6 +7091,10 @@
     try { window.dispatchEvent(new Event('newcritic:fitdone')); } catch (e) {}
   }
   function fitAllSteps() {
+    // (read with nothing carried: the name's opening carries the band, the first rows and the column's words down by a
+    // translate of their own, and stands down for the pass, coming back once it is done — latest-rail.js, THE NAME
+    // OPENS BIG; read carried, the rows were seated a growth's height higher)
+    if (window.__ncOpenClear) window.__ncOpenClear();
     // THE BLOCKS ARE SEATED ON EVERY PAGE, and last. It hung off
     // fitSubscribeLines, which is a step about the offer's own lines
     // and does not run where there is no offer — so the archive's band
