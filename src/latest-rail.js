@@ -77,6 +77,7 @@
   var WM_SCALE = 0.81;
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
+    if (window.__ncOpenClear) window.__ncOpenClear();
     var vw = document.documentElement.clientWidth;
     if (!st || !main || vw === logoW) return;
     logoW = vw;
@@ -476,6 +477,7 @@
   var bandCtx = null;
   var RAIL_NAME_CAPS = 13.1338;
   var bandGeo = function (st) {
+    if (window.__ncOpenClear) window.__ncOpenClear();
     if (!st) return null;
     seatLogo(st);
     var run = st.querySelector(':scope > .sub-ticker-run');
@@ -1274,6 +1276,7 @@
     try { measure0(); } finally { measuring = false; }
   };
   var measure0 = function () {
+    if (window.__ncOpenClear) window.__ncOpenClear();
     // (read with the band's words at rest, not spread for the colophon)
     var p0 = strip.style.getPropertyValue('--colo-p');
     if (p0) { strip.style.setProperty('--colo-p', '0'); void strip.offsetWidth; }
@@ -1503,4 +1506,125 @@
   put();
   if (window.ResizeObserver) new ResizeObserver(put).observe(box);
   else addEventListener('resize', put, { passive: true });
+})();
+
+// THE NAME OPENS BIG (2026-10-11, at the user's words — "I like the current size of the wordmark but on initial load I
+// want the wordmark logo to load bigger, like it used to full width across then each element shrinks with scroll,
+// pulling up the content and the latest column and settling as is now"): from 1024 up the page opens with the name at
+// its old full size (1 / WM_SCALE of the settled), THE, NEW, the bird and CRITIC spread evenly across the band's span
+// (THE's first stroke to CRITIC's last, the settled 20s), the line under the name and the dot on the big name's foot.
+// The page's lift is that much less (--open-d, the name's growth in height; style.css, THE NAME OPENS BIG), so the
+// band, the rows and the column all stand lower by it, and the first --open-d of scroll carries them up a pixel for a
+// pixel while each piece shrinks and slides, straight, to where it settles. Drawn by a transform over the settled
+// layout, so everything that reads the band (seatLogo, bandGeo, the column's edge) clears it first (__ncOpenClear).
+(function () {
+  var main = document.querySelector('main.has-mega.wm-banded');
+  var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+  if (!main || !st) return;
+  var wide = window.matchMedia('(min-width: 1024px)');
+  var MIN_GAP = 24;
+  var geo = null, applied = false, raf = 0, dirty = true;
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var els = function () {
+    var q = function (sel) { return [].slice.call(st.querySelectorAll(sel)).filter(function (e) { return e.getBoundingClientRect().width > 0; }); };
+    return { row: q('.band-logo__top, .band-logo__mid, .band-logo__low, .band-logo__bird'),
+      under: q('.sub-ticker-run > .band-under'), dot: q('.sub-ticker-run > .theme-toggle.chip-dot:not(.chip-dot--rail)') };
+  };
+  var clear = function () {
+    if (!geo) return;
+    geo.all.forEach(function (t) { t.el.style.removeProperty('transform'); });
+    geo.col.forEach(function (el) { el.style.removeProperty('transform'); });
+    main.classList.remove('nc-opening');
+    applied = false;
+  };
+  window.__ncOpenClear = function () {
+    if (applied) clear();
+    dirty = true;
+    if (!raf) raf = requestAnimationFrame(tick);
+  };
+  var setD = function (d) {
+    var v = d > 0 ? d + 'px' : '';
+    if (main.style.getPropertyValue('--open-d') !== v) { if (v) main.style.setProperty('--open-d', v); else main.style.removeProperty('--open-d'); }
+  };
+  var measure = function () {
+    dirty = false;
+    if (geo) clear();
+    geo = null;
+    if (!wide.matches) { setD(0); return; }
+    var E = els();
+    if (E.row.length < 2) { setD(0); return; }
+    var bt = st.getBoundingClientRect().top;
+    // (each piece read where it settles, and how a transform of its own moves it: the point a scale holds still and
+    // what a pixel of translate comes to on the page — the bird is scaled by its own --bird-s)
+    var read = function (el) {
+      var R = el.getBoundingClientRect(), m0 = getComputedStyle(el).transform;
+      var base = m0 && m0 !== 'none' ? ' ' + m0 : '';
+      el.style.setProperty('transform', 'scale(2)' + base, 'important');
+      var R2 = el.getBoundingClientRect();
+      el.style.setProperty('transform', 'translate(100px, 100px)' + base, 'important');
+      var R3 = el.getBoundingClientRect();
+      el.style.removeProperty('transform');
+      return { el: el, base: base, l: R.left, t: R.top - bt, w: R.width, h: R.height,
+        ox: 2 * R.left - R2.left, oy: 2 * (R.top - bt) - (R2.top - bt), sx: (R3.left - R.left) / 100 || 1, sy: (R3.top - R.top) / 100 || 1 };
+    };
+    var row = E.row.map(read).sort(function (a, b) { return a.l - b.l; });
+    var under = E.under.map(read), dot = E.dot.map(read);
+    var words = row.filter(function (t) { return !t.el.classList.contains('band-logo__bird'); });
+    var y0 = Math.min.apply(null, words.map(function (t) { return t.t; }));
+    var wmH = Math.max.apply(null, words.map(function (t) { return t.t + t.h; })) - y0;
+    var span = row[row.length - 1].l + row[row.length - 1].w - row[0].l;
+    var W = row.reduce(function (a, t) { return a + t.w; }, 0), n = row.length;
+    var K = 1 / (window.__ncWmScale || 0.9);
+    if ((span - K * W) / (n - 1) < MIN_GAP) K = (span - MIN_GAP * (n - 1)) / W;
+    if (!(K > 1.001) || !(wmH > 0)) { setD(0); return; }
+    var G = (span - K * W) / (n - 1);
+    var D = Math.round((K - 1) * wmH);
+    // (the opening in the band's own frame, the band standing D down the window: the name from the window's 20)
+    var x = row[0].l;
+    row.forEach(function (t) { t.X = x; t.Y = (y0 - D) + K * (t.t - y0); t.k0 = K; x += K * t.w + G; });
+    var wordOf = function (cls) { return row.filter(function (t) { return t.el.classList.contains(cls); })[0]; };
+    var pin = function (t, w) { t.k0 = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l - w.l) : t.l; };
+    under.forEach(function (t) {
+      var c = t.el.classList;
+      pin(t, wordOf(c.contains('band-under--the') ? 'band-logo__top' : c.contains('band-under--new') ? 'band-logo__mid' : 'band-logo__low'));
+    });
+    // (the dot's middle, under the C's)
+    dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
+    // (the column's sticky hold carried down with the band, the rest of the opening's growth, so its words come up a
+    // pixel for a pixel with the rows; the copyright at its foot carried back, so it stays 20 over the window's)
+    var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
+    var col = hold ? [hold].concat([].slice.call(hold.querySelectorAll(':scope > .rail-copy'))) : [];
+    geo = { D: D, all: row.concat(under, dot), col: col };
+    setD(D);
+  };
+  var draw = function () {
+    if (!geo) return;
+    var p = clamp((window.pageYOffset || 0) / geo.D, 0, 1);
+    if (p >= 1) { if (applied) clear(); return; }
+    geo.all.forEach(function (t) {
+      var k = t.k0 + (1 - t.k0) * p;
+      var X = t.X + (t.l - t.X) * p, Y = t.Y + (t.t - t.Y) * p;
+      var ax = (X - (t.ox + k * (t.l - t.ox))) / t.sx, ay = (Y - (t.oy + k * (t.t - t.oy))) / t.sy;
+      t.el.style.setProperty('transform', 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')' + t.base, 'important');
+    });
+    var off = geo.D * (1 - p);
+    // (and the band's own ground and its rule at its foot while it opens: the band's ground and rule are painted by the
+    // first movement's sticky cover, its ::before, held at the window's top by the sheet's !important — the band's
+    // ground hides that rule and draws its own where the band ends; style.css, THE NAME OPENS BIG)
+    if (!main.classList.contains('nc-opening')) main.classList.add('nc-opening');
+    geo.col.forEach(function (el, i) { el.style.setProperty('transform', 'translateY(' + (i ? -off : off).toFixed(2) + 'px)', 'important'); });
+    applied = true;
+  };
+  var tick = function () {
+    raf = 0;
+    if (dirty) measure();
+    draw();
+  };
+  var ask = function () { if (!raf) raf = requestAnimationFrame(tick); };
+  // (and on a timer too, should no frame come — a tab drawn in the background runs none)
+  var redo = function () { dirty = true; ask(); setTimeout(function () { if (dirty) tick(); }, 150); };
+  addEventListener('scroll', ask, { passive: true });
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, redo, { passive: true }); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(redo);
+  redo();
 })();
