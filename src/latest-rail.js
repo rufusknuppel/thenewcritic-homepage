@@ -1226,7 +1226,9 @@
   addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () { ticking = false; gauge(); light(); band(); });
+    // (not the band while the name stands open or is shutting — THE NAME OPENS BIG: its pieces are carried by
+    // animations, and nothing moves them under the scroll)
+    requestAnimationFrame(function () { ticking = false; gauge(); light(); if (!(window.__ncOpenBusy && window.__ncOpenBusy())) band(); });
   }, { passive: true });
   addEventListener('newcritic:railshut', function () { band.seatLead = true; band(); });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
@@ -1517,61 +1519,64 @@
 // band, the rows and the column all stand lower by it, and the first --open-d of scroll carries them up a pixel for a
 // pixel while each piece shrinks and slides, straight, to where it settles. Drawn by a transform over the settled
 // layout, so everything that reads the band (seatLogo, bandGeo, the column's edge) clears it first (__ncOpenClear).
+// (A TRIGGER, NOT A SCRUB, since — "I want to try something else, a trigger in the scroll that collapses the top
+// band", 2026-10-11, after the shrink drawn with the scroll read wobbly: the page opens with the name big; the first
+// scroll down collapses the band on its own clock, 0.6 on the column's ease, the rows and the column coming up with
+// it; back at the very top it opens again. The page's lift is the settled one throughout: at the opening the band, the
+// rows and the column are carried down by the name's growth, by a transform, and the collapse takes it away — every
+// move an animation the browser runs, none drawn by the script.)
 (function () {
   var main = document.querySelector('main.has-mega.wm-banded');
   var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-  if (!main || !st) return;
+  if (!main || !st || !document.body.animate) return;
   var wide = window.matchMedia('(min-width: 1024px)');
-  var MIN_GAP = 24;
-  // (over this much scroll since — "Can you make shrink slower?", 2026-10-11: the name shrinks over 300 of scroll, not
-  // its own growth's 31, and the page rises only by that growth meanwhile — the band, the rows and the column carried
-  // back by the rest, so nothing slides under the band — then scrolls as ever)
-  var RUN = 300;
-  var geo = null, applied = false, raf = 0, dirty = true;
-  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var MIN_GAP = 24, DUR = 600, EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
+  // (geo: the pieces and the opening, read with the band as it settles; anims: the animations while the name stands
+  // open or is on its way — none once it has shut; stale: the band moved since it was read)
+  var geo = null, anims = [], stale = true, dir = 0;
+  var dur = function () { return still.matches ? 1 : DUR; };
   var els = function () {
     var q = function (sel) { return [].slice.call(st.querySelectorAll(sel)).filter(function (e) { return e.getBoundingClientRect().width > 0; }); };
     return { row: q('.band-logo__top, .band-logo__mid, .band-logo__low, .band-logo__bird'),
       under: q('.sub-ticker-run > .band-under'), dot: q('.sub-ticker-run > .theme-toggle.chip-dot:not(.chip-dot--rail)') };
   };
-  var clear = function () {
-    if (!geo) return;
-    geo.all.forEach(function (t) { t.el.style.removeProperty('transform'); });
-    geo.col.forEach(function (el) { el.style.removeProperty('transform'); });
-    geo.page.forEach(function (el) { el.style.removeProperty('transform'); el.style.removeProperty('z-index'); });
-    geo.T = 0;
-    main.classList.remove('nc-opening');
-    applied = false;
+  var drop = function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); anims = []; };
+  // (a piece's move at p of the way from the opening to where it settles)
+  var tfAt = function (t, p) {
+    var k = t.k0 + (1 - t.k0) * p;
+    var X = t.X + (t.l - t.X) * p, Y = t.Y + (t.t - t.Y) * p;
+    var ax = (X - (t.ox + k * (t.l - t.ox))) / t.sx, ay = (Y - (t.oy + k * (t.t - t.oy))) / t.sy;
+    // (the dot's own transform is the sheet's, held !important: it moves by its translate, unscaled)
+    if (t.tr) return ax.toFixed(2) + 'px ' + ay.toFixed(2) + 'px';
+    return 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')' + t.base;
   };
-  window.__ncOpenClear = function () {
-    if (applied) clear();
-    dirty = true;
-    if (!raf) raf = requestAnimationFrame(tick);
-  };
-  var setD = function (d) {
-    var v = d > 0 ? d + 'px' : '';
-    if (main.style.getPropertyValue('--open-d') !== v) { if (v) main.style.setProperty('--open-d', v); else main.style.removeProperty('--open-d'); }
-  };
+  // (read with nothing carried: every animation gone first)
   var measure = function () {
-    dirty = false;
-    if (geo) clear();
+    drop();
+    stale = false;
     geo = null;
-    if (!wide.matches) { setD(0); return; }
+    main.style.removeProperty('--open-d');
+    if (!wide.matches) { main.classList.remove('nc-opening'); return; }
     var E = els();
-    if (E.row.length < 2) { setD(0); return; }
+    if (E.row.length < 2) { main.classList.remove('nc-opening'); return; }
     var bt = st.getBoundingClientRect().top;
     // (each piece read where it settles, and how a transform of its own moves it: the point a scale holds still and
-    // what a pixel of translate comes to on the page — the bird is scaled by its own --bird-s)
+    // what a pixel of translate comes to on the page. The bird's own transform is the sheet's, held !important, which
+    // no animation overrides: its drawing moves instead — the frame and the two paths, in the one space of its
+    // viewBox — read off the frame)
     var read = function (el) {
-      var R = el.getBoundingClientRect(), m0 = getComputedStyle(el).transform;
+      var bird = el.classList.contains('band-logo__bird');
+      var mv = bird ? [].slice.call(el.children) : [el], pr = mv[0] || el;
+      var R = el.getBoundingClientRect(), P = pr.getBoundingClientRect(), m0 = getComputedStyle(pr).transform;
       var base = m0 && m0 !== 'none' ? ' ' + m0 : '';
-      el.style.setProperty('transform', 'scale(2)' + base, 'important');
-      var R2 = el.getBoundingClientRect();
-      el.style.setProperty('transform', 'translate(100px, 100px)' + base, 'important');
-      var R3 = el.getBoundingClientRect();
-      el.style.removeProperty('transform');
-      return { el: el, base: base, l: R.left, t: R.top - bt, w: R.width, h: R.height,
-        ox: 2 * R.left - R2.left, oy: 2 * (R.top - bt) - (R2.top - bt), sx: (R3.left - R.left) / 100 || 1, sy: (R3.top - R.top) / 100 || 1 };
+      pr.style.setProperty('transform', 'scale(2)' + base, 'important');
+      var P2 = pr.getBoundingClientRect();
+      pr.style.setProperty('transform', 'translate(100px, 100px)' + base, 'important');
+      var P3 = pr.getBoundingClientRect();
+      pr.style.removeProperty('transform');
+      return { el: el, mv: mv, base: base, l: R.left, t: R.top - bt, w: R.width, h: R.height,
+        ox: 2 * P.left - P2.left, oy: 2 * (P.top - bt) - (P2.top - bt), sx: (P3.left - P.left) / 100 || 1, sy: (P3.top - P.top) / 100 || 1 };
     };
     var row = E.row.map(read).sort(function (a, b) { return a.l - b.l; });
     var under = E.under.map(read), dot = E.dot.map(read);
@@ -1582,10 +1587,10 @@
     var W = row.reduce(function (a, t) { return a + t.w; }, 0), n = row.length;
     var K = 1 / (window.__ncWmScale || 0.9);
     if ((span - K * W) / (n - 1) < MIN_GAP) K = (span - MIN_GAP * (n - 1)) / W;
-    if (!(K > 1.001) || !(wmH > 0)) { setD(0); return; }
+    if (!(K > 1.001) || !(wmH > 0)) { main.classList.remove('nc-opening'); return; }
     var G = (span - K * W) / (n - 1);
     var D = Math.round((K - 1) * wmH);
-    // (the opening in the band's own frame, the band standing D down the window: the name from the window's 20)
+    // (the opening in the band's own frame, the band carried D down the window: the name from the window's 20)
     var x = row[0].l;
     row.forEach(function (t) { t.X = x; t.Y = (y0 - D) + K * (t.t - y0); t.k0 = K; x += K * t.w + G; });
     var wordOf = function (cls) { return row.filter(function (t) { return t.el.classList.contains(cls); })[0]; };
@@ -1595,63 +1600,92 @@
       pin(t, wordOf(c.contains('band-under--the') ? 'band-logo__top' : c.contains('band-under--new') ? 'band-logo__mid' : 'band-logo__low'));
     });
     // (the dot's middle, under the C's)
-    dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
-    // (the column's sticky hold carried down with the band, the rest of the opening's growth, so its words come up a
-    // pixel for a pixel with the rows; the copyright at its foot carried back, so it stays 20 over the window's)
+    dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
     var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
-    var col = hold ? [hold].concat([].slice.call(hold.querySelectorAll(':scope > .rail-copy'))) : [];
-    var L = Math.max(D, RUN);
-    var page = [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement'));
-    var holdTop = hold ? parseFloat(getComputedStyle(hold).top) || 0 : 0;
-    geo = { D: D, L: L, all: row.concat(under, dot), col: col, page: page, holdTop: holdTop, T: 0 };
-    setD(L);
+    geo = { D: D, all: row.concat(under, dot),
+      page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement')),
+      copy: hold ? [].slice.call(hold.querySelectorAll(':scope > .rail-copy')) : [] };
+    // (the band's own ground and its rule at its foot: the band's ground and rule are painted by the first movement's
+    // sticky cover, its ::before, held at the window's top by the sheet's !important — the band's ground hides that
+    // rule and draws its own where the band ends, the same where it settles; and its container over the rows, which
+    // are a layer of their own while they are carried; style.css, THE NAME OPENS BIG)
+    main.classList.add('nc-opening');
   };
-  var draw = function () {
+  // (every move one animation from the opening to the settled band, on the one clock and ease — the name's pieces, the
+  // band, the rows and the column carried down by the growth, the copyright carried back to the window's foot — set
+  // at time t and running r: 1 shutting, -1 opening, 0 held)
+  var start = function (t, r) {
+    drop();
     if (!geo) return;
-    var p = clamp((window.pageYOffset || 0) / geo.L, 0, 1);
-    if (p >= 1) { if (applied) clear(); return; }
-    geo.all.forEach(function (t) {
-      var k = t.k0 + (1 - t.k0) * p;
-      var X = t.X + (t.l - t.X) * p, Y = t.Y + (t.t - t.Y) * p;
-      var ax = (X - (t.ox + k * (t.l - t.ox))) / t.sx, ay = (Y - (t.oy + k * (t.t - t.oy))) / t.sy;
-      t.el.style.setProperty('transform', 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')' + t.base, 'important');
+    var opt = { duration: dur(), easing: EASE, fill: 'both' };
+    var add = function (el, kf) { var a = el.animate(kf, opt); a.pause(); a.currentTime = t; anims.push(a); };
+    geo.all.forEach(function (g) {
+      var prop = g.tr ? 'translate' : 'transform', k0 = {}, k1 = {};
+      k0[prop] = tfAt(g, 0); k1[prop] = tfAt(g, 1);
+      g.mv.forEach(function (m) { add(m, [k0, k1]); });
     });
-    var off = geo.D * (1 - p);
-    // (the page carried back by the scroll the name's shrink runs past its growth, so the band stands off the window's
-    // top by what the name has yet to lose and the rows and the column come up under it: the page's lift is the run,
-    // its first L of scroll the shrink)
-    var T = (geo.L - geo.D) * (1 - p);
-    // (the column's hold: where it would stand, sticky — the larger of its resting top and its column's top, read less
-    // last frame's carry — set to stand the name's remaining growth under its resting top; the copyright carried back
-    // to the window's foot)
-    var hold = geo.col[0], HT = off;
-    if (hold) {
-      var nat = Math.max(geo.holdTop, hold.parentElement.getBoundingClientRect().top + geo.T);
-      HT = (geo.holdTop + off) - (nat - T);
-    }
-    geo.page.forEach(function (el) { el.style.setProperty('transform', 'translateY(' + (-T).toFixed(2) + 'px)', 'important'); });
-    // (the band's container over the rows meanwhile: carried, each is its own layer, and the rows, later on the page,
-    // would paint over the band)
-    if (geo.page[0] && geo.page[0].style.getPropertyValue('z-index') !== '80') geo.page[0].style.setProperty('z-index', '80', 'important');
-    geo.col.forEach(function (el, i) { el.style.setProperty('transform', 'translateY(' + (i ? -off : HT).toFixed(2) + 'px)', 'important'); });
-    geo.T = T;
-    // (and the band's own ground and its rule at its foot while it opens: the band's ground and rule are painted by the
-    // first movement's sticky cover, its ::before, held at the window's top by the sheet's !important — the band's
-    // ground hides that rule and draws its own where the band ends; style.css, THE NAME OPENS BIG)
-    if (!main.classList.contains('nc-opening')) main.classList.add('nc-opening');
-    applied = true;
+    geo.page.forEach(function (el) { add(el, [{ transform: 'translateY(' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
+    geo.copy.forEach(function (el) { add(el, [{ transform: 'translateY(-' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
+    dir = r;
+    if (!r || !anims.length) return;
+    // (running from t at once, all on one start: a fresh play() waits a frame to begin, and restarted every time the
+    // band is read it would stand still)
+    var t0 = document.timeline.currentTime;
+    anims.forEach(function (a) { a.playbackRate = r; a.startTime = t0 - t / r; });
+    var mine = anims;
+    anims[0].onfinish = function () {
+      if (anims !== mine) return;
+      // (shut: nothing left carried; open: held at the opening)
+      if (dir > 0) drop();
+      dir = 0;
+    };
   };
-  var tick = function () {
-    raf = 0;
-    if (dirty) measure();
-    draw();
+  // (where the name stands now: the time on the animations, which way they run)
+  var now = function () { return anims.length ? { t: anims[0].currentTime || 0, r: dir } : null; };
+  window.__ncOpenBusy = function () { return anims.length > 0; };
+  // (anything that reads the band — seatLogo, bandGeo, the column's edge — reads it with nothing carried: the opening
+  // stands down for the reading and comes back where it stood, at the same time, before the page is drawn again;
+  // where the name is shut, the band is read again when it next opens)
+  var back = null;
+  window.__ncOpenClear = function () {
+    if (!anims.length || back) return;
+    back = now();
+    drop();
+    queueMicrotask(function () { var b = back; back = null; if (b && geo) start(b.t, b.r); });
   };
-  var ask = function () { if (!raf) raf = requestAnimationFrame(tick); };
-  // (and on a timer too, should no frame come — a tab drawn in the background runs none)
-  var redo = function () { dirty = true; ask(); setTimeout(function () { if (dirty) tick(); }, 150); };
-  // (drawn in the scroll's own event, which comes once a frame, so the band moves in the frame the page does)
-  addEventListener('scroll', function () { if (dirty) ask(); else draw(); }, { passive: true });
-  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, redo, { passive: true }); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(redo);
-  redo();
+  // (shutting from where the name stands; opening from where it stands, or from the settled band, read again if it
+  // has moved)
+  var go = function (r) {
+    if (r === dir) return;
+    var b = now();
+    if (r > 0) { if (b) start(b.t, 1); return; }
+    if (b) { start(b.t, -1); return; }
+    if (stale || !geo) measure();
+    start(dur(), -1);
+  };
+  // (shut on the way down from the first pixel; open on the way up once within OPEN_AT of the top, so it is open by
+  // the time the page gets there rather than starting once a trackpad's glide has died at the top — "expansion looks
+  // worse than collapse", 2026-10-11 — and at the top whichever way it came)
+  var OPEN_AT = 120, lastY = window.pageYOffset || 0;
+  var onScroll = function () {
+    var y = window.pageYOffset || 0, dy = y - lastY;
+    lastY = y;
+    if (!geo) return;
+    var isOpen = anims.length && dir <= 0, isShut = !anims.length || dir > 0;
+    if (dy > 0 && y > 0 && isOpen) go(1);
+    else if ((y <= 0 || (dy < 0 && y <= OPEN_AT)) && isShut) go(-1);
+  };
+  // (read again when the page is laid anew, and the name set where it stood — open at the top of the page, shut below)
+  var redo = function () {
+    var b = now();
+    measure();
+    if (b) start(b.t, b.r);
+    else if ((window.pageYOffset || 0) <= 0) start(0, 0);
+  };
+  var due = false;
+  var ask = function () { if (due) return; due = true; requestAnimationFrame(function () { if (due) { due = false; redo(); } }); setTimeout(function () { if (due) { due = false; redo(); } }, 150); };
+  addEventListener('scroll', onScroll, { passive: true });
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, ask, { passive: true }); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ask);
+  ask();
 })();

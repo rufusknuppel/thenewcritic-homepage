@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=91b34263">
+<link rel="stylesheet" href="style.css?v=4f7ec21d">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11012,7 +11012,7 @@ window.__ncStripInk = function () {
   addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () { ticking = false; gauge(); light(); band(); });
+    requestAnimationFrame(function () { ticking = false; gauge(); light(); if (!(window.__ncOpenBusy && window.__ncOpenBusy())) band(); });
   }, { passive: true });
   addEventListener('newcritic:railshut', function () { band.seatLead = true; band(); });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
@@ -11195,53 +11195,46 @@ window.__ncStripInk = function () {
 (function () {
   var main = document.querySelector('main.has-mega.wm-banded');
   var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
-  if (!main || !st) return;
+  if (!main || !st || !document.body.animate) return;
   var wide = window.matchMedia('(min-width: 1024px)');
-  var MIN_GAP = 24;
-  var RUN = 300;
-  var geo = null, applied = false, raf = 0, dirty = true;
-  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var MIN_GAP = 24, DUR = 600, EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
+  var geo = null, anims = [], stale = true, dir = 0;
+  var dur = function () { return still.matches ? 1 : DUR; };
   var els = function () {
     var q = function (sel) { return [].slice.call(st.querySelectorAll(sel)).filter(function (e) { return e.getBoundingClientRect().width > 0; }); };
     return { row: q('.band-logo__top, .band-logo__mid, .band-logo__low, .band-logo__bird'),
       under: q('.sub-ticker-run > .band-under'), dot: q('.sub-ticker-run > .theme-toggle.chip-dot:not(.chip-dot--rail)') };
   };
-  var clear = function () {
-    if (!geo) return;
-    geo.all.forEach(function (t) { t.el.style.removeProperty('transform'); });
-    geo.col.forEach(function (el) { el.style.removeProperty('transform'); });
-    geo.page.forEach(function (el) { el.style.removeProperty('transform'); el.style.removeProperty('z-index'); });
-    geo.T = 0;
-    main.classList.remove('nc-opening');
-    applied = false;
-  };
-  window.__ncOpenClear = function () {
-    if (applied) clear();
-    dirty = true;
-    if (!raf) raf = requestAnimationFrame(tick);
-  };
-  var setD = function (d) {
-    var v = d > 0 ? d + 'px' : '';
-    if (main.style.getPropertyValue('--open-d') !== v) { if (v) main.style.setProperty('--open-d', v); else main.style.removeProperty('--open-d'); }
+  var drop = function () { anims.forEach(function (a) { try { a.cancel(); } catch (e) {} }); anims = []; };
+  var tfAt = function (t, p) {
+    var k = t.k0 + (1 - t.k0) * p;
+    var X = t.X + (t.l - t.X) * p, Y = t.Y + (t.t - t.Y) * p;
+    var ax = (X - (t.ox + k * (t.l - t.ox))) / t.sx, ay = (Y - (t.oy + k * (t.t - t.oy))) / t.sy;
+    if (t.tr) return ax.toFixed(2) + 'px ' + ay.toFixed(2) + 'px';
+    return 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')' + t.base;
   };
   var measure = function () {
-    dirty = false;
-    if (geo) clear();
+    drop();
+    stale = false;
     geo = null;
-    if (!wide.matches) { setD(0); return; }
+    main.style.removeProperty('--open-d');
+    if (!wide.matches) { main.classList.remove('nc-opening'); return; }
     var E = els();
-    if (E.row.length < 2) { setD(0); return; }
+    if (E.row.length < 2) { main.classList.remove('nc-opening'); return; }
     var bt = st.getBoundingClientRect().top;
     var read = function (el) {
-      var R = el.getBoundingClientRect(), m0 = getComputedStyle(el).transform;
+      var bird = el.classList.contains('band-logo__bird');
+      var mv = bird ? [].slice.call(el.children) : [el], pr = mv[0] || el;
+      var R = el.getBoundingClientRect(), P = pr.getBoundingClientRect(), m0 = getComputedStyle(pr).transform;
       var base = m0 && m0 !== 'none' ? ' ' + m0 : '';
-      el.style.setProperty('transform', 'scale(2)' + base, 'important');
-      var R2 = el.getBoundingClientRect();
-      el.style.setProperty('transform', 'translate(100px, 100px)' + base, 'important');
-      var R3 = el.getBoundingClientRect();
-      el.style.removeProperty('transform');
-      return { el: el, base: base, l: R.left, t: R.top - bt, w: R.width, h: R.height,
-        ox: 2 * R.left - R2.left, oy: 2 * (R.top - bt) - (R2.top - bt), sx: (R3.left - R.left) / 100 || 1, sy: (R3.top - R.top) / 100 || 1 };
+      pr.style.setProperty('transform', 'scale(2)' + base, 'important');
+      var P2 = pr.getBoundingClientRect();
+      pr.style.setProperty('transform', 'translate(100px, 100px)' + base, 'important');
+      var P3 = pr.getBoundingClientRect();
+      pr.style.removeProperty('transform');
+      return { el: el, mv: mv, base: base, l: R.left, t: R.top - bt, w: R.width, h: R.height,
+        ox: 2 * P.left - P2.left, oy: 2 * (P.top - bt) - (P2.top - bt), sx: (P3.left - P.left) / 100 || 1, sy: (P3.top - P.top) / 100 || 1 };
     };
     var row = E.row.map(read).sort(function (a, b) { return a.l - b.l; });
     var under = E.under.map(read), dot = E.dot.map(read);
@@ -11252,7 +11245,7 @@ window.__ncStripInk = function () {
     var W = row.reduce(function (a, t) { return a + t.w; }, 0), n = row.length;
     var K = 1 / (window.__ncWmScale || 0.9);
     if ((span - K * W) / (n - 1) < MIN_GAP) K = (span - MIN_GAP * (n - 1)) / W;
-    if (!(K > 1.001) || !(wmH > 0)) { setD(0); return; }
+    if (!(K > 1.001) || !(wmH > 0)) { main.classList.remove('nc-opening'); return; }
     var G = (span - K * W) / (n - 1);
     var D = Math.round((K - 1) * wmH);
     var x = row[0].l;
@@ -11263,50 +11256,74 @@ window.__ncStripInk = function () {
       var c = t.el.classList;
       pin(t, wordOf(c.contains('band-under--the') ? 'band-logo__top' : c.contains('band-under--new') ? 'band-logo__mid' : 'band-logo__low'));
     });
-    dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
+    dot.forEach(function (t) { var w = wordOf('band-logo__low'); t.k0 = 1; t.tr = true; t.sx = t.sy = 1; t.Y = t.t; t.X = w ? w.X + K * (t.l + t.w / 2 - w.l) - t.w / 2 : t.l; });
     var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
-    var col = hold ? [hold].concat([].slice.call(hold.querySelectorAll(':scope > .rail-copy'))) : [];
-    var L = Math.max(D, RUN);
-    var page = [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement'));
-    var holdTop = hold ? parseFloat(getComputedStyle(hold).top) || 0 : 0;
-    geo = { D: D, L: L, all: row.concat(under, dot), col: col, page: page, holdTop: holdTop, T: 0 };
-    setD(L);
+    geo = { D: D, all: row.concat(under, dot),
+      page: [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement')),
+      copy: hold ? [].slice.call(hold.querySelectorAll(':scope > .rail-copy')) : [] };
+    main.classList.add('nc-opening');
   };
-  var draw = function () {
+  var start = function (t, r) {
+    drop();
     if (!geo) return;
-    var p = clamp((window.pageYOffset || 0) / geo.L, 0, 1);
-    if (p >= 1) { if (applied) clear(); return; }
-    geo.all.forEach(function (t) {
-      var k = t.k0 + (1 - t.k0) * p;
-      var X = t.X + (t.l - t.X) * p, Y = t.Y + (t.t - t.Y) * p;
-      var ax = (X - (t.ox + k * (t.l - t.ox))) / t.sx, ay = (Y - (t.oy + k * (t.t - t.oy))) / t.sy;
-      t.el.style.setProperty('transform', 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')' + t.base, 'important');
+    var opt = { duration: dur(), easing: EASE, fill: 'both' };
+    var add = function (el, kf) { var a = el.animate(kf, opt); a.pause(); a.currentTime = t; anims.push(a); };
+    geo.all.forEach(function (g) {
+      var prop = g.tr ? 'translate' : 'transform', k0 = {}, k1 = {};
+      k0[prop] = tfAt(g, 0); k1[prop] = tfAt(g, 1);
+      g.mv.forEach(function (m) { add(m, [k0, k1]); });
     });
-    var off = geo.D * (1 - p);
-    var T = (geo.L - geo.D) * (1 - p);
-    var hold = geo.col[0], HT = off;
-    if (hold) {
-      var nat = Math.max(geo.holdTop, hold.parentElement.getBoundingClientRect().top + geo.T);
-      HT = (geo.holdTop + off) - (nat - T);
-    }
-    geo.page.forEach(function (el) { el.style.setProperty('transform', 'translateY(' + (-T).toFixed(2) + 'px)', 'important'); });
-    if (geo.page[0] && geo.page[0].style.getPropertyValue('z-index') !== '80') geo.page[0].style.setProperty('z-index', '80', 'important');
-    geo.col.forEach(function (el, i) { el.style.setProperty('transform', 'translateY(' + (i ? -off : HT).toFixed(2) + 'px)', 'important'); });
-    geo.T = T;
-    if (!main.classList.contains('nc-opening')) main.classList.add('nc-opening');
-    applied = true;
+    geo.page.forEach(function (el) { add(el, [{ transform: 'translateY(' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
+    geo.copy.forEach(function (el) { add(el, [{ transform: 'translateY(-' + geo.D + 'px)' }, { transform: 'translateY(0px)' }]); });
+    dir = r;
+    if (!r || !anims.length) return;
+    var t0 = document.timeline.currentTime;
+    anims.forEach(function (a) { a.playbackRate = r; a.startTime = t0 - t / r; });
+    var mine = anims;
+    anims[0].onfinish = function () {
+      if (anims !== mine) return;
+      if (dir > 0) drop();
+      dir = 0;
+    };
   };
-  var tick = function () {
-    raf = 0;
-    if (dirty) measure();
-    draw();
+  var now = function () { return anims.length ? { t: anims[0].currentTime || 0, r: dir } : null; };
+  window.__ncOpenBusy = function () { return anims.length > 0; };
+  var back = null;
+  window.__ncOpenClear = function () {
+    if (!anims.length || back) return;
+    back = now();
+    drop();
+    queueMicrotask(function () { var b = back; back = null; if (b && geo) start(b.t, b.r); });
   };
-  var ask = function () { if (!raf) raf = requestAnimationFrame(tick); };
-  var redo = function () { dirty = true; ask(); setTimeout(function () { if (dirty) tick(); }, 150); };
-  addEventListener('scroll', function () { if (dirty) ask(); else draw(); }, { passive: true });
-  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, redo, { passive: true }); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(redo);
-  redo();
+  var go = function (r) {
+    if (r === dir) return;
+    var b = now();
+    if (r > 0) { if (b) start(b.t, 1); return; }
+    if (b) { start(b.t, -1); return; }
+    if (stale || !geo) measure();
+    start(dur(), -1);
+  };
+  var OPEN_AT = 120, lastY = window.pageYOffset || 0;
+  var onScroll = function () {
+    var y = window.pageYOffset || 0, dy = y - lastY;
+    lastY = y;
+    if (!geo) return;
+    var isOpen = anims.length && dir <= 0, isShut = !anims.length || dir > 0;
+    if (dy > 0 && y > 0 && isOpen) go(1);
+    else if ((y <= 0 || (dy < 0 && y <= OPEN_AT)) && isShut) go(-1);
+  };
+  var redo = function () {
+    var b = now();
+    measure();
+    if (b) start(b.t, b.r);
+    else if ((window.pageYOffset || 0) <= 0) start(0, 0);
+  };
+  var due = false;
+  var ask = function () { if (due) return; due = true; requestAnimationFrame(function () { if (due) { due = false; redo(); } }); setTimeout(function () { if (due) { due = false; redo(); } }, 150); };
+  addEventListener('scroll', onScroll, { passive: true });
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, ask, { passive: true }); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ask);
+  ask();
 })();
 
 </script>
