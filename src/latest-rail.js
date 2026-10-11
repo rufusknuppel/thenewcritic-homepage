@@ -1523,6 +1523,10 @@
   if (!main || !st) return;
   var wide = window.matchMedia('(min-width: 1024px)');
   var MIN_GAP = 24;
+  // (over this much scroll since — "Can you make shrink slower?", 2026-10-11: the name shrinks over 300 of scroll, not
+  // its own growth's 31, and the page rises only by that growth meanwhile — the band, the rows and the column carried
+  // back by the rest, so nothing slides under the band — then scrolls as ever)
+  var RUN = 300;
   var geo = null, applied = false, raf = 0, dirty = true;
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
   var els = function () {
@@ -1534,6 +1538,8 @@
     if (!geo) return;
     geo.all.forEach(function (t) { t.el.style.removeProperty('transform'); });
     geo.col.forEach(function (el) { el.style.removeProperty('transform'); });
+    geo.page.forEach(function (el) { el.style.removeProperty('transform'); el.style.removeProperty('z-index'); });
+    geo.T = 0;
     main.classList.remove('nc-opening');
     applied = false;
   };
@@ -1594,12 +1600,15 @@
     // pixel for a pixel with the rows; the copyright at its foot carried back, so it stays 20 over the window's)
     var hold = document.querySelector('.page-rows .latest-rail .latest-rail__hold');
     var col = hold ? [hold].concat([].slice.call(hold.querySelectorAll(':scope > .rail-copy'))) : [];
-    geo = { D: D, all: row.concat(under, dot), col: col };
-    setD(D);
+    var L = Math.max(D, RUN);
+    var page = [].slice.call(document.querySelectorAll('.page-rows > .head-rail, .page-rows > .movement'));
+    var holdTop = hold ? parseFloat(getComputedStyle(hold).top) || 0 : 0;
+    geo = { D: D, L: L, all: row.concat(under, dot), col: col, page: page, holdTop: holdTop, T: 0 };
+    setD(L);
   };
   var draw = function () {
     if (!geo) return;
-    var p = clamp((window.pageYOffset || 0) / geo.D, 0, 1);
+    var p = clamp((window.pageYOffset || 0) / geo.L, 0, 1);
     if (p >= 1) { if (applied) clear(); return; }
     geo.all.forEach(function (t) {
       var k = t.k0 + (1 - t.k0) * p;
@@ -1608,11 +1617,28 @@
       t.el.style.setProperty('transform', 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) scale(' + k.toFixed(4) + ')' + t.base, 'important');
     });
     var off = geo.D * (1 - p);
+    // (the page carried back by the scroll the name's shrink runs past its growth, so the band stands off the window's
+    // top by what the name has yet to lose and the rows and the column come up under it: the page's lift is the run,
+    // its first L of scroll the shrink)
+    var T = (geo.L - geo.D) * (1 - p);
+    // (the column's hold: where it would stand, sticky — the larger of its resting top and its column's top, read less
+    // last frame's carry — set to stand the name's remaining growth under its resting top; the copyright carried back
+    // to the window's foot)
+    var hold = geo.col[0], HT = off;
+    if (hold) {
+      var nat = Math.max(geo.holdTop, hold.parentElement.getBoundingClientRect().top + geo.T);
+      HT = (geo.holdTop + off) - (nat - T);
+    }
+    geo.page.forEach(function (el) { el.style.setProperty('transform', 'translateY(' + (-T).toFixed(2) + 'px)', 'important'); });
+    // (the band's container over the rows meanwhile: carried, each is its own layer, and the rows, later on the page,
+    // would paint over the band)
+    if (geo.page[0] && geo.page[0].style.getPropertyValue('z-index') !== '80') geo.page[0].style.setProperty('z-index', '80', 'important');
+    geo.col.forEach(function (el, i) { el.style.setProperty('transform', 'translateY(' + (i ? -off : HT).toFixed(2) + 'px)', 'important'); });
+    geo.T = T;
     // (and the band's own ground and its rule at its foot while it opens: the band's ground and rule are painted by the
     // first movement's sticky cover, its ::before, held at the window's top by the sheet's !important — the band's
     // ground hides that rule and draws its own where the band ends; style.css, THE NAME OPENS BIG)
     if (!main.classList.contains('nc-opening')) main.classList.add('nc-opening');
-    geo.col.forEach(function (el, i) { el.style.setProperty('transform', 'translateY(' + (i ? -off : off).toFixed(2) + 'px)', 'important'); });
     applied = true;
   };
   var tick = function () {
@@ -1623,7 +1649,8 @@
   var ask = function () { if (!raf) raf = requestAnimationFrame(tick); };
   // (and on a timer too, should no frame come — a tab drawn in the background runs none)
   var redo = function () { dirty = true; ask(); setTimeout(function () { if (dirty) tick(); }, 150); };
-  addEventListener('scroll', ask, { passive: true });
+  // (drawn in the scroll's own event, which comes once a frame, so the band moves in the frame the page does)
+  addEventListener('scroll', function () { if (dirty) ask(); else draw(); }, { passive: true });
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, redo, { passive: true }); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(redo);
   redo();
