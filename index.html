@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=6c26e8d5">
+<link rel="stylesheet" href="style.css?v=8112a030">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -5808,6 +5808,7 @@
   }
   var COURIER_GAP = 36;
   var ROWS_GAP = 54;
+  var BAND_AIR = 36;
   var ROW_STEP = 108;
   var SECTION_GAP = ROW_STEP;
   var BAND_RULE = 2;
@@ -5986,7 +5987,8 @@
                     if (rEl === topStrip) break;
                   }
                   var opening = !!document.querySelector('main.wm-opening');
-                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
+                  var airK = document.querySelector('main.has-foot-band') ? 54 - BAND_AIR - 1 : 0;
+                  firstAt = body.getBoundingClientRect().top + railFoot + (opening ? 72 - airK + (144 - topStrip.offsetHeight) + Math.max(0, topStrip.offsetHeight - 162) + (bandedInk() ? BAND_RULE : 0) : COURIER_GAP);
                 }
                 var kInk = Infinity;
                 [].forEach.call(body.querySelectorAll('.card--row-a[data-row="0"] .cover-kicker, .card--row-b[data-row="0"] .cover-kicker'), function (k) {
@@ -6206,7 +6208,7 @@
         });
       }
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
-      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb) edgeGap += (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
+      if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb) edgeGap = BAND_AIR + (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
       var tail = next.classList.contains('section-band--colophon') && !ONE_COL.matches ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
       var tailM = tail ? Math.min(0, parseFloat(tail.style.marginBottom) || 0) : 0;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: (parseFloat(getComputedStyle(body).paddingBottom) || 0) + tailM, tail: tail });
@@ -6688,6 +6690,7 @@
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   var NEAR_GAP = 54;
+  NEAR_GAP = 36;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -10485,6 +10488,7 @@ window.__ncStripInk = function () {
     if (!items.length) return;
     if (!wideLogo.matches || !main.classList.contains('wm-banded')) {
       [].forEach.call(items, function (u) { u.style.removeProperty('left'); u.style.removeProperty('top'); });
+      main.classList.remove('has-foot-band');
       return;
     }
     var run = st.querySelector(':scope > .sub-ticker-run');
