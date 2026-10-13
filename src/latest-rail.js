@@ -552,7 +552,11 @@
         var rwF = railN ? railN.offsetWidth : 0, colMid = onL ? rwF / 2 : vwF - rwF / 2;
         fbX = { the: vwF / 2 - wT / 2, new: 54, critic: vwF - 54 - wS, copy: colMid - wC / 2, mid: 0 };
         var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
-        fbDot = { x: onL ? 27 + dW / 2 : vwF - 27 - dW / 2, y: st.getBoundingClientRect().top + (parseFloat(st.style.getPropertyValue('height')) || 0) + 27 + dHt / 2 };
+        // (at the column's foot since, 27 from its outer side and 27 over the window's foot, its foot on the copyright's
+        // baseline — "Move dot to the bottom right of the column", 2026-10-13; the copyright kept 20 clear of it)
+        // (across, halfway from the copyright's end to the column's outer side since — "set halfway between copright
+        // and side", the copyright on the column's middle again)
+        fbDot = { x: onL ? fbX.copy / 2 : (fbX.copy + wC + vwF) / 2, y: st.getBoundingClientRect().top + vh - 27 - dHt / 2 };
         // (54 over the window's foot since — "Increase top and bottom to 54px", the Latest column's, 2026-10-13)
         // (and back to 27 — "have the copyright be only 27px bottom margin", The Latest still 54 under the rule)
         fbCopyY = st.getBoundingClientRect().top + vh - 27;
@@ -2007,7 +2011,8 @@
       if (ct != null) {
         // (54 since — "Increase top and bottom to 54px", the Latest column's, 2026-10-13)
         var want = cur + (ruleB + 54 - ct);
-        if (Math.abs(want - cur) > 0.25) main.style.setProperty('--rl-top', want.toFixed(2) + 'px');
+        // (no longer: the stack on the column's middle again since — "Vertically center the latest", 2026-10-13)
+        void want;
       }
     }
     // (the bird: the name's bird's size and drawing's proportion; its foot 27 over the copyright's capitals)
