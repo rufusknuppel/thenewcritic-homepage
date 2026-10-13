@@ -3574,13 +3574,23 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     const lt = lettersOf('the'), ln = lettersOf('new'), lc = lettersOf('critic');
     const wMax = Math.max(...[...lt, ...ln, ...lc].map((L) => L.hi - L.lo));
     const colX = (i) => wMax / 2 + i * (gridW - wMax) / 5;
+    // (and the bird in every empty cell since — "Use the bird in every blank space", "in the grid": as tall as the
+    // letters and a thirtieth, on its column's middle and the letters' middle)
+    let birdN = 0;
+    const gridBird = (col) => {
+      if (!TNC_MARK) return '';
+      const h = 1.03 * 300, w = h * TNC_MARK.w / TNC_MARK.h, n = birdN++;
+      return `<svg x="${(colX(col) - w / 2).toFixed(2)}" y="${(150 - h / 2).toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" overflow="visible">`
+        + TNC_MARK.body.replace(/\bid="([^"]+)"/g, `id="$1-grid${n}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-grid${n})`).replace(/ class="band-logo__shield band-logo__frame"/g, '') + '</svg>';
+    };
     const gridLine = (letters, cols) => {
+      const empty = [0, 1, 2, 3, 4, 5].filter((c) => !cols.includes(c));
       const d = letters.map((L, li) => {
         const dx = colX(cols[li]) - (L.lo + L.hi) / 2;
         return L.subs.map((sp) => { let q = 0; return sp.replace(/-?\d*\.?\d+/g, (m) => (q++ % 2 === 0 ? String(+(+m + dx).toFixed(2)) : m)); }).join('');
       }).join('');
       return svgTpl.replace(/ d="[^"]+"/, ` d="${d}"`).replace(/viewBox="[^"]+"/, `viewBox="0 0 ${gridW.toFixed(2)} 300"`)
-        .replace(/width:[\d.]+em/, `width:${(gridW / 300).toFixed(4)}em`);
+        .replace(/width:[\d.]+em/, `width:${(gridW / 300).toFixed(4)}em`).replace(/<\/svg>\s*$/, empty.map(gridBird).join('') + '</svg>');
     };
     const name = `<a class="rail-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-sp: ${WM_SPACE.toFixed(4)}em">`
       + `<span class="rail-name__l1">${gridLine(lt, [0, 2, 4])}</span><span class="rail-name__l1">${gridLine(ln, [1, 3, 5])}</span>`
