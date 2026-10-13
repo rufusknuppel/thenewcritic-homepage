@@ -7839,8 +7839,11 @@
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
               // (the row's ink a pixel over the painted frame, where the frame is not laid yet)
-              if (fr0 && fr0.offsetHeight) rowDelta = (BAND_AIR - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
-              else if (ink) rowDelta = (BAND_AIR + 1 - (window.pageYOffset || 0)) - ink.t;
+              // (under the name over the content since, 54 under its letters — THE NAME OVER THE CONTENT: the name's box
+              // ends 54 under them; the row's foot let go under the foot band, "let the bottom of the content be hidden")
+              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR;
+              if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
+              else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
           }
         }

@@ -499,6 +499,9 @@
       // (across the side column again since, window edge to window edge — "Have the nav bar cut across The latest
       // column", 2026-10-13)
       var FB_ACROSS = true;
+      // (the name over the content from the side column's edge — THE NAME OVER THE CONTENT, build.js contentName)
+      var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
+      document.documentElement.style.setProperty('--cn-l', (rrN && rrN.width && railN.classList.contains('latest-rail--l') ? rrN.right : 0).toFixed(2) + 'px');
       if (NAME_IN_RAIL && !FB_ACROSS) {
         var railF = document.querySelector('.page-rows .latest-rail--latest');
         var rrF = railF && railF.getBoundingClientRect();

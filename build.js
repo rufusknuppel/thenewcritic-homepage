@@ -184,6 +184,41 @@ function wordmarkWord(word, widthEm = 0) {
 // bird to their right — drawn at the band's own size (style.css, THE NAME
 // IN THE BAND). Each line is its drawing at a cap of 1em, as wide as its
 // letters make it; the bird is the masthead's own, its filter's id its own.
+// THE NAME OVER THE CONTENT (2026-10-13 — "Move the Wordmark above the Content. Have THE NEW (Bird) CRITIC on one
+// line, the bird 25% taller than the letters. the letters 54px from the top and sides and content", "wordmark should
+// only be in the content column. Shouldn't come across The latest and should scroll away", "Should be no rule between
+// wordmark and content"): the four across the content's column at the document's top, the words the drawing's word
+// space apart, the line as wide as the column less two 54s (--cn-span the line's width in caps); style.css, THE NAME
+// OVER THE CONTENT; latest-rail.js sets --cn-l, duo-panel-fit.js seats the first row 54 under it
+// (each word's letters a fifth further apart, ink to ink — "add 20% more spacing between letters in the wordmark",
+// 2026-10-13: the word's outline split into its letters where their ink parts, each letter moved on by a fifth of
+// every gap before it, the drawing widened by the fifth of them all; LETTER_K)
+const LETTER_K = 1.2;
+function spacedWord(word, k) {
+  const svg = WORDMARK_WORDS[word];
+  const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+  const subs = svg.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).map((sp) => {
+    const n = sp.match(/-?\d*\.?\d+/g).map(Number);
+    let lo = Infinity, hi = -Infinity;
+    for (let t = 0; t < n.length; t += 2) { lo = Math.min(lo, n[t]); hi = Math.max(hi, n[t]); }
+    return { sp, lo, hi };
+  }).sort((a, b) => a.lo - b.lo);
+  const L = [];
+  subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) { z.d += q.sp; z.hi = Math.max(z.hi, q.hi); } else L.push({ d: q.sp, lo: q.lo, hi: q.hi }); });
+  let dx = 0;
+  const paths = L.map((l, i) => { if (i) dx += (k - 1) * (l.lo - L[i - 1].hi); return `<path fill="currentColor" transform="translate(${dx.toFixed(2)} 0)" d="${l.d}"/>`; });
+  const w = vb[2] + dx;
+  return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
+}
+function contentName() {
+  if (!TNC_MARK) return '';
+  const caps = (w) => spacedWord(w, LETTER_K).ar;
+  const ar = TNC_MARK.w / TNC_MARK.h, BIRD_K = 1.75; // (three quarters taller since — "I want bird to be 75% bigger than letters")
+  const span = caps('the') + caps('new') + caps('critic') + BIRD_K * ar + 3 * WM_SPACE;
+  const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
+  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-span: ${span.toFixed(4)}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
+    + `<span class="content-name__word">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
+}
 function bandWord(word) {
   const svg = WORDMARK_WORDS[word];
   const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
@@ -3896,6 +3931,7 @@ ${renderStampDefs()}
      fitters and the chrome's fold machinery still measure it.) -->
 <nav class="dek-band dek-band--masthead" aria-label="Masthead line"></nav>
 
+${contentName()}
 <main id="main">
 
   <!-- THE MARGINS TAKE THE ESSAYS' MARK: the two 72s painted in the
