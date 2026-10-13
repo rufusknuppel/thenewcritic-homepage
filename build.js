@@ -3590,7 +3590,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         return L.subs.map((sp) => { let q = 0; return sp.replace(/-?\d*\.?\d+/g, (m) => (q++ % 2 === 0 ? String(+(+m + dx).toFixed(2)) : m)); }).join('');
       }).join('');
       return svgTpl.replace(/ d="[^"]+"/, ` d="${d}"`).replace(/viewBox="[^"]+"/, `viewBox="0 0 ${gridW.toFixed(2)} 300"`)
-        .replace(/width:[\d.]+em/, `width:${(gridW / 300).toFixed(4)}em`).replace(/<\/svg>\s*$/, empty.map(gridBird).join('') + '</svg>');
+        .replace(/width:[\d.]+em/, `width:${(gridW / 300).toFixed(4)}em`);
+      // (no birds in the empty cells since — "Remove the birds from between the grid", the same day: gridBird kept, unused)
+      void empty; void gridBird;
     };
     const name = `<a class="rail-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-sp: ${WM_SPACE.toFixed(4)}em">`
       + `<span class="rail-name__l1">${gridLine(lt, [0, 2, 4])}</span><span class="rail-name__l1">${gridLine(ln, [1, 3, 5])}</span>`
@@ -3599,7 +3601,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // (three lines since, THE, NEW and CRITIC each spaced across the one width at the letters' size — "Space the
     // wordmark over Three lines", "THE spaced, NEW spaced, and CRITIC spaced to fit width"; the bird over CRITIC)
     // (the bird out of the name since — "Move the bird under THE latest kickers": railBird, under each section's list)
-    return name.replace('__BIRD__', '');
+    // (and a rule under the name, across the column, 20 under the grid — "Add a rule under the wordmark grid and The
+    // Latest", 2026-10-13; style.css)
+    return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>';
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
   // as tall as the name's letters and a thirtieth (--rn-span, the name's span, sizes it as the name is sized)
@@ -3618,7 +3622,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // (no credit in the column since 2026-10-04: "Remove the garamond
       // italics from the right column")
       return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span></a></li>`;
-    }).join('')}</ul>` + railBird(si)
+    // (the bird no longer under the kickers since — "Remove bird from beneath The Latest", 2026-10-13: railBird kept,
+    // unused)
+    }).join('')}</ul>` + (void railBird, '')
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + railCues(si)
     + `</div>${si === 0 ? railCopy() : ''}</div></aside>`;

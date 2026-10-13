@@ -465,8 +465,11 @@
     // stands at the window's top: each top a calc on the window's height, so a window grown taller needs no seating
     var vh = window.innerHeight, capH = c0.base - c0.cap;
     if (FOOT_BAND) {
-      base = FOOT_TOP ? st.getBoundingClientRect().top + 20 + capH : st.getBoundingClientRect().top + vh - 20;
-      if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(40 + capH) + 'px');
+      // (36 taller since 2026-10-13 — "expand the height of the nav bar by 36px": 18 more over the line and 18 more
+      // under it, 38 each)
+      var FB_AIR = 20 + 18;
+      base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
+      if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
       main.classList.toggle('foot-band-top', FOOT_TOP && !NAME_FOOT);
       [].forEach.call(items, function (u) { u.style.setProperty('top', '0px', 'important'); });
