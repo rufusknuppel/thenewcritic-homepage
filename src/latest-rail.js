@@ -315,7 +315,9 @@
     H = Math.round(navCap > 0 && !NAV_STACK ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
     // (and the line under the name — THE LINE UNDER THE NAME, 2026-10-10: The Last Magazine's capitals AIR under the
     // name's ink, the band AIR under the line's baseline; seatUnder sets the line)
-    var undT = st.querySelector('.band-under--the > *');
+    // (the line's capitals read off the list's Garamond since The Last Magazine went to the kickers' Work Sans — "Make
+    // the last magazine all caps work sans", 2026-10-13: the band's air stays the list's)
+    var undT = (NAME_IN_RAIL && FOOT_TOP && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
     if (undT && undT.offsetWidth && !FOOT_BAND) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
     // (the line gone to the band at the window's foot since — THE LINE IN THE FOOT BAND, seatUnder: the name AIR from
     // the band's top and foot)
@@ -461,7 +463,7 @@
       return isFinite(l) ? { l: l, r: r, b: b } : null;
     };
     var words = { the: inkOf('.band-logo__top svg path'), new: inkOf('.band-logo__mid svg path'), critic: inkOf('.band-logo__low svg path') };
-    var tlm = st.querySelector('.band-under--the > *');
+    var tlm = (NAME_IN_RAIL && FOOT_TOP && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
     var c0 = tlm && capsOf(tlm);
     if (!run || !words.the || !words.new || !words.critic || !c0) return;
     var foot = Math.max(words.the.b, words.new.b, words.critic.b);
@@ -1986,6 +1988,12 @@
     return base - (m.actualBoundingBoxAscent || fs * 0.66);
   };
   var seat = function () {
+    // (the name over the content into main, under the band at the top as it scrolls — "wordmark should pass under top
+    // band": main a stacking context of its own over everything outside it; the name's top off main's, which stands
+    // above the document's top)
+    var cnM = document.querySelector('a.content-name');
+    if (cnM && cnM.parentElement !== main) main.appendChild(cnM);
+    if (cnM) document.documentElement.style.setProperty('--cn-top-off', (-(main.getBoundingClientRect().top + (window.pageYOffset || 0))).toFixed(2) + 'px');
     if (!main.classList.contains('name-in-rail') || window.innerWidth < 1024) return;
     var hold = document.querySelector('.page-rows .latest-rail--latest > .latest-rail__hold');
     var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -2032,4 +2040,5 @@
   window.addEventListener('load', function () { setTimeout(seat, 300); setTimeout(seat, 1500); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(seat, 200); });
   setTimeout(seat, 800);
+  seat();
 })();

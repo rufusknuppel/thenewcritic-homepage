@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=992196a2">
+<link rel="stylesheet" href="style.css?v=cb79ace3">
 <style>:root{--colo-span:15.9459;--band-span:14.2737;--wm-space:0.9231;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6028,7 +6028,7 @@
             rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
-              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? cnm.getBoundingClientRect().bottom + (window.pageYOffset || 0) : BAND_AIR;
+              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + cnm.offsetHeight : BAND_AIR;
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
@@ -10421,7 +10421,7 @@ window.__ncStripInk = function () {
     if (navEls.length) { var nc0 = capsOf(navEls[0].querySelector('b')); if (nc0) navCap = nc0.base - nc0.cap; }
     var AIR = WM_SIDE;
     H = Math.round(navCap > 0 && !NAV_STACK ? 3 * AIR + wmH + navCap : 2 * AIR + wmH);
-    var undT = st.querySelector('.band-under--the > *');
+    var undT = (NAME_IN_RAIL && FOOT_TOP && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
     if (undT && undT.offsetWidth && !FOOT_BAND) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
     if (FOOT_BAND) H = Math.round(2 * AIR + wmH);
     if (NAME_IN_RAIL) H = 0;
@@ -10526,7 +10526,7 @@ window.__ncStripInk = function () {
       return isFinite(l) ? { l: l, r: r, b: b } : null;
     };
     var words = { the: inkOf('.band-logo__top svg path'), new: inkOf('.band-logo__mid svg path'), critic: inkOf('.band-logo__low svg path') };
-    var tlm = st.querySelector('.band-under--the > *');
+    var tlm = (NAME_IN_RAIL && FOOT_TOP && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
     var c0 = tlm && capsOf(tlm);
     if (!run || !words.the || !words.new || !words.critic || !c0) return;
     var foot = Math.max(words.the.b, words.new.b, words.critic.b);
@@ -11492,6 +11492,9 @@ window.__ncStripInk = function () {
     return base - (m.actualBoundingBoxAscent || fs * 0.66);
   };
   var seat = function () {
+    var cnM = document.querySelector('a.content-name');
+    if (cnM && cnM.parentElement !== main) main.appendChild(cnM);
+    if (cnM) document.documentElement.style.setProperty('--cn-top-off', (-(main.getBoundingClientRect().top + (window.pageYOffset || 0))).toFixed(2) + 'px');
     if (!main.classList.contains('name-in-rail') || window.innerWidth < 1024) return;
     var hold = document.querySelector('.page-rows .latest-rail--latest > .latest-rail__hold');
     var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -11535,6 +11538,7 @@ window.__ncStripInk = function () {
   window.addEventListener('load', function () { setTimeout(seat, 300); setTimeout(seat, 1500); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(seat, 200); });
   setTimeout(seat, 800);
+  seat();
 })();
 
 </script>
