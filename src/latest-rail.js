@@ -496,7 +496,10 @@
       // its line from the side column's edge to the window's, the side column running on to the window's foot;
       // --fb-l / --fb-r, style.css)
       var cL = 0, cR = vwF;
-      if (NAME_IN_RAIL) {
+      // (across the side column again since, window edge to window edge — "Have the nav bar cut across The latest
+      // column", 2026-10-13)
+      var FB_ACROSS = true;
+      if (NAME_IN_RAIL && !FB_ACROSS) {
         var railF = document.querySelector('.page-rows .latest-rail--latest');
         var rrF = railF && railF.getBoundingClientRect();
         if (rrF && rrF.width) { if (railF.classList.contains('latest-rail--l')) cL = rrF.right; else cR = rrF.left; }
@@ -1490,6 +1493,13 @@
           if (arS) {
             var wN = critS * fS + RN_WIDER, BEAK = 0.2;
             var fB = (wN - 20 - (1 - BEAK) * arS * 40) / (critS + (1 - BEAK) * arS * 3);
+            // (two lines since, THE/NEW and CRI/TIC on each side of the bird, the bird as tall as the two and their 20,
+            // its body 20 clear of each side, the beak over THE/NEW — "The new and critic in line on each side of the bird")
+            var rnL = parseFloat(rnS.style.getPropertyValue('--rn-l')), rnR = parseFloat(rnS.style.getPropertyValue('--rn-r'));
+            if (rnS.classList.contains('rail-name--pair') && rnL > 0 && rnR > 0)
+              fB = (wN - 40 - arS * 20) / (rnL + rnR + arS * 2);
+            // (the bird's whole ink centred between the sides' since, 20 clear of each — "Bird should be centered
+            // between ink")
             if (fB < fS) main.style.setProperty('--rn-font', fB.toFixed(3) + 'px');
           }
         }

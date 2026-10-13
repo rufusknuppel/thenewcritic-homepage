@@ -3618,9 +3618,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // right", 2026-10-13: THE, NEW and CRITIC each as drawn, flush left, 20 apart; the bird at the top right, as
     // tall as the letters and a thirtieth, in the highlight; the grid's pieces kept, unused)
     void gridRow; void lettersOf;
-    const name = `<a class="rail-name rail-name--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-critic: ${l2.toFixed(4)}">`
+    // (THE over NEW on the left, CRI over TIC on the right, flush right, the bird between them as tall as the two
+    // lines — "Break up CRI TIC and right align on the right of the bird", "The new and critic in line on each side
+    // of the bird", 2026-10-13; --rn-l and --rn-r the two sides' widths in ems)
+    const rnL = Math.max(caps('the'), caps('new')), rnR = Math.max(caps('cri'), caps('tic'));
+    const name = `<a class="rail-name rail-name--words rail-name--pair" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-critic: ${l2.toFixed(4)}; --rn-l: ${rnL.toFixed(4)}; --rn-r: ${rnR.toFixed(4)}">`
       + (TNC_MARK ? `<span class="rail-name__bird" aria-hidden="true" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-under"').replace(/url\(#([^)]+)\)/g, 'url(#$1-under)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>` : '')
-      + `<span class="rail-word">${bandWord('the')}</span><span class="rail-word">${bandWord('new')}</span><span class="rail-word">${bandWord('critic')}</span></a>`;
+      + `<span class="rail-word rail-word--the">${bandWord('the')}</span><span class="rail-word rail-word--new">${bandWord('new')}</span><span class="rail-word rail-word--cri">${bandWord('cri')}</span><span class="rail-word rail-word--tic">${bandWord('tic')}</span></a>`;
     // (the bird between the two lines since — "move the bird between THENEW and CRITIC", 2026-10-13)
     // (three lines since, THE, NEW and CRITIC each spaced across the one width at the letters' size — "Space the
     // wordmark over Three lines", "THE spaced, NEW spaced, and CRITIC spaced to fit width"; the bird over CRITIC)
