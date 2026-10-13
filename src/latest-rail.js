@@ -1449,7 +1449,8 @@
       // previous size", 2026-10-10: CRITIC's reach from the gap read at the 0.9 name's size, so the column holds
       // where it stood whatever the name's size)
       // (18 wider since 2026-10-11 — "expand the latest column by 18px")
-      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18;
+      // (and 18 again with the MAILLE name, 2026-10-13 — "Expand the latest column by 18px")
+      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18 - 18;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
