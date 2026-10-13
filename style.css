@@ -29190,9 +29190,7 @@ html body main.has-mega .duo-half--mega > .essay-acts > *:is(*, .r.r.r.r.r.r.r.r
     align-items: center !important;
     gap: 0.5em !important;
     font-size: var(--rm-h, 20px) !important;
-    /* (2.6 since the box went round the whole bird — THE BOX ROUND THE WHOLE BIRD, build.js: the drawing the box, so
-       the bird's box as tall as the two lines and their gap) */
-    --cn-bird: 2.6;
+    --cn-bird: 3.3104;
     height: auto !important;
     width: max-content !important;
     line-height: 1 !important;
