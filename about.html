@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="has-mega rail-side-r ledger-root">
+<html lang="en" class="has-mega rail-side-l ledger-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=19483adc">
+<link rel="stylesheet" href="style.css?v=6d19bbea">
 <style>:root{--colo-span:15.9459;--band-span:14.2737;--wm-space:0.9231;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -4943,7 +4943,7 @@
   }
   var COURIER_GAP = 36;
   var ROWS_GAP = 54;
-  var BAND_AIR = 36;
+  var BAND_AIR = 54;
   var ROW_STEP = 108;
   var SECTION_GAP = ROW_STEP;
   var BAND_RULE = 2;
@@ -5160,6 +5160,11 @@
               }
             }
             rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
+            if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
+              var fr0 = row.querySelector('.card-frame');
+              if (fr0 && fr0.offsetHeight) rowDelta = (BAND_AIR - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
+              else if (ink) rowDelta = (BAND_AIR + 1 - (window.pageYOffset || 0)) - ink.t;
+            }
           }
         }
         if (!prev && ink && !body.parentElement.classList.contains('m--latest')) {
