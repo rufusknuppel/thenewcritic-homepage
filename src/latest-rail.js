@@ -328,7 +328,9 @@
       var cuT = capsOf(undT);
       // (29 over and under its line, as the foot band was, with the name over the content — "Move bottom band to top of
       // the site")
-      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 58 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      // (54 since — "Move the top band margins to 54px")
+      // (27 since — "have 27px above and below text in the top band"; FB_AIR, seatUnder)
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -475,6 +477,10 @@
       // under it, 38 each)
       // (9 less over and under since 2026-10-13 — "Reduce bottom band height by 18px")
       var FB_AIR = 20 + 18 - 9;
+      // (54 since, the band at the top — "Move the top band margins to 54px", 2026-10-13)
+      if (FOOT_TOP && NAME_IN_RAIL) FB_AIR = 54;
+      // (27 since — "have 27px above and below text in the top band", 2026-10-13)
+      if (FOOT_TOP && NAME_IN_RAIL) FB_AIR = 27;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
@@ -531,6 +537,22 @@
       var xN = cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
       fbX = { the: cL + 20, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
       if (!fitAll) fbX.critic = cR - 20 - wS;
+      // THE BAND'S LINE SPREAD (2026-10-13 — "Move the top band margins to 54px. Move copyright to the bottom THE
+      // LATEST column. spaced same distance as top band items are from the rule. Move dot to top right of THE latest
+      // column set 27px from side and top. Move THe last Magazine to the center of the top band. socials on right, nav
+      // items on left"): the list 54 from the left, The Last Magazine on the window's middle, the socials to 54 from
+      // the right; the copyright on the side column's middle, its baseline as far over the window's foot as the line's
+      // over the band's rule; the dot 27 in from the column's outer side and 27 under the rule (fbDot)
+      var fbDot = null, fbCopyY = null;
+      if (FOOT_TOP && NAME_IN_RAIL) {
+        if (cpyF) cpyF.style.removeProperty('display');
+        wC = txw(cpyF);
+        var rwF = railN ? railN.offsetWidth : 0, colMid = onL ? rwF / 2 : vwF - rwF / 2;
+        fbX = { the: vwF / 2 - wT / 2, new: 54, critic: vwF - 54 - wS, copy: colMid - wC / 2, mid: 0 };
+        var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
+        fbDot = { x: onL ? 27 + dW / 2 : vwF - 27 - dW / 2, y: st.getBoundingClientRect().top + (parseFloat(st.style.getPropertyValue('height')) || 0) + 27 + dHt / 2 };
+        fbCopyY = st.getBoundingClientRect().top + vh - FB_AIR;
+      }
     }
     [].forEach.call(items, function (u) {
       var key = u.classList.contains('band-under--the') ? 'the' : u.classList.contains('band-under--new') ? 'new' : 'critic';
@@ -545,11 +567,15 @@
       var x0 = w.l;
       if (key === 'the') { var sx = stemOfT(st.querySelector('.band-logo__top svg path')); if (sx != null) x0 = sx; }
       var left = (parseFloat(u.style.getPropertyValue('left')) || 0) + (right ? w.r - tb.right : x0 - tb.left);
-      if (fbX) left = (parseFloat(u.style.getPropertyValue('left')) || 0) + ((right ? fbX.copy : fbX[key]) - tb.left);
+      // (read where it stands unslid: the copyright rides out with the column as it shuts, on a transform — "Move
+      // copyright to the bottom THE LATEST column")
+      var uTx = 0; try { uTx = new DOMMatrixReadOnly(getComputedStyle(u).transform).m41 || 0; } catch (e) { uTx = 0; }
+      if (fbX) left = (parseFloat(u.style.getPropertyValue('left')) || 0) + ((right ? fbX.copy : fbX[key]) - (tb.left - uTx));
       void ur;
-      var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + (base - probe(u));
+      var atFoot = right && fbCopyY != null;
+      var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + ((atFoot ? fbCopyY : base) - probe(u));
       u.style.setProperty('left', left.toFixed(2) + 'px', 'important');
-      u.style.setProperty('top', FOOT_BAND && !FOOT_TOP ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
+      u.style.setProperty('top', (FOOT_BAND && !FOOT_TOP) || atFoot ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
     });
     void rr;
     // (THE DOT UNDER CRITIC'S LAST C, 2026-10-11 — "Move the theme dot under the final C in the nav bar vertically
@@ -572,8 +598,10 @@
         var cx = cm.a * lastC[1] + cm.e;
         var cy = base - (c0.base - c0.cap) / 2;
         var dr = dot.getBoundingClientRect(), ds = getComputedStyle(dot);
-        var dl = (parseFloat(ds.left) || 0) + (fbX ? fbX.mid - (dr.left + dr.width / 2) : cx - dr.right);
-        var dt = (parseFloat(ds.top) || 0) + (cy - (dr.top + dr.height / 2));
+        // (read where it stands unslid: shut, the column's width is on its translate)
+        var dTx = parseFloat((ds.translate || '0').split(' ')[0]) || 0;
+        var dl = (parseFloat(ds.left) || 0) + (fbDot ? fbDot.x - (dr.left - dTx + dr.width / 2) : fbX ? fbX.mid - (dr.left + dr.width / 2) : cx - dr.right);
+        var dt = (parseFloat(ds.top) || 0) + ((fbDot ? fbDot.y : cy) - (dr.top + dr.height / 2));
         st.style.setProperty('--dot-l', dl.toFixed(2) + 'px');
         st.style.setProperty('--dot-t', FOOT_BAND && !FOOT_TOP ? 'calc(100svh + ' + (dt - vh).toFixed(2) + 'px)' : dt.toFixed(2) + 'px');
       }
@@ -588,7 +616,8 @@
       // OPENS BIG)
       void cL; void sR; main.classList.remove('band-copy-colo');
       // (in the foot band, standing always, only where it clears the socials by 20 — THE LINE IN THE FOOT BAND)
-      if (FOOT_BAND) cpy.style.setProperty('visibility', cL - sR >= 20 ? 'visible' : 'hidden', 'important');
+      if (FOOT_BAND && !(FOOT_TOP && NAME_IN_RAIL)) cpy.style.setProperty('visibility', cL - sR >= 20 ? 'visible' : 'hidden', 'important');
+      else cpy.style.removeProperty('visibility');
     }
   };
   var seatColo = function () {
