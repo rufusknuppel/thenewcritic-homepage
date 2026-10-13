@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=6024d18c">
+<link rel="stylesheet" href="style.css?v=96d11e43">
 <style>:root{--colo-span:15.9459;--band-span:14.2737;--wm-space:0.9231;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6028,7 +6028,7 @@
             rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
-              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR;
+              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? cnm.getBoundingClientRect().bottom + (window.pageYOffset || 0) : BAND_AIR;
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
@@ -10317,7 +10317,7 @@ window.__ncStripInk = function () {
   var wideLogo = window.matchMedia('(min-width: 1024px)');
   var WM_SCALE = 1;
   var FOOT_BAND = true;
-  var FOOT_TOP = false;
+  var FOOT_TOP = true;
   var NAME_FOOT = false;
   var NAME_IN_RAIL = true;
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
@@ -10429,7 +10429,7 @@ window.__ncStripInk = function () {
     var topB = 0;
     if (FOOT_BAND && FOOT_TOP && undT && undT.offsetWidth) {
       var cuT = capsOf(undT);
-      if (cuT) { var fbT = Math.round(40 + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 58 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -10439,6 +10439,7 @@ window.__ncStripInk = function () {
     }
     var vcalc = function (v) { return nameB ? 'calc(100svh + ' + (v - vhN).toFixed(2) + 'px)' : v.toFixed(2) + 'px'; };
     main.style.setProperty('--strip-settled', H + 'px', 'important');
+    document.documentElement.style.setProperty('--strip-settled', H + 'px');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
@@ -10555,8 +10556,8 @@ window.__ncStripInk = function () {
       var FB_ACROSS = true;
       var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
       var onL = rrN && rrN.width && railN.classList.contains('latest-rail--l'), onR = rrN && rrN.width && !onL;
-      document.documentElement.style.setProperty('--cn-l', (onL ? rrN.right : 0).toFixed(2) + 'px');
-      document.documentElement.style.setProperty('--cn-r', (onR ? document.documentElement.clientWidth - rrN.left : 0).toFixed(2) + 'px');
+      document.documentElement.style.setProperty('--cn-l', (onL ? railN.offsetWidth : 0) + 'px');
+      document.documentElement.style.setProperty('--cn-r', (onR ? railN.offsetWidth : 0) + 'px');
       if (NAME_IN_RAIL && !FB_ACROSS) {
         var railF = document.querySelector('.page-rows .latest-rail--latest');
         var rrF = railF && railF.getBoundingClientRect();
@@ -11259,6 +11260,7 @@ window.__ncStripInk = function () {
     var w = rail.classList.contains('latest-rail--r') ? document.documentElement.clientWidth - left : left + rail.offsetWidth;
     var v = Math.round(w / 2) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
+    document.documentElement.style.setProperty('--rail-shift', v);
   };
   var animT = 0;
   var set = function (shut) {
