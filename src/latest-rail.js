@@ -584,6 +584,9 @@
       // (read where it stands unslid: the copyright rides out with the column as it shuts, on a transform — "Move
       // copyright to the bottom THE LATEST column")
       var uTx = 0; try { uTx = new DOMMatrixReadOnly(getComputedStyle(u).transform).m41 || 0; } catch (e) { uTx = 0; }
+      // (and the band's words, which ride with the band as the column shuts on their translate — "bottom band should
+      // expand and collapse with side column")
+      uTx += parseFloat((getComputedStyle(u).translate || '0').split(' ')[0]) || 0;
       if (fbX) left = (parseFloat(u.style.getPropertyValue('left')) || 0) + ((right ? fbX.copy : fbX[key]) - (tb.left - uTx));
       void ur;
       var atFoot = right && fbCopyY != null;
