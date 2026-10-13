@@ -198,7 +198,7 @@ function wordmarkWord(word, widthEm = 0) {
 // (each word's letters a fifth further apart, ink to ink — "add 20% more spacing between letters in the wordmark",
 // 2026-10-13: the word's outline split into its letters where their ink parts, each letter moved on by a fifth of
 // every gap before it, the drawing widened by the fifth of them all; LETTER_K)
-const LETTER_K = 1.2 * 1.2; // (a fifth more again since — "Increase gaps between letters in the wordmark by 20%")
+const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gaps between letters in the wordmark by 20%", twice)
 function spacedWord(word, k) {
   const svg = WORDMARK_WORDS[word];
   const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
@@ -226,7 +226,7 @@ function contentName() {
   // (three quarters since — "make THE 75% of the height of NEW"; half again since, a line over it as well as under,
   // the letters between at the same gap from each — "I want THE to have a overline as well as an underline, reduce
   // size accordingly")
-  const THE_K = 0.75; // (and back to three quarters, the line under it alone — "Revert overline on THE")
+  const THE_K = 0.75 * 0.8; // (and back to three quarters, the line under it alone — "Revert overline on THE"; a fifth smaller since, "Make THE 20% smaller")
   // (the gaps either side of the bird a quarter less than THE's to NEW's since — "reduce the gaps between W and C and
   // bird by 25%": the line still the column's width, the letters a little bigger for it; BIRD_GAP, --cn-gap)
   const BIRD_GAP = 0.75;
