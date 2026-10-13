@@ -121,8 +121,8 @@ const STAMP_FRAME = (() => {
 // frame (latest-rail.js, BIRD_INK); --bird-ar on the svg itself makes its
 // box square. In the colophon too since ("add to colophon too"), a cap tall
 // as the stamp was.
-const TNC_MARK = (() => {
-  const file = path.join(__dirname, 'assets', 'monogram-tnc.svg');
+const loadMark = (name) => {
+  const file = path.join(__dirname, 'assets', name);
   if (!fs.existsSync(file)) return null;
   const src = fs.readFileSync(file, 'utf8').replace(/<!--[\s\S]*?-->/g, '');
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
@@ -138,7 +138,12 @@ const TNC_MARK = (() => {
     return `<${tag}${id === spans ? ' class="band-logo__shield band-logo__frame"' : ''}${rest}${style ? ` style="${style}"` : ''}/>`;
   }).replace(/\s*\n\s*/g, '');
   return { w, h, body };
-})();
+};
+const TNC_MARK = loadMark('monogram-tnc.svg');
+// (the bird in its box, as the mark stood on 2026-10-09 before the box was taken out, 82d62dd — the beak out through
+// the box's left side, the wings over its top and foot, the tail to its right side: the name over the content's,
+// "Add back in the box around the bird from the old repo where the bird wings and beak and tail break out of the box")
+const TNC_BOX = loadMark('mark-bird-box.svg') || TNC_MARK;
 // THE NAME IN THE KOSUTH COVER'S LETTERING (2026-10-02, at the user's
 // word — "Use it as the wordmark, making the ink 5% thinner"): the
 // masthead's THE NEW CRITIC is three vector words, each traced from the
@@ -193,7 +198,7 @@ function wordmarkWord(word, widthEm = 0) {
 // (each word's letters a fifth further apart, ink to ink — "add 20% more spacing between letters in the wordmark",
 // 2026-10-13: the word's outline split into its letters where their ink parts, each letter moved on by a fifth of
 // every gap before it, the drawing widened by the fifth of them all; LETTER_K)
-const LETTER_K = 1.2;
+const LETTER_K = 1.2 * 1.2; // (a fifth more again since — "Increase gaps between letters in the wordmark by 20%")
 function spacedWord(word, k) {
   const svg = WORDMARK_WORDS[word];
   const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
@@ -211,19 +216,35 @@ function spacedWord(word, k) {
   return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
 }
 function contentName() {
+  const TNC_MARK = TNC_BOX;
   if (!TNC_MARK) return '';
   const caps = (w) => spacedWord(w, LETTER_K).ar;
   const ar = TNC_MARK.w / TNC_MARK.h, BIRD_K = 1.75 * 1.25; // (three quarters taller since — "I want bird to be 75% bigger than letters"; and a quarter bigger again, "Make the bird 25% bigger")
   // (THE half the size of NEW and CRITIC since, with a line under the whole word — "Make The 50% of the size of NEW
   // and CRITIC. Add a line underneath it, like in older repo with the blockier wordmark": as the LODÉHO name had it,
   // 2026-10-08, a gap of a stroke and a line a stroke deep under the letters; THE_K; style.css, THE HALF SIZE)
-  const THE_K = 0.75; // (three quarters since — "make THE 75% of the height of NEW")
+  // (three quarters since — "make THE 75% of the height of NEW"; half again since, a line over it as well as under,
+  // the letters between at the same gap from each — "I want THE to have a overline as well as an underline, reduce
+  // size accordingly")
+  const THE_K = 0.75; // (and back to three quarters, the line under it alone — "Revert overline on THE")
   // (the gaps either side of the bird a quarter less than THE's to NEW's since — "reduce the gaps between W and C and
   // bird by 25%": the line still the column's width, the letters a little bigger for it; BIRD_GAP, --cn-gap)
   const BIRD_GAP = 0.75;
   const span = THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
-  const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
-  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-span: ${span.toFixed(4)}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
+  // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
+  // edges showing through as hairlines — "Seeing hairlines around gaps": the cuts a mask on the outline)
+  let markBody = TNC_MARK.body;
+  const boxSrc = TNC_MARK === TNC_BOX ? fs.readFileSync(path.join(__dirname, 'assets', 'mark-bird-box.svg'), 'utf8') : '';
+  const cutsD = (boxSrc.match(/<path id="cuts"[^>]*\sd="([^"]+)"/) || [])[1];
+  if (cutsD) {
+    markBody = `<defs><mask id="cuts-out" maskUnits="userSpaceOnUse" x="-50" y="-50" width="${TNC_MARK.w + 100}" height="${TNC_MARK.h + 100}"><rect x="-50" y="-50" width="${TNC_MARK.w + 100}" height="${TNC_MARK.h + 100}" fill="#fff"/><path d="${cutsD}" fill="#000"/></mask></defs>`
+      + markBody.replace(/(<path[^>]*style="[^"]*stroke: currentColor[^"]*")\/>/, '$1 mask="url(#cuts-out)"/>')
+        .replace(`<path d="${cutsD}" style="fill: var(--nc-stamp-ground, #FFFFFF)"/>`, '');
+  }
+  const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
+  // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
+  const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
+  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
     + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
 }
 function bandWord(word) {
