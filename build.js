@@ -3696,7 +3696,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // (the bird out of the name since — "Move the bird under THE latest kickers": railBird, under each section's list)
     // (and a rule under the name, across the column, 20 under the grid — "Add a rule under the wordmark grid and The
     // Latest", 2026-10-13; style.css)
-    return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>';
+    // (the name's bird again at the column's foot, 27 over the copyright, shown as the name's own is covered by the
+    // band — "Then when the wordmark is fully covered, have the bird appear in the latest column 27px above the
+    // copyright", "Fade it in as the last 20% of the bird is scrolled over", 2026-10-13: the name's drawing, its ids
+    // its own; latest-rail.js seats and fades it, style.css THE BIRD AT THE COLUMN'S FOOT)
+    const cnBird = (contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '';
+    const railBirdMark = cnBird.replace(/-cn\b/g, '-rm').replace('class="content-name__bird"', 'class="rail-mark"');
+    return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
   // as tall as the name's letters and a thirtieth (--rn-span, the name's span, sizes it as the name is sized)

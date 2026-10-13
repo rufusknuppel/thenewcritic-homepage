@@ -1962,3 +1962,71 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(ask);
   ask();
 })();
+
+// THE LATEST 27 UNDER THE RULE, THE BIRD AT THE COLUMN'S FOOT (2026-10-13 — "Have THE latest sit 27px under top
+// rule"; "Then when the wordmark is fully covered, have the bird appear in the latest column 27px above the
+// copyright", "Fade it in as the last 20% of the bird is scrolled over"): The Latest's capitals 27 under the band's
+// rule (--rl-top); the name's bird at the column's foot at the name's bird's size, its wing tip 27 over the
+// copyright's capitals (--rm-bottom), shown as the name's own goes under the band, from none while a fifth of it
+// shows to all once none does (--rm-o); style.css
+(function () {
+  var main = document.querySelector('main.has-mega');
+  if (!main) return;
+  var capTop = function (el) {
+    // (the capitals' top off the text's line: its baseline less the font's cap height, read by canvas)
+    if (!el) return null;
+    var cs = getComputedStyle(el), fs = parseFloat(cs.fontSize) || 0;
+    var p = document.createElement('span'); p.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    el.appendChild(p); var base = p.getBoundingClientRect().top; el.removeChild(p);
+    var cx = capTop.ctx || (capTop.ctx = document.createElement('canvas').getContext('2d'));
+    cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+    var m = cx.measureText('H');
+    return base - (m.actualBoundingBoxAscent || fs * 0.66);
+  };
+  var seat = function () {
+    if (!main.classList.contains('name-in-rail') || window.innerWidth < 1024) return;
+    var hold = document.querySelector('.page-rows .latest-rail--latest > .latest-rail__hold');
+    var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    if (!hold || !strip) return;
+    var ruleB = strip.getBoundingClientRect().top + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0);
+    // (The Latest: its heading's capitals 27 under the rule)
+    var first = hold.querySelector(':scope > .latest-rail__in');
+    var head = first && (first.querySelector('.latest-rail__label, .latest-rail__head, h2, h3, a') || first);
+    if (first && head) {
+      var cur = parseFloat(getComputedStyle(first).marginTop) || 0, ct = capTop(head);
+      if (ct != null) {
+        var want = cur + (ruleB + 27 - ct);
+        if (Math.abs(want - cur) > 0.25) main.style.setProperty('--rl-top', want.toFixed(2) + 'px');
+      }
+    }
+    // (the bird: the name's bird's size and drawing's proportion; its foot 27 over the copyright's capitals)
+    var mark = hold.querySelector(':scope > .rail-mark');
+    var nb = document.querySelector('a.content-name .content-name__bird'), line = document.querySelector('a.content-name .content-name__line');
+    var cn = document.querySelector('a.content-name');
+    var cpy = strip.querySelector('.sub-ticker-run > .band-under--copy');
+    if (!mark || !nb || !line || !cn) return;
+    hold.style.setProperty('--rm-font', getComputedStyle(line).fontSize);
+    hold.style.setProperty('--rm-k', cn.style.getPropertyValue('--cn-bird') || '2.1875');
+    hold.style.setProperty('--rm-ar', cn.style.getPropertyValue('--bird-ar') || '0.968');
+    var cT = cpy && capTop(cpy.firstElementChild || cpy);
+    if (cT != null) hold.style.setProperty('--rm-bottom', (hold.getBoundingClientRect().bottom - (cT - 27)).toFixed(2) + 'px');
+    fade();
+  };
+  var fade = function () {
+    var hold = document.querySelector('.page-rows .latest-rail--latest > .latest-rail__hold');
+    var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
+    var nb = document.querySelector('a.content-name .content-name__bird');
+    if (!hold || !strip || !nb) return;
+    var ruleB = strip.getBoundingClientRect().top + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0);
+    var r = nb.getBoundingClientRect();
+    var shown = r.height ? Math.max(0, Math.min(1, (r.bottom - ruleB) / r.height)) : 1;
+    var o = Math.max(0, Math.min(1, (0.2 - shown) / 0.2));
+    hold.style.setProperty('--rm-o', o.toFixed(3));
+  };
+  window.addEventListener('scroll', fade, { passive: true });
+  window.addEventListener('resize', function () { setTimeout(seat, 60); });
+  document.addEventListener('newcritic:fit', function () { setTimeout(seat, 0); });
+  window.addEventListener('load', function () { setTimeout(seat, 300); setTimeout(seat, 1500); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(seat, 200); });
+  setTimeout(seat, 800);
+})();
