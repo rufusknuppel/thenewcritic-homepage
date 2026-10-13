@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=46e5fc9f">
+<link rel="stylesheet" href="style.css?v=3c725abd">
 <style>:root{--colo-span:15.9459;--band-span:14.2737;--wm-space:0.9231;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11164,7 +11164,16 @@ window.__ncStripInk = function () {
         var minS = (parseFloat(rnS.style.getPropertyValue('--rn-min')) || 0) * fS;
         mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
         var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
-        if (rnS.classList.contains('rail-name--words') && critS > 0) mid = vwE - 252 - (critS * fS + 42);
+        if (rnS.classList.contains('rail-name--words') && critS > 0) {
+          var RN_WIDER = 54;
+          mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
+          var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
+          if (arS) {
+            var wN = critS * fS + RN_WIDER, BEAK = 0.2;
+            var fB = (wN - 20 - (1 - BEAK) * arS * 40) / (critS + (1 - BEAK) * arS * 3);
+            if (fB < fS) main.style.setProperty('--rn-font', fB.toFixed(3) + 'px');
+          }
+        }
       }
       var lowP = document.querySelector('.latest-rail--r') && document.querySelector('.sub-ticker--top .band-logo__low svg path');
       var runs = lowP && letterRuns(lowP);
