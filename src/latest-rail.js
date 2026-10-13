@@ -1462,6 +1462,21 @@
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
       // (54 wider on the left since 2026-10-13 — "expand the side column by 54px", the column just gone left)
       if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1) - 54;
+      // THE GRID SQUARE (2026-10-13 — "Reduce The latest column size, keeping letter heights the same but reducing
+      // spacing between letters to form a tighter more square grid"): the name's letters at the size the column gave
+      // them at that width (its 20 and 22 in from the column's sides, --rn-span caps across), and the column as narrow
+      // as makes the grid as wide as it is tall — four lines and three 20s — the 20 and 22 again round it (--rn-font;
+      // style.css, THE GRID SQUARE)
+      var rnS = document.querySelector('.page-rows .latest-rail .rail-name');
+      if (rnS && isFinite(newL) && isFinite(theR) && main.classList.contains('name-in-rail')) {
+        var spanS = parseFloat(rnS.style.getPropertyValue('--rn-span')) || 7.759;
+        var fS = ((theR + newL) / 2 + 1 + 54 - 42) / spanS;
+        main.style.setProperty('--rn-font', fS.toFixed(3) + 'px');
+        // (and no narrower than keeps the columns' letters clear of each other across — "Widen it tho so that letters
+        // don't overlap": --rn-min, build.js)
+        var minS = (parseFloat(rnS.style.getPropertyValue('--rn-min')) || 0) * fS;
+        mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
+      }
       // (and on the right, between CRITIC's R and its first I since —
       // "Have the edge of the latest column stretch to between the R and
       // the I of critic", 2026-10-09: the rule's middle halfway from the R's

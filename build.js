@@ -3594,9 +3594,28 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // (no birds in the empty cells since — "Remove the birds from between the grid", the same day: gridBird kept, unused)
       void empty; void gridBird;
     };
-    const name = `<a class="rail-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-sp: ${WM_SPACE.toFixed(4)}em">`
-      + `<span class="rail-name__l1">${gridLine(lt, [0, 2, 4])}</span><span class="rail-name__l1">${gridLine(ln, [1, 3, 5])}</span>`
-      + `<span class="rail-name__l2">${gridLine(lc.slice(0, 3), [0, 2, 4])}</span><span class="rail-name__l2">${gridLine(lc.slice(3), [1, 3, 5])}</span></a>`;
+    // (THE GRID SQUARE since — "Reduce The latest column size, keeping letter heights the same but reducing spacing
+    // between letters to form a tighter more square grid", 2026-10-13: each letter its own drawing, set on its
+    // column's middle by the stylesheet across whatever width the name has — the six middles evenly from the widest
+    // letter's half in from either side — so the column can narrow to the grid's height and the letters keep their
+    // size; latest-rail.js sizes both, style.css THE GRID SQUARE)
+    const letterSvg = (L) => {
+      const w = L.hi - L.lo;
+      const d = L.subs.map((sp) => { let q = 0; return sp.replace(/-?\d*\.?\d+/g, (m) => (q++ % 2 === 0 ? String(+(+m - L.lo).toFixed(2)) : m)); }).join('');
+      return `<span class="rail-cell" style="--c: COL; --w: ${(w / 300).toFixed(4)}em"><svg class="band-logo__line" aria-hidden="true" focusable="false" style="width:${(w / 300).toFixed(4)}em;height:1em" viewBox="0 0 ${w.toFixed(2)} 300" overflow="visible"><path fill="currentColor" d="${d}"/></svg></span>`;
+    };
+    // (no narrower than keeps a column's letters clear of the next column's across — "Widen it tho so that letters
+    // don't overlap": the columns' middles at least the two widest halves apart, --rn-min the name's least width in
+    // letters' heights; latest-rail.js)
+    const colsOf = [[lt[0], lc[0]], [ln[0], lc[3]], [lt[1], lc[1]], [ln[1], lc[4]], [lt[2], lc[2]], [ln[2], lc[5]]];
+    const half = colsOf.map((c) => Math.max(...c.map((L) => (L.hi - L.lo) / 2)) / 300);
+    let sMin = 0;
+    for (let c = 0; c < 5; c++) sMin = Math.max(sMin, half[c] + half[c + 1]);
+    const rnMin = half[0] + 5 * sMin + half[5];
+    const gridRow = (letters, cols) => `<span class="rail-row">${letters.map((L, li) => letterSvg(L).replace('COL', cols[li])).join('')}</span>`;
+    void gridLine; void svgTpl;
+    const name = `<a class="rail-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-sp: ${WM_SPACE.toFixed(4)}em; --wmax: ${(wMax / 300).toFixed(4)}em; --a0: ${(Math.max(lt[0].hi - lt[0].lo, lc[0].hi - lc[0].lo) / 600).toFixed(4)}em; --a5: ${(Math.max(ln[2].hi - ln[2].lo, lc[5].hi - lc[5].lo) / 600).toFixed(4)}em; --rn-min: ${rnMin.toFixed(4)}">`
+      + gridRow(lt, [0, 2, 4]) + gridRow(ln, [1, 3, 5]) + gridRow(lc.slice(0, 3), [0, 2, 4]) + gridRow(lc.slice(3), [1, 3, 5]) + '</a>';
     // (the bird between the two lines since — "move the bird between THENEW and CRITIC", 2026-10-13)
     // (three lines since, THE, NEW and CRITIC each spaced across the one width at the letters' size — "Space the
     // wordmark over Three lines", "THE spaced, NEW spaced, and CRITIC spaced to fit width"; the bird over CRITIC)
