@@ -14795,7 +14795,7 @@ html body main.has-mega .duo-half--mega > .essay-acts > *:is(*, .r.r.r.r.r.r.r.r
     align-items: center !important;
     gap: 0.5em !important;
     font-size: var(--rm-h, 20px) !important;
-    --cn-bird: 3.3104;
+    --cn-bird: 2.6;
     height: auto !important;
     width: max-content !important;
     line-height: 1 !important;

@@ -219,7 +219,13 @@ function contentName() {
   const TNC_MARK = TNC_BOX;
   if (!TNC_MARK) return '';
   const caps = (w) => spacedWord(w, LETTER_K).ar;
-  const ar = TNC_MARK.w / TNC_MARK.h, BIRD_K = 1.75 * 1.25; // (three quarters taller since — "I want bird to be 75% bigger than letters"; and a quarter bigger again, "Make the bird 25% bigger")
+  // THE BOX ROUND THE WHOLE BIRD (2026-10-13 — "Use this shape around the bird on the wordmark too", the stamp's PNG:
+  // "Make the red box have 15% around the outside of the bird", "Reduce to 10%"): the box solid, a tenth of the bird's
+  // height past its every tip — the beak, the wing tips, the tail — nothing out of it; the drawing's view the box, so
+  // the box stands where the wing tips stood (BIRD_K), the bird inside it smaller (BOX_VB; the bird's ink, BIRD_INK)
+  const BIRD_INK = { l: 0.18, t: 0.14, r: 705.12, b: 728.37 }, BOX_M = 0.10 * (BIRD_INK.b - BIRD_INK.t);
+  const BOX_VB = { x: BIRD_INK.l - BOX_M, y: BIRD_INK.t - BOX_M, w: BIRD_INK.r - BIRD_INK.l + 2 * BOX_M, h: BIRD_INK.b - BIRD_INK.t + 2 * BOX_M };
+  const ar = BOX_VB.w / BOX_VB.h, BIRD_K = 1.75 * 1.25; // (three quarters taller since — "I want bird to be 75% bigger than letters"; and a quarter bigger again, "Make the bird 25% bigger")
   // (THE half the size of NEW and CRITIC since, with a line under the whole word — "Make The 50% of the size of NEW
   // and CRITIC. Add a line underneath it, like in older repo with the blockier wordmark": as the LODÉHO name had it,
   // 2026-10-08, a gap of a stroke and a line a stroke deep under the letters; THE_K; style.css, THE HALF SIZE)
@@ -246,7 +252,14 @@ function contentName() {
   const birdD = (boxSrc.match(/<path id="bird"[^>]*\sd="([^"]+)"/) || [])[1] || '';
   const holeD = (birdD.match(/M[^M]*/g) || []).slice(1).join('');
   if (holeD) markBody = markBody.replace(/<path[^>]*fill-rule="evenodd"/, (m) => `<path class="beak-hole" d="${holeD}" style="fill: currentColor"/>` + m);
-  const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
+  // (the box round the whole bird since — THE BOX ROUND THE WHOLE BIRD: the box, the beak's hole, the bird, its vein;
+  // the outline, its breaks and the old box's field gone)
+  const veinD = (boxSrc.match(/<path id="vein"[^>]*\sd="([^"]+)"/) || [])[1] || '';
+  if (birdD) markBody = `<path d="M${BOX_VB.x.toFixed(2)} ${BOX_VB.y.toFixed(2)}H${(BOX_VB.x + BOX_VB.w).toFixed(2)}V${(BOX_VB.y + BOX_VB.h).toFixed(2)}H${BOX_VB.x.toFixed(2)}Z" style="fill: currentColor"/>`
+    + (holeD ? `<path class="beak-hole" d="${holeD}" style="fill: currentColor"/>` : '')
+    + `<path fill-rule="evenodd" d="${birdD}" style="fill: currentColor"/>`
+    + (veinD ? `<path d="${veinD}" style="fill: var(--nc-stamp-ground, #FFFFFF)"/>` : '');
+  const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="${birdD ? [BOX_VB.x, BOX_VB.y, BOX_VB.w, BOX_VB.h].map((v) => v.toFixed(2)).join(' ') : `0 0 ${TNC_MARK.w} ${TNC_MARK.h}`}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
   return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
