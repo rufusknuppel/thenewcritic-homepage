@@ -102,6 +102,10 @@
   // (and the name back at the head with the line's band at the foot the same day — "Revert wordmark on top and nav
   // band on bottom")
   var NAME_FOOT = false;
+  // (and the name out of the head altogether since 2026-10-13 — "Move THE NEW above CRITIC in the Latest", the band
+  // gone: the head no height, the band's name still laid out unseen so the column's edge reads it as before;
+  // build.js and style.css, THE NAME IN THE COLUMN)
+  var NAME_IN_RAIL = true;
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
@@ -314,6 +318,8 @@
     // (the line gone to the band at the window's foot since — THE LINE IN THE FOOT BAND, seatUnder: the name AIR from
     // the band's top and foot)
     if (FOOT_BAND) H = Math.round(2 * AIR + wmH);
+    if (NAME_IN_RAIL) H = 0;
+    main.classList.toggle('name-in-rail', NAME_IN_RAIL);
     // (the line's band over the name: its own height, 20 over and under the line's capitals, and its rule)
     var topB = 0;
     if (FOOT_BAND && FOOT_TOP && undT && undT.offsetWidth) {
@@ -483,10 +489,27 @@
       var wS = txw(st.querySelector('.sub-ticker-run > .band-under--critic')), wC = txw(st.querySelector('.sub-ticker-run > .band-under--copy'));
       // (the dot after the socials since — "Move the theme dot to the other side of socials", 2026-10-11: the five
       // evenly from the 20 to the 20, every gap one)
-      var gF = (vwF - 40 - wT - wN - wS - dW - wC) / 4;
+      // (the content's column alone since 2026-10-13 — "Move the nav band into the content column only": the band and
+      // its line from the side column's edge to the window's, the side column running on to the window's foot;
+      // --fb-l / --fb-r, style.css)
+      var cL = 0, cR = vwF;
+      if (NAME_IN_RAIL) {
+        var railF = document.querySelector('.page-rows .latest-rail--latest');
+        var rrF = railF && railF.getBoundingClientRect();
+        if (rrF && rrF.width) { if (railF.classList.contains('latest-rail--l')) cL = rrF.right; else cR = rrF.left; }
+      }
+      main.style.setProperty('--fb-l', cL.toFixed(2) + 'px');
+      main.style.setProperty('--fb-r', (vwF - cR).toFixed(2) + 'px');
+      // (the copyright let go where the five would stand less than 20 apart — the content's column narrow at 1024)
+      var cpyF = st.querySelector('.sub-ticker-run > .band-under--copy');
+      var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / 4 >= 20;
+      if (cpyF) cpyF.style.setProperty('display', fitAll ? '' : 'none', fitAll ? '' : 'important');
+      if (!fitAll) wC = 0;
+      var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? 4 : 3);
       // (between the nav's items and the socials since — "move the dot between nav items and socials", the same day)
-      var xN = 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
-      fbX = { the: 20, new: xN, critic: xS, copy: vwF - 20 - wC, mid: xD + dW / 2 };
+      var xN = cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
+      fbX = { the: cL + 20, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
+      if (!fitAll) fbX.critic = cR - 20 - wS;
     }
     [].forEach.call(items, function (u) {
       var key = u.classList.contains('band-under--the') ? 'the' : u.classList.contains('band-under--new') ? 'new' : 'critic';
@@ -1434,7 +1457,8 @@
       var newL = Infinity, theR = -Infinity;
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__mid svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) newL = Math.min(newL, qr.left); });
       [].forEach.call(document.querySelectorAll('.sub-ticker--top .band-logo__top svg path'), function (q) { var qr = q.getBoundingClientRect(); if (qr.width) theR = Math.max(theR, qr.right); });
-      if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1);
+      // (54 wider on the left since 2026-10-13 — "expand the side column by 54px", the column just gone left)
+      if (isFinite(newL) && isFinite(theR)) mid = vwE - 252 - ((theR + newL) / 2 + 1) - 54;
       // (and on the right, between CRITIC's R and its first I since —
       // "Have the edge of the latest column stretch to between the R and
       // the I of critic", 2026-10-09: the rule's middle halfway from the R's
@@ -1449,8 +1473,9 @@
       // previous size", 2026-10-10: CRITIC's reach from the gap read at the 0.9 name's size, so the column holds
       // where it stood whatever the name's size)
       // (18 wider since 2026-10-11 — "expand the latest column by 18px")
-      // (and 18 again with the MAILLE name, 2026-10-13 — "Expand the latest column by 18px")
-      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18 - 18;
+      // (and 18 again with the MAILLE name, 2026-10-13 — "Expand the latest column by 18px"; and 36 more, "Expand the
+      // latest column by 36px"; and 54 more, "expand side column by 54px again")
+      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18 - 18 - 36 - 54;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);

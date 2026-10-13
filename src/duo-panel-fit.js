@@ -7447,7 +7447,8 @@
   // (the air between the bands and the rows, over the first picture and under the last, where the line stands in the
   // foot band: 36 since 2026-10-11 — "Reduce gap from 54px to 36px"; 54 before. THE LINE IN THE FOOT BAND,
   // latest-rail.js)
-  var BAND_AIR = 36;
+  // (54 again since 2026-10-13 — "Have gap above and below content be 54px")
+  var BAND_AIR = 54;
   // (between one row and the next, 72 since 2026-10-04, at the user's
   // word: "Increase space between rows to 72px" — the band's 54 over the
   // first row and the colophon's 54 under the last stand as they were)
@@ -7833,6 +7834,14 @@
               }
             }
             rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
+            // (no head at all where the name stands in the column — THE NAME IN THE COLUMN, latest-rail.js: the first
+            // picture's frame BAND_AIR under the window's top at the page's top)
+            if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
+              var fr0 = row.querySelector('.card-frame');
+              // (the row's ink a pixel over the painted frame, where the frame is not laid yet)
+              if (fr0 && fr0.offsetHeight) rowDelta = (BAND_AIR - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
+              else if (ink) rowDelta = (BAND_AIR + 1 - (window.pageYOffset || 0)) - ink.t;
+            }
           }
         }
         // (a section's first row 36 under its dek's baseline — or its

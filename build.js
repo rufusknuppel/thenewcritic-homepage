@@ -502,7 +502,8 @@ const SITE_TAGLINE = 'The Last Magazine';
 // page, 'l' or 'r' — the root carries it as rail-side-l / rail-side-r for the
 // rules that differ by side (style.css). On the right again since "Move The
 // Latest column back to the right", after an afternoon on the left.
-const RAIL_SIDE = 'r';
+// (on the left again since 2026-10-13 — "Move the latest column to the left side")
+const RAIL_SIDE = 'l';
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
 // deploy by cloudflare/worker.js. Social cards need absolute URLs, and
@@ -3505,7 +3506,100 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       + (ab ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ab.href)}">About</a>` : '')
       + `</span></nav>`;
   };
-  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() : ''}<div class="latest-rail__in">`
+  // THE NAME IN THE COLUMN (2026-10-13, at the user's words — "Move THE NEW above CRITIC in the Latest. Move the bird
+  // into the bottom right corner of The Latest", the top band gone): THE NEW over CRITIC at the column's head, the two
+  // lines centred, the wider as wide as the column less its 20s (--rn-span, the wider line in caps: THE, the drawing's
+  // word space and NEW, or CRITIC); the bird in the column's foot at the right (style.css, THE NAME IN THE COLUMN)
+  const railMark = () => {
+    const caps = (w) => { const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number); return vb[2] / vb[3]; };
+    const l1 = caps('the') + WM_SPACE + caps('new'), l2 = caps('critic');
+    // (CRITIC's letters spaced out to THE NEW's width, at their own size — "Make Critic the same width as THENEW",
+    // "space critic letters, don't make bigger", 2026-10-13: the drawing's subpaths grouped into letters by where
+    // they stand across — a counter inside its letter's span — and the letters set evenly from THE's first stroke's
+    // place to NEW's last's)
+    // (and THE NEW the same since — "Space THE NEW without a space like the letters of CRITIC": its six letters
+    // evenly across the same width, no word's gap among them)
+    const spaced = (words) => {
+      const W = l1 * 300;
+      let off = 0, subs = [], svg0 = null;
+      words.forEach((w) => {
+        const svg = bandWord(w); svg0 = svg0 || svg;
+        const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+        const k = 300 / vb[3];
+        svg.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).forEach((sp) => {
+          let q = 0;
+          const sp2 = sp.replace(/-?\d*\.?\d+/g, (m) => String(+((q++ % 2 === 0 ? +m * k + off : +m * k)).toFixed(2)));
+          const n = sp2.match(/-?\d*\.?\d+/g).map(Number);
+          let lo = Infinity, hi = -Infinity;
+          for (let t = 0; t < n.length; t += 2) { lo = Math.min(lo, n[t]); hi = Math.max(hi, n[t]); }
+          subs.push({ sp: sp2, lo, hi });
+        });
+        off += vb[2] * k + 1000;
+      });
+      subs.sort((a, b) => a.lo - b.lo);
+      const letters = [];
+      subs.forEach((q) => { const L = letters[letters.length - 1]; if (L && q.lo < L.hi) { L.subs.push(q.sp); L.hi = Math.max(L.hi, q.hi); } else letters.push({ subs: [q.sp], lo: q.lo, hi: q.hi }); });
+      const ink = letters.reduce((t, L) => t + (L.hi - L.lo), 0);
+      const g = letters.length > 1 ? (W - ink) / (letters.length - 1) : 0;
+      let x = 0;
+      const out = letters.map((L) => {
+        const dx = x - L.lo; x += (L.hi - L.lo) + g;
+        return L.subs.map((sp) => { let q = 0; return sp.replace(/-?\d*\.?\d+/g, (m) => (q++ % 2 === 0 ? String(+(+m + dx).toFixed(2)) : m)); }).join('');
+      }).join('');
+      return svg0.replace(/ d="[^"]+"/, ` d="${out}"`).replace(/viewBox="[^"]+"/, `viewBox="0 0 ${W.toFixed(2)} 300"`)
+        .replace(/width:[\d.]+em/, `width:${(W / 300).toFixed(4)}em`);
+    };
+    // (FOUR LINES ON SIX COLUMNS since — "Space the letters over four lines in the wordmark. T H E (1, 3, 5) N E W (2, 4,
+    // 6), C R I (1,3,5) T I C(2,4,6)": six columns evenly across the one width, the widest letter's half in from
+    // either side, every letter on its column's middle — THE and CRI on the odd columns, NEW and TIC on the even)
+    const lettersOf = (w) => {
+      const svg = bandWord(w);
+      const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+      const k = 300 / vb[3];
+      const subs = svg.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).map((sp) => {
+        let q = 0;
+        const sp2 = sp.replace(/-?\d*\.?\d+/g, (m) => String(+(+m * k).toFixed(2)));
+        const n = sp2.match(/-?\d*\.?\d+/g).map(Number);
+        let lo = Infinity, hi = -Infinity;
+        for (let t = 0; t < n.length; t += 2) { lo = Math.min(lo, n[t]); hi = Math.max(hi, n[t]); }
+        void q;
+        return { sp: sp2, lo, hi };
+      }).sort((a, b) => a.lo - b.lo);
+      const L = [];
+      subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) { z.subs.push(q.sp); z.hi = Math.max(z.hi, q.hi); } else L.push({ subs: [q.sp], lo: q.lo, hi: q.hi }); });
+      return L;
+    };
+    const svgTpl = bandWord('the');
+    const gridW = l1 * 300;
+    const lt = lettersOf('the'), ln = lettersOf('new'), lc = lettersOf('critic');
+    const wMax = Math.max(...[...lt, ...ln, ...lc].map((L) => L.hi - L.lo));
+    const colX = (i) => wMax / 2 + i * (gridW - wMax) / 5;
+    const gridLine = (letters, cols) => {
+      const d = letters.map((L, li) => {
+        const dx = colX(cols[li]) - (L.lo + L.hi) / 2;
+        return L.subs.map((sp) => { let q = 0; return sp.replace(/-?\d*\.?\d+/g, (m) => (q++ % 2 === 0 ? String(+(+m + dx).toFixed(2)) : m)); }).join('');
+      }).join('');
+      return svgTpl.replace(/ d="[^"]+"/, ` d="${d}"`).replace(/viewBox="[^"]+"/, `viewBox="0 0 ${gridW.toFixed(2)} 300"`)
+        .replace(/width:[\d.]+em/, `width:${(gridW / 300).toFixed(4)}em`);
+    };
+    const name = `<a class="rail-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-sp: ${WM_SPACE.toFixed(4)}em">`
+      + `<span class="rail-name__l1">${gridLine(lt, [0, 2, 4])}</span><span class="rail-name__l1">${gridLine(ln, [1, 3, 5])}</span>`
+      + `<span class="rail-name__l2">${gridLine(lc.slice(0, 3), [0, 2, 4])}</span><span class="rail-name__l2">${gridLine(lc.slice(3), [1, 3, 5])}</span></a>`;
+    // (the bird between the two lines since — "move the bird between THENEW and CRITIC", 2026-10-13)
+    // (three lines since, THE, NEW and CRITIC each spaced across the one width at the letters' size — "Space the
+    // wordmark over Three lines", "THE spaced, NEW spaced, and CRITIC spaced to fit width"; the bird over CRITIC)
+    // (the bird out of the name since — "Move the bird under THE latest kickers": railBird, under each section's list)
+    return name.replace('__BIRD__', '');
+  };
+  // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
+  // as tall as the name's letters and a thirtieth (--rn-span, the name's span, sizes it as the name is sized)
+  const railBird = (si) => {
+    if (!TNC_MARK) return '';
+    const caps = (w) => { const vb = WORDMARK_WORDS[w].match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number); return vb[2] / vb[3]; };
+    const span = Math.max(caps('the') + WM_SPACE + caps('new'), caps('critic'));
+    return `<span class="rail-bird" aria-hidden="true" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}; --rn-span: ${span.toFixed(4)}"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, `id="$1-rail${si}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-rail${si})`).replace(/ class="band-logo__shield band-logo__frame"/g, ' class="rail-bird__frame"')}</svg></span>`;
+  };
+  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() : ''}<div class="latest-rail__in">`
     + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from
@@ -3514,7 +3608,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // (no credit in the column since 2026-10-04: "Remove the garamond
       // italics from the right column")
       return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span></a></li>`;
-    }).join('')}</ul>`
+    }).join('')}</ul>` + railBird(si)
     + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
     + railCues(si)
     + `</div>${si === 0 ? railCopy() : ''}</div></aside>`;
