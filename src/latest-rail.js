@@ -94,7 +94,9 @@
   // the window's top, its rule at its foot, the name's band under it, the two one head — --strip-settled — its
   // height the line's band, the rule, and the name with its air; THE LINE IN THE FOOT BAND, now at the head)
   // (back at the foot the same day — "Revert wordmark on top and nav band on bottom")
-  var FOOT_TOP = false;
+  // (true again since 2026-10-13 — "Move bottom band to top of the site": the band at the window's top, its rule
+  // under it, the name and the column under that)
+  var FOOT_TOP = true;
   // (and the name in a band at the window's foot since 2026-10-11 — "Move wordmark to the bottom": the line's band
   // alone the head, --strip-settled; the name in its band at the foot, its air 20 over and under it, the band's rule
   // over it — its ground .foot-band, its height --foot-band; each of the name's and the bird's rises a calc on the
@@ -324,7 +326,9 @@
     var topB = 0;
     if (FOOT_BAND && FOOT_TOP && undT && undT.offsetWidth) {
       var cuT = capsOf(undT);
-      if (cuT) { var fbT = Math.round(40 + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      // (29 over and under its line, as the foot band was, with the name over the content — "Move bottom band to top of
+      // the site")
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 58 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -334,6 +338,8 @@
     }
     var vcalc = function (v) { return nameB ? 'calc(100svh + ' + (v - vhN).toFixed(2) + 'px)' : v.toFixed(2) + 'px'; };
     main.style.setProperty('--strip-settled', H + 'px', 'important');
+    // (the root too, for the name over the content under the band at the top — "Move bottom band to top of the site")
+    document.documentElement.style.setProperty('--strip-settled', H + 'px');
     st.style.setProperty('height', H + 'px', 'important');
     var top = st.getBoundingClientRect().top;
     k = inkY();
@@ -504,8 +510,10 @@
       var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
       // (and to the side column's left edge where the column is on the right — "Move the latest column to the right")
       var onL = rrN && rrN.width && railN.classList.contains('latest-rail--l'), onR = rrN && rrN.width && !onL;
-      document.documentElement.style.setProperty('--cn-l', (onL ? rrN.right : 0).toFixed(2) + 'px');
-      document.documentElement.style.setProperty('--cn-r', (onR ? document.documentElement.clientWidth - rrN.left : 0).toFixed(2) + 'px');
+      // (the column's own width, not where it stands: slid out as it shuts it stands past the window — "Expansion/
+      // collapse breaks wordmark"; the name slides with the rows instead, --rail-shift)
+      document.documentElement.style.setProperty('--cn-l', (onL ? railN.offsetWidth : 0) + 'px');
+      document.documentElement.style.setProperty('--cn-r', (onR ? railN.offsetWidth : 0) + 'px');
       if (NAME_IN_RAIL && !FB_ACROSS) {
         var railF = document.querySelector('.page-rows .latest-rail--latest');
         var rrF = railF && railF.getBoundingClientRect();
@@ -1643,6 +1651,9 @@
     var w = rail.classList.contains('latest-rail--r') ? document.documentElement.clientWidth - left : left + rail.offsetWidth;
     var v = Math.round(w / 2) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
+    // (and to the root, for the name over the content outside main, which slides with the rows — "Expansion/collapse
+    // breaks wordmark. Should move with content to center too", 2026-10-13)
+    document.documentElement.style.setProperty('--rail-shift', v);
   };
   // (the foot's strip and its words follow the column out and back —
   // THE NAV AT THE FOOT: their easing on before they move, only while the

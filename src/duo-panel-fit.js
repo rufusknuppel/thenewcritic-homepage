@@ -7841,7 +7841,7 @@
               // (the row's ink a pixel over the painted frame, where the frame is not laid yet)
               // (under the name over the content since, 54 under its letters — THE NAME OVER THE CONTENT: the name's box
               // ends 54 under them; the row's foot let go under the foot band, "let the bottom of the content be hidden")
-              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR;
+              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? cnm.getBoundingClientRect().bottom + (window.pageYOffset || 0) : BAND_AIR;
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
