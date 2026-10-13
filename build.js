@@ -241,6 +241,11 @@ function contentName() {
       + markBody.replace(/(<path[^>]*style="[^"]*stroke: currentColor[^"]*")\/>/, '$1 mask="url(#cuts-out)"/>')
         .replace(`<path d="${cutsD}" style="fill: var(--nc-stamp-ground, #FFFFFF)"/>`, '');
   }
+  // (the hole in the beak filled in the box's charcoal — "Make this hole in the beak charcoal fill", 2026-10-13: the
+  // bird's outline's one inner subpath laid under the bird, .beak-hole)
+  const birdD = (boxSrc.match(/<path id="bird"[^>]*\sd="([^"]+)"/) || [])[1] || '';
+  const holeD = (birdD.match(/M[^M]*/g) || []).slice(1).join('');
+  if (holeD) markBody = markBody.replace(/<path[^>]*fill-rule="evenodd"/, (m) => `<path class="beak-hole" d="${holeD}" style="fill: currentColor"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);

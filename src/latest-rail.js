@@ -551,7 +551,9 @@
         fbX = { the: vwF / 2 - wT / 2, new: 54, critic: vwF - 54 - wS, copy: colMid - wC / 2, mid: 0 };
         var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
         fbDot = { x: onL ? 27 + dW / 2 : vwF - 27 - dW / 2, y: st.getBoundingClientRect().top + (parseFloat(st.style.getPropertyValue('height')) || 0) + 27 + dHt / 2 };
-        fbCopyY = st.getBoundingClientRect().top + vh - FB_AIR;
+        // (54 over the window's foot since — "Increase top and bottom to 54px", the Latest column's, 2026-10-13)
+        // (and back to 27 — "have the copyright be only 27px bottom margin", The Latest still 54 under the rule)
+        fbCopyY = st.getBoundingClientRect().top + vh - 27;
       }
     }
     [].forEach.call(items, function (u) {
@@ -1995,7 +1997,8 @@
     if (first && head) {
       var cur = parseFloat(getComputedStyle(first).marginTop) || 0, ct = capTop(head);
       if (ct != null) {
-        var want = cur + (ruleB + 27 - ct);
+        // (54 since — "Increase top and bottom to 54px", the Latest column's, 2026-10-13)
+        var want = cur + (ruleB + 54 - ct);
         if (Math.abs(want - cur) > 0.25) main.style.setProperty('--rl-top', want.toFixed(2) + 'px');
       }
     }
