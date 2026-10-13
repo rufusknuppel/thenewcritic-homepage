@@ -1476,6 +1476,9 @@
         // don't overlap": --rn-min, build.js)
         var minS = (parseFloat(rnS.style.getPropertyValue('--rn-min')) || 0) * fS;
         mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
+        // (three words since — the column CRITIC's width at that size and the 20 and 22 round it)
+        var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
+        if (rnS.classList.contains('rail-name--words') && critS > 0) mid = vwE - 252 - (critS * fS + 42);
       }
       // (and on the right, between CRITIC's R and its first I since —
       // "Have the edge of the latest column stretch to between the R and

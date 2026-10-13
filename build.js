@@ -3614,11 +3614,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     const rnMin = half[0] + 5 * sMin + half[5];
     const gridRow = (letters, cols) => `<span class="rail-row">${letters.map((L, li) => letterSvg(L).replace('COL', cols[li])).join('')}</span>`;
     void gridLine; void svgTpl;
-    const name = `<a class="rail-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-sp: ${WM_SPACE.toFixed(4)}em; --wmax: ${(wMax / 300).toFixed(4)}em; --a0: ${(Math.max(lt[0].hi - lt[0].lo, lc[0].hi - lc[0].lo) / 600).toFixed(4)}em; --a5: ${(Math.max(ln[2].hi - ln[2].lo, lc[5].hi - lc[5].lo) / 600).toFixed(4)}em; --rn-min: ${rnMin.toFixed(4)}">`
-      // (THE BIRD UNDER THE LETTERS since — "Add the bird underneath the wordmark letters in the highlight color filling",
-      // 2026-10-13: the bird behind the grid, as large as the grid's box allows, in the highlight; style.css)
-      + (TNC_MARK ? `<span class="rail-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-under"').replace(/url\(#([^)]+)\)/g, 'url(#$1-under)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>` : '')
-      + gridRow(lt, [0, 2, 4]) + gridRow(ln, [1, 3, 5]) + gridRow(lc.slice(0, 3), [0, 2, 4]) + gridRow(lc.slice(3), [1, 3, 5]) + '</a>';
+    // (THREE WORDS since — "Have the wordmark be three words, all left aligned THE/NEW/CRITIC. With bird in the top
+    // right", 2026-10-13: THE, NEW and CRITIC each as drawn, flush left, 20 apart; the bird at the top right, as
+    // tall as the letters and a thirtieth, in the highlight; the grid's pieces kept, unused)
+    void gridRow; void lettersOf;
+    const name = `<a class="rail-name rail-name--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--rn-span: ${Math.max(l1, l2).toFixed(4)}; --rn-critic: ${l2.toFixed(4)}">`
+      + (TNC_MARK ? `<span class="rail-name__bird" aria-hidden="true" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-under"').replace(/url\(#([^)]+)\)/g, 'url(#$1-under)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>` : '')
+      + `<span class="rail-word">${bandWord('the')}</span><span class="rail-word">${bandWord('new')}</span><span class="rail-word">${bandWord('critic')}</span></a>`;
     // (the bird between the two lines since — "move the bird between THENEW and CRITIC", 2026-10-13)
     // (three lines since, THE, NEW and CRITIC each spaced across the one width at the letters' size — "Space the
     // wordmark over Three lines", "THE spaced, NEW spaced, and CRITIC spaced to fit width"; the bird over CRITIC)
