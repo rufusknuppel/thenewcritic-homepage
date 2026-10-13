@@ -467,7 +467,8 @@
     if (FOOT_BAND) {
       // (36 taller since 2026-10-13 — "expand the height of the nav bar by 36px": 18 more over the line and 18 more
       // under it, 38 each)
-      var FB_AIR = 20 + 18;
+      // (9 less over and under since 2026-10-13 — "Reduce bottom band height by 18px")
+      var FB_AIR = 20 + 18 - 9;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');

@@ -3494,7 +3494,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // (with the column on the right the first picture stands at the
         // right, by the column, still in the middle of the page — "Move The
         // Latest column back to the right")
-        const toR = RAIL_SIDE === 'r' ? j % 2 === 0 : j % 2 === 1;
+        // (the first picture at the left whichever side the column stands, the rest alternating from it — "Move top
+        // post image to the left. Adjust other posts accordingly", 2026-10-13)
+        const toR = j % 2 === 1;
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first
