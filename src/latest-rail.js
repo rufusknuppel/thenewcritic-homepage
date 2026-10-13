@@ -501,7 +501,10 @@
       var FB_ACROSS = true;
       // (the name over the content from the side column's edge — THE NAME OVER THE CONTENT, build.js contentName)
       var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
-      document.documentElement.style.setProperty('--cn-l', (rrN && rrN.width && railN.classList.contains('latest-rail--l') ? rrN.right : 0).toFixed(2) + 'px');
+      // (and to the side column's left edge where the column is on the right — "Move the latest column to the right")
+      var onL = rrN && rrN.width && railN.classList.contains('latest-rail--l'), onR = rrN && rrN.width && !onL;
+      document.documentElement.style.setProperty('--cn-l', (onL ? rrN.right : 0).toFixed(2) + 'px');
+      document.documentElement.style.setProperty('--cn-r', (onR ? document.documentElement.clientWidth - rrN.left : 0).toFixed(2) + 'px');
       if (NAME_IN_RAIL && !FB_ACROSS) {
         var railF = document.querySelector('.page-rows .latest-rail--latest');
         var rrF = railF && railF.getBoundingClientRect();
@@ -1524,7 +1527,9 @@
       // (18 wider since 2026-10-11 — "expand the latest column by 18px")
       // (and 18 again with the MAILLE name, 2026-10-13 — "Expand the latest column by 18px"; and 36 more, "Expand the
       // latest column by 36px"; and 54 more, "expand side column by 54px again")
-      if (runs && runs.length > 2) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18 - 18 - 36 - 54;
+      // (not with the name over the content since — "Move the latest column to the right", 2026-10-13: the column the
+      // width the name-in-rail sizing above gave it, the same on either side)
+      if (runs && runs.length > 2 && !main.classList.contains('name-in-rail')) mid = (vwE - 20) - (runs[runs.length - 1][1] - (runs[1][1] + runs[2][0]) / 2) * (0.9 / (window.__ncWmScale || 0.9)) - 1 - 252 - 18 - 18 - 36 - 54;
     }
     void word;
     if (p0) strip.style.setProperty('--colo-p', p0);
