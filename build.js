@@ -218,9 +218,12 @@ function contentName() {
   // and CRITIC. Add a line underneath it, like in older repo with the blockier wordmark": as the LODÉHO name had it,
   // 2026-10-08, a gap of a stroke and a line a stroke deep under the letters; THE_K; style.css, THE HALF SIZE)
   const THE_K = 0.75; // (three quarters since — "make THE 75% of the height of NEW")
-  const span = THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + 3 * WM_SPACE;
+  // (the gaps either side of the bird a quarter less than THE's to NEW's since — "reduce the gaps between W and C and
+  // bird by 25%": the line still the column's width, the letters a little bigger for it; BIRD_GAP, --cn-gap)
+  const BIRD_GAP = 0.75;
+  const span = THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
-  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-span: ${span.toFixed(4)}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
+  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-span: ${span.toFixed(4)}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
     + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
 }
 function bandWord(word) {
