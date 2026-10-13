@@ -3706,7 +3706,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // copyright", "Fade it in as the last 20% of the bird is scrolled over", 2026-10-13: the name's drawing, its ids
     // its own; latest-rail.js seats and fades it, style.css THE BIRD AT THE COLUMN'S FOOT)
     const cnBird = (contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '';
-    const railBirdMark = cnBird.replace(/-cn\b/g, '-rm').replace('class="content-name__bird"', 'class="rail-mark"');
+    // (THE over NEW at its left and CRI over TIC at its right since, each pair as tall as the box — "For the stamp in
+    // the latest column have THE/NEW (on the left) and CRI/TIC (on the right) the height of the box", 2026-10-13:
+    // --rm-wl and --rm-wr the two sides' widths in their capitals; style.css THE STAMP'S WORDS)
+    const birdSvgRm = cnBird.replace(/-cn\b/g, '-rm').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '');
+    const wTHE = spacedWord('the', LETTER_K), wNEW = spacedWord('new', LETTER_K), wCRI = spacedWord('cri', LETTER_K), wTIC = spacedWord('tic', LETTER_K);
+    const railBirdMark = `<span class="rail-mark" aria-hidden="true" style="--rm-wl: ${Math.max(wTHE.ar, wNEW.ar).toFixed(4)}; --rm-wr: ${Math.max(wCRI.ar, wTIC.ar).toFixed(4)}">`
+      + `<span class="rail-mark__side">${wTHE.svg}${wNEW.svg}</span>${birdSvgRm}<span class="rail-mark__side rail-mark__side--r">${wCRI.svg}${wTIC.svg}</span></span>`;
     return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,

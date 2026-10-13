@@ -2016,9 +2016,15 @@
     var cn = document.querySelector('a.content-name');
     var cpy = strip.querySelector('.sub-ticker-run > .band-under--copy');
     if (!mark || !nb || !line || !cn) return;
-    hold.style.setProperty('--rm-font', getComputedStyle(line).fontSize);
-    hold.style.setProperty('--rm-k', cn.style.getPropertyValue('--cn-bird') || '2.1875');
-    hold.style.setProperty('--rm-ar', cn.style.getPropertyValue('--bird-ar') || '0.968');
+    // (the stamp's capital: THE/NEW, the bird and CRI/TIC with their two half-capital gaps across the column less two
+    // 27s — THE STAMP'S WORDS)
+    var arB = parseFloat(cn.style.getPropertyValue('--bird-ar')) || 0.9676;
+    var wl = parseFloat(mark.style.getPropertyValue('--rm-wl')) || 0, wr = parseFloat(mark.style.getPropertyValue('--rm-wr')) || 0;
+    var railW = hold.parentElement ? hold.parentElement.offsetWidth : hold.offsetWidth;
+    var availW = railW - 54;
+    var rmH = availW / (wl + wr + 2 * 0.5 + 3.3104 * arB);
+    hold.style.setProperty('--rm-h', rmH.toFixed(3) + 'px');
+    hold.style.setProperty('--rm-ar', arB.toFixed(4));
     var cT = cpy && capTop(cpy.firstElementChild || cpy);
     if (cT != null) hold.style.setProperty('--rm-bottom', (hold.getBoundingClientRect().bottom - (cT - 27)).toFixed(2) + 'px');
     fade();
