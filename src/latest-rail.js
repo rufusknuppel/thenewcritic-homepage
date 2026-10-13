@@ -97,6 +97,9 @@
   // (true again since 2026-10-13 — "Move bottom band to top of the site": the band at the window's top, its rule
   // under it, the name and the column under that)
   var FOOT_TOP = true;
+  // (at the window's foot again since, across the content's column only — "move top band to the bottom in the left
+  // column", 2026-10-13: FB_ACROSS off; the line spread as it stood at the top, SPREAD)
+  FOOT_TOP = false;
   // (and the name in a band at the window's foot since 2026-10-11 — "Move wordmark to the bottom": the line's band
   // alone the head, --strip-settled; the name in its band at the foot, its air 20 over and under it, the band's rule
   // over it — its ground .foot-band, its height --foot-band; each of the name's and the bird's rises a calc on the
@@ -108,6 +111,7 @@
   // gone: the head no height, the band's name still laid out unseen so the column's edge reads it as before;
   // build.js and style.css, THE NAME IN THE COLUMN)
   var NAME_IN_RAIL = true;
+  var SPREAD = NAME_IN_RAIL; // (the band's line spread — THE BAND'S LINE SPREAD, seatUnder)
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
@@ -317,7 +321,7 @@
     // name's ink, the band AIR under the line's baseline; seatUnder sets the line)
     // (the line's capitals read off the list's Garamond since The Last Magazine went to the kickers' Work Sans — "Make
     // the last magazine all caps work sans", 2026-10-13: the band's air stays the list's)
-    var undT = (NAME_IN_RAIL && FOOT_TOP && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
+    var undT = (SPREAD && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
     if (undT && undT.offsetWidth && !FOOT_BAND) { var cu0 = capsOf(undT); if (cu0) H = Math.round(3 * AIR + wmH + (cu0.base - cu0.cap)); }
     // (the line gone to the band at the window's foot since — THE LINE IN THE FOOT BAND, seatUnder: the name AIR from
     // the band's top and foot)
@@ -463,7 +467,7 @@
       return isFinite(l) ? { l: l, r: r, b: b } : null;
     };
     var words = { the: inkOf('.band-logo__top svg path'), new: inkOf('.band-logo__mid svg path'), critic: inkOf('.band-logo__low svg path') };
-    var tlm = (NAME_IN_RAIL && FOOT_TOP && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
+    var tlm = (SPREAD && st.querySelector('.band-under--new > *')) || st.querySelector('.band-under--the > *');
     var c0 = tlm && capsOf(tlm);
     if (!run || !words.the || !words.new || !words.critic || !c0) return;
     var foot = Math.max(words.the.b, words.new.b, words.critic.b);
@@ -480,9 +484,9 @@
       // (9 less over and under since 2026-10-13 — "Reduce bottom band height by 18px")
       var FB_AIR = 20 + 18 - 9;
       // (54 since, the band at the top — "Move the top band margins to 54px", 2026-10-13)
-      if (FOOT_TOP && NAME_IN_RAIL) FB_AIR = 54;
+      if (SPREAD) FB_AIR = 54;
       // (27 since — "have 27px above and below text in the top band", 2026-10-13)
-      if (FOOT_TOP && NAME_IN_RAIL) FB_AIR = 27;
+      if (SPREAD) FB_AIR = 27;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
@@ -513,7 +517,7 @@
       var cL = 0, cR = vwF;
       // (across the side column again since, window edge to window edge — "Have the nav bar cut across The latest
       // column", 2026-10-13)
-      var FB_ACROSS = true;
+      var FB_ACROSS = !SPREAD || FOOT_TOP;
       // (the name over the content from the side column's edge — THE NAME OVER THE CONTENT, build.js contentName)
       var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
       // (and to the side column's left edge where the column is on the right — "Move the latest column to the right")
@@ -525,7 +529,8 @@
       if (NAME_IN_RAIL && !FB_ACROSS) {
         var railF = document.querySelector('.page-rows .latest-rail--latest');
         var rrF = railF && railF.getBoundingClientRect();
-        if (rrF && rrF.width) { if (railF.classList.contains('latest-rail--l')) cL = rrF.right; else cR = rrF.left; }
+        // (off the column's own width, not where it stands — slid out as it shuts it stands past the window)
+        if (rrF && rrF.width) { if (railF.classList.contains('latest-rail--l')) cL = railF.offsetWidth; else cR = vwF - railF.offsetWidth; }
       }
       main.style.setProperty('--fb-l', cL.toFixed(2) + 'px');
       main.style.setProperty('--fb-r', (vwF - cR).toFixed(2) + 'px');
@@ -546,11 +551,12 @@
       // the right; the copyright on the side column's middle, its baseline as far over the window's foot as the line's
       // over the band's rule; the dot 27 in from the column's outer side and 27 under the rule (fbDot)
       var fbDot = null, fbCopyY = null;
-      if (FOOT_TOP && NAME_IN_RAIL) {
+      if (SPREAD) {
         if (cpyF) cpyF.style.removeProperty('display');
         wC = txw(cpyF);
         var rwF = railN ? railN.offsetWidth : 0, colMid = onL ? rwF / 2 : vwF - rwF / 2;
-        fbX = { the: vwF / 2 - wT / 2, new: 54, critic: vwF - 54 - wS, copy: colMid - wC / 2, mid: 0 };
+        // (across the band's own span since it went to the content's column's foot: cL to cR)
+        fbX = { the: (cL + cR) / 2 - wT / 2, new: cL + 54, critic: cR - 54 - wS, copy: colMid - wC / 2, mid: 0 };
         var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
         // (at the column's foot since, 27 from its outer side and 27 over the window's foot, its foot on the copyright's
         // baseline — "Move dot to the bottom right of the column", 2026-10-13; the copyright kept 20 clear of it)
@@ -624,7 +630,7 @@
       // OPENS BIG)
       void cL; void sR; main.classList.remove('band-copy-colo');
       // (in the foot band, standing always, only where it clears the socials by 20 — THE LINE IN THE FOOT BAND)
-      if (FOOT_BAND && !(FOOT_TOP && NAME_IN_RAIL)) cpy.style.setProperty('visibility', cL - sR >= 20 ? 'visible' : 'hidden', 'important');
+      if (FOOT_BAND && !SPREAD) cpy.style.setProperty('visibility', cL - sR >= 20 ? 'visible' : 'hidden', 'important');
       else cpy.style.removeProperty('visibility');
     }
   };
