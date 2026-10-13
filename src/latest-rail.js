@@ -1478,7 +1478,21 @@
         mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
         // (three words since — the column CRITIC's width at that size and the 20 and 22 round it)
         var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
-        if (rnS.classList.contains('rail-name--words') && critS > 0) mid = vwE - 252 - (critS * fS + 42);
+        if (rnS.classList.contains('rail-name--words') && critS > 0) {
+          // (the column 54 wider — "Expand the latest column by 54px", 2026-10-13 — the letters growing back into it)
+          var RN_WIDER = 54;
+          mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
+          // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
+          // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
+          // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
+          // overhang. Reduce the size of the letters if needed", 2026-10-13)
+          var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
+          if (arS) {
+            var wN = critS * fS + RN_WIDER, BEAK = 0.2;
+            var fB = (wN - 20 - (1 - BEAK) * arS * 40) / (critS + (1 - BEAK) * arS * 3);
+            if (fB < fS) main.style.setProperty('--rn-font', fB.toFixed(3) + 'px');
+          }
+        }
       }
       // (and on the right, between CRITIC's R and its first I since —
       // "Have the edge of the latest column stretch to between the R and
