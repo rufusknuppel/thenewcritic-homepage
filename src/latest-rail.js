@@ -1486,7 +1486,8 @@
         var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
         if (rnS.classList.contains('rail-name--words') && critS > 0) {
           // (the column 54 wider — "Expand the latest column by 54px", 2026-10-13 — the letters growing back into it)
-          var RN_WIDER = 54;
+          // (and back by 54 since — "Reduce the latest column size by 54px", the name gone over the content)
+          var RN_WIDER = 0;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the

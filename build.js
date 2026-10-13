@@ -214,10 +214,14 @@ function contentName() {
   if (!TNC_MARK) return '';
   const caps = (w) => spacedWord(w, LETTER_K).ar;
   const ar = TNC_MARK.w / TNC_MARK.h, BIRD_K = 1.75; // (three quarters taller since — "I want bird to be 75% bigger than letters")
-  const span = caps('the') + caps('new') + caps('critic') + BIRD_K * ar + 3 * WM_SPACE;
+  // (THE half the size of NEW and CRITIC since, with a line under the whole word — "Make The 50% of the size of NEW
+  // and CRITIC. Add a line underneath it, like in older repo with the blockier wordmark": as the LODÉHO name had it,
+  // 2026-10-08, a gap of a stroke and a line a stroke deep under the letters; THE_K; style.css, THE HALF SIZE)
+  const THE_K = 0.5;
+  const span = THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + 3 * WM_SPACE;
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-span: ${span.toFixed(4)}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
-    + `<span class="content-name__word">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
+    + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
 }
 function bandWord(word) {
   const svg = WORDMARK_WORDS[word];
