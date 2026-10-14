@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=632e600e">
+<link rel="stylesheet" href="style.css?v=28a5316f">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10577,11 +10577,13 @@ window.__ncStripInk = function () {
       main.style.setProperty('--fb-l', cL.toFixed(2) + 'px');
       main.style.setProperty('--fb-r', (vwF - cR).toFixed(2) + 'px');
       var cpyF = st.querySelector('.sub-ticker-run > .band-under--copy');
-      var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / 4 >= 20;
+      var NO_TLM = true, nG = NO_TLM ? 3 : 4;
+      if (NO_TLM) wT = 0;
+      var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / nG >= 20;
       if (cpyF) cpyF.style.setProperty('display', fitAll ? '' : 'none', fitAll ? '' : 'important');
       if (!fitAll) wC = 0;
-      var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? 4 : 3);
-      var xN = cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
+      var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? nG : nG - 1);
+      var xN = NO_TLM ? cL + 20 : cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
       fbX = { the: cL + 20, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
       if (!fitAll) fbX.critic = cR - 20 - wS;
       var fbDot = null, fbCopyY = null, colY = null;
