@@ -2036,7 +2036,7 @@
     var wl = parseFloat(mark.style.getPropertyValue('--rm-wl')) || 0, wr = parseFloat(mark.style.getPropertyValue('--rm-wr')) || 0;
     var railW = hold.parentElement ? hold.parentElement.offsetWidth : hold.offsetWidth;
     var availW = railW - 54;
-    var rmH = availW / (wl + wr + 2 * 0.5 + 3.3104 * arB);
+    var rmH = availW / (wl + wr + 2 * 0.5 + 2.6022 * arB);
     hold.style.setProperty('--rm-h', rmH.toFixed(3) + 'px');
     hold.style.setProperty('--rm-ar', arB.toFixed(4));
     var cT = cpy && capTop(cpy.firstElementChild || cpy);

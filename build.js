@@ -219,7 +219,11 @@ function contentName() {
   const TNC_MARK = TNC_BOX;
   if (!TNC_MARK) return '';
   const caps = (w) => spacedWord(w, LETTER_K).ar;
-  const ar = TNC_MARK.w / TNC_MARK.h, BIRD_K = 1.75 * 1.25; // (three quarters taller since — "I want bird to be 75% bigger than letters"; and a quarter bigger again, "Make the bird 25% bigger")
+  const ar = TNC_MARK.w / TNC_MARK.h; // (the bird three quarters taller than the letters, then a quarter bigger again — "I want bird to be 75% bigger than letters", "Make the bird 25% bigger")
+  // (the box, its outline's outer edge, half as tall again as the letters since 2026-10-14 — "Make the bird box only
+  // 50% bigger than letters": the drawing's height the box's over the box's share of it, read off #box)
+  const boxM = fs.readFileSync(path.join(__dirname, 'assets', 'mark-bird-box.svg'), 'utf8').match(/<path id="box"[^>]*stroke-width="([\d.]+)"[^>]*d="M[\d.]+ ([\d.]+)H[\d.]+V([\d.]+)/);
+  const BIRD_K = boxM ? 1.5 * TNC_MARK.h / (+boxM[3] - +boxM[2] + +boxM[1]) : 1.75 * 1.25;
   // (THE half the size of NEW and CRITIC since, with a line under the whole word — "Make The 50% of the size of NEW
   // and CRITIC. Add a line underneath it, like in older repo with the blockier wordmark": as the LODÉHO name had it,
   // 2026-10-08, a gap of a stroke and a line a stroke deep under the letters; THE_K; style.css, THE HALF SIZE)
@@ -229,7 +233,7 @@ function contentName() {
   const THE_K = 0.75 * 0.8; // (and back to three quarters, the line under it alone — "Revert overline on THE"; a fifth smaller since, "Make THE 20% smaller")
   // (the gaps either side of the bird a quarter less than THE's to NEW's since — "reduce the gaps between W and C and
   // bird by 25%": the line still the column's width, the letters a little bigger for it; BIRD_GAP, --cn-gap)
-  const BIRD_GAP = 0.75;
+  const BIRD_GAP = 1; // (and the gaps either side of the bird THE's to NEW's again since 2026-10-14 — "Have the space on either side of the bird match the space between the and new")
   const span = THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
   // edges showing through as hairlines — "Seeing hairlines around gaps": the cuts a mask on the outline)
