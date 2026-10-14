@@ -259,15 +259,12 @@ function contentName() {
   // it runs a little past the beak and well past the tail's tip, so the bird's place in the line is widened by what
   // it overhangs either side (--cn-ring-l, --cn-ring-r, in capitals) and the gaps still meet ink)
   // (an upright ellipse through the tail's tip too for a while — "Make it oblong so that it also touches the tail" —
-  // and the circle again since, 2026-10-14: "Revert the oblong circle back to perfect circle")
-  const RING = (() => {
-    const [ax, ay, bx, by, cx, cy] = [0.19, 414.34, 235.88, 0.14, 362.56, 728.37];
-    const d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
-    const ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d;
-    const uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d;
-    return { x: ux, y: uy, r: Math.hypot(ax - ux, ay - uy) };
-  })();
-  const ringL = Math.max(0, RING.r - RING.x) * BIRD_K / TNC_MARK.h, ringR = Math.max(0, RING.x + RING.r - TNC_MARK.w) * BIRD_K / TNC_MARK.h;
+  // then the circle again, 2026-10-14: "Revert the oblong circle back to perfect circle"; and straight since, the
+  // crescent's border two lines, from the upper wing's tip to the beak's and on to the lower wing's — "Draw a straight
+  // line from the wing tip to the beak", "As the border of the crescent": nothing past the drawing's sides, so no
+  // overhang to widen the bird's place by)
+  const TIPS = { up: [235.88, 0.14], beak: [0.19, 414.34], low: [362.56, 728.37] };
+  const ringL = 0, ringR = 0;
   const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + ringL + ringR + (1 + 2 * BIRD_GAP) * GAP;
   const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
@@ -301,7 +298,7 @@ function contentName() {
   // run out past the disc's left edge)
   // (its ends run on past the drawing's top and foot, so the disc's own edge, not the clip, rounds the crescent's tips)
   const ringClip = wrapD ? wrapD.replace(/^M100 0L([\d.]+) 0/, 'M-100 -40L$1 -40L$1 0').replace(/L([\d.]+) 728\.84L100 728\.84Z$/, 'L$1 728.84L$1 770L-100 770Z') : '';
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + `<circle class="bird-ring" cx="${RING.x.toFixed(2)}" cy="${RING.y.toFixed(2)}" r="${RING.r.toFixed(2)}" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TIPS.beak.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #B3301E)" stroke-width="0"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
