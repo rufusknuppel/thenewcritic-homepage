@@ -554,12 +554,17 @@
       main.style.setProperty('--fb-r', (vwF - cR).toFixed(2) + 'px');
       // (the copyright let go where the five would stand less than 20 apart — the content's column narrow at 1024)
       var cpyF = st.querySelector('.sub-ticker-run > .band-under--copy');
-      var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / 4 >= 20;
+      // (no Last Magazine in the line since — "Get rid of the last magazine in the bottom band", 2026-10-14: kept in
+      // its place unseen, the band's capitals still read off it, the list from the window's 20 and the rest evenly
+      // between it and the copyright; style.css, NO LAST MAGAZINE IN THE FOOT BAND)
+      var NO_TLM = true, nG = NO_TLM ? 3 : 4;
+      if (NO_TLM) wT = 0;
+      var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / nG >= 20;
       if (cpyF) cpyF.style.setProperty('display', fitAll ? '' : 'none', fitAll ? '' : 'important');
       if (!fitAll) wC = 0;
-      var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? 4 : 3);
+      var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? nG : nG - 1);
       // (between the nav's items and the socials since — "move the dot between nav items and socials", the same day)
-      var xN = cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
+      var xN = NO_TLM ? cL + 20 : cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
       fbX = { the: cL + 20, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
       if (!fitAll) fbX.critic = cR - 20 - wS;
       // THE BAND'S LINE SPREAD (2026-10-13 — "Move the top band margins to 54px. Move copyright to the bottom THE
