@@ -2413,6 +2413,7 @@
               var picksB = baseOf(lastT3) + dS, socB = picksB + g3 + socH;
               var mids = [(navBase + ctH + dS) / 2, (picksB + socB - socH) / 2, (socB + birdTop) / 2];
               [].forEach.call(dashes, function (dEl, k) {
+                if (getComputedStyle(dEl).display === 'none') return;
                 var dT = parseFloat(hold.style.getPropertyValue('--rl-d' + (k + 1))) || 0;
                 hold.style.setProperty('--rl-d' + (k + 1), (dT + (mids[k] + dOff) - baseOf(dEl)).toFixed(2) + 'px');
               });
