@@ -2224,6 +2224,11 @@
         if (main.classList.contains('logo-split')) {
           var bH = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
           hold.style.setProperty('--rl-pb', (20 + bH).toFixed(2) + 'px');
+          // (THE NEW CRITIC on the bird since, 20 over it, and the stack on the middle between the column's top and THE
+          // NEW CRITIC's capitals — "Make the bird red. Move the block letters on top of the bird", 2026-10-14; style.css
+          // THE NAME ON THE BIRD)
+          hold.style.setProperty('--rl-pt', '0px');
+          hold.style.setProperty('--rl-pb', (hr.bottom - lr.top).toFixed(2) + 'px');
         }
       }
     }
