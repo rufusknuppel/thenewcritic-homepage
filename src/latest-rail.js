@@ -1702,7 +1702,11 @@
           // onto the middle of that room — "There should be 54px between edge of content and ink of sidebar and 54px
           // between the ink of sidebar and the edge of site", 2026-10-14; style.css THE COLUMN'S INK 54 FROM EACH SIDE)
           var navMeas = document.querySelector('.page-rows .latest-rail .rail-top__nav');
+          // (its width on one line, whatever lines it stands in — "Split nav and socials over two lines", 2026-10-14)
+          var navBrs = navMeas ? navMeas.querySelectorAll('br.rail-br') : [];
+          [].forEach.call(navBrs, function (br) { br.style.display = 'none'; });
           var navMW = navMeas ? navMeas.getBoundingClientRect().width : 0;
+          [].forEach.call(navBrs, function (br) { br.style.display = ''; });
           if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
@@ -2278,6 +2282,18 @@
         // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
         var birdC = hold.querySelector(':scope > .rail-mark--bird');
+        // (the bird and THE LAST MAGAZINE lit together, one link to the top — "Bird and the last magazine should hover
+        // together", 2026-10-14; style.css THE BIRD AND THE LAST MAGAZINE ONE LINK)
+        if (!hold.__tlmHot) {
+          hold.__tlmHot = true;
+          [birdC, tlmC].forEach(function (el) {
+            if (!el) return;
+            el.addEventListener('mouseenter', function () { hold.classList.add('is-tlm-hot'); });
+            el.addEventListener('mouseleave', function () { hold.classList.remove('is-tlm-hot'); });
+            el.addEventListener('focus', function () { hold.classList.add('is-tlm-hot'); });
+            el.addEventListener('blur', function () { hold.classList.remove('is-tlm-hot'); });
+          });
+        }
         // (the nav on the middle of the room left of THE NEW CRITIC since, the socials beside the name on the middle of
         // the room right of it, their capitals 27 under the page's top — "Center the nav on one side of the wordmark.
         // Center the socials on the other side", 2026-10-14; --rl-navx, --cs-x, --cs-t; style.css THE NAV AND THE SOCIALS
@@ -2323,21 +2339,38 @@
             if (ctS != null) main.style.setProperty('--cs-t', (csT + wantS - (ctS + (window.pageYOffset || 0))).toFixed(2) + 'px');
           }
         }
+        // (an element's first line's capitals: capTop reads the last, and the nav and the socials stand in two lines)
+        var capTop1 = function (el) {
+          var pF1 = document.createElement('span');
+          pF1.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+          el.insertBefore(pF1, el.firstChild);
+          var t1 = pF1.getBoundingClientRect().top - capHt(el);
+          el.removeChild(pF1);
+          return t1;
+        };
         if (topG && navL) {
-          var ctN = capTop(navL);
+          var ctN = capTop1(navL);
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
           // (54 under the window's top since, not on THE NEW CRITIC's middle, and THE LAST MAGAZINE's foot 54 over its
           // foot — "Start the nav 54px from the top and the last magazine 54px from the bottom", 2026-10-14)
           // (72 since — "Add 18px to the top margin and the bottom margin of the column", 2026-10-14)
-          var wantN = 54 + 18;
+          // (81 since — "Add another 9px above and below on the side column", 2026-10-14)
+          var wantN = 54 + 27;
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
           // (THE LAST MAGAZINE's foot as far over the window's as the nav's capitals stand under its top — "Have the last
           // magazine sit the same distance from the bottom as the nav from the top", 2026-10-14; --rl-tlmb)
-          hold.style.setProperty('--rl-tlmb', wantN.toFixed(2) + 'px');
+          // (as far over it as its ink stands in from the window's side since — "Have space below the last magazine equal
+          // it's inset from the sides", 2026-10-14)
+          var tlmW0 = hold.querySelector(':scope > .rail-tlm .tnc-words') || hold.querySelector(':scope > .rail-tlm');
+          var tlmB = tlmW0 && tlmW0.getBoundingClientRect().width ? Math.max(0, tlmW0.getBoundingClientRect().left) : wantN;
+          hold.style.setProperty('--rl-tlmb', tlmB.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
           // (the caret on the middle of the column's left margin, the room from the window's edge to the nav — "Move the
           // caret to sit in the left margin of the column", 2026-10-14; --rl-caretx, style.css THE BIRD UNDER THE NAV)
+          var navBrC = navL.querySelectorAll('br.rail-br');
+          [].forEach.call(navBrC, function (br) { br.style.display = 'none'; });
           var navWc = navL.getBoundingClientRect().width;
+          [].forEach.call(navBrC, function (br) { br.style.display = ''; });
           hold.style.setProperty('--rl-caretx', ((hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
           // (the bird beside THE NEW CRITIC for a while — "Move the bird to the right of the new critic where the socials
           // are now" — and back in the column since, between the nav and The Latest, a quarter taller than the name's
@@ -2429,11 +2462,11 @@
           // latest list and kickers", 2026-10-14; --rl-pt, --rl-kmt, --rl-soct, --rl-d1..3, --rl-birdt)
           if (ctH != null && kicks.length && socR) {
             var G = 77.5;
-            var navBase = hr.top + wantN + capHt(navL);
+            var navBase = baseOf(navL);
             var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
             var tlmR = hold.querySelector(':scope > .rail-tlm');
             var tlmF3 = tlmR && tlmR.offsetHeight ? parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923 : 0;
-            var tlmTop = hr.bottom - wantN - tlmF3;
+            var tlmTop = hr.bottom - tlmB - tlmF3;
             // (a fifth closer to THE LAST MAGAZINE since — "make the bird 20% closer to The Last Magazine", 2026-10-14)
             var birdTop = tlmF3 ? tlmTop - 0.8 * G / 2 - bH3 : tlmTop - bH3;
             hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
@@ -2450,18 +2483,31 @@
             var dashGap = G / 2 - dIn;
             // (the comma line's capitals G under the nav's baseline)
             var ptS = parseFloat(getComputedStyle(hold).paddingTop) || 0;
-            var dS = navBase + G - ctH;
+            // (one blank line of the column's Garamond between its sections since, baseline to baseline two of the comma
+            // line's lines — "Have just 1 line of space in between the different garamond sections", 2026-10-14)
+            var L2 = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
+            var dS = navBase + L2 - capHt(secLine) - ctH;
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
             // (the first kicker's capitals dashGap under the comma line's last baseline)
             var secB = baseOf(secLine), k0 = kicks[0], kC = baseOf(k0) - capHt(k0);
             var kmt = parseFloat(getComputedStyle(kList).marginTop) || 0;
-            var dK = (secB + dashGap) - kC;
+            var dK = (secB + L2 - capHt(k0)) - kC;
             hold.style.setProperty('--rl-kmt', (kmt + dK).toFixed(2) + 'px');
             // (read after --rl-pt and --rl-kmt are set: the read lays the stack where it now stands)
             var lastKB = baseOf(kicks[kicks.length - 1]);
-            var socH = capHt(socR), socB = lastKB + G + socH;
+            var socB = lastKB + L2;
             var socT = parseFloat(getComputedStyle(socR).top) || 0;
-            hold.style.setProperty('--rl-soct', (socT + socB - baseOf(socR)).toFixed(2) + 'px');
+            // (its first line's baseline: the socials stand in two lines)
+            hold.style.setProperty('--rl-soct', (socT + socB - (capTop1(socR) + capHt(socR))).toFixed(2) + 'px');
+            // (the stack, the nav's capitals to the socials' last baseline, on the middle between the window's top and the
+            // bird's — "start the garamond stack centered between the top of the bird and the top of the site", 2026-10-14)
+            var sTop = capTop1(navL), sBot = baseOf(socR);
+            var sh = (hr.top + birdTop - sTop - sBot) / 2;
+            ['--rl-navt', '--rl-pt', '--rl-soct'].forEach(function (v) {
+              var cur = parseFloat(hold.style.getPropertyValue(v));
+              if (!isNaN(cur)) hold.style.setProperty(v, (v === '--rl-pt' ? Math.max(0, cur + sh) : cur + sh).toFixed(2) + 'px');
+            });
+            navBase += sh; lastKB += sh; socB = sBot + sh;
             var mids = [navBase + G / 2, lastKB + G / 2, (socB + birdTop) / 2];
             [].forEach.call(dashes, function (dEl, k) {
               if (getComputedStyle(dEl).display === 'none') return;

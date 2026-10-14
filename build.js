@@ -3944,7 +3944,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       + (TLM_WORDS ? `<span class="rail-logo__tlm">${tlmWords()}</span>` : '') + `</a>`
       // (the bird its own since, over the copyright — "Move THE NEW CRITIC to sit at the top of the latest column and
       // separate the bird to sit above The Copyright", 2026-10-14: style.css THE WORDS AT THE TOP, THE BIRD AT THE FOOT)
-      + `<span class="rail-mark rail-mark--bird" aria-hidden="true">${birdSvgRm}</span>`;
+      // (a link to the page's top since, with THE LAST MAGAZINE — "Bird and the last magazine should hover together and
+      // take you to the top of the site", 2026-10-14; latest-rail.js .is-tlm-hot, style.css THE BIRD AND THE LAST MAGAZINE ONE LINK)
+      + `<a class="rail-mark rail-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${birdSvgRm}</a>`;
     return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
@@ -3959,7 +3961,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // from the bottom. Move the socials into the smaller italic font that sits below editor's picks", "Band should
   // disappear"): THE LAST MAGAZINE drawn at the column's foot, the band's socials under the column's stack in the
   // kickers' italic (style.css THE BAND GONE; latest-rail.js sizes THE LAST MAGAZINE to the column, --rl-tlmf)
-  const railFoot = () => (TLM_WORDS ? `<a class="rail-tlm" href="about.html" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
+  const railFoot = () => (TLM_WORDS ? `<a class="rail-tlm" href="#top" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
     // (the band's nav over The Latest since — "The nav itmes should go above the latest", 2026-10-14: .rail-top, at the
     // column's top; the socials under it for a while, "Sit the socials under the nav", beside the name since —
     // contentSocials)
@@ -3967,11 +3969,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
       return [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="rail-top__a rail-top__dead">Store</span>']
         .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
-        .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join('<span class="rail-top__sep">, </span>');
+        .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}">About</a>`] : [])
+        // (over two lines since, the break after the second — "Split nav and socials over two lines", 2026-10-14)
+        .map((x, i) => (i ? '<span class="rail-top__sep">, </span>' + (i === 2 ? '<br class="rail-br">' : '') : '') + x).join('');
     })()}</div></div>`
     // (the socials back in the column since, under The Latest — "Move the socials below the latest", 2026-10-14:
     // contentSocials' links, .rail-socials, last in the stack)
     + contentSocials().replace('class="content-socials"', 'class="rail-socials"').replace(/content-socials__/g, 'rail-socials__')
+      .split('<span class="rail-socials__sep">, </span>').map((x, i) => (i ? '<span class="rail-socials__sep">, </span>' + (i === 2 ? '<br class="rail-br">' : '') : '') + x).join('')
     // (three em dashes between the column's parts — "Add 3 ——— between the different sections of the sidebar", latest-rail.js seats them)
     + [1, 2, 3].map((k) => `<span class="rail-dash rail-dash--${k}" aria-hidden="true">\u2014\u2014\u2014</span>`).join('');
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() + railFoot() : ''}<div class="latest-rail__in">`
