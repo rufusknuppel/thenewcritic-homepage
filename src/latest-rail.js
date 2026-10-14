@@ -1685,6 +1685,11 @@
           // (and 36 narrower again — "Reduce by another 36px", the same day)
           var RN_WIDER = 18;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
+          // (as wide as THE LAST MAGAZINE at its band size and 27 on each side of it since, and the rule — "Expand the
+          // column so that 27px on either side of THE LAST MAGAZINE", 2026-10-14; .rail-tlm's --rl-lwt its width in capitals)
+          var tlmW = document.querySelector('.page-rows .latest-rail > .latest-rail__hold > .rail-tlm');
+          var lwW = tlmW ? parseFloat(tlmW.style.getPropertyValue('--rl-lwt')) || 0 : 0;
+          if (lwW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 + 54 + 12.923 * lwW);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
@@ -2251,9 +2256,21 @@
         var tlmC = hold.querySelector(':scope > .rail-tlm');
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', Math.min(12.923, (railW - 2 - 54) / lwTC).toFixed(3) + 'px');
-        var ctL = head ? capTop(head) : null;
-        var ptL = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
-        hold.style.setProperty('--rl-pt', (ctL != null ? Math.max(0, ptL + (hr.top + 54 - ctL)) : 54).toFixed(2) + 'px');
+        // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle
+        // between the socials' foot and the bird's top — "The nav itmes should go above the latest", "Sit the socials
+        // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
+        var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
+        var birdC = hold.querySelector(':scope > .rail-mark--bird');
+        if (topG && navL) {
+          var ctN = capTop(navL);
+          var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
+          var dN = ctN != null ? hr.top + 27 - ctN : 0;
+          hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
+          var gB = topG.getBoundingClientRect().bottom + dN;
+          var bT = birdC && birdC.getBoundingClientRect().height ? birdC.getBoundingClientRect().top : hr.bottom;
+          hold.style.setProperty('--rl-pt', Math.max(0, gB - hr.top).toFixed(2) + 'px');
+          hold.style.setProperty('--rl-pb', Math.max(0, hr.bottom - bT).toFixed(2) + 'px');
+        }
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;

@@ -3938,12 +3938,20 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // disappear"): THE LAST MAGAZINE drawn at the column's foot, the band's socials under the column's stack in the
   // kickers' italic (style.css THE BAND GONE; latest-rail.js sizes THE LAST MAGAZINE to the column, --rl-tlmf)
   const railFoot = () => (TLM_WORDS ? `<a class="rail-tlm" href="about.html" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
+    // (the band's nav over The Latest since, the socials under it — "The nav itmes should go above the latest", "Sit the
+    // socials under the nav", 2026-10-14: .rail-top, at the column's top)
+    + `<div class="rail-top"><div class="rail-top__nav">${(() => {
+      const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
+      return [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="rail-top__a rail-top__dead">Store</span>']
+        .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
+        .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join('<span class="rail-top__sep">, </span>');
+    })()}</div>`
     + `<div class="rail-socials">${[
       ['https://www.thenewcritic.com', 'Substack'],
       ['https://www.instagram.com/thenewcritic', 'Instagram'],
       ['https://x.com/thenewcritic', 'X'],
       ['mailto:editors@thenewcritic.com', 'Email'],
-    ].map(([href, label]) => `<a class="rail-socials__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join('<span class="rail-socials__sep">, </span>')}</div>`;
+    ].map(([href, label]) => `<a class="rail-socials__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join('<span class="rail-socials__sep">, </span>')}</div></div>`;
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() + railFoot() : ''}<div class="latest-rail__in">`
     + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
