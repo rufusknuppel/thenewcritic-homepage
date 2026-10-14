@@ -270,6 +270,11 @@ function contentName() {
   const wrapFile = path.join(__dirname, 'assets', 'mark-bird-wrap.svg');
   const wrapD = fs.existsSync(wrapFile) ? (fs.readFileSync(wrapFile, 'utf8').match(/<path id="wrap"[^>]*\sd="([^"]+)"/) || [])[1] : '';
   if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #B3301E)"/>` + m);
+  // (a ring under the bird — "Add a circle like this under the bird ... Circle should be highlight color", 2026-10-14,
+  // from the user's drawing of the swallow over a thin circle: its middle a little behind the head, on the beak's
+  // height, its edge just past the beak on the left, under the tail's root on the right, a fifth of the bird's height
+  // in from its top and a tenth from its foot; a thin line, 5 of the drawing's units; .bird-ring, under the bird)
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<circle class="bird-ring" cx="192" cy="406" r="241" fill="none" style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
