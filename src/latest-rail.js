@@ -1681,7 +1681,9 @@
           // (and 36 more since — "expand column by 36px so bird and wordmarks can grow", 2026-10-14, the names and the bird
           // drawn to the column's width)
           // (and 18 more — "Make the column 18px wider", the same day)
-          var RN_WIDER = 36 + 36 + 18;
+          // (36 narrower since — "Reduce column size by 36px", 2026-10-14)
+          // (and 36 narrower again — "Reduce by another 36px", the same day)
+          var RN_WIDER = 18;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
@@ -2229,6 +2231,36 @@
           // THE NAME ON THE BIRD)
           hold.style.setProperty('--rl-pt', '0px');
           hold.style.setProperty('--rl-pb', (hr.bottom - lr.top).toFixed(2) + 'px');
+        }
+      }
+      // (THE NEW CRITIC out of the column since, over the first post — "Remove the new cirtic wordmark in the side
+      // column", 2026-10-14: the stack on the middle between the column's top and the bird's)
+      else if (main.classList.contains('logo-split')) {
+        // (the bird at the column's top since, 54 under it and as tall as the capitals of THE NEW CRITIC over the
+        // content, The Latest's stack at the foot, its last line's baseline 54 over the window's — "move the bird to
+        // the top and the latest to the bottom", "make the bird as tall as the letters of the wordmark", 2026-10-14;
+        // style.css THE BIRD AT THE TOP, THE LATEST AT THE FOOT)
+        var cnb = document.querySelector('a.content-name .content-name__block');
+        var cnbH = cnb ? cnb.getBoundingClientRect().height : 0;
+        if (cnbH) hold.style.setProperty('--rl-bird', cnbH.toFixed(3) + 'px');
+        hold.style.setProperty('--rl-pt', '0px');
+        var ins = hold.querySelectorAll(':scope > .latest-rail__in'), lastIn = ins[ins.length - 1];
+        // (the last element seen with words in it — the deepest last child can be one unseen, as Editors' Picks' folded
+        // list is)
+        var lastT = null, allT = lastIn ? lastIn.querySelectorAll('*') : [];
+        for (var q = allT.length - 1; q >= 0 && !lastT; q--) {
+          var eq = allT[q];
+          if (eq.closest('svg') || !eq.textContent.trim() || !eq.getBoundingClientRect().height || getComputedStyle(eq).visibility === 'hidden') continue;
+          lastT = eq;
+        }
+        if (lastT) {
+          var pin = document.createElement('span');
+          pin.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+          lastT.appendChild(pin);
+          var blL = pin.getBoundingClientRect().top;
+          pin.remove();
+          var pbL = parseFloat(hold.style.getPropertyValue('--rl-pb')) || 0;
+          hold.style.setProperty('--rl-pb', Math.max(0, pbL + (blL - (hr.bottom - 54))).toFixed(2) + 'px');
         }
       }
     }

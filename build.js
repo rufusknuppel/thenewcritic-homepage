@@ -261,6 +261,16 @@ function stampWords() {
     + `<span class="tnc-words__grp tnc-words__grp--under"><span class="tnc-words__row">${w('the')}${w('new')}</span></span>`
     + `<span class="tnc-words__grp tnc-words__grp--over"><span class="tnc-words__row">${w('critic')}</span></span></span>`;
 }
+// (the name over the content again since, in the block letters across the content column 54 in from its every side,
+// over the first post — "I want that THE NEW CRITIC to sit in the content column on top of the first post, edge to
+// edge. 54px above and below and on the sides", 2026-10-14: the stamp's line kept in the name, unseen, for
+// latest-rail.js, which seats off it; style.css THE NAME OVER THE FIRST POST)
+function contentNameBlock() {
+  const cn = contentName();
+  if (!cn) return '';
+  return cn.replace('<a class="content-name content-name--stamp"', '<a class="content-name content-name--stamp content-name--block"')
+    .replace(/<\/a>$/, `<span class="content-name__block" style="--cn-lwb: ${bandBlockLineW().toFixed(4)}">${bandBlockWords()}</span></a>`);
+}
 function contentName() {
   const TNC_MARK = TNC_BOX;
   if (!TNC_MARK) return '';
@@ -4178,7 +4188,7 @@ ${renderStampDefs()}
      fitters and the chrome's fold machinery still measure it.) -->
 <nav class="dek-band dek-band--masthead" aria-label="Masthead line"></nav>
 
-${contentName()}
+${contentNameBlock()}
 <main id="main">
 
   <!-- THE MARGINS TAKE THE ESSAYS' MARK: the two 72s painted in the
