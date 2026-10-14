@@ -104,6 +104,10 @@
   // top band that runs edge to edge. Move the wordmark into the top left, move the bird into the middle", 2026-10-14;
   // THE BAND'S MARKS, seatUnder)
   FOOT_TOP = true;
+  // (and at the window's foot again since, edge to edge, its line spread evenly as it stood on 2026-10-11, the names in
+  // the column's top and the bird over the band — "Using the current wordmark/logo, use this as a reference to bring
+  // back the bottom nav band/left side column format", 2026-10-14: FOOT_TOP off, the line not SPREAD)
+  FOOT_TOP = false;
   // (and the name in a band at the window's foot since 2026-10-11 — "Move wordmark to the bottom": the line's band
   // alone the head, --strip-settled; the name in its band at the foot, its air 20 over and under it, the band's rule
   // over it — its ground .foot-band, its height --foot-band; each of the name's and the bird's rises a calc on the
@@ -116,6 +120,7 @@
   // build.js and style.css, THE NAME IN THE COLUMN)
   var NAME_IN_RAIL = true;
   var SPREAD = NAME_IN_RAIL; // (the band's line spread — THE BAND'S LINE SPREAD, seatUnder)
+  SPREAD = false; // (the line even from the window's 20 to its 20 again since 2026-10-14, FOOT_TOP's note)
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
   var seatLogo = function (st) {
@@ -2138,6 +2143,17 @@
     // (the bird apart from the words since, over the copyright, as tall as it stood in the stamp before the words
     // went under it — "separate the bird to sit above The Copyright": --rm-hb)
     hold.style.setProperty('--rm-hb', rmH.toFixed(3) + 'px');
+    // THE NAMES IN THE COLUMN (2026-10-14): THE NEW CRITIC across the column less two 20s, THE LAST MAGAZINE 0.64 of
+    // its width — as the band had them — the rule 5/16 of THE NEW CRITIC's capital from each (--rl-b, --rl-t)
+    var logo = hold.querySelector(':scope > .rail-mark--logo');
+    if (logo) {
+      var lwBL = parseFloat(logo.style.getPropertyValue('--rl-lwb')) || 0, lwTL = parseFloat(logo.style.getPropertyValue('--rl-lwt')) || 0;
+      if (lwBL > 0) {
+        var capL = (railW - 40) / lwBL;
+        hold.style.setProperty('--rl-b', capL.toFixed(3) + 'px');
+        hold.style.setProperty('--rl-t', (lwTL > 0 ? 0.64 * capL * lwBL / lwTL : 0).toFixed(3) + 'px');
+      }
+    }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;
     if (lw > 0) rmH = availW / lw;
     hold.style.setProperty('--rm-h', rmH.toFixed(3) + 'px');

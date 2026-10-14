@@ -737,7 +737,7 @@ const SITE_TAGLINE = 'The Last Magazine';
 // rules that differ by side (style.css). On the right again since "Move The
 // Latest column back to the right", after an afternoon on the left.
 // (on the left again since 2026-10-13 — "Move the latest column to the left side")
-const RAIL_SIDE = 'r'; // (on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left"; on the right again since, the same day — "move the latest column to the right")
+const RAIL_SIDE = 'l'; // (on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left"; on the right again since, the same day — "move the latest column to the right"; and on the left again with the band at the foot — "bring back the bottom nav band/left side column format")
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
 // deploy by cloudflare/worker.js. Social cards need absolute URLs, and
@@ -3898,6 +3898,13 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // latest-rail.js sizes the capital as before; stampWords)
     const railBirdMark = `<span class="rail-mark rail-mark--line" aria-hidden="true" style="--rm-wl: ${spanAll.toFixed(4)}; --rm-wr: ${spanAll.toFixed(4)}; --rm-lw: ${stampLineW().toFixed(4)}">`
       + `<span class="rail-mark__line">${stampWords()}</span></span>`
+      // (the band's names in the column's top since, the band back at the window's foot — "Using the current
+      // wordmark/logo, use this as a reference to bring back the bottom nav band/left side column format", 2026-10-14:
+      // THE NEW CRITIC in the block letters over a 2px rule over THE LAST MAGAZINE, latest-rail.js sizing them to the
+      // column, style.css THE NAMES IN THE COLUMN)
+      + `<a class="rail-mark rail-mark--logo" href="#top" aria-label="The New Critic — to the top of the front page" style="--rl-lwb: ${bandBlockLineW().toFixed(4)}; --rl-lwt: ${(TLM_WORDS ? tlmLineW() : 0).toFixed(4)}">`
+      + `<span class="rail-logo__tnc">${bandBlockWords()}</span><span class="rail-logo__rule" aria-hidden="true"></span>`
+      + (TLM_WORDS ? `<span class="rail-logo__tlm">${tlmWords()}</span>` : '') + `</a>`
       // (the bird its own since, over the copyright — "Move THE NEW CRITIC to sit at the top of the latest column and
       // separate the bird to sit above The Copyright", 2026-10-14: style.css THE WORDS AT THE TOP, THE BIRD AT THE FOOT)
       + `<span class="rail-mark rail-mark--bird" aria-hidden="true">${birdSvgRm}</span>`;
