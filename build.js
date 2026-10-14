@@ -241,9 +241,13 @@ function contentName() {
   // wing's leftmost ink, 159.43 of the drawing's units, so the wings and the tail fly out of it over the ground;
   // --cn-red-w its width in capitals, style.css THE RED BLOCK; CRITIC as far from the column's right edge as THE from
   // its left since — "Have the margin of critic match the margin of THE": RED_PAD on both ends of the span)
-  const RED_PAD = 0.25, WING_L = 159.43;
-  const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
-  const redW = RED_PAD + THE_K * caps('the') + WM_SPACE + caps('new') + BIRD_GAP * WM_SPACE + BIRD_K * WING_L / TNC_MARK.h;
+  // (and a tenth more room round the words and the bird since 2026-10-14 — "Add 10% more space around the words and bird
+  // between the words": AIR_K on the band's ends, its air over and under the letters (--cn-band, the band's height in
+  // capitals) and every gap between the words and the bird)
+  const AIR_K = 1.1, GAP = WM_SPACE * AIR_K;
+  const RED_PAD = 0.25 * AIR_K, WING_L = 159.43, BAND_H = 1 + 2 * 0.25 * AIR_K;
+  const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * GAP;
+  const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
   // edges showing through as hairlines — "Seeing hairlines around gaps": the cuts a mask on the outline)
   let markBody = TNC_MARK.body;
@@ -267,7 +271,7 @@ function contentName() {
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
-  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-red-w: ${redW.toFixed(4)}; --cn-red-pad: ${RED_PAD}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
+  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-red-w: ${redW.toFixed(4)}; --cn-red-pad: ${RED_PAD}; --cn-gap: ${GAP.toFixed(4)}; --cn-band: ${BAND_H.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
     + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
 }
 function bandWord(word) {
