@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a513f1b9">
+<link rel="stylesheet" href="style.css?v=4016121a">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10432,7 +10432,7 @@ window.__ncStripInk = function () {
     var topB = 0;
     if (FOOT_BAND && FOOT_TOP && undT && undT.offsetWidth) {
       var cuT = capsOf(undT);
-      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 + 18 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 + 18 + 18 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -10542,6 +10542,7 @@ window.__ncStripInk = function () {
       if (SPREAD) FB_AIR = 27;
       if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18;
       if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18 + 9;
+      if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18 + 9 + 9;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
@@ -10598,7 +10599,7 @@ window.__ncStripInk = function () {
           capB *= 0.5;
           capB *= 1.2;
           var capT = 0, stackH = bandH - 2 * WM_M;
-          capB *= stackH / (stackH - 18);
+          capB *= stackH / 63;
           if (bmT && lwT) {
             capB = Math.min(capB, (stackH - 2 - 8) / (1 + lwB / lwT));
             capT = capB * lwB / lwT;
@@ -10608,6 +10609,7 @@ window.__ncStripInk = function () {
           bmW.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
           bmW.style.setProperty('top', ((bmT ? WM_M : (bandH - capB) / 2) - runT).toFixed(2) + 'px');
           bmW.style.setProperty('--bm-gap', gapR.toFixed(2) + 'px');
+          bmW.style.setProperty('--bm-x', (cL + WM_M).toFixed(2) + 'px');
           bmW.classList.toggle('band-mark--stacked', !!bmT);
           if (bmT) {
             bmT.style.setProperty('font-size', capT.toFixed(3) + 'px');

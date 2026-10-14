@@ -341,7 +341,7 @@
       // (54 since — "Move the top band margins to 54px")
       // (27 since — "have 27px above and below text in the top band"; FB_AIR, seatUnder)
       // (36 taller since 2026-10-14 — "expand the band size by 36px"; FB_AIR, seatUnder)
-      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 + 18 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 + 18 + 18 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -498,6 +498,8 @@
       if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18;
       // (and 18 taller again, 9 more over and under — "Increase band height by 18px. Expand bird and wordmarks accordingly")
       if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18 + 9;
+      // (and 18 taller again — "Expand the top column by another 18px", the same day)
+      if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18 + 9 + 9;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
@@ -597,7 +599,8 @@
           var capT = 0, stackH = bandH - 2 * WM_M;
           // (grown with the band since, as the bird is — "Increase band height by 18px. Expand bird and wordmarks
           // accordingly": the names' size as it stood with the band 18 shorter, times the stack's growth)
-          capB *= stackH / (stackH - 18);
+          // (and again with each 18 since: the size it had with the stack 63 tall, times the stack's growth)
+          capB *= stackH / 63;
           if (bmT && lwT) {
             capB = Math.min(capB, (stackH - 2 - 8) / (1 + lwB / lwT));
             capT = capB * lwB / lwT;
@@ -607,6 +610,7 @@
           bmW.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
           bmW.style.setProperty('top', ((bmT ? WM_M : (bandH - capB) / 2) - runT).toFixed(2) + 'px');
           bmW.style.setProperty('--bm-gap', gapR.toFixed(2) + 'px');
+          bmW.style.setProperty('--bm-x', (cL + WM_M).toFixed(2) + 'px');
           bmW.classList.toggle('band-mark--stacked', !!bmT);
           if (bmT) {
             bmT.style.setProperty('font-size', capT.toFixed(3) + 'px');
