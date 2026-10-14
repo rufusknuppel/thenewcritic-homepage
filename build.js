@@ -727,7 +727,7 @@ const SITE_TAGLINE = 'The Last Magazine';
 // rules that differ by side (style.css). On the right again since "Move The
 // Latest column back to the right", after an afternoon on the left.
 // (on the left again since 2026-10-13 — "Move the latest column to the left side")
-const RAIL_SIDE = 'l'; // (on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left")
+const RAIL_SIDE = 'r'; // (on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left"; on the right again since, the same day — "move the latest column to the right")
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
 // deploy by cloudflare/worker.js. Social cards need absolute URLs, and
