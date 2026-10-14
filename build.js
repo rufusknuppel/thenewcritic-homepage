@@ -3827,7 +3827,12 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // the latest column have THE/NEW (on the left) and CRI/TIC (on the right) the height of the box", 2026-10-13:
     // --rm-wl and --rm-wr the two sides' widths in their capitals; style.css THE STAMP'S WORDS)
     const birdSvgRm = cnBird.replace(/-cn\b/g, '-rm').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '');
-    const wTHE = spacedWord('the', LETTER_K), wNEW = spacedWord('new', LETTER_K), wCRI = spacedWord('cri', LETTER_K), wTIC = spacedWord('tic', LETTER_K);
+    // (each word's letters spaced till it spans as wide as the widest of the four, so THE, NEW, CRI and TIC stand one
+    // width — "Space the Letters so that THE and NEW span the same width and CRI and TIC span the same width as THE
+    // and NEW", 2026-10-14: a word's width runs on its gaps, k times them, so k is solved for the width)
+    const spanAll = Math.max(...['the', 'new', 'cri', 'tic'].map((w) => spacedWord(w, LETTER_K).ar));
+    const spacedTo = (w) => { const a1 = spacedWord(w, 1).ar, g = spacedWord(w, 2).ar - a1; return spacedWord(w, g > 0 ? 1 + (spanAll - a1) / g : LETTER_K); };
+    const wTHE = spacedTo('the'), wNEW = spacedTo('new'), wCRI = spacedTo('cri'), wTIC = spacedTo('tic');
     const railBirdMark = `<span class="rail-mark" aria-hidden="true" style="--rm-wl: ${Math.max(wTHE.ar, wNEW.ar).toFixed(4)}; --rm-wr: ${Math.max(wCRI.ar, wTIC.ar).toFixed(4)}">`
       + `<span class="rail-mark__side">${wTHE.svg}${wNEW.svg}</span>${birdSvgRm}<span class="rail-mark__side rail-mark__side--r">${wCRI.svg}${wTIC.svg}</span></span>`;
     return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
