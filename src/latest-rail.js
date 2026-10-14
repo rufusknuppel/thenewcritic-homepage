@@ -2356,7 +2356,11 @@
           if (ctH != null && lastT3 && socR) {
             var navBase = hr.top + wantN + capHt(navL);
             var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
-            var birdTop = hr.bottom - wantN - bH3;
+            // (THE LAST MAGAZINE back in the column since, under the bird, its foot where the bird's stood and the bird 27
+            // over it — "Move the last magazine under the bird", 2026-10-14; style.css THE LAST MAGAZINE UNDER THE BIRD)
+            var tlmR = hold.querySelector(':scope > .rail-tlm');
+            var tlmH = tlmR && tlmR.offsetHeight ? (parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923) + 27 : 0;
+            var birdTop = hr.bottom - wantN - tlmH - bH3;
             var navInk = navL.getBoundingClientRect().left;
             hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             hold.style.setProperty('--rl-birdx', (navInk - hr.left).toFixed(2) + 'px');
