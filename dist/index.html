@@ -11678,7 +11678,7 @@ window.__ncStripInk = function () {
         if (topG && navL) {
           var ctN = capTop(navL);
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
-          var wantN = 54;
+          var wantN = 54 + 18;
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
           hold.style.setProperty('--rl-tlmb', wantN.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');

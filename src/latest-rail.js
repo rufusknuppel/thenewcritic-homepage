@@ -2328,7 +2328,8 @@
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
           // (54 under the window's top since, not on THE NEW CRITIC's middle, and THE LAST MAGAZINE's foot 54 over its
           // foot — "Start the nav 54px from the top and the last magazine 54px from the bottom", 2026-10-14)
-          var wantN = 54;
+          // (72 since — "Add 18px to the top margin and the bottom margin of the column", 2026-10-14)
+          var wantN = 54 + 18;
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
           // (THE LAST MAGAZINE's foot as far over the window's as the nav's capitals stand under its top — "Have the last
           // magazine sit the same distance from the bottom as the nav from the top", 2026-10-14; --rl-tlmb)
