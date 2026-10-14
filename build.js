@@ -247,9 +247,9 @@ function contentName() {
   const TNC_MARK = TNC_BOX;
   if (!TNC_MARK) return '';
   const caps = (w) => spacedWord(w, LETTER_K).ar;
-  // (THE NEW from full size at T down to 0.85 at W, its tops level; CRITIC from 0.85 at its first C up to full at the
-  // outer one, its feet level — THE TAPER)
-  const TAPER = 0.15, step = (i) => TAPER * i / 5;
+  // (THE NEW from full size at T down to 0.92 at W, its tops level; CRITIC from 0.92 at its first C up to full at the
+  // outer one, its feet level — THE TAPER; 0.85 till "Reduce this effect to 8%", 2026-10-14)
+  const TAPER = 0.08, step = (i) => TAPER * i / 5;
   const tTHE = taperedWord('the', LETTER_K, [0, 1, 2].map((i) => 1 - step(i)), 'top');
   const tNEW = taperedWord('new', LETTER_K, [3, 4, 5].map((i) => 1 - step(i)), 'top');
   const tCRITIC = taperedWord('critic', LETTER_K, [0, 1, 2, 3, 4, 5].map((i) => 1 - TAPER + step(i)), 'bottom');
