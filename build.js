@@ -298,7 +298,20 @@ function contentName() {
   const TEE = toBird([RED_PAD + THE_K * tThe[0], tThe[1]]);
   // (and the same on the bird's other side since — "do the same on the other side of the T": the wedge from the wing
   // tips to the middle of the stem of CRITIC's T, over everything right of the bird between its two lines)
-  const TEE_R = toBird([birdL + BIRD_K * ar + ringR + BIRD_GAP * GAP + tCritic[0], tCritic[1]]);
+  // (its point at the outer C's edge since, at the T's stem's height — "Should go the Edge of C" — first its far side,
+  // then its near one, the side the rest of the word stands by: "Should connect to the other side of C the near side")
+  const cEdge = (() => {
+    const svgW = WORDMARK_WORDS.critic, vbW = svgW.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+    const subs = svgW.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).map((sp) => {
+      const n = sp.match(/-?\d*\.?\d+/g).map(Number); let lo = Infinity, hi = -Infinity;
+      for (let t = 0; t < n.length; t += 2) { lo = Math.min(lo, n[t]); hi = Math.max(hi, n[t]); }
+      return { lo, hi };
+    }).sort((a, b) => a.lo - b.lo);
+    const L = []; subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) z.hi = Math.max(z.hi, q.hi); else L.push({ ...q }); });
+    let dx = 0; for (let q = 1; q < L.length; q++) dx += (LETTER_K - 1) * (L[q].lo - L[q - 1].hi);
+    return (L[L.length - 1].lo + dx - vbW[0]) / vbW[3];
+  })();
+  const TEE_R = toBird([birdL + BIRD_K * ar + ringR + BIRD_GAP * GAP + cEdge, tCritic[1]]);
   const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + ringL + ringR + (1 + 2 * BIRD_GAP) * GAP;
   const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
