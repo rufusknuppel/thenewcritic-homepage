@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=89a02a95">
+<link rel="stylesheet" href="style.css?v=823ce5c7">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11643,6 +11643,15 @@ window.__ncStripInk = function () {
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', Math.min(12.923, (railW - 2 - 54) / lwTC).toFixed(3) + 'px');
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
         var birdC = hold.querySelector(':scope > .rail-mark--bird');
+        var fr1 = document.querySelector('.page-rows section.card .card-frame');
+        var cnlV = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
+        if (fr1 && fr1.offsetWidth) {
+          var cnmV = Math.max(0, fr1.getBoundingClientRect().left - main.getBoundingClientRect().left - cnlV).toFixed(2) + 'px';
+          if (document.documentElement.style.getPropertyValue('--cn-m') !== cnmV) {
+            document.documentElement.style.setProperty('--cn-m', cnmV);
+            setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
+          }
+        }
         var cnW = document.querySelector('a.content-name .content-name__block .tnc-words');
         var cnWr = cnW && cnW.getBoundingClientRect();
         var capHt = function (el) {
@@ -11669,7 +11678,7 @@ window.__ncStripInk = function () {
         if (topG && navL) {
           var ctN = capTop(navL);
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
-          var wantN = wmMid != null ? wmMid - capHt(navL) / 2 : 27;
+          var wantN = 54;
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
           hold.style.setProperty('--rl-tlmb', wantN.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
@@ -11698,13 +11707,15 @@ window.__ncStripInk = function () {
             var navBase = hr.top + wantN + capHt(navL);
             var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
             var tlmR = hold.querySelector(':scope > .rail-tlm');
-            var tlmH = tlmR && tlmR.offsetHeight ? (parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923) + 27 : 0;
-            var birdTop = hr.bottom - wantN - tlmH - bH3;
+            var tlmF3 = tlmR && tlmR.offsetHeight ? parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923 : 0;
+            var tlmTop = hr.bottom - wantN - tlmF3;
             var navInk = navL.getBoundingClientRect().left;
-            hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             hold.style.setProperty('--rl-birdx', (navInk - hr.left).toFixed(2) + 'px');
             var stackH = baseOf(lastT3) - ctH, socH = capHt(socR);
-            var g3 = Math.max(0, ((birdTop - navBase) - stackH - socH) / 3);
+            var nG = tlmF3 ? 4 : 3;
+            var g3 = Math.max(0, ((tlmTop - navBase) - stackH - socH - bH3) / nG);
+            var birdTop = tlmF3 ? tlmTop - g3 - bH3 : tlmTop - bH3;
+            hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
             var dS = navBase + g3 - ctH;
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');

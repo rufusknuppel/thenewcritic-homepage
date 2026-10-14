@@ -2282,6 +2282,19 @@
         // the room right of it, their capitals 27 under the page's top — "Center the nav on one side of the wordmark.
         // Center the socials on the other side", 2026-10-14; --rl-navx, --cs-x, --cs-t; style.css THE NAV AND THE SOCIALS
         // BESIDE THE NAME)
+        // (the name across the content's measure: the first picture's inset from the column's edge, 54 till the rows
+        // stop widening, the same off the window's right — "Make the new critic wordmark the width of the content
+        // column", 2026-10-14; --cn-m, style.css THE NAME THE CONTENT'S WIDTH)
+        var fr1 = document.querySelector('.page-rows section.card .card-frame');
+        var cnlV = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
+        if (fr1 && fr1.offsetWidth) {
+          var cnmV = Math.max(0, fr1.getBoundingClientRect().left - main.getBoundingClientRect().left - cnlV).toFixed(2) + 'px';
+          // (a changed measure changes the name's height, which seats the first row: the page laid again once)
+          if (document.documentElement.style.getPropertyValue('--cn-m') !== cnmV) {
+            document.documentElement.style.setProperty('--cn-m', cnmV);
+            setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
+          }
+        }
         var cnW = document.querySelector('a.content-name .content-name__block .tnc-words');
         var cnWr = cnW && cnW.getBoundingClientRect();
         // (both on THE NEW CRITIC's height since, their capitals' middle on the letters' middle — "Nav and socials should
@@ -2313,7 +2326,9 @@
         if (topG && navL) {
           var ctN = capTop(navL);
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
-          var wantN = wmMid != null ? wmMid - capHt(navL) / 2 : 27;
+          // (54 under the window's top since, not on THE NEW CRITIC's middle, and THE LAST MAGAZINE's foot 54 over its
+          // foot — "Start the nav 54px from the top and the last magazine 54px from the bottom", 2026-10-14)
+          var wantN = 54;
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
           // (THE LAST MAGAZINE's foot as far over the window's as the nav's capitals stand under its top — "Have the last
           // magazine sit the same distance from the bottom as the nav from the top", 2026-10-14; --rl-tlmb)
@@ -2359,13 +2374,17 @@
             // (THE LAST MAGAZINE back in the column since, under the bird, its foot where the bird's stood and the bird 27
             // over it — "Move the last magazine under the bird", 2026-10-14; style.css THE LAST MAGAZINE UNDER THE BIRD)
             var tlmR = hold.querySelector(':scope > .rail-tlm');
-            var tlmH = tlmR && tlmR.offsetHeight ? (parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923) + 27 : 0;
-            var birdTop = hr.bottom - wantN - tlmH - bH3;
+            var tlmF3 = tlmR && tlmR.offsetHeight ? parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923 : 0;
+            var tlmTop = hr.bottom - wantN - tlmF3;
             var navInk = navL.getBoundingClientRect().left;
-            hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             hold.style.setProperty('--rl-birdx', (navInk - hr.left).toFixed(2) + 'px');
             var stackH = baseOf(lastT3) - ctH, socH = capHt(socR);
-            var g3 = Math.max(0, ((birdTop - navBase) - stackH - socH) / 3);
+            // (the bird to THE LAST MAGAZINE as far as the rest apart since, not 27 — "make the distances between nav and
+            // latest lates and socials socials and bird bird and the last magazine equal", 2026-10-14: four gaps)
+            var nG = tlmF3 ? 4 : 3;
+            var g3 = Math.max(0, ((tlmTop - navBase) - stackH - socH - bH3) / nG);
+            var birdTop = tlmF3 ? tlmTop - g3 - bH3 : tlmTop - bH3;
+            hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
             var dS = navBase + g3 - ctH;
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
