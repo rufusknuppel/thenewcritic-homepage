@@ -581,6 +581,9 @@
         if (FOOT_TOP && bmW && bmB) {
           var bandH = 2 * FB_AIR + capH, stT = st.getBoundingClientRect().top, runT = rr0(run) - stT;
           var WM_M = 20, AR_B = 0.9676;
+          // (54 from the window's sides since, the names and the bird at the size they had — "move the bird and the
+          // wordmarks so they start 54px from the sides", 2026-10-14)
+          var SIDE_M = 54;
           var lwB = parseFloat(bmW.style.getPropertyValue('--bm-lw')) || 14.9;
           var lwT = bmT ? parseFloat(bmT.style.getPropertyValue('--bm-lw')) || 17.9 : 0;
           var twB = bmW.querySelector('.tnc-words'), gB = twB ? parseFloat(twB.style.getPropertyValue('--tw-space')) || 1.3846 : 1.3846;
@@ -607,18 +610,18 @@
           }
           var gapR = bmT ? (stackH - capB - capT - 2) / 2 : 0;
           bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
-          bmW.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
+          bmW.style.setProperty('left', (cL + SIDE_M).toFixed(2) + 'px');
           bmW.style.setProperty('top', ((bmT ? WM_M : (bandH - capB) / 2) - runT).toFixed(2) + 'px');
           bmW.style.setProperty('--bm-gap', gapR.toFixed(2) + 'px');
-          bmW.style.setProperty('--bm-x', (cL + WM_M).toFixed(2) + 'px');
+          bmW.style.setProperty('--bm-x', (cL + SIDE_M).toFixed(2) + 'px');
           bmW.classList.toggle('band-mark--stacked', !!bmT);
           if (bmT) {
             bmT.style.setProperty('font-size', capT.toFixed(3) + 'px');
-            bmT.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
+            bmT.style.setProperty('left', (cL + SIDE_M).toFixed(2) + 'px');
             bmT.style.setProperty('top', (WM_M + stackH - capT - runT).toFixed(2) + 'px');
           }
           // (its wing tips 10 from the band's top and its rule since — "Make it 10px for the bird wing tips actually")
-          var BIRD_M = 10, birdH = bandH - 2 * BIRD_M, birdW = birdH * AR_B, birdX = cR - WM_M - birdW;
+          var BIRD_M = 10, birdH = bandH - 2 * BIRD_M, birdW = birdH * AR_B, birdX = cR - SIDE_M - birdW;
           bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
           bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
