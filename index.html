@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=78d8351a">
+<link rel="stylesheet" href="style.css?v=24e1e390">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11626,23 +11626,10 @@ window.__ncStripInk = function () {
         var cnb = document.querySelector('a.content-name .content-name__block');
         var cnbH = cnb ? cnb.getBoundingClientRect().height : 0;
         if (cnbH) hold.style.setProperty('--rl-bird', cnbH.toFixed(3) + 'px');
-        hold.style.setProperty('--rl-pt', '0px');
-        var ins = hold.querySelectorAll(':scope > .latest-rail__in'), lastIn = ins[ins.length - 1];
-        var lastT = null, allT = lastIn ? lastIn.querySelectorAll('*') : [];
-        for (var q = allT.length - 1; q >= 0 && !lastT; q--) {
-          var eq = allT[q];
-          if (eq.closest('svg') || !eq.textContent.trim() || !eq.getBoundingClientRect().height || getComputedStyle(eq).visibility === 'hidden') continue;
-          lastT = eq;
-        }
-        if (lastT) {
-          var pin = document.createElement('span');
-          pin.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-          lastT.appendChild(pin);
-          var blL = pin.getBoundingClientRect().top;
-          pin.remove();
-          var pbL = parseFloat(hold.style.getPropertyValue('--rl-pb')) || 0;
-          hold.style.setProperty('--rl-pb', Math.max(0, pbL + (blL - (hr.bottom - 54))).toFixed(2) + 'px');
-        }
+        hold.style.setProperty('--rl-pb', '0px');
+        var ctL = head ? capTop(head) : null;
+        var ptL = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
+        hold.style.setProperty('--rl-pt', (ctL != null ? Math.max(0, ptL + (hr.top + 54 - ctL)) : 54).toFixed(2) + 'px');
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;
