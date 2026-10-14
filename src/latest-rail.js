@@ -2312,10 +2312,41 @@
           // magazine sit the same distance from the bottom as the nav from the top", 2026-10-14; --rl-tlmb)
           hold.style.setProperty('--rl-tlmb', wantN.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
-          var gB = topG.getBoundingClientRect().bottom + dN;
-          var bT = birdC && birdC.getBoundingClientRect().height ? birdC.getBoundingClientRect().top : hr.bottom;
-          hold.style.setProperty('--rl-pt', Math.max(0, gB - hr.top).toFixed(2) + 'px');
-          hold.style.setProperty('--rl-pb', Math.max(0, hr.bottom - bT).toFixed(2) + 'px');
+          // (the caret on the middle of the column's left margin, the room from the window's edge to the nav — "Move the
+          // caret to sit in the left margin of the column", 2026-10-14; --rl-caretx, style.css THE BIRD UNDER THE NAV)
+          var navWc = navL.getBoundingClientRect().width;
+          hold.style.setProperty('--rl-caretx', ((hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
+          // (The Latest at the column's foot since, its last line's baseline as far over the window's as the nav's
+          // capitals under its top; the bird, a quarter taller than THE NEW CRITIC's letters, and THE LAST MAGAZINE 27
+          // under it, the two on the middle between the nav's baseline and The Latest's capitals — "Move the last
+          // magazine and bird between the nav and the latest. I want the bird to be 25% bigger", 2026-10-14; --rl-birdt)
+          if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
+          hold.style.setProperty('--rl-pt', '0px');
+          var ins2 = hold.querySelectorAll(':scope > .latest-rail__in'), last2 = ins2[ins2.length - 1], lastT2 = null;
+          var all2 = last2 ? last2.querySelectorAll('*') : [];
+          for (var q2 = all2.length - 1; q2 >= 0 && !lastT2; q2--) {
+            var e2 = all2[q2];
+            if (e2.closest('svg') || !e2.textContent.trim() || !e2.getBoundingClientRect().height || getComputedStyle(e2).visibility === 'hidden') continue;
+            lastT2 = e2;
+          }
+          var pbOld = parseFloat(hold.style.getPropertyValue('--rl-pb')) || 0, pbNew = pbOld;
+          if (lastT2) {
+            var pin2 = document.createElement('span');
+            pin2.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            lastT2.appendChild(pin2);
+            var bl2 = pin2.getBoundingClientRect().top;
+            pin2.remove();
+            pbNew = Math.max(0, pbOld + (bl2 - (hr.bottom - wantN)));
+            hold.style.setProperty('--rl-pb', pbNew.toFixed(2) + 'px');
+          }
+          var ctH = head ? capTop(head) : null;
+          if (ctH != null) {
+            // (read after --rl-pb is set: capTop's own read lays the stack where it now stands)
+            var navBase = hr.top + wantN + capHt(navL);
+            var bHt = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0, tlmF = parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923;
+            var grpH = bHt + 27 + tlmF;
+            hold.style.setProperty('--rl-birdt', ((navBase + ctH) / 2 - grpH / 2 - hr.top).toFixed(2) + 'px');
+          }
         }
       }
     }

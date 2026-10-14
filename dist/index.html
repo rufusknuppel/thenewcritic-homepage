@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=640eaee2">
+<link rel="stylesheet" href="style.css?v=c782bc9c">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11670,10 +11670,34 @@ window.__ncStripInk = function () {
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
           hold.style.setProperty('--rl-tlmb', wantN.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
-          var gB = topG.getBoundingClientRect().bottom + dN;
-          var bT = birdC && birdC.getBoundingClientRect().height ? birdC.getBoundingClientRect().top : hr.bottom;
-          hold.style.setProperty('--rl-pt', Math.max(0, gB - hr.top).toFixed(2) + 'px');
-          hold.style.setProperty('--rl-pb', Math.max(0, hr.bottom - bT).toFixed(2) + 'px');
+          var navWc = navL.getBoundingClientRect().width;
+          hold.style.setProperty('--rl-caretx', ((hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
+          if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
+          hold.style.setProperty('--rl-pt', '0px');
+          var ins2 = hold.querySelectorAll(':scope > .latest-rail__in'), last2 = ins2[ins2.length - 1], lastT2 = null;
+          var all2 = last2 ? last2.querySelectorAll('*') : [];
+          for (var q2 = all2.length - 1; q2 >= 0 && !lastT2; q2--) {
+            var e2 = all2[q2];
+            if (e2.closest('svg') || !e2.textContent.trim() || !e2.getBoundingClientRect().height || getComputedStyle(e2).visibility === 'hidden') continue;
+            lastT2 = e2;
+          }
+          var pbOld = parseFloat(hold.style.getPropertyValue('--rl-pb')) || 0, pbNew = pbOld;
+          if (lastT2) {
+            var pin2 = document.createElement('span');
+            pin2.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            lastT2.appendChild(pin2);
+            var bl2 = pin2.getBoundingClientRect().top;
+            pin2.remove();
+            pbNew = Math.max(0, pbOld + (bl2 - (hr.bottom - wantN)));
+            hold.style.setProperty('--rl-pb', pbNew.toFixed(2) + 'px');
+          }
+          var ctH = head ? capTop(head) : null;
+          if (ctH != null) {
+            var navBase = hr.top + wantN + capHt(navL);
+            var bHt = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0, tlmF = parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923;
+            var grpH = bHt + 27 + tlmF;
+            hold.style.setProperty('--rl-birdt', ((navBase + ctH) / 2 - grpH / 2 - hr.top).toFixed(2) + 'px');
+          }
         }
       }
     }
