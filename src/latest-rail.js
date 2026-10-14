@@ -581,6 +581,9 @@
           var lwT = bmT ? parseFloat(bmT.style.getPropertyValue('--bm-lw')) || 17.9 : 0;
           var twB = bmW.querySelector('.tnc-words'), gB = twB ? parseFloat(twB.style.getPropertyValue('--tw-space')) || 1.3846 : 1.3846;
           var capB = Math.min(bandH - 2 * WM_M, (cR - cL - 2 * WM_M) / (lwB + lwT + AR_B + 2 * gB));
+          // (half that since — "Reduce wordmark size by 50% and expand bird to sit 20px from top and bottom of band",
+          // 2026-10-14: the names half as big at their sides, the bird the band's height less two 20s)
+          capB *= 0.5;
           var yB = (bandH - capB) / 2 - runT;
           var wordsR = cL + WM_M + capB * lwB, tlmL = cR - WM_M - capB * lwT;
           bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
@@ -591,11 +594,11 @@
             bmT.style.setProperty('left', tlmL.toFixed(2) + 'px');
             bmT.style.setProperty('top', yB.toFixed(2) + 'px');
           }
-          var birdW = capB * AR_B, birdX = ((bmT ? tlmL : cR - WM_M) + wordsR) / 2 - birdW / 2;
-          bmB.style.setProperty('height', capB.toFixed(2) + 'px');
+          var birdH = bandH - 2 * WM_M, birdW = birdH * AR_B, birdX = ((bmT ? tlmL : cR - WM_M) + wordsR) / 2 - birdW / 2;
+          bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
           bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
-          bmB.style.setProperty('top', yB.toFixed(2) + 'px');
+          bmB.style.setProperty('top', (WM_M - runT).toFixed(2) + 'px');
           // THE LINE IN THE COLUMN (2026-10-14 — "Move nav itmes and socials. Nav to the top of the Latest, set 20px
           // from the top of column and Socials 20px from the bottom of the column"): both on the column's middle, the
           // nav's capitals 20 under the band's rule, the socials' baseline 20 over the window's foot; riding out with

@@ -10594,6 +10594,7 @@ window.__ncStripInk = function () {
           var lwT = bmT ? parseFloat(bmT.style.getPropertyValue('--bm-lw')) || 17.9 : 0;
           var twB = bmW.querySelector('.tnc-words'), gB = twB ? parseFloat(twB.style.getPropertyValue('--tw-space')) || 1.3846 : 1.3846;
           var capB = Math.min(bandH - 2 * WM_M, (cR - cL - 2 * WM_M) / (lwB + lwT + AR_B + 2 * gB));
+          capB *= 0.5;
           var yB = (bandH - capB) / 2 - runT;
           var wordsR = cL + WM_M + capB * lwB, tlmL = cR - WM_M - capB * lwT;
           bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
@@ -10604,11 +10605,11 @@ window.__ncStripInk = function () {
             bmT.style.setProperty('left', tlmL.toFixed(2) + 'px');
             bmT.style.setProperty('top', yB.toFixed(2) + 'px');
           }
-          var birdW = capB * AR_B, birdX = ((bmT ? tlmL : cR - WM_M) + wordsR) / 2 - birdW / 2;
-          bmB.style.setProperty('height', capB.toFixed(2) + 'px');
+          var birdH = bandH - 2 * WM_M, birdW = birdH * AR_B, birdX = ((bmT ? tlmL : cR - WM_M) + wordsR) / 2 - birdW / 2;
+          bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
           bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
-          bmB.style.setProperty('top', yB.toFixed(2) + 'px');
+          bmB.style.setProperty('top', (WM_M - runT).toFixed(2) + 'px');
           var colMidL = onL ? rwF / 2 : vwF - rwF / 2;
           fbX.new = colMidL - wN / 2;
           fbX.critic = colMidL - wS / 2;
