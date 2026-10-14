@@ -2381,9 +2381,11 @@
             var stackH = baseOf(lastT3) - ctH, socH = capHt(socR);
             // (the bird to THE LAST MAGAZINE as far as the rest apart since, not 27 — "make the distances between nav and
             // latest lates and socials socials and bird bird and the last magazine equal", 2026-10-14: four gaps)
-            var nG = tlmF3 ? 4 : 3;
+            // (the bird to THE LAST MAGAZINE half the others since — "reduce the gap specifically between bird and the last
+            // magazine by 50%", 2026-10-14)
+            var nG = tlmF3 ? 3.5 : 3;
             var g3 = Math.max(0, ((tlmTop - navBase) - stackH - socH - bH3) / nG);
-            var birdTop = tlmF3 ? tlmTop - g3 - bH3 : tlmTop - bH3;
+            var birdTop = tlmF3 ? tlmTop - g3 / 2 - bH3 : tlmTop - bH3;
             hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
             var dS = navBase + g3 - ctH;

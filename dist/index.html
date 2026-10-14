@@ -11712,9 +11712,9 @@ window.__ncStripInk = function () {
             var navInk = navL.getBoundingClientRect().left;
             hold.style.setProperty('--rl-birdx', (navInk - hr.left).toFixed(2) + 'px');
             var stackH = baseOf(lastT3) - ctH, socH = capHt(socR);
-            var nG = tlmF3 ? 4 : 3;
+            var nG = tlmF3 ? 3.5 : 3;
             var g3 = Math.max(0, ((tlmTop - navBase) - stackH - socH - bH3) / nG);
-            var birdTop = tlmF3 ? tlmTop - g3 - bH3 : tlmTop - bH3;
+            var birdTop = tlmF3 ? tlmTop - g3 / 2 - bH3 : tlmTop - bH3;
             hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
             var dS = navBase + g3 - ctH;
