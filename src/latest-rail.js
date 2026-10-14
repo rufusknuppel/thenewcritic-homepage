@@ -120,6 +120,9 @@
   // build.js and style.css, THE NAME IN THE COLUMN)
   var NAME_IN_RAIL = true;
   var SPREAD = NAME_IN_RAIL; // (the band's line spread — THE BAND'S LINE SPREAD, seatUnder)
+  // (the names apart since 2026-10-14 — THE NEW CRITIC at the column's top, THE LAST MAGAZINE in the band, the bird
+  // between: style.css THE NAMES APART)
+  main.classList.add('logo-split');
   SPREAD = false; // (the line even from the window's 20 to its 20 again since 2026-10-14, FOOT_TOP's note)
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
@@ -536,6 +539,9 @@
       // (across the side column again since, window edge to window edge — "Have the nav bar cut across The latest
       // column", 2026-10-13)
       var FB_ACROSS = !SPREAD || FOOT_TOP;
+      // (the content's column alone again since, the side column the window's whole height — "Move the bottom band over
+      // so the latest takes up full height of the site", 2026-10-14)
+      if (!FOOT_TOP) FB_ACROSS = false;
       // (the name over the content from the side column's edge — THE NAME OVER THE CONTENT, build.js contentName)
       var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
       // (and to the side column's left edge where the column is on the right — "Move the latest column to the right")
@@ -559,13 +565,35 @@
       // between it and the copyright; style.css, NO LAST MAGAZINE IN THE FOOT BAND)
       var NO_TLM = true, nG = NO_TLM ? 3 : 4;
       if (NO_TLM) wT = 0;
+      // (THE LAST MAGAZINE back in the line since, drawn — the band's mark, .band-mark--tlm, its capitals the line's,
+      // from the band's 20 — "Move the last magazine into the bottom band", 2026-10-14)
+      var bmTF = !FOOT_TOP ? st.querySelector('.band-mark--tlm') : null, capTF = capH, lwTF = 0;
+      if (bmTF) { lwTF = parseFloat(bmTF.style.getPropertyValue('--bm-lw')) || 18.8; NO_TLM = false; nG = 4; wT = capTF * lwTF; }
+      // (no copyright and no dot in it since — "Remove copyright from band", "And dot", 2026-10-14: THE LAST MAGAZINE from
+      // the band's 20, the socials to its other 20, the nav midway; style.css, NO COPYRIGHT, NO DOT IN THE BAND)
+      var NO_CD = true;
+      var wCR = wC;
+      if (NO_CD) { wC = 0; dW = 0; nG = NO_TLM ? 1 : 2; }
       var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / nG >= 20;
       if (cpyF) cpyF.style.setProperty('display', fitAll ? '' : 'none', fitAll ? '' : 'important');
       if (!fitAll) wC = 0;
       var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? nG : nG - 1);
       // (between the nav's items and the socials since — "move the dot between nav items and socials", the same day)
       var xN = NO_TLM ? cL + 20 : cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
-      fbX = { the: cL + 20, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
+      if (NO_CD) xS = xN + wN + gF;
+      // (the nav from the band's 20, the socials to its other 20 and THE LAST MAGAZINE midway between them since — "Center
+      // the last magazine between the nav and the socials", 2026-10-14)
+      var xT = cL + 20;
+      if (NO_CD && bmTF) { xN = cL + 20; xS = cR - 20 - wS; xT = (xN + wN + xS) / 2 - wT / 2; }
+      fbX = { the: xT, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
+      // (the copyright, unseen, still inside the window — its width kept for its place)
+      if (NO_CD) fbX.copy = cR - 20 - wCR;
+      if (bmTF) {
+        var runTF = run.getBoundingClientRect().top;
+        bmTF.style.setProperty('font-size', capTF.toFixed(3) + 'px');
+        bmTF.style.setProperty('left', fbX.the.toFixed(2) + 'px');
+        bmTF.style.setProperty('top', 'calc(100svh + ' + (base - capTF - runTF - vh).toFixed(2) + 'px)');
+      }
       if (!fitAll) fbX.critic = cR - 20 - wS;
       // THE BAND'S LINE SPREAD (2026-10-13 — "Move the top band margins to 54px. Move copyright to the bottom THE
       // LATEST column. spaced same distance as top band items are from the rule. Move dot to top right of THE latest
@@ -2174,17 +2202,29 @@
         // the charcoal 20, THE LAST MAGAZINE, 20; the blocks from the window's edge to the rule; --rl-bird)
         var capTL = lwTL > 0 ? capL * lwBL / lwTL : 0;
         hold.style.setProperty('--rl-bird', Math.max(20, (railW - 2) - 80 - 2 - capL - capTL).toFixed(3) + 'px');
+        // (three tenths smaller since, under The Latest — "Move the bird below the latest. Make the bird 30% smaller",
+        // 2026-10-14: 0.7 of the 0.62 of the column it stood at)
+        if (main.classList.contains('logo-split')) hold.style.setProperty('--rl-bird', (0.7 * 0.62 * (railW - 2)).toFixed(3) + 'px');
       }
       // (The Latest's stack on the middle between THE LAST MAGAZINE's foot and the bird's top — "Vertically center THe
       // latest between last and bird", 2026-10-14: the column's air over and under the stack those two's; --rl-pt,
       // --rl-pb, style.css)
       var birdM = hold.querySelector(':scope > .rail-mark--bird');
-      var hr = hold.getBoundingClientRect(), lr = logo.getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
+      var hr = hold.getBoundingClientRect(), lr = ((main.classList.contains('logo-split') && logo.querySelector('.rail-logo__tnc .tnc-words')) || logo).getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
       // (and between them and the band since the bird went into the names' block — "Move the bird under THE NEW CRITIC")
       var fbH = (parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0) + 2;
       if (lr.height) {
         hold.style.setProperty('--rl-pt', (lr.bottom - hr.top).toFixed(2) + 'px');
         hold.style.setProperty('--rl-pb', (br && br.height ? hr.bottom - br.top : Math.max(0, hr.bottom - (window.innerHeight - fbH))).toFixed(2) + 'px');
+        // (THE LAST MAGAZINE gone to the band since, the stack 20 over the window's foot, the column the window's whole
+        // height, and the bird on the middle between THE NEW CRITIC's foot and the stack's top — "Center bird between The
+        // New CRITIC and the Latest. Have the latest sit 20px off bottom of the site", 2026-10-14; --rl-bird-top)
+        // (the bird under The Latest since, 20 over the window's foot as THE NEW CRITIC stands 20 under its top, and the
+        // stack on the middle between the two — "Move the bird below the latest", "Center the latest between the two")
+        if (main.classList.contains('logo-split')) {
+          var bH = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
+          hold.style.setProperty('--rl-pb', (20 + bH).toFixed(2) + 'px');
+        }
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;

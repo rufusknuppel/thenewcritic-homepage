@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4e15967e">
+<link rel="stylesheet" href="style.css?v=4e1de1ea">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10324,6 +10324,7 @@ window.__ncStripInk = function () {
   var NAME_FOOT = false;
   var NAME_IN_RAIL = true;
   var SPREAD = NAME_IN_RAIL; // (the band's line spread — THE BAND'S LINE SPREAD, seatUnder)
+  main.classList.add('logo-split');
   SPREAD = false; // (the line even from the window's 20 to its 20 again since 2026-10-14, FOOT_TOP's note)
   var ruleW = function () { return parseFloat(getComputedStyle(main).getPropertyValue('--band-rule')) || 2; };
   window.__ncWmScale = WM_SCALE;
@@ -10565,6 +10566,7 @@ window.__ncStripInk = function () {
       var wS = txw(st.querySelector('.sub-ticker-run > .band-under--critic')), wC = txw(st.querySelector('.sub-ticker-run > .band-under--copy'));
       var cL = 0, cR = vwF;
       var FB_ACROSS = !SPREAD || FOOT_TOP;
+      if (!FOOT_TOP) FB_ACROSS = false;
       var railN = document.querySelector('.page-rows .latest-rail--latest'), rrN = railN && railN.getBoundingClientRect();
       var onL = rrN && rrN.width && railN.classList.contains('latest-rail--l'), onR = rrN && rrN.width && !onL;
       document.documentElement.style.setProperty('--cn-l', (onL ? railN.offsetWidth : 0) + 'px');
@@ -10579,12 +10581,27 @@ window.__ncStripInk = function () {
       var cpyF = st.querySelector('.sub-ticker-run > .band-under--copy');
       var NO_TLM = true, nG = NO_TLM ? 3 : 4;
       if (NO_TLM) wT = 0;
+      var bmTF = !FOOT_TOP ? st.querySelector('.band-mark--tlm') : null, capTF = capH, lwTF = 0;
+      if (bmTF) { lwTF = parseFloat(bmTF.style.getPropertyValue('--bm-lw')) || 18.8; NO_TLM = false; nG = 4; wT = capTF * lwTF; }
+      var NO_CD = true;
+      var wCR = wC;
+      if (NO_CD) { wC = 0; dW = 0; nG = NO_TLM ? 1 : 2; }
       var fitAll = (cR - cL - 40 - wT - wN - wS - dW - wC) / nG >= 20;
       if (cpyF) cpyF.style.setProperty('display', fitAll ? '' : 'none', fitAll ? '' : 'important');
       if (!fitAll) wC = 0;
       var gF = (cR - cL - 40 - wT - wN - wS - dW - wC) / (fitAll ? nG : nG - 1);
       var xN = NO_TLM ? cL + 20 : cL + 20 + wT + gF, xD = xN + wN + gF, xS = xD + dW + gF;
-      fbX = { the: cL + 20, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
+      if (NO_CD) xS = xN + wN + gF;
+      var xT = cL + 20;
+      if (NO_CD && bmTF) { xN = cL + 20; xS = cR - 20 - wS; xT = (xN + wN + xS) / 2 - wT / 2; }
+      fbX = { the: xT, new: xN, critic: xS, copy: cR - 20 - wC, mid: xD + dW / 2 };
+      if (NO_CD) fbX.copy = cR - 20 - wCR;
+      if (bmTF) {
+        var runTF = run.getBoundingClientRect().top;
+        bmTF.style.setProperty('font-size', capTF.toFixed(3) + 'px');
+        bmTF.style.setProperty('left', fbX.the.toFixed(2) + 'px');
+        bmTF.style.setProperty('top', 'calc(100svh + ' + (base - capTF - runTF - vh).toFixed(2) + 'px)');
+      }
       if (!fitAll) fbX.critic = cR - 20 - wS;
       var fbDot = null, fbCopyY = null, colY = null;
       if (SPREAD) {
@@ -11590,13 +11607,18 @@ window.__ncStripInk = function () {
         hold.style.setProperty('--rl-t', (lwTL > 0 ? capL * lwBL / lwTL : 0).toFixed(3) + 'px');
         var capTL = lwTL > 0 ? capL * lwBL / lwTL : 0;
         hold.style.setProperty('--rl-bird', Math.max(20, (railW - 2) - 80 - 2 - capL - capTL).toFixed(3) + 'px');
+        if (main.classList.contains('logo-split')) hold.style.setProperty('--rl-bird', (0.7 * 0.62 * (railW - 2)).toFixed(3) + 'px');
       }
       var birdM = hold.querySelector(':scope > .rail-mark--bird');
-      var hr = hold.getBoundingClientRect(), lr = logo.getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
+      var hr = hold.getBoundingClientRect(), lr = ((main.classList.contains('logo-split') && logo.querySelector('.rail-logo__tnc .tnc-words')) || logo).getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
       var fbH = (parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0) + 2;
       if (lr.height) {
         hold.style.setProperty('--rl-pt', (lr.bottom - hr.top).toFixed(2) + 'px');
         hold.style.setProperty('--rl-pb', (br && br.height ? hr.bottom - br.top : Math.max(0, hr.bottom - (window.innerHeight - fbH))).toFixed(2) + 'px');
+        if (main.classList.contains('logo-split')) {
+          var bH = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
+          hold.style.setProperty('--rl-pb', (20 + bH).toFixed(2) + 'px');
+        }
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;

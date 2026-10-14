@@ -3906,6 +3906,8 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // (the bird in THE NEW CRITIC's block since, under the words — "Move the bird under THE NEW CRITIC. Keep margins as
       // they are now around THE NEW CRITIC. Match those margins with the bird", 2026-10-14: 20 under the words and 20
       // over the block's foot, its ids its own)
+      // (THE NEW CRITIC in the hand-drawn letters for a few minutes — "Revert the new critic to the hand drawn wordmark"
+      // — and the block letters again since, "Make the new critic the block letters", 2026-10-14)
       + `<span class="rail-logo__tnc">${bandBlockWords()}<span class="rail-logo__bird" aria-hidden="true">${birdSvgRm.replace(/-rm\b/g, '-rl')}</span></span><span class="rail-logo__rule" aria-hidden="true"></span>`
       + (TLM_WORDS ? `<span class="rail-logo__tlm">${tlmWords()}</span>` : '') + `</a>`
       // (the bird its own since, over the copyright — "Move THE NEW CRITIC to sit at the top of the latest column and
