@@ -285,8 +285,13 @@ function contentSocials() {
 function contentNameBlock() {
   const cn = contentName();
   if (!cn) return '';
+  // (THE LAST MAGAZINE under CRITIC since, as wide as CRITIC, a fifth of a capital under it — "Move the last magazine
+  // below Critic", 2026-10-14: --cn-tlmk its capital in the name's; style.css THE LAST MAGAZINE UNDER CRITIC)
+  const tlmK = TLM_WORDS ? spacedWord('critic', LETTER_K).ar / tlmLineW() : 0;
+  const words = !TLM_WORDS ? bandBlockWords() : bandBlockWords().replace(/(<span class="tnc-words__grp)("><span class="tnc-words__row">)((?:(?!<span class="tnc-words__grp)[\s\S])*)$/,
+    (m, a1, a2, rest) => `${a1} tnc-words__grp--critic${a2}${rest.replace(/<\/span><\/span>$/, `</span><span class="content-name__tlm" aria-label="${escapeHtml(SITE_TAGLINE)}">${tlmWords()}</span></span>`)}`);
   return cn.replace('<a class="content-name content-name--stamp"', '<a class="content-name content-name--stamp content-name--block"')
-    .replace(/<\/a>$/, `<span class="content-name__block" style="--cn-lwb: ${bandBlockLineW().toFixed(4)}">${bandBlockWords()}</span></a>`);
+    .replace(/<\/a>$/, `<span class="content-name__block" style="--cn-lwb: ${bandBlockLineW().toFixed(4)}; --cn-tlmk: ${tlmK.toFixed(5)}">${words}</span></a>`);
 }
 function contentName() {
   const TNC_MARK = TNC_BOX;
@@ -3963,7 +3968,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       return [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="rail-top__a rail-top__dead">Store</span>']
         .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
         .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join('<span class="rail-top__sep">, </span>');
-    })()}</div></div>`;
+    })()}</div></div>`
+    // (the socials back in the column since, under The Latest — "Move the socials below the latest", 2026-10-14:
+    // contentSocials' links, .rail-socials, last in the stack)
+    + contentSocials().replace('class="content-socials"', 'class="rail-socials"').replace(/content-socials__/g, 'rail-socials__');
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() + railFoot() : ''}<div class="latest-rail__in">`
     + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
@@ -4219,7 +4227,7 @@ ${renderStampDefs()}
      fitters and the chrome's fold machinery still measure it.) -->
 <nav class="dek-band dek-band--masthead" aria-label="Masthead line"></nav>
 
-${contentNameBlock()}${contentSocials()}
+${contentNameBlock()}
 <main id="main">
 
   <!-- THE MARGINS TAKE THE ESSAYS' MARK: the two 72s painted in the
