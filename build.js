@@ -128,7 +128,7 @@ const loadMark = (name) => {
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   const inner = src.slice(src.indexOf('>', src.indexOf('<svg')) + 1, src.lastIndexOf('</svg>'));
   // (white the ground, the highlight's red the page's highlight, anything else the ink)
-  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FFFFFF)' : /^#D52B05$/i.test(v) ? 'var(--nc-mark, #D52B05)' : v === 'none' ? 'none' : 'currentColor');
+  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FFFFFF)' : /^#(?:D52B05|B3301E)$/i.test(v) ? 'var(--nc-mark, #B3301E)' : v === 'none' ? 'none' : 'currentColor');
   const spans = ['border', 'frame', 'ground'].find((k) => new RegExp(`id="${k}"`).test(inner));
   const body = inner.replace(/<(path|rect)\b([^>]*?)\/?>/g, (m0, tag, attrs) => {
     const id = (attrs.match(/\sid="([^"]+)"/) || [])[1];
@@ -366,7 +366,7 @@ function bandLogoHtml(id = 'band', cls = '') {
       // (the slit in the beak in the ground it sits on, the box's left: charcoal on the dark side — "this should be
       // dark too" — and white on the light, "Should be white on white background tho")
       + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #FFFFFF); stroke: var(--nc-stamp-ground, #FFFFFF)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #D52B05)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #B3301E)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
     // (the TNC monogram in the stamp's place, the band's and the colophon's - THE TNC MONOGRAM IN THE BAND)
@@ -4086,12 +4086,13 @@ function renderFontGateScript() {
   // again, #F01E2C, "Want highlight color to be red", then the lighter
   // navy again, #1A1AB0, "Use that lighter navy as the highlight color",
   // then vermilion, #D52B05, 2026-10-07, "#D52B05 use this as the accent
+  // color", then #B3301E, 2026-10-14, "#B3301E Use this for the highlight
   // color".
   // It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#d52b05';
+  var YELLOW = '#b3301e';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
