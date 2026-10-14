@@ -2352,7 +2352,14 @@
             el.removeChild(pn);
             return b;
           };
-          if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
+          // (its size held where it stands since, off the window and the column, not off the name's letters, so the name's
+          // size can change and the bird keep its own — "keep the bird at current size", 2026-10-14: a quarter taller
+          // than the name was across the window less two 54s and the column)
+          var cnBlk = document.querySelector('a.content-name .content-name__block');
+          var lwbB = cnBlk ? parseFloat(cnBlk.style.getPropertyValue('--cn-lwb')) || 0 : 0;
+          var cnlB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
+          if (lwbB > 0) hold.style.setProperty('--rl-bird', (1.25 * (document.documentElement.clientWidth - 108 - cnlB) / lwbB).toFixed(3) + 'px');
+          else if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');
           var socR = hold.querySelector(':scope > .rail-socials');
 
