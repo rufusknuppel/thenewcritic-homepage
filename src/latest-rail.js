@@ -2037,6 +2037,14 @@
     var railW = hold.parentElement ? hold.parentElement.offsetWidth : hold.offsetWidth;
     var availW = railW - 54;
     var rmH = availW / (wl + wr + 2 * 0.5 + 2.6022 * arB);
+    // (the stamp the content's since, the hand-drawn letters on one line under the bird, the whole drawn to the line's
+    // width across the column less two 27s — "Make that side wordmark/logo the center wordmark logo too", "Use the hand
+    // drawn font": --rm-lw the line's width in capitals)
+    // (the bird apart from the words since, over the copyright, as tall as it stood in the stamp before the words
+    // went under it — "separate the bird to sit above The Copyright": --rm-hb)
+    hold.style.setProperty('--rm-hb', rmH.toFixed(3) + 'px');
+    var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;
+    if (lw > 0) rmH = availW / lw;
     hold.style.setProperty('--rm-h', rmH.toFixed(3) + 'px');
     hold.style.setProperty('--rm-ar', arB.toFixed(4));
     var cT = cpy && capTop(cpy.firstElementChild || cpy);
@@ -2050,7 +2058,9 @@
     if (!hold || !strip || !nb) return;
     var ruleB = strip.getBoundingClientRect().top + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0);
     var r = nb.getBoundingClientRect();
-    var shown = r.height ? Math.max(0, Math.min(1, (r.bottom - ruleB) / r.height)) : 1;
+    // (no name over the content since — "Remove the big wordmark and bird at the top of the page", 2026-10-14: its
+    // bird unseen, the column's words and bird shown outright)
+    var shown = r.height ? Math.max(0, Math.min(1, (r.bottom - ruleB) / r.height)) : 0;
     var o = Math.max(0, Math.min(1, (0.2 - shown) / 0.2));
     hold.style.setProperty('--rm-o', o.toFixed(3));
   };

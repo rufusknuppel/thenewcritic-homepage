@@ -24,6 +24,12 @@ const WORDMARK_WORDS = require('./wordmark.js').wordmarkWords(path.join(__dirnam
 // left the site's spaces as they were. --wm-space on :root, style.css,
 // THE WORDS AS FAR APART AS THEIR DRAWING SETS THEM.)
 const WM_SPACE = require('./wordmark.js').wordmarkSpace(path.join(__dirname, 'assets', 'wordmark.svg'));
+// (the stamp's words in the hand-drawn MAILLE / SÉZANE letters since 2026-10-14 — "Use the hand drawn font not the block
+// font for this new logo": the name's drawing of 10-06 as it last stood, assets/wordmark-the-new-critic-maille-site.svg;
+// stampWords)
+const HAND_FILE = path.join(__dirname, 'assets', 'wordmark-the-new-critic-maille-site.svg');
+const HAND_WORDS = require('./wordmark.js').wordmarkWords(HAND_FILE);
+const HAND_SPACE = require('./wordmark.js').wordmarkSpace(HAND_FILE);
 // THE STAMP (2026-09-25, at the user's word): the hand-cut bird in its
 // frame, traced to one path from the print (assets/stamp.svg) and
 // stated once a page as a <symbol>; every stamp on the page is a <use>
@@ -199,8 +205,8 @@ function wordmarkWord(word, widthEm = 0) {
 // 2026-10-13: the word's outline split into its letters where their ink parts, each letter moved on by a fifth of
 // every gap before it, the drawing widened by the fifth of them all; LETTER_K)
 const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gaps between letters in the wordmark by 20%", twice)
-function spacedWord(word, k) {
-  const svg = WORDMARK_WORDS[word];
+function spacedWord(word, k, words) {
+  const svg = (words || WORDMARK_WORDS)[word];
   const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
   const subs = svg.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).map((sp) => {
     const n = sp.match(/-?\d*\.?\d+/g).map(Number);
@@ -214,6 +220,23 @@ function spacedWord(word, k) {
   const paths = L.map((l, i) => { if (i) dx += (k - 1) * (l.lo - L[i - 1].hi); return `<path fill="currentColor" transform="translate(${dx.toFixed(2)} 0)" d="${l.d}"/>`; });
   const w = vb[2] + dx;
   return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
+}
+// (the stamp's words, the column's and the content's alike: THE NEW CRITIC on one line, every word's letters spaced as
+// NEW's are when THE, NEW, CRI and TIC are each spaced to the widest of them — "Make the spacing the same as in NEW";
+// a bar under THE NEW and one over CRITIC for a while, the letters three quarters tall between them — "Add a Bar under
+// THE NEW and a bar above CRITIC", 2026-10-14 — gone since, "Remove the bars"; the words half as far apart again as
+// the drawing's word space — "increase the space between the words by 50%"; style.css THE STAMP'S WORDS ON ONE LINE)
+const STAMP_SPAN = () => Math.max(...['the', 'new', 'cri', 'tic'].map((w) => spacedWord(w, LETTER_K).ar));
+// (the stamp's line's width in its capitals: the letters and the two word gaps)
+const stampLineW = () => ['the', 'new', 'critic'].reduce((t, x) => t + spacedWord(x, 1, HAND_WORDS).ar, 0) + 2 * 1.5 * HAND_SPACE;
+function stampWords() {
+  // (the hand-drawn letters as their drawing spaces them, NEW's gaps every word's; the words half as far apart again
+  // as the drawing's own word space — "increase the space between the words by 50%", kept when the bars went — "But
+  // keep spacing between words")
+  const w = (x) => spacedWord(x, 1, HAND_WORDS).svg;
+  return `<span class="tnc-words" style="--tw-space: ${(1.5 * HAND_SPACE).toFixed(4)}">`
+    + `<span class="tnc-words__grp tnc-words__grp--under"><span class="tnc-words__row">${w('the')}${w('new')}</span></span>`
+    + `<span class="tnc-words__grp tnc-words__grp--over"><span class="tnc-words__row">${w('critic')}</span></span></span>`;
 }
 function contentName() {
   const TNC_MARK = TNC_BOX;
@@ -366,8 +389,11 @@ function contentName() {
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
-  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-red-w: ${redW.toFixed(4)}; --cn-red-pad: ${RED_PAD}; --cn-gap: ${GAP.toFixed(4)}; --cn-ring-l: ${ringL.toFixed(4)}; --cn-ring-r: ${ringR.toFixed(4)}; --cn-band: ${BAND_H.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
-    + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
+  // (the column's stamp over the content too since — "Make that side wordmark/logo the center wordmark logo too",
+  // 2026-10-14: the bird over THE NEW CRITIC, as the column has it, the bird as tall as it stood in the line (BIRD_K
+  // of the line's capital, --cns-k the stamp's capital in the line's), the stamp on the column's middle; style.css THE
+  // STAMP OVER THE CONTENT)
+  return `<a class="content-name content-name--stamp" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-red-w: ${redW.toFixed(4)}; --cn-red-pad: ${RED_PAD}; --cn-gap: ${GAP.toFixed(4)}; --cn-ring-l: ${ringL.toFixed(4)}; --cn-ring-r: ${ringR.toFixed(4)}; --cn-band: ${BAND_H.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line"><span class="content-name__stamp" style="--cns-k: ${(BIRD_K / 2.6022).toFixed(5)}">${bird}${stampWords()}</span></span></a>`;
 }
 function bandWord(word) {
   const svg = WORDMARK_WORDS[word];
@@ -3830,15 +3856,15 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // (each word's letters spaced till it spans as wide as the widest of the four, so THE, NEW, CRI and TIC stand one
     // width — "Space the Letters so that THE and NEW span the same width and CRI and TIC span the same width as THE
     // and NEW", 2026-10-14: a word's width runs on its gaps, k times them, so k is solved for the width)
-    const spanAll = Math.max(...['the', 'new', 'cri', 'tic'].map((w) => spacedWord(w, LETTER_K).ar));
-    const kOf = (w) => { const a1 = spacedWord(w, 1).ar, g = spacedWord(w, 2).ar - a1; return g > 0 ? 1 + (spanAll - a1) / g : LETTER_K; };
-    // (the words on one line under the bird since, at the size the stamp stood, every word's letters spaced as NEW's
-    // were — "Arrange the letters in the sidebar in one line under the bird. Keep it the same size as right now. Make
-    // the spacing the same as in NEW": --rm-wl and --rm-wr kept as they stood so latest-rail.js sizes the capital as
-    // before; the words a name's word space apart; style.css THE STAMP ON ONE LINE)
-    const kNEW = kOf('new');
-    const railBirdMark = `<span class="rail-mark rail-mark--line" aria-hidden="true" style="--rm-wl: ${spanAll.toFixed(4)}; --rm-wr: ${spanAll.toFixed(4)}; --rm-space: ${WM_SPACE.toFixed(4)}">`
-      + `${birdSvgRm}<span class="rail-mark__line">${spacedWord('the', kNEW).svg}${spacedWord('new', kNEW).svg}${spacedWord('critic', kNEW).svg}</span></span>`;
+    const spanAll = STAMP_SPAN();
+    // (the words on one line under the bird since, at the size the stamp stood — "Arrange the letters in the sidebar in
+    // one line under the bird. Keep it the same size as right now": --rm-wl and --rm-wr kept as they stood so
+    // latest-rail.js sizes the capital as before; stampWords)
+    const railBirdMark = `<span class="rail-mark rail-mark--line" aria-hidden="true" style="--rm-wl: ${spanAll.toFixed(4)}; --rm-wr: ${spanAll.toFixed(4)}; --rm-lw: ${stampLineW().toFixed(4)}">`
+      + `<span class="rail-mark__line">${stampWords()}</span></span>`
+      // (the bird its own since, over the copyright — "Move THE NEW CRITIC to sit at the top of the latest column and
+      // separate the bird to sit above The Copyright", 2026-10-14: style.css THE WORDS AT THE TOP, THE BIRD AT THE FOOT)
+      + `<span class="rail-mark rail-mark--bird" aria-hidden="true">${birdSvgRm}</span>`;
     return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
