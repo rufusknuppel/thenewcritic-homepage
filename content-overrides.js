@@ -53,6 +53,11 @@ module.exports = {
   },
   'long-covid': {
     kicker: 'Who’s Still Masking?',
+    // (the paper above and below the drawing cropped out of the frame, as
+    // McNally's — "Do the same with Long Covid", 2026-10-14: the drawing
+    // stands from rows 58 to 830 of the scan's 898)
+    boxZoom: 1.19,
+    boxPos: '50% 46%',
   },
   'high-school-or-claude': {
     kicker: 'AI in 8th Grade',
