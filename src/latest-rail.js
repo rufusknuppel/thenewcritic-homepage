@@ -613,11 +613,12 @@
             bmT.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
             bmT.style.setProperty('top', (WM_M + stackH - capT - runT).toFixed(2) + 'px');
           }
-          var birdH = stackH, birdW = birdH * AR_B, birdX = cR - WM_M - birdW;
+          // (its wing tips 10 from the band's top and its rule since — "Make it 10px for the bird wing tips actually")
+          var BIRD_M = 10, birdH = bandH - 2 * BIRD_M, birdW = birdH * AR_B, birdX = cR - WM_M - birdW;
           bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
           bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
-          bmB.style.setProperty('top', (WM_M - runT).toFixed(2) + 'px');
+          bmB.style.setProperty('top', (BIRD_M - runT).toFixed(2) + 'px');
           // THE LINE IN THE COLUMN (2026-10-14 — "Move nav itmes and socials. Nav to the top of the Latest, set 20px
           // from the top of column and Socials 20px from the bottom of the column"): both on the column's middle, the
           // nav's capitals 20 under the band's rule, the socials' baseline 20 over the window's foot; riding out with

@@ -10614,11 +10614,11 @@ window.__ncStripInk = function () {
             bmT.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
             bmT.style.setProperty('top', (WM_M + stackH - capT - runT).toFixed(2) + 'px');
           }
-          var birdH = stackH, birdW = birdH * AR_B, birdX = cR - WM_M - birdW;
+          var BIRD_M = 10, birdH = bandH - 2 * BIRD_M, birdW = birdH * AR_B, birdX = cR - WM_M - birdW;
           bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
           bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
-          bmB.style.setProperty('top', (WM_M - runT).toFixed(2) + 'px');
+          bmB.style.setProperty('top', (BIRD_M - runT).toFixed(2) + 'px');
           var colMidL = onL ? rwF / 2 : vwF - rwF / 2;
           fbX.new = colMidL - wN / 2;
           fbX.critic = colMidL - wS / 2;
