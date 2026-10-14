@@ -9818,7 +9818,11 @@
           var metaOver = true, dekUp = true;
           if (between && metaOver) top0 = j.mT;
           var midH = between ? (metaOver ? (j.mB - j.mT) + META_AIR : META_AIR + (j.mB - j.mT)) : INK_GAP;
-          var sH = between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT)
+          // (no rule between the dek and the text on the front page since, the text's first ink 54 under the dek's last
+          // baseline — "Remove the rule between the dek and the body text", "Close the gap to 54px", 2026-10-14; style.css
+          // NO RULE OVER THE BODY)
+          var dekToText = document.querySelector('main.logo-split:not(.foot-band-top)') && window.innerWidth >= 1024 ? 54 : RULE_AIR + FRAME + RULE_AIR;
+          var sH = between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
             : between ? (metaOver ? midH + (j.hdB - j.ttT) : (j.ttB - top0) + midH) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
@@ -9845,6 +9849,7 @@
             }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
+            if (dekToText !== RULE_AIR + FRAME + RULE_AIR) dnY = (j.dkB + dekY + dekToText) - j.txT;
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop - j.ttT;
