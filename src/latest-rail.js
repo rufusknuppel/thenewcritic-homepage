@@ -1810,6 +1810,9 @@
     // under the head; THE LINE IN THE FOOT BAND)
     var mn = document.querySelector('main');
     var fb = mn && mn.classList.contains('has-foot-band') && !mn.classList.contains('foot-band-top') ? (parseFloat(getComputedStyle(mn).getPropertyValue('--foot-band')) || 0) + rule : 0;
+    // (on the middle of the whole window since the band went — "Band should disappear", "When you press a kicker center
+    // content between the top and bottom", 2026-10-14)
+    if (mn && mn.classList.contains('logo-split') && !mn.classList.contains('foot-band-top')) { fb = 0; rule = 0; }
     var room = window.innerHeight - fb - (foot + rule);
     var air = bot != null && bot - top < room ? (room - (bot - top)) / 2 : 54;
     window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - air), behavior: 'smooth' });
