@@ -630,7 +630,12 @@
           var colMidL = onL ? rwF / 2 : vwF - rwF / 2;
           fbX.new = colMidL - wN / 2;
           fbX.critic = colMidL - wS / 2;
-          colY = { new: { y: st.getBoundingClientRect().bottom + 20 + capH, foot: false }, critic: { y: stT + vh - 20, foot: true } };
+          // (the nav on the socials since, a line over them, as far apart as the section names stand — "move the nav bar
+          // on top of the socials, spaced like section titles", 2026-10-14: the pitch read off two section names)
+          var metas = [].filter.call(document.querySelectorAll('.page-rows .latest-rail--latest .latest-rail__meta-link'), function (m) { return m.offsetWidth; });
+          var pitch = 28.5;
+          for (var mi = 1; mi < metas.length; mi++) { var dm = metas[mi].getBoundingClientRect().top - metas[mi - 1].getBoundingClientRect().top; if (dm > 10 && dm < 60) { pitch = dm; break; } }
+          colY = { new: { y: stT + vh - 20 - pitch, foot: true }, critic: { y: stT + vh - 20, foot: true } };
         }
         var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
         // (at the column's foot since, 27 from its outer side and 27 over the window's foot, its foot on the copyright's

@@ -2245,8 +2245,13 @@ function bandUnder() {
   // (the name and the bird in the band since — "Move the wordmark into the top left, move the bird into the middle",
   // 2026-10-14: the stamp's words and the name's bird, its ids its own; latest-rail.js seats them, THE BAND'S MARKS)
   const bandBird = ((contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '').replace(/-cn\b/g, '-bm').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '');
+  // (the upper wing in the highlight since, the wing's gap still the ground — "make the top wing of the bird the
+  // highlight color, excluding wing gap", 2026-10-14: the bird again over itself, clipped to the wing above the gap's
+  // middle, .bird-upper; style.css THE UPPER WING)
+  const UPPER = 'M100 -10H312V326L301 336L290 337L270 335.5L250 335L230 336.5L210 339L187 344L150 352L100 352Z';
+  const bandBirdUp = bandBird.replace(/<path[^>]*fill-rule="evenodd"[^>]*\/>/, (m) => m + `<clipPath id="upper-wing-bm"><path d="${UPPER}"/></clipPath>` + m.replace('<path ', '<path class="bird-upper" clip-path="url(#upper-wing-bm)" '));
   const marks = `<a class="band-mark band-mark--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--bm-lw: ${stampLineW().toFixed(4)}">${stampWords()}</a>`
-    + (bandBird ? `<a class="band-mark band-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${bandBird}</a>` : '')
+    + (bandBird ? `<a class="band-mark band-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${bandBirdUp}</a>` : '')
     // (and THE LAST MAGAZINE at the band's right, as the name stands at its left — "Add The Last Magazine I created in a
     // different session", "Add it to the right of the band", 2026-10-14; to the About page, as the line's was)
     + (TLM_WORDS ? `<a class="band-mark band-mark--tlm" href="${escapeHtml(ab ? ab.href : '#top')}" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--bm-lw: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '');
