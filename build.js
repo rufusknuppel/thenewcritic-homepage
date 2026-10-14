@@ -258,6 +258,11 @@ function contentName() {
   const birdD = (boxSrc.match(/<path id="bird"[^>]*\sd="([^"]+)"/) || [])[1] || '';
   const holeD = (birdD.match(/M[^M]*/g) || []).slice(1).join('');
   if (holeD) markBody = markBody.replace(/<path[^>]*fill-rule="evenodd"/, (m) => `<path class="beak-hole" d="${holeD}" style="fill: currentColor"/>` + m);
+  // (the red block's edge round the wings' left side — "The block should wrap and fill the edges of the wings", "just on
+  // the left side tho", 2026-10-14: assets/mark-bird-wrap.svg, under the bird, .red-wrap)
+  const wrapFile = path.join(__dirname, 'assets', 'mark-bird-wrap.svg');
+  const wrapD = fs.existsSync(wrapFile) ? (fs.readFileSync(wrapFile, 'utf8').match(/<path id="wrap"[^>]*\sd="([^"]+)"/) || [])[1] : '';
+  if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #B3301E)"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
