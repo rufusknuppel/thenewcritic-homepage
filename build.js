@@ -2229,7 +2229,12 @@ function bandUnder() {
   // line's end under CRITIC's last stroke for a day, then went to the column's foot — railCopy — and back under
   // CRITIC's last C since 2026-10-11, "move copyright into nav band under final C of critic", its end on the C's
   // last stroke; in the column's foot still where it would not clear the socials by 20 — latest-rail.js, seatUnder)
-  return `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">© The New Critic, Inc.</span>`;
+  // (the name and the bird in the band since — "Move the wordmark into the top left, move the bird into the middle",
+  // 2026-10-14: the stamp's words and the name's bird, its ids its own; latest-rail.js seats them, THE BAND'S MARKS)
+  const bandBird = ((contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '').replace(/-cn\b/g, '-bm').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '');
+  const marks = `<a class="band-mark band-mark--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--bm-lw: ${stampLineW().toFixed(4)}">${stampWords()}</a>`
+    + (bandBird ? `<a class="band-mark band-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${bandBird}</a>` : '');
+  return marks + `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">© The New Critic, Inc.</span>`;
 }
 function navStrip() {
   const by = (key) => SITE_LINKS.find((l) => l.key === key);

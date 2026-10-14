@@ -100,6 +100,10 @@
   // (at the window's foot again since, across the content's column only — "move top band to the bottom in the left
   // column", 2026-10-13: FB_ACROSS off; the line spread as it stood at the top, SPREAD)
   FOOT_TOP = false;
+  // (and at the window's top again since, edge to edge, the column's name and bird in it — "Move the nav band into a
+  // top band that runs edge to edge. Move the wordmark into the top left, move the bird into the middle", 2026-10-14;
+  // THE BAND'S MARKS, seatUnder)
+  FOOT_TOP = true;
   // (and the name in a band at the window's foot since 2026-10-11 — "Move wordmark to the bottom": the line's band
   // alone the head, --strip-settled; the name in its band at the foot, its air 20 over and under it, the band's rule
   // over it — its ground .foot-band, its height --foot-band; each of the name's and the bird's rises a calc on the
@@ -336,7 +340,8 @@
       // the site")
       // (54 since — "Move the top band margins to 54px")
       // (27 since — "have 27px above and below text in the top band"; FB_AIR, seatUnder)
-      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      // (36 taller since 2026-10-14 — "expand the band size by 36px"; FB_AIR, seatUnder)
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -450,6 +455,7 @@
     for (k = 0; k + 1 < n.length; k += 2) if (+n[k + 1] > (y0 + y1) / 2) x = Math.min(x, +n[k]);
     return isFinite(x) ? m.a * x + m.e : null;
   };
+  var rr0 = function (el) { return el.getBoundingClientRect().top; };
   var seatUnder = function (st) {
     if (!st) return;
     var items = st.querySelectorAll('.sub-ticker-run > .band-under');
@@ -487,6 +493,9 @@
       if (SPREAD) FB_AIR = 54;
       // (27 since — "have 27px above and below text in the top band", 2026-10-13)
       if (SPREAD) FB_AIR = 27;
+      // (36 taller since, 18 more over and under — "expand the band size by 36px", 2026-10-14, the band at the top with
+      // its name and bird)
+      if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
@@ -557,6 +566,29 @@
         var rwF = railN ? railN.offsetWidth : 0, colMid = onL ? rwF / 2 : vwF - rwF / 2;
         // (across the band's own span since it went to the content's column's foot: cL to cR)
         fbX = { the: (cL + cR) / 2 - wT / 2, new: cL + 54, critic: cR - 54 - wS, copy: colMid - wC / 2, mid: 0 };
+        // THE BAND'S MARKS (2026-10-14 — "Move the nav band into a top band that runs edge to edge. Move the wordmark
+        // into the top left, move the bird into the middle, move the socials and nav in between on left and right of
+        // bird"): the name 54 from the window's left, its capitals on the band's middle, 20 tall, or as much less as
+        // keeps 27 either side of the socials; the bird on the window's middle, 27 under the band's top and 27 over its
+        // rule; the socials midway between the name and the bird, the nav midway between the bird and the window's 54
+        var bmW = st.querySelector('.band-mark--words'), bmB = st.querySelector('.band-mark--bird');
+        if (FOOT_TOP && bmW && bmB) {
+          var bandH = 2 * FB_AIR + capH, stT = st.getBoundingClientRect().top, runT = rr0(run) - stT;
+          var birdH = bandH - 54, birdW = birdH * 0.9676, midX = (cL + cR) / 2;
+          var lwB = parseFloat(bmW.style.getPropertyValue('--bm-lw')) || 14.9;
+          var WM_M = 20; // (20 round the name since — "Make margins around wordmark 20px", the same day: 20 from the window's left and the band's top)
+          var capB = Math.max(6, Math.min(20, (midX - birdW / 2 - cL - WM_M - wS - 2 * 27) / lwB));
+          var wordsR = cL + WM_M + capB * lwB;
+          bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
+          bmW.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
+          bmW.style.setProperty('top', (WM_M - runT).toFixed(2) + 'px');
+          bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
+          bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
+          bmB.style.setProperty('left', (midX - birdW / 2).toFixed(2) + 'px');
+          bmB.style.setProperty('top', (27 - runT).toFixed(2) + 'px');
+          fbX.critic = (wordsR + midX - birdW / 2) / 2 - wS / 2;
+          fbX.new = (midX + birdW / 2 + cR - 54) / 2 - wN / 2;
+        }
         var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
         // (at the column's foot since, 27 from its outer side and 27 over the window's foot, its foot on the copyright's
         // baseline — "Move dot to the bottom right of the column", 2026-10-13; the copyright kept 20 clear of it)

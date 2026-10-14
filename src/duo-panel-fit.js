@@ -7841,7 +7841,8 @@
               // (the row's ink a pixel over the painted frame, where the frame is not laid yet)
               // (under the name over the content since, 54 under its letters — THE NAME OVER THE CONTENT: the name's box
               // ends 54 under them; the row's foot let go under the foot band, "let the bottom of the content be hidden")
-              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + cnm.offsetHeight : BAND_AIR;
+              var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
+              // (with no name, BAND_AIR under the band where it heads the window — "Move the nav band into a top band", 2026-10-14)
               // (the name's foot off the band and its own height, not its box: in main it stands off main's top, which
               // this very pass moves — "wordmark should pass under top band")
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
