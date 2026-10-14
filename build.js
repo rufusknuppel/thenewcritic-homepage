@@ -223,7 +223,10 @@ function contentName() {
   // (the box, its outline's outer edge, half as tall again as the letters since 2026-10-14 — "Make the bird box only
   // 50% bigger than letters": the drawing's height the box's over the box's share of it, read off #box)
   const boxM = fs.readFileSync(path.join(__dirname, 'assets', 'mark-bird-box.svg'), 'utf8').match(/<path id="box"[^>]*stroke-width="([\d.]+)"[^>]*d="M[\d.]+ ([\d.]+)H[\d.]+V([\d.]+)/);
-  const BIRD_K = boxM ? 1.5 * TNC_MARK.h / (+boxM[3] - +boxM[2] + +boxM[1]) : 1.75 * 1.25;
+  const BOX_K = boxM ? 1.5 * TNC_MARK.h / (+boxM[3] - +boxM[2] + +boxM[1]) : 1.75 * 1.25;
+  // (the bird a tenth smaller since 2026-10-14 — "Make bird 10% smaller": the band as tall as it stood, BOX_K, the
+  // gaps either side of the bird as they were, the letters a little bigger for the room it gives back)
+  const BIRD_K = BOX_K * 0.9;
   // (THE half the size of NEW and CRITIC since, with a line under the whole word — "Make The 50% of the size of NEW
   // and CRITIC. Add a line underneath it, like in older repo with the blockier wordmark": as the LODÉHO name had it,
   // 2026-10-08, a gap of a stroke and a line a stroke deep under the letters; THE_K; style.css, THE HALF SIZE)
@@ -247,7 +250,7 @@ function contentName() {
   const AIR_K = 1.1, GAP = WM_SPACE * AIR_K;
   // (the band a tenth taller than the bird since, so the bird has air over and under it too — "Also on top and below
   // bird too": a twentieth of its height each way, the letters on the band's middle with it)
-  const RED_PAD = 0.25 * AIR_K, WING_L = 159.43, BAND_H = BIRD_K * AIR_K;
+  const RED_PAD = 0.25 * AIR_K, WING_L = 159.43, BAND_H = BOX_K * AIR_K;
   const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * GAP;
   const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
@@ -270,11 +273,13 @@ function contentName() {
   const wrapFile = path.join(__dirname, 'assets', 'mark-bird-wrap.svg');
   const wrapD = fs.existsSync(wrapFile) ? (fs.readFileSync(wrapFile, 'utf8').match(/<path id="wrap"[^>]*\sd="([^"]+)"/) || [])[1] : '';
   if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #B3301E)"/>` + m);
+  // (its middle on the middle of the bird's height since, 364.26, halfway between the wing tips — "Make red circle
+  // centered in height of bird")
   // (a ring under the bird — "Add a circle like this under the bird ... Circle should be highlight color", 2026-10-14,
   // from the user's drawing of the swallow over a thin circle: its middle a little behind the head, on the beak's
   // height, its edge just past the beak on the left, under the tail's root on the right, a fifth of the bird's height
   // in from its top and a tenth from its foot; a thin line, 5 of the drawing's units; .bird-ring, under the bird)
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<circle class="bird-ring" cx="192" cy="406" r="241" fill="none" style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<circle class="bird-ring" cx="192" cy="364.26" r="241" fill="none" style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
