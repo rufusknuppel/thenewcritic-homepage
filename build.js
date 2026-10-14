@@ -210,6 +210,10 @@ function wordmarkWord(word, widthEm = 0) {
 // 2026-10-13: the word's outline split into its letters where their ink parts, each letter moved on by a fifth of
 // every gap before it, the drawing widened by the fifth of them all; LETTER_K)
 const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gaps between letters in the wordmark by 20%", twice)
+// (CRITIC's first C closer to its R and to the I before it — "The space between the C and the R feels off", 2026-10-14:
+// the drawing leaves 35.8 and 36 there against 30 everywhere else, and the C's open side reads wider still; the
+// block letters' gaps by their index in the word, in the drawing's units before LETTER_K)
+const WM_KERN = { critic: { 1: 26, 5: 30 } };
 function spacedWord(word, k, words) {
   const svg = (words || WORDMARK_WORDS)[word];
   const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
@@ -222,7 +226,8 @@ function spacedWord(word, k, words) {
   const L = [];
   subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) { z.d += q.sp; z.hi = Math.max(z.hi, q.hi); } else L.push({ d: q.sp, lo: q.lo, hi: q.hi }); });
   let dx = 0;
-  const paths = L.map((l, i) => { if (i) dx += (k - 1) * (l.lo - L[i - 1].hi); return `<path fill="currentColor" transform="translate(${dx.toFixed(2)} 0)" d="${l.d}"/>`; });
+  const kern = !words ? WM_KERN[word] : null;
+  const paths = L.map((l, i) => { if (i) { const g = l.lo - L[i - 1].hi; dx += (kern && kern[i] != null ? kern[i] : g) * k - g; } return `<path fill="currentColor" transform="translate(${dx.toFixed(2)} 0)" d="${l.d}"/>`; });
   const w = vb[2] + dx;
   return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
 }
