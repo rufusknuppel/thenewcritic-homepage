@@ -306,7 +306,12 @@
       if (cut != null) { if (dx < 0) winL = Math.max(boxL, cut); else winR = Math.min(boxR, cut); }
       var V = winR - winL, x0 = winL - boxL;
       if (!(V > 0)) return;
-      var k = Math.max(V / dims[0], H / dims[1]), iw = dims[0] * k, ih = dims[1] * k;
+      // (a card's own zoom, its picture at least that many times the box's height, and where it stands up and down —
+      // build.js boxZoom / boxPos, written on the title as --swap-size / --swap-pos: "Zoom in on the george mcnally so
+      // the top and bottom borders aren't visible in the frame", 2026-10-14)
+      var zm = /auto\s+([\d.]+)%/.exec(t.style.getPropertyValue('--swap-size') || '');
+      var zp = /\S+\s+(-?[\d.]+)%/.exec(t.style.getPropertyValue('--swap-pos') || '');
+      var k = Math.max(V / dims[0], H / dims[1], zm ? zm[1] / 100 * H / dims[1] : 0), iw = dims[0] * k, ih = dims[1] * k;
       var bs = iw.toFixed(2) + 'px ' + ih.toFixed(2) + 'px';
       // (a postscript's face at the window's middle where the window crops
       // it — "with the face as the focal point (no zoom tho)": the face's
@@ -320,6 +325,7 @@
         if (mm) { fx = mm[1] / 100; fy = mm[2] / 100; }
       }
       var px = Math.min(0, Math.max(V - iw, V / 2 - fx * iw)), py = Math.min(0, Math.max(H - ih, H / 2 - fy * ih));
+      if (zp) py = (H - ih) * zp[1] / 100;
       var bp = (x0 + px).toFixed(2) + 'px ' + py.toFixed(2) + 'px';
       if (t.style.getPropertyValue('--rest-bs') !== bs) t.style.setProperty('--rest-bs', bs);
       if (t.style.getPropertyValue('--rest-bp') !== bp) t.style.setProperty('--rest-bp', bp);

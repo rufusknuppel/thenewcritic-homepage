@@ -850,6 +850,8 @@ function applyContentOverrides(posts) {
     if (o.head) p.head = o.head;
     if (o.zoom) p.zoom = o.zoom;
     if (o.mat) p.mat = o.mat;
+    if (o.boxZoom) p.boxZoom = o.boxZoom;
+    if (o.boxPos) p.boxPos = o.boxPos;
     // The interview subject's display name — locked, so the dek
     // parser (applyDekBylines, which runs after) can't overwrite it
     // with whatever alias the feed's dek used.
@@ -3124,7 +3126,11 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // reads as the panel materialising AROUND a label that never moves
   // (see .rest-kicker in style.css). aria-hidden: it duplicates the panel
   // band's kicker link, which is the one assistive tech should meet.
-  const titleHtml = `<h3 class="card-title"><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>`;
+  // (a card's own zoom on the box that paints its picture at rest — `boxZoom`, the picture's height over the box's,
+  // and `boxPos`, where it stands — "Zoom in on the george mcnally so the top and bottom borders aren't visible in
+  // the frame", 2026-10-14)
+  const boxStyle = post.boxZoom ? ` style="--swap-size: auto ${+(post.boxZoom * 100).toFixed(1)}%${post.boxPos ? `; --swap-pos: ${escapeHtml(post.boxPos)}` : ''}"` : '';
+  const titleHtml = `<h3 class="card-title"${boxStyle}><a href="${escapeHtml(post.link)}" rel="noopener">${escapeHtml(post.title)}</a></h3>`;
   // THE STACK: title then dek in the left column, with the byline as the
   // panel's full-width header strip above .duo-panel-top (see THE STACK
   // in style.css) — every section, postscript included. Postscript's own

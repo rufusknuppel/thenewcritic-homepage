@@ -30,8 +30,20 @@
 //             centres the head; under 1 stands the drawing back from the
 //             frame's edges to give the head air, on
 //   mat     — the colour of the frame's ground round a zoomed-out drawing
+//   boxZoom — a big card's picture at rest zoomed in its box: its height
+//             over the box's (1.24 = 124%), to crop a scan's paper edges
+//   boxPos  — with boxZoom: where the picture stands in the box, as a
+//             CSS background-position, e.g. '50% 52.5%'
 
 module.exports = {
+  // (the paper above and below the drawing cropped out of the frame —
+  // "Zoom in on the george mcnally so the top and bottom borders aren't
+  // visible in the frame", 2026-10-14: the drawing stands from rows 80
+  // to 830 of the scan's 912)
+  'mcnally-the-younger': {
+    boxZoom: 1.24,
+    boxPos: '50% 49%',
+  },
   // (The Latest's kickers, 2026-10-04, at the user's word: "Set top 6
   // kickers to 'Bay Area Seduction Camp', 'Who's Still Masking?', 'AI
   // Middle School' ... I like the current MrBeast 'Becoming a Journalist'
