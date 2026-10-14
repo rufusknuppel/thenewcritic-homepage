@@ -1652,7 +1652,8 @@
           // 2026-10-14: the stamp's words and bird drawn to the column's width, so they grow with it)
           // (and 36 more since — "expand column by 36px so bird and wordmarks can grow", 2026-10-14, the names and the bird
           // drawn to the column's width)
-          var RN_WIDER = 36 + 36;
+          // (and 18 more — "Make the column 18px wider", the same day)
+          var RN_WIDER = 36 + 36 + 18;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
@@ -2165,6 +2166,11 @@
         hold.style.setProperty('--rl-b', capL.toFixed(3) + 'px');
         // (THE LAST MAGAZINE as wide as THE NEW CRITIC since — "Make The Last Magazine the same width as The NEW CRITIC")
         hold.style.setProperty('--rl-t', (lwTL > 0 ? capL * lwBL / lwTL : 0).toFixed(3) + 'px');
+        // (the bird as tall as makes the two blocks together a square, as tall as they are wide — "Make the bird taller
+        // so the whole different color section is a square", 2026-10-14: the red block 20, the words, 20, the bird, 20;
+        // the charcoal 20, THE LAST MAGAZINE, 20; the blocks from the window's edge to the rule; --rl-bird)
+        var capTL = lwTL > 0 ? capL * lwBL / lwTL : 0;
+        hold.style.setProperty('--rl-bird', Math.max(20, (railW - 2) - 100 - capL - capTL).toFixed(3) + 'px');
       }
       // (The Latest's stack on the middle between THE LAST MAGAZINE's foot and the bird's top — "Vertically center THe
       // latest between last and bird", 2026-10-14: the column's air over and under the stack those two's; --rl-pt,

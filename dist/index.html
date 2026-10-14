@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=99987ee8">
+<link rel="stylesheet" href="style.css?v=83b13624">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11248,7 +11248,7 @@ window.__ncStripInk = function () {
         mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
         var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
         if (rnS.classList.contains('rail-name--words') && critS > 0) {
-          var RN_WIDER = 36 + 36;
+          var RN_WIDER = 36 + 36 + 18;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
           if (arS) {
@@ -11588,6 +11588,8 @@ window.__ncStripInk = function () {
         if (railEl) hold.style.setProperty('--rl-x', (20 - (hold.getBoundingClientRect().left - railEl.getBoundingClientRect().left)).toFixed(2) + 'px');
         hold.style.setProperty('--rl-b', capL.toFixed(3) + 'px');
         hold.style.setProperty('--rl-t', (lwTL > 0 ? capL * lwBL / lwTL : 0).toFixed(3) + 'px');
+        var capTL = lwTL > 0 ? capL * lwBL / lwTL : 0;
+        hold.style.setProperty('--rl-bird', Math.max(20, (railW - 2) - 100 - capL - capTL).toFixed(3) + 'px');
       }
       var birdM = hold.querySelector(':scope > .rail-mark--bird');
       var hr = hold.getBoundingClientRect(), lr = logo.getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
