@@ -3903,7 +3903,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // THE NEW CRITIC in the block letters over a 2px rule over THE LAST MAGAZINE, latest-rail.js sizing them to the
       // column, style.css THE NAMES IN THE COLUMN)
       + `<a class="rail-mark rail-mark--logo" href="#top" aria-label="The New Critic — to the top of the front page" style="--rl-lwb: ${bandBlockLineW().toFixed(4)}; --rl-lwt: ${(TLM_WORDS ? tlmLineW() : 0).toFixed(4)}">`
-      + `<span class="rail-logo__tnc">${bandBlockWords()}</span><span class="rail-logo__rule" aria-hidden="true"></span>`
+      // (the bird in THE NEW CRITIC's block since, under the words — "Move the bird under THE NEW CRITIC. Keep margins as
+      // they are now around THE NEW CRITIC. Match those margins with the bird", 2026-10-14: 20 under the words and 20
+      // over the block's foot, its ids its own)
+      + `<span class="rail-logo__tnc">${bandBlockWords()}<span class="rail-logo__bird" aria-hidden="true">${birdSvgRm.replace(/-rm\b/g, '-rl')}</span></span><span class="rail-logo__rule" aria-hidden="true"></span>`
       + (TLM_WORDS ? `<span class="rail-logo__tlm">${tlmWords()}</span>` : '') + `</a>`
       // (the bird its own since, over the copyright — "Move THE NEW CRITIC to sit at the top of the latest column and
       // separate the bird to sit above The Copyright", 2026-10-14: style.css THE WORDS AT THE TOP, THE BIRD AT THE FOOT)

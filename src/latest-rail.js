@@ -2171,9 +2171,11 @@
       // --rl-pb, style.css)
       var birdM = hold.querySelector(':scope > .rail-mark--bird');
       var hr = hold.getBoundingClientRect(), lr = logo.getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
-      if (lr.height && br && br.height) {
+      // (and between them and the band since the bird went into the names' block — "Move the bird under THE NEW CRITIC")
+      var fbH = (parseFloat(getComputedStyle(main).getPropertyValue('--foot-band')) || 0) + 2;
+      if (lr.height) {
         hold.style.setProperty('--rl-pt', (lr.bottom - hr.top).toFixed(2) + 'px');
-        hold.style.setProperty('--rl-pb', (hr.bottom - br.top).toFixed(2) + 'px');
+        hold.style.setProperty('--rl-pb', (br && br.height ? hr.bottom - br.top : Math.max(0, hr.bottom - (window.innerHeight - fbH))).toFixed(2) + 'px');
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;
