@@ -230,11 +230,19 @@ function contentName() {
   // (three quarters since — "make THE 75% of the height of NEW"; half again since, a line over it as well as under,
   // the letters between at the same gap from each — "I want THE to have a overline as well as an underline, reduce
   // size accordingly")
-  const THE_K = 0.75 * 0.8; // (and back to three quarters, the line under it alone — "Revert overline on THE"; a fifth smaller since, "Make THE 20% smaller")
+  // (THE_K 0.75 * 0.8 till 2026-10-14: and back to three quarters, the line under it alone — "Revert overline on THE"; a fifth smaller since, "Make THE 20% smaller")
+  const THE_K = 1; // (as tall as NEW since 2026-10-14 — "Make THE the same size as NEW")
   // (the gaps either side of the bird a quarter less than THE's to NEW's since — "reduce the gaps between W and C and
   // bird by 25%": the line still the column's width, the letters a little bigger for it; BIRD_GAP, --cn-gap)
   const BIRD_GAP = 1; // (and the gaps either side of the bird THE's to NEW's again since 2026-10-14 — "Have the space on either side of the bird match the space between the and new")
-  const span = THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
+  // (one red block behind THE NEW and the bird's head since 2026-10-14 — "Have the red only stretch to to the left edge
+  // of the wings, including the wing gap. Have the right edge include THE and NEW in one red box": half as tall again
+  // as the letters, a quarter of a capital clear of THE on its left as above and below, its right edge on the upper
+  // wing's leftmost ink, 159.43 of the drawing's units, so the wings and the tail fly out of it over the ground;
+  // --cn-red-w its width in capitals, style.css THE RED BLOCK)
+  const RED_PAD = 0.25, WING_L = 159.43;
+  const span = RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
+  const redW = RED_PAD + THE_K * caps('the') + WM_SPACE + caps('new') + BIRD_GAP * WM_SPACE + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
   // edges showing through as hairlines — "Seeing hairlines around gaps": the cuts a mask on the outline)
   let markBody = TNC_MARK.body;
@@ -253,7 +261,7 @@ function contentName() {
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
-  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
+  return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-red-w: ${redW.toFixed(4)}; --cn-red-pad: ${RED_PAD}; --cn-gap: ${WM_SPACE.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
     + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
 }
 function bandWord(word) {
