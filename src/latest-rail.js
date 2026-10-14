@@ -2333,10 +2333,7 @@
           if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');
           var socR = hold.querySelector(':scope > .rail-socials');
-          if (socR) {
-            var socT = parseFloat(hold.style.getPropertyValue('--rl-soct')) || 0;
-            hold.style.setProperty('--rl-soct', (socT + (hr.bottom - wantN) - baseOf(socR)).toFixed(2) + 'px');
-          }
+
           var ctH = head ? capTop(head) : null;
           var ins3 = hold.querySelectorAll(':scope > .latest-rail__in'), last3 = ins3[ins3.length - 1], lastT3 = null;
           var all3 = last3 ? last3.querySelectorAll('*') : [];
@@ -2345,15 +2342,24 @@
             if (e3.closest('svg') || !e3.textContent.trim() || !e3.getBoundingClientRect().height || getComputedStyle(e3).visibility === 'hidden') continue;
             lastT3 = e3;
           }
+          // (the bird in the column's bottom corner since, its left on the nav's first ink, its foot as far over the
+          // window's as the nav's capitals under its top; The Latest and the socials up under the nav, the nav, The
+          // Latest, the socials and the bird the same distance apart, ink to ink — "Move the bird to the bottom corner and
+          // move the latest and socials up", 2026-10-14; --rl-birdx, --rl-birdt, --rl-pt, --rl-soct)
           if (ctH != null && lastT3 && socR) {
             var navBase = hr.top + wantN + capHt(navL);
-            var socCap = baseOf(socR) - capHt(socR);
             var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
-            var stackH = baseOf(lastT3) - ctH;
-            var g3 = Math.max(0, ((socCap - navBase) - bH3 - stackH) / 3);
-            hold.style.setProperty('--rl-birdt', (navBase + g3 - hr.top).toFixed(2) + 'px');
+            var birdTop = hr.bottom - wantN - bH3;
+            var navInk = navL.getBoundingClientRect().left;
+            hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
+            hold.style.setProperty('--rl-birdx', (navInk - hr.left).toFixed(2) + 'px');
+            var stackH = baseOf(lastT3) - ctH, socH = capHt(socR);
+            var g3 = Math.max(0, ((birdTop - navBase) - stackH - socH) / 3);
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
-            hold.style.setProperty('--rl-pt', Math.max(0, ptS + (navBase + 2 * g3 + bH3 - ctH)).toFixed(2) + 'px');
+            var dS = navBase + g3 - ctH;
+            hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
+            var socT = parseFloat(hold.style.getPropertyValue('--rl-soct')) || 0;
+            hold.style.setProperty('--rl-soct', (socT + (baseOf(lastT3) + dS + g3 + socH) - baseOf(socR)).toFixed(2) + 'px');
           }
         }
       }
