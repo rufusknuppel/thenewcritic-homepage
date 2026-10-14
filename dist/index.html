@@ -11192,7 +11192,7 @@ window.__ncStripInk = function () {
         mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
         var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
         if (rnS.classList.contains('rail-name--words') && critS > 0) {
-          var RN_WIDER = 0;
+          var RN_WIDER = 36;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
           if (arS) {

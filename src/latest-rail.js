@@ -1545,7 +1545,9 @@
         if (rnS.classList.contains('rail-name--words') && critS > 0) {
           // (the column 54 wider — "Expand the latest column by 54px", 2026-10-13 — the letters growing back into it)
           // (and back by 54 since — "Reduce the latest column size by 54px", the name gone over the content)
-          var RN_WIDER = 0;
+          // (and 36 wider since — "Make the latest column 36px wider. Make the bird and wordmark bigger accordingly",
+          // 2026-10-14: the stamp's words and bird drawn to the column's width, so they grow with it)
+          var RN_WIDER = 36;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
