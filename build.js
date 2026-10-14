@@ -3831,10 +3831,14 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // width — "Space the Letters so that THE and NEW span the same width and CRI and TIC span the same width as THE
     // and NEW", 2026-10-14: a word's width runs on its gaps, k times them, so k is solved for the width)
     const spanAll = Math.max(...['the', 'new', 'cri', 'tic'].map((w) => spacedWord(w, LETTER_K).ar));
-    const spacedTo = (w) => { const a1 = spacedWord(w, 1).ar, g = spacedWord(w, 2).ar - a1; return spacedWord(w, g > 0 ? 1 + (spanAll - a1) / g : LETTER_K); };
-    const wTHE = spacedTo('the'), wNEW = spacedTo('new'), wCRI = spacedTo('cri'), wTIC = spacedTo('tic');
-    const railBirdMark = `<span class="rail-mark" aria-hidden="true" style="--rm-wl: ${Math.max(wTHE.ar, wNEW.ar).toFixed(4)}; --rm-wr: ${Math.max(wCRI.ar, wTIC.ar).toFixed(4)}">`
-      + `<span class="rail-mark__side">${wTHE.svg}${wNEW.svg}</span>${birdSvgRm}<span class="rail-mark__side rail-mark__side--r">${wCRI.svg}${wTIC.svg}</span></span>`;
+    const kOf = (w) => { const a1 = spacedWord(w, 1).ar, g = spacedWord(w, 2).ar - a1; return g > 0 ? 1 + (spanAll - a1) / g : LETTER_K; };
+    // (the words on one line under the bird since, at the size the stamp stood, every word's letters spaced as NEW's
+    // were — "Arrange the letters in the sidebar in one line under the bird. Keep it the same size as right now. Make
+    // the spacing the same as in NEW": --rm-wl and --rm-wr kept as they stood so latest-rail.js sizes the capital as
+    // before; the words a name's word space apart; style.css THE STAMP ON ONE LINE)
+    const kNEW = kOf('new');
+    const railBirdMark = `<span class="rail-mark rail-mark--line" aria-hidden="true" style="--rm-wl: ${spanAll.toFixed(4)}; --rm-wr: ${spanAll.toFixed(4)}; --rm-space: ${WM_SPACE.toFixed(4)}">`
+      + `${birdSvgRm}<span class="rail-mark__line">${spacedWord('the', kNEW).svg}${spacedWord('new', kNEW).svg}${spacedWord('critic', kNEW).svg}</span></span>`;
     return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
