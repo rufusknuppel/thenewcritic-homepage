@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=035d07c5">
+<link rel="stylesheet" href="style.css?v=cfb93e00">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11274,6 +11274,9 @@ window.__ncStripInk = function () {
           if (lwW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 + 54 + 12.923 * lwW);
           var NAME_K = 0.72 * 0.95;
           if (lwW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round((vwE - NAME_K * (vwE - 108 - 299)) / 2 + 2);
+          var navMeas = document.querySelector('.page-rows .latest-rail .rail-top__nav');
+          var navMW = navMeas ? navMeas.getBoundingClientRect().width : 0;
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54);
           var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
           if (arS) {
             var wN = critS * fS + RN_WIDER, BEAK = 0.2;

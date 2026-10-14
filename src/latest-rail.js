@@ -1697,6 +1697,13 @@
           // (the name 0.95 of that since — "Reduce wordmark size by 5%"; NAME_K as style.css has it)
           var NAME_K = 0.72 * 0.95;
           if (lwW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round((vwE - NAME_K * (vwE - 108 - 299)) / 2 + 2);
+          // (as wide as the nav and 54 since, the column's ink — the nav its widest line — 54 from the window's edge and
+          // 54 from the content's, the pictures standing 54 past the column's edge, the column's stack carried 28 right
+          // onto the middle of that room — "There should be 54px between edge of content and ink of sidebar and 54px
+          // between the ink of sidebar and the edge of site", 2026-10-14; style.css THE COLUMN'S INK 54 FROM EACH SIDE)
+          var navMeas = document.querySelector('.page-rows .latest-rail .rail-top__nav');
+          var navMW = navMeas ? navMeas.getBoundingClientRect().width : 0;
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
