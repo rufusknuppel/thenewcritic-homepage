@@ -1690,6 +1690,13 @@
           var tlmW = document.querySelector('.page-rows .latest-rail > .latest-rail__hold > .rail-tlm');
           var lwW = tlmW ? parseFloat(tlmW.style.getPropertyValue('--rl-lwt')) || 0 : 0;
           if (lwW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 + 54 + 12.923 * lwW);
+          // (as wide as stands the nav, on the column's middle, as far from THE NEW CRITIC as from the window's edge since —
+          // "Expand side bar so there's equal space between the wordmark and the nav and the nav and the side", 2026-10-14:
+          // the name 0.72 of the window less two 54s and the 299 the column stood at (style.css), on the window's middle,
+          // its left edge wl; the column's middle wl / 2, the rule's 2 past it)
+          // (the name 0.95 of that since — "Reduce wordmark size by 5%"; NAME_K as style.css has it)
+          var NAME_K = 0.72 * 0.95;
+          if (lwW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round((vwE - NAME_K * (vwE - 108 - 299)) / 2 + 2);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
@@ -2301,6 +2308,9 @@
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
           var wantN = wmMid != null ? wmMid - capHt(navL) / 2 : 27;
           var dN = ctN != null ? hr.top + wantN - ctN : 0;
+          // (THE LAST MAGAZINE's foot as far over the window's as the nav's capitals stand under its top — "Have the last
+          // magazine sit the same distance from the bottom as the nav from the top", 2026-10-14; --rl-tlmb)
+          hold.style.setProperty('--rl-tlmb', wantN.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
           var gB = topG.getBoundingClientRect().bottom + dN;
           var bT = birdC && birdC.getBoundingClientRect().height ? birdC.getBoundingClientRect().top : hr.bottom;
