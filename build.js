@@ -255,14 +255,22 @@ function contentName() {
   // tips and beak": the circle through (0.19, 414.34), (235.88, 0.14) and (362.56, 728.37), the drawing's three tips;
   // it runs a little past the beak and well past the tail's tip, so the bird's place in the line is widened by what
   // it overhangs either side (--cn-ring-l, --cn-ring-r, in capitals) and the gaps still meet ink)
+  // (and an ellipse since, upright, so it touches the tail's tip too — "Make it oblong so that it also touches the
+  // tail": the axis-set ellipse through the four tips, the tail's (705.12, 242.38) with the others, A x² + B y² + C x +
+  // D y = 1 solved for them; 363.0 across its half, 375.1 up)
   const RING = (() => {
-    const [ax, ay, bx, by, cx, cy] = [0.19, 414.34, 235.88, 0.14, 362.56, 728.37];
-    const d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
-    const ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d;
-    const uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d;
-    return { x: ux, y: uy, r: Math.hypot(ax - ux, ay - uy) };
+    const P = [[0.19, 414.34], [235.88, 0.14], [362.56, 728.37], [705.12, 242.38]];
+    const M = P.map(([x, y]) => [x * x, y * y, x, y, 1]);
+    for (let c = 0; c < 4; c++) {
+      let p = c; for (let r = c + 1; r < 4; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+      [M[c], M[p]] = [M[p], M[c]];
+      for (let r = 0; r < 4; r++) if (r !== c) { const f = M[r][c] / M[c][c]; M[r] = M[r].map((v, q) => v - f * M[c][q]); }
+    }
+    const [A, B, C, D] = M.map((row, q) => row[4] / row[q]);
+    const x = -C / (2 * A), y = -D / (2 * B), k = 1 + A * x * x + B * y * y;
+    return { x, y, rx: Math.sqrt(k / A), ry: Math.sqrt(k / B) };
   })();
-  const ringL = Math.max(0, RING.r - RING.x) * BIRD_K / TNC_MARK.h, ringR = Math.max(0, RING.x + RING.r - TNC_MARK.w) * BIRD_K / TNC_MARK.h;
+  const ringL = Math.max(0, RING.rx - RING.x) * BIRD_K / TNC_MARK.h, ringR = Math.max(0, RING.x + RING.rx - TNC_MARK.w) * BIRD_K / TNC_MARK.h;
   const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + ringL + ringR + (1 + 2 * BIRD_GAP) * GAP;
   const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
@@ -291,7 +299,7 @@ function contentName() {
   // from the user's drawing of the swallow over a thin circle: its middle a little behind the head, on the beak's
   // height, its edge just past the beak on the left, under the tail's root on the right, a fifth of the bird's height
   // in from its top and a tenth from its foot; a thin line, 5 of the drawing's units; .bird-ring, under the bird)
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<circle class="bird-ring" cx="${RING.x.toFixed(2)}" cy="${RING.y.toFixed(2)}" r="${RING.r.toFixed(2)}" fill="none" style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<ellipse class="bird-ring" cx="${RING.x.toFixed(2)}" cy="${RING.y.toFixed(2)}" rx="${RING.rx.toFixed(2)}" ry="${RING.ry.toFixed(2)}" fill="none" style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
