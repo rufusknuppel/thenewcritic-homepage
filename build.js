@@ -239,9 +239,10 @@ function contentName() {
   // of the wings, including the wing gap. Have the right edge include THE and NEW in one red box": half as tall again
   // as the letters, a quarter of a capital clear of THE on its left as above and below, its right edge on the upper
   // wing's leftmost ink, 159.43 of the drawing's units, so the wings and the tail fly out of it over the ground;
-  // --cn-red-w its width in capitals, style.css THE RED BLOCK)
+  // --cn-red-w its width in capitals, style.css THE RED BLOCK; CRITIC as far from the column's right edge as THE from
+  // its left since — "Have the margin of critic match the margin of THE": RED_PAD on both ends of the span)
   const RED_PAD = 0.25, WING_L = 159.43;
-  const span = RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
+  const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * WM_SPACE;
   const redW = RED_PAD + THE_K * caps('the') + WM_SPACE + caps('new') + BIRD_GAP * WM_SPACE + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
   // edges showing through as hairlines — "Seeing hairlines around gaps": the cuts a mask on the outline)
