@@ -2264,10 +2264,43 @@
         // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
         var birdC = hold.querySelector(':scope > .rail-mark--bird');
+        // (the nav on the middle of the room left of THE NEW CRITIC since, the socials beside the name on the middle of
+        // the room right of it, their capitals 27 under the page's top — "Center the nav on one side of the wordmark.
+        // Center the socials on the other side", 2026-10-14; --rl-navx, --cs-x, --cs-t; style.css THE NAV AND THE SOCIALS
+        // BESIDE THE NAME)
+        var cnW = document.querySelector('a.content-name .content-name__block .tnc-words');
+        var cnWr = cnW && cnW.getBoundingClientRect();
+        // (both on THE NEW CRITIC's height since, their capitals' middle on the letters' middle — "Nav and socials should
+        // be centered vertically on THENEW CRITIC wordmark", 2026-10-14: wmMid in the page's measure, the nav's off the
+        // column's top, which stands at the window's)
+        var capHt = function (el) {
+          var cs = getComputedStyle(el), cx = capTop.ctx || (capTop.ctx = document.createElement('canvas').getContext('2d'));
+          cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+          return cx.measureText('H').actualBoundingBoxAscent || parseFloat(cs.fontSize) * 0.66;
+        };
+        var wmMid = cnWr && cnWr.height ? (cnWr.top + cnWr.bottom) / 2 + (window.pageYOffset || 0) : null;
+        if (cnWr && cnWr.width) {
+          // (the nav on the column's middle again since, and the socials as far in from the window's right as the nav is
+          // from its left — "Nav should be centered in side column. socials should have same inset", 2026-10-14)
+          hold.style.removeProperty('--rl-navx');
+          var navWd = navL ? navL.getBoundingClientRect().width : 0;
+          var navIn = hr.left + hr.width / 2 - navWd / 2;
+          var csE = document.querySelector('.content-socials');
+          if (csE && csE.parentElement !== main) main.appendChild(csE);
+          if (csE) {
+            var vwC = document.documentElement.clientWidth, mL = main.getBoundingClientRect().left;
+            main.style.setProperty('--cs-x', (navWd ? vwC - navIn - csE.getBoundingClientRect().width / 2 - mL : (cnWr.right + vwC) / 2 - mL).toFixed(2) + 'px');
+            var ctS = capTop(csE);
+            var csT = parseFloat(main.style.getPropertyValue('--cs-t')) || 0;
+            var wantS = wmMid != null ? wmMid - capHt(csE) / 2 : 27;
+            if (ctS != null) main.style.setProperty('--cs-t', (csT + wantS - (ctS + (window.pageYOffset || 0))).toFixed(2) + 'px');
+          }
+        }
         if (topG && navL) {
           var ctN = capTop(navL);
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
-          var dN = ctN != null ? hr.top + 27 - ctN : 0;
+          var wantN = wmMid != null ? wmMid - capHt(navL) / 2 : 27;
+          var dN = ctN != null ? hr.top + wantN - ctN : 0;
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
           var gB = topG.getBoundingClientRect().bottom + dN;
           var bT = birdC && birdC.getBoundingClientRect().height ? birdC.getBoundingClientRect().top : hr.bottom;
