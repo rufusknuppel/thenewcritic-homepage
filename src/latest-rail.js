@@ -607,6 +607,15 @@
           if (bmT && lwT) {
             capB = Math.min(capB, (stackH - 2 - 8) / (1 + lwB / lwT));
             capT = capB * lwB / lwT;
+            // (a fifth smaller since, on THE NEW CRITIC's middle — "make the last magazine 20% smaller and center it under
+            // the new critic", 2026-10-14; its baseline still 20 over the band's rule, the rule midway)
+            // (and THE NEW CRITIC the bigger for it, the air either side of the rule as it stood, the names still 20 from
+            // the band's top and its rule — "The New Critic will have to get bigger too to keep top and bottom margin")
+            var gap0 = (stackH - capB - capT - 2) / 2;
+            // (and a fifth smaller again, THE NEW CRITIC bigger again for it — "do this again, another 20%": 0.8 of 0.8)
+            var TLM_K = 0.8 * 0.8;
+            capB = (stackH - 2 - 2 * gap0) / (1 + TLM_K * lwB / lwT);
+            capT = TLM_K * capB * lwB / lwT;
           }
           var gapR = bmT ? (stackH - capB - capT - 2) / 2 : 0;
           bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
@@ -617,7 +626,7 @@
           bmW.classList.toggle('band-mark--stacked', !!bmT);
           if (bmT) {
             bmT.style.setProperty('font-size', capT.toFixed(3) + 'px');
-            bmT.style.setProperty('left', (cL + SIDE_M).toFixed(2) + 'px');
+            bmT.style.setProperty('left', (cL + SIDE_M + (capB * lwB - capT * lwT) / 2).toFixed(2) + 'px');
             bmT.style.setProperty('top', (WM_M + stackH - capT - runT).toFixed(2) + 'px');
           }
           // (its wing tips 10 from the band's top and its rule since — "Make it 10px for the bird wing tips actually")

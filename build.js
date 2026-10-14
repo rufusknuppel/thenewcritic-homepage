@@ -242,6 +242,16 @@ function tlmWords() {
     + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('the')}${w('new')}</span></span>`
     + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('critic')}</span></span></span>`;
 }
+// (the band's THE NEW CRITIC in the LODÉHO block letters since — "make the new critic the block letters", 2026-10-14:
+// the name's drawing, assets/wordmark.svg, its letters as the name over the content last spaced them, LETTER_K, the
+// words half as far apart again as its word space, as the column's stamp had them; bandBlockWords)
+const bandBlockLineW = () => ['the', 'new', 'critic'].reduce((t, x) => t + spacedWord(x, LETTER_K).ar, 0) + 2 * 1.5 * WM_SPACE;
+function bandBlockWords() {
+  const w = (x) => spacedWord(x, LETTER_K).svg;
+  return `<span class="tnc-words" style="--tw-space: ${(1.5 * WM_SPACE).toFixed(4)}">`
+    + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('the')}${w('new')}</span></span>`
+    + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('critic')}</span></span></span>`;
+}
 function stampWords() {
   // (the hand-drawn letters as their drawing spaces them, NEW's gaps every word's; the words half as far apart again
   // as the drawing's own word space — "increase the space between the words by 50%", kept when the bars went — "But
@@ -2250,7 +2260,7 @@ function bandUnder() {
   // middle, .bird-upper; style.css THE UPPER WING)
   const UPPER = 'M100 -10H312V326L301 336L290 337L270 335.5L250 335L230 336.5L210 339L187 344L150 352L100 352Z';
   const bandBirdUp = bandBird.replace(/<path[^>]*fill-rule="evenodd"[^>]*\/>/, (m) => m + `<clipPath id="upper-wing-bm"><path d="${UPPER}"/></clipPath>` + m.replace('<path ', '<path class="bird-upper" clip-path="url(#upper-wing-bm)" '));
-  const marks = `<a class="band-mark band-mark--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--bm-lw: ${stampLineW().toFixed(4)}">${stampWords()}</a>`
+  const marks = `<a class="band-mark band-mark--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--bm-lw: ${bandBlockLineW().toFixed(4)}">${bandBlockWords()}</a>`
     + (bandBird ? `<a class="band-mark band-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${bandBirdUp}</a>` : '')
     // (and THE LAST MAGAZINE at the band's right, as the name stands at its left — "Add The Last Magazine I created in a
     // different session", "Add it to the right of the band", 2026-10-14; to the About page, as the line's was)
