@@ -341,7 +341,7 @@
       // (54 since — "Move the top band margins to 54px")
       // (27 since — "have 27px above and below text in the top band"; FB_AIR, seatUnder)
       // (36 taller since 2026-10-14 — "expand the band size by 36px"; FB_AIR, seatUnder)
-      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
+      if (cuT) { var fbT = Math.round((NAME_IN_RAIL ? 54 + 36 + 18 : 40) + (cuT.base - cuT.cap)); main.style.setProperty('--foot-band', fbT + 'px'); topB = fbT + ruleW(); H += topB; }
     }
     var vhN = window.innerHeight, nameB = 0;
     if (NAME_FOOT && topB) {
@@ -496,6 +496,8 @@
       // (36 taller since, 18 more over and under — "expand the band size by 36px", 2026-10-14, the band at the top with
       // its name and bird)
       if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18;
+      // (and 18 taller again, 9 more over and under — "Increase band height by 18px. Expand bird and wordmarks accordingly")
+      if (SPREAD && FOOT_TOP) FB_AIR = 27 + 18 + 9;
       base = FOOT_TOP ? st.getBoundingClientRect().top + FB_AIR + capH : st.getBoundingClientRect().top + vh - FB_AIR;
       if (!(NAME_FOOT && FOOT_TOP)) main.style.setProperty('--foot-band', Math.round(2 * FB_AIR + capH) + 'px');
       main.classList.add('has-foot-band');
@@ -584,17 +586,34 @@
           // (half that since — "Reduce wordmark size by 50% and expand bird to sit 20px from top and bottom of band",
           // 2026-10-14: the names half as big at their sides, the bird the band's height less two 20s)
           capB *= 0.5;
-          var yB = (bandH - capB) / 2 - runT;
-          var wordsR = cL + WM_M + capB * lwB, tlmL = cR - WM_M - capB * lwT;
+          // (a fifth bigger again since — "increase wordmarks by 20%", 2026-10-14)
+          capB *= 1.2;
+          // THE NAMES STACKED (2026-10-14 — "Have The New Critic sit on top of The Last Magazine sat between a 2px
+          // rule. The Last Magazine should be shrunk to match the width of THE new Critic", "Move bird to the right"):
+          // THE NEW CRITIC 20 from the window's left with its capitals 20 under the band's top, THE LAST MAGAZINE as
+          // wide as it under it with its baseline 20 over the band's rule, a 2px rule as wide midway between (style.css
+          // THE NAMES STACKED, --bm-gap the air either side of it); the two no taller than leaves 4 either side of the
+          // rule; the bird 20 from the window's right
+          var capT = 0, stackH = bandH - 2 * WM_M;
+          // (grown with the band since, as the bird is — "Increase band height by 18px. Expand bird and wordmarks
+          // accordingly": the names' size as it stood with the band 18 shorter, times the stack's growth)
+          capB *= stackH / (stackH - 18);
+          if (bmT && lwT) {
+            capB = Math.min(capB, (stackH - 2 - 8) / (1 + lwB / lwT));
+            capT = capB * lwB / lwT;
+          }
+          var gapR = bmT ? (stackH - capB - capT - 2) / 2 : 0;
           bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
           bmW.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
-          bmW.style.setProperty('top', yB.toFixed(2) + 'px');
+          bmW.style.setProperty('top', ((bmT ? WM_M : (bandH - capB) / 2) - runT).toFixed(2) + 'px');
+          bmW.style.setProperty('--bm-gap', gapR.toFixed(2) + 'px');
+          bmW.classList.toggle('band-mark--stacked', !!bmT);
           if (bmT) {
-            bmT.style.setProperty('font-size', capB.toFixed(3) + 'px');
-            bmT.style.setProperty('left', tlmL.toFixed(2) + 'px');
-            bmT.style.setProperty('top', yB.toFixed(2) + 'px');
+            bmT.style.setProperty('font-size', capT.toFixed(3) + 'px');
+            bmT.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
+            bmT.style.setProperty('top', (WM_M + stackH - capT - runT).toFixed(2) + 'px');
           }
-          var birdH = bandH - 2 * WM_M, birdW = birdH * AR_B, birdX = ((bmT ? tlmL : cR - WM_M) + wordsR) / 2 - birdW / 2;
+          var birdH = stackH, birdW = birdH * AR_B, birdX = cR - WM_M - birdW;
           bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
           bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
