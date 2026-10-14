@@ -3933,7 +3933,18 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     const span = Math.max(caps('the') + WM_SPACE + caps('new'), caps('critic'));
     return `<span class="rail-bird" aria-hidden="true" style="--bird-ar: ${(TNC_MARK.w / TNC_MARK.h).toFixed(4)}; --rn-span: ${span.toFixed(4)}"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" focusable="false" overflow="visible">${TNC_MARK.body.replace(/\bid="([^"]+)"/g, `id="$1-rail${si}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-rail${si})`).replace(/ class="band-logo__shield band-logo__frame"/g, ' class="rail-bird__frame"')}</svg></span>`;
   };
-  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() : ''}<div class="latest-rail__in">`
+  // THE LAST MAGAZINE AND THE SOCIALS IN THE COLUMN (2026-10-14 — "Move the last magazine 27px under the bird and 27px
+  // from the bottom. Move the socials into the smaller italic font that sits below editor's picks", "Band should
+  // disappear"): THE LAST MAGAZINE drawn at the column's foot, the band's socials under the column's stack in the
+  // kickers' italic (style.css THE BAND GONE; latest-rail.js sizes THE LAST MAGAZINE to the column, --rl-tlmf)
+  const railFoot = () => (TLM_WORDS ? `<a class="rail-tlm" href="about.html" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
+    + `<div class="rail-socials">${[
+      ['https://www.thenewcritic.com', 'Substack'],
+      ['https://www.instagram.com/thenewcritic', 'Instagram'],
+      ['https://x.com/thenewcritic', 'X'],
+      ['mailto:editors@thenewcritic.com', 'Email'],
+    ].map(([href, label]) => `<a class="rail-socials__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join('<span class="rail-socials__sep">, </span>')}</div>`;
+  const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() + railFoot() : ''}<div class="latest-rail__in">`
     + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
       // (the writer's name alone since 2026-10-04 — "Remove all 'bys' from

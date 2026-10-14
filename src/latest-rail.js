@@ -2246,6 +2246,11 @@
         // (switched since, The Latest at the top, its capitals 54 under the column's top, the bird at the foot, 54 over
         // the window's — "switch the latest and the bird", 2026-10-14; style.css THE LATEST AT THE TOP, THE BIRD AT THE FOOT)
         hold.style.setProperty('--rl-pb', '0px');
+        // (THE LAST MAGAZINE at the column's foot since, as tall as it stood in the band unless the column less two 27s
+        // is narrower — "Move the last magazine 27px under the bird and 27px from the bottom"; style.css THE BAND GONE)
+        var tlmC = hold.querySelector(':scope > .rail-tlm');
+        var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', Math.min(12.923, (railW - 2 - 54) / lwTC).toFixed(3) + 'px');
         var ctL = head ? capTop(head) : null;
         var ptL = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
         hold.style.setProperty('--rl-pt', (ctL != null ? Math.max(0, ptL + (hr.top + 54 - ctL)) : 54).toFixed(2) + 'px');
