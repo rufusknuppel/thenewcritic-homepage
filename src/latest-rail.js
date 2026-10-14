@@ -1650,7 +1650,9 @@
           // (and back by 54 since — "Reduce the latest column size by 54px", the name gone over the content)
           // (and 36 wider since — "Make the latest column 36px wider. Make the bird and wordmark bigger accordingly",
           // 2026-10-14: the stamp's words and bird drawn to the column's width, so they grow with it)
-          var RN_WIDER = 36;
+          // (and 36 more since — "expand column by 36px so bird and wordmarks can grow", 2026-10-14, the names and the bird
+          // drawn to the column's width)
+          var RN_WIDER = 36 + 36;
           mid = vwE - 252 - (critS * fS + 42 + RN_WIDER);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
@@ -2154,9 +2156,24 @@
     if (logo) {
       var lwBL = parseFloat(logo.style.getPropertyValue('--rl-lwb')) || 0, lwTL = parseFloat(logo.style.getPropertyValue('--rl-lwt')) || 0;
       if (lwBL > 0) {
-        var capL = (railW - 40) / lwBL;
+        // (the column's rule, 2, off its width since, so the names' blocks run from the window's edge to the rule —
+        // "fix highlight box around wordmarks")
+        var capL = (railW - 2 - 40) / lwBL;
+        // (20 from the column's own left, wherever the stack's box stands in it)
+        var railEl = hold.parentElement;
+        if (railEl) hold.style.setProperty('--rl-x', (20 - (hold.getBoundingClientRect().left - railEl.getBoundingClientRect().left)).toFixed(2) + 'px');
         hold.style.setProperty('--rl-b', capL.toFixed(3) + 'px');
-        hold.style.setProperty('--rl-t', (lwTL > 0 ? 0.64 * capL * lwBL / lwTL : 0).toFixed(3) + 'px');
+        // (THE LAST MAGAZINE as wide as THE NEW CRITIC since — "Make The Last Magazine the same width as The NEW CRITIC")
+        hold.style.setProperty('--rl-t', (lwTL > 0 ? capL * lwBL / lwTL : 0).toFixed(3) + 'px');
+      }
+      // (The Latest's stack on the middle between THE LAST MAGAZINE's foot and the bird's top — "Vertically center THe
+      // latest between last and bird", 2026-10-14: the column's air over and under the stack those two's; --rl-pt,
+      // --rl-pb, style.css)
+      var birdM = hold.querySelector(':scope > .rail-mark--bird');
+      var hr = hold.getBoundingClientRect(), lr = logo.getBoundingClientRect(), br = birdM && birdM.getBoundingClientRect();
+      if (lr.height && br && br.height) {
+        hold.style.setProperty('--rl-pt', (lr.bottom - hr.top).toFixed(2) + 'px');
+        hold.style.setProperty('--rl-pb', (hr.bottom - br.top).toFixed(2) + 'px');
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;
