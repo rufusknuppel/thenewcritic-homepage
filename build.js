@@ -215,44 +215,13 @@ function spacedWord(word, k) {
   const w = vb[2] + dx;
   return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
 }
-// THE TAPER (2026-10-14 — "Have THE NEW grow smaller ... letters getting smaller on their way to the bird. Then the
-// opposite for CRITIC, shrinking from the top and growing towards the outer C"; asked, a gentle even taper; "have this
-// be subtle tho. Only getting smaller by 15%"): spacedWord with each letter drawn at its own scale, scales[i], about
-// the cap line (anchor 'top', its top held) or the baseline ('bottom', its foot held), each gap the mean of its two
-// letters' scales; the side bearings scaled with the letters they stand by
-function taperedWord(word, k, scales, anchor) {
-  const svg = WORDMARK_WORDS[word];
-  const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
-  const subs = svg.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).map((sp) => {
-    const n = sp.match(/-?\d*\.?\d+/g).map(Number);
-    let lo = Infinity, hi = -Infinity;
-    for (let t = 0; t < n.length; t += 2) { lo = Math.min(lo, n[t]); hi = Math.max(hi, n[t]); }
-    return { sp, lo, hi };
-  }).sort((a, b) => a.lo - b.lo);
-  const L = [];
-  subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) { z.d += q.sp; z.hi = Math.max(z.hi, q.hi); } else L.push({ d: q.sp, lo: q.lo, hi: q.hi }); });
-  const sc = (i) => scales[Math.min(i, scales.length - 1)];
-  const yHold = anchor === 'bottom' ? vb[1] + vb[3] : vb[1];
-  let X = vb[0] + (L[0].lo - vb[0]) * sc(0);
-  const paths = L.map((l, i) => {
-    if (i) X += (L[i - 1].hi - L[i - 1].lo) * sc(i - 1) + k * (l.lo - L[i - 1].hi) * (sc(i - 1) + sc(i)) / 2;
-    const s = sc(i);
-    return `<path fill="currentColor" transform="translate(${(X - l.lo * s).toFixed(2)} ${(yHold * (1 - s)).toFixed(2)}) scale(${s.toFixed(4)})" d="${l.d}"/>`;
-  });
-  const last = L[L.length - 1];
-  const w = X + (last.hi - last.lo) * sc(L.length - 1) + (vb[0] + vb[2] - last.hi) * sc(L.length - 1) - vb[0];
-  return { ar: w / vb[3], n: L.length, svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
-}
 function contentName() {
   const TNC_MARK = TNC_BOX;
   if (!TNC_MARK) return '';
   const caps = (w) => spacedWord(w, LETTER_K).ar;
-  // (THE NEW from full size at T down to 0.92 at W, its tops level; CRITIC from 0.92 at its first C up to full at the
-  // outer one, its feet level — THE TAPER; 0.85 till "Reduce this effect to 8%", 2026-10-14)
-  const TAPER = 0.08, step = (i) => TAPER * i / 5;
-  const tTHE = taperedWord('the', LETTER_K, [0, 1, 2].map((i) => 1 - step(i)), 'top');
-  const tNEW = taperedWord('new', LETTER_K, [3, 4, 5].map((i) => 1 - step(i)), 'top');
-  const tCRITIC = taperedWord('critic', LETTER_K, [0, 1, 2, 3, 4, 5].map((i) => 1 - TAPER + step(i)), 'bottom');
+  // (THE NEW tapering to the bird and CRITIC growing from it for a while, 15% then 8% — "Have THE NEW grow smaller
+  // ... Then the opposite for CRITIC", "Reduce this effect to 8%" — and level again since, 2026-10-14: "Revert the
+  // steps in the letters")
   const ar = TNC_MARK.w / TNC_MARK.h; // (the bird three quarters taller than the letters, then a quarter bigger again — "I want bird to be 75% bigger than letters", "Make the bird 25% bigger")
   // (the box, its outline's outer edge, half as tall again as the letters since 2026-10-14 — "Make the bird box only
   // 50% bigger than letters": the drawing's height the box's over the box's share of it, read off #box)
@@ -299,8 +268,8 @@ function contentName() {
     return { x: ux, y: uy, r: Math.hypot(ax - ux, ay - uy) };
   })();
   const ringL = Math.max(0, RING.r - RING.x) * BIRD_K / TNC_MARK.h, ringR = Math.max(0, RING.x + RING.r - TNC_MARK.w) * BIRD_K / TNC_MARK.h;
-  const span = 2 * RED_PAD + THE_K * tTHE.ar + tNEW.ar + tCRITIC.ar + BIRD_K * ar + ringL + ringR + (1 + 2 * BIRD_GAP) * GAP;
-  const redW = RED_PAD + THE_K * tTHE.ar + GAP + tNEW.ar + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
+  const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + ringL + ringR + (1 + 2 * BIRD_GAP) * GAP;
+  const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
   // edges showing through as hairlines — "Seeing hairlines around gaps": the cuts a mask on the outline)
   let markBody = TNC_MARK.body;
@@ -327,12 +296,17 @@ function contentName() {
   // from the user's drawing of the swallow over a thin circle: its middle a little behind the head, on the beak's
   // height, its edge just past the beak on the left, under the tail's root on the right, a fifth of the bird's height
   // in from its top and a tenth from its foot; a thin line, 5 of the drawing's units; .bird-ring, under the bird)
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<circle class="bird-ring" cx="${RING.x.toFixed(2)}" cy="${RING.y.toFixed(2)}" r="${RING.r.toFixed(2)}" fill="none" style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
+  // (only the disc's part left of the bird since, a crescent — "Only have the left part of the bird be red, so the
+  // crescent", 2026-10-14: the disc clipped to the ground left of the wings, the wrap's outline (mark-bird-wrap.svg)
+  // run out past the disc's left edge)
+  // (its ends run on past the drawing's top and foot, so the disc's own edge, not the clip, rounds the crescent's tips)
+  const ringClip = wrapD ? wrapD.replace(/^M100 0L([\d.]+) 0/, 'M-100 -40L$1 -40L$1 0').replace(/L([\d.]+) 728\.84L100 728\.84Z$/, 'L$1 728.84L$1 770L-100 770Z') : '';
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + `<circle class="bird-ring" cx="${RING.x.toFixed(2)}" cy="${RING.y.toFixed(2)}" r="${RING.r.toFixed(2)}" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #B3301E)" stroke-width="5"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
   return `<a class="content-name" href="#top" aria-label="The New Critic — to the top of the front page" style="--cn-line: ${boxStroke ? (boxStroke / TNC_MARK.h * BIRD_K).toFixed(5) : 0.0625}; --cn-span: ${span.toFixed(4)}; --cn-red-w: ${redW.toFixed(4)}; --cn-red-pad: ${RED_PAD}; --cn-gap: ${GAP.toFixed(4)}; --cn-ring-l: ${ringL.toFixed(4)}; --cn-ring-r: ${ringR.toFixed(4)}; --cn-band: ${BAND_H.toFixed(4)}; --cn-bgap: ${BIRD_GAP}; --cn-bird: ${BIRD_K}; --bird-ar: ${ar.toFixed(4)}"><span class="content-name__line">`
-    + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${tTHE.svg}</span><span class="content-name__word">${tNEW.svg}</span>${bird}<span class="content-name__word">${tCRITIC.svg}</span></span></a>`;
+    + `<span class="content-name__word content-name__word--the" style="--cn-the: ${THE_K}">${spacedWord('the', LETTER_K).svg}</span><span class="content-name__word">${spacedWord('new', LETTER_K).svg}</span>${bird}<span class="content-name__word">${spacedWord('critic', LETTER_K).svg}</span></span></a>`;
 }
 function bandWord(word) {
   const svg = WORDMARK_WORDS[word];
