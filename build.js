@@ -769,7 +769,7 @@ const SITE_TAGLINE = 'The Last Magazine';
 // rules that differ by side (style.css). On the right again since "Move The
 // Latest column back to the right", after an afternoon on the left.
 // (on the left again since 2026-10-13 — "Move the latest column to the left side")
-const RAIL_SIDE = 'l'; // (on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left"; on the right again since, the same day — "move the latest column to the right"; and on the left again with the band at the foot — "bring back the bottom nav band/left side column format")
+const RAIL_SIDE = 'r'; // (on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left"; on the right again since, the same day — "move the latest column to the right"; and on the left again with the band at the foot — "bring back the bottom nav band/left side column format")
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
 // deploy by cloudflare/worker.js. Social cards need absolute URLs, and
@@ -3718,7 +3718,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // Latest column back to the right")
         // (the first picture at the left whichever side the column stands, the rest alternating from it — "Move top
         // post image to the left. Adjust other posts accordingly", 2026-10-13)
-        const toR = j % 2 === 1;
+        // (the first picture by the column since, in the middle of the page, the rest alternating from it — "Move the
+        // side column to the right. Flip the top post and others so that top image is in the middle", 2026-10-14)
+        const toR = (j % 2 === 1) !== (RAIL_SIDE === 'r');
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first

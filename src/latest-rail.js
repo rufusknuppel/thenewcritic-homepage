@@ -2362,7 +2362,9 @@
           // (as far over it as its ink stands in from the window's side since — "Have space below the last magazine equal
           // it's inset from the sides", 2026-10-14)
           var tlmW0 = hold.querySelector(':scope > .rail-tlm .tnc-words') || hold.querySelector(':scope > .rail-tlm');
-          var tlmB = tlmW0 && tlmW0.getBoundingClientRect().width ? Math.max(0, tlmW0.getBoundingClientRect().left) : wantN;
+          // (from the nearer side, the column on either — "Move the side column to the right", 2026-10-14)
+          var tlmR0 = tlmW0 && tlmW0.getBoundingClientRect();
+          var tlmB = tlmR0 && tlmR0.width ? Math.max(0, Math.min(tlmR0.left, document.documentElement.clientWidth - tlmR0.right)) : wantN;
           hold.style.setProperty('--rl-tlmb', tlmB.toFixed(2) + 'px');
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
           // (the caret on the middle of the column's left margin, the room from the window's edge to the nav — "Move the
@@ -2371,7 +2373,11 @@
           [].forEach.call(navBrC, function (br) { br.style.display = 'none'; });
           var navWc = navL.getBoundingClientRect().width;
           [].forEach.call(navBrC, function (br) { br.style.display = ''; });
-          hold.style.setProperty('--rl-caretx', ((hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
+          // (in the right margin with the column on the right — "Move the side column to the right", 2026-10-14)
+          var railOnR = !!hold.closest('.latest-rail--r');
+          hold.style.setProperty('--rl-caretx', (railOnR
+            ? (hr.left + hr.width / 2 + navWc / 2 + document.documentElement.clientWidth) / 2 - hr.left
+            : (hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
           // (the bird beside THE NEW CRITIC for a while — "Move the bird to the right of the new critic where the socials
           // are now" — and back in the column since, between the nav and The Latest, a quarter taller than the name's
           // letters; the socials at the column's foot, their baseline as far over the window's as the nav's capitals
