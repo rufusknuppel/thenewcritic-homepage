@@ -245,7 +245,9 @@ function contentName() {
   // between the words": AIR_K on the band's ends, its air over and under the letters (--cn-band, the band's height in
   // capitals) and every gap between the words and the bird)
   const AIR_K = 1.1, GAP = WM_SPACE * AIR_K;
-  const RED_PAD = 0.25 * AIR_K, WING_L = 159.43, BAND_H = 1 + 2 * 0.25 * AIR_K;
+  // (the band a tenth taller than the bird since, so the bird has air over and under it too — "Also on top and below
+  // bird too": a twentieth of its height each way, the letters on the band's middle with it)
+  const RED_PAD = 0.25 * AIR_K, WING_L = 159.43, BAND_H = BIRD_K * AIR_K;
   const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + (1 + 2 * BIRD_GAP) * GAP;
   const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
