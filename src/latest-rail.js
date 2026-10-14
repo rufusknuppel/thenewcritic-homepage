@@ -2316,43 +2316,44 @@
           // caret to sit in the left margin of the column", 2026-10-14; --rl-caretx, style.css THE BIRD UNDER THE NAV)
           var navWc = navL.getBoundingClientRect().width;
           hold.style.setProperty('--rl-caretx', ((hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
-          // (the bird out of the column since, beside THE NEW CRITIC where the socials stood — on the middle of the room
-          // right of the name, as the nav stands on the middle of the room left of it, on the letters' middle, a quarter
-          // taller than they are, scrolling away with them; its drawing's colours as the column painted them carried onto
-          // it before it goes — "Move the bird to the right of the new critic where the socials are now", 2026-10-14;
-          // --cb-x, --cb-t, --cb-h; style.css THE BIRD BESIDE THE NAME)
-          var birdO = hold.querySelector(':scope > .rail-mark--bird') || main.querySelector(':scope > .rail-mark--bird');
-          if (birdO && birdO.parentElement !== main) {
-            [].forEach.call(birdO.querySelectorAll('svg *'), function (q) {
-              var qs = getComputedStyle(q);
-              ['display', 'fill', 'stroke', 'opacity', 'visibility'].forEach(function (k) { q.style.setProperty(k, qs.getPropertyValue(k)); });
-            });
-            birdO.classList.add('rail-mark--out');
-            main.appendChild(birdO);
-          }
-          if (birdO && cnbH && wmMid != null) {
-            var bHo = 1.25 * cnbH, vwB = document.documentElement.clientWidth, mLb = main.getBoundingClientRect().left;
-            main.style.setProperty('--cb-h', bHo.toFixed(3) + 'px');
-            main.style.setProperty('--cb-ar', arB.toFixed(4));
-            main.style.setProperty('--cb-x', (vwB - (hr.left + hr.width / 2) - mLb).toFixed(2) + 'px');
-            main.style.setProperty('--cb-t', (wmMid - bHo / 2).toFixed(2) + 'px');
-          }
-          // (The Latest and the socials under it — "Move the socials below the latest", 2026-10-14 — one stack on the
-          // middle between the nav's baseline and as far over the window's foot as the nav's capitals stand under its
-          // top, ink to ink: The Latest's capitals to the socials' baseline; --rl-pt)
+          // (the bird beside THE NEW CRITIC for a while — "Move the bird to the right of the new critic where the socials
+          // are now" — and back in the column since, between the nav and The Latest, a quarter taller than the name's
+          // letters; the socials at the column's foot, their baseline as far over the window's as the nav's capitals
+          // stand under its top; the nav, the bird, The Latest and the socials the same distance apart, ink to ink — "I
+          // want the socials to sit same distance from nav. I want the bird to go between the nav and the latest",
+          // 2026-10-14; --rl-bird, --rl-birdt, --rl-pt, --rl-soct; style.css THE BIRD BACK BETWEEN)
+          var baseOf = function (el) {
+            var pn = document.createElement('span');
+            pn.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            el.appendChild(pn);
+            var b = pn.getBoundingClientRect().top;
+            el.removeChild(pn);
+            return b;
+          };
+          if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');
           var socR = hold.querySelector(':scope > .rail-socials');
+          if (socR) {
+            var socT = parseFloat(hold.style.getPropertyValue('--rl-soct')) || 0;
+            hold.style.setProperty('--rl-soct', (socT + (hr.bottom - wantN) - baseOf(socR)).toFixed(2) + 'px');
+          }
           var ctH = head ? capTop(head) : null;
-          if (ctH != null && socR) {
-            var pinS = document.createElement('span');
-            pinS.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-            socR.appendChild(pinS);
-            var socB = pinS.getBoundingClientRect().top;
-            socR.removeChild(pinS);
+          var ins3 = hold.querySelectorAll(':scope > .latest-rail__in'), last3 = ins3[ins3.length - 1], lastT3 = null;
+          var all3 = last3 ? last3.querySelectorAll('*') : [];
+          for (var q3 = all3.length - 1; q3 >= 0 && !lastT3; q3--) {
+            var e3 = all3[q3];
+            if (e3.closest('svg') || !e3.textContent.trim() || !e3.getBoundingClientRect().height || getComputedStyle(e3).visibility === 'hidden') continue;
+            lastT3 = e3;
+          }
+          if (ctH != null && lastT3 && socR) {
             var navBase = hr.top + wantN + capHt(navL);
-            var avail = (hr.bottom - wantN) - navBase, inkH = socB - ctH;
+            var socCap = baseOf(socR) - capHt(socR);
+            var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
+            var stackH = baseOf(lastT3) - ctH;
+            var g3 = Math.max(0, ((socCap - navBase) - bH3 - stackH) / 3);
+            hold.style.setProperty('--rl-birdt', (navBase + g3 - hr.top).toFixed(2) + 'px');
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
-            hold.style.setProperty('--rl-pt', Math.max(0, ptS + (navBase + (avail - inkH) / 2 - ctH)).toFixed(2) + 'px');
+            hold.style.setProperty('--rl-pt', Math.max(0, ptS + (navBase + 2 * g3 + bH3 - ctH)).toFixed(2) + 'px');
           }
         }
       }

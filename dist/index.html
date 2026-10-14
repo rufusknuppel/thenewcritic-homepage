@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=ba3adeab">
+<link rel="stylesheet" href="style.css?v=40afe389">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11672,35 +11672,38 @@ window.__ncStripInk = function () {
           hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
           var navWc = navL.getBoundingClientRect().width;
           hold.style.setProperty('--rl-caretx', ((hr.left + hr.width / 2 - navWc / 2) / 2 - hr.left).toFixed(2) + 'px');
-          var birdO = hold.querySelector(':scope > .rail-mark--bird') || main.querySelector(':scope > .rail-mark--bird');
-          if (birdO && birdO.parentElement !== main) {
-            [].forEach.call(birdO.querySelectorAll('svg *'), function (q) {
-              var qs = getComputedStyle(q);
-              ['display', 'fill', 'stroke', 'opacity', 'visibility'].forEach(function (k) { q.style.setProperty(k, qs.getPropertyValue(k)); });
-            });
-            birdO.classList.add('rail-mark--out');
-            main.appendChild(birdO);
-          }
-          if (birdO && cnbH && wmMid != null) {
-            var bHo = 1.25 * cnbH, vwB = document.documentElement.clientWidth, mLb = main.getBoundingClientRect().left;
-            main.style.setProperty('--cb-h', bHo.toFixed(3) + 'px');
-            main.style.setProperty('--cb-ar', arB.toFixed(4));
-            main.style.setProperty('--cb-x', (vwB - (hr.left + hr.width / 2) - mLb).toFixed(2) + 'px');
-            main.style.setProperty('--cb-t', (wmMid - bHo / 2).toFixed(2) + 'px');
-          }
+          var baseOf = function (el) {
+            var pn = document.createElement('span');
+            pn.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            el.appendChild(pn);
+            var b = pn.getBoundingClientRect().top;
+            el.removeChild(pn);
+            return b;
+          };
+          if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');
           var socR = hold.querySelector(':scope > .rail-socials');
+          if (socR) {
+            var socT = parseFloat(hold.style.getPropertyValue('--rl-soct')) || 0;
+            hold.style.setProperty('--rl-soct', (socT + (hr.bottom - wantN) - baseOf(socR)).toFixed(2) + 'px');
+          }
           var ctH = head ? capTop(head) : null;
-          if (ctH != null && socR) {
-            var pinS = document.createElement('span');
-            pinS.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-            socR.appendChild(pinS);
-            var socB = pinS.getBoundingClientRect().top;
-            socR.removeChild(pinS);
+          var ins3 = hold.querySelectorAll(':scope > .latest-rail__in'), last3 = ins3[ins3.length - 1], lastT3 = null;
+          var all3 = last3 ? last3.querySelectorAll('*') : [];
+          for (var q3 = all3.length - 1; q3 >= 0 && !lastT3; q3--) {
+            var e3 = all3[q3];
+            if (e3.closest('svg') || !e3.textContent.trim() || !e3.getBoundingClientRect().height || getComputedStyle(e3).visibility === 'hidden') continue;
+            lastT3 = e3;
+          }
+          if (ctH != null && lastT3 && socR) {
             var navBase = hr.top + wantN + capHt(navL);
-            var avail = (hr.bottom - wantN) - navBase, inkH = socB - ctH;
+            var socCap = baseOf(socR) - capHt(socR);
+            var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
+            var stackH = baseOf(lastT3) - ctH;
+            var g3 = Math.max(0, ((socCap - navBase) - bH3 - stackH) / 3);
+            hold.style.setProperty('--rl-birdt', (navBase + g3 - hr.top).toFixed(2) + 'px');
             var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
-            hold.style.setProperty('--rl-pt', Math.max(0, ptS + (navBase + (avail - inkH) / 2 - ctH)).toFixed(2) + 'px');
+            hold.style.setProperty('--rl-pt', Math.max(0, ptS + (navBase + 2 * g3 + bH3 - ctH)).toFixed(2) + 'px');
           }
         }
       }
