@@ -2358,7 +2358,8 @@
           var cnBlk = document.querySelector('a.content-name .content-name__block');
           var lwbB = cnBlk ? parseFloat(cnBlk.style.getPropertyValue('--cn-lwb')) || 0 : 0;
           var cnlB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
-          if (lwbB > 0) hold.style.setProperty('--rl-bird', (1.25 * (document.documentElement.clientWidth - 108 - cnlB) / lwbB).toFixed(3) + 'px');
+          // (the column as it stood then, 299, whatever its width since — "Reduce the size of the garamond in the side column")
+          if (lwbB > 0) hold.style.setProperty('--rl-bird', (1.25 * (document.documentElement.clientWidth - 108 - 299) / lwbB).toFixed(3) + 'px');
           else if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');
           var socR = hold.querySelector(':scope > .rail-socials');
@@ -2399,6 +2400,22 @@
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
             var socT = parseFloat(hold.style.getPropertyValue('--rl-soct')) || 0;
             hold.style.setProperty('--rl-soct', (socT + (baseOf(lastT3) + dS + g3 + socH) - baseOf(socR)).toFixed(2) + 'px');
+            // (three em dashes on the middle of each gap but the last — "Add 3 ——— between the different sections of the
+            // sidebar. the nav and the latest, the latest and the socials, the socials and the bird", "just 3 em dashes",
+            // "In garamond", 2026-10-14: each dash's ink on the gap's middle; --rl-d1..3, style.css THE DASHES)
+            var dashes = hold.querySelectorAll(':scope > .rail-dash');
+            if (dashes.length === 3) {
+              var cxD = capTop.ctx || (capTop.ctx = document.createElement('canvas').getContext('2d'));
+              var csD = getComputedStyle(dashes[0]);
+              cxD.font = csD.fontStyle + ' ' + csD.fontWeight + ' ' + csD.fontSize + ' ' + csD.fontFamily;
+              var mD = cxD.measureText('\u2014'), dOff = ((mD.actualBoundingBoxAscent || 0) - (mD.actualBoundingBoxDescent || 0)) / 2;
+              var picksB = baseOf(lastT3) + dS, socB = picksB + g3 + socH;
+              var mids = [(navBase + ctH + dS) / 2, (picksB + socB - socH) / 2, (socB + birdTop) / 2];
+              [].forEach.call(dashes, function (dEl, k) {
+                var dT = parseFloat(hold.style.getPropertyValue('--rl-d' + (k + 1))) || 0;
+                hold.style.setProperty('--rl-d' + (k + 1), (dT + (mids[k] + dOff) - baseOf(dEl)).toFixed(2) + 'px');
+              });
+            }
           }
         }
       }

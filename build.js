@@ -3971,7 +3971,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     })()}</div></div>`
     // (the socials back in the column since, under The Latest — "Move the socials below the latest", 2026-10-14:
     // contentSocials' links, .rail-socials, last in the stack)
-    + contentSocials().replace('class="content-socials"', 'class="rail-socials"').replace(/content-socials__/g, 'rail-socials__');
+    + contentSocials().replace('class="content-socials"', 'class="rail-socials"').replace(/content-socials__/g, 'rail-socials__')
+    // (three em dashes between the column's parts — "Add 3 ——— between the different sections of the sidebar", latest-rail.js seats them)
+    + [1, 2, 3].map((k) => `<span class="rail-dash rail-dash--${k}" aria-hidden="true">\u2014\u2014\u2014</span>`).join('');
   const railHtml = (sec, si) => `\n  <aside class="latest-rail latest-rail--${sec.rail} latest-rail--${sec.key}" data-sec="${sec.key}" aria-label="${escapeHtml(sec.word)}"><div class="latest-rail__hold">${si === 0 ? railDot() + railNav() + railMark() + railFoot() : ''}<div class="latest-rail__in">`
     + railName(sec.word, sec.href)
     + `<ul class="latest-rail__list">${sec.posts.map((p) => {
