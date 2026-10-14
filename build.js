@@ -265,6 +265,28 @@ function contentName() {
   // overhang to widen the bird's place by)
   const TIPS = { up: [235.88, 0.14], beak: [0.19, 414.34], low: [362.56, 728.37] };
   const ringL = 0, ringR = 0;
+  // (the wedge's point on the middle of T's stem since — "Extend the lines from the wing tips to the center of the stem
+  // of T", "Rather than the beak", 2026-10-14: the stem's middle across, read off the T's ink below two thirds of its
+  // height, and halfway down it from under the bar (the T's lowest ink at its bar's ends) to the baseline; carried
+  // into the bird's drawing units by the line's own measure — THE from RED_PAD, then NEW and the bird a GAP apart, the
+  // bird BIRD_K capitals tall on the letters' middle)
+  const TEE = (() => {
+    const svgT = WORDMARK_WORDS.the, vbT = svgT.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+    const subs = svgT.match(/ d="([^"]+)"/)[1].match(/M[^M]*/g).map((sp) => {
+      const n = sp.match(/-?\d*\.?\d+/g).map(Number), pts = [];
+      for (let t = 0; t < n.length; t += 2) pts.push([n[t], n[t + 1]]);
+      return pts;
+    }).sort((a, b) => Math.min(...a.map((q) => q[0])) - Math.min(...b.map((q) => q[0])));
+    const T = subs[0], xs = T.map((q) => q[0]), ys = T.map((q) => q[1]);
+    const lo = Math.min(...xs), hi = Math.max(...xs), top = Math.min(...ys), bot = Math.max(...ys), w = hi - lo;
+    const stem = T.filter((q) => q[1] > top + 0.6 * (bot - top));
+    const sx = (Math.min(...stem.map((q) => q[0])) + Math.max(...stem.map((q) => q[0]))) / 2;
+    const bar = Math.max(...T.filter((q) => q[0] < lo + 0.15 * w || q[0] > hi - 0.15 * w).map((q) => q[1]));
+    const emX = RED_PAD + THE_K * (sx - vbT[0]) / vbT[3], emY = ((bar + bot) / 2 - vbT[1]) / vbT[3];
+    const birdL = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + ringL;
+    const u = TNC_MARK.h / BIRD_K;
+    return [+((emX - birdL) * u).toFixed(2), +((emY - (0.5 - BIRD_K / 2)) * u).toFixed(2)];
+  })();
   const span = 2 * RED_PAD + THE_K * caps('the') + caps('new') + caps('critic') + BIRD_K * ar + ringL + ringR + (1 + 2 * BIRD_GAP) * GAP;
   const redW = RED_PAD + THE_K * caps('the') + GAP + caps('new') + BIRD_GAP * GAP + BIRD_K * WING_L / TNC_MARK.h;
   // (the breaks in the box's outline cut out of it rather than painted over it in the ground, which left the outline's
@@ -297,8 +319,8 @@ function contentName() {
   // crescent", 2026-10-14: the disc clipped to the ground left of the wings, the wrap's outline (mark-bird-wrap.svg)
   // run out past the disc's left edge)
   // (its ends run on past the drawing's top and foot, so the disc's own edge, not the clip, rounds the crescent's tips)
-  const ringClip = wrapD ? wrapD.replace(/^M100 0L([\d.]+) 0/, 'M-100 -40L$1 -40L$1 0').replace(/L([\d.]+) 728\.84L100 728\.84Z$/, 'L$1 728.84L$1 770L-100 770Z') : '';
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TIPS.beak.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #B3301E)" stroke-width="0"/>` + m);
+  const ringClip = wrapD ? wrapD.replace(/^M100 0L([\d.]+) 0/, 'M-9000 -40L$1 -40L$1 0').replace(/L([\d.]+) 728\.84L100 728\.84Z$/, 'L$1 728.84L$1 770L-9000 770Z') : '';
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #B3301E)" stroke-width="0"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
