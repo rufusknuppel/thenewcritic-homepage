@@ -2243,25 +2243,12 @@
         var cnb = document.querySelector('a.content-name .content-name__block');
         var cnbH = cnb ? cnb.getBoundingClientRect().height : 0;
         if (cnbH) hold.style.setProperty('--rl-bird', cnbH.toFixed(3) + 'px');
-        hold.style.setProperty('--rl-pt', '0px');
-        var ins = hold.querySelectorAll(':scope > .latest-rail__in'), lastIn = ins[ins.length - 1];
-        // (the last element seen with words in it — the deepest last child can be one unseen, as Editors' Picks' folded
-        // list is)
-        var lastT = null, allT = lastIn ? lastIn.querySelectorAll('*') : [];
-        for (var q = allT.length - 1; q >= 0 && !lastT; q--) {
-          var eq = allT[q];
-          if (eq.closest('svg') || !eq.textContent.trim() || !eq.getBoundingClientRect().height || getComputedStyle(eq).visibility === 'hidden') continue;
-          lastT = eq;
-        }
-        if (lastT) {
-          var pin = document.createElement('span');
-          pin.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-          lastT.appendChild(pin);
-          var blL = pin.getBoundingClientRect().top;
-          pin.remove();
-          var pbL = parseFloat(hold.style.getPropertyValue('--rl-pb')) || 0;
-          hold.style.setProperty('--rl-pb', Math.max(0, pbL + (blL - (hr.bottom - 54))).toFixed(2) + 'px');
-        }
+        // (switched since, The Latest at the top, its capitals 54 under the column's top, the bird at the foot, 54 over
+        // the window's — "switch the latest and the bird", 2026-10-14; style.css THE LATEST AT THE TOP, THE BIRD AT THE FOOT)
+        hold.style.setProperty('--rl-pb', '0px');
+        var ctL = head ? capTop(head) : null;
+        var ptL = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
+        hold.style.setProperty('--rl-pt', (ctL != null ? Math.max(0, ptL + (hr.top + 54 - ctL)) : 54).toFixed(2) + 'px');
       }
     }
     var lw = parseFloat(mark.style.getPropertyValue('--rm-lw')) || 0;
