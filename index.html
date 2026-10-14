@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=22c8a237">
+<link rel="stylesheet" href="style.css?v=8cde81d1">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11734,6 +11734,7 @@ window.__ncStripInk = function () {
               var picksB = baseOf(lastT3) + dS, socB = picksB + g3 + socH;
               var mids = [(navBase + ctH + dS) / 2, (picksB + socB - socH) / 2, (socB + birdTop) / 2];
               [].forEach.call(dashes, function (dEl, k) {
+                if (getComputedStyle(dEl).display === 'none') return;
                 var dT = parseFloat(hold.style.getPropertyValue('--rl-d' + (k + 1))) || 0;
                 hold.style.setProperty('--rl-d' + (k + 1), (dT + (mids[k] + dOff) - baseOf(dEl)).toFixed(2) + 'px');
               });
