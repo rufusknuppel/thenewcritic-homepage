@@ -30,6 +30,11 @@ const WM_SPACE = require('./wordmark.js').wordmarkSpace(path.join(__dirname, 'as
 const HAND_FILE = path.join(__dirname, 'assets', 'wordmark-the-new-critic-maille-site.svg');
 const HAND_WORDS = require('./wordmark.js').wordmarkWords(HAND_FILE);
 const HAND_SPACE = require('./wordmark.js').wordmarkSpace(HAND_FILE);
+// (THE LAST MAGAZINE in the same letters, drawn in another session — assets/wordmark-the-last-magazine.svg — and
+// respaced as THE NEW CRITIC is, its letters each the gap THE NEW CRITIC's drawing leaves after the same pair —
+// "Space the letters exactly like THE NEW CRITIC", 2026-10-14: assets/wordmark-the-last-magazine-spaced.svg)
+const TLM_FILE = path.join(__dirname, 'assets', 'wordmark-the-last-magazine-spaced.svg');
+const TLM_WORDS = fs.existsSync(TLM_FILE) ? require('./wordmark.js').wordmarkWords(TLM_FILE) : null;
 // THE STAMP (2026-09-25, at the user's word): the hand-cut bird in its
 // frame, traced to one path from the print (assets/stamp.svg) and
 // stated once a page as a <symbol>; every stamp on the page is a <use>
@@ -229,6 +234,14 @@ function spacedWord(word, k, words) {
 const STAMP_SPAN = () => Math.max(...['the', 'new', 'cri', 'tic'].map((w) => spacedWord(w, LETTER_K).ar));
 // (the stamp's line's width in its capitals: the letters and the two word gaps)
 const stampLineW = () => ['the', 'new', 'critic'].reduce((t, x) => t + spacedWord(x, 1, HAND_WORDS).ar, 0) + 2 * 1.5 * HAND_SPACE;
+// (THE LAST MAGAZINE as the stamp's words are set: its words the drawing's, the same word space between them)
+const tlmLineW = () => ['the', 'new', 'critic'].reduce((t, x) => t + spacedWord(x, 1, TLM_WORDS).ar, 0) + 2 * 1.5 * HAND_SPACE;
+function tlmWords() {
+  const w = (x) => spacedWord(x, 1, TLM_WORDS).svg;
+  return `<span class="tnc-words" style="--tw-space: ${(1.5 * HAND_SPACE).toFixed(4)}">`
+    + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('the')}${w('new')}</span></span>`
+    + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('critic')}</span></span></span>`;
+}
 function stampWords() {
   // (the hand-drawn letters as their drawing spaces them, NEW's gaps every word's; the words half as far apart again
   // as the drawing's own word space — "increase the space between the words by 50%", kept when the bars went — "But
@@ -2233,7 +2246,10 @@ function bandUnder() {
   // 2026-10-14: the stamp's words and the name's bird, its ids its own; latest-rail.js seats them, THE BAND'S MARKS)
   const bandBird = ((contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '').replace(/-cn\b/g, '-bm').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '');
   const marks = `<a class="band-mark band-mark--words" href="#top" aria-label="The New Critic — to the top of the front page" style="--bm-lw: ${stampLineW().toFixed(4)}">${stampWords()}</a>`
-    + (bandBird ? `<a class="band-mark band-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${bandBird}</a>` : '');
+    + (bandBird ? `<a class="band-mark band-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${bandBird}</a>` : '')
+    // (and THE LAST MAGAZINE at the band's right, as the name stands at its left — "Add The Last Magazine I created in a
+    // different session", "Add it to the right of the band", 2026-10-14; to the About page, as the line's was)
+    + (TLM_WORDS ? `<a class="band-mark band-mark--tlm" href="${escapeHtml(ab ? ab.href : '#top')}" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--bm-lw: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '');
   return marks + `<span class="band-under band-under--the">${tlm}</span><span class="band-under band-under--new">${nav}</span><span class="band-under band-under--critic">${soc}</span><span class="band-under band-under--copy">© The New Critic, Inc.</span>`;
 }
 function navStrip() {

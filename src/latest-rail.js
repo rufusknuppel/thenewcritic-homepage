@@ -559,7 +559,7 @@
       // items on left"): the list 54 from the left, The Last Magazine on the window's middle, the socials to 54 from
       // the right; the copyright on the side column's middle, its baseline as far over the window's foot as the line's
       // over the band's rule; the dot 27 in from the column's outer side and 27 under the rule (fbDot)
-      var fbDot = null, fbCopyY = null;
+      var fbDot = null, fbCopyY = null, colY = null;
       if (SPREAD) {
         if (cpyF) cpyF.style.removeProperty('display');
         wC = txw(cpyF);
@@ -567,27 +567,43 @@
         // (across the band's own span since it went to the content's column's foot: cL to cR)
         fbX = { the: (cL + cR) / 2 - wT / 2, new: cL + 54, critic: cR - 54 - wS, copy: colMid - wC / 2, mid: 0 };
         // THE BAND'S MARKS (2026-10-14 — "Move the nav band into a top band that runs edge to edge. Move the wordmark
-        // into the top left, move the bird into the middle, move the socials and nav in between on left and right of
-        // bird"): the name 54 from the window's left, its capitals on the band's middle, 20 tall, or as much less as
-        // keeps 27 either side of the socials; the bird on the window's middle, 27 under the band's top and 27 over its
-        // rule; the socials midway between the name and the bird, the nav midway between the bird and the window's 54
-        var bmW = st.querySelector('.band-mark--words'), bmB = st.querySelector('.band-mark--bird');
+        // into the top left, move the bird into the middle", "Make margins around wordmark 20px", "Add it [The Last
+        // Magazine] to the right of the band"): THE NEW CRITIC 20 from the window's left, THE LAST MAGAZINE 20 from its
+        // right, as big as lets the two and the bird between them fill the band across ("Make wordmarks bigger to fit
+        // the size of the band") — the band's height less two 20s at most — the bird as tall as their capitals ("Make
+        // Bird the same height as the letters") and midway between them ("Center bird between the two wordmarks"), a
+        // word space either side, all on the band's middle
+        var bmW = st.querySelector('.band-mark--words'), bmB = st.querySelector('.band-mark--bird'), bmT = st.querySelector('.band-mark--tlm');
         if (FOOT_TOP && bmW && bmB) {
           var bandH = 2 * FB_AIR + capH, stT = st.getBoundingClientRect().top, runT = rr0(run) - stT;
-          var birdH = bandH - 54, birdW = birdH * 0.9676, midX = (cL + cR) / 2;
+          var WM_M = 20, AR_B = 0.9676;
           var lwB = parseFloat(bmW.style.getPropertyValue('--bm-lw')) || 14.9;
-          var WM_M = 20; // (20 round the name since — "Make margins around wordmark 20px", the same day: 20 from the window's left and the band's top)
-          var capB = Math.max(6, Math.min(20, (midX - birdW / 2 - cL - WM_M - wS - 2 * 27) / lwB));
-          var wordsR = cL + WM_M + capB * lwB;
+          var lwT = bmT ? parseFloat(bmT.style.getPropertyValue('--bm-lw')) || 17.9 : 0;
+          var twB = bmW.querySelector('.tnc-words'), gB = twB ? parseFloat(twB.style.getPropertyValue('--tw-space')) || 1.3846 : 1.3846;
+          var capB = Math.min(bandH - 2 * WM_M, (cR - cL - 2 * WM_M) / (lwB + lwT + AR_B + 2 * gB));
+          var yB = (bandH - capB) / 2 - runT;
+          var wordsR = cL + WM_M + capB * lwB, tlmL = cR - WM_M - capB * lwT;
           bmW.style.setProperty('font-size', capB.toFixed(3) + 'px');
           bmW.style.setProperty('left', (cL + WM_M).toFixed(2) + 'px');
-          bmW.style.setProperty('top', (WM_M - runT).toFixed(2) + 'px');
-          bmB.style.setProperty('height', birdH.toFixed(2) + 'px');
+          bmW.style.setProperty('top', yB.toFixed(2) + 'px');
+          if (bmT) {
+            bmT.style.setProperty('font-size', capB.toFixed(3) + 'px');
+            bmT.style.setProperty('left', tlmL.toFixed(2) + 'px');
+            bmT.style.setProperty('top', yB.toFixed(2) + 'px');
+          }
+          var birdW = capB * AR_B, birdX = ((bmT ? tlmL : cR - WM_M) + wordsR) / 2 - birdW / 2;
+          bmB.style.setProperty('height', capB.toFixed(2) + 'px');
           bmB.style.setProperty('width', birdW.toFixed(2) + 'px');
-          bmB.style.setProperty('left', (midX - birdW / 2).toFixed(2) + 'px');
-          bmB.style.setProperty('top', (27 - runT).toFixed(2) + 'px');
-          fbX.critic = (wordsR + midX - birdW / 2) / 2 - wS / 2;
-          fbX.new = (midX + birdW / 2 + cR - 54) / 2 - wN / 2;
+          bmB.style.setProperty('left', birdX.toFixed(2) + 'px');
+          bmB.style.setProperty('top', yB.toFixed(2) + 'px');
+          // THE LINE IN THE COLUMN (2026-10-14 — "Move nav itmes and socials. Nav to the top of the Latest, set 20px
+          // from the top of column and Socials 20px from the bottom of the column"): both on the column's middle, the
+          // nav's capitals 20 under the band's rule, the socials' baseline 20 over the window's foot; riding out with
+          // the column as it shuts, as the copyright does (style.css, THE LINE IN THE COLUMN)
+          var colMidL = onL ? rwF / 2 : vwF - rwF / 2;
+          fbX.new = colMidL - wN / 2;
+          fbX.critic = colMidL - wS / 2;
+          colY = { new: { y: st.getBoundingClientRect().bottom + 20 + capH, foot: false }, critic: { y: stT + vh - 20, foot: true } };
         }
         var dHt = dotF ? dotF.getBoundingClientRect().height : 0;
         // (at the column's foot since, 27 from its outer side and 27 over the window's foot, its foot on the copyright's
@@ -621,8 +637,9 @@
       uTx += parseFloat((getComputedStyle(u).translate || '0').split(' ')[0]) || 0;
       if (fbX) left = (parseFloat(u.style.getPropertyValue('left')) || 0) + ((right ? fbX.copy : fbX[key]) - (tb.left - uTx));
       void ur;
-      var atFoot = right && fbCopyY != null;
-      var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + ((atFoot ? fbCopyY : base) - probe(u));
+      var colB = colY && !right ? colY[key] : null;
+      var atFoot = (right && fbCopyY != null) || !!(colB && colB.foot);
+      var top = (parseFloat(u.style.getPropertyValue('top')) || 0) + ((colB ? colB.y : atFoot ? fbCopyY : base) - probe(u));
       u.style.setProperty('left', left.toFixed(2) + 'px', 'important');
       u.style.setProperty('top', (FOOT_BAND && !FOOT_TOP) || atFoot ? 'calc(100svh + ' + (top - vh).toFixed(2) + 'px)' : top.toFixed(2) + 'px', 'important');
     });
