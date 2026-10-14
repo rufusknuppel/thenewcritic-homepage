@@ -2365,59 +2365,109 @@
           hold.style.setProperty('--rl-pb', '0px');
           var socR = hold.querySelector(':scope > .rail-socials');
 
-          var ctH = head ? capTop(head) : null;
-          var ins3 = hold.querySelectorAll(':scope > .latest-rail__in'), last3 = ins3[ins3.length - 1], lastT3 = null;
-          var all3 = last3 ? last3.querySelectorAll('*') : [];
-          for (var q3 = all3.length - 1; q3 >= 0 && !lastT3; q3--) {
-            var e3 = all3[q3];
-            if (e3.closest('svg') || !e3.textContent.trim() || !e3.getBoundingClientRect().height || getComputedStyle(e3).visibility === 'hidden') continue;
-            lastT3 = e3;
+          // (the sections' names on one comma line since, The Latest, Essays, Postscript, Contra, Editors' Picks, the open
+          // one in the highlight, each pressed as its own name was; the open section's kickers under it — "Have The
+          // Latest, Essays, Postscript, Contra, etc. in a comma list", 2026-10-14: .rail-sections, built here once, its
+          // links pressing the names they stand for, which stay in their places unseen)
+          var secLine = hold.querySelector(':scope > .rail-sections');
+          var metasR = hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__meta > a.latest-rail__meta-link');
+          if (!secLine && metasR.length) {
+            secLine = document.createElement('div');
+            secLine.className = 'rail-sections';
+            [].forEach.call(metasR, function (mA, k) {
+              if (k) { var sp = document.createElement('span'); sp.className = 'rail-sections__sep'; sp.textContent = ', '; secLine.appendChild(sp); }
+              var a2 = document.createElement('a');
+              a2.className = 'rail-sections__a';
+              a2.href = mA.getAttribute('href') || '#';
+              a2.textContent = mA.textContent.trim();
+              a2.__meta = mA;
+              a2.addEventListener('click', function (ev) {
+                if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button !== 0) return;
+                ev.preventDefault();
+                mA.click();
+              });
+              secLine.appendChild(a2);
+            });
+            var in0 = hold.querySelector(':scope > .latest-rail__in');
+            hold.insertBefore(secLine, in0);
+            // (the open section followed: its name in the highlight, the stack grown or shrunk to its kickers — "When
+            // kickers need more or less space, expand or contract the garamond stack", "Keep red for whatever section is
+            // selected", 2026-10-14; each section's block watched for its class alone, so the line's own changes don't
+            // call back)
+            if (window.MutationObserver) {
+              // (and again as the lists' opening and shutting settle)
+              var reseat = [], mo = new MutationObserver(function () {
+                reseat.forEach(clearTimeout);
+                reseat = [30, 400, 900, 1600].map(function (ms) { return setTimeout(seat, ms); });
+              });
+              [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in'), function (inE) { mo.observe(inE, { attributes: true, attributeFilter: ['class'] }); });
+            }
           }
-          // (the bird in the column's bottom corner since, its left on the nav's first ink, its foot as far over the
-          // window's as the nav's capitals under its top; The Latest and the socials up under the nav, the nav, The
-          // Latest, the socials and the bird the same distance apart, ink to ink — "Move the bird to the bottom corner and
-          // move the latest and socials up", 2026-10-14; --rl-birdx, --rl-birdt, --rl-pt, --rl-soct)
-          if (ctH != null && lastT3 && socR) {
+          if (secLine) [].forEach.call(secLine.querySelectorAll('.rail-sections__a'), function (a2) {
+            var inA = a2.__meta && a2.__meta.closest('.latest-rail__in');
+            a2.classList.toggle('is-current', !!(inA && inA.classList.contains('is-current')));
+          });
+          // (the open section's kickers: the list seen)
+          var kList = null;
+          [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list'), function (ul) {
+            if (!kList && ul.getBoundingClientRect().height && getComputedStyle(ul).visibility !== 'hidden') kList = ul;
+          });
+          var kicks = kList ? kList.querySelectorAll('.latest-rail__kick') : [];
+          // (the comma line's first line's capitals: it wraps, and capTop reads the last)
+          var ctH = null;
+          if (secLine) {
+            var pF = document.createElement('span');
+            pF.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+            secLine.insertBefore(pF, secLine.firstChild);
+            ctH = pF.getBoundingClientRect().top - capHt(secLine);
+            secLine.removeChild(pF);
+          }
+          // (the Garamond's stack pinned under the nav since, the gaps between its parts held at what they were at 1440,
+          // 77.5, the room left under the socials over the bird — "Pin Garamond stack with current spacing to the nav at
+          // the top", "Allowing for more space under socials to the bird"; the kickers as far under the comma line as
+          // the line under the dash over it — "have the same space between dash and the latest be the sapce between the
+          // latest list and kickers", 2026-10-14; --rl-pt, --rl-kmt, --rl-soct, --rl-d1..3, --rl-birdt)
+          if (ctH != null && kicks.length && socR) {
+            var G = 77.5;
             var navBase = hr.top + wantN + capHt(navL);
             var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
-            // (THE LAST MAGAZINE back in the column since, under the bird, its foot where the bird's stood and the bird 27
-            // over it — "Move the last magazine under the bird", 2026-10-14; style.css THE LAST MAGAZINE UNDER THE BIRD)
             var tlmR = hold.querySelector(':scope > .rail-tlm');
             var tlmF3 = tlmR && tlmR.offsetHeight ? parseFloat(hold.style.getPropertyValue('--rl-tlmf')) || 12.923 : 0;
             var tlmTop = hr.bottom - wantN - tlmF3;
-            var navInk = navL.getBoundingClientRect().left;
-            hold.style.setProperty('--rl-birdx', (navInk - hr.left).toFixed(2) + 'px');
-            var stackH = baseOf(lastT3) - ctH, socH = capHt(socR);
-            // (the bird to THE LAST MAGAZINE as far as the rest apart since, not 27 — "make the distances between nav and
-            // latest lates and socials socials and bird bird and the last magazine equal", 2026-10-14: four gaps)
-            // (the bird to THE LAST MAGAZINE half the others since — "reduce the gap specifically between bird and the last
-            // magazine by 50%", 2026-10-14)
-            var nG = tlmF3 ? 3.5 : 3;
-            var g3 = Math.max(0, ((tlmTop - navBase) - stackH - socH - bH3) / nG);
-            var birdTop = tlmF3 ? tlmTop - g3 / 2 - bH3 : tlmTop - bH3;
+            // (a fifth closer to THE LAST MAGAZINE since — "make the bird 20% closer to The Last Magazine", 2026-10-14)
+            var birdTop = tlmF3 ? tlmTop - 0.8 * G / 2 - bH3 : tlmTop - bH3;
             hold.style.setProperty('--rl-birdt', (birdTop - hr.top).toFixed(2) + 'px');
-            var ptS = parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0;
-            var dS = navBase + g3 - ctH;
-            hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
-            var socT = parseFloat(hold.style.getPropertyValue('--rl-soct')) || 0;
-            hold.style.setProperty('--rl-soct', (socT + (baseOf(lastT3) + dS + g3 + socH) - baseOf(socR)).toFixed(2) + 'px');
-            // (three em dashes on the middle of each gap but the last — "Add 3 ——— between the different sections of the
-            // sidebar. the nav and the latest, the latest and the socials, the socials and the bird", "just 3 em dashes",
-            // "In garamond", 2026-10-14: each dash's ink on the gap's middle; --rl-d1..3, style.css THE DASHES)
             var dashes = hold.querySelectorAll(':scope > .rail-dash');
-            if (dashes.length === 3) {
-              var cxD = capTop.ctx || (capTop.ctx = document.createElement('canvas').getContext('2d'));
+            var cxD = capTop.ctx || (capTop.ctx = document.createElement('canvas').getContext('2d'));
+            var dIn = 0.5, dOff = 0;
+            if (dashes.length) {
               var csD = getComputedStyle(dashes[0]);
               cxD.font = csD.fontStyle + ' ' + csD.fontWeight + ' ' + csD.fontSize + ' ' + csD.fontFamily;
-              var mD = cxD.measureText('\u2014'), dOff = ((mD.actualBoundingBoxAscent || 0) - (mD.actualBoundingBoxDescent || 0)) / 2;
-              var picksB = baseOf(lastT3) + dS, socB = picksB + g3 + socH;
-              var mids = [(navBase + ctH + dS) / 2, (picksB + socB - socH) / 2, (socB + birdTop) / 2];
-              [].forEach.call(dashes, function (dEl, k) {
-                if (getComputedStyle(dEl).display === 'none') return;
-                var dT = parseFloat(hold.style.getPropertyValue('--rl-d' + (k + 1))) || 0;
-                hold.style.setProperty('--rl-d' + (k + 1), (dT + (mids[k] + dOff) - baseOf(dEl)).toFixed(2) + 'px');
-              });
+              var mD = cxD.measureText('\u2014');
+              dIn = ((mD.actualBoundingBoxAscent || 0) + (mD.actualBoundingBoxDescent || 0)) / 2;
+              dOff = ((mD.actualBoundingBoxAscent || 0) - (mD.actualBoundingBoxDescent || 0)) / 2;
             }
+            var dashGap = G / 2 - dIn;
+            // (the comma line's capitals G under the nav's baseline)
+            var ptS = parseFloat(getComputedStyle(hold).paddingTop) || 0;
+            var dS = navBase + G - ctH;
+            hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
+            // (the first kicker's capitals dashGap under the comma line's last baseline)
+            var secB = baseOf(secLine), k0 = kicks[0], kC = baseOf(k0) - capHt(k0);
+            var kmt = parseFloat(getComputedStyle(kList).marginTop) || 0;
+            var dK = (secB + dashGap) - kC;
+            hold.style.setProperty('--rl-kmt', (kmt + dK).toFixed(2) + 'px');
+            // (read after --rl-pt and --rl-kmt are set: the read lays the stack where it now stands)
+            var lastKB = baseOf(kicks[kicks.length - 1]);
+            var socH = capHt(socR), socB = lastKB + G + socH;
+            var socT = parseFloat(getComputedStyle(socR).top) || 0;
+            hold.style.setProperty('--rl-soct', (socT + socB - baseOf(socR)).toFixed(2) + 'px');
+            var mids = [navBase + G / 2, lastKB + G / 2, (socB + birdTop) / 2];
+            [].forEach.call(dashes, function (dEl, k) {
+              if (getComputedStyle(dEl).display === 'none') return;
+              var dT = parseFloat(getComputedStyle(dEl).top) || 0;
+              hold.style.setProperty('--rl-d' + (k + 1), (dT + (mids[k] + dOff) - baseOf(dEl)).toFixed(2) + 'px');
+            });
           }
         }
       }
