@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=1e389107">
+<link rel="stylesheet" href="style.css?v=2ffef5fe">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -5162,7 +5162,7 @@
             rowDelta = firstAt - (seatPic && ink ? ink.t : topInk()); hasJob = true;
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
-              var cnm = document.querySelector('a.content-name'), cnH = cnm && cnm.offsetHeight ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + cnm.offsetHeight : BAND_AIR;
+              var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
