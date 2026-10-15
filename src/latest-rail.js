@@ -2586,11 +2586,13 @@ var ncStemX = function () {
               // (read only once the list stands fully open since: read as it still opens, the next name stood short of where
               // it lands and the gap came out long, a second step after the slide — "Remove the second 14px step when
               // sections open", 2026-10-15; the gaps are the same under every section, so the ones already set hold meanwhile)
-              var kOpen = Math.abs(kList.getBoundingClientRect().height - kList.scrollHeight) < 1 && Math.abs((parseFloat(getComputedStyle(kList).maxHeight) || 0) - kList.scrollHeight) < 3;
+              var kOpen = Math.abs(kList.getBoundingClientRect().height - kList.scrollHeight) < 3 && Math.abs((parseFloat(getComputedStyle(kList).maxHeight) || 0) - kList.scrollHeight) < 3;
+              var kKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
+              var kHeld = hold.__ncKmK === kKey;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-              if (kOpen || !hold.style.getPropertyValue('--rl-kmt')) hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              if (!kHeld && (kOpen || !hold.style.getPropertyValue('--rl-kmt'))) hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
               var kNext = metasS[metasS.indexOf(metaC) + 1];
-              if (kNext && (kOpen || !hold.style.getPropertyValue('--rl-kmb'))) {
+              if (kNext && !kHeld && (kOpen || !hold.style.getPropertyValue('--rl-kmb'))) {
                 var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
@@ -2601,16 +2603,29 @@ var ncStemX = function () {
               // last baseline and the window's foot since, read as the band pins, the socials' baseline 27 over the hold's
               // top — "Space between ink of socials and bird should match the space between the bird and the latest and the
               // latest and the bottom", 2026-10-15)
-              var gapB = bUnder ? (hr.height + 27 - bUnder.height - (lkB - ctB)) / 3 : 0;
+              // (The Latest over the bird since, the same three spaces — the socials' baseline to The Latest's capitals, its
+              // last baseline to the bird, the bird to the window's foot — the stack read as tall as its longest section's
+              // list makes it, so the bird held where it is clears every list — "move the bird below the latest", 2026-10-15)
+              var maxLH = 0;
+              [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list'), function (l) { maxLH = Math.max(maxLH, l.scrollHeight); });
+              var stackB = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height);
+              var gapB = bUnder ? (hr.height + 27 - bUnder.height - stackB) / 3 : 0;
               // (read once for a window's size since, from the stack as it first stands, and held: the bird fixed and The
               // Latest's capitals with it, only the open section's kickers changing under them as the sections come and go
               // — "Bird should be fixed, shouldn't move with the latest adjustments", "I want the latest to hold position",
               // 2026-10-15)
               var gKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
-              if (bUnder) { if (hold.__ncGapK === gKey) gapB = hold.__ncGap; else { hold.__ncGapK = gKey; hold.__ncGap = gapB; } }
+              // (and kept only once the open list and its gaps have settled: read while they still eased in, the stack came
+              // out short and the bird stood 20 high)
+              var kcs = getComputedStyle(kList);
+              var kSet = kOpen && Math.abs((parseFloat(kcs.marginTop) || 0) - (parseFloat(hold.style.getPropertyValue('--rl-kmt')) || 0)) < 0.5 && (!kNext || Math.abs((parseFloat(kcs.marginBottom) || 0) - (parseFloat(hold.style.getPropertyValue('--rl-kmb')) || 0)) < 0.5);
+              if (bUnder) { if (hold.__ncGapK === gKey) { gapB = hold.__ncGap; stackB = hold.__ncStackH; } else if (kSet) { hold.__ncGapK = gKey; hold.__ncGap = gapB; hold.__ncStackH = stackB; } }
+              // (the kickers' gaps kept with them, the same under every section: read again as a list still eased open, they
+              // shook the names under it)
+              if (kSet && kNext) hold.__ncKmK = kKey;
               var gTopB = gapB - 27;
-              if (bUnder) hold.style.setProperty('--rl-birdt', gTopB.toFixed(2) + 'px');
-              var shB = bUnder ? hr.top + gTopB + bUnder.height + gapB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
+              if (bUnder) hold.style.setProperty('--rl-birdt', (gTopB + stackB + gapB).toFixed(2) + 'px');
+              var shB = bUnder ? hr.top + gTopB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
               var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
               hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
             }
