@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b8d15380">
+<link rel="stylesheet" href="style.css?v=95854a0b">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11806,15 +11806,15 @@ var RAIL_MORE = 27;
           }
           if (inBand && ctH != null && kicks.length) {
             var bHb = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
-            var birdTopB = hr.bottom - tlmB - bHb;
+            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
+            var birdTopB = tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
             hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
             var L2b = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
             var secBb = baseOf(secLine), k0b = kicks[0], kCb = baseOf(k0b) - capHt(k0b);
             var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
             hold.style.setProperty('--rl-kmt', (kmtb + (secBb + 0.7 * (L2b - capHt(k0b))) - kCb).toFixed(2) + 'px');
             var ctB = capTop1(secLine), lkB = baseOf(kicks[kicks.length - 1]);
-            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
-            var topRefB = tncRb && tncRb.height ? tncRb.bottom : hr.top;
+            var topRefB = hr.top;
             var shB = (topRefB + birdTopB - ctB - lkB) / 2;
             var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
             hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');

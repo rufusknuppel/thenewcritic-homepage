@@ -2492,15 +2492,19 @@ var RAIL_MORE = 27;
             // (the sections' line and the kickers on the middle between the column's THE NEW CRITIC and the bird, the
             // bird's foot as far over the column's as the name's top under its top; the kickers as they were under the line)
             var bHb = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
-            var birdTopB = hr.bottom - tlmB - bHb;
+            // (THE NEW CRITIC under the bird since, at the column's foot as far over it as it stands in from the column's
+            // sides, the bird 27 over it, as THE LAST MAGAZINE was — "Move THE NEW CRITIC in the side column under the
+            // bird, like how the last magazine used to be", 2026-10-15: the stack on the middle between the column's top
+            // and the bird; style.css THE COLUMN'S NAME UNDER THE BIRD)
+            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
+            var birdTopB = tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
             hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
             var L2b = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
             var secBb = baseOf(secLine), k0b = kicks[0], kCb = baseOf(k0b) - capHt(k0b);
             var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
             hold.style.setProperty('--rl-kmt', (kmtb + (secBb + 0.7 * (L2b - capHt(k0b))) - kCb).toFixed(2) + 'px');
             var ctB = capTop1(secLine), lkB = baseOf(kicks[kicks.length - 1]);
-            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
-            var topRefB = tncRb && tncRb.height ? tncRb.bottom : hr.top;
+            var topRefB = hr.top;
             var shB = (topRefB + birdTopB - ctB - lkB) / 2;
             var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
             hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
