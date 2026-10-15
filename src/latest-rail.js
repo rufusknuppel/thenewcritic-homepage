@@ -1146,7 +1146,9 @@ var RAIL_MORE = 27;
     var br = body.getBoundingClientRect();
     var bodyTop = br.top + (window.pageYOffset || 0);
     var tops = rails.map(function (rail, i) {
-      if (i === 0) return Math.max(0, rest + settled - bodyTop);
+      // (under the opening's THE NEW CRITIC since, the column coming up over it with the rows — "On the initial open,
+      // have the wordmark across the whole top", 2026-10-15: window.ncOpenH, below)
+      if (i === 0) return Math.max(0, rest + settled + (window.ncOpenH ? window.ncOpenH() : 0) - bodyTop);
       var cs = cardsOf(rail.getAttribute('data-sec'));
       // (the column from its section's first picture's top, its divider
       // over its head on that line — "Section divider should align with
@@ -2573,4 +2575,32 @@ var RAIL_MORE = 27;
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(seat, 200); });
   setTimeout(seat, 800);
   seat();
+})();
+
+// THE OPENING (2026-10-15 — "On the initial open, have the wordmark across the whole top set 54px from top bottom and
+// sides. Have a 2px rule underneath it. Have the rest of the site/column and content pull over this wordmark. In the
+// last 20% of this have the wordmark fade in to its current position now"): THE NEW CRITIC across the window's top,
+// held where it stands (style.css THE OPENING) while the column and the rows, which begin under it (ncOpenH: the
+// column's top here, the first row's in duo-panel-fit.js), come up over it — the name cut off at their top edge as it
+// rises (--op-cut); the column's own THE NEW CRITIC coming in over the last fifth of the climb (--tnc-o).
+window.ncOpenH = function () {
+  var cn = document.querySelector('a.content-name');
+  return cn && getComputedStyle(cn).position === 'fixed' ? cn.offsetHeight : 0;
+};
+(function () {
+  var de = document.documentElement, last = '';
+  var ride = function () {
+    var h = window.ncOpenH(), y = Math.max(0, window.pageYOffset || 0);
+    var cut = h ? Math.min(h, y) : 0;
+    var o = h ? Math.max(0, Math.min(1, (y / h - 0.8) / 0.2)) : 1;
+    var key = cut.toFixed(1) + '|' + o.toFixed(3);
+    if (key === last) return;
+    last = key;
+    de.style.setProperty('--op-cut', cut.toFixed(1) + 'px');
+    de.style.setProperty('--tnc-o', o.toFixed(3));
+  };
+  window.addEventListener('scroll', ride, { passive: true });
+  window.addEventListener('resize', function () { last = ''; ride(); });
+  document.addEventListener('newcritic:fit', function () { last = ''; ride(); });
+  ride();
 })();
