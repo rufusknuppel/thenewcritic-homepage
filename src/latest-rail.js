@@ -2583,10 +2583,14 @@ var ncStemX = function () {
             if (metasS.length && metaC) {
               var L2b = 2 * (parseFloat(getComputedStyle(metaC).lineHeight) || 27.5);
               var k0b = kicks[0], kLast = kicks[kicks.length - 1];
+              // (read only once the list stands fully open since: read as it still opens, the next name stood short of where
+              // it lands and the gap came out long, a second step after the slide — "Remove the second 14px step when
+              // sections open", 2026-10-15; the gaps are the same under every section, so the ones already set hold meanwhile)
+              var kOpen = Math.abs(kList.getBoundingClientRect().height - kList.scrollHeight) < 1 && Math.abs((parseFloat(getComputedStyle(kList).maxHeight) || 0) - kList.scrollHeight) < 3;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-              hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              if (kOpen || !hold.style.getPropertyValue('--rl-kmt')) hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
               var kNext = metasS[metasS.indexOf(metaC) + 1];
-              if (kNext) {
+              if (kNext && (kOpen || !hold.style.getPropertyValue('--rl-kmb'))) {
                 var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
