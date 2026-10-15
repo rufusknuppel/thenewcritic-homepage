@@ -2639,7 +2639,7 @@ window.ncOpenH = function () {
     var navE = band.querySelector('.rail-top'), socE = band.querySelector('.rail-socials');
     if (navE && socE && mids[0] != null) {
       var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width;
-      var navL0 = mids[0] - nw / 2, vw0 = document.documentElement.clientWidth;
+      var navL0 = 26, vw0 = document.documentElement.clientWidth;
       band.style.setProperty('--opb-soc-r', navL0.toFixed(1) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
     }
