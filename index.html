@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e992df5c">
+<link rel="stylesheet" href="style.css?v=b8d15380">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6030,7 +6030,7 @@
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
               var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
-              if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? 54 : 0) - fr0.getBoundingClientRect().height) / 2);
+              if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
@@ -11922,7 +11922,7 @@ window.ncOpenH = function () {
     var navE = band.querySelector('.rail-top'), socE = band.querySelector('.rail-socials');
     if (navE && socE && mids[0] != null) {
       var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width;
-      var navL0 = mids[0] - nw / 2, vw0 = document.documentElement.clientWidth;
+      var navL0 = 26, vw0 = document.documentElement.clientWidth;
       band.style.setProperty('--opb-soc-r', navL0.toFixed(1) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
     }
