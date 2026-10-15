@@ -3975,6 +3975,10 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // disappear"): THE LAST MAGAZINE drawn at the column's foot, the band's socials under the column's stack in the
   // kickers' italic (style.css THE BAND GONE; latest-rail.js sizes THE LAST MAGAZINE to the column, --rl-tlmf)
   const railFoot = () => (TLM_WORDS ? `<a class="rail-tlm" href="#top" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
+    // (THE NEW CRITIC at the column's top since, as wide as THE LAST MAGAZINE and as far under the window's top as that
+    // stands over its foot — "Move THE NEW CRITIC into the top of the side column the same spacing as the last
+    // magazine. Same width and same distance from the top", 2026-10-15: style.css THE NAME AT THE COLUMN'S TOP)
+    + (TLM_WORDS ? `<a class="rail-tnc" href="#top" aria-label="${escapeHtml(SITE_NAME)}" style="--rl-lwb: ${bandBlockLineW().toFixed(4)}; --rl-lwt: ${tlmLineW().toFixed(4)}">${bandBlockWords()}</a>` : '')
     // (the band's nav over The Latest since — "The nav itmes should go above the latest", 2026-10-14: .rail-top, at the
     // column's top; the socials under it for a while, "Sit the socials under the nav", beside the name since —
     // contentSocials)

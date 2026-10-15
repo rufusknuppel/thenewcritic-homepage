@@ -2494,14 +2494,15 @@
             var L2 = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
             // (the white from the nav's last baseline to the sections' capitals, and from the last kicker's to the
             // socials', three tenths less than that blank line's — "Reduce gaps between nav and the latest, kickers and
-            // socails by 30%", 2026-10-15; the sections to the kickers a blank line still)
+            // socails by 30%", 2026-10-15)
             var gapS = 0.7 * (L2 - capHt(secLine));
             var dS = navBase + gapS - ctH;
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
             // (the first kicker's capitals dashGap under the comma line's last baseline)
             var secB = baseOf(secLine), k0 = kicks[0], kC = baseOf(k0) - capHt(k0);
             var kmt = parseFloat(getComputedStyle(kList).marginTop) || 0;
-            var dK = (secB + L2 - capHt(k0)) - kC;
+            // (three tenths less white too since — "also reduce the gap between latest and kickers", 2026-10-15)
+            var dK = (secB + 0.7 * (L2 - capHt(k0))) - kC;
             hold.style.setProperty('--rl-kmt', (kmt + dK).toFixed(2) + 'px');
             // (read after --rl-pt and --rl-kmt are set: the read lays the stack where it now stands)
             var lastKB = baseOf(kicks[kicks.length - 1]);
@@ -2512,7 +2513,11 @@
             // (the stack, the nav's capitals to the socials' last baseline, on the middle between the window's top and the
             // bird's — "start the garamond stack centered between the top of the bird and the top of the site", 2026-10-14)
             var sTop = capTop1(navL), sBot = baseOf(socR);
-            var sh = (hr.top + birdTop - sTop - sBot) / 2;
+            // (between THE NEW CRITIC's foot and the bird's top since, the name at the column's top — "Move THE NEW
+            // CRITIC into the top of the side column", 2026-10-15)
+            var tncW = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncR = tncW && tncW.getBoundingClientRect();
+            var topRef = tncR && tncR.height ? tncR.bottom : hr.top;
+            var sh = (topRef + birdTop - sTop - sBot) / 2;
             ['--rl-navt', '--rl-pt', '--rl-soct'].forEach(function (v) {
               var cur = parseFloat(hold.style.getPropertyValue(v));
               if (!isNaN(cur)) hold.style.setProperty(v, (v === '--rl-pt' ? Math.max(0, cur + sh) : cur + sh).toFixed(2) + 'px');
