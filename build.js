@@ -215,8 +215,9 @@ const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gap
 // block letters' gaps by their index in the word, in the drawing's units before LETTER_K)
 // (CRITIC's T and I and NEW's E and W half as far apart as CRITIC's I and T, the T's arms and the W's slope opening the
 // gaps past what the boxes say — "Half the letter spacing between I and T of Critic between the T and I of Critic and
-// between the E and W of NEW", 2026-10-15: 15 of the drawing's 30)
-const WM_KERN = { critic: { 1: 26, 4: 15, 5: 30 }, new: { 2: 15 } };
+// between the E and W of NEW", 2026-10-15: 15 of the drawing's 30; THE's T and H and CRITIC's I and T too — "Also half
+// the space between the T and H in the and the I and T in Critic")
+const WM_KERN = { the: { 1: 15 }, critic: { 1: 26, 3: 15, 4: 15, 5: 30 }, new: { 2: 15 } };
 // (THE LAST MAGAZINE's own: MAGAZINE's G and A closer, the G's open side and the A's slope reading wider than the rest at
 // the drawing's even 62.3 — "the space between G and A is off in the last magazine", 2026-10-14; keyed as the
 // drawing's words, critic = MAGAZINE, by the gap's place)
