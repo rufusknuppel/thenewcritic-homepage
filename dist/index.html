@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8ed87fb7">
+<link rel="stylesheet" href="style.css?v=a249ff5f">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -10312,6 +10312,7 @@ window.__ncStripInk = function () {
 <script>
 var RAIL_MORE = 27;
 var RAIL_COL = 238 + 36;
+var NC_ROWL = 54;
 var ncStemX = function () {
   var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
   return r && r.height ? Math.round(r.left + r.height * 45.3 / 300) : 53;
@@ -11316,7 +11317,7 @@ var ncStemX = function () {
           [].forEach.call(navBrs, function (br) { br.style.display = ''; });
           if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE + 2 * 27);
           var socM = document.querySelector('main .op-band .rail-socials'), socMW = socM ? socM.getBoundingClientRect().width : 0;
-          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(3 * ncStemX() + socMW - 108);
+          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 * ncStemX() + socMW - NC_ROWL);
           var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
           if (arS) {
             var wN = critS * fS + RN_WIDER, BEAK = 0.2;
@@ -11404,7 +11405,7 @@ var ncStemX = function () {
     var left = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft;
     var w = rail.classList.contains('latest-rail--r') ? document.documentElement.clientWidth - left : left + rail.offsetWidth;
     var v = Math.round(w / 2) + 'px';
-    if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - ncStemX()) + 'px';
+    if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - NC_ROWL) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
     document.documentElement.style.setProperty('--rail-shift', v);
   };
@@ -11438,7 +11439,7 @@ var ncStemX = function () {
       var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
       if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0));
     });
-    if (inkL < 1e8 && Math.abs(inkL - ncStemX()) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
+    if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
     var vwG = document.documentElement.clientWidth;
     document.documentElement.style.setProperty('--opb-in', ncStemX() + 'px');
     var socG = document.querySelector('main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
@@ -11870,6 +11871,8 @@ var ncStemX = function () {
               }
               var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
               var gapB = bUnder ? (hr.height + 27 - bUnder.height - (lkB - ctB)) / 3 : 0;
+              var gKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
+              if (bUnder) { if (hold.__ncGapK === gKey) gapB = hold.__ncGap; else { hold.__ncGapK = gKey; hold.__ncGap = gapB; } }
               var gTopB = gapB - 27;
               if (bUnder) hold.style.setProperty('--rl-birdt', gTopB.toFixed(2) + 'px');
               var shB = bUnder ? hr.top + gTopB + bUnder.height + gapB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;

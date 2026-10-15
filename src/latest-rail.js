@@ -14,6 +14,9 @@ var RAIL_MORE = 27;
 // inset at the left, the T's stem's — "Move the latest under the bird. Expand that column by 36px", "Move the content to
 // the left", 2026-10-15: RAIL_COL; ncStemX the stem's left edge off the window's left, on a whole pixel)
 var RAIL_COL = 238 + 36;
+// (the rows' left edge 54 off the window's side since, their right still the nav's inset short of the column under the
+// socials — "have the left margin of the content column be 54px from the side", 2026-10-15)
+var NC_ROWL = 54;
 var ncStemX = function () {
   var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
   return r && r.height ? Math.round(r.left + r.height * 45.3 / 300) : 53;
@@ -1734,7 +1737,7 @@ var ncStemX = function () {
           var socM = document.querySelector('main .op-band .rail-socials'), socMW = socM ? socM.getBoundingClientRect().width : 0;
           // (and the inset again short of the socials since, the column's margin on the rows' side its margin on the window's
           // — "Left margin of side column should match right margin", 2026-10-15)
-          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(3 * ncStemX() + socMW - 108);
+          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 * ncStemX() + socMW - NC_ROWL);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
@@ -1892,7 +1895,7 @@ var ncStemX = function () {
     var v = Math.round(w / 2) + 'px';
     // (as far as sets the rows' ink's left edge on the stem's inset since — the ink's left as it lands unslid, read by
     // gut, main.__ncInkL)
-    if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - ncStemX()) + 'px';
+    if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - NC_ROWL) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
     // (and to the root, for the name over the content outside main, which slides with the rows — "Expansion/collapse
     // breaks wordmark. Should move with content to center too", 2026-10-13)
@@ -1941,7 +1944,7 @@ var ncStemX = function () {
       var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
       if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0));
     });
-    if (inkL < 1e8 && Math.abs(inkL - ncStemX()) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
+    if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
     // (the column under the socials since, as wide as they are and on their middle — "Have the side column expand to be
     // the size of the socials, center the bird and the latest in the column", 2026-10-15: --rl-gtx the hold's carry,
     // --nc-colw the socials' width)
@@ -2595,6 +2598,12 @@ var ncStemX = function () {
               // top — "Space between ink of socials and bird should match the space between the bird and the latest and the
               // latest and the bottom", 2026-10-15)
               var gapB = bUnder ? (hr.height + 27 - bUnder.height - (lkB - ctB)) / 3 : 0;
+              // (read once for a window's size since, from the stack as it first stands, and held: the bird fixed and The
+              // Latest's capitals with it, only the open section's kickers changing under them as the sections come and go
+              // — "Bird should be fixed, shouldn't move with the latest adjustments", "I want the latest to hold position",
+              // 2026-10-15)
+              var gKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
+              if (bUnder) { if (hold.__ncGapK === gKey) gapB = hold.__ncGap; else { hold.__ncGapK = gKey; hold.__ncGap = gapB; } }
               var gTopB = gapB - 27;
               if (bUnder) hold.style.setProperty('--rl-birdt', gTopB.toFixed(2) + 'px');
               var shB = bUnder ? hr.top + gTopB + bUnder.height + gapB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
