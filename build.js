@@ -218,6 +218,9 @@ const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gap
 // between the E and W of NEW", 2026-10-15: 15 of the drawing's 30; THE's T and H and CRITIC's I and T too — "Also half
 // the space between the T and H in the and the I and T in Critic")
 const WM_KERN = { the: { 1: 15 }, critic: { 1: 26, 3: 15, 4: 15, 5: 30 }, new: { 2: 15 } };
+// (CRITIC's two Cs 3% bigger than the other letters, about their own middles, so they stand over the capitals' line and
+// under the baseline as a round letter must to look as tall — "Make Cs 3% bigger than other letters", 2026-10-15)
+const WM_GROW = { critic: { 0: 1.03, 5: 1.03 } };
 // (THE LAST MAGAZINE's own: MAGAZINE's G and A closer, the G's open side and the A's slope reading wider than the rest at
 // the drawing's even 62.3 — "the space between G and A is off in the last magazine", 2026-10-14; keyed as the
 // drawing's words, critic = MAGAZINE, by the gap's place)
@@ -233,10 +236,20 @@ function spacedWord(word, k, words) {
   }).sort((a, b) => a.lo - b.lo);
   const L = [];
   subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) { z.d += q.sp; z.hi = Math.max(z.hi, q.hi); } else L.push({ d: q.sp, lo: q.lo, hi: q.hi }); });
-  let dx = 0;
   const kern = !words ? WM_KERN[word] : words === TLM_WORDS ? TLM_KERN[word] : null;
-  const paths = L.map((l, i) => { if (i) { const g = l.lo - L[i - 1].hi; dx += (kern && kern[i] != null ? kern[i] : g) * k - g; } return `<path fill="currentColor" transform="translate(${dx.toFixed(2)} 0)" d="${l.d}"/>`; });
-  const w = vb[2] + dx;
+  // (a letter grown about its own middle where WM_GROW says, its gaps to its neighbours kept as its grown edges stand)
+  const grow = !words ? WM_GROW[word] : null;
+  const sOf = (i) => (grow && grow[i]) || 1, mid = (l) => (l.lo + l.hi) / 2;
+  const loOf = (i) => mid(L[i]) - (mid(L[i]) - L[i].lo) * sOf(i), hiOf = (i) => mid(L[i]) + (L[i].hi - mid(L[i])) * sOf(i);
+  const cy = vb[1] + vb[3] / 2;
+  let dx = L.length ? L[0].lo - loOf(0) : 0;
+  const paths = L.map((l, i) => {
+    if (i) dx += (kern && kern[i] != null ? kern[i] : l.lo - L[i - 1].hi) * k - (loOf(i) - hiOf(i - 1));
+    const sc = sOf(i), c = mid(l);
+    const tf = `translate(${dx.toFixed(2)} 0)` + (sc !== 1 ? ` translate(${c.toFixed(2)} ${cy}) scale(${sc}) translate(${(-c).toFixed(2)} ${-cy})` : '');
+    return `<path fill="currentColor" transform="${tf}" d="${l.d}"/>`;
+  });
+  const w = vb[2] + dx + (L.length ? hiOf(L.length - 1) - L[L.length - 1].hi : 0);
   return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
 }
 // (the stamp's words, the column's and the content's alike: THE NEW CRITIC on one line, every word's letters spaced as
