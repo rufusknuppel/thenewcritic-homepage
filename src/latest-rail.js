@@ -10,6 +10,14 @@
 // (the side column this much wider than its nav and its two 54s — "Expand the side column by 27px", 2026-10-15; read by
 // the column's width and the bird's size below)
 var RAIL_MORE = 27;
+// (the column on the right since, in the gutter the rows leave there, 274 — the 238 and 36 more — the rows from the nav's
+// inset at the left, the T's stem's — "Move the latest under the bird. Expand that column by 36px", "Move the content to
+// the left", 2026-10-15: RAIL_COL; ncStemX the stem's left edge off the window's left, on a whole pixel)
+var RAIL_COL = 238 + 36;
+var ncStemX = function () {
+  var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
+  return r && r.height ? Math.round(r.left + r.height * 45.3 / 300) : 53;
+};
 (function () {
   var rails = [].slice.call(document.querySelectorAll('.latest-rail'));
   var main = document.querySelector('main');
@@ -1874,6 +1882,9 @@ var RAIL_MORE = 27;
     // go half its width right — THE LATEST ON THE RIGHT AGAIN, style.css)
     var w = rail.classList.contains('latest-rail--r') ? document.documentElement.clientWidth - left : left + rail.offsetWidth;
     var v = Math.round(w / 2) + 'px';
+    // (as far as sets the rows' ink's left edge on the stem's inset since — the ink's left as it lands unslid, read by
+    // gut, main.__ncInkL)
+    if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - ncStemX()) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
     // (and to the root, for the name over the content outside main, which slides with the rows — "Expansion/collapse
     // breaks wordmark. Should move with content to center too", 2026-10-13)
@@ -1914,8 +1925,27 @@ var RAIL_MORE = 27;
     var G = (parseFloat(main.style.getPropertyValue('--rail-shift')) || 0) + 54;
     var gv = G.toFixed(1) + 'px';
     if (document.documentElement.style.getPropertyValue('--nc-gut') !== gv) document.documentElement.style.setProperty('--nc-gut', gv);
+    // (the rows' ink's left edge as it lands, unslid, the carry set off it — the first rows' pictures and words)
+    var inkL = 1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
+    [].slice.call(document.querySelectorAll('.page-rows section.card'), 0, 6).forEach(function (c) {
+      [c.querySelector('.card-frame'), c.querySelector('.swap-body-text')].forEach(function (e) {
+        var q = e && e.getBoundingClientRect();
+        if (q && q.width) inkL = Math.min(inkL, q.left);
+      });
+    });
+    if (inkL < 1e8 && Math.abs(inkL - ncStemX()) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
+    // (the column under the socials since, as wide as they are and on their middle — "Have the side column expand to be
+    // the size of the socials, center the bird and the latest in the column", 2026-10-15: --rl-gtx the hold's carry,
+    // --nc-colw the socials' width)
+    var vwG = document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--opb-in', ncStemX() + 'px');
+    var socG = document.querySelector('main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
+    if (!sq || !sq.width) return;
+    document.documentElement.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
+    // (the column itself left where a shut column stands, out past the window's left — the rows' fitter reads it there
+    // — its hold alone carried over, --rl-gtx)
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
-    var v = (t0 + G / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
+    var v = (t0 + (sq.left + sq.right) / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
   };
   main.classList.add('rail-is-shut');
@@ -2316,8 +2346,10 @@ var RAIL_MORE = 27;
         // (across the column's ink whatever its width since, no longer held to the band's size — "growing the wordmarks")
         // (off the column as it stood before it grew the rows' 2 × 27 — "Make the content column 27px narrower on either
         // side", 2026-10-15 — so THE LAST MAGAZINE keeps its size)
-        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
-        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
+        // (off the nav's width since, the column no longer standing as wide as it and its 135 — RAIL_COL)
+        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + 25 : railW - 110;
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle
         // between the socials' foot and the bird's top — "The nav itmes should go above the latest", "Sit the socials
         // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
@@ -2526,7 +2558,11 @@ var RAIL_MORE = 27;
             // — THE LATEST IN THE LEFT GUTTER)
             var bElB = hold.querySelector(':scope > .rail-mark--bird'), bVisB = bElB && bElB.getBoundingClientRect().height;
             var birdTopB = !bVisB ? hr.bottom : tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
-            if (bVisB) hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
+            // (under the bird since, its capitals 54 under the bird's foot, no longer on a middle — "Move the latest under
+            // the bird ... don't center. anymore", 2026-10-15: the bird at the column's top, style.css THE COLUMN ON THE
+            // RIGHT)
+            var bUnder = bVisB && !(tncRb && tncRb.height) ? bElB.getBoundingClientRect() : null;
+            if (bVisB && !bUnder) hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
             // (the sections' names stacked again since, each its own line, the open one's kickers under it — "Bring back
             // the latest from older repos with the section titles stacked, not in a list", 2026-10-15: the comma line out
             // of sight; the kickers as far under their name's baseline as three tenths of two lines less their capital,
@@ -2544,7 +2580,16 @@ var RAIL_MORE = 27;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
               var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
-              var shB = (hr.top + birdTopB - ctB - lkB) / 2;
+              // (the bird and The Latest one group on the column's middle since, the bird over, 54, The Latest's capitals —
+              // "center the bird and the latest in the column, vertically and horizontally", 2026-10-15)
+              // (one space between the socials' baseline and the bird, the bird and The Latest's capitals, and The Latest's
+              // last baseline and the window's foot since, read as the band pins, the socials' baseline 27 over the hold's
+              // top — "Space between ink of socials and bird should match the space between the bird and the latest and the
+              // latest and the bottom", 2026-10-15)
+              var gapB = bUnder ? (hr.height + 27 - bUnder.height - (lkB - ctB)) / 3 : 0;
+              var gTopB = gapB - 27;
+              if (bUnder) hold.style.setProperty('--rl-birdt', gTopB.toFixed(2) + 'px');
+              var shB = bUnder ? hr.top + gTopB + bUnder.height + gapB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
               var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
               hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
             }

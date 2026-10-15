@@ -8975,6 +8975,10 @@
       var rRight = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft + rail.offsetWidth;
       rr = { left: rRight - rail.offsetWidth, right: rRight };
       shut = Math.round(rRight / 2);
+      // (the slide as it is written since, which carries the rows' ink onto the nav's inset rather than half the
+      // column — latest-rail.js THE COLUMN SHUTS, "Move the content to the left", 2026-10-15)
+      var slidW = parseFloat(document.querySelector('main').style.getPropertyValue('--rail-shift'));
+      if (slidW > 0) shut = slidW;
     }
     // (and on the right, since later on 2026-10-05 — "Move The Latest to the
     // right": the rows carried half its width right, its left read off its
