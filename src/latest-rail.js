@@ -1900,7 +1900,24 @@ var RAIL_MORE = 27;
   shutBtn.addEventListener('click', function (e) { e.preventDefault(); set(true); });
   openBtn.addEventListener('click', function (e) { e.preventDefault(); set(false); });
   shift();
-  addEventListener('resize', shift, { passive: true });
+  // (shut from the first since, the rows on the window's middle and The Latest in the gutter they leave on the left —
+  // "Have sidebar closed as default ... Have the latest open only in the gutter of the left", 2026-10-15: the column
+  // carried in so its right edge meets the gutter's, the hold on the gutter's middle (--rl-gtx, its translate); no
+  // carets; style.css THE LATEST IN THE LEFT GUTTER)
+  var holdG = rail.querySelector('.latest-rail__hold');
+  var gut = function () {
+    if (!holdG || !main.classList.contains('rail-is-shut') || window.innerWidth < 1024) return;
+    var G = (parseFloat(main.style.getPropertyValue('--rail-shift')) || 0) + 54;
+    var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
+    var v = (t0 + G / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
+    if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
+  };
+  main.classList.add('rail-is-shut');
+  document.documentElement.classList.add('nc-rail-shut');
+  [shutBtn, openBtn].forEach(function (b) { b.setAttribute('aria-expanded', 'false'); b.tabIndex = -1; });
+  gut();
+  addEventListener('resize', function () { shift(); gut(); }, { passive: true });
+  addEventListener('load', gut);
 })();
 // THE DOT AT THE LATEST'S TOP LEFT (2026-10-09, at the user's words — "move
 // the dot to the top left of The Latest"): the box over The Latest's depth
@@ -2496,8 +2513,11 @@ var RAIL_MORE = 27;
             // (over The Latest for a few minutes — "I want the new critic and the bird to sit above the latest" — and at
             // the foot under it again since, "with the bird and the new critic in the bottom under the latest")
             var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
-            var birdTopB = tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
-            hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
+            // (the stack on the column's middle since, the bird gone to the window's corner and the name out of the column
+            // — THE LATEST IN THE LEFT GUTTER)
+            var bElB = hold.querySelector(':scope > .rail-mark--bird'), bVisB = bElB && bElB.getBoundingClientRect().height;
+            var birdTopB = !bVisB ? hr.bottom : tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
+            if (bVisB) hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
             // (the sections' names stacked again since, each its own line, the open one's kickers under it — "Bring back
             // the latest from older repos with the section titles stacked, not in a list", 2026-10-15: the comma line out
             // of sight; the kickers as far under their name's baseline as three tenths of two lines less their capital,

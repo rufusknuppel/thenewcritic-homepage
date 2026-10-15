@@ -303,6 +303,20 @@ function opBand() {
     + (TLM_WORDS ? `<a class="rail-tlm" href="#top" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
     + soc + `</div></div>`;
 }
+// (the bird in the window's bottom right corner since, 27 over its foot and 27 in from either side of the right gutter
+// the rows leave — "Have sidebar closed as default. Have the bird in the bottom right corner with 27px spacing below
+// and on sides", 2026-10-15: the swallow's body and its two cuts, the drawing's box its ink's; outside main, so nothing
+// carries it; style.css THE BIRD IN THE CORNER)
+function cornerBird() {
+  const birdSrc = (contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '';
+  const vb = (birdSrc.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/) || []).slice(1).map(Number);
+  const body = (birdSrc.match(/<path fill-rule="evenodd" d="[^"]+"/) || [])[0];
+  const beak = (birdSrc.match(/<path class="beak-hole" d="[^"]+"/) || [])[0];
+  const cut = (birdSrc.match(/<path d="[^"]+"(?=[^>]*\/><\/svg>)/) || [])[0];
+  if (vb.length !== 2 || !body) return '';
+  return `<a class="corner-bird" href="#top" aria-label="The New Critic — to the top of the front page" style="--cbd-ar: ${(vb[0] / vb[1]).toFixed(5)}"><svg viewBox="0 0 ${vb[0]} ${vb[1]}" focusable="false" aria-hidden="true">`
+    + `${body} class="corner-bird__body"/>${beak ? `${beak.replace('class="beak-hole"', 'class="corner-bird__cut"')}/>` : ''}${cut ? `${cut} class="corner-bird__cut"/>` : ''}</svg></a>`;
+}
 function contentNameBlock() {
   const cn = contentName();
   if (!cn) return '';
@@ -4283,6 +4297,7 @@ ${duoHtml}
        renderColophonBand.) -->
 ${renderMarginalia()}
 </main>
+${cornerBird()}
 
 ${renderFooter()}
 
