@@ -1707,10 +1707,7 @@
           [].forEach.call(navBrs, function (br) { br.style.display = 'none'; });
           var navMW = navMeas ? navMeas.getBoundingClientRect().width : 0;
           [].forEach.call(navBrs, function (br) { br.style.display = ''; });
-          // (56 wider since, its edge a 2px rule 54 from the pictures and 54 from the column's ink — "Add a vertical
-          // divider between the side column and the content. Have 54px on either side. 2px divider", 2026-10-15;
-          // style.css THE DIVIDER)
-          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + 56);
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
