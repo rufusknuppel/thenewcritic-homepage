@@ -11298,7 +11298,7 @@ var ncStemX = function () {
       if (rnS && isFinite(newL) && isFinite(theR) && main.classList.contains('name-in-rail')) {
         var spanS = parseFloat(rnS.style.getPropertyValue('--rn-span')) || 7.759;
         var fS = ((theR + newL) / 2 + 1 + 54 - 42) / spanS;
-        main.style.setProperty('--rn-font', fS.toFixed(3) + 'px');
+        var rnF = fS;
         var minS = (parseFloat(rnS.style.getPropertyValue('--rn-min')) || 0) * fS;
         mid = vwE - 252 - (Math.max(4 * fS + 3 * 20, minS) + 42);
         var critS = parseFloat(rnS.style.getPropertyValue('--rn-critic'));
@@ -11325,9 +11325,10 @@ var ncStemX = function () {
             var rnL = parseFloat(rnS.style.getPropertyValue('--rn-l')), rnR = parseFloat(rnS.style.getPropertyValue('--rn-r'));
             if (rnS.classList.contains('rail-name--pair') && rnL > 0 && rnR > 0)
               fB = (wN - 40 - arS * 20) / (rnL + rnR + arS * 2);
-            if (fB < fS) main.style.setProperty('--rn-font', fB.toFixed(3) + 'px');
+            if (fB < fS) rnF = fB;
           }
         }
+        if (main.style.getPropertyValue('--rn-font') !== rnF.toFixed(3) + 'px') main.style.setProperty('--rn-font', rnF.toFixed(3) + 'px');
       }
       var lowP = document.querySelector('.latest-rail--r') && document.querySelector('.sub-ticker--top .band-logo__low svg path');
       var runs = lowP && letterRuns(lowP);
@@ -11828,7 +11829,7 @@ var ncStemX = function () {
             if (window.MutationObserver) {
               var reseat = [], mo = new MutationObserver(function () {
                 reseat.forEach(clearTimeout);
-                reseat = [30, 400, 900, 1600].map(function (ms) { return setTimeout(seat, ms); });
+                reseat = [30, 900].map(function (ms) { return setTimeout(seat, ms); });
               });
               [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in'), function (inE) { mo.observe(inE, { attributes: true, attributeFilter: ['class'] }); });
             }
