@@ -1727,6 +1727,14 @@ var ncStemX = function () {
           // (54 wider again since, unseen — the column shut, its half-width the rows' carry onto the window's middle — so the
           // rows stand 27 further in from either side — "Make the content column 27px narrower on either side", 2026-10-15)
           if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE + 2 * 27);
+          // (as wide, unseen, as sets the rows from the nav's inset to the socials' left edge once carried — "Have the content
+          // column stretch from the margin of the nav to the edge of the side column", 2026-10-15: the rows the window less
+          // the column and 108, the column the two insets, the socials and less 108; the rows' words taking what a picture
+          // gives up, duo-panel-fit.js seatSlides, so the rows fill it)
+          var socM = document.querySelector('main .op-band .rail-socials'), socMW = socM ? socM.getBoundingClientRect().width : 0;
+          // (and the inset again short of the socials since, the column's margin on the rows' side its margin on the window's
+          // — "Left margin of side column should match right margin", 2026-10-15)
+          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(3 * ncStemX() + socMW - 108);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
