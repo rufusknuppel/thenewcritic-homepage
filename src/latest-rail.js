@@ -1706,7 +1706,8 @@ var RAIL_MORE = 27;
           // 54 from the content's, the pictures standing 54 past the column's edge, the column's stack carried 28 right
           // onto the middle of that room — "There should be 54px between edge of content and ink of sidebar and 54px
           // between the ink of sidebar and the edge of site", 2026-10-14; style.css THE COLUMN'S INK 54 FROM EACH SIDE)
-          var navMeas = document.querySelector('.page-rows .latest-rail .rail-top__nav');
+          // (wherever it stands: in the band under the opening's name since, 2026-10-15)
+          var navMeas = document.querySelector('.rail-top__nav');
           // (its width on one line, whatever lines it stands in — "Split nav and socials over two lines", 2026-10-14)
           var navBrs = navMeas ? navMeas.querySelectorAll('br.rail-br') : [];
           [].forEach.call(navBrs, function (br) { br.style.display = 'none'; });
@@ -1839,6 +1840,9 @@ var RAIL_MORE = 27;
     // (on the middle of the whole window since the band went — "Band should disappear", "When you press a kicker center
     // content between the top and bottom", 2026-10-14)
     if (mn && mn.classList.contains('logo-split') && !mn.classList.contains('foot-band-top')) { fb = 0; rule = 0; }
+    // (under the band under the opening's name since, which stays pinned at the top — THE BAND UNDER THE NAME)
+    var opB = document.querySelector('main .op-band');
+    if (opB && window.innerWidth >= 1024) rule = opB.offsetHeight;
     var room = window.innerHeight - fb - (foot + rule);
     var air = bot != null && bot - top < room ? (room - (bot - top)) / 2 : 54;
     window.scrollTo({ top: Math.max(0, top + window.pageYOffset - foot - rule - air), behavior: 'smooth' });
@@ -2282,10 +2286,12 @@ var RAIL_MORE = 27;
         hold.style.setProperty('--rl-pb', '0px');
         // (THE LAST MAGAZINE at the column's foot since, as tall as it stood in the band unless the column less two 27s
         // is narrower — "Move the last magazine 27px under the bird and 27px from the bottom"; style.css THE BAND GONE)
-        var tlmC = hold.querySelector(':scope > .rail-tlm');
+        var opBandE = document.querySelector('main .op-band');
+        var tlmC = hold.querySelector(':scope > .rail-tlm') || (opBandE && opBandE.querySelector(':scope > .rail-tlm'));
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
         // (across the column's ink whatever its width since, no longer held to the band's size — "growing the wordmarks")
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
         // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle
         // between the socials' foot and the bird's top — "The nav itmes should go above the latest", "Sit the socials
         // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
@@ -2297,10 +2303,11 @@ var RAIL_MORE = 27;
           hold.__tlmHot = true;
           [birdC, tlmC].forEach(function (el) {
             if (!el) return;
-            el.addEventListener('mouseenter', function () { hold.classList.add('is-tlm-hot'); });
-            el.addEventListener('mouseleave', function () { hold.classList.remove('is-tlm-hot'); });
-            el.addEventListener('focus', function () { hold.classList.add('is-tlm-hot'); });
-            el.addEventListener('blur', function () { hold.classList.remove('is-tlm-hot'); });
+            var hot = function (on) { hold.classList.toggle('is-tlm-hot', on); if (opBandE) opBandE.classList.toggle('is-tlm-hot', on); };
+            el.addEventListener('mouseenter', function () { hot(true); });
+            el.addEventListener('mouseleave', function () { hot(false); });
+            el.addEventListener('focus', function () { hot(true); });
+            el.addEventListener('blur', function () { hot(false); });
           });
         }
         // (the nav on the middle of the room left of THE NEW CRITIC since, the socials beside the name on the middle of
@@ -2357,8 +2364,11 @@ var RAIL_MORE = 27;
           el.removeChild(pF1);
           return t1;
         };
-        if (topG && navL) {
-          var ctN = capTop1(navL);
+        // (the nav, the socials and THE LAST MAGAZINE in the band under the opening's name since — THE BAND UNDER THE
+        // NAME, 2026-10-15: the column's stack the sections' line and the kickers alone, below)
+        var inBand = !navL;
+        if (navL || hold.querySelector(':scope > .rail-tnc')) {
+          var ctN = navL ? capTop1(navL) : null;
           var navT = parseFloat(hold.style.getPropertyValue('--rl-navt')) || 0;
           // (54 under the window's top since, not on THE NEW CRITIC's middle, and THE LAST MAGAZINE's foot 54 over its
           // foot — "Start the nav 54px from the top and the last magazine 54px from the bottom", 2026-10-14)
@@ -2373,14 +2383,15 @@ var RAIL_MORE = 27;
           var tlmW0 = hold.querySelector(':scope > .rail-tlm .tnc-words') || hold.querySelector(':scope > .rail-tlm');
           // (from the nearer side, the column on either — "Move the side column to the right", 2026-10-14)
           var tlmR0 = tlmW0 && tlmW0.getBoundingClientRect();
+          if (inBand) { tlmW0 = hold.querySelector(':scope > .rail-tnc .tnc-words'); tlmR0 = tlmW0 && tlmW0.getBoundingClientRect(); }
           var tlmB = tlmR0 && tlmR0.width ? Math.max(0, Math.min(tlmR0.left, document.documentElement.clientWidth - tlmR0.right)) : wantN;
           hold.style.setProperty('--rl-tlmb', tlmB.toFixed(2) + 'px');
-          hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
+          if (navL) hold.style.setProperty('--rl-navt', (navT + dN).toFixed(2) + 'px');
           // (the caret on the middle of the column's left margin, the room from the window's edge to the nav — "Move the
           // caret to sit in the left margin of the column", 2026-10-14; --rl-caretx, style.css THE BIRD UNDER THE NAV)
-          var navBrC = navL.querySelectorAll('br.rail-br');
+          var navBrC = navL ? navL.querySelectorAll('br.rail-br') : [];
           [].forEach.call(navBrC, function (br) { br.style.display = 'none'; });
-          var navWc = navL.getBoundingClientRect().width;
+          var navWc = navL ? navL.getBoundingClientRect().width : (tlmR0 ? tlmR0.width : 0);
           [].forEach.call(navBrC, function (br) { br.style.display = ''; });
           // (in the right margin with the column on the right — "Move the side column to the right", 2026-10-14)
           var railOnR = !!hold.closest('.latest-rail--r');
@@ -2477,7 +2488,24 @@ var RAIL_MORE = 27;
           // the top", "Allowing for more space under socials to the bird"; the kickers as far under the comma line as
           // the line under the dash over it — "have the same space between dash and the latest be the sapce between the
           // latest list and kickers", 2026-10-14; --rl-pt, --rl-kmt, --rl-soct, --rl-d1..3, --rl-birdt)
-          if (ctH != null && kicks.length && socR) {
+          if (inBand && ctH != null && kicks.length) {
+            // (the sections' line and the kickers on the middle between the column's THE NEW CRITIC and the bird, the
+            // bird's foot as far over the column's as the name's top under its top; the kickers as they were under the line)
+            var bHb = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
+            var birdTopB = hr.bottom - tlmB - bHb;
+            hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
+            var L2b = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
+            var secBb = baseOf(secLine), k0b = kicks[0], kCb = baseOf(k0b) - capHt(k0b);
+            var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
+            hold.style.setProperty('--rl-kmt', (kmtb + (secBb + 0.7 * (L2b - capHt(k0b))) - kCb).toFixed(2) + 'px');
+            var ctB = capTop1(secLine), lkB = baseOf(kicks[kicks.length - 1]);
+            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
+            var topRefB = tncRb && tncRb.height ? tncRb.bottom : hr.top;
+            var shB = (topRefB + birdTopB - ctB - lkB) / 2;
+            var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
+            hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
+          }
+          if (!inBand && ctH != null && kicks.length && socR) {
             var G = 77.5;
             var navBase = baseOf(navL);
             var bH3 = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
@@ -2579,25 +2607,47 @@ var RAIL_MORE = 27;
 // last 20% of this have the wordmark fade in to its current position now"): THE NEW CRITIC across the window's top,
 // held where it stands (style.css THE OPENING) while the column and the rows, which begin under it (ncOpenH: the
 // column's top here, the first row's in duo-panel-fit.js), come up over it — the name cut off at their top edge as it
-// rises (--op-cut); the column's own THE NEW CRITIC coming in over the last fifth of the climb (--tnc-o).
+// rises; the column's own THE NEW CRITIC coming in over the last fifth of the climb.
 window.ncOpenH = function () {
-  var cn = document.querySelector('a.content-name');
-  return cn && getComputedStyle(cn).position === 'fixed' ? cn.offsetHeight : 0;
+  var cn = document.querySelector('a.content-name'), band = document.querySelector('main .op-band');
+  return cn && band && window.innerWidth >= 1024 && band.offsetHeight ? cn.offsetHeight + band.offsetHeight : 0;
 };
 (function () {
+  // (no script on the scroll — "It's so glitchy", 2026-10-15: the name scrolls away with the page and the band under it
+  // pins by itself (sticky); read here as the page is laid: the band's place in main (--op-mt, the opening's height
+  // less main's own top, which stands above the document's), the scroll at which it pins (--op-s, for the column's
+  // name's scroll timeline), and THE, NEW and CRITIC's middles across the window (--opb-the, --opb-new, --opb-critic))
   var de = document.documentElement, last = '';
-  var ride = function () {
-    var h = window.ncOpenH(), y = Math.max(0, window.pageYOffset || 0);
-    var cut = h ? Math.min(h, y) : 0;
-    var o = h ? Math.max(0, Math.min(1, (y / h - 0.8) / 0.2)) : 1;
-    var key = cut.toFixed(1) + '|' + o.toFixed(3);
+  var lay = function () {
+    var main = document.querySelector('main.has-mega'), band = main && main.querySelector('.op-band');
+    var cn = document.querySelector('a.content-name');
+    if (!main || !band || !cn) return;
+    var h = window.ncOpenH();
+    var mt = h - (main.getBoundingClientRect().top + (window.pageYOffset || 0));
+    var ws = cn.querySelectorAll('.content-name__block .tnc-words svg');
+    var mids = [].map.call(ws, function (w) { var r = w.getBoundingClientRect(); return (r.left + r.right) / 2; });
+    var nb = band.querySelector('.rail-top'), sb = band.querySelector('.rail-socials');
+    var key = [h, mt, nb ? nb.offsetWidth : 0, sb ? sb.offsetWidth : 0].concat(mids).map(function (v) { return v.toFixed(1); }).join('|');
     if (key === last) return;
     last = key;
-    de.style.setProperty('--op-cut', cut.toFixed(1) + 'px');
-    de.style.setProperty('--tnc-o', o.toFixed(3));
+    main.style.setProperty('--op-mt', mt.toFixed(1) + 'px');
+    de.style.setProperty('--op-s', cn.offsetHeight.toFixed(1) + 'px');
+    ['--opb-the', '--opb-new', '--opb-critic'].forEach(function (v, k) { if (mids[k] != null) band.style.setProperty(v, mids[k].toFixed(1) + 'px'); });
+    // (the socials as far in from the window's right as the nav from its left, THE LAST MAGAZINE on the middle between
+    // the two — "have the socials be inset the same distance from the right as the nav on the left. center the last
+    // magazine between the two", 2026-10-15: --opb-soc-r, --opb-tlm)
+    var navE = band.querySelector('.rail-top'), socE = band.querySelector('.rail-socials');
+    if (navE && socE && mids[0] != null) {
+      var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width;
+      var navL0 = mids[0] - nw / 2, vw0 = document.documentElement.clientWidth;
+      band.style.setProperty('--opb-soc-r', navL0.toFixed(1) + 'px');
+      band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
+    }
   };
-  window.addEventListener('scroll', ride, { passive: true });
-  window.addEventListener('resize', function () { last = ''; ride(); });
-  document.addEventListener('newcritic:fit', function () { last = ''; ride(); });
-  ride();
+  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); });
+  document.addEventListener('newcritic:fit', function () { setTimeout(lay, 0); });
+  window.addEventListener('load', function () { setTimeout(lay, 300); setTimeout(lay, 1500); });
+  setTimeout(lay, 800);
+  lay();
 })();
+
