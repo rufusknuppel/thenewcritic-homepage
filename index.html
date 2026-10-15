@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=90c21c56">
+<link rel="stylesheet" href="style.css?v=937ac8d5">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11301,7 +11301,7 @@ var RAIL_MORE = 27;
           [].forEach.call(navBrs, function (br) { br.style.display = 'none'; });
           var navMW = navMeas ? navMeas.getBoundingClientRect().width : 0;
           [].forEach.call(navBrs, function (br) { br.style.display = ''; });
-          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE);
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE + 2 * 27);
           var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
           if (arS) {
             var wN = critS * fS + RN_WIDER, BEAK = 0.2;
@@ -11415,6 +11415,8 @@ var RAIL_MORE = 27;
   var gut = function () {
     if (!holdG || !main.classList.contains('rail-is-shut') || window.innerWidth < 1024) return;
     var G = (parseFloat(main.style.getPropertyValue('--rail-shift')) || 0) + 54;
+    var gv = G.toFixed(1) + 'px';
+    if (document.documentElement.style.getPropertyValue('--nc-gut') !== gv) document.documentElement.style.setProperty('--nc-gut', gv);
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
     var v = (t0 + G / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
@@ -11425,6 +11427,7 @@ var RAIL_MORE = 27;
   gut();
   addEventListener('resize', function () { shift(); gut(); }, { passive: true });
   addEventListener('load', gut);
+  document.addEventListener('newcritic:fit', function () { setTimeout(gut, 0); });
 })();
 (function () {
   var nav = document.querySelector('.latest-rail__hold > .rail-nav');
