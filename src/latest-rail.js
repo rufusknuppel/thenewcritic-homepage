@@ -1935,11 +1935,11 @@ var ncStemX = function () {
     if (document.documentElement.style.getPropertyValue('--nc-gut') !== gv) document.documentElement.style.setProperty('--nc-gut', gv);
     // (the rows' ink's left edge as it lands, unslid, the carry set off it — the first rows' pictures and words)
     var inkL = 1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
-    [].slice.call(document.querySelectorAll('.page-rows section.card'), 0, 6).forEach(function (c) {
-      [c.querySelector('.card-frame'), c.querySelector('.swap-body-text')].forEach(function (e) {
-        var q = e && e.getBoundingClientRect();
-        if (q && q.width) inkL = Math.min(inkL, q.left);
-      });
+    // (the words on the left alone since, less the centring of a picture at its own shape — the row's edge, not where a
+    // narrower pair stands on the column's middle, 2026-10-15)
+    [].slice.call(document.querySelectorAll('.page-rows section.card .duo-half--mega.is-slide'), 0, 8).forEach(function (c) {
+      var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
+      if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0));
     });
     if (inkL < 1e8 && Math.abs(inkL - ncStemX()) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
     // (the column under the socials since, as wide as they are and on their middle — "Have the side column expand to be

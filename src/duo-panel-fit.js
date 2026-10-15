@@ -8957,6 +8957,13 @@
   // (the column's edge the picture passes under: 54 off the window's side,
   // or 54 off the section's blue on the other)
   function columnEdge(card, d) {
+    // (the rows as wide as the column between the nav's inset and the column under the socials since, so its edges are
+    // the row's own — "Should be centered in the content column ... which should stretch from the left edge of the nav
+    // to the edge of the side column", 2026-10-15; latest-rail.js, mid)
+    if (window.innerWidth >= 1024 && document.querySelector('main.rail-is-shut.logo-split')) {
+      var Pe = slidePic(card);
+      if (Pe) return d < 0 ? Pe.l : Pe.r;
+    }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
     var rail = key && document.querySelector('.latest-rail--' + key);
@@ -9054,7 +9061,7 @@
       // unchanged) moved in together by half (sh) and the margin's cut
       // brought in by the other half, so the pair stands centred where it
       // stood. On whole pixels.
-      var sh = 0, grow = 0;
+      var sh = 0;
       if (framed) {
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
         var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
@@ -9070,11 +9077,7 @@
         var kind = card.classList.contains('duo-half--kind-postscript') ? 'ps' : card.classList.contains('duo-half--kind-contra') ? 'co' : 'es';
         var want = ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : kind === 'co' ? 1 : Math.max(ar, 1)) : null;
         var give = want ? V0 - (P.b - P.t) * want : 0;
-        // (the words' column takes what the picture gives up since, the pair no longer moved in from the row's edges —
-        // the picture held to its edge on the margin and cut on the words' side, the words widened to meet it — "Have the
-        // content column stretch from the margin of the nav to the edge of the side column", "Keep going to get it to
-        // stretch to the side column", 2026-10-15: grow, and sh none)
-        if (give > 1) grow = Math.round(give);
+        if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
         // CONTRAS ALWAYS SQUARE (2026-10-14 — "I want contras to always be
         // square"): where the window the margin leaves a review is narrower
         // than the rows stand tall, the review's row is cut to that width —
@@ -9100,10 +9103,13 @@
           }
         }
         // (held square, it is not narrowed to its height besides)
-        if (kind === 'co' && secQ && secQ.style.getPropertyValue('--rows-h')) { sh = 0; grow = 0; }
-        dx += sh + (right ? grow : -grow);
+        if (kind === 'co' && secQ && secQ.style.getPropertyValue('--rows-h')) sh = 0;
+        dx += sh;
       }
-      card.classList.toggle('is-true-size', sh !== 0 || grow !== 0);
+      card.classList.toggle('is-true-size', sh !== 0);
+      // (and told the gutter's measure, which reads the rows' ink off their edge: the words' column on the left, less what
+      // centring a picture at its own shape moved it — latest-rail.js, gut)
+      card.__ncSh = sh; card.__ncWordsL = right;
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -9160,7 +9166,7 @@
         // whole pixel past the picture's, and the seam's rule to the whole
         // pixel that covers the picture's edge beside it, so the frame's
         // ink always lies over the picture's last pixel.)
-        var seamX = (right ? Math.ceil(P.l + wb + grow) - FRAME : Math.floor(P.r - wb - grow)) + sh;
+        var seamX = (right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb)) + sh;
         // (round the picture alone: from the cut on the margin to the old
         // seam, whose rule is the frame's side now — THE FRAME ROUND THE
         // PICTURE ALONE)
@@ -9186,12 +9192,9 @@
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
-        bs.left = ((right ? P.l : P.r - wb - grow) + sh - cr0.left).toFixed(2) + 'px';
+        bs.left = ((right ? P.l : P.r - wb) + sh - cr0.left).toFixed(2) + 'px';
         bs.top = (P.t - cr0.top).toFixed(2) + 'px';
-        bs.width = (wb + grow).toFixed(2) + 'px';
-        // (and its words as wide as it, the column grown past the width they were cut to)
-        var btG = grow && body.querySelector(':scope > .swap-body-text');
-        if (btG) { var bcs = getComputedStyle(body); btG.style.width = Math.max(0, wb + grow - (parseFloat(bcs.paddingLeft) || 0) - (parseFloat(bcs.paddingRight) || 0)).toFixed(2) + 'px'; }
+        bs.width = wb.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
     });

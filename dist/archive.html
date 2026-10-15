@@ -6787,6 +6787,10 @@
     return { Q: d < 0 ? { l: P.l - SLIDE_GAP - w, r: P.l - SLIDE_GAP, t: P.t, b: P.b } : { l: P.r + SLIDE_GAP, r: P.r + SLIDE_GAP + w, t: P.t, b: P.b }, out: true, d: d };
   }
   function columnEdge(card, d) {
+    if (window.innerWidth >= 1024 && document.querySelector('main.rail-is-shut.logo-split')) {
+      var Pe = slidePic(card);
+      if (Pe) return d < 0 ? Pe.l : Pe.r;
+    }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
     var rail = key && document.querySelector('.latest-rail--' + key);
@@ -6839,14 +6843,14 @@
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
       if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
-      var sh = 0, grow = 0;
+      var sh = 0;
       if (framed) {
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
         var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
         var kind = card.classList.contains('duo-half--kind-postscript') ? 'ps' : card.classList.contains('duo-half--kind-contra') ? 'co' : 'es';
         var want = ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : kind === 'co' ? 1 : Math.max(ar, 1)) : null;
         var give = want ? V0 - (P.b - P.t) * want : 0;
-        if (give > 1) grow = Math.round(give);
+        if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
         if (kind === 'co') {
           var secQ = card.closest('.card--mega');
           var refQ = document.querySelector('.page-rows .card--mega.card--row-big:not(.card--kind-contra) .duo-half--mega.is-slide');
@@ -6861,10 +6865,11 @@
             window.__ncSquareT = setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
           }
         }
-        if (kind === 'co' && secQ && secQ.style.getPropertyValue('--rows-h')) { sh = 0; grow = 0; }
-        dx += sh + (right ? grow : -grow);
+        if (kind === 'co' && secQ && secQ.style.getPropertyValue('--rows-h')) sh = 0;
+        dx += sh;
       }
-      card.classList.toggle('is-true-size', sh !== 0 || grow !== 0);
+      card.classList.toggle('is-true-size', sh !== 0);
+      card.__ncSh = sh; card.__ncWordsL = right;
       var cr0 = restRect(card);
       var s = card.style;
       s.setProperty('--slide-x', dx.toFixed(2) + 'px');
@@ -6906,7 +6911,7 @@
           card.appendChild(fr);
         }
         var Ec = columnEdge(card, seat.d) - sh;
-        var seamX = (right ? Math.ceil(P.l + wb + grow) - FRAME : Math.floor(P.r - wb - grow)) + sh;
+        var seamX = (right ? Math.ceil(P.l + wb) - FRAME : Math.floor(P.r - wb)) + sh;
         var fl = right ? seamX : Math.floor(Ec), frr = right ? Math.ceil(Ec) : seamX + FRAME;
         var ft = Math.floor(P.t), fb = Math.ceil(P.b);
         var fs = fr.style;
@@ -6924,11 +6929,9 @@
       var body = card.querySelector(':scope > .swap-body.is-set');
       if (body) {
         var bs = body.style;
-        bs.left = ((right ? P.l : P.r - wb - grow) + sh - cr0.left).toFixed(2) + 'px';
+        bs.left = ((right ? P.l : P.r - wb) + sh - cr0.left).toFixed(2) + 'px';
         bs.top = (P.t - cr0.top).toFixed(2) + 'px';
-        bs.width = (wb + grow).toFixed(2) + 'px';
-        var btG = grow && body.querySelector(':scope > .swap-body-text');
-        if (btG) { var bcs = getComputedStyle(body); btG.style.width = Math.max(0, wb + grow - (parseFloat(bcs.paddingLeft) || 0) - (parseFloat(bcs.paddingRight) || 0)).toFixed(2) + 'px'; }
+        bs.width = wb.toFixed(2) + 'px';
         bs.height = (P.b - P.t).toFixed(2) + 'px';
       }
     });
