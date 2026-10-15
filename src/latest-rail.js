@@ -2648,7 +2648,13 @@ window.ncOpenH = function () {
     var navE = band.querySelector('.rail-top'), socE = band.querySelector('.rail-socials');
     if (navE && socE && mids[0] != null) {
       var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width;
-      var navL0 = 26, vw0 = document.documentElement.clientWidth;
+      var vw0 = document.documentElement.clientWidth;
+      // (the nav's ink on the left edge of THE's T's stem, the socials' as far in from the right — "align nav with the
+      // left edge of stem of T, inset socials in the same way", 2026-10-15: the stem 45.3 of the T's 300 in from its
+      // left; the glyphs' 1 of side-bearing off the boxes; --opb-nav-l, --opb-soc-r)
+      var tR = ws[0] ? ws[0].getBoundingClientRect() : null;
+      var navL0 = tR && tR.height ? Math.round(tR.left + tR.height * 45.3 / 300) - 1 : 26;
+      band.style.setProperty('--opb-nav-l', navL0.toFixed(1) + 'px');
       band.style.setProperty('--opb-soc-r', navL0.toFixed(1) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
     }

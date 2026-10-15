@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=f840b52a">
+<link rel="stylesheet" href="style.css?v=ae3d6888">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11925,7 +11925,10 @@ window.ncOpenH = function () {
     var navE = band.querySelector('.rail-top'), socE = band.querySelector('.rail-socials');
     if (navE && socE && mids[0] != null) {
       var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width;
-      var navL0 = 26, vw0 = document.documentElement.clientWidth;
+      var vw0 = document.documentElement.clientWidth;
+      var tR = ws[0] ? ws[0].getBoundingClientRect() : null;
+      var navL0 = tR && tR.height ? Math.round(tR.left + tR.height * 45.3 / 300) - 1 : 26;
+      band.style.setProperty('--opb-nav-l', navL0.toFixed(1) + 'px');
       band.style.setProperty('--opb-soc-r', navL0.toFixed(1) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
     }
