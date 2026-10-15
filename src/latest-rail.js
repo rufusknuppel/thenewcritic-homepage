@@ -2397,11 +2397,9 @@ var ncStemX = function () {
           // (a changed measure changes the name's height, which seats the first row: the page laid again once)
           if (document.documentElement.style.getPropertyValue('--cn-m') !== cnmV) {
             document.documentElement.style.setProperty('--cn-m', cnmV);
-            // (the name's size no longer reads --cn-m, but the pass this resize asks for is the one that seats the first row
-            // 27 under the band at some widths — the passes before it run before the opening's height is read — so it
-            // stays until that seat stands on its own; tried without it 2026-10-15: at 1920 the first row came up under
-            // the band)
-            setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
+            // (no resize asked for since: the name's size no longer reads --cn-m — a later rule sizes it — and the pass the
+            // resize ran, ~3s cold, was only setting the first row right, which its own seat does now (duo-panel-fit.js,
+            // ohS); 2026-10-15)
           }
         }
         var cnW = document.querySelector('a.content-name .content-name__block .tnc-words');
