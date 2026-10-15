@@ -2314,8 +2314,10 @@ var RAIL_MORE = 27;
         var tlmC = hold.querySelector(':scope > .rail-tlm') || (opBandE && opBandE.querySelector(':scope > .rail-tlm'));
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
         // (across the column's ink whatever its width since, no longer held to the band's size — "growing the wordmarks")
-        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
-        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
+        // (off the column as it stood before it grew the rows' 2 × 27 — "Make the content column 27px narrower on either
+        // side", 2026-10-15 — so THE LAST MAGAZINE keeps its size)
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
         // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle
         // between the socials' foot and the bird's top — "The nav itmes should go above the latest", "Sit the socials
         // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
