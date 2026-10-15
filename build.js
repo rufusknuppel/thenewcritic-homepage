@@ -214,6 +214,10 @@ const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gap
 // the drawing leaves 35.8 and 36 there against 30 everywhere else, and the C's open side reads wider still; the
 // block letters' gaps by their index in the word, in the drawing's units before LETTER_K)
 const WM_KERN = { critic: { 1: 26, 5: 30 } };
+// (THE LAST MAGAZINE's own: MAGAZINE's G and A closer, the G's open side and the A's slope reading wider than the rest at
+// the drawing's even 62.3 — "the space between G and A is off in the last magazine", 2026-10-14; keyed as the
+// drawing's words, critic = MAGAZINE, by the gap's place)
+const TLM_KERN = { critic: { 3: 46 } };
 function spacedWord(word, k, words) {
   const svg = (words || WORDMARK_WORDS)[word];
   const vb = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
@@ -226,7 +230,7 @@ function spacedWord(word, k, words) {
   const L = [];
   subs.forEach((q) => { const z = L[L.length - 1]; if (z && q.lo < z.hi) { z.d += q.sp; z.hi = Math.max(z.hi, q.hi); } else L.push({ d: q.sp, lo: q.lo, hi: q.hi }); });
   let dx = 0;
-  const kern = !words ? WM_KERN[word] : null;
+  const kern = !words ? WM_KERN[word] : words === TLM_WORDS ? TLM_KERN[word] : null;
   const paths = L.map((l, i) => { if (i) { const g = l.lo - L[i - 1].hi; dx += (kern && kern[i] != null ? kern[i] : g) * k - g; } return `<path fill="currentColor" transform="translate(${dx.toFixed(2)} 0)" d="${l.d}"/>`; });
   const w = vb[2] + dx;
   return { ar: w / vb[3], svg: `<svg class="band-logo__line" aria-hidden="true" focusable="false" viewBox="${vb[0]} ${vb[1]} ${w.toFixed(2)} ${vb[3]}" overflow="visible" style="width:${(w / vb[3]).toFixed(4)}em;height:1em">${paths.join('')}</svg>` };
