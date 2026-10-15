@@ -11684,8 +11684,8 @@ var RAIL_MORE = 27;
         var opBandE = document.querySelector('main .op-band');
         var tlmC = hold.querySelector(':scope > .rail-tlm') || (opBandE && opBandE.querySelector(':scope > .rail-tlm'));
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
-        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
-        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
         var birdC = hold.querySelector(':scope > .rail-mark--bird');
         if (!hold.__tlmHot) {
