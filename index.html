@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=618f3d11">
+<link rel="stylesheet" href="style.css?v=8ed87fb7">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6739,6 +6739,8 @@
       var rRight = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft + rail.offsetWidth;
       rr = { left: rRight - rail.offsetWidth, right: rRight };
       shut = Math.round(rRight / 2);
+      var slidW = parseFloat(document.querySelector('main').style.getPropertyValue('--rail-shift'));
+      if (slidW > 0) shut = slidW;
     }
     if (!railL && rail && rail.offsetWidth && document.querySelector('main.rail-is-shut')) {
       var opR = rail.offsetParent;
@@ -10304,6 +10306,11 @@ window.__ncStripInk = function () {
 </script>
 <script>
 var RAIL_MORE = 27;
+var RAIL_COL = 238 + 36;
+var ncStemX = function () {
+  var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
+  return r && r.height ? Math.round(r.left + r.height * 45.3 / 300) : 53;
+};
 (function () {
   var rails = [].slice.call(document.querySelectorAll('.latest-rail'));
   var main = document.querySelector('main');
@@ -11390,6 +11397,7 @@ var RAIL_MORE = 27;
     var left = (op ? op.getBoundingClientRect().left + op.clientLeft : 0) + rail.offsetLeft;
     var w = rail.classList.contains('latest-rail--r') ? document.documentElement.clientWidth - left : left + rail.offsetWidth;
     var v = Math.round(w / 2) + 'px';
+    if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - ncStemX()) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
     document.documentElement.style.setProperty('--rail-shift', v);
   };
@@ -11418,8 +11426,21 @@ var RAIL_MORE = 27;
     var G = (parseFloat(main.style.getPropertyValue('--rail-shift')) || 0) + 54;
     var gv = G.toFixed(1) + 'px';
     if (document.documentElement.style.getPropertyValue('--nc-gut') !== gv) document.documentElement.style.setProperty('--nc-gut', gv);
+    var inkL = 1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
+    [].slice.call(document.querySelectorAll('.page-rows section.card'), 0, 6).forEach(function (c) {
+      [c.querySelector('.card-frame'), c.querySelector('.swap-body-text')].forEach(function (e) {
+        var q = e && e.getBoundingClientRect();
+        if (q && q.width) inkL = Math.min(inkL, q.left);
+      });
+    });
+    if (inkL < 1e8 && Math.abs(inkL - ncStemX()) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
+    var vwG = document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--opb-in', ncStemX() + 'px');
+    var socG = document.querySelector('main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
+    if (!sq || !sq.width) return;
+    document.documentElement.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
-    var v = (t0 + G / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
+    var v = (t0 + (sq.left + sq.right) / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
   };
   main.classList.add('rail-is-shut');
@@ -11685,8 +11706,9 @@ var RAIL_MORE = 27;
         var opBandE = document.querySelector('main .op-band');
         var tlmC = hold.querySelector(':scope > .rail-tlm') || (opBandE && opBandE.querySelector(':scope > .rail-tlm'));
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
-        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
-        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 2 * 27) / lwTC).toFixed(3) + 'px');
+        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + 25 : railW - 110;
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
         var birdC = hold.querySelector(':scope > .rail-mark--bird');
         if (!hold.__tlmHot) {
@@ -11827,7 +11849,8 @@ var RAIL_MORE = 27;
             var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
             var bElB = hold.querySelector(':scope > .rail-mark--bird'), bVisB = bElB && bElB.getBoundingClientRect().height;
             var birdTopB = !bVisB ? hr.bottom : tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
-            if (bVisB) hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
+            var bUnder = bVisB && !(tncRb && tncRb.height) ? bElB.getBoundingClientRect() : null;
+            if (bVisB && !bUnder) hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
             var metasS = [].filter.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__meta a.latest-rail__meta-link'), function (m) { return m.getBoundingClientRect().height; });
             var inC = kList.closest('.latest-rail__in'), metaC = inC && inC.querySelector('.latest-rail__meta a.latest-rail__meta-link');
             if (metasS.length && metaC) {
@@ -11841,7 +11864,10 @@ var RAIL_MORE = 27;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
               var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
-              var shB = (hr.top + birdTopB - ctB - lkB) / 2;
+              var gapB = bUnder ? (hr.height + 27 - bUnder.height - (lkB - ctB)) / 3 : 0;
+              var gTopB = gapB - 27;
+              if (bUnder) hold.style.setProperty('--rl-birdt', gTopB.toFixed(2) + 'px');
+              var shB = bUnder ? hr.top + gTopB + bUnder.height + gapB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
               var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
               hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
             }
