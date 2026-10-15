@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=2c1ea1f8">
+<link rel="stylesheet" href="style.css?v=d63548c0">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6029,7 +6029,7 @@
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
               var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
-              if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = Math.max(0, (document.documentElement.clientHeight - fr0.getBoundingClientRect().height) / 2);
+              if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
@@ -10982,7 +10982,7 @@ var RAIL_MORE = 27;
     var br = body.getBoundingClientRect();
     var bodyTop = br.top + (window.pageYOffset || 0);
     var tops = rails.map(function (rail, i) {
-      if (i === 0) return Math.max(0, rest + settled - bodyTop);
+      if (i === 0) return Math.max(0, rest + settled + (window.ncOpenH ? window.ncOpenH() : 0) - bodyTop);
       var cs = cardsOf(rail.getAttribute('data-sec'));
       return cs.length ? picTop(cs[0]) - br.top : null;
     });
@@ -11874,6 +11874,27 @@ var RAIL_MORE = 27;
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(seat, 200); });
   setTimeout(seat, 800);
   seat();
+})();
+window.ncOpenH = function () {
+  var cn = document.querySelector('a.content-name');
+  return cn && getComputedStyle(cn).position === 'fixed' ? cn.offsetHeight : 0;
+};
+(function () {
+  var de = document.documentElement, last = '';
+  var ride = function () {
+    var h = window.ncOpenH(), y = Math.max(0, window.pageYOffset || 0);
+    var cut = h ? Math.min(h, y) : 0;
+    var o = h ? Math.max(0, Math.min(1, (y / h - 0.8) / 0.2)) : 1;
+    var key = cut.toFixed(1) + '|' + o.toFixed(3);
+    if (key === last) return;
+    last = key;
+    de.style.setProperty('--op-cut', cut.toFixed(1) + 'px');
+    de.style.setProperty('--tnc-o', o.toFixed(3));
+  };
+  window.addEventListener('scroll', ride, { passive: true });
+  window.addEventListener('resize', function () { last = ''; ride(); });
+  document.addEventListener('newcritic:fit', function () { last = ''; ride(); });
+  ride();
 })();
 
 </script>
