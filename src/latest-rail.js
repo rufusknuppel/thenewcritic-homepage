@@ -1716,7 +1716,9 @@ var RAIL_MORE = 27;
           // (27 wider since, the nav and the socials each on one line on its middle, THE NEW CRITIC, THE LAST MAGAZINE and
           // the bird grown to the wider ink — "Expand the side column by 27px, growing the wordmarks and bird, and making
           // nav and social lists one line", 2026-10-15)
-          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE);
+          // (54 wider again since, unseen — the column shut, its half-width the rows' carry onto the window's middle — so the
+          // rows stand 27 further in from either side — "Make the content column 27px narrower on either side", 2026-10-15)
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE + 2 * 27);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
@@ -1907,7 +1909,11 @@ var RAIL_MORE = 27;
   var holdG = rail.querySelector('.latest-rail__hold');
   var gut = function () {
     if (!holdG || !main.classList.contains('rail-is-shut') || window.innerWidth < 1024) return;
+    // (the gutter on the root as --nc-gut since, for the bird and the hold's width — "Expand margins on both gutters to
+    // 36px", 2026-10-15: the column's carry and 54, where the widest rows stand off the window's sides)
     var G = (parseFloat(main.style.getPropertyValue('--rail-shift')) || 0) + 54;
+    var gv = G.toFixed(1) + 'px';
+    if (document.documentElement.style.getPropertyValue('--nc-gut') !== gv) document.documentElement.style.setProperty('--nc-gut', gv);
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
     var v = (t0 + G / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
@@ -1918,6 +1924,7 @@ var RAIL_MORE = 27;
   gut();
   addEventListener('resize', function () { shift(); gut(); }, { passive: true });
   addEventListener('load', gut);
+  document.addEventListener('newcritic:fit', function () { setTimeout(gut, 0); });
 })();
 // THE DOT AT THE LATEST'S TOP LEFT (2026-10-09, at the user's words — "move
 // the dot to the top left of The Latest"): the box over The Latest's depth
