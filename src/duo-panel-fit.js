@@ -8995,7 +8995,10 @@
   // the picture comes in, which it does only as it nears the window)
   var PS_SHAPE = 0.8;
   function picAspect(card) {
-    if (card.__ar !== undefined) return card.__ar;
+    // (a shape once found is kept; none found is asked again, the picture's
+    // address not always written yet when the first pass runs — a review
+    // left unsquared, 2026-10-14)
+    if (card.__ar) return card.__ar;
     var ar = null;
     [].some.call(card.querySelectorAll('img'), function (im) {
       var u = im.getAttribute('src') || im.getAttribute('data-src') || '';
@@ -9057,6 +9060,32 @@
         var want = ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : kind === 'co' ? 1 : Math.max(ar, 1)) : null;
         var give = want ? V0 - (P.b - P.t) * want : 0;
         if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
+        // CONTRAS ALWAYS SQUARE (2026-10-14 — "I want contras to always be
+        // square"): where the window the margin leaves a review is narrower
+        // than the rows stand tall, the review's row is cut to that width —
+        // the picture's box keeps its width (--row-wa), its frame standing
+        // a pixel taller than --rows-h — and the rows under it come up; the
+        // full height again once the window is short enough to narrow it
+        // instead. The rows' own height read off the first big row that is
+        // not a review. A change refits the page once.
+        if (kind === 'co') {
+          var secQ = card.closest('.card--mega');
+          var refQ = document.querySelector('.page-rows .card--mega.card--row-big:not(.card--kind-contra) .duo-half--mega.is-slide');
+          var PnQ = refQ && slidePic(refQ);
+          var H0Q = PnQ ? PnQ.b - PnQ.t : P.b - P.t;
+          var VQ = Math.round(V0);
+          // (the box as tall as the window is wide: the frame, a pixel past
+          // each, the same both ways)
+          var nvQ = secQ && VQ < H0Q - 1.5 ? VQ + 'px' : '';
+          if (secQ && secQ.style.getPropertyValue('--rows-h') !== nvQ) {
+            if (nvQ) secQ.style.setProperty('--rows-h', nvQ, 'important');
+            else secQ.style.removeProperty('--rows-h');
+            clearTimeout(window.__ncSquareT);
+            window.__ncSquareT = setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
+          }
+        }
+        // (held square, it is not narrowed to its height besides)
+        if (kind === 'co' && secQ && secQ.style.getPropertyValue('--rows-h')) sh = 0;
         dx += sh;
       }
       card.classList.toggle('is-true-size', sh !== 0);
