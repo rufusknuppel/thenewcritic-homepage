@@ -2494,18 +2494,23 @@ var RAIL_MORE = 27;
             var bHb = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
             // (THE NEW CRITIC under the bird since, at the column's foot as far over it as it stands in from the column's
             // sides, the bird 27 over it, as THE LAST MAGAZINE was — "Move THE NEW CRITIC in the side column under the
-            // bird, like how the last magazine used to be", 2026-10-15: the stack on the middle between the column's top
-            // and the bird; style.css THE COLUMN'S NAME UNDER THE BIRD)
-            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
-            var birdTopB = tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
-            hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
+            // bird, like how the last magazine used to be", 2026-10-15)
+            // (the bird and the name over The Latest since, one stack with the sections and the kickers on the column's
+            // middle: the bird, 27, the name's ink, 54, the sections' capitals — "I want the new critic and the bird to sit
+            // above the latest", 2026-10-15: --rl-birdt, --rl-tnct, --rl-pt; style.css THE BIRD AND THE NAME OVER THE LATEST)
+            var tncAb = hold.querySelector(':scope > .rail-tnc'), tncWb = tncAb && tncAb.querySelector('.tnc-words');
+            var tncRb = tncWb && tncWb.getBoundingClientRect(), tncHb = tncRb && tncRb.height ? tncRb.height : 0;
+            var tncOffB = tncHb ? tncRb.top - tncAb.getBoundingClientRect().top : 0;
             var L2b = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
             var secBb = baseOf(secLine), k0b = kicks[0], kCb = baseOf(k0b) - capHt(k0b);
             var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
             hold.style.setProperty('--rl-kmt', (kmtb + (secBb + 0.7 * (L2b - capHt(k0b))) - kCb).toFixed(2) + 'px');
             var ctB = capTop1(secLine), lkB = baseOf(kicks[kicks.length - 1]);
-            var topRefB = hr.top;
-            var shB = (topRefB + birdTopB - ctB - lkB) / 2;
+            var headB = bHb + 27 + (tncHb ? tncHb + 54 : 0);
+            var topB = (hr.height - headB - (lkB - ctB)) / 2;
+            hold.style.setProperty('--rl-birdt', topB.toFixed(2) + 'px');
+            if (tncHb) hold.style.setProperty('--rl-tnct', (topB + bHb + 27 - tncOffB).toFixed(2) + 'px');
+            var shB = hr.top + topB + headB - ctB;
             var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
             hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
           }
