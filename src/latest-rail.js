@@ -1682,7 +1682,10 @@ var ncStemX = function () {
       if (rnS && isFinite(newL) && isFinite(theR) && main.classList.contains('name-in-rail')) {
         var spanS = parseFloat(rnS.style.getPropertyValue('--rn-span')) || 7.759;
         var fS = ((theR + newL) / 2 + 1 + 54 - 42) / spanS;
-        main.style.setProperty('--rn-font', fS.toFixed(3) + 'px');
+        // (written once, at its last value, and only if it changes since: --rn-font sits on main, so every change restyles
+        // the whole page, ~110ms — set to fS and then again to fB on every measure, it cost two of those a call and kept
+        // the page busy for seconds after it showed; "Identify why the site loads so slowly", 2026-10-15)
+        var rnF = fS;
         // (and no narrower than keeps the columns' letters clear of each other across — "Widen it tho so that letters
         // don't overlap": --rn-min, build.js)
         var minS = (parseFloat(rnS.style.getPropertyValue('--rn-min')) || 0) * fS;
@@ -1753,9 +1756,10 @@ var ncStemX = function () {
               fB = (wN - 40 - arS * 20) / (rnL + rnR + arS * 2);
             // (the bird's whole ink centred between the sides' since, 20 clear of each — "Bird should be centered
             // between ink")
-            if (fB < fS) main.style.setProperty('--rn-font', fB.toFixed(3) + 'px');
+            if (fB < fS) rnF = fB;
           }
         }
+        if (main.style.getPropertyValue('--rn-font') !== rnF.toFixed(3) + 'px') main.style.setProperty('--rn-font', rnF.toFixed(3) + 'px');
       }
       // (and on the right, between CRITIC's R and its first I since —
       // "Have the edge of the latest column stretch to between the R and
@@ -2393,6 +2397,10 @@ var ncStemX = function () {
           // (a changed measure changes the name's height, which seats the first row: the page laid again once)
           if (document.documentElement.style.getPropertyValue('--cn-m') !== cnmV) {
             document.documentElement.style.setProperty('--cn-m', cnmV);
+            // (the name's size no longer reads --cn-m, but the pass this resize asks for is the one that seats the first row
+            // 27 under the band at some widths — the passes before it run before the opening's height is read — so it
+            // stays until that seat stands on its own; tried without it 2026-10-15: at 1920 the first row came up under
+            // the band)
             setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
           }
         }
@@ -2525,10 +2533,11 @@ var ncStemX = function () {
             // selected", 2026-10-14; each section's block watched for its class alone, so the line's own changes don't
             // call back)
             if (window.MutationObserver) {
-              // (and again as the lists' opening and shutting settle)
+              // (and again as the lists' opening and shutting settle — at once and once they have, since: four seats a
+              // change, ~50ms each in the middle of a scroll, where the gaps they set are held now, 2026-10-15)
               var reseat = [], mo = new MutationObserver(function () {
                 reseat.forEach(clearTimeout);
-                reseat = [30, 400, 900, 1600].map(function (ms) { return setTimeout(seat, ms); });
+                reseat = [30, 900].map(function (ms) { return setTimeout(seat, ms); });
               });
               [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in'), function (inE) { mo.observe(inE, { attributes: true, attributeFilter: ['class'] }); });
             }
