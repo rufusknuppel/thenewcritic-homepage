@@ -2488,31 +2488,37 @@ var RAIL_MORE = 27;
           // the top", "Allowing for more space under socials to the bird"; the kickers as far under the comma line as
           // the line under the dash over it — "have the same space between dash and the latest be the sapce between the
           // latest list and kickers", 2026-10-14; --rl-pt, --rl-kmt, --rl-soct, --rl-d1..3, --rl-birdt)
-          if (inBand && ctH != null && kicks.length) {
-            // (the sections' line and the kickers on the middle between the column's THE NEW CRITIC and the bird, the
-            // bird's foot as far over the column's as the name's top under its top; the kickers as they were under the line)
+          if (inBand && kicks.length) {
             var bHb = parseFloat(hold.style.getPropertyValue('--rl-bird')) || 0;
             // (THE NEW CRITIC under the bird since, at the column's foot as far over it as it stands in from the column's
             // sides, the bird 27 over it, as THE LAST MAGAZINE was — "Move THE NEW CRITIC in the side column under the
-            // bird, like how the last magazine used to be", 2026-10-15)
-            // (the bird and the name over The Latest since, one stack with the sections and the kickers on the column's
-            // middle: the bird, 27, the name's ink, 54, the sections' capitals — "I want the new critic and the bird to sit
-            // above the latest", 2026-10-15: --rl-birdt, --rl-tnct, --rl-pt; style.css THE BIRD AND THE NAME OVER THE LATEST)
-            var tncAb = hold.querySelector(':scope > .rail-tnc'), tncWb = tncAb && tncAb.querySelector('.tnc-words');
-            var tncRb = tncWb && tncWb.getBoundingClientRect(), tncHb = tncRb && tncRb.height ? tncRb.height : 0;
-            var tncOffB = tncHb ? tncRb.top - tncAb.getBoundingClientRect().top : 0;
-            var L2b = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
-            var secBb = baseOf(secLine), k0b = kicks[0], kCb = baseOf(k0b) - capHt(k0b);
-            var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-            hold.style.setProperty('--rl-kmt', (kmtb + (secBb + 0.7 * (L2b - capHt(k0b))) - kCb).toFixed(2) + 'px');
-            var ctB = capTop1(secLine), lkB = baseOf(kicks[kicks.length - 1]);
-            var headB = bHb + 27 + (tncHb ? tncHb + 54 : 0);
-            var topB = (hr.height - headB - (lkB - ctB)) / 2;
-            hold.style.setProperty('--rl-birdt', topB.toFixed(2) + 'px');
-            if (tncHb) hold.style.setProperty('--rl-tnct', (topB + bHb + 27 - tncOffB).toFixed(2) + 'px');
-            var shB = hr.top + topB + headB - ctB;
-            var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
-            hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
+            // bird, like how the last magazine used to be", 2026-10-15; style.css THE COLUMN'S NAME UNDER THE BIRD)
+            // (over The Latest for a few minutes — "I want the new critic and the bird to sit above the latest" — and at
+            // the foot under it again since, "with the bird and the new critic in the bottom under the latest")
+            var tncWb = hold.querySelector(':scope > .rail-tnc .tnc-words'), tncRb = tncWb && tncWb.getBoundingClientRect();
+            var birdTopB = tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
+            hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
+            // (the sections' names stacked again since, each its own line, the open one's kickers under it — "Bring back
+            // the latest from older repos with the section titles stacked, not in a list", 2026-10-15: the comma line out
+            // of sight; the kickers as far under their name's baseline as three tenths of two lines less their capital,
+            // and the next name as far under the last of them, --rl-kmt, --rl-kmb; style.css THE SECTIONS STACKED AGAIN)
+            var metasS = [].filter.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__meta a.latest-rail__meta-link'), function (m) { return m.getBoundingClientRect().height; });
+            var inC = kList.closest('.latest-rail__in'), metaC = inC && inC.querySelector('.latest-rail__meta a.latest-rail__meta-link');
+            if (metasS.length && metaC) {
+              var L2b = 2 * (parseFloat(getComputedStyle(metaC).lineHeight) || 27.5);
+              var k0b = kicks[0], kLast = kicks[kicks.length - 1];
+              var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
+              hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              var kNext = metasS[metasS.indexOf(metaC) + 1];
+              if (kNext) {
+                var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
+                hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
+              }
+              var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
+              var shB = (hr.top + birdTopB - ctB - lkB) / 2;
+              var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
+              hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
+            }
           }
           if (!inBand && ctH != null && kicks.length && socR) {
             var G = 77.5;
@@ -2659,8 +2665,25 @@ window.ncOpenH = function () {
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
     }
   };
-  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); });
+  // (the column shut till the band pins, opening as it does, its bird alone out from the first, where it will stand —
+  // "On initial load, hide the side column ... Then when the nav bar hits its pinned position, the side column should
+  // open", "have the rest of the side column hidden, but have the bird its final position pinned in the side",
+  // 2026-10-15: main.op-pinned, toggled only as the scroll crosses the band's pinning, nothing set on the way; style.css
+  // THE COLUMN OPENING AS THE BAND PINS)
+  var pinned = null;
+  var pin = function () {
+    var main = document.querySelector('main.has-mega'), cn = document.querySelector('a.content-name');
+    if (!main || !cn) return;
+    var on = (window.pageYOffset || 0) >= cn.offsetHeight - 0.5;
+    if (on === pinned) return;
+    pinned = on;
+    main.classList.toggle('op-pinned', on);
+  };
+  window.addEventListener('scroll', pin, { passive: true });
+  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); pinned = null; pin(); });
   document.addEventListener('newcritic:fit', function () { setTimeout(lay, 0); });
+  pin();
+  window.addEventListener('load', pin);
   window.addEventListener('load', function () { setTimeout(lay, 300); setTimeout(lay, 1500); });
   setTimeout(lay, 800);
   lay();
