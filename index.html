@@ -11815,14 +11815,15 @@ window.__ncStripInk = function () {
             var dashGap = G / 2 - dIn;
             var ptS = parseFloat(getComputedStyle(hold).paddingTop) || 0;
             var L2 = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
-            var dS = navBase + L2 - capHt(secLine) - ctH;
+            var gapS = 0.7 * (L2 - capHt(secLine));
+            var dS = navBase + gapS - ctH;
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
             var secB = baseOf(secLine), k0 = kicks[0], kC = baseOf(k0) - capHt(k0);
             var kmt = parseFloat(getComputedStyle(kList).marginTop) || 0;
             var dK = (secB + L2 - capHt(k0)) - kC;
             hold.style.setProperty('--rl-kmt', (kmt + dK).toFixed(2) + 'px');
             var lastKB = baseOf(kicks[kicks.length - 1]);
-            var socB = lastKB + L2;
+            var socB = lastKB + gapS + capHt(socR);
             var socT = parseFloat(getComputedStyle(socR).top) || 0;
             hold.style.setProperty('--rl-soct', (socT + socB - (capTop1(socR) + capHt(socR))).toFixed(2) + 'px');
             var sTop = capTop1(navL), sBot = baseOf(socR);
