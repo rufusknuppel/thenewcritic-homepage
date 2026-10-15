@@ -2492,7 +2492,11 @@
             // (one blank line of the column's Garamond between its sections since, baseline to baseline two of the comma
             // line's lines — "Have just 1 line of space in between the different garamond sections", 2026-10-14)
             var L2 = 2 * (parseFloat(getComputedStyle(secLine).lineHeight) || 26);
-            var dS = navBase + L2 - capHt(secLine) - ctH;
+            // (the white from the nav's last baseline to the sections' capitals, and from the last kicker's to the
+            // socials', three tenths less than that blank line's — "Reduce gaps between nav and the latest, kickers and
+            // socails by 30%", 2026-10-15; the sections to the kickers a blank line still)
+            var gapS = 0.7 * (L2 - capHt(secLine));
+            var dS = navBase + gapS - ctH;
             hold.style.setProperty('--rl-pt', Math.max(0, ptS + dS).toFixed(2) + 'px');
             // (the first kicker's capitals dashGap under the comma line's last baseline)
             var secB = baseOf(secLine), k0 = kicks[0], kC = baseOf(k0) - capHt(k0);
@@ -2501,7 +2505,7 @@
             hold.style.setProperty('--rl-kmt', (kmt + dK).toFixed(2) + 'px');
             // (read after --rl-pt and --rl-kmt are set: the read lays the stack where it now stands)
             var lastKB = baseOf(kicks[kicks.length - 1]);
-            var socB = lastKB + L2;
+            var socB = lastKB + gapS + capHt(socR);
             var socT = parseFloat(getComputedStyle(socR).top) || 0;
             // (its first line's baseline: the socials stand in two lines)
             hold.style.setProperty('--rl-soct', (socT + socB - (capTop1(socR) + capHt(socR))).toFixed(2) + 'px');
