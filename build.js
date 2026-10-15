@@ -318,6 +318,11 @@ function opBand() {
   return `<div class="op-track"><div class="op-band">`
     + `<div class="rail-top"><div class="rail-top__nav">${nav}</div></div>`
     + (TLM_WORDS ? `<a class="rail-tlm" href="#top" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
+    // (THE NEW CRITIC in THE LAST MAGAZINE's place since, as tall, coming in as it goes over the last fifth of the
+    // opening name's climb out of the window — "Over the last 20% of the new critic disappearing, have the last magazine
+    // fade out in the nav band and be replaced by THE NEW CRITIC, same height", 2026-10-15; style.css THE NAME INTO THE
+    // BAND)
+    + `<a class="op-tnc" href="#top" aria-hidden="true" tabindex="-1">${bandBlockWords()}</a>`
     + soc + `</div></div>`;
 }
 // (the bird in the window's bottom right corner since, 27 over its foot and 27 in from either side of the right gutter

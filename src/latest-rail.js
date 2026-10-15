@@ -2688,10 +2688,22 @@ window.ncOpenH = function () {
       // left edge of stem of T, inset socials in the same way", 2026-10-15: the stem 45.3 of the T's 300 in from its
       // left; the glyphs' 1 of side-bearing off the boxes; --opb-nav-l, --opb-soc-r)
       var tR = ws[0] ? ws[0].getBoundingClientRect() : null;
-      var navL0 = tR && tR.height ? Math.round(tR.left + tR.height * 45.3 / 300) - 1 : 26;
-      band.style.setProperty('--opb-nav-l', navL0.toFixed(1) + 'px');
-      band.style.setProperty('--opb-soc-r', navL0.toFixed(1) + 'px');
-      band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - navL0 - sw) / 2).toFixed(1) + 'px');
+      var stemX = tR && tR.height ? Math.round(tR.left + tR.height * 45.3 / 300) : 27;
+      // (the glyphs' own ink edges since, read off the face — the italics' first and last letters lean past their boxes
+      // differently from the uprights' 1 — "Make the nav items italicized", "italicize the socials too", 2026-10-15; the
+      // last italic's faint edge a pixel short of where its box says, as the window draws it)
+      var cxI = lay.cx || (lay.cx = document.createElement('canvas').getContext('2d'));
+      var glyph = function (el, last) {
+        var t = (el.textContent || '').replace(/\s+$/, '').replace(/^\s+/, ''), ch = last ? t.slice(-1) : t.charAt(0), cs = getComputedStyle(el);
+        cxI.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        var m = cxI.measureText(ch || 'S');
+        return { l: m.actualBoundingBoxLeft || 0, over: (m.actualBoundingBoxRight || 0) - (m.width || 0) };
+      };
+      var navA = navE.querySelector('.rail-top__nav > *') || navE, socAs = socE.querySelectorAll('a, span'), socA = socAs.length ? socAs[socAs.length - 1] : socE;
+      var navL0 = stemX + glyph(navA, false).l, socR0 = stemX + glyph(socA, true).over - 1;
+      band.style.setProperty('--opb-nav-l', navL0.toFixed(2) + 'px');
+      band.style.setProperty('--opb-soc-r', socR0.toFixed(2) + 'px');
+      band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - socR0 - sw) / 2).toFixed(1) + 'px');
     }
   };
   // (the column shut till the band pins, opening as it does, its bird alone out from the first, where it will stand —
