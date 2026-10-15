@@ -1713,7 +1713,10 @@ var RAIL_MORE = 27;
           // (27 wider since, the nav and the socials each on one line on its middle, THE NEW CRITIC, THE LAST MAGAZINE and
           // the bird grown to the wider ink — "Expand the side column by 27px, growing the wordmarks and bird, and making
           // nav and social lists one line", 2026-10-15)
-          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE);
+          // (and 56 more since, its inner edge a 2px rule 54 from the pictures and 54 from its own ink — "Add a 2px
+          // vertical rule between the side column and the content column", "have 54px on either side", 2026-10-15;
+          // style.css THE RULE BETWEEN)
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE + 56);
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
@@ -2283,7 +2286,7 @@ var RAIL_MORE = 27;
         var tlmC = hold.querySelector(':scope > .rail-tlm');
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
         // (across the column's ink whatever its width since, no longer held to the band's size — "growing the wordmarks")
-        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 56) / lwTC).toFixed(3) + 'px');
         // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle
         // between the socials' foot and the bird's top — "The nav itmes should go above the latest", "Sit the socials
         // under the nav", "Center the latest between nav and bird", 2026-10-14; style.css THE NAV OVER THE LATEST)
@@ -2407,7 +2410,7 @@ var RAIL_MORE = 27;
           var cnlB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
           // (the column as it stood then, 299, whatever its width since — "Reduce the size of the garamond in the side column")
           // (grown as the column's ink is since — "Expand the side column by 27px, growing the wordmarks and bird")
-          var birdK = railW - 56 - RAIL_MORE > 0 ? (railW - 56) / (railW - 56 - RAIL_MORE) : 1;
+          var birdK = railW - 112 - RAIL_MORE > 0 ? (railW - 112) / (railW - 112 - RAIL_MORE) : 1;
           if (lwbB > 0) hold.style.setProperty('--rl-bird', (birdK * 1.25 * (document.documentElement.clientWidth - 108 - 299) / lwbB).toFixed(3) + 'px');
           else if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');

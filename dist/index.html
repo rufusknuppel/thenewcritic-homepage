@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=db18a797">
+<link rel="stylesheet" href="style.css?v=2c1ea1f8">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11299,7 +11299,7 @@ var RAIL_MORE = 27;
           [].forEach.call(navBrs, function (br) { br.style.display = 'none'; });
           var navMW = navMeas ? navMeas.getBoundingClientRect().width : 0;
           [].forEach.call(navBrs, function (br) { br.style.display = ''; });
-          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE);
+          if (navMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(navMW + 54 + RAIL_MORE + 56);
           var birdS = rnS.querySelector('.rail-name__bird'), arS = birdS ? parseFloat(birdS.style.getPropertyValue('--bird-ar')) || 1 : 0;
           if (arS) {
             var wN = critS * fS + RN_WIDER, BEAK = 0.2;
@@ -11663,7 +11663,7 @@ var RAIL_MORE = 27;
         hold.style.setProperty('--rl-pb', '0px');
         var tlmC = hold.querySelector(':scope > .rail-tlm');
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
-        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54) / lwTC).toFixed(3) + 'px');
+        if (lwTC > 0) hold.style.setProperty('--rl-tlmf', ((railW - 2 - 54 - 56) / lwTC).toFixed(3) + 'px');
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
         var birdC = hold.querySelector(':scope > .rail-mark--bird');
         if (!hold.__tlmHot) {
@@ -11745,7 +11745,7 @@ var RAIL_MORE = 27;
           var cnBlk = document.querySelector('a.content-name .content-name__block');
           var lwbB = cnBlk ? parseFloat(cnBlk.style.getPropertyValue('--cn-lwb')) || 0 : 0;
           var cnlB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
-          var birdK = railW - 56 - RAIL_MORE > 0 ? (railW - 56) / (railW - 56 - RAIL_MORE) : 1;
+          var birdK = railW - 112 - RAIL_MORE > 0 ? (railW - 112) / (railW - 112 - RAIL_MORE) : 1;
           if (lwbB > 0) hold.style.setProperty('--rl-bird', (birdK * 1.25 * (document.documentElement.clientWidth - 108 - 299) / lwbB).toFixed(3) + 'px');
           else if (cnbH) hold.style.setProperty('--rl-bird', (1.25 * cnbH).toFixed(3) + 'px');
           hold.style.setProperty('--rl-pb', '0px');
