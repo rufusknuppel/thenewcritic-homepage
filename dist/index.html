@@ -6029,6 +6029,7 @@
             if (document.querySelector('main.name-in-rail') && !ONE_COL.matches) {
               var fr0 = row.querySelector('.card-frame');
               var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
+              if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = Math.max(0, (document.documentElement.clientHeight - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }

@@ -7845,6 +7845,9 @@
               // (with no name, BAND_AIR under the band where it heads the window — "Move the nav band into a top band", 2026-10-14)
               // (the name's foot off the band and its own height, not its box: in main it stands off main's top, which
               // this very pass moves — "wordmark should pass under top band")
+              // (the first picture on the window's middle since, the name gone to the column's top — "Center the top
+              // post in the viewport", 2026-10-15)
+              if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = Math.max(0, (document.documentElement.clientHeight - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
             }
