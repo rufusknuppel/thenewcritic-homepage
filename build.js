@@ -392,51 +392,7 @@ function nameSwallow(id = 'cn') {
   const half = (cLo + cHi) / 2 - 20 * u;
   // (the wing gap's width in the drawing's units, twice its area over its outline's length, ~5.9; the body's outer edge,
   // its first subpath — the second is the beak's notch)
-  // (and for the white edge, that outline simplified to its corners — Douglas-Peucker, a unit's tolerance — so the
-  // beak's and the tail's tips, drawn as runs of tiny curves, come out single sharp corners the edge's mitre can point,
-  // "I'd like the outlines to mimic the points of the beak and tails", 2026-10-16)
-  const GAP_W = 6, outerD = (body.match(/M[^M]*/) || [body])[0];
-  const outer = (() => {
-    const pts = [];
-    for (const m of outerD.matchAll(/([MLC])([^MLCZ]*)/g)) {
-      const n = (m[2].match(/-?\d*\.?\d+/g) || []).map(Number);
-      const step = m[1] === 'C' ? 6 : 2;
-      for (let t = 0; t + step <= n.length; t += step) pts.push([n[t + step - 2], n[t + step - 1]]);
-    }
-    // (a closed outline: split at its point farthest from the first, so neither half's ends meet)
-    const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
-    let far0 = 0, fd0 = -1;
-    pts.forEach((q, t) => { const d = Math.hypot(q[0] - pts[0][0], q[1] - pts[0][1]); if (d > fd0) { fd0 = d; far0 = t; } });
-    keep[far0] = 1;
-    const stack = [[0, far0], [far0, pts.length - 1]];
-    while (stack.length) {
-      const [a, b] = stack.pop(); let far = -1, fd = 1;
-      const [ax, ay] = pts[a], [bx2, by2] = pts[b], dx = bx2 - ax, dy = by2 - ay, L = Math.hypot(dx, dy) || 1;
-      for (let t = a + 1; t < b; t++) { const d = Math.abs((pts[t][0] - ax) * dy - (pts[t][1] - ay) * dx) / L; if (d > fd) { fd = d; far = t; } }
-      if (far > 0) { keep[far] = 1; stack.push([a, far], [far, b]); }
-    }
-    return pts.filter((_, t) => keep[t]);
-  })();
-  // (the white edge a shape of its own since, the outline pushed out a wing gap's width, filled under the bird: at an
-  // outward corner its point halfway between a round tip's (the width) and a full mitre's (the width over the half
-  // angle's sine), at an inward one the width alone — "Make outlines somewhere between their pointiness now and the
-  // last round", 2026-10-16)
-  const edgeD = (() => {
-    const P = outer[0][0] === outer[outer.length - 1][0] && outer[0][1] === outer[outer.length - 1][1] ? outer.slice(0, -1) : outer;
-    const n = P.length; let A = 0;
-    for (let t = 0; t < n; t++) { const a = P[t], b = P[(t + 1) % n]; A += a[0] * b[1] - b[0] * a[1]; }
-    const sg = A > 0 ? 1 : -1;
-    const nrm = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1; return [sg * dy / L, -sg * dx / L]; };
-    return 'M' + P.map((p1, t) => {
-      const p0 = P[(t - 1 + n) % n], p2 = P[(t + 1) % n], n1 = nrm(p0, p1), n2 = nrm(p1, p2);
-      let bx = n1[0] + n2[0], by = n1[1] + n2[1]; const bl = Math.hypot(bx, by) || 1; bx /= bl; by /= bl;
-      const cosH = Math.max(0.05, bx * n1[0] + by * n1[1]);
-      const cross = (p1[0] - p0[0]) * (p2[1] - p1[1]) - (p1[1] - p0[1]) * (p2[0] - p1[0]);
-      const out = sg * cross < 0;
-      const e = out ? Math.min(GAP_W + 0.5 * (GAP_W / cosH - GAP_W), 10 * GAP_W) : GAP_W;
-      return (p1[0] + bx * e).toFixed(2) + ' ' + (p1[1] + by * e).toFixed(2);
-    }).join('L') + 'Z';
-  })();
+  const GAP_W = 6, outer = (body.match(/M[^M]*/) || [body])[0];
   const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
   return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
     + `<defs><mask id="${id}-swallow-under" maskUnits="userSpaceOnUse" ${big}><rect ${big} fill="#fff"/>`
@@ -456,12 +412,11 @@ function nameSwallow(id = 'cn') {
     // bird itslef")
     // (round the whole bird since, not clipped to the letters — clipped there, the letters' own soft edge showed as a
     // hairline along it, and on the white page it is unseen — "Make sure that the outline around the bird covers any
-    // harilines"; its corners mitred, so it comes to a point at the beak's and the tail's — "I'd like the outlines to
-    // mimic the points of the beak and tails", 2026-10-16)
-    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge">`
-    // (between round and pointed since — "Make outlines somewhere between their pointiness now and the last round",
-    // 2026-10-16: edgeD)
-    + `<path class="cn-swallow__fly" transform="${tf}" d="${edgeD}"/></g></g>`
+    // harilines"; pointed at the beak's and the tail's tips for a while, then halfway — "I'd like the outlines to mimic
+    // the points of the beak and tails", "Make outlines somewhere between their pointiness now and the last round" —
+    // and round again since, "Revert to pre-pointy outlines", 2026-10-16)
+    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" fill="none">`
+    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${2 * GAP_W}" stroke-linejoin="round"/></g></g>`
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
     + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
     + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
