@@ -813,6 +813,11 @@ var ncStemX = function () {
   seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top'));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { logoW = -1; seatColo(); });
   addEventListener('resize', function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }, { passive: true });
+  // (and when the column's width changes, which --cn-l and --fb-l are read off: the band's every seat asked for it
+  // while the strip was laid, and a stray resize after the first pass did — neither runs now, and the column widens
+  // once its socials have landed, 2026-10-16)
+  var railLW = document.querySelector('.page-rows .latest-rail--latest');
+  if (railLW && window.ResizeObserver) new ResizeObserver(function () { seatLogo(document.querySelector('.page-rows > .head-rail > .sub-ticker--top')); }).observe(railLW);
   var LIST_NAV = true;
   var bandCtx = null;
   var RAIL_NAME_CAPS = 13.1338;

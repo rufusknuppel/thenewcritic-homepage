@@ -6865,8 +6865,10 @@
           if (secQ && secQ.style.getPropertyValue('--rows-h') !== nvQ) {
             if (nvQ) secQ.style.setProperty('--rows-h', nvQ, 'important');
             else secQ.style.removeProperty('--rows-h');
-            clearTimeout(window.__ncSquareT);
-            window.__ncSquareT = setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
+            if (!firstOfTwo) {
+              clearTimeout(window.__ncSquareT);
+              window.__ncSquareT = setTimeout(fitAll, 0);
+            }
           }
         }
         if (kind === 'co' && secQ && secQ.style.getPropertyValue('--rows-h')) sh = 0;

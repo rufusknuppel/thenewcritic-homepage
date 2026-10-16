@@ -9110,8 +9110,14 @@
           if (secQ && secQ.style.getPropertyValue('--rows-h') !== nvQ) {
             if (nvQ) secQ.style.setProperty('--rows-h', nvQ, 'important');
             else secQ.style.removeProperty('--rows-h');
-            clearTimeout(window.__ncSquareT);
-            window.__ncSquareT = setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 0);
+            // (in the pass's first run the second reads the rows anew, and
+            // that is the refit; in its last, a pass of the fitter's own —
+            // not a resize, which woke every listener on the page and ran
+            // a whole pass more on every load at 1024 and 1440, 2026-10-16)
+            if (!firstOfTwo) {
+              clearTimeout(window.__ncSquareT);
+              window.__ncSquareT = setTimeout(fitAll, 0);
+            }
           }
         }
         // (held square, it is not narrowed to its height besides)
