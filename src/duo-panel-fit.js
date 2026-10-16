@@ -6862,6 +6862,13 @@
     // forced layout, so the new height lands whole and instantly.
     var frozen = [].slice.call(document.querySelectorAll('.latest-cover-col--square'));
     frozen.forEach(function (el) { el.style.transition = 'none'; });
+    // (and the rows' slide with the column, --rail-shift's .6s: a pass
+    // that began while they still slid — a face landing late moves the
+    // column's edge, and its resize asks for a pass as the rows come
+    // back — measured every picture off rows a fraction short of their
+    // seat, its frame off its whole pixels for the visit, 2026-10-15)
+    var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
+    slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     try {
       // THE PASS RUNS TWICE (2026-10-01). Its steps read each other's
       // answers across the whole page, and the first of them read a page
@@ -6911,6 +6918,7 @@
       }
     } finally {
       frozen.forEach(function (el) { void el.offsetHeight; el.style.transition = ''; });
+      slid.forEach(function (el) { void el.offsetHeight; el.style.removeProperty('transition'); });
     }
     });
     lastWorld = { start: world0, end: worldSig() };

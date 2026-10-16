@@ -1125,6 +1125,13 @@ async function fetchHtml(url) {
 let failedPageFetches = 0;
 
 function extractPreloads(html) {
+  // (Substack's pages carry the preloads as a JSON script block since
+  // 2026-10 — <script type="application/json" id="preloads-json"> —
+  // where they were a JSON.parse("…") string; both are read)
+  const j = /<script\b[^>]*\bid="preloads-json"[^>]*>([\s\S]*?)<\/script>/.exec(html);
+  if (j) {
+    try { return JSON.parse(j[1]); } catch { /* the older form below */ }
+  }
   const m = /window\._preloads\s*=\s*JSON\.parse\("([\s\S]*?)"\)<\/script>/.exec(html);
   if (!m) return null;
   try {

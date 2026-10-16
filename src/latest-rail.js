@@ -17,6 +17,10 @@ var RAIL_COL = 238 + 36;
 // (the rows' left edge 54 off the window's side since, their right still the nav's inset short of the column under the
 // socials — "have the left margin of the content column be 54px from the side", 2026-10-15)
 var NC_ROWL = 54;
+// (the old strip over the rows — the head rail's sub-ticker — stands out of sight since the band moved into main (style
+// .css: no height, no opacity), its words, logo and colophon with it; what only lays it out is skipped while it is
+// gone — "Identify why the site loads so slowly ... lowest risk fixes", 2026-10-15)
+var ncStripGone = function (st) { return !!st && st.offsetHeight === 0 && getComputedStyle(st).opacity === '0'; };
 var ncStemX = function () {
   var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
   return r && r.height ? Math.round(r.left + r.height * 45.3 / 300) : 53;
@@ -1334,6 +1338,19 @@ var ncStemX = function () {
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     var co = document.querySelector('.page-rows > .section-band--colophon.colo');
     if (!st || !co || !main.classList.contains('wm-banded')) return;
+    // (gone, only what the page outside the strip reads of it is kept: the rule under the head rail seated at its foot,
+    // and no cover — the cover has been 0 since THE BAND HOLDS AT THE FOOTER)
+    if (ncStripGone(st)) {
+      band.seatLead = false;
+      var hrG = st.parentElement;
+      if (hrG) {
+        var fvG = Math.max(0, st.getBoundingClientRect().bottom).toFixed(2) + 'px';
+        if (hrG.style.getPropertyValue('--band-foot') !== fvG) hrG.style.setProperty('--band-foot', fvG);
+        if (hrG.style.getPropertyValue('--band-cover') !== '0.00px') hrG.style.setProperty('--band-cover', '0.00px');
+      }
+      ['--foot-cover', '--fill-top', '--fill-bot'].forEach(function (p) { if (main.style.getPropertyValue(p) !== '0.00px') main.style.setProperty(p, '0.00px'); });
+      return;
+    }
     // (the band's words at rest stand evenly between the name's ink and
     // the bird's outline — "the nav bar items should be evenly distributed
     // between ink of wordmark and ink of stamp outline": one gap from
@@ -1805,6 +1822,10 @@ var ncStemX = function () {
   measure();
   window.__ncRailEdge = measure;
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  // (and whenever a face lands, not only the first wave: the column's width is read off the socials, whose italic can
+  // land after the faces are said to be ready — the rows then moved a pixel or two after their last fit, the frames off
+  // their whole pixels; a width that has changed asks for the fit again, one that has not does nothing, 2026-10-15)
+  if (document.fonts) document.fonts.addEventListener('loadingdone', function () { setTimeout(measure, 0); });
   addEventListener('resize', measure, { passive: true });
   addEventListener('load', measure);
 })();
@@ -1944,16 +1965,27 @@ var ncStemX = function () {
     var inkL = 1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
     // (the words on the left alone since, less the centring of a picture at its own shape — the row's edge, not where a
     // narrower pair stands on the column's middle, 2026-10-15)
+    // (read with the rows' slide stood down, where they will stand, not where they are on the way: read as they still
+    // slid back from a resize's carry, the carry came out 19 wide and stayed so — duo-panel-fit.js fitAllNow, which
+    // stands it down for its pass the same way, 2026-10-15)
+    var slidG = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
+    slidG.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card .duo-half--mega.is-slide'), 0, 8).forEach(function (c) {
       var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
       if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0));
     });
+    slidG.forEach(function (el) { el.style.removeProperty('transition'); });
     if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
+    document.documentElement.style.setProperty('--opb-in', ncStemX() + 'px');
+    carry();
+  };
+  // (the hold's carry alone, which lay below asks for too once it has set where the socials stand — not the rows' slide,
+  // which is the fitter's to settle, 2026-10-15)
+  var carry = function () {
+    if (!holdG || !main.classList.contains('rail-is-shut') || window.innerWidth < 1024) return;
     // (the column under the socials since, as wide as they are and on their middle — "Have the side column expand to be
     // the size of the socials, center the bird and the latest in the column", 2026-10-15: --rl-gtx the hold's carry,
     // --nc-colw the socials' width)
-    var vwG = document.documentElement.clientWidth;
-    document.documentElement.style.setProperty('--opb-in', ncStemX() + 'px');
     var socG = document.querySelector('main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
     if (!sq || !sq.width) return;
     document.documentElement.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
@@ -1970,6 +2002,9 @@ var ncStemX = function () {
   addEventListener('resize', function () { shift(); gut(); }, { passive: true });
   addEventListener('load', gut);
   document.addEventListener('newcritic:fit', function () { setTimeout(gut, 0); });
+  // (and the carry after the band is laid, which sets where the socials stand — window.__ncGut, called by lay below:
+  // read before it, as a face landed, the column stood a pixel or so off the socials' middle on some loads, 2026-10-15)
+  window.__ncGut = carry;
 })();
 // THE DOT AT THE LATEST'S TOP LEFT (2026-10-09, at the user's words — "move
 // the dot to the top left of The Latest"): the box over The Latest's depth
@@ -2599,7 +2634,10 @@ var ncStemX = function () {
               // tolerance on them was a guess that failed at some sizes)
               var kOpen = kList.getAnimations ? !kList.getAnimations().length : Math.abs(kList.getBoundingClientRect().height - kList.scrollHeight) < 4;
               var kKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
-              var kHeld = hold.__ncKmK === kKey;
+              // (read again whenever a list stands open since, not held from the first read: one read at an unlucky moment
+              // stood for the whole visit — the bird a few pixels off on some loads; a settled read is the same under every
+              // section, so the gaps hold still, 2026-10-15)
+              var kHeld = false;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
               if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
               var kNext = metasS[metasS.indexOf(metaC) + 1];
@@ -2625,15 +2663,19 @@ var ncStemX = function () {
               // Latest's capitals with it, only the open section's kickers changing under them as the sections come and go
               // — "Bird should be fixed, shouldn't move with the latest adjustments", "I want the latest to hold position",
               // 2026-10-15)
-              var gKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
+              // (keyed on the window's size alone since: the faces' status flips to loading whenever one more face starts,
+              // and a seat then fell back to an unsettled read — the bird a few pixels off on some loads; a face that lands
+              // asks for a seat of its own, which reads afresh once the list stands)
+              var gKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height);
               // (and kept only once the open list and its gaps have settled: read while they still eased in, the stack came
               // out short and the bird stood 20 high)
               var kcs = getComputedStyle(kList);
               var kSet = kOpen && hold.style.getPropertyValue('--rl-kmt') && (!kNext || hold.style.getPropertyValue('--rl-kmb')) && Math.abs((parseFloat(kcs.marginTop) || 0) - (parseFloat(hold.style.getPropertyValue('--rl-kmt')) || 0)) < 0.5 && (!kNext || Math.abs((parseFloat(kcs.marginBottom) || 0) - (parseFloat(hold.style.getPropertyValue('--rl-kmb')) || 0)) < 0.5);
-              if (bUnder) { if (hold.__ncGapK === gKey) { gapB = hold.__ncGap; stackB = hold.__ncStackH; } else if (kSet) { hold.__ncGapK = gKey; hold.__ncGap = gapB; hold.__ncStackH = stackB; } }
-              // (the kickers' gaps kept with them, the same under every section: read again as a list still eased open, they
-              // shook the names under it)
-              if (kSet && kNext) hold.__ncKmK = kKey;
+              // (and seated again once it does, where it has not yet: the last seat of a load could fall while the open list
+              // still eased open, and nothing came after it to read the settled stack — at most 8 tries)
+              if (kSet) hold.__ncSettleN = 0;
+              else if ((hold.__ncSettleN || 0) < 8) { hold.__ncSettleN = (hold.__ncSettleN || 0) + 1; clearTimeout(hold.__ncSettleT); hold.__ncSettleT = setTimeout(seat, 750); }
+              if (bUnder) { if (kSet && kNext) { hold.__ncGapK = gKey; hold.__ncGap = gapB; hold.__ncStackH = stackB; } else if (hold.__ncGapK === gKey) { gapB = hold.__ncGap; stackB = hold.__ncStackH; } }
               var gTopB = gapB - 27;
               if (bUnder) hold.style.setProperty('--rl-birdt', (gTopB + stackB + gapB).toFixed(2) + 'px');
               var shB = bUnder ? hr.top + gTopB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
@@ -2796,6 +2838,8 @@ window.ncOpenH = function () {
       band.style.setProperty('--opb-nav-l', navL0.toFixed(2) + 'px');
       band.style.setProperty('--opb-soc-r', socR0.toFixed(2) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - socR0 - sw) / 2).toFixed(1) + 'px');
+      // (the column under the socials carried to where they now stand)
+      if (window.__ncGut) setTimeout(window.__ncGut, 0);
     }
   };
   // (the column shut till the band pins, opening as it does, its bird alone out from the first, where it will stand —
