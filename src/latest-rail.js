@@ -3027,7 +3027,8 @@ window.ncOpenH = function () {
       cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
       var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
-      var dx = ox + (fq.left > tR ? fq.left - 27 - tR : tL < fq.right ? 0 : fq.right + 27 - tL);
+      // (54 off it again since — "Revert back to 54px margins", 2026-10-16)
+      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
       var ruleT = dkB + 27, dy = ruleT + 2 + 27 - capT;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
       if (sb.style.getPropertyValue('translate') !== sv) sb.style.setProperty('translate', sv, 'important');
