@@ -2904,8 +2904,8 @@ window.ncOpenH = function () {
     var g = sw && sw.querySelector('.cn-swallow__tlm'), cn = document.querySelector('a.content-name');
     if (!g || !cn || (window.pageYOffset || 0) >= cn.offsetHeight - 0.5) return;
     var tlm = document.querySelector('main .op-band > a.rail-tlm'), m = sw.getScreenCTM(), html = '';
-    var fly = sw.querySelectorAll('.cn-swallow__fly'), axX = fly[1] && parseFloat(fly[1].getAttribute('data-axis-x'));
-    var cBot = fly[1] && parseFloat(fly[1].getAttribute('data-c-bot'));
+    var fly = sw.querySelectorAll('.cn-swallow__fly'), flyA = sw.querySelector('.cn-swallow__fly[data-axis-x]');
+    var axX = flyA && parseFloat(flyA.getAttribute('data-axis-x')), cBot = flyA && parseFloat(flyA.getAttribute('data-c-bot'));
     var t0 = tlm && tlm.getClientRects().length && tlm.querySelector('svg');
     if (m && m.d && t0 && axX === axX) {
       var sr = sw.getBoundingClientRect(), tr = t0.getBoundingClientRect(), y0 = -(window.pageYOffset || 0);

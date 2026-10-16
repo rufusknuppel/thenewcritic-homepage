@@ -406,18 +406,20 @@ function nameSwallow(id = 'cn') {
     + `<clipPath id="${id}-swallow-letters">${wP ? `<path transform="translate(${wX.toFixed(2)} 0) ${wP[1]}" d="${wP[2]}"/>` : ''}<path transform="${c[1]}" d="${c[2]}"/></clipPath>`
     + (cut ? `<mask id="${id}-swallow-gap" maskUnits="userSpaceOnUse" x="-100" y="-100" width="900" height="930"><rect x="-100" y="-100" width="900" height="930" fill="#fff"/><path d="${cut}" fill="#000"/></mask>` : '')
     + `<clipPath id="${id}-swallow-ink"><path class="cn-swallow__fly" transform="${tf}" clip-rule="evenodd" d="${body}"/></clipPath></defs>`
-    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
-    + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
-    + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
-    + `</g></g>`
     // (the bird black since, edged a pixel in white where it crosses the letters — "Make bird Black and add a 1px outlin
     // in white to letters where the bird overlaps", "Should trace the outline of the beak and the tail", 2026-10-16: the
     // bird's own outline, clipped to the W's and the C's ink, where it runs over them (under the mask, so not under the
     // C's left half; the C's own outline where the tail runs under it gone since, "Remove outline on C except tail"). As
     // wide as the wing gap since, the bird's outer edge alone, not the beak's notch — "Have the outline be as wide as the
-    // wing gap", "don't do this for the beak notch, just the beak": GAP_W, in the drawing's units, so it grows with it)
+    // wing gap", "don't do this for the beak notch, just the beak": GAP_W, in the drawing's units, so it grows with it;
+    // drawn under the bird twice that wide since, so all of it stands outside the bird — "Outline shouldn't cut into
+    // bird itslef")
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-letters)" fill="none">`
-    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${GAP_W}" stroke-linejoin="round"/></g></g>`
+    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${2 * GAP_W}" stroke-linejoin="round"/></g></g>`
+    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
+    + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
+    + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
+    + `</g></g>`
     + `<g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
 }
 function contentNameBlock() {
