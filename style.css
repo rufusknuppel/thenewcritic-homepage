@@ -30828,10 +30828,10 @@ html body .cn-swallow .cn-swallow__beak{ fill: var(--k, #121417) !important; }
 /* (the bird black since, edged a pixel in white where it crosses the letters, the beak's notch white — "Make bird
    Black and add a 1px outlin in white to letters where the bird overlaps", "Should trace the outline of the beak and
    the tail", 2026-10-16: the bird's outline where it runs over the W and the C; the C's own where the tail runs
-   under gone since, "Remove outline on C except tail") */
+   under gone since, "Remove outline on C except tail"; as wide as the wing gap since, its width set in build.js) */
 html body .cn-swallow .cn-swallow__body{ fill: var(--k, #121417) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: #FFFFFF !important; }
-html body .cn-swallow .cn-swallow__edge path{ fill: none !important; stroke: #FFFFFF !important; stroke-width: 1px !important; }
+html body .cn-swallow .cn-swallow__edge path{ fill: none !important; stroke: #FFFFFF !important; }
 html body .cn-swallow .cn-swallow__tlm{ fill: var(--k, #121417); color: var(--k, #121417); }
 html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){

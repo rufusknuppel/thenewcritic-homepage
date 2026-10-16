@@ -389,6 +389,9 @@ function nameSwallow(id = 'cn') {
   const bx = axisX - 299.22 * ks, by = -(728.23 * ks - cBot) / 2 - 0.14 * ks;
   const tf = `translate(${bx.toFixed(2)} ${by.toFixed(2)}) scale(${ks.toFixed(5)})`;
   const half = (cLo + cHi) / 2 - 20 * u;
+  // (the wing gap's width in the drawing's units, twice its area over its outline's length, ~5.9; the body's outer edge,
+  // its first subpath — the second is the beak's notch)
+  const GAP_W = 6, outer = (body.match(/M[^M]*/) || [body])[0];
   // (the W as NEW sets it, carried into CRITIC's units: NEW's box ends the word gap left of CRITIC's)
   const nw = spacedWord('new', LETTER_K), nwW = nw.ar * cap;
   const wP = [...nw.svg.matchAll(/<path fill="currentColor" transform="([^"]+)" d="([^"]+)"\/>/g)].pop();
@@ -396,7 +399,9 @@ function nameSwallow(id = 'cn') {
   const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
   return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
     + `<defs><mask id="${id}-swallow-under" maskUnits="userSpaceOnUse" ${big}><rect ${big} fill="#fff"/>`
-    + `<path transform="${c[1]}" d="${c[2]}" fill="#000" clip-path="url(#${id}-swallow-cl)"/></mask>`
+    // (and a wing gap's width either side of it, so the tail stops short of the C's left half and starts again past it
+    // — "Have that gap on either side of the C intersection too", 2026-10-16: GAP_W, the drawing's wing gap)
+    + `<path transform="${c[1]}" d="${c[2]}" fill="#000" stroke="#000" stroke-width="${(2 * GAP_W * ks).toFixed(2)}" stroke-linejoin="round" clip-path="url(#${id}-swallow-cl)"/></mask>`
     + `<clipPath id="${id}-swallow-cl"><rect x="-${cap * 4}" y="-${cap}" width="${(half + cap * 4).toFixed(2)}" height="${cap * 3}"/></clipPath>`
     + `<clipPath id="${id}-swallow-letters">${wP ? `<path transform="translate(${wX.toFixed(2)} 0) ${wP[1]}" d="${wP[2]}"/>` : ''}<path transform="${c[1]}" d="${c[2]}"/></clipPath>`
     + (cut ? `<mask id="${id}-swallow-gap" maskUnits="userSpaceOnUse" x="-100" y="-100" width="900" height="930"><rect x="-100" y="-100" width="900" height="930" fill="#fff"/><path d="${cut}" fill="#000"/></mask>` : '')
@@ -408,10 +413,11 @@ function nameSwallow(id = 'cn') {
     // (the bird black since, edged a pixel in white where it crosses the letters — "Make bird Black and add a 1px outlin
     // in white to letters where the bird overlaps", "Should trace the outline of the beak and the tail", 2026-10-16: the
     // bird's own outline, clipped to the W's and the C's ink, where it runs over them (under the mask, so not under the
-    // C's left half; the C's own outline where the tail runs under it gone since, "Remove outline on C except tail"). A
-    // CSS pixel whatever the size, non-scaling)
+    // C's left half; the C's own outline where the tail runs under it gone since, "Remove outline on C except tail"). As
+    // wide as the wing gap since, the bird's outer edge alone, not the beak's notch — "Have the outline be as wide as the
+    // wing gap", "don't do this for the beak notch, just the beak": GAP_W, in the drawing's units, so it grows with it)
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-letters)" fill="none">`
-    + `<path class="cn-swallow__fly" transform="${tf}" d="${body}" vector-effect="non-scaling-stroke"/></g></g>`
+    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${GAP_W}" stroke-linejoin="round"/></g></g>`
     + `<g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
 }
 function contentNameBlock() {
