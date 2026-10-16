@@ -381,9 +381,9 @@ function nameSwallow(id = 'cn') {
   // so its foot a little under the baseline; cBot, data-c-bot, for latest-rail.js swallowTlm too)
   const ys = c[2].match(/-?\d*\.?\d+/g).map(Number).filter((_, i) => i % 2 === 1);
   const cBot = cap / 2 + (Math.max(...ys) - cap / 2) * ((WM_GROW.critic || {})[0] || 1);
-  // (23 of the mock's units right of the gap's middle since — "move bird 5 mock units right", "Move another 5 units
-  // right", "Move another 8 units", "Move 5 units right", 2026-10-16)
-  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2 + 23 * u, ks = k * u;
+  // (28 of the mock's units right of the gap's middle since — "move bird 5 mock units right", "Move another 5 units
+  // right", "Move another 8 units", "Move 5 units right", "Move another 5 units right", 2026-10-16)
+  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2 + 28 * u, ks = k * u;
   const bx = axisX - 299.22 * ks, by = -(728.23 * ks - cBot) / 2 - 0.14 * ks;
   const tf = `translate(${bx.toFixed(2)} ${by.toFixed(2)}) scale(${ks.toFixed(5)})`;
   const half = (cLo + cHi) / 2 - 20 * u;
