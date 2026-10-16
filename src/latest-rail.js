@@ -1335,6 +1335,7 @@ var ncStemX = function () {
   // 0 to 1, on the band; --band-logo-w, the name's width; style.css, THE
   // BAND GIVES UP ITS NAME).
   var band = function () {
+    band.still = false;
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     var co = document.querySelector('.page-rows > .section-band--colophon.colo');
     if (!st || !co || !main.classList.contains('wm-banded')) return;
@@ -1344,7 +1345,10 @@ var ncStemX = function () {
       band.seatLead = false;
       var hrG = st.parentElement;
       if (hrG) {
-        var fvG = Math.max(0, st.getBoundingClientRect().bottom).toFixed(2) + 'px';
+        var sbG = st.getBoundingClientRect().bottom, fvG = Math.max(0, sbG).toFixed(2) + 'px';
+        // (its foot above the document's top, the head rail not sticky: 0 at every scroll, so the scroll's frame leaves
+        // it be till a seat, a pass or a resize reads it again — band.still, below)
+        band.still = sbG + (window.pageYOffset || 0) <= 0;
         if (hrG.style.getPropertyValue('--band-foot') !== fvG) hrG.style.setProperty('--band-foot', fvG);
         if (hrG.style.getPropertyValue('--band-cover') !== '0.00px') hrG.style.setProperty('--band-cover', '0.00px');
       }
@@ -1588,7 +1592,7 @@ var ncStemX = function () {
     ticking = true;
     // (not the band while the name stands open or is shutting — THE NAME OPENS BIG: its pieces are carried by
     // animations, and nothing moves them under the scroll)
-    requestAnimationFrame(function () { ticking = false; gauge(); light(); if (!(window.__ncOpenBusy && window.__ncOpenBusy())) band(); });
+    requestAnimationFrame(function () { ticking = false; gauge(); light(); if (!band.still && !(window.__ncOpenBusy && window.__ncOpenBusy())) band(); });
   }, { passive: true });
   addEventListener('newcritic:railshut', function () { band.seatLead = true; band(); });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {

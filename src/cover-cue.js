@@ -270,7 +270,10 @@
     var boxed = !!swapped(cover) && !!words.closest('.card-title, .latest-title, .card-dek, .latest-dek');
     return cover ? { cover: cover, say: true, mid: !boxed, title: title } : null;
   }
-  var cue = null, host = null, rafId = 0, px = 0, py = 0;
+  // (the hand's place unknown till it moves, not the window's corner: a
+  // card travelling at load made the line for a hand at 0,0, and every
+  // scroll after asked the corner what stood under it, 2026-10-16)
+  var cue = null, host = null, rafId = 0, px = null, py = null;
   // WHERE THE WORDS SIT: on the pointer, or in the middle of the
   // picture. (A third seat, HELD where the pointer left it and pulled
   // the courier's 24 inside the border, stood here for a few minutes
@@ -473,6 +476,10 @@
     // Nothing to do until the reader has stood on a picture once: no
     // line has been made, so no line can be out of place.
     if (!cue) return;
+    // (nor once the hand has left the window: no picture can come under
+    // a pointer that is not on the page, and the hit test was a forced
+    // layout on every scroll frame of a wheel turned from outside it)
+    if (px == null || py == null) return;
     if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
     follow();
   }
@@ -584,5 +591,8 @@
   window.addEventListener('resize', queueFollow, { passive: true });
   // And on the press that takes the reader away.
   document.addEventListener('pointerdown', hide, { passive: true });
+  // And when the hand leaves the window, which is no place on the page
+  // (the next move over it reads the place afresh, 2026-10-16).
+  document.documentElement.addEventListener('mouseleave', function () { px = py = null; hide(); inbox(null); });
   window.addEventListener('blur', function () { hide(); inbox(null); });
 })();

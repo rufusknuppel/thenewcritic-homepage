@@ -11102,6 +11102,7 @@ var ncStemX = function () {
     lift(); setTimeout(lift, 50); setTimeout(lift, 1000); setTimeout(lift, 1700);
   });
   var band = function () {
+    band.still = false;
     var st = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
     var co = document.querySelector('.page-rows > .section-band--colophon.colo');
     if (!st || !co || !main.classList.contains('wm-banded')) return;
@@ -11109,7 +11110,8 @@ var ncStemX = function () {
       band.seatLead = false;
       var hrG = st.parentElement;
       if (hrG) {
-        var fvG = Math.max(0, st.getBoundingClientRect().bottom).toFixed(2) + 'px';
+        var sbG = st.getBoundingClientRect().bottom, fvG = Math.max(0, sbG).toFixed(2) + 'px';
+        band.still = sbG + (window.pageYOffset || 0) <= 0;
         if (hrG.style.getPropertyValue('--band-foot') !== fvG) hrG.style.setProperty('--band-foot', fvG);
         if (hrG.style.getPropertyValue('--band-cover') !== '0.00px') hrG.style.setProperty('--band-cover', '0.00px');
       }
@@ -11246,7 +11248,7 @@ var ncStemX = function () {
   addEventListener('scroll', function () {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () { ticking = false; gauge(); light(); if (!(window.__ncOpenBusy && window.__ncOpenBusy())) band(); });
+    requestAnimationFrame(function () { ticking = false; gauge(); light(); if (!band.still && !(window.__ncOpenBusy && window.__ncOpenBusy())) band(); });
   }, { passive: true });
   addEventListener('newcritic:railshut', function () { band.seatLead = true; band(); });
   ['load', 'resize', 'newcritic:fit', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) {
@@ -12590,7 +12592,7 @@ window.ncOpenH = function () {
     var boxed = !!swapped(cover) && !!words.closest('.card-title, .latest-title, .card-dek, .latest-dek');
     return cover ? { cover: cover, say: true, mid: !boxed, title: title } : null;
   }
-  var cue = null, host = null, rafId = 0, px = 0, py = 0;
+  var cue = null, host = null, rafId = 0, px = null, py = null;
   var mode = 'pointer', lit = null;
   var originX = 0, originY = 0, seated = false;
   function origin() {
@@ -12693,6 +12695,7 @@ window.ncOpenH = function () {
   }
   function queueFollow() {
     if (!cue) return;
+    if (px == null || py == null) return;
     if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
     follow();
   }
@@ -12754,6 +12757,7 @@ window.ncOpenH = function () {
   window.addEventListener('scroll', queueFollow, { passive: true });
   window.addEventListener('resize', queueFollow, { passive: true });
   document.addEventListener('pointerdown', hide, { passive: true });
+  document.documentElement.addEventListener('mouseleave', function () { px = py = null; hide(); inbox(null); });
   window.addEventListener('blur', function () { hide(); inbox(null); });
 })();
 
