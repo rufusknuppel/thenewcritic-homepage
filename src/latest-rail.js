@@ -2947,9 +2947,9 @@ window.ncOpenH = function () {
   // (the band's rule over the post passing under it — "Hide the rule until the top outline of the first post, grow the
   // rule to cover only the card width, shrinking and disappearing between posts and growing (pinned to scroll) to cover
   // the text of various posts as they scroll under the band", 2026-10-16: each post's ink, its picture and its words,
-  // read in the page; the rule unseen till a post's top reaches the band's foot, growing from the post's middle to its
-  // width over the next RULE_RUN of scroll, held, and shrinking back to its middle over the last RULE_RUN before its
-  // foot passes, so it is gone between posts — written as one keyframe run on the root's scroll timeline, so the
+  // read in the page; the rule unseen till a post's picture's top reaches the band's foot, then its outline's width,
+  // growing toward the words to the post's width over the next RULE_RUN of scroll, held, and shrinking to the post's
+  // middle over the last RULE_RUN before its foot passes, so it is gone between posts — written as one keyframe run on the root's scroll timeline, so the
   // compositor carries it and no script runs on the scroll; style.css THE RULE OVER THE POST UNDER THE BAND)
   var RULE_RUN = 54, ruleKey = '', ruleCss = null;
   var bandRule = function () {
@@ -2961,22 +2961,24 @@ window.ncOpenH = function () {
     var sy = window.pageYOffset || 0, de2 = document.documentElement, max = de2.scrollHeight - window.innerHeight, bh = band.offsetHeight;
     if (max <= 0 || !bh) return;
     var spans = [];
+    // (each post's picture too — its outline's top is where the rule starts, as wide as it, "The rule should only grow
+    // left or right from the top of the image outline, then shrink to the middle", 2026-10-16: iL, iR, iT)
     [].forEach.call(document.querySelectorAll('.page-rows section.card'), function (c) {
-      var L = 1e9, R = -1e9, T = 1e9, B = -1e9;
+      var L = 1e9, R = -1e9, T = 1e9, B = -1e9, fr = c.querySelector('.card-frame'), fq = fr && fr.getBoundingClientRect();
       [].forEach.call(c.querySelectorAll('.card-frame, .swap-body-head, .swap-body-text'), function (e) {
         var r = e.getBoundingClientRect();
         if (!r.width || !r.height) return;
         L = Math.min(L, r.left); R = Math.max(R, r.right); T = Math.min(T, r.top + sy); B = Math.max(B, r.bottom + sy);
       });
-      if (R > L && B > T) spans.push({ L: L, R: R, T: T, B: B });
+      if (R > L && B > T && fq && fq.width) spans.push({ L: L, R: R, T: T, B: B, iL: fq.left, iR: fq.right, iT: fq.top + sy });
     });
-    spans.sort(function (a, b) { return a.T - b.T; });
-    // (posts standing over one another's lines one stretch, their widths together)
+    spans.sort(function (a, b) { return a.iT - b.iT; });
+    // (posts standing over one another's lines one stretch, their widths together, the first picture's outline its start)
     var segs = [];
     spans.forEach(function (q) {
       var z = segs[segs.length - 1];
-      if (z && q.T < z.B) { z.L = Math.min(z.L, q.L); z.R = Math.max(z.R, q.R); z.B = Math.max(z.B, q.B); }
-      else segs.push({ L: q.L, R: q.R, T: q.T, B: q.B });
+      if (z && q.iT < z.B) { z.L = Math.min(z.L, q.L); z.R = Math.max(z.R, q.R); z.B = Math.max(z.B, q.B); }
+      else segs.push({ L: q.L, R: q.R, B: q.B, iL: q.iL, iR: q.iR, iT: q.iT });
     });
     // (the scroll at which the pinned band's foot stands at a line of the page)
     var at = function (y) { return Math.max(0, Math.min(max, y - bh)); };
@@ -2984,9 +2986,11 @@ window.ncOpenH = function () {
     var kf = function (sv, x, w) { return pct(sv) + '{transform:translateX(' + x.toFixed(1) + 'px) scaleX(' + Math.max(0, w).toFixed(1) + ')}'; };
     var steps = [];
     if (segs.length) steps.push(kf(0, (segs[0].L + segs[0].R) / 2, 0));
+    // (unseen till the picture's top reaches the band's foot, then at once the picture's outline's width, growing out from
+    // it toward the words alone over RULE_RUN, held, and shrinking to the post's middle over the last RULE_RUN)
     segs.forEach(function (g) {
-      var mid = (g.L + g.R) / 2, run = Math.min(RULE_RUN, (g.B - g.T) / 2);
-      steps.push(kf(at(g.T), mid, 0), kf(at(g.T + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(at(g.B), mid, 0));
+      var mid = (g.L + g.R) / 2, run = Math.min(RULE_RUN, (g.B - g.iT) / 2), s0 = at(g.iT);
+      steps.push(kf(Math.max(0, s0 - 0.5), mid, 0), kf(s0, g.iL, g.iR - g.iL), kf(at(g.iT + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(at(g.B), mid, 0));
     });
     if (segs.length) steps.push(kf(max, (segs[segs.length - 1].L + segs[segs.length - 1].R) / 2, 0));
     var css = '@keyframes nc-band-rule{' + steps.join('') + '}';
