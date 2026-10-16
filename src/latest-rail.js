@@ -2740,7 +2740,9 @@ var ncStemX = function () {
               if (swE && navA && cnW && !bUnder) {
                 var capN = parseFloat(getComputedStyle(cnW).fontSize) || 0, topN = cnW.getBoundingClientRect().top + (window.pageYOffset || 0);
                 var swH = 0.72 * ((parseFloat(swE.getAttribute('data-cbot')) || 1) * capN * (parseFloat(swE.getAttribute('data-k0')) || 1) + topN);
-                var aN = hr.top - baseOf(navA);
+                // (off the band's own foot, where the hold stands at the opening and pinned alike: read off the hold, a seat
+                // made before the band came to the opening's foot stood the bird 130 high till the next)
+                var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
                 // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
