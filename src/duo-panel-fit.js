@@ -7862,7 +7862,8 @@
               // row fell back to the name's foot, under the band, till a later pass — one a stray resize asked for — set it
               // right; 2026-10-15, "Identify why the site loads so slowly")
               var ohS = window.ncOpenH ? window.ncOpenH() : 0;
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 27;
+              // (right under it again since — "Start content right underneat band", 2026-10-16)
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;

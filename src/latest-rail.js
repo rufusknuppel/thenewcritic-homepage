@@ -2547,7 +2547,8 @@ var ncStemX = function () {
           // size can change and the bird keep its own — "keep the bird at current size", 2026-10-14: a quarter taller
           // than the name was across the window less two 54s and the column)
           var cnBlk = document.querySelector('a.content-name .content-name__block');
-          var lwbB = cnBlk ? parseFloat(cnBlk.style.getPropertyValue('--cn-lwb')) || 0 : 0;
+          // (off the line's width as it stood before the opening's words drew closer, --cn-lwb0, so the bird keeps its size)
+          var lwbB = cnBlk ? parseFloat(cnBlk.style.getPropertyValue('--cn-lwb0')) || parseFloat(cnBlk.style.getPropertyValue('--cn-lwb')) || 0 : 0;
           var cnlB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cn-l')) || 0;
           // (the column as it stood then, 299, whatever its width since — "Reduce the size of the garamond in the side column")
           // (grown as the column's ink is since — "Expand the side column by 27px, growing the wordmarks and bird")
@@ -2631,7 +2632,15 @@ var ncStemX = function () {
             // (the stack on the column's middle since, the bird gone to the window's corner and the name out of the column
             // — THE LATEST IN THE LEFT GUTTER)
             var bElB = hold.querySelector(':scope > .rail-mark--bird'), bVisB = bElB && bElB.getBoundingClientRect().height;
-            var birdTopB = !bVisB ? hr.bottom : tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
+            // (no bird, the stack on the middle of the room the column shows at the opening, from the band's foot to the
+            // window's — "Remove bird from side column and re-center the latest", 2026-10-16: the column rides under the band
+            // till it pins, so its room at the opening is the window less the opening, ncOpenH)
+            // (on the first picture's middle since — "On load have the lastest sit vertically centered based on the image
+            // position", 2026-10-16: the picture's middle in the page less the column's top at the opening, ncOpenH, the
+            // stack centred on twice that under the column's top)
+            var fr1B = document.querySelector('.page-rows section.card .card-frame'), f1r = fr1B && fr1B.getBoundingClientRect();
+            var midB = f1r && f1r.height ? f1r.top + (window.pageYOffset || 0) + f1r.height / 2 - (window.ncOpenH ? window.ncOpenH() : 0) : null;
+            var birdTopB = !bVisB ? hr.top + (midB != null ? 2 * midB : Math.min(hr.height, document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0))) : tncRb && tncRb.height ? tncRb.top - 27 - bHb : hr.bottom - tlmB - bHb;
             // (under the bird since, its capitals 54 under the bird's foot, no longer on a middle — "Move the latest under
             // the bird ... don't center. anymore", 2026-10-15: the bird at the column's top, style.css THE COLUMN ON THE
             // RIGHT)
@@ -2879,10 +2888,52 @@ window.ncOpenH = function () {
     // (on the name, which alone reads it — the column's wipe that read it off main is overridden since THE LATEST SEEN
     // FROM THE FIRST: a class on main restyled the whole page on the scroll's first frame, ~400ms, 2026-10-16)
     cn.classList.toggle('op-pinned', on);
+    if (!on) swallowTlm();
+  };
+  // (THE LAST MAGAZINE over the bird's lower wing where they meet — "Have the last magazine be printed over the bottom
+  // wing if there's overlap", 2026-10-16: the band stands under the name, so its letters are drawn again inside the
+  // bird, clipped to its ink, where the band's own stand; read while the band rides under the name, where the two keep
+  // their places, and faded with it on the scroll's timeline; style.css THE BIRD BETWEEN NEW AND CRITIC)
+  // (and the bird sized to its wing tips' rooms first — "Want the wing tips to sit halfway between the last magazine and
+  // wordmark and halfway between wordmark and top of site", 2026-10-16: the upper tip, the drawing's (235.88, 0.14), on
+  // the middle of the page's top and the capitals', the lower, (362.56, 728.37), on the middle of the baseline and THE
+  // LAST MAGAZINE's capitals; the line between the tips on the gap's middle, where build.js set it, data-axis-x (the
+  // tips' middle 299.22 across); as build.js set it without a band)
+  var swallowTlm = function () {
+    var sw = document.querySelector('a.content-name .content-name__block > .cn-swallow > svg');
+    var g = sw && sw.querySelector('.cn-swallow__tlm'), cn = document.querySelector('a.content-name');
+    if (!g || !cn || (window.pageYOffset || 0) >= cn.offsetHeight - 0.5) return;
+    var tlm = document.querySelector('main .op-band > a.rail-tlm'), m = sw.getScreenCTM(), html = '';
+    var fly = sw.querySelectorAll('.cn-swallow__fly'), axX = fly[1] && parseFloat(fly[1].getAttribute('data-axis-x'));
+    var cBot = fly[1] && parseFloat(fly[1].getAttribute('data-c-bot'));
+    var t0 = tlm && tlm.getClientRects().length && tlm.querySelector('svg');
+    if (m && m.d && t0 && axX === axX) {
+      var sr = sw.getBoundingClientRect(), tr = t0.getBoundingClientRect(), y0 = -(window.pageYOffset || 0);
+      // (the lower tip as far under C's foot as the upper stands over W's top since — "have the space between the top
+      // wing and the top of W be the same as the space between the bottom wing and the bottom of the C", 2026-10-16)
+      var yUp = ((y0 + sr.top) / 2 - m.f) / m.d, yCap = (sr.top - m.f) / m.d;
+      var yLo = cBot === cBot ? cBot + (yCap - yUp) : ((sr.bottom + tr.top) / 2 - m.f) / m.d;
+      if (tr.top > sr.bottom && sr.top > y0) {
+        var k = (yLo - yUp) / (728.37 - 0.14);
+        var tf = 'translate(' + (axX - 299.22 * k).toFixed(2) + ' ' + (yUp - 0.14 * k).toFixed(2) + ') scale(' + k.toFixed(5) + ')';
+        [].forEach.call(fly, function (f) { if (f.getAttribute('transform') !== tf) f.setAttribute('transform', tf); });
+      }
+    }
+    if (tlm && m && m.a && tlm.getClientRects().length) {
+      [].forEach.call(tlm.querySelectorAll('svg'), function (t) {
+        var r = t.getBoundingClientRect();
+        if (!r.width) return;
+        html += '<svg x="' + ((r.left - m.e) / m.a).toFixed(2) + '" y="' + ((r.top - m.f) / m.d).toFixed(2) + '" width="' + (r.width / m.a).toFixed(2)
+          + '" height="' + (r.height / m.d).toFixed(2) + '" viewBox="' + t.getAttribute('viewBox') + '" overflow="visible">' + t.innerHTML + '</svg>';
+      });
+    }
+    if (g.__k !== html) { g.__k = html; g.innerHTML = html; }
   };
   window.addEventListener('scroll', pin, { passive: true });
-  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); pinned = null; pin(); });
-  document.addEventListener('newcritic:fit', function () { setTimeout(lay, 0); });
+  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); setTimeout(swallowTlm, 160); pinned = null; pin(); });
+  document.addEventListener('newcritic:fit', function () { setTimeout(lay, 0); setTimeout(swallowTlm, 0); });
+  window.addEventListener('load', function () { setTimeout(swallowTlm, 350); setTimeout(swallowTlm, 1550); });
+  setTimeout(swallowTlm, 850);
   pin();
   window.addEventListener('load', pin);
   window.addEventListener('load', function () { setTimeout(lay, 300); setTimeout(lay, 1500); });

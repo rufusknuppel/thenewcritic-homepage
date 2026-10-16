@@ -271,10 +271,12 @@ function tlmWords() {
 // (the band's THE NEW CRITIC in the LODÉHO block letters since — "make the new critic the block letters", 2026-10-14:
 // the name's drawing, assets/wordmark.svg, its letters as the name over the content last spaced them, LETTER_K, the
 // words half as far apart again as its word space, as the column's stamp had them; bandBlockWords)
-const bandBlockLineW = () => ['the', 'new', 'critic'].reduce((t, x) => t + spacedWord(x, LETTER_K).ar, 0) + 2 * 1.5 * WM_SPACE;
-function bandBlockWords() {
+// (the words SP word spaces apart, half as far again by default; the opening's name a fifth further than the drawing's
+// since — NAME_SPACE, THE BIRD BETWEEN NEW AND CRITIC)
+const bandBlockLineW = (sp = 1.5) => ['the', 'new', 'critic'].reduce((t, x) => t + spacedWord(x, LETTER_K).ar, 0) + 2 * sp * WM_SPACE;
+function bandBlockWords(sp = 1.5) {
   const w = (x) => spacedWord(x, LETTER_K).svg;
-  return `<span class="tnc-words" style="--tw-space: ${(1.5 * WM_SPACE).toFixed(4)}">`
+  return `<span class="tnc-words" style="--tw-space: ${(sp * WM_SPACE).toFixed(4)}">`
     + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('the')}${w('new')}</span></span>`
     + `<span class="tnc-words__grp"><span class="tnc-words__row">${w('critic')}</span></span></span>`;
 }
@@ -322,7 +324,10 @@ function opBand() {
     // opening name's climb out of the window — "Over the last 20% of the new critic disappearing, have the last magazine
     // fade out in the nav band and be replaced by THE NEW CRITIC, same height", 2026-10-15; style.css THE NAME INTO THE
     // BAND)
-    + `<a class="op-tnc" href="#top" aria-hidden="true" tabindex="-1">${bandBlockWords()}</a>`
+    + `<a class="op-tnc" href="#top" aria-hidden="true" tabindex="-1">${bandBlockWords(NAME_SPACE)}</a>`
+    // (the bird in it in miniature, as the opening name has it — "Keep bird in miniature in nav wordmark", 2026-10-16: a
+    // box as wide as that name on its middle, the bird over its CRITIC; style.css THE BIRD BETWEEN NEW AND CRITIC)
+    + `<span class="opb-swallow" aria-hidden="true" style="width: ${bandBlockLineW(NAME_SPACE).toFixed(4)}em">${nameSwallow('opb')}</span>`
     + soc + `</div></div>`;
 }
 // (the bird in the window's bottom right corner since, 27 over its foot and 27 in from either side of the right gutter
@@ -339,16 +344,69 @@ function cornerBird() {
   return `<a class="corner-bird" href="#top" aria-label="The New Critic — to the top of the front page" style="--cbd-ar: ${(vb[0] / vb[1]).toFixed(5)}"><svg viewBox="0 0 ${vb[0]} ${vb[1]}" focusable="false" aria-hidden="true">`
     + `${body} class="corner-bird__body"/>${beak ? `${beak.replace('class="beak-hole"', 'class="corner-bird__cut"')}/>` : ''}${cut ? `${cut} class="corner-bird__cut"/>` : ''}</svg></a>`;
 }
+// THE BIRD BETWEEN NEW AND CRITIC (2026-10-16 — "The bird 10% bigger than the text of the The NEW CRITIC wordmark, with
+// 20% more spacing between the words. The bird should be between THE NEW and CRITIC, the bird's beak overlapping with
+// the W and the tail should pass under the left side of C but over the right side. I want to see the bird in Highlight
+// color", then "Make bird 15% bigger, have the wing overlap the top of the W. keep the current angle of the bird", "Make
+// bird centered vertically in the letters", "Move the bird so that the little bit of black at the top of the W is
+// hidden", "That bird beak notch should be charcoal tho and the wing gap should be clear", "Show this on the site",
+// "Make bird 10% smaller", "I want the wing gap to be clean"): the swallow as the mock (exports/mocks/
+// make-bird-weave.js) set it — 1.1 × 1.15 × 0.9 the capitals tall, upright as the site draws it, on the letters'
+// middle, its wings on the middle of the space between W and C, the opening name's
+// words a fifth further apart than the drawing's word space (NAME_SPACE). Drawn over CRITIC in CRITIC's own units, its
+// body in the ink (the letters in the highlight since, "Turn bird to black and wordmark to red") with the wing gap
+// masked clean through it, the beak's notch in the letters' colour, and hidden
+// where the C's left half stands, so the tail runs under that side and over the right. The band's name carries it in
+// miniature ("Keep bird in miniature in nav wordmark"); ID keeps each copy's masks its own. style.css THE BIRD BETWEEN
+// NEW AND CRITIC.
+const NAME_SPACE = 1.2;
+function nameSwallow(id = 'cn') {
+  const src = (contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '';
+  const body = (src.match(/<path fill-rule="evenodd" d="([^"]+)"/) || [])[1];
+  const beak = (src.match(/<path class="beak-hole" d="([^"]+)"/) || [])[1];
+  const cut = (src.match(/<path d="([^"]+)"(?=[^>]*\/><\/svg>)/) || [])[1];
+  if (!body) return '';
+  const cr = spacedWord('critic', LETTER_K), cap = +cr.svg.match(/viewBox="[^"]+ ([\d.]+)"/)[1];
+  const c = cr.svg.match(/<path fill="currentColor" transform="([^"]+)" d="([^"]+)"\/>/);
+  const xs = c[2].match(/-?\d*\.?\d+/g).map(Number).filter((_, i) => i % 2 === 0);
+  const cLo = Math.min(...xs), cHi = Math.max(...xs);
+  // (the mock's measure: capitals 600 tall, the drawing's C from 2675.2, the words 1.2 × 216 apart, the bird's drawing
+  // 732.23 tall in its file's box from (-1.82, -1.86) and 728.84 tall in ink, its upper wing's tip 242 in)
+  const u = cap / 600, k = 600 * 1.1 * 1.15 * 0.9 / 732.23, cMock = 2675.2 + 2 * 0.2 * 216;
+  // (its wings on the middle of the space between W and C since — "I want to see the bird with wings halfway between W
+  // and C", 2026-10-16: the line from wing tip to wing tip, the drawing's (235.88, 0.14) to (362.56, 728.37), its middle
+  // 299.22 across, on the gap's middle; a little left for a while before, "Move the bird slightly left", "like 3%")
+  // (as far over W's top as under C's foot since — "have the space between the top wing and the top of W be the same as
+  // the space between the bottom wing and the bottom of the C", 2026-10-16: the C 3% grown about the capitals' middle,
+  // so its foot a little under the baseline; cBot, data-c-bot, for latest-rail.js swallowTlm too)
+  const ys = c[2].match(/-?\d*\.?\d+/g).map(Number).filter((_, i) => i % 2 === 1);
+  const cBot = cap / 2 + (Math.max(...ys) - cap / 2) * ((WM_GROW.critic || {})[0] || 1);
+  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2, ks = k * u;
+  const bx = axisX - 299.22 * ks, by = -(728.23 * ks - cBot) / 2 - 0.14 * ks;
+  const tf = `translate(${bx.toFixed(2)} ${by.toFixed(2)}) scale(${ks.toFixed(5)})`;
+  const half = (cLo + cHi) / 2 - 20 * u;
+  const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
+  return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
+    + `<defs><mask id="${id}-swallow-under" maskUnits="userSpaceOnUse" ${big}><rect ${big} fill="#fff"/>`
+    + `<clipPath id="${id}-swallow-cl"><rect x="-${cap * 4}" y="-${cap}" width="${(half + cap * 4).toFixed(2)}" height="${cap * 3}"/></clipPath>`
+    + `<path transform="${c[1]}" d="${c[2]}" fill="#000" clip-path="url(#${id}-swallow-cl)"/></mask>`
+    + (cut ? `<mask id="${id}-swallow-gap" maskUnits="userSpaceOnUse" x="-100" y="-100" width="900" height="930"><rect x="-100" y="-100" width="900" height="930" fill="#fff"/><path d="${cut}" fill="#000"/></mask>` : '')
+    + `<clipPath id="${id}-swallow-ink"><path class="cn-swallow__fly" transform="${tf}" clip-rule="evenodd" d="${body}"/></clipPath></defs>`
+    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
+    + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
+    + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
+    + `</g></g><g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
+}
 function contentNameBlock() {
   const cn = contentName();
   if (!cn) return '';
   // (THE LAST MAGAZINE under CRITIC since, as wide as CRITIC, a fifth of a capital under it — "Move the last magazine
   // below Critic", 2026-10-14: --cn-tlmk its capital in the name's; style.css THE LAST MAGAZINE UNDER CRITIC)
   const tlmK = TLM_WORDS ? spacedWord('critic', LETTER_K).ar / tlmLineW() : 0;
-  const words = !TLM_WORDS ? bandBlockWords() : bandBlockWords().replace(/(<span class="tnc-words__grp)("><span class="tnc-words__row">)((?:(?!<span class="tnc-words__grp)[\s\S])*)$/,
+  const words = !TLM_WORDS ? bandBlockWords(NAME_SPACE) : bandBlockWords(NAME_SPACE).replace(/(<span class="tnc-words__grp)("><span class="tnc-words__row">)((?:(?!<span class="tnc-words__grp)[\s\S])*)$/,
     (m, a1, a2, rest) => `${a1} tnc-words__grp--critic${a2}${rest.replace(/<\/span><\/span>$/, `</span><span class="content-name__tlm" aria-label="${escapeHtml(SITE_TAGLINE)}">${tlmWords()}</span></span>`)}`);
   return cn.replace('<a class="content-name content-name--stamp"', '<a class="content-name content-name--stamp content-name--block"')
-    .replace(/<\/a>$/, `<span class="content-name__block" style="--cn-lwb: ${bandBlockLineW().toFixed(4)}; --cn-tlmk: ${tlmK.toFixed(5)}">${words}</span></a>`);
+    .replace(/<\/a>$/, `<span class="content-name__block" style="--cn-lwb: ${bandBlockLineW(NAME_SPACE).toFixed(4)}; --cn-lwb0: ${bandBlockLineW().toFixed(4)}; --cn-tlmk: ${tlmK.toFixed(5)}">${words}${nameSwallow()}</span></a>`);
 }
 function contentName() {
   const TNC_MARK = TNC_BOX;
@@ -4022,7 +4080,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // separate the bird to sit above The Copyright", 2026-10-14: style.css THE WORDS AT THE TOP, THE BIRD AT THE FOOT)
       // (a link to the page's top since, with THE LAST MAGAZINE — "Bird and the last magazine should hover together and
       // take you to the top of the site", 2026-10-14; latest-rail.js .is-tlm-hot, style.css THE BIRD AND THE LAST MAGAZINE ONE LINK)
-      + `<a class="rail-mark rail-mark--bird" href="#top" aria-hidden="true" tabindex="-1">${birdSvgRm}</a>`;
+      // (out of the column since, the name's own bird in the highlight standing for it — "Remove bird from side column
+      // and re-center the latest", 2026-10-16: latest-rail.js, finding no bird, seats The Latest on the column's middle)
+      + '';
     return name.replace('__BIRD__', '') + '<span class="rail-name-rule" aria-hidden="true"></span>' + railBirdMark;
   };
   // THE BIRD UNDER THE KICKERS (2026-10-13 — "Move the bird under THE latest kickers"): under the open section's list,
