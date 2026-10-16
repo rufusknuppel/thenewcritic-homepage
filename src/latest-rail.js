@@ -2984,62 +2984,27 @@ window.ncOpenH = function () {
   // growing toward the words to the post's width over the next RULE_RUN of scroll, held, and shrinking to the post's
   // middle over the last RULE_RUN before its foot passes, so it is gone between posts — written as one keyframe run on the root's scroll timeline, so the
   // compositor carries it and no script runs on the scroll; style.css THE RULE OVER THE POST UNDER THE BAND)
-  var RULE_RUN = 54, ruleKey = '', ruleCss = null;
+  // (each post's own rule since, the band's gone — "Have the rule always expanded stretching out from the top of the
+  // posts, should attach to the bottom of the band on scroll, then scroll away at the bottom of the post", 2026-10-16:
+  // the picture's held top line, sticky in its frame, stretched past the picture over the words and 9 past them,
+  // --rule-xl and --rule-xr, read here; the frame is the post's foot, the words ending over it, so the line leaves with
+  // the post; style.css THE RULE ACROSS EACH POST'S TOP)
   var bandRule = function () {
     var band = document.querySelector('main .op-band');
-    if (!band) return;
-    var on = window.innerWidth >= 1024 && window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()');
-    band.classList.toggle('rule-runs', !!on);
-    if (!on) return;
-    var sy = window.pageYOffset || 0, de2 = document.documentElement, max = de2.scrollHeight - window.innerHeight, bh = band.offsetHeight;
-    if (max <= 0 || !bh) return;
-    var spans = [];
-    // (each post's picture too — its outline's top is where the rule starts, as wide as it, "The rule should only grow
-    // left or right from the top of the image outline, then shrink to the middle", 2026-10-16: iL, iR, iT)
+    if (band) band.classList.remove('rule-runs');
+    if (window.innerWidth < 1024) return;
     [].forEach.call(document.querySelectorAll('.page-rows section.card'), function (c) {
-      var L = 1e9, R = -1e9, T = 1e9, B = -1e9, fr = c.querySelector('.card-frame'), fq = fr && fr.getBoundingClientRect();
-      [].forEach.call(c.querySelectorAll('.card-frame, .swap-body-head, .swap-body-text'), function (e) {
+      var fr = c.querySelector('.card-frame'), fq = fr && fr.getBoundingClientRect();
+      if (!fq || !fq.width) return;
+      var L = fq.left, R = fq.right;
+      [].forEach.call(c.querySelectorAll('.swap-body-head, .swap-body-text'), function (e) {
         var r = e.getBoundingClientRect();
-        if (!r.width || !r.height) return;
-        L = Math.min(L, r.left); R = Math.max(R, r.right); T = Math.min(T, r.top + sy); B = Math.max(B, r.bottom + sy);
+        if (r.width && r.height) { L = Math.min(L, r.left); R = Math.max(R, r.right); }
       });
-      if (R > L && B > T && fq && fq.width) spans.push({ L: L, R: R, T: T, B: B, iL: fq.left, iR: fq.right, iT: fq.top + sy });
+      var xl = (L < fq.left - 0.5 ? fq.left - L + 9 : 0).toFixed(1) + 'px', xr = (R > fq.right + 0.5 ? R - fq.right + 9 : 0).toFixed(1) + 'px';
+      if (fr.style.getPropertyValue('--rule-xl') !== xl) fr.style.setProperty('--rule-xl', xl);
+      if (fr.style.getPropertyValue('--rule-xr') !== xr) fr.style.setProperty('--rule-xr', xr);
     });
-    spans.sort(function (a, b) { return a.iT - b.iT; });
-    // (posts standing over one another's lines one stretch, their widths together, the first picture's outline its start)
-    var segs = [];
-    spans.forEach(function (q) {
-      var z = segs[segs.length - 1];
-      if (z && q.iT < z.B) { z.L = Math.min(z.L, q.L); z.R = Math.max(z.R, q.R); z.B = Math.max(z.B, q.B); }
-      else segs.push({ L: q.L, R: q.R, B: q.B, iL: q.iL, iR: q.iR, iT: q.iT });
-    });
-    // (the scroll at which the pinned band's foot stands at a line of the page)
-    var at = function (y) { return Math.max(0, Math.min(max, y - bh)); };
-    var pct = function (sv) { return (100 * sv / max).toFixed(4) + '%'; };
-    var kf = function (sv, x, w) { return pct(sv) + '{transform:translateX(' + x.toFixed(1) + 'px) scaleX(' + Math.max(0, w).toFixed(1) + ')}'; };
-    var steps = [];
-    if (segs.length) steps.push(kf(0, (segs[0].L + segs[0].R) / 2, 0));
-    // (unseen till the picture's top reaches the band's foot, then at once the picture's outline's width, growing out from
-    // it toward the words alone over RULE_RUN, held, and shrinking back to it over the last RULE_RUN)
-    // (past the words on their side since — "Have the rule overhange the text side by 54px", then "Actually I want
-    // overhang to be 9px only", 2026-10-16)
-    // (and going as it came since, shrinking back from the words to the picture's outline's width over the last
-    // RULE_RUN and then gone at once — "The retraction of the rule hsould work exatcly like the expansion", 2026-10-16)
-    var sEnd = 0;
-    segs.forEach(function (g) {
-      if (g.L < g.iL - 0.5) g.L -= 9;
-      if (g.R > g.iR + 0.5) g.R += 9;
-      var mid = (g.iL + g.iR) / 2, run = Math.min(RULE_RUN, (g.B - g.iT) / 2), s0 = at(g.iT), s1 = at(g.B);
-      steps.push(kf(Math.max(sEnd, s0 - 0.5), mid, 0), kf(s0, g.iL, g.iR - g.iL), kf(at(g.iT + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(s1, g.iL, g.iR - g.iL));
-      sEnd = Math.min(max, s1 + 0.5);
-      steps.push(kf(sEnd, mid, 0));
-    });
-    if (segs.length) steps.push(kf(max, (segs[segs.length - 1].L + segs[segs.length - 1].R) / 2, 0));
-    var css = '@keyframes nc-band-rule{' + steps.join('') + '}';
-    if (css === ruleKey) return;
-    ruleKey = css;
-    if (!ruleCss) { ruleCss = document.createElement('style'); ruleCss.id = 'nc-band-rule'; document.head.appendChild(ruleCss); }
-    ruleCss.textContent = css;
   };
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');
