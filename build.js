@@ -356,8 +356,8 @@ function cornerBird() {
 // words a fifth further apart than the drawing's word space (NAME_SPACE). Drawn over CRITIC in CRITIC's own units, its
 // body in the ink (in the highlight till "Make bird Black and add a 1px outlin in white to letters where the bird
 // overlaps"; the letters red for a while, "Turn bird to black and wordmark to red", "Revert to black wordmark red
-// bird") with the wing gap masked clean through it, the beak's notch in white, the letters it crosses edged in white
-// within it, and hidden
+// bird") with the wing gap masked clean through it, the beak's notch in white, edged in white where it crosses the
+// letters, and hidden
 // where the C's left half stands, so the tail runs under that side and over the right. The band's name carries it in
 // miniature ("Keep bird in miniature in nav wordmark"); ID keeps each copy's masks its own. style.css THE BIRD BETWEEN
 // NEW AND CRITIC.
@@ -396,20 +396,24 @@ function nameSwallow(id = 'cn') {
   const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
   return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
     + `<defs><mask id="${id}-swallow-under" maskUnits="userSpaceOnUse" ${big}><rect ${big} fill="#fff"/>`
-    + `<clipPath id="${id}-swallow-cl"><rect x="-${cap * 4}" y="-${cap}" width="${(half + cap * 4).toFixed(2)}" height="${cap * 3}"/></clipPath>`
     + `<path transform="${c[1]}" d="${c[2]}" fill="#000" clip-path="url(#${id}-swallow-cl)"/></mask>`
+    + `<clipPath id="${id}-swallow-cl"><rect x="-${cap * 4}" y="-${cap}" width="${(half + cap * 4).toFixed(2)}" height="${cap * 3}"/></clipPath>`
+    + `<clipPath id="${id}-swallow-letters">${wP ? `<path transform="translate(${wX.toFixed(2)} 0) ${wP[1]}" d="${wP[2]}"/>` : ''}<path transform="${c[1]}" d="${c[2]}"/></clipPath>`
     + (cut ? `<mask id="${id}-swallow-gap" maskUnits="userSpaceOnUse" x="-100" y="-100" width="900" height="930"><rect x="-100" y="-100" width="900" height="930" fill="#fff"/><path d="${cut}" fill="#000"/></mask>` : '')
     + `<clipPath id="${id}-swallow-ink"><path class="cn-swallow__fly" transform="${tf}" clip-rule="evenodd" d="${body}"/></clipPath></defs>`
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
     + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
     + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
     + `</g></g>`
-    // (the bird black since, the letters it crosses edged a pixel in white within it — "Make bird Black and add a 1px
-    // outlin in white to letters where the bird overlaps", 2026-10-16: the W's and the C's outlines, clipped to the
-    // bird's ink, so the C's edge shows where the tail runs under it and the W's and the C's where the bird runs over)
-    + `<g class="cn-swallow__edge" clip-path="url(#${id}-swallow-ink)" fill="none">`
-    + (wP ? `<g transform="translate(${wX.toFixed(2)} 0)"><path transform="${wP[1]}" d="${wP[2]}" vector-effect="non-scaling-stroke"/></g>` : '')
-    + `<path transform="${c[1]}" d="${c[2]}" vector-effect="non-scaling-stroke"/></g>`
+    // (the bird black since, edged a pixel in white where it crosses the letters — "Make bird Black and add a 1px outlin
+    // in white to letters where the bird overlaps", "Should trace the outline of the beak and the tail", 2026-10-16: the
+    // bird's own outline, clipped to the W's and the C's ink, where it runs over them (under the mask, so not under the
+    // C's left half); and there, where the tail runs under, the C's outline clipped to the bird's ink, as the C stands
+    // over it. A CSS pixel whatever the size, non-scaling)
+    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-letters)" fill="none">`
+    + `<path class="cn-swallow__fly" transform="${tf}" d="${body}" vector-effect="non-scaling-stroke"/></g></g>`
+    + `<g clip-path="url(#${id}-swallow-ink)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-cl)" fill="none">`
+    + `<path transform="${c[1]}" d="${c[2]}" vector-effect="non-scaling-stroke"/></g></g>`
     + `<g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
 }
 function contentNameBlock() {

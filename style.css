@@ -30825,8 +30825,9 @@ html body .cn-swallow > svg{ display: block !important; width: 100% !important; 
    to black wordmark red bird", 2026-10-16) */
 html body .cn-swallow .cn-swallow__body{ fill: var(--nc-mark, #B3301E) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: var(--k, #121417) !important; }
-/* (the bird black since, the letters it crosses edged a pixel in white within it, the beak's notch white — "Make
-   bird Black and add a 1px outlin in white to letters where the bird overlaps", 2026-10-16) */
+/* (the bird black since, edged a pixel in white where it crosses the letters, the beak's notch white — "Make bird
+   Black and add a 1px outlin in white to letters where the bird overlaps", "Should trace the outline of the beak and
+   the tail", 2026-10-16: the bird's outline where it runs over the W and the C, the C's where the tail runs under) */
 html body .cn-swallow .cn-swallow__body{ fill: var(--k, #121417) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: #FFFFFF !important; }
 html body .cn-swallow .cn-swallow__edge path{ fill: none !important; stroke: #FFFFFF !important; stroke-width: 1px !important; }
