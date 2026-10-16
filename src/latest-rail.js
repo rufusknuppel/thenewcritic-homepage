@@ -3020,14 +3020,19 @@ window.ncOpenH = function () {
     var steps = [];
     if (segs.length) steps.push(kf(0, (segs[0].L + segs[0].R) / 2, 0));
     // (unseen till the picture's top reaches the band's foot, then at once the picture's outline's width, growing out from
-    // it toward the words alone over RULE_RUN, held, and shrinking to the post's middle over the last RULE_RUN)
+    // it toward the words alone over RULE_RUN, held, and shrinking back to it over the last RULE_RUN)
     // (past the words on their side since — "Have the rule overhange the text side by 54px", then "Actually I want
     // overhang to be 9px only", 2026-10-16)
+    // (and going as it came since, shrinking back from the words to the picture's outline's width over the last
+    // RULE_RUN and then gone at once — "The retraction of the rule hsould work exatcly like the expansion", 2026-10-16)
+    var sEnd = 0;
     segs.forEach(function (g) {
       if (g.L < g.iL - 0.5) g.L -= 9;
       if (g.R > g.iR + 0.5) g.R += 9;
-      var mid = (g.L + g.R) / 2, run = Math.min(RULE_RUN, (g.B - g.iT) / 2), s0 = at(g.iT);
-      steps.push(kf(Math.max(0, s0 - 0.5), mid, 0), kf(s0, g.iL, g.iR - g.iL), kf(at(g.iT + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(at(g.B), mid, 0));
+      var mid = (g.iL + g.iR) / 2, run = Math.min(RULE_RUN, (g.B - g.iT) / 2), s0 = at(g.iT), s1 = at(g.B);
+      steps.push(kf(Math.max(sEnd, s0 - 0.5), mid, 0), kf(s0, g.iL, g.iR - g.iL), kf(at(g.iT + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(s1, g.iL, g.iR - g.iL));
+      sEnd = Math.min(max, s1 + 0.5);
+      steps.push(kf(sEnd, mid, 0));
     });
     if (segs.length) steps.push(kf(max, (segs[segs.length - 1].L + segs[segs.length - 1].R) / 2, 0));
     var css = '@keyframes nc-band-rule{' + steps.join('') + '}';
