@@ -8735,7 +8735,7 @@
     var boxed = !!swapped(cover) && !!words.closest('.card-title, .latest-title, .card-dek, .latest-dek');
     return cover ? { cover: cover, say: true, mid: !boxed, title: title } : null;
   }
-  var cue = null, host = null, rafId = 0, px = 0, py = 0;
+  var cue = null, host = null, rafId = 0, px = null, py = null;
   var mode = 'pointer', lit = null;
   var originX = 0, originY = 0, seated = false;
   function origin() {
@@ -8838,6 +8838,7 @@
   }
   function queueFollow() {
     if (!cue) return;
+    if (px == null || py == null) return;
     if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
     follow();
   }
@@ -8899,6 +8900,7 @@
   window.addEventListener('scroll', queueFollow, { passive: true });
   window.addEventListener('resize', queueFollow, { passive: true });
   document.addEventListener('pointerdown', hide, { passive: true });
+  document.documentElement.addEventListener('mouseleave', function () { px = py = null; hide(); inbox(null); });
   window.addEventListener('blur', function () { hide(); inbox(null); });
 })();
 
