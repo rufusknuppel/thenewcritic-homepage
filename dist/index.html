@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a7b1dd16">
+<link rel="stylesheet" href="style.css?v=b91391a7">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12095,11 +12095,58 @@ window.ncOpenH = function () {
     }
     if (g.__k !== html) { g.__k = html; g.innerHTML = html; }
   };
+  var RULE_RUN = 54, ruleKey = '', ruleCss = null;
+  var bandRule = function () {
+    var band = document.querySelector('main .op-band');
+    if (!band) return;
+    var on = window.innerWidth >= 1024 && window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()');
+    band.classList.toggle('rule-runs', !!on);
+    if (!on) return;
+    var sy = window.pageYOffset || 0, de2 = document.documentElement, max = de2.scrollHeight - window.innerHeight, bh = band.offsetHeight;
+    if (max <= 0 || !bh) return;
+    var spans = [];
+    [].forEach.call(document.querySelectorAll('.page-rows section.card'), function (c) {
+      var L = 1e9, R = -1e9, T = 1e9, B = -1e9;
+      [].forEach.call(c.querySelectorAll('.card-frame, .swap-body-head, .swap-body-text'), function (e) {
+        var r = e.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        L = Math.min(L, r.left); R = Math.max(R, r.right); T = Math.min(T, r.top + sy); B = Math.max(B, r.bottom + sy);
+      });
+      if (R > L && B > T) spans.push({ L: L, R: R, T: T, B: B });
+    });
+    spans.sort(function (a, b) { return a.T - b.T; });
+    var segs = [];
+    spans.forEach(function (q) {
+      var z = segs[segs.length - 1];
+      if (z && q.T < z.B) { z.L = Math.min(z.L, q.L); z.R = Math.max(z.R, q.R); z.B = Math.max(z.B, q.B); }
+      else segs.push({ L: q.L, R: q.R, T: q.T, B: q.B });
+    });
+    var at = function (y) { return Math.max(0, Math.min(max, y - bh)); };
+    var pct = function (sv) { return (100 * sv / max).toFixed(4) + '%'; };
+    var kf = function (sv, x, w) { return pct(sv) + '{transform:translateX(' + x.toFixed(1) + 'px) scaleX(' + Math.max(0, w).toFixed(1) + ')}'; };
+    var steps = [];
+    if (segs.length) steps.push(kf(0, (segs[0].L + segs[0].R) / 2, 0));
+    segs.forEach(function (g) {
+      var mid = (g.L + g.R) / 2, run = Math.min(RULE_RUN, (g.B - g.T) / 2);
+      steps.push(kf(at(g.T), mid, 0), kf(at(g.T + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(at(g.B), mid, 0));
+    });
+    if (segs.length) steps.push(kf(max, (segs[segs.length - 1].L + segs[segs.length - 1].R) / 2, 0));
+    var css = '@keyframes nc-band-rule{' + steps.join('') + '}';
+    if (css === ruleKey) return;
+    ruleKey = css;
+    if (!ruleCss) { ruleCss = document.createElement('style'); ruleCss.id = 'nc-band-rule'; document.head.appendChild(ruleCss); }
+    ruleCss.textContent = css;
+  };
+  if (window.ResizeObserver) {
+    var ruleT = 0, rows = document.querySelector('.page-rows');
+    if (rows) new ResizeObserver(function () { clearTimeout(ruleT); ruleT = setTimeout(bandRule, 120); }).observe(rows);
+  }
   window.addEventListener('scroll', pin, { passive: true });
-  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); setTimeout(swallowTlm, 160); pinned = null; pin(); });
-  document.addEventListener('newcritic:fit', function () { setTimeout(lay, 0); setTimeout(swallowTlm, 0); });
-  window.addEventListener('load', function () { setTimeout(swallowTlm, 350); setTimeout(swallowTlm, 1550); });
+  window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); setTimeout(swallowTlm, 160); setTimeout(bandRule, 200); pinned = null; pin(); });
+  document.addEventListener('newcritic:fit', function () { setTimeout(lay, 0); setTimeout(swallowTlm, 0); setTimeout(bandRule, 0); });
+  window.addEventListener('load', function () { setTimeout(swallowTlm, 350); setTimeout(swallowTlm, 1550); setTimeout(bandRule, 400); setTimeout(bandRule, 1600); });
   setTimeout(swallowTlm, 850);
+  setTimeout(bandRule, 900);
   pin();
   window.addEventListener('load', pin);
   window.addEventListener('load', function () { setTimeout(lay, 300); setTimeout(lay, 1500); });
