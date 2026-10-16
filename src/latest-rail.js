@@ -1766,7 +1766,9 @@ var ncStemX = function () {
           // column stretch from the margin of the nav to the edge of the side column", 2026-10-15: the rows the window less
           // the column and 108, the column the two insets, the socials and less 108; the rows' words taking what a picture
           // gives up, duo-panel-fit.js seatSlides, so the rows fill it)
-          var socM = document.querySelector('main .op-band .rail-socials'), socMW = socM ? socM.getBoundingClientRect().width : 0;
+          // (the nav's width with the column under it since, at the left — "Move the latest to the left and flip the
+          // posts", 2026-10-16: build.js COLUMN_AT, the root's rail-col-l)
+          var socM = document.querySelector(document.documentElement.classList.contains('rail-col-l') ? 'main .op-band .rail-top__nav' : 'main .op-band .rail-socials'), socMW = socM ? socM.getBoundingClientRect().width : 0;
           // (and the inset again short of the socials since, the column's margin on the rows' side its margin on the window's
           // — "Left margin of side column should match right margin", 2026-10-15)
           if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 * ncStemX() + socMW - NC_ROWL);
@@ -1934,6 +1936,9 @@ var ncStemX = function () {
     // (as far as sets the rows' ink's left edge on the stem's inset since — the ink's left as it lands unslid, read by
     // gut, main.__ncInkL)
     if (window.innerWidth >= 1024 && !rail.classList.contains('latest-rail--r')) v = Math.round((main.__ncInkL != null ? main.__ncInkL : w + 54) - NC_ROWL) + 'px';
+    // (the column under the nav since, the rows' ink's right edge on the socials' inset instead, NC_ROWL in from the
+    // window's right — "Move the latest to the left and flip the posts", 2026-10-16: main.__ncInkR, read by gut)
+    if (window.innerWidth >= 1024 && document.documentElement.classList.contains('rail-col-l')) v = Math.round(main.__ncInkR != null ? main.__ncInkR - (document.documentElement.clientWidth - NC_ROWL) : 0) + 'px';
     if (main.style.getPropertyValue('--rail-shift') !== v) main.style.setProperty('--rail-shift', v);
     // (and to the root, for the name over the content outside main, which slides with the rows — "Expansion/collapse
     // breaks wordmark. Should move with content to center too", 2026-10-13)
@@ -1979,7 +1984,8 @@ var ncStemX = function () {
       if (el.style.getPropertyValue('--nc-gut') !== gv) el.style.setProperty('--nc-gut', gv);
     });
     // (the rows' ink's left edge as it lands, unslid, the carry set off it — the first rows' pictures and words)
-    var inkL = 1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
+    var inkL = 1e9, inkR = -1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
+    var colL = document.documentElement.classList.contains('rail-col-l');
     // (the words on the left alone since, less the centring of a picture at its own shape — the row's edge, not where a
     // narrower pair stands on the column's middle, 2026-10-15)
     // (read with the rows' slide stood down, where they will stand, not where they are on the way: read as they still
@@ -1990,9 +1996,13 @@ var ncStemX = function () {
     [].slice.call(document.querySelectorAll('.page-rows section.card .duo-half--mega.is-slide'), 0, 8).forEach(function (c) {
       var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
       if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0));
+      // (the words on the right, with the column at the left — their right edge as they land, unslid)
+      var eR = !c.__ncWordsL && c.querySelector('.swap-body-text'), qR = eR && eR.getBoundingClientRect();
+      if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0));
     });
     slidG.forEach(function (el) { el.style.removeProperty('transition'); });
-    if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
+    if (colL) { if (inkR > -1e8 && Math.abs(inkR - (document.documentElement.clientWidth - NC_ROWL)) > 0.5) { main.__ncInkR = inkR + sh0; shift(); } }
+    else if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
     holdG.style.setProperty('--opb-in', ncStemX() + 'px');
     carry();
   };
@@ -2003,7 +2013,8 @@ var ncStemX = function () {
     // (the column under the socials since, as wide as they are and on their middle — "Have the side column expand to be
     // the size of the socials, center the bird and the latest in the column", 2026-10-15: --rl-gtx the hold's carry,
     // --nc-colw the socials' width)
-    var socG = document.querySelector('main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
+    // (under the nav since, with the column at the left — "Move the latest to the left and flip the posts", 2026-10-16)
+    var socG = document.querySelector(document.documentElement.classList.contains('rail-col-l') ? 'main .op-band .rail-top__nav' : 'main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
     if (!sq || !sq.width) return;
     holdG.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
     // (the column itself left where a shut column stands, out past the window's left — the rows' fitter reads it there

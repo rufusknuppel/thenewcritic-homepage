@@ -910,6 +910,10 @@ const SITE_TAGLINE = 'The Last Magazine';
 // rules that differ by side (style.css). On the right again since "Move The
 // Latest column back to the right", after an afternoon on the left.
 // (on the left again since 2026-10-13 — "Move the latest column to the left side")
+// (the shut column's hold under the nav at the left, 'l', or under the socials at the right, 'r' — the root carries it
+// as rail-col-l / rail-col-r for latest-rail.js; on the left since 2026-10-16, the posts flipped with it — "Move the
+// latest to the left and flip the posts")
+const COLUMN_AT = 'l';
 const RAIL_SIDE = 'l'; // (on the left again since 2026-10-15 — "Move the column to the left and filp the posts accordingly"; on the right again since 2026-10-13 — "Move the latest column to the right"; on the left since 2026-10-14 — "Move the latest column to the left"; on the right again since, the same day — "move the latest column to the right"; and on the left again with the band at the foot — "bring back the bottom nav band/left side column format")
 const SITE_URL = 'https://www.thenewcritic.com';
 // Where THIS build is served: the apex domain, routed to the gh-pages
@@ -3872,7 +3876,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // (and by the column again since, in the middle of the page — "flip top post so image is in the center", 2026-10-15)
         // (flipped since, the top post's picture toward the page's middle, its words at the nav's margin — "flip top post
         // so image is in the middle", 2026-10-15)
-        const toR = (j % 2 === 0) !== (RAIL_SIDE === 'r');
+        // (and flipped again with the column under the nav since — "Move the latest to the left and flip the posts",
+        // 2026-10-16: the top post's picture by the column still, its words at the socials' margin; COLUMN_AT)
+        const toR = ((j % 2 === 0) !== (RAIL_SIDE === 'r')) !== (COLUMN_AT === 'l');
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first
@@ -5205,8 +5211,8 @@ function markMega(html) {
   // root's own background (style.css, html.has-mega).
   return html
     .replace(/<html(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
-      ? m.replace('class="', `class="has-mega rail-side-${RAIL_SIDE} `)
-      : `<html${attrs || ''} class="has-mega rail-side-${RAIL_SIDE}">`)
+      ? m.replace('class="', `class="has-mega rail-side-${RAIL_SIDE} rail-col-${COLUMN_AT} `)
+      : `<html${attrs || ''} class="has-mega rail-side-${RAIL_SIDE} rail-col-${COLUMN_AT}">`)
     .replace(/<body(\s[^>]*)?>/, (m, attrs) => /class="/.test(attrs || '')
       ? m.replace('class="', 'class="has-mega ')
       : `<body${attrs || ''} class="has-mega">`)
