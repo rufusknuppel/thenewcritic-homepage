@@ -15876,6 +15876,8 @@ html body .cn-swallow .cn-swallow__body{ fill: var(--k, #121417) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: #FFFFFF !important; }
 html body .cn-swallow .cn-swallow__body{ fill: var(--nc-mark, #B3301E) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: var(--k, #121417) !important; }
+html body .cn-swallow .cn-swallow__body{ fill: var(--k, #121417) !important; }
+html body .cn-swallow .cn-swallow__beak{ fill: #FFFFFF !important; }
 html body .cn-swallow .cn-swallow__edge path{ fill: none !important; stroke: #FFFFFF !important; }
 html body .cn-swallow .cn-swallow__tlm{ fill: var(--k, #121417); color: var(--k, #121417); }
 html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
