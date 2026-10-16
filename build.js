@@ -415,7 +415,27 @@ function nameSwallow(id = 'cn') {
       for (let t = a + 1; t < b; t++) { const d = Math.abs((pts[t][0] - ax) * dy - (pts[t][1] - ay) * dx) / L; if (d > fd) { fd = d; far = t; } }
       if (far > 0) { keep[far] = 1; stack.push([a, far], [far, b]); }
     }
-    return 'M' + pts.filter((_, t) => keep[t]).map((q) => q[0].toFixed(2) + ' ' + q[1].toFixed(2)).join('L') + 'Z';
+    return pts.filter((_, t) => keep[t]);
+  })();
+  // (the white edge a shape of its own since, the outline pushed out a wing gap's width, filled under the bird: at an
+  // outward corner its point halfway between a round tip's (the width) and a full mitre's (the width over the half
+  // angle's sine), at an inward one the width alone — "Make outlines somewhere between their pointiness now and the
+  // last round", 2026-10-16)
+  const edgeD = (() => {
+    const P = outer[0][0] === outer[outer.length - 1][0] && outer[0][1] === outer[outer.length - 1][1] ? outer.slice(0, -1) : outer;
+    const n = P.length; let A = 0;
+    for (let t = 0; t < n; t++) { const a = P[t], b = P[(t + 1) % n]; A += a[0] * b[1] - b[0] * a[1]; }
+    const sg = A > 0 ? 1 : -1;
+    const nrm = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1; return [sg * dy / L, -sg * dx / L]; };
+    return 'M' + P.map((p1, t) => {
+      const p0 = P[(t - 1 + n) % n], p2 = P[(t + 1) % n], n1 = nrm(p0, p1), n2 = nrm(p1, p2);
+      let bx = n1[0] + n2[0], by = n1[1] + n2[1]; const bl = Math.hypot(bx, by) || 1; bx /= bl; by /= bl;
+      const cosH = Math.max(0.05, bx * n1[0] + by * n1[1]);
+      const cross = (p1[0] - p0[0]) * (p2[1] - p1[1]) - (p1[1] - p0[1]) * (p2[0] - p1[0]);
+      const out = sg * cross < 0;
+      const e = out ? Math.min(GAP_W + 0.5 * (GAP_W / cosH - GAP_W), 10 * GAP_W) : GAP_W;
+      return (p1[0] + bx * e).toFixed(2) + ' ' + (p1[1] + by * e).toFixed(2);
+    }).join('L') + 'Z';
   })();
   const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
   return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
@@ -438,8 +458,10 @@ function nameSwallow(id = 'cn') {
     // hairline along it, and on the white page it is unseen — "Make sure that the outline around the bird covers any
     // harilines"; its corners mitred, so it comes to a point at the beak's and the tail's — "I'd like the outlines to
     // mimic the points of the beak and tails", 2026-10-16)
-    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" fill="none">`
-    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${2 * GAP_W}" stroke-linejoin="miter" stroke-miterlimit="16"/></g></g>`
+    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge">`
+    // (between round and pointed since — "Make outlines somewhere between their pointiness now and the last round",
+    // 2026-10-16: edgeD)
+    + `<path class="cn-swallow__fly" transform="${tf}" d="${edgeD}"/></g></g>`
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
     + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
     + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
