@@ -12127,7 +12127,7 @@ window.ncOpenH = function () {
         var r = e.getBoundingClientRect();
         if (r.width && r.height) { L = Math.min(L, r.left); R = Math.max(R, r.right); }
       });
-      var xl = (L < fq.left - 0.5 ? fq.left - L + 9 : 0).toFixed(1) + 'px', xr = (R > fq.right + 0.5 ? R - fq.right + 9 : 0).toFixed(1) + 'px';
+      var xl = (L < fq.left - 0.5 ? fq.left - L + 9 : 9).toFixed(1) + 'px', xr = (R > fq.right + 0.5 ? R - fq.right + 9 : 9).toFixed(1) + 'px';
       if (fr.style.getPropertyValue('--rule-xl') !== xl) fr.style.setProperty('--rule-xl', xl);
       if (fr.style.getPropertyValue('--rule-xr') !== xr) fr.style.setProperty('--rule-xr', xr);
     });
