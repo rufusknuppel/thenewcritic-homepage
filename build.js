@@ -354,8 +354,8 @@ function cornerBird() {
 // make-bird-weave.js) set it — 1.1 × 1.15 × 0.9 the capitals tall, upright as the site draws it, on the letters'
 // middle, its wings on the middle of the space between W and C, the opening name's
 // words a fifth further apart than the drawing's word space (NAME_SPACE). Drawn over CRITIC in CRITIC's own units, its
-// body in the ink (the letters in the highlight since, "Turn bird to black and wordmark to red") with the wing gap
-// masked clean through it, the beak's notch in the letters' colour, and hidden
+// body in the highlight (in the ink, the letters red, for a while — "Turn bird to black and wordmark to red", "Revert
+// to black wordmark red bird") with the wing gap masked clean through it, the beak's notch in the letters' ink, and hidden
 // where the C's left half stands, so the tail runs under that side and over the right. The band's name carries it in
 // miniature ("Keep bird in miniature in nav wordmark"); ID keeps each copy's masks its own. style.css THE BIRD BETWEEN
 // NEW AND CRITIC.
@@ -381,7 +381,9 @@ function nameSwallow(id = 'cn') {
   // so its foot a little under the baseline; cBot, data-c-bot, for latest-rail.js swallowTlm too)
   const ys = c[2].match(/-?\d*\.?\d+/g).map(Number).filter((_, i) => i % 2 === 1);
   const cBot = cap / 2 + (Math.max(...ys) - cap / 2) * ((WM_GROW.critic || {})[0] || 1);
-  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2, ks = k * u;
+  // (10 of the mock's units right of the gap's middle since — "move bird 5 mock units right", "Move another 5 units
+  // right", 2026-10-16)
+  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2 + 10 * u, ks = k * u;
   const bx = axisX - 299.22 * ks, by = -(728.23 * ks - cBot) / 2 - 0.14 * ks;
   const tf = `translate(${bx.toFixed(2)} ${by.toFixed(2)}) scale(${ks.toFixed(5)})`;
   const half = (cLo + cHi) / 2 - 20 * u;

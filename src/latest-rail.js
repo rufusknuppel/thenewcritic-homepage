@@ -2916,7 +2916,11 @@ window.ncOpenH = function () {
       if (tr.top > sr.bottom && sr.top > y0) {
         var k = (yLo - yUp) / (728.37 - 0.14);
         var tf = 'translate(' + (axX - 299.22 * k).toFixed(2) + ' ' + (yUp - 0.14 * k).toFixed(2) + ') scale(' + k.toFixed(5) + ')';
+        // (and the band's bird the same, in the same units, so it stands in its name as this one in the opening's —
+        // "proportions of bird in the band should match exatcly the top wordmark", 2026-10-16)
+        var flyB = document.querySelectorAll('main .op-band > .opb-swallow .cn-swallow__fly');
         [].forEach.call(fly, function (f) { if (f.getAttribute('transform') !== tf) f.setAttribute('transform', tf); });
+        [].forEach.call(flyB, function (f) { if (f.getAttribute('transform') !== tf) f.setAttribute('transform', tf); });
       }
     }
     if (tlm && m && m.a && tlm.getClientRects().length) {
