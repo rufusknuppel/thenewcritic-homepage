@@ -383,19 +383,40 @@ function nameSwallow(id = 'cn') {
   // so its foot a little under the baseline; cBot, data-c-bot, for latest-rail.js swallowTlm too)
   const ys = c[2].match(/-?\d*\.?\d+/g).map(Number).filter((_, i) => i % 2 === 1);
   const cBot = cap / 2 + (Math.max(...ys) - cap / 2) * ((WM_GROW.critic || {})[0] || 1);
-  // (28 of the mock's units right of the gap's middle since — "move bird 5 mock units right", "Move another 5 units
-  // right", "Move another 8 units", "Move 5 units right", "Move another 5 units right", 2026-10-16)
-  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2 + 28 * u, ks = k * u;
+  // (38 of the mock's units right of the gap's middle since — "move bird 5 mock units right", "Move another 5 units
+  // right", "Move another 8 units", "Move 5 units right", "Move another 5 units right", "Move the bird 5 units right",
+  // "move another 5 units", 2026-10-16)
+  const axisX = cLo - NAME_SPACE * WM_SPACE * cap / 2 + 38 * u, ks = k * u;
   const bx = axisX - 299.22 * ks, by = -(728.23 * ks - cBot) / 2 - 0.14 * ks;
   const tf = `translate(${bx.toFixed(2)} ${by.toFixed(2)}) scale(${ks.toFixed(5)})`;
   const half = (cLo + cHi) / 2 - 20 * u;
   // (the wing gap's width in the drawing's units, twice its area over its outline's length, ~5.9; the body's outer edge,
   // its first subpath — the second is the beak's notch)
-  const GAP_W = 6, outer = (body.match(/M[^M]*/) || [body])[0];
-  // (the W as NEW sets it, carried into CRITIC's units: NEW's box ends the word gap left of CRITIC's)
-  const nw = spacedWord('new', LETTER_K), nwW = nw.ar * cap;
-  const wP = [...nw.svg.matchAll(/<path fill="currentColor" transform="([^"]+)" d="([^"]+)"\/>/g)].pop();
-  const wX = -NAME_SPACE * WM_SPACE * cap - nwW;
+  // (and for the white edge, that outline simplified to its corners — Douglas-Peucker, a unit's tolerance — so the
+  // beak's and the tail's tips, drawn as runs of tiny curves, come out single sharp corners the edge's mitre can point,
+  // "I'd like the outlines to mimic the points of the beak and tails", 2026-10-16)
+  const GAP_W = 6, outerD = (body.match(/M[^M]*/) || [body])[0];
+  const outer = (() => {
+    const pts = [];
+    for (const m of outerD.matchAll(/([MLC])([^MLCZ]*)/g)) {
+      const n = (m[2].match(/-?\d*\.?\d+/g) || []).map(Number);
+      const step = m[1] === 'C' ? 6 : 2;
+      for (let t = 0; t + step <= n.length; t += step) pts.push([n[t + step - 2], n[t + step - 1]]);
+    }
+    // (a closed outline: split at its point farthest from the first, so neither half's ends meet)
+    const keep = new Uint8Array(pts.length); keep[0] = keep[pts.length - 1] = 1;
+    let far0 = 0, fd0 = -1;
+    pts.forEach((q, t) => { const d = Math.hypot(q[0] - pts[0][0], q[1] - pts[0][1]); if (d > fd0) { fd0 = d; far0 = t; } });
+    keep[far0] = 1;
+    const stack = [[0, far0], [far0, pts.length - 1]];
+    while (stack.length) {
+      const [a, b] = stack.pop(); let far = -1, fd = 1;
+      const [ax, ay] = pts[a], [bx2, by2] = pts[b], dx = bx2 - ax, dy = by2 - ay, L = Math.hypot(dx, dy) || 1;
+      for (let t = a + 1; t < b; t++) { const d = Math.abs((pts[t][0] - ax) * dy - (pts[t][1] - ay) * dx) / L; if (d > fd) { fd = d; far = t; } }
+      if (far > 0) { keep[far] = 1; stack.push([a, far], [far, b]); }
+    }
+    return 'M' + pts.filter((_, t) => keep[t]).map((q) => q[0].toFixed(2) + ' ' + q[1].toFixed(2)).join('L') + 'Z';
+  })();
   const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
   return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
     + `<defs><mask id="${id}-swallow-under" maskUnits="userSpaceOnUse" ${big}><rect ${big} fill="#fff"/>`
@@ -403,7 +424,6 @@ function nameSwallow(id = 'cn') {
     // — "Have that gap on either side of the C intersection too", 2026-10-16: GAP_W, the drawing's wing gap)
     + `<path transform="${c[1]}" d="${c[2]}" fill="#000" stroke="#000" stroke-width="${(2 * GAP_W * ks).toFixed(2)}" stroke-linejoin="round" clip-path="url(#${id}-swallow-cl)"/></mask>`
     + `<clipPath id="${id}-swallow-cl"><rect x="-${cap * 4}" y="-${cap}" width="${(half + cap * 4).toFixed(2)}" height="${cap * 3}"/></clipPath>`
-    + `<clipPath id="${id}-swallow-letters">${wP ? `<path transform="translate(${wX.toFixed(2)} 0) ${wP[1]}" d="${wP[2]}"/>` : ''}<path transform="${c[1]}" d="${c[2]}"/></clipPath>`
     + (cut ? `<mask id="${id}-swallow-gap" maskUnits="userSpaceOnUse" x="-100" y="-100" width="900" height="930"><rect x="-100" y="-100" width="900" height="930" fill="#fff"/><path d="${cut}" fill="#000"/></mask>` : '')
     + `<clipPath id="${id}-swallow-ink"><path class="cn-swallow__fly" transform="${tf}" clip-rule="evenodd" d="${body}"/></clipPath></defs>`
     // (the bird black since, edged a pixel in white where it crosses the letters — "Make bird Black and add a 1px outlin
@@ -414,8 +434,12 @@ function nameSwallow(id = 'cn') {
     // wing gap", "don't do this for the beak notch, just the beak": GAP_W, in the drawing's units, so it grows with it;
     // drawn under the bird twice that wide since, so all of it stands outside the bird — "Outline shouldn't cut into
     // bird itslef")
-    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-letters)" fill="none">`
-    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${2 * GAP_W}" stroke-linejoin="round"/></g></g>`
+    // (round the whole bird since, not clipped to the letters — clipped there, the letters' own soft edge showed as a
+    // hairline along it, and on the white page it is unseen — "Make sure that the outline around the bird covers any
+    // harilines"; its corners mitred, so it comes to a point at the beak's and the tail's — "I'd like the outlines to
+    // mimic the points of the beak and tails", 2026-10-16)
+    + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" fill="none">`
+    + `<path class="cn-swallow__fly" transform="${tf}" d="${outer}" stroke-width="${2 * GAP_W}" stroke-linejoin="miter" stroke-miterlimit="16"/></g></g>`
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
     + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
     + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')

@@ -7863,7 +7863,24 @@
               // right; 2026-10-15, "Identify why the site loads so slowly")
               var ohS = window.ncOpenH ? window.ncOpenH() : 0;
               // (right under it again since — "Start content right underneat band", 2026-10-16)
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS;
+              // (the posts' own step under the band's lowest ink since — "start the top content the standard gap between
+              // posts below the ink in the band", 2026-10-16: ROW_STEP under the lowest of THE LAST MAGAZINE's letters and
+              // the nav's and the socials' baselines, read off the band's top, which stands the name's height down the page)
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) {
+                cnH = ohS;
+                var opB = document.querySelector('main .op-band'), cnO = document.querySelector('a.content-name');
+                if (opB && cnO) {
+                  var obT = opB.getBoundingClientRect().top, inkB = -Infinity;
+                  [].forEach.call(opB.querySelectorAll(':scope > a.rail-tlm svg'), function (sv) { var rr = sv.getBoundingClientRect(); if (rr.height) inkB = Math.max(inkB, rr.bottom); });
+                  [].forEach.call(opB.querySelectorAll(':scope > .rail-top .rail-top__nav, :scope > .rail-socials'), function (el) {
+                    if (!el.getClientRects().length) return;
+                    var mk = document.createElement('span');
+                    mk.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+                    el.appendChild(mk); inkB = Math.max(inkB, mk.getBoundingClientRect().top); el.removeChild(mk);
+                  });
+                  if (inkB > -Infinity) cnH = cnO.offsetHeight + (inkB - obT) + ROW_STEP;
+                }
+              }
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
