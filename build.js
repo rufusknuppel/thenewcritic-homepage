@@ -408,12 +408,10 @@ function nameSwallow(id = 'cn') {
     // (the bird black since, edged a pixel in white where it crosses the letters — "Make bird Black and add a 1px outlin
     // in white to letters where the bird overlaps", "Should trace the outline of the beak and the tail", 2026-10-16: the
     // bird's own outline, clipped to the W's and the C's ink, where it runs over them (under the mask, so not under the
-    // C's left half); and there, where the tail runs under, the C's outline clipped to the bird's ink, as the C stands
-    // over it. A CSS pixel whatever the size, non-scaling)
+    // C's left half; the C's own outline where the tail runs under it gone since, "Remove outline on C except tail"). A
+    // CSS pixel whatever the size, non-scaling)
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-letters)" fill="none">`
     + `<path class="cn-swallow__fly" transform="${tf}" d="${body}" vector-effect="non-scaling-stroke"/></g></g>`
-    + `<g clip-path="url(#${id}-swallow-ink)"><g class="cn-swallow__edge" clip-path="url(#${id}-swallow-cl)" fill="none">`
-    + `<path transform="${c[1]}" d="${c[2]}" vector-effect="non-scaling-stroke"/></g></g>`
     + `<g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
 }
 function contentNameBlock() {

@@ -30827,7 +30827,8 @@ html body .cn-swallow .cn-swallow__body{ fill: var(--nc-mark, #B3301E) !importan
 html body .cn-swallow .cn-swallow__beak{ fill: var(--k, #121417) !important; }
 /* (the bird black since, edged a pixel in white where it crosses the letters, the beak's notch white — "Make bird
    Black and add a 1px outlin in white to letters where the bird overlaps", "Should trace the outline of the beak and
-   the tail", 2026-10-16: the bird's outline where it runs over the W and the C, the C's where the tail runs under) */
+   the tail", 2026-10-16: the bird's outline where it runs over the W and the C; the C's own where the tail runs
+   under gone since, "Remove outline on C except tail") */
 html body .cn-swallow .cn-swallow__body{ fill: var(--k, #121417) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: #FFFFFF !important; }
 html body .cn-swallow .cn-swallow__edge path{ fill: none !important; stroke: #FFFFFF !important; stroke-width: 1px !important; }
