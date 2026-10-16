@@ -354,8 +354,10 @@ function cornerBird() {
 // make-bird-weave.js) set it — 1.1 × 1.15 × 0.9 the capitals tall, upright as the site draws it, on the letters'
 // middle, its wings on the middle of the space between W and C, the opening name's
 // words a fifth further apart than the drawing's word space (NAME_SPACE). Drawn over CRITIC in CRITIC's own units, its
-// body in the highlight (in the ink, the letters red, for a while — "Turn bird to black and wordmark to red", "Revert
-// to black wordmark red bird") with the wing gap masked clean through it, the beak's notch in the letters' ink, and hidden
+// body in the ink (in the highlight till "Make bird Black and add a 1px outlin in white to letters where the bird
+// overlaps"; the letters red for a while, "Turn bird to black and wordmark to red", "Revert to black wordmark red
+// bird") with the wing gap masked clean through it, the beak's notch in white, the letters it crosses edged in white
+// within it, and hidden
 // where the C's left half stands, so the tail runs under that side and over the right. The band's name carries it in
 // miniature ("Keep bird in miniature in nav wordmark"); ID keeps each copy's masks its own. style.css THE BIRD BETWEEN
 // NEW AND CRITIC.
@@ -387,6 +389,10 @@ function nameSwallow(id = 'cn') {
   const bx = axisX - 299.22 * ks, by = -(728.23 * ks - cBot) / 2 - 0.14 * ks;
   const tf = `translate(${bx.toFixed(2)} ${by.toFixed(2)}) scale(${ks.toFixed(5)})`;
   const half = (cLo + cHi) / 2 - 20 * u;
+  // (the W as NEW sets it, carried into CRITIC's units: NEW's box ends the word gap left of CRITIC's)
+  const nw = spacedWord('new', LETTER_K), nwW = nw.ar * cap;
+  const wP = [...nw.svg.matchAll(/<path fill="currentColor" transform="([^"]+)" d="([^"]+)"\/>/g)].pop();
+  const wX = -NAME_SPACE * WM_SPACE * cap - nwW;
   const big = `x="-${cap * 4}" y="-${cap}" width="${cap * 8}" height="${cap * 3}"`;
   return `<span class="cn-swallow" aria-hidden="true" style="width: ${cr.ar.toFixed(4)}em"><svg viewBox="0 0 ${(cr.ar * cap).toFixed(2)} ${cap}" overflow="visible" focusable="false">`
     + `<defs><mask id="${id}-swallow-under" maskUnits="userSpaceOnUse" ${big}><rect ${big} fill="#fff"/>`
@@ -397,7 +403,14 @@ function nameSwallow(id = 'cn') {
     + `<g mask="url(#${id}-swallow-under)"><g class="cn-swallow__fly" transform="${tf}" data-axis-x="${axisX.toFixed(2)}" data-c-bot="${cBot.toFixed(2)}">`
     + `<path class="cn-swallow__body" fill-rule="evenodd" d="${body}"${cut ? ` mask="url(#${id}-swallow-gap)"` : ''}/>`
     + (beak ? `<path class="cn-swallow__beak" d="${beak}"/>` : '')
-    + `</g></g><g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
+    + `</g></g>`
+    // (the bird black since, the letters it crosses edged a pixel in white within it — "Make bird Black and add a 1px
+    // outlin in white to letters where the bird overlaps", 2026-10-16: the W's and the C's outlines, clipped to the
+    // bird's ink, so the C's edge shows where the tail runs under it and the W's and the C's where the bird runs over)
+    + `<g class="cn-swallow__edge" clip-path="url(#${id}-swallow-ink)" fill="none">`
+    + (wP ? `<g transform="translate(${wX.toFixed(2)} 0)"><path transform="${wP[1]}" d="${wP[2]}" vector-effect="non-scaling-stroke"/></g>` : '')
+    + `<path transform="${c[1]}" d="${c[2]}" vector-effect="non-scaling-stroke"/></g>`
+    + `<g class="cn-swallow__tlm" clip-path="url(#${id}-swallow-ink)"></g></svg></span>`;
 }
 function contentNameBlock() {
   const cn = contentName();

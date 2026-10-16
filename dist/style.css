@@ -15872,6 +15872,9 @@ html body main .op-track > .op-band > .opb-swallow > .cn-swallow{
 html body .cn-swallow > svg{ display: block !important; width: 100% !important; height: 100% !important; overflow: visible !important; }
 html body .cn-swallow .cn-swallow__body{ fill: var(--nc-mark, #B3301E) !important; }
 html body .cn-swallow .cn-swallow__beak{ fill: var(--k, #121417) !important; }
+html body .cn-swallow .cn-swallow__body{ fill: var(--k, #121417) !important; }
+html body .cn-swallow .cn-swallow__beak{ fill: #FFFFFF !important; }
+html body .cn-swallow .cn-swallow__edge path{ fill: none !important; stroke: #FFFFFF !important; stroke-width: 1px !important; }
 html body .cn-swallow .cn-swallow__tlm{ fill: var(--k, #121417); color: var(--k, #121417); }
 html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
