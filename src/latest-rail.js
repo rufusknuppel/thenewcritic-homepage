@@ -574,8 +574,11 @@ var ncStemX = function () {
         // (off the column's own width, not where it stands — slid out as it shuts it stands past the window)
         if (rrF && rrF.width) { if (railF.classList.contains('latest-rail--l')) cL = railF.offsetWidth; else cR = vwF - railF.offsetWidth; }
       }
-      main.style.setProperty('--fb-l', cL.toFixed(2) + 'px');
-      main.style.setProperty('--fb-r', (vwF - cR).toFixed(2) + 'px');
+      // (on the foot band, which alone reads them — not main, 2026-10-16)
+      [].forEach.call(document.querySelectorAll('.foot-band'), function (fbE) {
+        fbE.style.setProperty('--fb-l', cL.toFixed(2) + 'px');
+        fbE.style.setProperty('--fb-r', (vwF - cR).toFixed(2) + 'px');
+      });
       // (the copyright let go where the five would stand less than 20 apart — the content's column narrow at 1024)
       var cpyF = st.querySelector('.sub-ticker-run > .band-under--copy');
       // (no Last Magazine in the line since — "Get rid of the last magazine in the bottom band", 2026-10-14: kept in
@@ -1785,7 +1788,8 @@ var ncStemX = function () {
             if (fB < fS) rnF = fB;
           }
         }
-        if (main.style.getPropertyValue('--rn-font') !== rnF.toFixed(3) + 'px') main.style.setProperty('--rn-font', rnF.toFixed(3) + 'px');
+        // (on the name itself, which alone reads it, not main — whose every change restyled the whole page, ~110ms, 2026-10-16)
+        if (rnS.style.getPropertyValue('--rn-font') !== rnF.toFixed(3) + 'px') rnS.style.setProperty('--rn-font', rnF.toFixed(3) + 'px');
       }
       // (and on the right, between CRITIC's R and its first I since —
       // "Have the edge of the latest column stretch to between the R and
@@ -1969,7 +1973,11 @@ var ncStemX = function () {
     // 36px", 2026-10-15: the column's carry and 54, where the widest rows stand off the window's sides)
     var G = (parseFloat(main.style.getPropertyValue('--rail-shift')) || 0) + 54;
     var gv = G.toFixed(1) + 'px';
-    if (document.documentElement.style.getPropertyValue('--nc-gut') !== gv) document.documentElement.style.setProperty('--nc-gut', gv);
+    // (on what reads it, the hold — its bird within it — and the corner bird, not the root, whose every change restyled
+    // the whole page, ~110ms, 2026-10-16)
+    [holdG].concat([].slice.call(document.querySelectorAll('body > a.corner-bird'))).forEach(function (el) {
+      if (el.style.getPropertyValue('--nc-gut') !== gv) el.style.setProperty('--nc-gut', gv);
+    });
     // (the rows' ink's left edge as it lands, unslid, the carry set off it — the first rows' pictures and words)
     var inkL = 1e9, sh0 = parseFloat(main.style.getPropertyValue('--rail-shift')) || 0;
     // (the words on the left alone since, less the centring of a picture at its own shape — the row's edge, not where a
@@ -1985,7 +1993,7 @@ var ncStemX = function () {
     });
     slidG.forEach(function (el) { el.style.removeProperty('transition'); });
     if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
-    document.documentElement.style.setProperty('--opb-in', ncStemX() + 'px');
+    holdG.style.setProperty('--opb-in', ncStemX() + 'px');
     carry();
   };
   // (the hold's carry alone, which lay below asks for too once it has set where the socials stand — not the rows' slide,
@@ -1997,7 +2005,7 @@ var ncStemX = function () {
     // --nc-colw the socials' width)
     var socG = document.querySelector('main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
     if (!sq || !sq.width) return;
-    document.documentElement.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
+    holdG.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
     // (the column itself left where a shut column stands, out past the window's left — the rows' fitter reads it there
     // — its hold alone carried over, --rl-gtx)
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
@@ -2295,7 +2303,11 @@ var ncStemX = function () {
     // above the document's top)
     var cnM = document.querySelector('a.content-name');
     if (cnM && cnM.parentElement !== main) main.appendChild(cnM);
-    if (cnM) document.documentElement.style.setProperty('--cn-top-off', (-(main.getBoundingClientRect().top + (window.pageYOffset || 0))).toFixed(2) + 'px');
+    // (on what reads it — the name, and the hold for its bird out of it — not the root, 2026-10-16)
+    if (cnM) {
+      var ctoV = (-(main.getBoundingClientRect().top + (window.pageYOffset || 0))).toFixed(2) + 'px';
+      [cnM, document.querySelector('.page-rows .latest-rail--latest > .latest-rail__hold')].forEach(function (el) { if (el && el.style.getPropertyValue('--cn-top-off') !== ctoV) el.style.setProperty('--cn-top-off', ctoV); });
+    }
     if (!main.classList.contains('name-in-rail') || window.innerWidth < 1024) return;
     var hold = document.querySelector('.page-rows .latest-rail--latest > .latest-rail__hold');
     var strip = document.querySelector('.page-rows > .head-rail > .sub-ticker--top');
@@ -2817,7 +2829,8 @@ window.ncOpenH = function () {
     var key = [h, mt, nb ? nb.offsetWidth : 0, sb ? sb.offsetWidth : 0].concat(mids).map(function (v) { return v.toFixed(1); }).join('|');
     if (key === last) return;
     last = key;
-    main.style.setProperty('--op-mt', mt.toFixed(1) + 'px');
+    // (on the band, which alone reads it — not main, 2026-10-16)
+    band.style.setProperty('--op-mt', mt.toFixed(1) + 'px');
     de.style.setProperty('--op-s', cn.offsetHeight.toFixed(1) + 'px');
     ['--opb-the', '--opb-new', '--opb-critic'].forEach(function (v, k) { if (mids[k] != null) band.style.setProperty(v, mids[k].toFixed(1) + 'px'); });
     // (the socials as far in from the window's right as the nav from its left, THE LAST MAGAZINE on the middle between
@@ -2863,7 +2876,9 @@ window.ncOpenH = function () {
     var on = (window.pageYOffset || 0) >= cn.offsetHeight - 0.5;
     if (on === pinned) return;
     pinned = on;
-    main.classList.toggle('op-pinned', on);
+    // (on the name, which alone reads it — the column's wipe that read it off main is overridden since THE LATEST SEEN
+    // FROM THE FIRST: a class on main restyled the whole page on the scroll's first frame, ~400ms, 2026-10-16)
+    cn.classList.toggle('op-pinned', on);
   };
   window.addEventListener('scroll', pin, { passive: true });
   window.addEventListener('resize', function () { last = ''; setTimeout(lay, 80); pinned = null; pin(); });
