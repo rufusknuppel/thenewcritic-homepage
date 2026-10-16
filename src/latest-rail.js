@@ -2988,7 +2988,10 @@ window.ncOpenH = function () {
     if (segs.length) steps.push(kf(0, (segs[0].L + segs[0].R) / 2, 0));
     // (unseen till the picture's top reaches the band's foot, then at once the picture's outline's width, growing out from
     // it toward the words alone over RULE_RUN, held, and shrinking to the post's middle over the last RULE_RUN)
+    // (past the words by 54 on their side since — "Have the rule overhange the text side by 54px", 2026-10-16)
     segs.forEach(function (g) {
+      if (g.L < g.iL - 0.5) g.L -= 54;
+      if (g.R > g.iR + 0.5) g.R += 54;
       var mid = (g.L + g.R) / 2, run = Math.min(RULE_RUN, (g.B - g.iT) / 2), s0 = at(g.iT);
       steps.push(kf(Math.max(0, s0 - 0.5), mid, 0), kf(s0, g.iL, g.iR - g.iL), kf(at(g.iT + run), g.L, g.R - g.L), kf(at(g.B - run), g.L, g.R - g.L), kf(at(g.B), mid, 0));
     });
