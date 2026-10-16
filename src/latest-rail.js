@@ -1995,10 +1995,14 @@ var ncStemX = function () {
     slidG.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card .duo-half--mega.is-slide'), 0, 8).forEach(function (c) {
       var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
-      if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0));
+      // (less the words' carry toward their picture, bandRule's, so the rows stand where they stood and the words alone
+      // come in — THE RULE UNDER THE DEK)
+      var sbG = e && e.closest('.swap-body'), oxG = sbG ? parseFloat((getComputedStyle(sbG).translate || '').split(/\s+/)[0]) || 0 : 0;
+      if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0) - oxG);
       // (the words on the right, with the column at the left — their right edge as they land, unslid)
       var eR = !c.__ncWordsL && c.querySelector('.swap-body-text'), qR = eR && eR.getBoundingClientRect();
-      if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0));
+      var sbR = eR && eR.closest('.swap-body'), oxR = sbR ? parseFloat((getComputedStyle(sbR).translate || '').split(/\s+/)[0]) || 0 : 0;
+      if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0) - oxR);
     });
     slidG.forEach(function (el) { el.style.removeProperty('transition'); });
     if (colL) { if (inkR > -1e8 && Math.abs(inkR - (document.documentElement.clientWidth - NC_ROWL)) > 0.5) { main.__ncInkR = inkR + sh0; shift(); } }
@@ -2994,21 +2998,44 @@ window.ncOpenH = function () {
   var bandRule = function () {
     var band = document.querySelector('main .op-band');
     if (band) band.classList.remove('rule-runs');
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1024) { [].forEach.call(document.querySelectorAll('.page-rows .swap-body, .page-rows .swap-body-text'), function (t) { t.style.removeProperty('translate'); }); return; }
+    // (the posts' rules gone since, top and foot, and one rule between the dek and the body instead, 27 past the body
+    // either side; the body 27 off the picture, its capitals 27 under the rule, the rule 27 under the dek's baseline —
+    // "Remove the rules on top and bottom. Add a rule between the dek and the body that extends 27px past the body text
+    // move the body text so it's 27px from the image. Have 27px between the body text and the rule and the rule and the
+    // dek", 2026-10-16: the body carried by its translate, the rule the dek's ::after, --dk-rl, --dk-rw, --dk-rt;
+    // style.css THE RULE UNDER THE DEK)
+    var cx = bandRule.cx || (bandRule.cx = document.createElement('canvas').getContext('2d'));
+    var baseAt = function (el, first) {
+      var pr = document.createElement('span');
+      pr.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      if (first) el.insertBefore(pr, el.firstChild); else el.appendChild(pr);
+      var y = pr.getBoundingClientRect().top; el.removeChild(pr); return y;
+    };
     [].forEach.call(document.querySelectorAll('.page-rows section.card'), function (c) {
       var fr = c.querySelector('.card-frame'), fq = fr && fr.getBoundingClientRect();
-      if (!fq || !fq.width) return;
-      var L = fq.left, R = fq.right;
-      [].forEach.call(c.querySelectorAll('.swap-body-head, .swap-body-text'), function (e) {
-        var r = e.getBoundingClientRect();
-        if (r.width && r.height) { L = Math.min(L, r.left); R = Math.max(R, r.right); }
-      });
-      // (and 9 past the picture on its side too since — "Have rules overhang the images by 9px too", 2026-10-16)
-      // (18 either side since — "Make 18px on either side", 2026-10-16)
-      // (27 since — "Expand to 27px and add the same on the bottom too", 2026-10-16)
-      var xl = (L < fq.left - 0.5 ? fq.left - L + 27 : 27).toFixed(1) + 'px', xr = (R > fq.right + 0.5 ? R - fq.right + 27 : 27).toFixed(1) + 'px';
-      if (fr.style.getPropertyValue('--rule-xl') !== xl) fr.style.setProperty('--rule-xl', xl);
-      if (fr.style.getPropertyValue('--rule-xr') !== xr) fr.style.setProperty('--rule-xr', xr);
+      var tx = c.querySelector('.swap-body-text'), dk = c.querySelector('.swap-body-dek'), p0 = tx && tx.querySelector('.swap-p');
+      var sb = tx && tx.closest('.swap-body');
+      if (!fq || !fq.width || !tx || !dk || !p0 || !sb) return;
+      var tq = tx.getBoundingClientRect(), dq = dk.getBoundingClientRect();
+      if (!tq.width || !dq.height) return;
+      // (the words' whole column carried across, so the title and the dek stay centred over the body — the row then
+      // stands its ink 54 in as before, and the picture comes the rest of the way)
+      var ox = parseFloat((getComputedStyle(sb).translate || '').split(/\s+/)[0]) || 0;
+      var oy = parseFloat((getComputedStyle(tx).translate || '').split(/\s+/)[1]) || 0;
+      var tL = tq.left, tR = tq.right, cs = getComputedStyle(p0);
+      cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
+      var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
+      var dx = ox + (fq.left > tR ? fq.left - 27 - tR : tL < fq.right ? 0 : fq.right + 27 - tL);
+      var ruleT = dkB + 27, dy = ruleT + 2 + 27 - capT;
+      var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
+      if (sb.style.getPropertyValue('translate') !== sv) sb.style.setProperty('translate', sv, 'important');
+      if (tx.style.getPropertyValue('translate') !== tv) tx.style.setProperty('translate', tv, 'important');
+      var rl = (tL - 27 - dq.left).toFixed(2) + 'px', rw = (tR - tL + 54).toFixed(2) + 'px', rt = (ruleT - dq.top).toFixed(2) + 'px';
+      if (dk.style.getPropertyValue('--dk-rl') !== rl) dk.style.setProperty('--dk-rl', rl);
+      if (dk.style.getPropertyValue('--dk-rw') !== rw) dk.style.setProperty('--dk-rw', rw);
+      if (dk.style.getPropertyValue('--dk-rt') !== rt) dk.style.setProperty('--dk-rt', rt);
     });
   };
   if (window.ResizeObserver) {
