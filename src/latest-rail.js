@@ -3002,7 +3002,8 @@ window.ncOpenH = function () {
         if (r.width && r.height) { L = Math.min(L, r.left); R = Math.max(R, r.right); }
       });
       // (and 9 past the picture on its side too since — "Have rules overhang the images by 9px too", 2026-10-16)
-      var xl = (L < fq.left - 0.5 ? fq.left - L + 9 : 9).toFixed(1) + 'px', xr = (R > fq.right + 0.5 ? R - fq.right + 9 : 9).toFixed(1) + 'px';
+      // (18 either side since — "Make 18px on either side", 2026-10-16)
+      var xl = (L < fq.left - 0.5 ? fq.left - L + 18 : 18).toFixed(1) + 'px', xr = (R > fq.right + 0.5 ? R - fq.right + 18 : 18).toFixed(1) + 'px';
       if (fr.style.getPropertyValue('--rule-xl') !== xl) fr.style.setProperty('--rule-xl', xl);
       if (fr.style.getPropertyValue('--rule-xr') !== xr) fr.style.setProperty('--rule-xr', xr);
     });
