@@ -7866,7 +7866,8 @@
               // (the posts' own step under the band's lowest ink for a while — "start the top content the standard gap
               // between posts below the ink in the band" — and 54 under the band's foot since, its rule's, "have top post
               // start 54px below the band", 2026-10-16)
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
+              // (right under it again since — "Start the top content right under the band", 2026-10-16)
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;

@@ -2687,6 +2687,11 @@ var ncStemX = function () {
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
               var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
+              // (less the stack's settle on the scroll, so a seat read part way down reads where the stack stands at the
+              // opening — THE BIRD BETWEEN THE NAV AND THE LATEST)
+              var tyB = (getComputedStyle(inC).translate || '').split(/\s+/)[1];
+              tyB = parseFloat(tyB) || 0;
+              ctB -= tyB; lkB -= tyB;
               // (the bird and The Latest one group on the column's middle since, the bird over, 54, The Latest's capitals —
               // "center the bird and the latest in the column, vertically and horizontally", 2026-10-15)
               // (one space between the socials' baseline and the bird, the bird and The Latest's capitals, and The Latest's
@@ -2722,6 +2727,34 @@ var ncStemX = function () {
               var shB = bUnder ? hr.top + gTopB - ctB : (hr.top + birdTopB - ctB - lkB) / 2;
               var ptB = parseFloat(getComputedStyle(hold).paddingTop) || 0;
               hold.style.setProperty('--rl-pt', Math.max(0, ptB + shB).toFixed(2) + 'px');
+              // THE BIRD BETWEEN THE NAV AND THE LATEST (2026-10-16 — "Move the bird between the nav and the latest. Mirror
+              // it so it points to the right, Make it 40% smaller than current size", "On scroll I want the latest and the
+              // bird to move so that they settle evenly spaced"): six tenths of the name's bird as it stood, a fifth bigger since ("Increase bird size by 20%") (build.js
+              // railSwallow); at the opening on the middle between the nav's baseline and The Latest's capitals, The Latest
+              // where it stands; as the band pins, one space between the nav's baseline and the bird, the bird and The
+              // Latest's capitals, and The Latest's last baseline and the window's foot — the two
+              // carried there on the scroll's timeline, --rl-swdy and --rl-stdy (the socials' baseline for the nav's with the column
+              // on the right again); style.css THE BIRD OVER THE LATEST
+              var swE = hold.querySelector(':scope > .rail-swallow'), navA = document.querySelector(document.documentElement.classList.contains('rail-col-l') ? 'main .op-band .rail-top__nav a' : 'main .op-band .rail-socials__a');
+              var cnW = document.querySelector('a.content-name .content-name__block > .tnc-words');
+              if (swE && navA && cnW && !bUnder) {
+                var capN = parseFloat(getComputedStyle(cnW).fontSize) || 0, topN = cnW.getBoundingClientRect().top + (window.pageYOffset || 0);
+                var swH = 0.72 * ((parseFloat(swE.getAttribute('data-cbot')) || 1) * capN * (parseFloat(swE.getAttribute('data-k0')) || 1) + topN);
+                var aN = hr.top - baseOf(navA);
+                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
+                // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
+                // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
+                // the site", 2026-10-16: The Latest off the first picture's middle, its --rl-pt moved to its capitals)
+                var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
+                var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
+                hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
+                var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
+                var swT1 = gS - aN;
+                hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
+                hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
+                hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
+                hold.style.setProperty('--rl-stdy', (swT1 + swH + gS - cap0).toFixed(2) + 'px');
+              }
             }
           }
           if (!inBand && ctH != null && kicks.length && socR) {
