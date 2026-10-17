@@ -2752,12 +2752,12 @@ var ncStemX = function () {
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
                 // the site", 2026-10-16: The Latest off the first picture's middle, its --rl-pt moved to its capitals)
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
-                // (The Latest over the bird since, the same three spaces — the socials' baseline to The Latest's capitals,
-                // its last baseline to the bird, the bird to the window's foot — "Flip the latest and bird", 2026-10-16)
-                var cap0 = g0 - aN, swT0 = cap0 + stS + g0;
+                // (The Latest over the bird for a minute — "Flip the latest and bird" — and the bird over it again since,
+                // "Flip the latest and the bird again", 2026-10-16)
+                var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
-                var cap1 = gS - aN, swT1 = cap1 + stS + gS;
+                var swT1 = gS - aN, cap1 = swT1 + swH + gS;
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
