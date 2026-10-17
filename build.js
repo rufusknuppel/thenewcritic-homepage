@@ -3903,7 +3903,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // so image is in the middle", 2026-10-15)
         // (and flipped again with the column under the nav since — "Move the latest to the left and flip the posts",
         // 2026-10-16: the top post's picture by the column still, its words at the socials' margin; COLUMN_AT)
-        const toR = ((j % 2 === 0) !== (RAIL_SIDE === 'r')) !== (COLUMN_AT === 'l');
+        // (flipped again since, the top post's picture at the left and its words toward the page's middle, the rest
+        // alternating from it — "Move the top image to the left and the title column to the center", 2026-10-16)
+        const toR = ((j % 2 === 0) !== (RAIL_SIDE === 'r')) === (COLUMN_AT === 'l');
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first
