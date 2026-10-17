@@ -11944,6 +11944,7 @@ var ncStemX = function () {
               if (swE && navA && cnW && !bUnder) {
                 var capN = parseFloat(getComputedStyle(cnW).fontSize) || 0, topN = cnW.getBoundingClientRect().top + (window.pageYOffset || 0);
                 var swH = 0.72 * ((parseFloat(swE.getAttribute('data-cbot')) || 1) * capN * (parseFloat(swE.getAttribute('data-k0')) || 1) + topN);
+                swH = capN;
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
