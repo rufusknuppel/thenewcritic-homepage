@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=c9ea97c2">
+<link rel="stylesheet" href="style.css?v=7ed27a95">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11905,20 +11905,22 @@ var ncStemX = function () {
             if (bVisB && !bUnder) hold.style.setProperty('--rl-birdt', (birdTopB - hr.top).toFixed(2) + 'px');
             var metasS = [].filter.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__meta a.latest-rail__meta-link'), function (m) { return m.getBoundingClientRect().height; });
             var inC = kList.closest('.latest-rail__in'), metaC = inC && inC.querySelector('.latest-rail__meta a.latest-rail__meta-link');
-            if (metasS.length && metaC) {
-              var L2b = 2 * (parseFloat(getComputedStyle(metaC).lineHeight) || 27.5);
+            var secV = secLine && secLine.getBoundingClientRect().height ? secLine : null;
+            if ((metasS.length && metaC) || secV) {
+              var L2b = 2 * (parseFloat(getComputedStyle(secV || metaC).lineHeight) || 27.5);
               var k0b = kicks[0], kLast = kicks[kicks.length - 1];
               var kOpen = kList.getAnimations ? !kList.getAnimations().length : Math.abs(kList.getBoundingClientRect().height - kList.scrollHeight) < 4;
               var kKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
               var kHeld = false;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
-              var kNext = metasS[metasS.indexOf(metaC) + 1];
+              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              var kNext = secV ? null : metasS[metasS.indexOf(metaC) + 1];
+              if (secV) hold.style.setProperty('--rl-kmb', '0px');
               if (kNext && !kHeld && kOpen) {
                 var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
-              var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
+              var ctB = capTop1(secV || metasS[0]), lkB = secV ? baseOf(kLast) : Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
               var tyB = (getComputedStyle(inC).translate || '').split(/\s+/)[1];
               tyB = parseFloat(tyB) || 0;
               ctB -= tyB; lkB -= tyB;

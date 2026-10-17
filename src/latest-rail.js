@@ -2667,8 +2667,12 @@ var ncStemX = function () {
             // and the next name as far under the last of them, --rl-kmt, --rl-kmb; style.css THE SECTIONS STACKED AGAIN)
             var metasS = [].filter.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__meta a.latest-rail__meta-link'), function (m) { return m.getBoundingClientRect().height; });
             var inC = kList.closest('.latest-rail__in'), metaC = inC && inC.querySelector('.latest-rail__meta a.latest-rail__meta-link');
-            if (metasS.length && metaC) {
-              var L2b = 2 * (parseFloat(getComputedStyle(metaC).lineHeight) || 27.5);
+            // (the comma line again since, the sections' names one list, the open one's kickers under it — "Make the
+            // section titles a comma separated list", 2026-10-16: the stack read off the line, its first capitals to the
+            // last kicker's baseline; style.css THE SECTIONS IN A COMMA LIST AGAIN)
+            var secV = secLine && secLine.getBoundingClientRect().height ? secLine : null;
+            if ((metasS.length && metaC) || secV) {
+              var L2b = 2 * (parseFloat(getComputedStyle(secV || metaC).lineHeight) || 27.5);
               var k0b = kicks[0], kLast = kicks[kicks.length - 1];
               // (and never before it has — not even for a first value: a list still opening as the page came in gave a gap
               // of 120 under the kickers, and the cache kept it, 2026-10-15)
@@ -2684,13 +2688,14 @@ var ncStemX = function () {
               // section, so the gaps hold still, 2026-10-15)
               var kHeld = false;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + (baseOf(metaC) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
-              var kNext = metasS[metasS.indexOf(metaC) + 1];
+              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              var kNext = secV ? null : metasS[metasS.indexOf(metaC) + 1];
+              if (secV) hold.style.setProperty('--rl-kmb', '0px');
               if (kNext && !kHeld && kOpen) {
                 var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
-              var ctB = capTop1(metasS[0]), lkB = Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
+              var ctB = capTop1(secV || metasS[0]), lkB = secV ? baseOf(kLast) : Math.max(baseOf(metasS[metasS.length - 1]), baseOf(kLast));
               // (less the stack's settle on the scroll, so a seat read part way down reads where the stack stands at the
               // opening — THE BIRD BETWEEN THE NAV AND THE LATEST)
               var tyB = (getComputedStyle(inC).translate || '').split(/\s+/)[1];
