@@ -6705,6 +6705,7 @@
   var TEXT_PIC_GAP = FRAME_PAD * 0.75;
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   var NEAR_GAP = 54;
+  var WORDS_FAR = 54;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -6785,7 +6786,7 @@
       var framed = bandedInk() && !!seat.out;
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
-      if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      if (framed) { wb += FRAME_ONE + (bandedInk() ? WORDS_FAR : 0); dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       var sh = 0;
       if (framed) {
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
@@ -7028,7 +7029,7 @@
           var seat = slideSeat(j.card, { l: Fl, r: Fr, t: B.t, b: B.b });
           var Q = seat && seat.Q;
           if (Q) {
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE : 0);
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE + WORDS_FAR : 0);
             j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
@@ -7039,7 +7040,7 @@
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: 0, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: WORDS_FAR, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -11468,10 +11469,10 @@ var ncStemX = function () {
     var slidG = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slidG.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card .duo-half--mega.is-slide'), 0, 8).forEach(function (c) {
-      var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
+      var e = c.__ncWordsL && c.querySelector('.swap-body'), q = e && e.getBoundingClientRect();
       var sbG = e && e.closest('.swap-body'), oxG = sbG ? parseFloat((getComputedStyle(sbG).translate || '').split(/\s+/)[0]) || 0 : 0;
       if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0) - oxG);
-      var eR = !c.__ncWordsL && c.querySelector('.swap-body-text'), qR = eR && eR.getBoundingClientRect();
+      var eR = !c.__ncWordsL && c.querySelector('.swap-body'), qR = eR && eR.getBoundingClientRect();
       var sbR = eR && eR.closest('.swap-body'), oxR = sbR ? parseFloat((getComputedStyle(sbR).translate || '').split(/\s+/)[0]) || 0 : 0;
       if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0) - oxR);
     });
