@@ -8914,6 +8914,9 @@
   // (the words' gap off the frame, the margin the cards keep: 54 —
   // "Match 54px margin on near side too", 2026-10-05)
   var NEAR_GAP = 54;
+  // (and 54 off the post's far edge, the picture 54 narrower for it — "Reduce the images by 54px to add a 54px margin
+  // on the far side of the body text", 2026-10-19: the words' column 54 wider, the text as wide, padded 54 on its far side)
+  var WORDS_FAR = 54;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
@@ -9067,7 +9070,7 @@
       // middle of the rule whatever fraction it falls on: its part-painted
       // last pixel showed as a hairline beside the rule — "On the left of
       // this right edge")
-      if (framed) { wb += FRAME_ONE; dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      if (framed) { wb += FRAME_ONE + (bandedInk() ? WORDS_FAR : 0); dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       // EVERY PICTURE AT ITS TRUE SIZE (2026-10-05, at the user's words —
       // "keep current image height, but set every image to true size,
       // maxing out at current width"; "Recenter images and columns
@@ -9477,7 +9480,7 @@
           if (Q) {
             // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
             // narrower, as the slide is shorter by it — seatSlides)
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE : 0);
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE + WORDS_FAR : 0);
             j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
@@ -9497,7 +9500,7 @@
       // the frame's 3 on the other: THE CARD IN A FRAME)
       // (54 off the frame since later on 2026-10-05 — "Match 54px margin on
       // near side too": NEAR_GAP)
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: 0, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: WORDS_FAR, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');

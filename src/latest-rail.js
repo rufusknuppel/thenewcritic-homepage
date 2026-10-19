@@ -1994,13 +1994,15 @@ var ncStemX = function () {
     var slidG = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slidG.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card .duo-half--mega.is-slide'), 0, 8).forEach(function (c) {
-      var e = c.__ncWordsL && c.querySelector('.swap-body-text'), q = e && e.getBoundingClientRect();
+      // (the words' column's outer edge since, not the text's — the text stands 54 in from it, "Reduce the images by
+      // 54px to add a 54px margin on the far side of the body text", 2026-10-19: duo-panel-fit.js WORDS_FAR)
+      var e = c.__ncWordsL && c.querySelector('.swap-body'), q = e && e.getBoundingClientRect();
       // (less the words' carry toward their picture, bandRule's, so the rows stand where they stood and the words alone
       // come in — THE RULE UNDER THE DEK)
       var sbG = e && e.closest('.swap-body'), oxG = sbG ? parseFloat((getComputedStyle(sbG).translate || '').split(/\s+/)[0]) || 0 : 0;
       if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0) - oxG);
       // (the words on the right, with the column at the left — their right edge as they land, unslid)
-      var eR = !c.__ncWordsL && c.querySelector('.swap-body-text'), qR = eR && eR.getBoundingClientRect();
+      var eR = !c.__ncWordsL && c.querySelector('.swap-body'), qR = eR && eR.getBoundingClientRect();
       var sbR = eR && eR.closest('.swap-body'), oxR = sbR ? parseFloat((getComputedStyle(sbR).translate || '').split(/\s+/)[0]) || 0 : 0;
       if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0) - oxR);
     });
