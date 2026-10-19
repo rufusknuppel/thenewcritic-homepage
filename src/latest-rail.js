@@ -3049,6 +3049,19 @@ window.ncOpenH = function () {
       if (dk.style.getPropertyValue('--dk-rl') !== rl) dk.style.setProperty('--dk-rl', rl);
       if (dk.style.getPropertyValue('--dk-rw') !== rw) dk.style.setProperty('--dk-rw', rw);
       if (dk.style.getPropertyValue('--dk-rt') !== rt) dk.style.setProperty('--dk-rt', rt);
+      // (the picture's painted box against its frame — the title's ::before box widened by --wrap, as essay-acts.js
+      // picBox reads it — so the corner at the picture's foot stands on the picture, not on the frame a pixel past it:
+      // "Make sure there are no hairlines tho between the border and the image on hover", 2026-10-19; --pb-b, style.css
+      // THE CORNER ON THE PICTURE)
+      var ti = c.querySelector('.card-title.hl-rect.rx'), tcs = ti && getComputedStyle(ti, '::before');
+      if (ti && tcs.content !== 'none') {
+        var trr = ti.getBoundingClientRect(), wr = parseFloat(getComputedStyle(ti).getPropertyValue('--wrap')) || 0, dpr = window.devicePixelRatio || 1;
+        var snap = function (v) { return Math.round(v * dpr) / dpr; };
+        var pB = snap(trr.bottom - (parseFloat(tcs.bottom) || 0));
+        // (its foot alone: across, the title's box is the slide's whole resting box, not the picture's)
+        var vb = (fq.bottom - pB).toFixed(2) + 'px';
+        if (fr.style.getPropertyValue('--pb-b') !== vb) fr.style.setProperty('--pb-b', vb);
+      }
     });
   };
   if (window.ResizeObserver) {

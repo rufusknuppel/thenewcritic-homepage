@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b758e0fa">
+<link rel="stylesheet" href="style.css?v=e637bc70">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12154,6 +12154,14 @@ window.ncOpenH = function () {
       if (dk.style.getPropertyValue('--dk-rl') !== rl) dk.style.setProperty('--dk-rl', rl);
       if (dk.style.getPropertyValue('--dk-rw') !== rw) dk.style.setProperty('--dk-rw', rw);
       if (dk.style.getPropertyValue('--dk-rt') !== rt) dk.style.setProperty('--dk-rt', rt);
+      var ti = c.querySelector('.card-title.hl-rect.rx'), tcs = ti && getComputedStyle(ti, '::before');
+      if (ti && tcs.content !== 'none') {
+        var trr = ti.getBoundingClientRect(), wr = parseFloat(getComputedStyle(ti).getPropertyValue('--wrap')) || 0, dpr = window.devicePixelRatio || 1;
+        var snap = function (v) { return Math.round(v * dpr) / dpr; };
+        var pB = snap(trr.bottom - (parseFloat(tcs.bottom) || 0));
+        var vb = (fq.bottom - pB).toFixed(2) + 'px';
+        if (fr.style.getPropertyValue('--pb-b') !== vb) fr.style.setProperty('--pb-b', vb);
+      }
     });
   };
   if (window.ResizeObserver) {
