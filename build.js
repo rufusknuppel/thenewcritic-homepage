@@ -362,6 +362,15 @@ function railSwallow() {
   const ys = c[2].match(/-?\d*\.?\d+/g).map(Number).filter((_, i) => i % 2 === 1);
   const cBot = cap / 2 + (Math.max(...ys) - cap / 2) * ((WM_GROW.critic || {})[0] || 1);
   const [w, h] = vb;
+  // (the user's own drawing since, assets/bird-column.svg, its paths in the ink as they stand — "Use this for the bird",
+  // 2026-10-19; the name's bird's drawing only where that file is missing)
+  const own = fs.existsSync(path.join(__dirname, 'assets', 'bird-column.svg')) ? fs.readFileSync(path.join(__dirname, 'assets', 'bird-column.svg'), 'utf8') : '';
+  const ovb = (own.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/) || []).slice(1).map(Number);
+  if (own && ovb.length === 2) {
+    const paths = (own.match(/<path\b[^>]*\/>/g) || []).map((pa) => pa.replace(/\sfill="[^"]*"/, '').replace('<path', '<path class="rail-swallow__body"')).join('');
+    return `<span class="rail-swallow" aria-hidden="true" data-k0="${(bandBlockLineW() / bandBlockLineW(1.2)).toFixed(5)}" data-cbot="${(cBot / cap).toFixed(5)}" style="--sw-ar: ${(ovb[0] / ovb[1]).toFixed(5)}">`
+      + `<svg viewBox="0 0 ${ovb[0]} ${ovb[1]}" overflow="visible" focusable="false">${paths}</svg></span>`;
+  }
   return `<span class="rail-swallow" aria-hidden="true" data-k0="${(bandBlockLineW() / bandBlockLineW(1.2)).toFixed(5)}" data-cbot="${(cBot / cap).toFixed(5)}" style="--sw-ar: ${(w / h).toFixed(5)}">`
     + `<svg viewBox="0 0 ${w} ${h}" overflow="visible" focusable="false">`
     + (cut ? `<defs><mask id="rs-swallow-gap" maskUnits="userSpaceOnUse" x="-100" y="-100" width="${w + 200}" height="${h + 200}"><rect x="-100" y="-100" width="${w + 200}" height="${h + 200}" fill="#fff"/><path d="${cut}" fill="#000"/></mask></defs>` : '')
