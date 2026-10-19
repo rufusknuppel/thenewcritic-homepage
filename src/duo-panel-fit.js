@@ -7867,7 +7867,9 @@
               // between posts below the ink in the band" — and 54 under the band's foot since, its rule's, "have top post
               // start 54px below the band", 2026-10-16)
               // (right under it again since — "Start the top content right under the band", 2026-10-16)
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS;
+              // (a pixel lower since, so the Read outline's top, two pixels over the painted picture, clears the band — "top outline
+              // on the top image is getting cut off on hover", 2026-10-19)
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 1;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
