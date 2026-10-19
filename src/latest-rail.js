@@ -2994,6 +2994,25 @@ window.ncOpenH = function () {
     }
     if (g.__k !== html) { g.__k = html; g.innerHTML = html; }
   };
+  // THE MARKS LIT TOGETHER (2026-10-19 — "Reenable the highlight on the wordmark and bird and last magazine"): a hand on
+  // the opening's THE NEW CRITIC or its THE LAST MAGAZINE, the band's THE LAST MAGAZINE or THE NEW CRITIC, or the
+  // column's bird lights them all in the highlight (main.nc-mark-hot; style.css THE MARKS LIT TOGETHER); the bird, like
+  // the rest, takes the hand to the page's top
+  var MARKS = 'a.content-name .content-name__block > .tnc-words, a.content-name .content-name__tlm, main .op-band > a.rail-tlm, main .op-band > a.op-tnc, .latest-rail__hold > .rail-swallow';
+  var markHot = function () {
+    var mn = document.querySelector('main');
+    if (!mn) return;
+    [].forEach.call(document.querySelectorAll(MARKS), function (el) {
+      if (el.__ncHot) return;
+      el.__ncHot = true;
+      var on = function (v) { mn.classList.toggle('nc-mark-hot', v); };
+      el.addEventListener('mouseenter', function () { on(true); });
+      el.addEventListener('mouseleave', function () { on(false); });
+      if (el.classList.contains('rail-swallow')) el.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    });
+  };
+  markHot();
+  window.addEventListener('load', markHot);
   // (the band's rule over the post passing under it — "Hide the rule until the top outline of the first post, grow the
   // rule to cover only the card width, shrinking and disappearing between posts and growing (pinned to scroll) to cover
   // the text of various posts as they scroll under the band", 2026-10-16: each post's ink, its picture and its words,
