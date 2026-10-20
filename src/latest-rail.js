@@ -3152,6 +3152,28 @@ window.ncOpenH = function () {
         if (q[0].__st !== st) { q[0].__st = st; q[0].style.cssText = st; }
       });
     }
+    // (and a dashed rule across the column between each two posts, 54 under the one's picture and 54 over the next's, from
+    // side to side in whole dashes on its middle — "I also want 109px between posts, with a 1px dash rule between and 54px
+    // beneath and above images", 2026-10-20; style.css THE DASHED RULE BETWEEN POSTS)
+    var pics = [];
+    [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+      var ti = c.querySelector('.card-title.hl-rect.rx'), tc = ti && getComputedStyle(ti, '::before');
+      if (!ti || tc.content === 'none') return;
+      var tr = ti.getBoundingClientRect();
+      if (tr.height) pics.push([tr.top + (parseFloat(tc.top) || 0) + syC, tr.bottom - (parseFloat(tc.bottom) || 0) + syC]);
+    });
+    pics.sort(function (a, b) { return a[0] - b[0]; });
+    var gapsY = [];
+    for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
+    var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
+    var gEls = mainC.querySelectorAll(':scope > .nc-col-gap');
+    for (var gk = 0; gk < Math.max(gEls.length, gapsY.length); gk++) {
+      var ge = gEls[gk];
+      if (gk >= gapsY.length) { if (ge) ge.remove(); continue; }
+      if (!ge) { ge = document.createElement('span'); ge.className = 'nc-col-gap'; ge.setAttribute('aria-hidden', 'true'); mainC.appendChild(ge); }
+      var gst = 'left:' + (x0 - Math.round(mq.left)) + 'px;top:' + (gapsY[gk] - (mq.top + syC)).toFixed(2) + 'px;width:' + lenH + 'px';
+      if (ge.__st !== gst) { ge.__st = gst; ge.style.cssText = gst; }
+    }
   };
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');

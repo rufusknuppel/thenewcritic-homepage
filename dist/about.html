@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dda0e09a">
+<link rel="stylesheet" href="style.css?v=cabe60cb">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -4864,7 +4864,8 @@
       if (!(d >= 0 && d < 600)) return;
       rows.forEach(function (row) {
         var was = parseFloat(row.style.getPropertyValue('--card-words'));
-        if (isNaN(was) || Math.abs(was - d) > 0.5) { row.style.setProperty('--card-words', d.toFixed(2) + 'px'); rowKDirty = true; }
+        var dd = d + (window.innerWidth >= 1024 && bandedInk() ? POST_TRIM : 0);
+        if (isNaN(was) || Math.abs(was - dd) > 0.5) { row.style.setProperty('--card-words', dd.toFixed(2) + 'px'); rowKDirty = true; }
       });
     };
     for (var i = 0; i < cards.length; i++) {
@@ -5208,7 +5209,7 @@
             var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
             if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) + (bandedInk() ? 1 : 0) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && (prev.classList.contains('card--row-b') || row.classList.contains('card--row-a')))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
@@ -5838,6 +5839,7 @@
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   var NEAR_GAP = 54;
   var WORDS_FAR = 54;
+  var PIC_FAR = 54, POST_TRIM = 108;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -5865,7 +5867,7 @@
   function columnEdge(card, d) {
     if (window.innerWidth >= 1024 && document.querySelector('main.rail-is-shut.logo-split')) {
       var Pe = slidePic(card);
-      if (Pe) return d < 0 ? Pe.l : Pe.r;
+      if (Pe) return d < 0 ? Pe.l + (bandedInk() ? PIC_FAR : 0) : Pe.r - (bandedInk() ? PIC_FAR : 0);
     }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];

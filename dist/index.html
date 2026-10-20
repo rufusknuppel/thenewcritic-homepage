@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dda0e09a">
+<link rel="stylesheet" href="style.css?v=cabe60cb">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -5732,7 +5732,8 @@
       if (!(d >= 0 && d < 600)) return;
       rows.forEach(function (row) {
         var was = parseFloat(row.style.getPropertyValue('--card-words'));
-        if (isNaN(was) || Math.abs(was - d) > 0.5) { row.style.setProperty('--card-words', d.toFixed(2) + 'px'); rowKDirty = true; }
+        var dd = d + (window.innerWidth >= 1024 && bandedInk() ? POST_TRIM : 0);
+        if (isNaN(was) || Math.abs(was - dd) > 0.5) { row.style.setProperty('--card-words', dd.toFixed(2) + 'px'); rowKDirty = true; }
       });
     };
     for (var i = 0; i < cards.length; i++) {
@@ -6076,7 +6077,7 @@
             var rbPic = picBoxOf(nb), rbCur = rowCourier(nb), rbInk = rowInk(nb);
             if (rbPic) curT = Math.min(curT, pic.t + acc - (rbPic.t - Math.min(rbCur ? rbCur.t : Infinity, rbInk ? rbInk.t : Infinity, rbPic.t)));
           }
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) + (bandedInk() ? 1 : 0) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           if (!ONE_COL.matches && pic && prevPic && sharesWidth(prev, row) && !(stacked && (prev.classList.contains('card--row-b') || row.classList.contains('card--row-a')))) {
             var mySpan = picSpanOf(row), pw = wordsSpanOf(prev);
             var myTop = Math.min(cur ? cur.t : Infinity, ink ? ink.t : Infinity, pic.t) + acc;
@@ -6706,6 +6707,7 @@
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   var NEAR_GAP = 54;
   var WORDS_FAR = 54;
+  var PIC_FAR = 54, POST_TRIM = 108;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -6733,7 +6735,7 @@
   function columnEdge(card, d) {
     if (window.innerWidth >= 1024 && document.querySelector('main.rail-is-shut.logo-split')) {
       var Pe = slidePic(card);
-      if (Pe) return d < 0 ? Pe.l : Pe.r;
+      if (Pe) return d < 0 ? Pe.l + (bandedInk() ? PIC_FAR : 0) : Pe.r - (bandedInk() ? PIC_FAR : 0);
     }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
@@ -12228,6 +12230,25 @@ window.ncOpenH = function () {
         var st = 'left:' + q[1] + 'px;top:' + topC.toFixed(2) + 'px;height:' + lenC + 'px';
         if (q[0].__st !== st) { q[0].__st = st; q[0].style.cssText = st; }
       });
+    }
+    var pics = [];
+    [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+      var ti = c.querySelector('.card-title.hl-rect.rx'), tc = ti && getComputedStyle(ti, '::before');
+      if (!ti || tc.content === 'none') return;
+      var tr = ti.getBoundingClientRect();
+      if (tr.height) pics.push([tr.top + (parseFloat(tc.top) || 0) + syC, tr.bottom - (parseFloat(tc.bottom) || 0) + syC]);
+    });
+    pics.sort(function (a, b) { return a[0] - b[0]; });
+    var gapsY = [];
+    for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
+    var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
+    var gEls = mainC.querySelectorAll(':scope > .nc-col-gap');
+    for (var gk = 0; gk < Math.max(gEls.length, gapsY.length); gk++) {
+      var ge = gEls[gk];
+      if (gk >= gapsY.length) { if (ge) ge.remove(); continue; }
+      if (!ge) { ge = document.createElement('span'); ge.className = 'nc-col-gap'; ge.setAttribute('aria-hidden', 'true'); mainC.appendChild(ge); }
+      var gst = 'left:' + (x0 - Math.round(mq.left)) + 'px;top:' + (gapsY[gk] - (mq.top + syC)).toFixed(2) + 'px;width:' + lenH + 'px';
+      if (ge.__st !== gst) { ge.__st = gst; ge.style.cssText = gst; }
     }
   };
   if (window.ResizeObserver) {

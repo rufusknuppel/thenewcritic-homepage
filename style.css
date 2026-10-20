@@ -31167,3 +31167,21 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ content: none !important; display: none !important; }
 }
+
+/* THE PICTURES 108 SHORTER (2026-10-20 — "Reduce card/image heights by 108px, 54px from top and bottom"): every row
+   height's formula takes --card-words off, and nothing sets it on these rows, so the trim is set here (and added to
+   it where duo-panel-fit.js fitRowScreens sets it, POST_TRIM); the picture cropped on its middle */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows{ --card-words: 108px; }
+}
+
+/* THE DASHED RULE BETWEEN POSTS (2026-10-20 — "I also want 109px between posts, with a 1px dash rule between and 54px
+   beneath and above images"): a 1px rule across the content column, six on and six off, 54 under one picture and 54
+   over the next (latest-rail.js bandRule, main > .nc-col-gap) */
+.nc-col-gap{ display: none; }
+@media (min-width: 1024px){
+  main > .nc-col-gap{
+    display: block; position: absolute; height: 1px; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(to right, var(--k, #121417) 0 6px, transparent 6px 12px);
+  }
+}

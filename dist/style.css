@@ -16075,3 +16075,13 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ content: none !important; display: none !important; }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows{ --card-words: 108px; }
+}
+.nc-col-gap{ display: none; }
+@media (min-width: 1024px){
+  main > .nc-col-gap{
+    display: block; position: absolute; height: 1px; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(to right, var(--k, #121417) 0 6px, transparent 6px 12px);
+  }
+}

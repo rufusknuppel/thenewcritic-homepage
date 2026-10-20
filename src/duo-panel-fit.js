@@ -7320,7 +7320,11 @@
       if (!(d >= 0 && d < 600)) return;
       rows.forEach(function (row) {
         var was = parseFloat(row.style.getPropertyValue('--card-words'));
-        if (isNaN(was) || Math.abs(was - d) > 0.5) { row.style.setProperty('--card-words', d.toFixed(2) + 'px'); rowKDirty = true; }
+        // (and the rows' pictures 108 shorter on the wide screen since — "Reduce card/image heights by 108px, 54px from
+        // top and bottom", 2026-10-20: every row height's formula takes --card-words off, so the trim rides on it, the
+        // picture cropped on its middle; POST_TRIM)
+        var dd = d + (window.innerWidth >= 1024 && bandedInk() ? POST_TRIM : 0);
+        if (isNaN(was) || Math.abs(was - dd) > 0.5) { row.style.setProperty('--card-words', dd.toFixed(2) + 'px'); rowKDirty = true; }
       });
     };
     for (var i = 0; i < cards.length; i++) {
@@ -7462,6 +7466,9 @@
   // first row and the colophon's 54 under the last stand as they were)
   // (108 since later that day: "Increase space between posts to 108px")
   var ROW_STEP = 108;
+  // (109 between the pictures on the wide screen since, 54 over and under a 1px dashed rule — "I also want 109px between
+  // posts, with a 1px dash rule between and 54px beneath and above images", 2026-10-20: a pixel added where the rows are
+  // stepped; latest-rail.js draws the rule)
   // (54 to the divider between the sections, its 9, and 54 past it, for a
   // day — "Have a 72px Charcoal Divider between the sections", then
   // "section dividers should actually be 54px and blue", "charcoal
@@ -7966,7 +7973,7 @@
           // the lowest of the row over it — across, the two keep 36)
           // (a section's first row 144 under the last section's ink —
           // 54 to the divider, its 36, and 54 past it: FOUR SECTIONS, 2026-10-04)
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) + (bandedInk() ? 1 : 0) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)
@@ -8919,6 +8926,9 @@
   // (and 54 off the post's far edge, the picture 54 narrower for it — "Reduce the images by 54px to add a 54px margin
   // on the far side of the body text", 2026-10-19: the words' column 54 wider, the text as wide, padded 54 on its far side)
   var WORDS_FAR = 54;
+  // (the picture 54 in from the post's outer edge — columnEdge, PIC_FAR — and the rows' pictures 108 shorter — fitRowScreens,
+  // POST_TRIM)
+  var PIC_FAR = 54, POST_TRIM = 108;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
@@ -8984,7 +8994,10 @@
     // to the edge of the side column", 2026-10-15; latest-rail.js, mid)
     if (window.innerWidth >= 1024 && document.querySelector('main.rail-is-shut.logo-split')) {
       var Pe = slidePic(card);
-      if (Pe) return d < 0 ? Pe.l : Pe.r;
+      // (54 in from the post's outer edge since, the picture clear of the dashed rule down the column's side — "Always
+      // have at least 54px between the images and the dashed rule", 2026-10-20: the clip, the frame and the true-size
+      // window all read this edge, so the picture itself is cut 54 further in; PIC_FAR)
+      if (Pe) return d < 0 ? Pe.l + (bandedInk() ? PIC_FAR : 0) : Pe.r - (bandedInk() ? PIC_FAR : 0);
     }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
