@@ -3094,7 +3094,8 @@ window.ncOpenH = function () {
           var dprM = window.devicePixelRatio || 1;
           mTop = Math.round(mTop * dprM) / dprM;
           // (the gap 6 since — "Make gaps 6px": a dash every 15)
-          var nD = Math.max(1, Math.round((bBase - mTop + 6) / 15)), mEnd = mTop + nD * 15 - 6;
+          // (the dash 6 too since — "Make dashes 6px segmets too": a dash every 12)
+          var nD = Math.max(1, Math.round((bBase - mTop + 6) / 12)), mEnd = mTop + nD * 12 - 6;
           var vt = (mTop - sq.top).toFixed(2) + 'px', vbt = (sq.bottom - mEnd).toFixed(2) + 'px';
           if (sb.style.getPropertyValue('--mr-t') !== vt) sb.style.setProperty('--mr-t', vt);
           if (sb.style.getPropertyValue('--mr-b') !== vbt) sb.style.setProperty('--mr-b', vbt);
