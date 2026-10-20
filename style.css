@@ -16110,3 +16110,11 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
   html body main.has-mega .op-track > .op-band > .nc-band-dash > svg{ display: block; overflow: hidden; }
   html body main.has-mega .op-track > .op-band > .nc-band-dash > svg path{ fill: none; stroke: var(--k, #121417); stroke-width: 1; }
 }
+.nc-pic-line{ display: none; }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line{
+    display: block; position: absolute; pointer-events: none; z-index: 12;
+    outline: 1px solid var(--k, #121417); outline-offset: 0px; transition: opacity .15s;
+  }
+  html body main.has-mega .page-rows .duo-half--mega:is(.is-acts, .is-acts-held) > .nc-pic-line{ opacity: 0; }
+}
