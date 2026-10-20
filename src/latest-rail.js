@@ -3192,7 +3192,10 @@ window.ncOpenH = function () {
     if (bandD) {
       var bd = bandD.querySelector(':scope > .nc-band-dash');
       if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
-      var bst = 'left:' + (x0 - Math.round(bandD.getBoundingClientRect().left)) + 'px;width:' + lenH + 'px';
+      // (edge to edge across the window since — "i want that to run edge to edge on the site", 2026-10-20: in step
+      // with the rules between posts, begun a whole dash left of the window's edge and cut at its right)
+      var bL = Math.round(bandD.getBoundingClientRect().left), bx0 = x0 - Math.ceil(x0 / 12) * 12, bW = document.documentElement.clientWidth;
+      var bst = 'left:' + (bx0 - bL) + 'px;width:' + (bW - bx0) + 'px';
       if (bd.__st !== bst) { bd.__st = bst; bd.style.cssText = bst; }
     }
   };
