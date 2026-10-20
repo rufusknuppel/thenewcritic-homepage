@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=c4c1f77d">
+<link rel="stylesheet" href="style.css?v=47d60e52">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6805,7 +6805,7 @@
   function columnEdge(card, d) {
     if (window.innerWidth >= 1024 && document.querySelector('main.rail-is-shut.logo-split')) {
       var Pe = slidePic(card);
-      if (Pe) return d < 0 ? Pe.l + (bandedInk() ? PIC_FAR : 0) : Pe.r - (bandedInk() ? PIC_FAR : 0);
+      if (Pe) return d < 0 ? Pe.l : Pe.r - (bandedInk() ? PIC_FAR : 0);
     }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
@@ -7112,7 +7112,7 @@
       if (j.bp) j.bp = { l: SWAP_PAD, r: SWAP_PAD, t: SWAP_PAD, b: SWAP_PAD };
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: WORDS_FAR, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');

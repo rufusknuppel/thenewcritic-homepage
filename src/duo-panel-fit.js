@@ -9004,7 +9004,9 @@
       // (54 in from the post's outer edge since, the picture clear of the dashed rule down the column's side — "Always
       // have at least 54px between the images and the dashed rule", 2026-10-20: the clip, the frame and the true-size
       // window all read this edge, so the picture itself is cut 54 further in; PIC_FAR)
-      if (Pe) return d < 0 ? Pe.l + (bandedInk() ? PIC_FAR : 0) : Pe.r - (bandedInk() ? PIC_FAR : 0);
+      // (on the right only since, the left's line and its 54 gone — "Remove the left vertical line and margin",
+      // 2026-10-20: the left pictures out to the nav's inset)
+      if (Pe) return d < 0 ? Pe.l : Pe.r - (bandedInk() ? PIC_FAR : 0);
     }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
@@ -9522,7 +9524,9 @@
       // the frame's 3 on the other: THE CARD IN A FRAME)
       // (54 off the frame since later on 2026-10-05 — "Match 54px margin on
       // near side too": NEAR_GAP)
-      if (j.slide && bandedInk()) j.bp = j.picR ? { l: WORDS_FAR, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
+      // (the words' far 54 on the right only since, the left's line and its margin gone — "Remove the left vertical line
+      // and margin", 2026-10-20: words at the left out to the nav's inset)
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');

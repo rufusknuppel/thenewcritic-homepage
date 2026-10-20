@@ -31217,3 +31217,9 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
   }
   html body main.has-mega .page-rows .duo-half--mega:is(.is-acts, .is-acts-held) > .nc-pic-line{ opacity: 0; }
 }
+
+/* THE LEFT LINE GONE (2026-10-20 — "Remove the left vertical line and margin"): the column's dashed side on the left
+   not drawn, and the 54 the pictures and words kept off it given back (duo-panel-fit.js columnEdge, j.bp) */
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side--l.nc-col-side--l{ display: none; }
+}

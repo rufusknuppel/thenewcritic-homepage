@@ -3191,6 +3191,9 @@ window.ncOpenH = function () {
     // (none along the band's foot over the first post since — "Remove top rule and top space above top post", 2026-10-20)
     for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
     var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
+    // (out to the window's left edge since, the left's line gone — "Horizontal dashes should go the left edge too",
+    // 2026-10-20: a whole dash at the right side's line, six on, six off from it to the left edge, cut there)
+    nH = Math.ceil((xr + 1 + 6) / 12); lenH = nH * 12 - 6; x0 = xr + 1 - lenH;
     var gEls = mainC.querySelectorAll(':scope > .nc-col-gap');
     for (var gk = 0; gk < Math.max(gEls.length, gapsY.length); gk++) {
       var ge = gEls[gk];
@@ -3212,10 +3215,10 @@ window.ncOpenH = function () {
       // between with their gaps six give or take the pixel that evens them out, and six off, six on out to the window's
       // edges)
       var bL = Math.round(bandD.getBoundingClientRect().left), bW = document.documentElement.clientWidth;
-      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [[sL - 3, 7], [sR - 3, 7]];
-      for (var bx = sL - 15; bx > -6; bx -= 12) dD.push([bx, 6]);
-      var iI = sR - sL - 7, nI = Math.max(0, Math.round((iI - 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
-      for (var bk = 0; bk < nI; bk++) { gx += Math.floor(gI * (bk + 1) / (nI + 1)) - Math.floor(gI * bk / (nI + 1)); dD.push([gx, 6]); gx += 6; }
+      // (the right side's alone since, the left's line gone — "Remove the left vertical line and margin": six off, six
+      // on from it to the window's left edge)
+      var sR = Math.round(cr), dD = [[sR - 3, 7]];
+      for (var bx = sR - 15; bx > -6; bx -= 12) dD.push([bx, 6]);
       for (bx = sR + 10; bx < bW; bx += 12) dD.push([bx, 6]);
       dD.sort(function (a, b) { return a[0] - b[0]; });
       var bst = 'left:' + (-bL) + 'px;width:' + bW + 'px';
