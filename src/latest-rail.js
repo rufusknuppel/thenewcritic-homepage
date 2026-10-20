@@ -3087,7 +3087,14 @@ window.ncOpenH = function () {
           var mTop = Math.min.apply(null, mb.map(function (r) { return r.top; })) + (mm.fontBoundingBoxAscent || 0);
           fontOf(mt.querySelector('a') || mt); mTop -= cx.measureText('H').actualBoundingBoxAscent || 0;
           var bBase = Math.max.apply(null, bb.map(function (r) { return r.top; })) + (bm.fontBoundingBoxAscent || 0);
-          var vt = (mTop - sq.top).toFixed(2) + 'px', vbt = (sq.bottom - bBase).toFixed(2) + 'px';
+          // (whole dashes since, its top on a whole pixel and its length nine of ink and three of ground over and over,
+          // ending on a whole nine, the nearest to the body's last baseline — "Make the rules 9px dotted segments",
+          // "Have gaps be only 3px", "Complete the final dash, don't cut off", 2026-10-20; style.css THE MARGIN'S RULE IN
+          // NINES)
+          var dprM = window.devicePixelRatio || 1;
+          mTop = Math.round(mTop * dprM) / dprM;
+          var nD = Math.max(1, Math.round((bBase - mTop + 3) / 12)), mEnd = mTop + nD * 12 - 3;
+          var vt = (mTop - sq.top).toFixed(2) + 'px', vbt = (sq.bottom - mEnd).toFixed(2) + 'px';
           if (sb.style.getPropertyValue('--mr-t') !== vt) sb.style.setProperty('--mr-t', vt);
           if (sb.style.getPropertyValue('--mr-b') !== vbt) sb.style.setProperty('--mr-b', vbt);
         }

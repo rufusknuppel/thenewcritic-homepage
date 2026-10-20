@@ -31145,3 +31145,9 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ top: var(--mr-t, 27px) !important; bottom: var(--mr-b, 27px) !important; }
 }
+
+/* THE MARGIN'S RULE IN NINES (2026-10-20 — "Make the rules 9px dotted segments"): the far margin's rule 9px of ink, 9px
+   of ground, down its length, from its top; the gaps 3 since, "Have gaps be only 3px" */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ background: repeating-linear-gradient(to bottom, var(--k, #121417) 0 9px, transparent 9px 12px) !important; }
+}
