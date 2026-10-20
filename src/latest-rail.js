@@ -3123,6 +3123,35 @@ window.ncOpenH = function () {
         if (fr.style.getPropertyValue('--pb-b') !== vb) fr.style.setProperty('--pb-b', vb);
       }
     });
+    // THE COLUMN'S DASHED SIDES (2026-10-20 — "Actually have the dashes run down the whole side of the content column on
+    // either side"): the posts' own margin rules gone; two dashed rules down the page at the content column's outer
+    // edges — the leftmost and rightmost of the posts' pictures and words — from the first picture's top to the last
+    // one's foot, in whole dashes on that run's middle (style.css THE COLUMN'S DASHED SIDES)
+    var cl = 1e9, cr = -1e9, ct = null, cb = null, syC = window.pageYOffset || 0;
+    [].forEach.call(document.querySelectorAll('.page-rows section.card'), function (c) {
+      [].forEach.call(c.querySelectorAll('.card-frame, .swap-body'), function (e) {
+        var r = e.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        cl = Math.min(cl, r.left); cr = Math.max(cr, r.right);
+        if (e.classList.contains('card-frame')) { if (ct == null) ct = r.top + syC; cb = r.bottom + syC; }
+      });
+    });
+    // (in main, under the pinned band, not over it — main its own stacking, the band's track 80 in it)
+    var mainC = document.querySelector('main.has-mega') || document.querySelector('main'), mq = mainC.getBoundingClientRect();
+    var sides = mainC.querySelectorAll(':scope > .nc-col-side');
+    if (sides.length !== 2) {
+      [].forEach.call(sides, function (e) { e.remove(); });
+      sides = ['l', 'r'].map(function (k) { var e = document.createElement('span'); e.className = 'nc-col-side nc-col-side--' + k; e.setAttribute('aria-hidden', 'true'); mainC.appendChild(e); return e; });
+    }
+    if (ct != null && cr > cl) {
+      var dprC = window.devicePixelRatio || 1, nC = Math.max(1, Math.floor((cb - ct + 6) / 12));
+      var topC = Math.round((ct + (cb - ct - (nC * 12 - 6)) / 2) * dprC) / dprC - (mq.top + syC), lenC = nC * 12 - 6;
+      // (each just outside the pictures that reach it, not over their outer pixel)
+      [[sides[0], Math.round(cl) - 1 - Math.round(mq.left)], [sides[1], Math.round(cr) - Math.round(mq.left)]].forEach(function (q) {
+        var st = 'left:' + q[1] + 'px;top:' + topC.toFixed(2) + 'px;height:' + lenC + 'px';
+        if (q[0].__st !== st) { q[0].__st = st; q[0].style.cssText = st; }
+      });
+    }
   };
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');

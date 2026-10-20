@@ -31152,3 +31152,18 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ background: repeating-linear-gradient(to bottom, var(--k, #121417) 0 6px, transparent 6px 12px) !important; }
 }
+
+/* THE COLUMN'S DASHED SIDES (2026-10-20 — "Actually have the dashes run down the whole side of the content column on
+   either side"): the posts' own margin rules gone; two 1px rules, six of ink and six of ground, down the content
+   column's outer edges from the first picture's top to the last one's foot (latest-rail.js bandRule, main >
+   .nc-col-side, under the pinned band) */
+.nc-col-side{ display: none; }
+@media (min-width: 1024px){
+  main > .nc-col-side{
+    display: block; position: absolute; width: 1px; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(to bottom, var(--k, #121417) 0 6px, transparent 6px 12px);
+  }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ content: none !important; display: none !important; }
+}

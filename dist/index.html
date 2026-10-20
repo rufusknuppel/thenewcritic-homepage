@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9fa906ea">
+<link rel="stylesheet" href="style.css?v=dda0e09a">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12206,6 +12206,29 @@ window.ncOpenH = function () {
         if (fr.style.getPropertyValue('--pb-b') !== vb) fr.style.setProperty('--pb-b', vb);
       }
     });
+    var cl = 1e9, cr = -1e9, ct = null, cb = null, syC = window.pageYOffset || 0;
+    [].forEach.call(document.querySelectorAll('.page-rows section.card'), function (c) {
+      [].forEach.call(c.querySelectorAll('.card-frame, .swap-body'), function (e) {
+        var r = e.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        cl = Math.min(cl, r.left); cr = Math.max(cr, r.right);
+        if (e.classList.contains('card-frame')) { if (ct == null) ct = r.top + syC; cb = r.bottom + syC; }
+      });
+    });
+    var mainC = document.querySelector('main.has-mega') || document.querySelector('main'), mq = mainC.getBoundingClientRect();
+    var sides = mainC.querySelectorAll(':scope > .nc-col-side');
+    if (sides.length !== 2) {
+      [].forEach.call(sides, function (e) { e.remove(); });
+      sides = ['l', 'r'].map(function (k) { var e = document.createElement('span'); e.className = 'nc-col-side nc-col-side--' + k; e.setAttribute('aria-hidden', 'true'); mainC.appendChild(e); return e; });
+    }
+    if (ct != null && cr > cl) {
+      var dprC = window.devicePixelRatio || 1, nC = Math.max(1, Math.floor((cb - ct + 6) / 12));
+      var topC = Math.round((ct + (cb - ct - (nC * 12 - 6)) / 2) * dprC) / dprC - (mq.top + syC), lenC = nC * 12 - 6;
+      [[sides[0], Math.round(cl) - 1 - Math.round(mq.left)], [sides[1], Math.round(cr) - Math.round(mq.left)]].forEach(function (q) {
+        var st = 'left:' + q[1] + 'px;top:' + topC.toFixed(2) + 'px;height:' + lenC + 'px';
+        if (q[0].__st !== st) { q[0].__st = st; q[0].style.cssText = st; }
+      });
+    }
   };
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');
