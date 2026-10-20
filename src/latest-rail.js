@@ -3157,14 +3157,11 @@ window.ncOpenH = function () {
       if (window.ncOpenH && window.ncOpenH() > 0) ct = window.ncOpenH();
       var nC = Math.max(1, Math.round((cb - ct + 6) / 12));
       var topC = Math.round(ct * dprC) / dprC - (mq.top + syC), lenC = nC * 12 - 6;
-      // (carried up over the band as the name scrolls away — "Then have the dash lines go over the top band",
-      // 2026-10-20: whole dashes on up from the band's foot past its top (--cs-pre, the band's height in whole dashes),
-      // shown from the band's foot at the opening and from its top once it pins, style.css nc-col-up)
-      var bandC = mainC.querySelector('.op-band'), preC = bandC && bandC.offsetHeight ? Math.ceil(bandC.offsetHeight / 12) * 12 : 0;
-      topC -= preC; lenC += preC;
+      // (under the band only — "have the vertical dividers only pass under the top band", 2026-10-20: from its foot, as
+      // before they were carried up over it that afternoon)
       // (each just outside the pictures that reach it, not over their outer pixel)
       [[sides[0], Math.round(cl) - 1 - Math.round(mq.left)], [sides[1], Math.round(cr) - Math.round(mq.left)]].forEach(function (q) {
-        var st = 'left:' + q[1] + 'px;top:' + topC.toFixed(2) + 'px;height:' + lenC + 'px;--cs-pre:' + preC + 'px';
+        var st = 'left:' + q[1] + 'px;top:' + topC.toFixed(2) + 'px;height:' + lenC + 'px';
         if (q[0].__st !== st) { q[0].__st = st; q[0].style.cssText = st; }
       });
     }
