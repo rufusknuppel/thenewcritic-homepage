@@ -12258,7 +12258,8 @@ window.ncOpenH = function () {
     if (bandD) {
       var bd = bandD.querySelector(':scope > .nc-band-dash');
       if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
-      var bst = 'left:' + (x0 - Math.round(bandD.getBoundingClientRect().left)) + 'px;width:' + lenH + 'px';
+      var bL = Math.round(bandD.getBoundingClientRect().left), bx0 = x0 - Math.ceil(x0 / 12) * 12, bW = document.documentElement.clientWidth;
+      var bst = 'left:' + (bx0 - bL) + 'px;width:' + (bW - bx0) + 'px';
       if (bd.__st !== bst) { bd.__st = bst; bd.style.cssText = bst; }
     }
   };
