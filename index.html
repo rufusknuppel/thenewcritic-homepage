@@ -11953,10 +11953,10 @@ var ncStemX = function () {
                 if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
-                var cap0 = g0 - aN, swT0 = cap0 + stS + g0;
+                var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
-                var cap1 = gS - aN, swT1 = cap1 + stS + gS;
+                var swT1 = gS - aN, cap1 = swT1 + swH + gS;
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
@@ -12267,18 +12267,18 @@ window.ncOpenH = function () {
       var bd = bandD.querySelector(':scope > .nc-band-dash');
       if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
       var bL = Math.round(bandD.getBoundingClientRect().left), bW = document.documentElement.clientWidth;
-      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [];
-      for (var bx = sL - 9; bx > -6; bx -= 12) dD.push(bx);
-      var iI = sR - sL - 7, nI = Math.max(1, Math.round((iI + 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
-      for (var bk = 0; bk < nI; bk++) { dD.push(gx); gx += 6 + (nI > 1 ? Math.floor(gI * (bk + 1) / (nI - 1)) - Math.floor(gI * bk / (nI - 1)) : 0); }
-      for (bx = sR + 4; bx < bW; bx += 12) dD.push(bx);
-      dD.sort(function (a, b) { return a - b; });
+      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [[sL - 3, 7], [sR - 3, 7]];
+      for (var bx = sL - 15; bx > -6; bx -= 12) dD.push([bx, 6]);
+      var iI = sR - sL - 7, nI = Math.max(0, Math.round((iI - 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
+      for (var bk = 0; bk < nI; bk++) { gx += Math.floor(gI * (bk + 1) / (nI + 1)) - Math.floor(gI * bk / (nI + 1)); dD.push([gx, 6]); gx += 6; }
+      for (bx = sR + 10; bx < bW; bx += 12) dD.push([bx, 6]);
+      dD.sort(function (a, b) { return a[0] - b[0]; });
       var bst = 'left:' + (-bL) + 'px;width:' + bW + 'px';
       var bkey = bst + '|' + dD.join(',');
       if (bd.__st !== bkey) {
         bd.__st = bkey; bd.style.cssText = bst;
         bd.innerHTML = '<svg width="' + bW + '" height="1" viewBox="0 0 ' + bW + ' 1" shape-rendering="crispEdges"><path d="' +
-          dD.map(function (x) { return 'M' + x + ' 0.5h6'; }).join('') + '"/></svg>';
+          dD.map(function (d) { return 'M' + d[0] + ' 0.5h' + d[1]; }).join('') + '"/></svg>';
       }
     }
   };
