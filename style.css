@@ -31138,3 +31138,10 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ background: var(--k, #121417) !important; }
 }
+
+/* THE MARGIN'S RULE ON THE WORDS (2026-10-20 — "Have the rules stretch from the top of the metadata to the bottom of the
+   body text"): the far margin's rule from the meta's capitals to the body's last baseline (--mr-t, --mr-b,
+   latest-rail.js bandRule) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ top: var(--mr-t, 27px) !important; bottom: var(--mr-b, 27px) !important; }
+}

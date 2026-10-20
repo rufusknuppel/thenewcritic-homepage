@@ -3068,6 +3068,30 @@ window.ncOpenH = function () {
       if (dk.style.getPropertyValue('--dk-rl') !== rl) dk.style.setProperty('--dk-rl', rl);
       if (dk.style.getPropertyValue('--dk-rw') !== rw) dk.style.setProperty('--dk-rw', rw);
       if (dk.style.getPropertyValue('--dk-rt') !== rt) dk.style.setProperty('--dk-rt', rt);
+      // (the far margin's rule from the meta's capitals to the body's last seen baseline — "Have the rules stretch from
+      // the top of the metadata to the bottom of the body text", 2026-10-20: each line's box read off the text's ranges,
+      // the last one inside the body's clip; --mr-t, --mr-b on the words' column, style.css THE MARGIN'S RULE ON THE WORDS)
+      var mt = c.querySelector('.swap-body-meta'), sq = sb.getBoundingClientRect();
+      var lineBoxes = function (el) {
+        var out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), n;
+        while ((n = w.nextNode())) { if (!n.nodeValue.trim()) continue; var rg = document.createRange(); rg.selectNodeContents(n); [].push.apply(out, [].slice.call(rg.getClientRects())); }
+        return out.filter(function (r) { return r.width && r.height; });
+      };
+      var fontOf = function (el) { var q = getComputedStyle(el); cx.font = q.fontStyle + ' ' + q.fontWeight + ' ' + q.fontSize + ' ' + q.fontFamily; return cx.measureText('Hg'); };
+      if (mt) {
+        var mb = lineBoxes(mt), mm = fontOf(mt.querySelector('a') || mt);
+        var bb = lineBoxes(tx).filter(function (r) { return r.bottom <= tq.bottom + 1; }), bm = fontOf(p0);
+        if (mb.length && bb.length) {
+          // (the meta's capitals: its line box's top plus the face's ascent, less the capital's height, the canvas set
+          // to the meta's face again after the body's)
+          var mTop = Math.min.apply(null, mb.map(function (r) { return r.top; })) + (mm.fontBoundingBoxAscent || 0);
+          fontOf(mt.querySelector('a') || mt); mTop -= cx.measureText('H').actualBoundingBoxAscent || 0;
+          var bBase = Math.max.apply(null, bb.map(function (r) { return r.top; })) + (bm.fontBoundingBoxAscent || 0);
+          var vt = (mTop - sq.top).toFixed(2) + 'px', vbt = (sq.bottom - bBase).toFixed(2) + 'px';
+          if (sb.style.getPropertyValue('--mr-t') !== vt) sb.style.setProperty('--mr-t', vt);
+          if (sb.style.getPropertyValue('--mr-b') !== vbt) sb.style.setProperty('--mr-b', vbt);
+        }
+      }
       // (the picture's painted box against its frame — the title's ::before box widened by --wrap, as essay-acts.js
       // picBox reads it — so the corner at the picture's foot stands on the picture, not on the frame a pixel past it:
       // "Make sure there are no hairlines tho between the border and the image on hover", 2026-10-19; --pb-b, style.css
