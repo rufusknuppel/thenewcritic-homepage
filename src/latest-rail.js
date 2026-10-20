@@ -2767,12 +2767,12 @@ var ncStemX = function () {
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
                 // (The Latest over the bird for a minute — "Flip the latest and bird" — and the bird over it again since,
                 // "Flip the latest and the bird again", 2026-10-16)
-                // (The Latest over the bird again since, the same three spaces — the line to The Latest's capitals, its last
-                // baseline to the bird, the bird to the window's foot — "switch the bird and the latest", 2026-10-20)
-                var cap0 = g0 - aN, swT0 = cap0 + stS + g0;
+                // (The Latest over the bird for an hour — "switch the bird and the latest", 2026-10-20 — and the bird over it
+                // again since, "flip bird and the latest positions")
+                var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
-                var cap1 = gS - aN, swT1 = cap1 + stS + gS;
+                var swT1 = gS - aN, cap1 = swT1 + swH + gS;
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
@@ -3207,22 +3207,23 @@ window.ncOpenH = function () {
       var bd = bandD.querySelector(':scope > .nc-band-dash');
       if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
       // (edge to edge across the window since — "i want that to run edge to edge on the site", 2026-10-20; drawn so the
-      // column's two dashed sides each stand on the middle of a gap since — "draw the dashes of the top rule so that the
-      // two vertical rules bisect gaps": three clear either side of each side's pixel, whole dashes of six between,
-      // their gaps six give or take the pixel that evens them out, and six on, six off out to the window's edges)
+      // column's two dashed sides each pass through the middle of a dash since — "now I want the vertical lines to pass
+      // through the center of dashes": a dash of seven on each side's pixel, three of it either side, six-pixel dashes
+      // between with their gaps six give or take the pixel that evens them out, and six off, six on out to the window's
+      // edges)
       var bL = Math.round(bandD.getBoundingClientRect().left), bW = document.documentElement.clientWidth;
-      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [];
-      for (var bx = sL - 9; bx > -6; bx -= 12) dD.push(bx);
-      var iI = sR - sL - 7, nI = Math.max(1, Math.round((iI + 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
-      for (var bk = 0; bk < nI; bk++) { dD.push(gx); gx += 6 + (nI > 1 ? Math.floor(gI * (bk + 1) / (nI - 1)) - Math.floor(gI * bk / (nI - 1)) : 0); }
-      for (bx = sR + 4; bx < bW; bx += 12) dD.push(bx);
-      dD.sort(function (a, b) { return a - b; });
+      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [[sL - 3, 7], [sR - 3, 7]];
+      for (var bx = sL - 15; bx > -6; bx -= 12) dD.push([bx, 6]);
+      var iI = sR - sL - 7, nI = Math.max(0, Math.round((iI - 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
+      for (var bk = 0; bk < nI; bk++) { gx += Math.floor(gI * (bk + 1) / (nI + 1)) - Math.floor(gI * bk / (nI + 1)); dD.push([gx, 6]); gx += 6; }
+      for (bx = sR + 10; bx < bW; bx += 12) dD.push([bx, 6]);
+      dD.sort(function (a, b) { return a[0] - b[0]; });
       var bst = 'left:' + (-bL) + 'px;width:' + bW + 'px';
       var bkey = bst + '|' + dD.join(',');
       if (bd.__st !== bkey) {
         bd.__st = bkey; bd.style.cssText = bst;
         bd.innerHTML = '<svg width="' + bW + '" height="1" viewBox="0 0 ' + bW + ' 1" shape-rendering="crispEdges"><path d="' +
-          dD.map(function (x) { return 'M' + x + ' 0.5h6'; }).join('') + '"/></svg>';
+          dD.map(function (d) { return 'M' + d[0] + ' 0.5h' + d[1]; }).join('') + '"/></svg>';
       }
     }
   };
