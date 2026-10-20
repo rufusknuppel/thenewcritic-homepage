@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=5d99e7ac">
+<link rel="stylesheet" href="style.css?v=d0965c9b">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11949,6 +11949,7 @@ var ncStemX = function () {
                 var swH = 0.72 * ((parseFloat(swE.getAttribute('data-cbot')) || 1) * capN * (parseFloat(swE.getAttribute('data-k0')) || 1) + topN);
                 swH = capN;
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
+                if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
                 var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
@@ -12258,9 +12259,20 @@ window.ncOpenH = function () {
     if (bandD) {
       var bd = bandD.querySelector(':scope > .nc-band-dash');
       if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
-      var bL = Math.round(bandD.getBoundingClientRect().left), bx0 = x0 - Math.ceil(x0 / 12) * 12, bW = document.documentElement.clientWidth;
-      var bst = 'left:' + (bx0 - bL) + 'px;width:' + (bW - bx0) + 'px';
-      if (bd.__st !== bst) { bd.__st = bst; bd.style.cssText = bst; }
+      var bL = Math.round(bandD.getBoundingClientRect().left), bW = document.documentElement.clientWidth;
+      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [];
+      for (var bx = sL - 9; bx > -6; bx -= 12) dD.push(bx);
+      var iI = sR - sL - 7, nI = Math.max(1, Math.round((iI + 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
+      for (var bk = 0; bk < nI; bk++) { dD.push(gx); gx += 6 + (nI > 1 ? Math.floor(gI * (bk + 1) / (nI - 1)) - Math.floor(gI * bk / (nI - 1)) : 0); }
+      for (bx = sR + 4; bx < bW; bx += 12) dD.push(bx);
+      dD.sort(function (a, b) { return a - b; });
+      var bst = 'left:' + (-bL) + 'px;width:' + bW + 'px';
+      var bkey = bst + '|' + dD.join(',');
+      if (bd.__st !== bkey) {
+        bd.__st = bkey; bd.style.cssText = bst;
+        bd.innerHTML = '<svg width="' + bW + '" height="1" viewBox="0 0 ' + bW + ' 1" shape-rendering="crispEdges"><path d="' +
+          dD.map(function (x) { return 'M' + x + ' 0.5h6'; }).join('') + '"/></svg>';
+      }
     }
   };
   if (window.ResizeObserver) {

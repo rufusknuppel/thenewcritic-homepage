@@ -16105,3 +16105,8 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
     background: repeating-linear-gradient(to right, var(--k, #121417) 0 6px, transparent 6px 12px);
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash{ background: none; overflow: hidden; }
+  html body main.has-mega .op-track > .op-band > .nc-band-dash > svg{ display: block; overflow: hidden; }
+  html body main.has-mega .op-track > .op-band > .nc-band-dash > svg path{ fill: none; stroke: var(--k, #121417); stroke-width: 1; }
+}

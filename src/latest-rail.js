@@ -2756,6 +2756,10 @@ var ncStemX = function () {
                 // (off the band's own foot, where the hold stands at the opening and pinned alike: read off the hold, a seat
                 // made before the band came to the opening's foot stood the bird 130 high till the next)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
+                // (from the dashed line under the band since, not the nav's baseline — "recenter vertically the bird and the
+                // latest from this rule to the bottom of the site", 2026-10-20: the line the pixel under the band's foot,
+                // so the three spaces begin a pixel under the hold's top)
+                if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
                 // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
@@ -3192,11 +3196,24 @@ window.ncOpenH = function () {
     if (bandD) {
       var bd = bandD.querySelector(':scope > .nc-band-dash');
       if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
-      // (edge to edge across the window since — "i want that to run edge to edge on the site", 2026-10-20: in step
-      // with the rules between posts, begun a whole dash left of the window's edge and cut at its right)
-      var bL = Math.round(bandD.getBoundingClientRect().left), bx0 = x0 - Math.ceil(x0 / 12) * 12, bW = document.documentElement.clientWidth;
-      var bst = 'left:' + (bx0 - bL) + 'px;width:' + (bW - bx0) + 'px';
-      if (bd.__st !== bst) { bd.__st = bst; bd.style.cssText = bst; }
+      // (edge to edge across the window since — "i want that to run edge to edge on the site", 2026-10-20; drawn so the
+      // column's two dashed sides each stand on the middle of a gap since — "draw the dashes of the top rule so that the
+      // two vertical rules bisect gaps": three clear either side of each side's pixel, whole dashes of six between,
+      // their gaps six give or take the pixel that evens them out, and six on, six off out to the window's edges)
+      var bL = Math.round(bandD.getBoundingClientRect().left), bW = document.documentElement.clientWidth;
+      var sL = Math.round(cl) - 1, sR = Math.round(cr), dD = [];
+      for (var bx = sL - 9; bx > -6; bx -= 12) dD.push(bx);
+      var iI = sR - sL - 7, nI = Math.max(1, Math.round((iI + 6) / 12)), gI = iI - 6 * nI, gx = sL + 4;
+      for (var bk = 0; bk < nI; bk++) { dD.push(gx); gx += 6 + (nI > 1 ? Math.floor(gI * (bk + 1) / (nI - 1)) - Math.floor(gI * bk / (nI - 1)) : 0); }
+      for (bx = sR + 4; bx < bW; bx += 12) dD.push(bx);
+      dD.sort(function (a, b) { return a - b; });
+      var bst = 'left:' + (-bL) + 'px;width:' + bW + 'px';
+      var bkey = bst + '|' + dD.join(',');
+      if (bd.__st !== bkey) {
+        bd.__st = bkey; bd.style.cssText = bst;
+        bd.innerHTML = '<svg width="' + bW + '" height="1" viewBox="0 0 ' + bW + ' 1" shape-rendering="crispEdges"><path d="' +
+          dD.map(function (x) { return 'M' + x + ' 0.5h6'; }).join('') + '"/></svg>';
+      }
     }
   };
   if (window.ResizeObserver) {
