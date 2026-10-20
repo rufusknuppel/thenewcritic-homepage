@@ -6036,7 +6036,7 @@
               var fr0 = row.querySelector('.card-frame');
               var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
               var ohS = window.ncOpenH ? window.ncOpenH() : 0;
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 1;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
@@ -12242,7 +12242,6 @@ window.ncOpenH = function () {
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
-    if (pics.length && window.ncOpenH && window.ncOpenH() > 0) gapsY.push(Math.round(window.ncOpenH()));
     for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
     var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
     var gEls = mainC.querySelectorAll(':scope > .nc-col-gap');

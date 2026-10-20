@@ -5168,7 +5168,7 @@
               var fr0 = row.querySelector('.card-frame');
               var cnm = document.querySelector('a.content-name'), cnH = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--strip-settled')) || 0) + (cnm && cnm.offsetHeight ? cnm.offsetHeight : BAND_AIR);
               var ohS = window.ncOpenH ? window.ncOpenH() : 0;
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 1;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
