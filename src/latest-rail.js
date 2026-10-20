@@ -3092,10 +3092,18 @@ window.ncOpenH = function () {
           // "Have gaps be only 3px", "Complete the final dash, don't cut off", 2026-10-20; style.css THE MARGIN'S RULE IN
           // NINES)
           var dprM = window.devicePixelRatio || 1;
-          mTop = Math.round(mTop * dprM) / dprM;
+          // (the picture's height since, its painted top to its foot — the title's ::before box, as essay-acts.js picBox
+          // reads it — the whole dashes on its middle — "Make the rule the height of the image", 2026-10-20)
+          var tiM = c.querySelector('.card-title.hl-rect.rx'), tcM = tiM && getComputedStyle(tiM, '::before');
+          if (tiM && tcM.content !== 'none') {
+            var trM = tiM.getBoundingClientRect();
+            mTop = trM.top + (parseFloat(tcM.top) || 0); bBase = trM.bottom - (parseFloat(tcM.bottom) || 0);
+          }
           // (the gap 6 since — "Make gaps 6px": a dash every 15)
           // (the dash 6 too since — "Make dashes 6px segmets too": a dash every 12)
-          var nD = Math.max(1, Math.round((bBase - mTop + 6) / 12)), mEnd = mTop + nD * 12 - 6;
+          var nD = Math.max(1, Math.floor((bBase - mTop + 6) / 12));
+          mTop = Math.round((mTop + (bBase - mTop - (nD * 12 - 6)) / 2) * dprM) / dprM;
+          var mEnd = mTop + nD * 12 - 6;
           var vt = (mTop - sq.top).toFixed(2) + 'px', vbt = (sq.bottom - mEnd).toFixed(2) + 'px';
           if (sb.style.getPropertyValue('--mr-t') !== vt) sb.style.setProperty('--mr-t', vt);
           if (sb.style.getPropertyValue('--mr-b') !== vbt) sb.style.setProperty('--mr-b', vbt);

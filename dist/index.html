@@ -12184,8 +12184,14 @@ window.ncOpenH = function () {
           fontOf(mt.querySelector('a') || mt); mTop -= cx.measureText('H').actualBoundingBoxAscent || 0;
           var bBase = Math.max.apply(null, bb.map(function (r) { return r.top; })) + (bm.fontBoundingBoxAscent || 0);
           var dprM = window.devicePixelRatio || 1;
-          mTop = Math.round(mTop * dprM) / dprM;
-          var nD = Math.max(1, Math.round((bBase - mTop + 6) / 12)), mEnd = mTop + nD * 12 - 6;
+          var tiM = c.querySelector('.card-title.hl-rect.rx'), tcM = tiM && getComputedStyle(tiM, '::before');
+          if (tiM && tcM.content !== 'none') {
+            var trM = tiM.getBoundingClientRect();
+            mTop = trM.top + (parseFloat(tcM.top) || 0); bBase = trM.bottom - (parseFloat(tcM.bottom) || 0);
+          }
+          var nD = Math.max(1, Math.floor((bBase - mTop + 6) / 12));
+          mTop = Math.round((mTop + (bBase - mTop - (nD * 12 - 6)) / 2) * dprM) / dprM;
+          var mEnd = mTop + nD * 12 - 6;
           var vt = (mTop - sq.top).toFixed(2) + 'px', vbt = (sq.bottom - mEnd).toFixed(2) + 'px';
           if (sb.style.getPropertyValue('--mr-t') !== vt) sb.style.setProperty('--mr-t', vt);
           if (sb.style.getPropertyValue('--mr-b') !== vbt) sb.style.setProperty('--mr-b', vbt);
