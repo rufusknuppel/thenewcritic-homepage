@@ -3169,8 +3169,7 @@ window.ncOpenH = function () {
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
-    // (and one along the band's foot over the first post — "Have a top dash line above top post too", 2026-10-20)
-    if (pics.length && window.ncOpenH && window.ncOpenH() > 0) gapsY.push(Math.round(window.ncOpenH()));
+    // (none along the band's foot over the first post since — "Remove top rule and top space above top post", 2026-10-20)
     for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
     var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
     var gEls = mainC.querySelectorAll(':scope > .nc-col-gap');

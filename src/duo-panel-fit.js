@@ -7879,7 +7879,9 @@
               // (54 under it since, the dashed sides running up to the band — "start top post 54 px under the band, but have dashes
               // expand to band", 2026-10-20: the frame's top, a pixel over the painted picture's, 54 under, so the picture stands
               // 54 under the dashed rule along the band's foot — "Have a top dash line above top post too")
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
+              // (back right under it, the rule and the 54 over the first post gone — "Remove top rule and top space above top post",
+              // 2026-10-20)
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 1;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
