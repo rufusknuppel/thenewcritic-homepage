@@ -3185,6 +3185,16 @@ window.ncOpenH = function () {
       var gst = 'left:' + (x0 - Math.round(mq.left)) + 'px;top:' + (gapsY[gk] - (mq.top + syC)).toFixed(2) + 'px;width:' + lenH + 'px';
       if (ge.__st !== gst) { ge.__st = gst; ge.style.cssText = gst; }
     }
+    // (and one along the band's foot, pinned with it, the first post 54 under it — "draw a dash line under the top band.
+    // Start the top bost 54px below that line", 2026-10-20: .op-band > .nc-band-dash, the same whole dashes across the
+    // column as the rules between posts; duo-panel-fit.js seats the first picture)
+    var bandD = mainC.querySelector('.op-band');
+    if (bandD) {
+      var bd = bandD.querySelector(':scope > .nc-band-dash');
+      if (!bd) { bd = document.createElement('span'); bd.className = 'nc-band-dash'; bd.setAttribute('aria-hidden', 'true'); bandD.appendChild(bd); }
+      var bst = 'left:' + (x0 - Math.round(bandD.getBoundingClientRect().left)) + 'px;width:' + lenH + 'px';
+      if (bd.__st !== bst) { bd.__st = bst; bd.style.cssText = bst; }
+    }
   };
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');

@@ -31206,3 +31206,15 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
     animation: nc-col-up linear both; animation-timeline: scroll(root); animation-range: 0px var(--op-s, 1px);
   }
 }
+
+/* THE DASHED LINE UNDER THE BAND (2026-10-20 — "draw a dash line under the top band. Start the top bost 54px below that
+   line"): a 1px rule, six on and six off, the pixel under the band's foot, pinned with it, across the content column as
+   the rules between posts (latest-rail.js bandRule, .op-band > .nc-band-dash); the first picture 54 under it
+   (duo-panel-fit.js) */
+.nc-band-dash{ display: none; }
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band > .nc-band-dash{
+    display: block; position: absolute; top: 100%; height: 1px; pointer-events: none;
+    background: repeating-linear-gradient(to right, var(--k, #121417) 0 6px, transparent 6px 12px);
+  }
+}
