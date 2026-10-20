@@ -16065,3 +16065,13 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ background: repeating-linear-gradient(to bottom, var(--k, #121417) 0 6px, transparent 6px 12px) !important; }
 }
+.nc-col-side{ display: none; }
+@media (min-width: 1024px){
+  main > .nc-col-side{
+    display: block; position: absolute; width: 1px; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(to bottom, var(--k, #121417) 0 6px, transparent 6px 12px);
+  }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.is-set.is-set:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::before{ content: none !important; display: none !important; }
+}
