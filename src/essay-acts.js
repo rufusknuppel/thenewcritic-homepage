@@ -31,6 +31,8 @@
     }
     return box.r > box.l && box.b > box.t ? box : null;
   }
+  // (read too for the picture's charcoal outline at rest — latest-rail.js bandRule)
+  window.__ncPicBox = picBox;
   // the card beside it in its row (duo-panel-fit.js, slideMate)
   function mateOf(card) {
     var sec = card.closest('section.card');

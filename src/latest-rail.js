@@ -2767,10 +2767,12 @@ var ncStemX = function () {
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
                 // (The Latest over the bird for a minute — "Flip the latest and bird" — and the bird over it again since,
                 // "Flip the latest and the bird again", 2026-10-16)
-                var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
+                // (The Latest over the bird again since, the same three spaces — the line to The Latest's capitals, its last
+                // baseline to the bird, the bird to the window's foot — "switch the bird and the latest", 2026-10-20)
+                var cap0 = g0 - aN, swT0 = cap0 + stS + g0;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
-                var swT1 = gS - aN, cap1 = swT1 + swH + gS;
+                var cap1 = gS - aN, swT1 = cap1 + stS + gS;
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
@@ -3175,6 +3177,17 @@ window.ncOpenH = function () {
       if (!ti || tc.content === 'none') return;
       var tr = ti.getBoundingClientRect();
       if (tr.height) pics.push([tr.top + (parseFloat(tc.top) || 0) + syC, tr.bottom - (parseFloat(tc.bottom) || 0) + syC]);
+    });
+    // (and a 1px charcoal outline round every picture at rest, on its painted box as the Read scrim's is, giving way to
+    // the scrim's own under Read — "Give every image a 1px charcoal outline", 2026-10-20: a span in the card, style.css
+    // THE PICTURES' OUTLINE)
+    if (window.__ncPicBox) [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+      var pb = window.__ncPicBox(c), pl = c.querySelector(':scope > .nc-pic-line');
+      if (!pb) { if (pl) pl.remove(); return; }
+      if (!pl) { pl = document.createElement('span'); pl.className = 'nc-pic-line'; pl.setAttribute('aria-hidden', 'true'); c.appendChild(pl); }
+      var po = pl.offsetParent || c, pr = po.getBoundingClientRect();
+      var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
+      if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
