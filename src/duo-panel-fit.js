@@ -7876,7 +7876,10 @@
               // (right under it again since — "Start the top content right under the band", 2026-10-16)
               // (a pixel lower since, so the Read outline's top, two pixels over the painted picture, clears the band — "top outline
               // on the top image is getting cut off on hover", 2026-10-19)
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 1;
+              // (54 under it since, the dashed sides running up to the band — "start top post 54 px under the band, but have dashes
+              // expand to band", 2026-10-20: the frame's top, a pixel over the painted picture's, 54 under, so the picture stands
+              // 54 under the dashed rule along the band's foot — "Have a top dash line above top post too")
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;

@@ -3144,8 +3144,13 @@ window.ncOpenH = function () {
       sides = ['l', 'r'].map(function (k) { var e = document.createElement('span'); e.className = 'nc-col-side nc-col-side--' + k; e.setAttribute('aria-hidden', 'true'); mainC.appendChild(e); return e; });
     }
     if (ct != null && cr > cl) {
-      var dprC = window.devicePixelRatio || 1, nC = Math.max(1, Math.floor((cb - ct + 6) / 12));
-      var topC = Math.round((ct + (cb - ct - (nC * 12 - 6)) / 2) * dprC) / dprC - (mq.top + syC), lenC = nC * 12 - 6;
+      // (from the band's foot at the opening since, not the first picture's top — "start top post 54 px under the band,
+      // but have dashes expand to band", 2026-10-20: ncOpenH, the band's foot in the page before it pins; whole dashes
+      // from there, the last the nearest to the last picture's foot)
+      var dprC = window.devicePixelRatio || 1;
+      if (window.ncOpenH && window.ncOpenH() > 0) ct = window.ncOpenH();
+      var nC = Math.max(1, Math.round((cb - ct + 6) / 12));
+      var topC = Math.round(ct * dprC) / dprC - (mq.top + syC), lenC = nC * 12 - 6;
       // (each just outside the pictures that reach it, not over their outer pixel)
       [[sides[0], Math.round(cl) - 1 - Math.round(mq.left)], [sides[1], Math.round(cr) - Math.round(mq.left)]].forEach(function (q) {
         var st = 'left:' + q[1] + 'px;top:' + topC.toFixed(2) + 'px;height:' + lenC + 'px';
@@ -3164,6 +3169,8 @@ window.ncOpenH = function () {
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
+    // (and one along the band's foot over the first post — "Have a top dash line above top post too", 2026-10-20)
+    if (pics.length && window.ncOpenH && window.ncOpenH() > 0) gapsY.push(Math.round(window.ncOpenH()));
     for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
     var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
     var gEls = mainC.querySelectorAll(':scope > .nc-col-gap');
