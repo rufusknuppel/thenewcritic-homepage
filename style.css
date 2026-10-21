@@ -31177,6 +31177,8 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
    it where duo-panel-fit.js fitRowScreens sets it, POST_TRIM); the picture cropped on its middle */
 @media (min-width: 1024px){
   html body main.has-mega .page-rows{ --card-words: 108px; }
+  /* (72 of it given back since — "Increase image height by 72px", 2026-10-20: duo-panel-fit.js POST_TRIM with it) */
+  html body main.has-mega .page-rows.page-rows{ --card-words: 36px; }
 }
 
 /* THE DASHED RULE BETWEEN POSTS (2026-10-20 — "I also want 109px between posts, with a 1px dash rule between and 54px

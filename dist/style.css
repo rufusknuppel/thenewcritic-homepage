@@ -16079,6 +16079,7 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows{ --card-words: 108px; }
+  html body main.has-mega .page-rows.page-rows{ --card-words: 36px; }
 }
 .nc-col-gap{ display: none; }
 @media (min-width: 1024px){

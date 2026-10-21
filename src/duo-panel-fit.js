@@ -8935,7 +8935,8 @@
   var WORDS_FAR = 54;
   // (the picture 54 in from the post's outer edge — columnEdge, PIC_FAR — and the rows' pictures 108 shorter — fitRowScreens,
   // POST_TRIM)
-  var PIC_FAR = 54, POST_TRIM = 108;
+  // (36 since — "Increase image height by 72px", 2026-10-20: style.css --card-words with it)
+  var PIC_FAR = 54, POST_TRIM = 36;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
