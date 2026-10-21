@@ -3208,10 +3208,14 @@ window.ncOpenH = function () {
       cxR.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
       var tInk = tBase - (cxR.measureText((tx.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
       var txR = tx.getBoundingClientRect();
+      // (from the picture's outline to the column's side rule, or on the left, where that rule is gone, to the window's
+      // edge — "connect the rules to the side rule and the image but remove the rules between the posts", 2026-10-20)
+      var pbR = window.__ncPicBox && window.__ncPicBox(sb.closest('.duo-half--mega')), rL = Math.round(txR.left), rR = Math.round(txR.right);
+      if (pbR) { if (pbR.r <= txR.left + 1) { rL = Math.round(pbR.r); rR = Math.round(cr) + 1; } else { rL = 0; rR = Math.round(pbR.l); } }
       if (!(tInk > dBase)) { if (dr) dr.remove(); return; }
       if (!dr) { dr = document.createElement('span'); dr.className = 'nc-dek-rule'; dr.setAttribute('aria-hidden', 'true'); sb.appendChild(dr); }
       var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
-      var dst = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dBase) + 26 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
+      var dst = 'left:' + (rL - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dBase) + 26 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + (rR - rL) + 'px';
       if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
       // (and another over the dek, as wide, on the middle between the title's last baseline and the dek's first ink —
       // "Add another rule above the dek between the dek and the title", 2026-10-20; each rule 26 off the dek since, the
@@ -3223,13 +3227,14 @@ window.ncOpenH = function () {
       var dInk = dFirst - (cxR.measureText((dk.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
       if (tBaseT == null || !(dInk > tBaseT)) { if (du) du.remove(); return; }
       if (!du) { du = document.createElement('span'); du.className = 'nc-dek-rule nc-dek-rule--top'; du.setAttribute('aria-hidden', 'true'); sb.appendChild(du); }
-      var ust = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dInk) - 27 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
+      var ust = 'left:' + (rL - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dInk) - 27 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + (rR - rL) + 'px';
       if (du.__st !== ust) { du.__st = ust; du.style.cssText = ust; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
     // (none along the band's foot over the first post since — "Remove top rule and top space above top post", 2026-10-20)
-    for (var gi = 1; gi < pics.length; gi++) { var gp = pics[gi][0] - pics[gi - 1][1]; if (gp > 100 && gp < 120) gapsY.push(Math.round(pics[gi - 1][1] + 54)); }
+    // (none between the posts since — "connect the rules to the side rule and the image but remove the rules between the
+    // posts", 2026-10-20)
     var xl = Math.round(cl) - 1, xr = Math.round(cr), nH = Math.max(1, Math.floor((xr + 1 - xl + 6) / 12)), lenH = nH * 12 - 6, x0 = xl + Math.round((xr + 1 - xl - lenH) / 2);
     // (out to the window's left edge since, the left's line gone — "Horizontal dashes should go the left edge too",
     // 2026-10-20: a whole dash at the right side's line, six on, six off from it to the left edge, cut there)
