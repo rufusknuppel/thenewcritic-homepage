@@ -8961,6 +8961,11 @@
   // the dek's baseline 26 over the bottom rule, the rule 52 over the text's first ink)
   TOP_RULE_GAP = 52 + 1 + 26;
   var DEK_TO_TEXT = 26 + 1 + 52;
+  // (the rule over the dek gone since and the dek's baseline 54 over the rule under it — "Move rule above the dek. Have
+  // 54px between dek and bottom rule", 2026-10-20: the title's baseline 52 over the dek's first ink, the rule's own 1
+  // and the 26 under it closed up)
+  TOP_RULE_GAP = 52;
+  DEK_TO_TEXT = 54 + 1 + 52;
   // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
   var META_TITLE_GAP = 26;
   // (the dek and text 3 more over the foot — "Move body text another 3px
