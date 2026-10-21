@@ -6788,7 +6788,7 @@
       var framed = bandedInk() && !!seat.out;
       var dx = (wc + gap - SLIDE_LESS) * (right ? 1 : -1);
       var wb = wc - SLIDE_LESS;
-      if (framed) { wb += FRAME_ONE + (bandedInk() ? WORDS_FAR : 0); dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      if (framed) { wb += FRAME_ONE + (bandedInk() && !right ? WORDS_FAR : 0); dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       var sh = 0;
       if (framed) {
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
@@ -7031,7 +7031,7 @@
           var seat = slideSeat(j.card, { l: Fl, r: Fr, t: B.t, b: B.b });
           var Q = seat && seat.Q;
           if (Q) {
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE + WORDS_FAR : 0);
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE + (Q.l > Fl ? 0 : WORDS_FAR) : 0);
             j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;

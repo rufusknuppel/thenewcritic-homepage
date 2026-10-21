@@ -9094,7 +9094,9 @@
       // middle of the rule whatever fraction it falls on: its part-painted
       // last pixel showed as a hairline beside the rule — "On the left of
       // this right edge")
-      if (framed) { wb += FRAME_ONE + (bandedInk() ? WORDS_FAR : 0); dx = (wb - FRAME / 2) * (right ? 1 : -1); }
+      // (the far 54 only where the words stand on the right since, the left's margin gone, so every words' column's
+      // text is the same width and a picture on the right takes the 54 — "standardize column width", 2026-10-20)
+      if (framed) { wb += FRAME_ONE + (bandedInk() && !right ? WORDS_FAR : 0); dx = (wb - FRAME / 2) * (right ? 1 : -1); }
       // EVERY PICTURE AT ITS TRUE SIZE (2026-10-05, at the user's words —
       // "keep current image height, but set every image to true size,
       // maxing out at current width"; "Recenter images and columns
@@ -9504,7 +9506,7 @@
           if (Q) {
             // (THE SLIDE IS 72 LESS, 2026-10-01: the column is SLIDE_LESS
             // narrower, as the slide is shorter by it — seatSlides)
-            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE + WORDS_FAR : 0);
+            var wc = Math.min(Fr - Fl, Q.r - Q.l) - SLIDE_LESS + (bandedInk() ? FRAME_ONE + (Q.l > Fl ? 0 : WORDS_FAR) : 0);
             j.picR = Q.l > Fl;
             j.Bd = Q.l > Fl ? { l: Fl, r: Fl + wc, t: B.t, b: B.b } : { l: Fr - wc, r: Fr, t: B.t, b: B.b };
             j.ncol = 1;
