@@ -16186,3 +16186,6 @@ html body main .latest-rail__hold > .rail-swallow .rail-swallow__beak{ fill: var
   html body main.has-mega .latest-rail__hold > .rail-swallow, html body main.has-mega .latest-rail__hold > .rail-swallow *{ --tc: #121417 !important; --div-ink: #121417 !important; --k: #121417 !important; }
   html body main.has-mega .latest-rail__hold > .rail-swallow .rail-swallow__body{ fill: #121417 !important; }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band.op-band > a.op-tnc, html body main.has-mega .op-track > .op-band.op-band > a.op-tnc *{ --k: #121417 !important; --tc: #121417 !important; --div-ink: #121417 !important; }
+}
