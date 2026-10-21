@@ -8953,6 +8953,9 @@
   // 27, and 9 more either side since — "add 9px on either side of
   // metadata", 2026-10-05)
   var META_AIR = 36;
+  // (the title's last baseline to the dek's first ink: 26, the rule's 1 and 26 — "Space the top rule 26px from title
+  // and dek", 2026-10-20)
+  var TOP_RULE_GAP = 53;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -9748,6 +9751,8 @@
       // (and since the byline stands between the title and the dek, 27
       // either side of it where it stood 18 over the title: 9 more)
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
+      // (and what the rule over the dek opens between it and the title — TOP_RULE_GAP)
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2;
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -9961,6 +9966,13 @@
               var gB = (j.dkT + dekY) - ((j.ttB != null ? j.ttB : j.hdB) + upY);
               var dl = (gB - gT) / 2;
               upY += dl; metaY -= dl;
+              // (and the dek carried down to TOP_RULE_GAP under the title's last baseline since, the rule over it on that
+              // gap's middle with 26 either side — "Space the top rule 26px from title and dek", 2026-10-20 — the whole
+              // stack lifted by half of what that adds, so it stands centred still; latest-rail.js bandRule lays the rule)
+              if (j.ttB != null) {
+                var pushD = TOP_RULE_GAP - ((j.dkT + dekY) - (j.ttB + upY));
+                if (pushD > 0) { dekY += pushD; upY -= pushD / 2; dekY -= pushD / 2; }
+              }
             }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
