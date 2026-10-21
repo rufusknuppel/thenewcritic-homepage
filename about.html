@@ -5844,6 +5844,7 @@
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
   var META_AIR = 36;
+  var TOP_RULE_GAP = 53;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -6320,6 +6321,7 @@
       var hh = j.body.querySelector(':scope > .swap-body-head');
       if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2;
     });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
@@ -6431,6 +6433,10 @@
               var gB = (j.dkT + dekY) - ((j.ttB != null ? j.ttB : j.hdB) + upY);
               var dl = (gB - gT) / 2;
               upY += dl; metaY -= dl;
+              if (j.ttB != null) {
+                var pushD = TOP_RULE_GAP - ((j.dkT + dekY) - (j.ttB + upY));
+                if (pushD > 0) { dekY += pushD; upY -= pushD / 2; dekY -= pushD / 2; }
+              }
             }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
