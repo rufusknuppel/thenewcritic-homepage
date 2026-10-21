@@ -3234,7 +3234,17 @@ window.ncOpenH = function () {
       // (a rule over the dek too for an afternoon — "Add another rule above the dek between the dek and the title",
       // 2026-10-20 — gone since, "Move rule above the dek. Have 54px between dek and bottom rule": the one under it 54
       // under the dek's last baseline, duo-panel-fit.js DEK_TO_TEXT)
-      [].forEach.call(sb.querySelectorAll(':scope > .nc-dek-rule--top'), function (e) { e.remove(); });
+      // (and back since, mirroring the one under it — "Add a rule back between title and dek with matching spacing as
+      // below dek", 2026-10-20: 54 over the dek's first ink as the other is 54 under its last baseline, the title's
+      // baseline 52 over it as the other stands 52 over the text; duo-panel-fit.js TOP_RULE_GAP)
+      var tt = sb.querySelector('.swap-body-title'), du = sb.querySelector(':scope > .nc-dek-rule--top');
+      var dFirst = baseAt(dk, false), dcs = getComputedStyle(dk);
+      cxR.font = dcs.fontStyle + ' ' + dcs.fontWeight + ' ' + dcs.fontSize + ' ' + dcs.fontFamily;
+      var dInk = dFirst - (cxR.measureText((dk.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
+      if (!tt || !tt.textContent.trim()) { if (du) du.remove(); return; }
+      if (!du) { du = document.createElement('span'); du.className = 'nc-dek-rule nc-dek-rule--top'; du.setAttribute('aria-hidden', 'true'); sb.appendChild(du); }
+      var ust = 'left:' + (rL - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dInk) - 55 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + (rR - rL) + 'px';
+      if (du.__st !== ust) { du.__st = ust; du.style.cssText = ust; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
