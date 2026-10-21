@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=2ec47454">
+<link rel="stylesheet" href="style.css?v=9d9a3f86">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6864,7 +6864,7 @@
         var ar = picAspect(card), E00 = columnEdge(card, seat.d);
         var V0 = right ? E00 - (P.l + dx) : (P.r + dx) - E00;
         var kind = card.classList.contains('duo-half--kind-postscript') ? 'ps' : card.classList.contains('duo-half--kind-contra') ? 'co' : 'es';
-        var want = ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : kind === 'co' ? 1 : Math.max(ar, 1)) : null;
+        var want = kind === 'co' ? 1 : ar ? (kind === 'ps' ? Math.min(ar, PS_SHAPE) : Math.max(ar, 1)) : null;
         var give = want ? V0 - (P.b - P.t) * want : 0;
         if (give > 1) sh = (right ? 1 : -1) * Math.round(give / 2);
         if (kind === 'co') {
@@ -7347,27 +7347,17 @@
           var dkF = j.dkF != null ? j.dkF : j.dkB;
           var top0 = between ? j.ttT : j.inT;
           var metaOver = true, dekUp = true;
-          var metaMid = between && dekUp;
-          if (metaMid) metaOver = false;
           if (between && metaOver) top0 = j.mT;
           var midH = between ? (metaOver ? (j.mB - j.mT) + META_AIR : META_AIR + (j.mB - j.mT)) : INK_GAP;
           var dekToText = document.querySelector('main.logo-split:not(.foot-band-top)') && window.innerWidth >= 1024 ? 54 : RULE_AIR + FRAME + RULE_AIR;
-          var sH = metaMid ? (j.ttB - j.ttT) + META_AIR + (j.mB - j.mT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
-            : between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
+          var sH = between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
             : between ? (metaOver ? midH + (j.hdB - j.ttT) : (j.ttB - top0) + midH) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
-          if (metaMid) {
-            upY = y0 - j.ttT;
-            var mTopM = y0 + (j.ttB - j.ttT) + META_AIR;
-            metaY = mTopM - (j.mT + upY);
-            dekY = (mTopM + (j.mB - j.mT) + META_AIR) - j.dkC;
-            ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
-            dnY = (j.dkB + dekY + dekToText) - j.txT;
-          } else if (between && metaOver && dekUp) {
+          if (between && metaOver && dekUp) {
             var tTop1 = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop1 - j.ttT;
             metaY = y0 - (j.mT + upY);
