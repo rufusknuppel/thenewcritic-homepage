@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=14de38e2">
+<link rel="stylesheet" href="style.css?v=2ec47454">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7277,17 +7277,27 @@
           var dkF = j.dkF != null ? j.dkF : j.dkB;
           var top0 = between ? j.ttT : j.inT;
           var metaOver = true, dekUp = true;
+          var metaMid = between && dekUp;
+          if (metaMid) metaOver = false;
           if (between && metaOver) top0 = j.mT;
           var midH = between ? (metaOver ? (j.mB - j.mT) + META_AIR : META_AIR + (j.mB - j.mT)) : INK_GAP;
           var dekToText = document.querySelector('main.logo-split:not(.foot-band-top)') && window.innerWidth >= 1024 ? 54 : RULE_AIR + FRAME + RULE_AIR;
-          var sH = between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
+          var sH = metaMid ? (j.ttB - j.ttT) + META_AIR + (j.mB - j.mT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
+            : between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
             : between ? (metaOver ? midH + (j.hdB - j.ttT) : (j.ttB - top0) + midH) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
-          if (between && metaOver && dekUp) {
+          if (metaMid) {
+            upY = y0 - j.ttT;
+            var mTopM = y0 + (j.ttB - j.ttT) + META_AIR;
+            metaY = mTopM - (j.mT + upY);
+            dekY = (mTopM + (j.mB - j.mT) + META_AIR) - j.dkC;
+            ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
+            dnY = (j.dkB + dekY + dekToText) - j.txT;
+          } else if (between && metaOver && dekUp) {
             var tTop1 = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop1 - j.ttT;
             metaY = y0 - (j.mT + upY);
@@ -12249,6 +12259,24 @@ window.ncOpenH = function () {
       var po = pl.offsetParent || c, pr = po.getBoundingClientRect();
       var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
+    });
+    [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
+      var dk = sb.querySelector('.swap-body-dek'), tx = sb.querySelector('.swap-body-text'), dr = sb.querySelector(':scope > .nc-dek-rule');
+      var rgD = document.createRange(), rgT = document.createRange();
+      var lnD = null, tTop = null;
+      if (dk && tx && dk.textContent.trim() && tx.textContent.trim()) {
+        rgD.selectNodeContents(dk);
+        var rsD = [].filter.call(rgD.getClientRects(), function (q) { return q.width > 0 && q.height > 0; });
+        var lastQ = null; rsD.forEach(function (q) { if (!lastQ || q.bottom > lastQ.bottom) lastQ = q; });
+        rsD.forEach(function (q) { if (q.top < lastQ.bottom - 2 && q.bottom > lastQ.top + 2) lnD = lnD ? { l: Math.min(lnD.l, q.left), r: Math.max(lnD.r, q.right), b: Math.max(lnD.b, q.bottom) } : { l: q.left, r: q.right, b: q.bottom }; });
+        rgT.selectNodeContents(tx);
+        [].forEach.call(rgT.getClientRects(), function (q) { if (q.width > 0 && q.height > 0 && (tTop == null || q.top < tTop)) tTop = q.top; });
+      }
+      if (!lnD || tTop == null || tTop <= lnD.b) { if (dr) dr.remove(); return; }
+      if (!dr) { dr = document.createElement('span'); dr.className = 'nc-dek-rule'; dr.setAttribute('aria-hidden', 'true'); sb.appendChild(dr); }
+      var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
+      var dst = 'left:' + (Math.round(lnD.l) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((lnD.b + tTop) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(lnD.r - lnD.l) + 'px';
+      if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];

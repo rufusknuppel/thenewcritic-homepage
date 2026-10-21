@@ -3186,6 +3186,27 @@ window.ncOpenH = function () {
       var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
     });
+    // (a 1px rule between each post's dek and its body, as wide as the dek's last line and on the middle of the room
+    // between them — "add a 1 px rule between dek and body text the width of the last line of the dek", 2026-10-20: a
+    // span in the words' column, style.css THE RULE UNDER THE DEK)
+    [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
+      var dk = sb.querySelector('.swap-body-dek'), tx = sb.querySelector('.swap-body-text'), dr = sb.querySelector(':scope > .nc-dek-rule');
+      var rgD = document.createRange(), rgT = document.createRange();
+      var lnD = null, tTop = null;
+      if (dk && tx && dk.textContent.trim() && tx.textContent.trim()) {
+        rgD.selectNodeContents(dk);
+        var rsD = [].filter.call(rgD.getClientRects(), function (q) { return q.width > 0 && q.height > 0; });
+        var lastQ = null; rsD.forEach(function (q) { if (!lastQ || q.bottom > lastQ.bottom) lastQ = q; });
+        rsD.forEach(function (q) { if (q.top < lastQ.bottom - 2 && q.bottom > lastQ.top + 2) lnD = lnD ? { l: Math.min(lnD.l, q.left), r: Math.max(lnD.r, q.right), b: Math.max(lnD.b, q.bottom) } : { l: q.left, r: q.right, b: q.bottom }; });
+        rgT.selectNodeContents(tx);
+        [].forEach.call(rgT.getClientRects(), function (q) { if (q.width > 0 && q.height > 0 && (tTop == null || q.top < tTop)) tTop = q.top; });
+      }
+      if (!lnD || tTop == null || tTop <= lnD.b) { if (dr) dr.remove(); return; }
+      if (!dr) { dr = document.createElement('span'); dr.className = 'nc-dek-rule'; dr.setAttribute('aria-hidden', 'true'); sb.appendChild(dr); }
+      var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
+      var dst = 'left:' + (Math.round(lnD.l) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((lnD.b + tTop) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(lnD.r - lnD.l) + 'px';
+      if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
+    });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
     // (none along the band's foot over the first post since — "Remove top rule and top space above top post", 2026-10-20)

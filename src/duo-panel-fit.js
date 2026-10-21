@@ -9918,20 +9918,34 @@
           // the title's last baseline, the rule RULE_AIR under the dek's last
           // baseline and the text's first ink RULE_AIR under the rule
           var metaOver = true, dekUp = true;
+          // THE BYLINE BETWEEN THE TITLE AND THE DEK (2026-10-20 — "Move meta data between title and dek"): the title's
+          // first ink at the stack's top, the byline's capitals META_AIR under its last baseline, the dek's first line
+          // META_AIR under the byline's baseline, the text dekToText under the dek; the byline carried down past the
+          // title on its own (metaY), as it was on 2026-10-07
+          var metaMid = between && dekUp;
+          if (metaMid) metaOver = false;
           if (between && metaOver) top0 = j.mT;
           var midH = between ? (metaOver ? (j.mB - j.mT) + META_AIR : META_AIR + (j.mB - j.mT)) : INK_GAP;
           // (no rule between the dek and the text on the front page since, the text's first ink 54 under the dek's last
           // baseline — "Remove the rule between the dek and the body text", "Close the gap to 54px", 2026-10-14; style.css
           // NO RULE OVER THE BODY)
           var dekToText = document.querySelector('main.logo-split:not(.foot-band-top)') && window.innerWidth >= 1024 ? 54 : RULE_AIR + FRAME + RULE_AIR;
-          var sH = between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
+          var sH = metaMid ? (j.ttB - j.ttT) + META_AIR + (j.mB - j.mT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
+            : between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
             : between ? (metaOver ? midH + (j.hdB - j.ttT) : (j.ttB - top0) + midH) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);
           var room = j.bb.height - 2 * INK_GAP;
           var y0 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH) / 2));
           upY = y0 - top0;
           var dekY;
-          if (between && metaOver && dekUp) {
+          if (metaMid) {
+            upY = y0 - j.ttT;
+            var mTopM = y0 + (j.ttB - j.ttT) + META_AIR;
+            metaY = mTopM - (j.mT + upY);
+            dekY = (mTopM + (j.mB - j.mT) + META_AIR) - j.dkC;
+            ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
+            dnY = (j.dkB + dekY + dekToText) - j.txT;
+          } else if (between && metaOver && dekUp) {
             var tTop1 = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop1 - j.ttT;
             metaY = y0 - (j.mT + upY);
