@@ -3002,7 +3002,7 @@ window.ncOpenH = function () {
   };
   // THE MARKS LIT TOGETHER (2026-10-19 — "Reenable the highlight on the wordmark and bird and last magazine"): a hand on
   // the opening's THE NEW CRITIC or its THE LAST MAGAZINE, the band's THE LAST MAGAZINE or THE NEW CRITIC, or the
-  // column's bird lights them all in the highlight (main.nc-mark-hot; style.css THE MARKS LIT TOGETHER); the bird, like
+  // column's bird lights them all in the highlight (each alone since, main.nc-hot-*; style.css THE MARKS LIT TOGETHER); the bird, like
   // the rest, takes the hand to the page's top
   var MARKS = 'a.content-name .content-name__block > .tnc-words, a.content-name .content-name__tlm, main .op-band > a.rail-tlm, main .op-band > a.op-tnc, .latest-rail__hold > .rail-swallow';
   var markHot = function () {
@@ -3011,7 +3011,21 @@ window.ncOpenH = function () {
     [].forEach.call(document.querySelectorAll(MARKS), function (el) {
       if (el.__ncHot) return;
       el.__ncHot = true;
-      var on = function (v) { mn.classList.toggle('nc-mark-hot', v); };
+      // (each its own since — "Separate the last magazine/the new critic/and the bird hover", 2026-10-20: the bird, THE
+      // LAST MAGAZINE, or THE NEW CRITIC wherever it stands)
+      // (the band's two names stand one over the other, the one faded out still under the hand: the one showing is lit)
+      var band2 = el.matches('main .op-band > a.rail-tlm, main .op-band > a.op-tnc');
+      var grpOf = function () {
+        if (el.classList.contains('rail-swallow')) return 'nc-hot-bird';
+        var tlm = el.matches('main .op-band > a.rail-tlm, a.content-name .content-name__tlm');
+        if (band2 && parseFloat(getComputedStyle(el).opacity) < 0.5) tlm = !tlm;
+        return tlm ? 'nc-hot-tlm' : 'nc-hot-tnc';
+      };
+      var grp = null;
+      var on = function (v) {
+        if (v) { grp = grpOf(); mn.classList.add(grp); }
+        else ['nc-hot-bird', 'nc-hot-tlm', 'nc-hot-tnc'].forEach(function (c) { mn.classList.remove(c); });
+      };
       el.addEventListener('mouseenter', function () { on(true); });
       el.addEventListener('mouseleave', function () { on(false); });
       if (el.classList.contains('rail-swallow')) el.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
