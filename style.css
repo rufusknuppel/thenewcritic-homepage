@@ -31310,6 +31310,8 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 /* THE GROUND SIENNA (2026-10-20 — "Make the background of the site sienna red"): the page's ground, the band's and
    everything that stood on the white as the ground (--g, --tw) a burnt sienna; the bird's notch the ground too */
 :root:root:root{ --nc-ground: #E97451; --g: var(--nc-ground); --tw: var(--nc-ground); }
+/* (the highlight's old red since, #B3301E — "Use the previous highlight color for the site background", 2026-10-20) */
+:root:root:root:root{ --nc-ground: #B3301E; }
 html:root, html:root body, html body main.has-mega, html body main.has-mega .op-track > .op-band.op-band.op-band.op-band, html body nav.section-band{ background-color: var(--nc-ground) !important; }
 html body main .latest-rail__hold > .rail-swallow .rail-swallow__beak{ fill: var(--nc-ground) !important; }
 
