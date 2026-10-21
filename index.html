@@ -6718,6 +6718,7 @@
   TOP_RULE_GAP = 52;
   DEK_TO_TEXT = 54 + 1 + 52;
   TOP_RULE_GAP = 26;
+  TOP_RULE_GAP = 52 + 1 + 54;
   var META_TITLE_GAP = 26;
   var BODY_UP = 3;
   var INK_GAP = 27;
@@ -12302,7 +12303,14 @@ window.ncOpenH = function () {
       var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
       var dst = 'left:' + (rL - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dBase) + 54 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + (rR - rL) + 'px';
       if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
-      [].forEach.call(sb.querySelectorAll(':scope > .nc-dek-rule--top'), function (e) { e.remove(); });
+      var tt = sb.querySelector('.swap-body-title'), du = sb.querySelector(':scope > .nc-dek-rule--top');
+      var dFirst = baseAt(dk, false), dcs = getComputedStyle(dk);
+      cxR.font = dcs.fontStyle + ' ' + dcs.fontWeight + ' ' + dcs.fontSize + ' ' + dcs.fontFamily;
+      var dInk = dFirst - (cxR.measureText((dk.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
+      if (!tt || !tt.textContent.trim()) { if (du) du.remove(); return; }
+      if (!du) { du = document.createElement('span'); du.className = 'nc-dek-rule nc-dek-rule--top'; du.setAttribute('aria-hidden', 'true'); sb.appendChild(du); }
+      var ust = 'left:' + (rL - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dInk) - 55 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + (rR - rL) + 'px';
+      if (du.__st !== ust) { du.__st = ust; du.style.cssText = ust; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
     var gapsY = [];
