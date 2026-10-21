@@ -8973,6 +8973,10 @@
   // (a rule between them again since, as the one under the dek is spaced — "Add a rule back between title and dek with
   // matching spacing as below dek", 2026-10-20: the title's baseline 52 over it, it 54 over the dek's first ink)
   TOP_RULE_GAP = 52 + 1 + 54;
+  // (the rules gone since and the dek 26 off the title and the text, as the byline is off the title — "Remove the rules
+  // between image and sides. Set spacing around dek to the spacing between meta and title", 2026-10-20)
+  TOP_RULE_GAP = 26;
+  DEK_TO_TEXT = 26;
   // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
   var META_TITLE_GAP = 26;
   // (the dek and text 3 more over the foot — "Move body text another 3px

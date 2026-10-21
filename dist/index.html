@@ -6719,6 +6719,8 @@
   DEK_TO_TEXT = 54 + 1 + 52;
   TOP_RULE_GAP = 26;
   TOP_RULE_GAP = 52 + 1 + 54;
+  TOP_RULE_GAP = 26;
+  DEK_TO_TEXT = 26;
   var META_TITLE_GAP = 26;
   var BODY_UP = 3;
   var INK_GAP = 27;
@@ -12288,7 +12290,9 @@ window.ncOpenH = function () {
       z.remove();
       return y;
     };
-    [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
+    var NO_DEK_RULES = true;
+    if (NO_DEK_RULES) [].forEach.call(document.querySelectorAll('.page-rows .swap-body > .nc-dek-rule'), function (e) { e.remove(); });
+    if (!NO_DEK_RULES) [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
       var dk = sb.querySelector('.swap-body-dek'), tx = sb.querySelector('.swap-body-text'), dr = sb.querySelector(':scope > .nc-dek-rule:not(.nc-dek-rule--top)');
       var ok = dk && tx && dk.textContent.trim() && tx.textContent.trim() && getComputedStyle(dk).display !== 'none';
       if (!ok) { if (dr) dr.remove(); [].forEach.call(sb.querySelectorAll(':scope > .nc-dek-rule--top'), function (e) { e.remove(); }); return; }

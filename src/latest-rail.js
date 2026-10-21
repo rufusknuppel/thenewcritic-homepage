@@ -3214,7 +3214,11 @@ window.ncOpenH = function () {
       z.remove();
       return y;
     };
-    [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
+    // (both gone since — "Remove the rules between image and sides. Set spacing around dek to the spacing between meta
+    // and title", 2026-10-20: NO_DEK_RULES; duo-panel-fit.js TOP_RULE_GAP, DEK_TO_TEXT)
+    var NO_DEK_RULES = true;
+    if (NO_DEK_RULES) [].forEach.call(document.querySelectorAll('.page-rows .swap-body > .nc-dek-rule'), function (e) { e.remove(); });
+    if (!NO_DEK_RULES) [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
       var dk = sb.querySelector('.swap-body-dek'), tx = sb.querySelector('.swap-body-text'), dr = sb.querySelector(':scope > .nc-dek-rule:not(.nc-dek-rule--top)');
       var ok = dk && tx && dk.textContent.trim() && tx.textContent.trim() && getComputedStyle(dk).display !== 'none';
       if (!ok) { if (dr) dr.remove(); [].forEach.call(sb.querySelectorAll(':scope > .nc-dek-rule--top'), function (e) { e.remove(); }); return; }
