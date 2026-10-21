@@ -16108,3 +16108,8 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega > .nc-col-side--l.nc-col-side--l{ display: none; }
 }
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side.nc-col-side, html body main.has-mega > .nc-col-gap.nc-col-gap{ background: var(--k, #121417); }
+  html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash{ background: var(--k, #121417); }
+  html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash > svg{ display: none; }
+}

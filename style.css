@@ -31223,3 +31223,11 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 @media (min-width: 1024px){
   html body main.has-mega > .nc-col-side--l.nc-col-side--l{ display: none; }
 }
+
+/* THE RULES SOLID (2026-10-20 — "Make the dashes straigth 1px rules"): the column's side, the rules between posts and
+   the line under the band each a straight 1px line of the ink, where their dashes stood */
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side.nc-col-side, html body main.has-mega > .nc-col-gap.nc-col-gap{ background: var(--k, #121417); }
+  html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash{ background: var(--k, #121417); }
+  html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash > svg{ display: none; }
+}
