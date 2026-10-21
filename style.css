@@ -16160,7 +16160,7 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 :root:root:root{ --nc-ground: #E97451; --g: var(--nc-ground); --tw: var(--nc-ground); }
 html:root, html:root body, html body main.has-mega, html body main.has-mega .op-track > .op-band.op-band.op-band.op-band, html body nav.section-band{ background-color: var(--nc-ground) !important; }
 html body main .latest-rail__hold > .rail-swallow .rail-swallow__beak{ fill: var(--nc-ground) !important; }
-:root:root:root:root{ --nc-mark: var(--nc-ground, #E97451); }
+:root:root:root:root{ --nc-mark: #FFFFFF; }
 @media (min-width: 1024px){
   html body main.has-mega > .nc-col-side.nc-col-side.nc-col-side, html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash.nc-band-dash{ background: #FFFFFF !important; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.swap-body > span.nc-dek-rule.nc-dek-rule{ border-top-color: #FFFFFF !important; }
