@@ -8980,6 +8980,9 @@
   // between image and sides. Set spacing around dek to the spacing between meta and title", 2026-10-20)
   TOP_RULE_GAP = 26;
   DEK_TO_TEXT = 26;
+  // (half as much again since — "increase spacing above and below dek by 50%", 2026-10-20)
+  TOP_RULE_GAP = 39;
+  DEK_TO_TEXT = 39;
   // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
   var META_TITLE_GAP = 26;
   // (the dek and text 3 more over the foot — "Move body text another 3px
