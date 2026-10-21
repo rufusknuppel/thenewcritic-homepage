@@ -7477,6 +7477,7 @@
   // section's first picture's top: "Section divider should align with the
   // top of the content, so no double spacing between sections")
   var SECTION_GAP = ROW_STEP;
+  var POST_GAP = 54;
   // (the blue rule hung under the band: style.css, --band-rule)
   // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
   // (4.5 since later that day: "Increase dividing line to 4.5px"; then 9,
@@ -7980,7 +7981,9 @@
           // the lowest of the row over it — across, the two keep 36)
           // (a section's first row 144 under the last section's ink —
           // 54 to the divider, its 36, and 54 past it: FOUR SECTIONS, 2026-10-04)
-          rowDelta = (stacked && row.classList.contains('card--row-a') ? (row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) + (bandedInk() ? 1 : 0) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          // (54 between the posts on the wide screen since, the rule between them gone — "Have 54px between posts",
+          // 2026-10-20: POST_GAP)
+          rowDelta = (stacked && row.classList.contains('card--row-a') ? (bandedInk() ? POST_GAP : row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)
