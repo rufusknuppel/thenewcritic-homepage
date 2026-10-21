@@ -31316,3 +31316,13 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 /* (THE GROUND SIENNA, then the highlight's red, for an afternoon — "Make the background of the site sienna red", 2026-10-20
    — with the highlight, the rules, the pictures' outlines and the words recoloured over it; all of it gone since, "Go
    back to white background": the white ground, the charcoal words and rules, the red highlight as they were) */
+
+/* THE RULES AND OUTLINES LIGHT GRAY (2026-10-20 — "Make all the rules and outlines a light gray"): the line under the
+   band, the column's side rule, the rule under the dek and the pictures' outlines in one light gray (--nc-rule); the
+   Read outline under the hand still the highlight */
+:root{ --nc-rule: #D6D6D6; }
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side.nc-col-side.nc-col-side, html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash.nc-band-dash{ background: var(--nc-rule) !important; }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body.swap-body > span.nc-dek-rule.nc-dek-rule{ border-top-color: var(--nc-rule) !important; }
+  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line{ outline-color: var(--nc-rule) !important; }
+}
