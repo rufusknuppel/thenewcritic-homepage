@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=24d40d7f">
+<link rel="stylesheet" href="style.css?v=5ef75cdf">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12149,7 +12149,18 @@ window.ncOpenH = function () {
     [].forEach.call(document.querySelectorAll(MARKS), function (el) {
       if (el.__ncHot) return;
       el.__ncHot = true;
-      var on = function (v) { mn.classList.toggle('nc-mark-hot', v); };
+      var band2 = el.matches('main .op-band > a.rail-tlm, main .op-band > a.op-tnc');
+      var grpOf = function () {
+        if (el.classList.contains('rail-swallow')) return 'nc-hot-bird';
+        var tlm = el.matches('main .op-band > a.rail-tlm, a.content-name .content-name__tlm');
+        if (band2 && parseFloat(getComputedStyle(el).opacity) < 0.5) tlm = !tlm;
+        return tlm ? 'nc-hot-tlm' : 'nc-hot-tnc';
+      };
+      var grp = null;
+      var on = function (v) {
+        if (v) { grp = grpOf(); mn.classList.add(grp); }
+        else ['nc-hot-bird', 'nc-hot-tlm', 'nc-hot-tnc'].forEach(function (c) { mn.classList.remove(c); });
+      };
       el.addEventListener('mouseenter', function () { on(true); });
       el.addEventListener('mouseleave', function () { on(false); });
       if (el.classList.contains('rail-swallow')) el.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
