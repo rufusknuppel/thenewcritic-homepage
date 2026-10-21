@@ -31326,3 +31326,33 @@ html body main .latest-rail__hold > .rail-swallow .rail-swallow__beak{ fill: var
   html body main.has-mega > .nc-col-side.nc-col-side.nc-col-side, html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash.nc-band-dash{ background: #FFFFFF !important; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.swap-body > span.nc-dek-rule.nc-dek-rule{ border-top-color: #FFFFFF !important; }
 }
+
+/* THE WORDS WHITE, THE HAND BLACK (2026-10-20 — "Make outlines of images white. Make all text that's not the new critic
+   wordmark and bird white with black hover"): the ink (--k) white wherever the words stand — the band's nav, The Last
+   Magazine and socials, the posts' words, The Latest's column — the name and the birds keeping the charcoal; the
+   highlight, which the hand lights things in and the open section is marked in, black; the pictures' outlines white */
+:root:root:root:root:root{ --nc-mark: #000000; }
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band.op-band, html body main.has-mega .page-rows .swap-body, html body main.has-mega .latest-rail__hold{ --k: #FFFFFF; }
+  /* (the words' own ink, --tc, white too, on them and all in them) */
+  html body main.has-mega .op-track > .op-band.op-band, html body main.has-mega .op-track > .op-band.op-band *,
+  html body main.has-mega .page-rows .swap-body, html body main.has-mega .page-rows .swap-body *,
+  html body main.has-mega .page-rows .latest-rail, html body main.has-mega .page-rows .latest-rail *,
+  html body .band-under, html body .band-under *{ --tc: #FFFFFF !important; --div-ink: #FFFFFF !important; --k: #FFFFFF; }
+  html body main.has-mega .op-track > .op-band.op-band > a.op-tnc, html body main.has-mega .latest-rail__hold > .rail-swallow, html body main.has-mega .latest-rail__hold > .rail-tnc{ --k: #121417; }
+  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line{ outline-color: #FFFFFF; }
+}
+/* (Read Essay, Read Interview and Read Review over the picture white still, the hand's black aside — "I like the read
+   essay color to be white", 2026-10-20) */
+@media (min-width: 1024px){
+  html body main.has-mega .duo-half--mega > .essay-acts > .essay-act, html body main.has-mega .duo-half--mega > .essay-acts > .essay-act *{ --nc-mark: #FFFFFF; --tc: #FFFFFF; --k: #FFFFFF; }
+}
+/* (THE LAST MAGAZINE in the band black with the name and the bird, not white with the words — "And the last magazine
+   and bird to be black", 2026-10-20) */
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band.op-band > a.rail-tlm, html body main.has-mega .op-track > .op-band.op-band > a.rail-tlm *{ --k: #121417 !important; --tc: #121417 !important; --div-ink: #121417 !important; }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .latest-rail__hold > .rail-swallow, html body main.has-mega .latest-rail__hold > .rail-swallow *{ --tc: #121417 !important; --div-ink: #121417 !important; --k: #121417 !important; }
+  html body main.has-mega .latest-rail__hold > .rail-swallow .rail-swallow__body{ fill: #121417 !important; }
+}

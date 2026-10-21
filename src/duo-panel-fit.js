@@ -8966,6 +8966,9 @@
   // and the 26 under it closed up)
   TOP_RULE_GAP = 52;
   DEK_TO_TEXT = 54 + 1 + 52;
+  // (the title's baseline to the dek's first ink the byline's baseline to the title's first since — "Gap between dek and
+  // title should match title/meta gap", 2026-10-20: META_TITLE_GAP, set below)
+  TOP_RULE_GAP = 26;
   // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
   var META_TITLE_GAP = 26;
   // (the dek and text 3 more over the foot — "Move body text another 3px
@@ -9983,7 +9986,7 @@
               // stack lifted by half of what that adds, so it stands centred still; latest-rail.js bandRule lays the rule)
               if (j.ttB != null) {
                 var pushD = TOP_RULE_GAP - ((j.dkT + dekY) - (j.ttB + upY));
-                if (pushD > 0) { dekY += pushD; upY -= pushD / 2; dekY -= pushD / 2; }
+                if (pushD) { dekY += pushD; upY -= pushD / 2; dekY -= pushD / 2; }
               }
               // (the byline's baseline META_TITLE_GAP over the title's first ink since, the gap the title's baseline keeps
               // over the rule — "Center titles, set metadata to title as the same gap", 2026-10-20: the byline carried to

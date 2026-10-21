@@ -16166,3 +16166,23 @@ html body main .latest-rail__hold > .rail-swallow .rail-swallow__beak{ fill: var
   html body main.has-mega > .nc-col-side.nc-col-side.nc-col-side, html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash.nc-band-dash{ background: #FFFFFF !important; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.swap-body > span.nc-dek-rule.nc-dek-rule{ border-top-color: #FFFFFF !important; }
 }
+:root:root:root:root:root{ --nc-mark: #000000; }
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band.op-band, html body main.has-mega .page-rows .swap-body, html body main.has-mega .latest-rail__hold{ --k: #FFFFFF; }
+  html body main.has-mega .op-track > .op-band.op-band, html body main.has-mega .op-track > .op-band.op-band *,
+  html body main.has-mega .page-rows .swap-body, html body main.has-mega .page-rows .swap-body *,
+  html body main.has-mega .page-rows .latest-rail, html body main.has-mega .page-rows .latest-rail *,
+  html body .band-under, html body .band-under *{ --tc: #FFFFFF !important; --div-ink: #FFFFFF !important; --k: #FFFFFF; }
+  html body main.has-mega .op-track > .op-band.op-band > a.op-tnc, html body main.has-mega .latest-rail__hold > .rail-swallow, html body main.has-mega .latest-rail__hold > .rail-tnc{ --k: #121417; }
+  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line{ outline-color: #FFFFFF; }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .duo-half--mega > .essay-acts > .essay-act, html body main.has-mega .duo-half--mega > .essay-acts > .essay-act *{ --nc-mark: #FFFFFF; --tc: #FFFFFF; --k: #FFFFFF; }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band.op-band > a.rail-tlm, html body main.has-mega .op-track > .op-band.op-band > a.rail-tlm *{ --k: #121417 !important; --tc: #121417 !important; --div-ink: #121417 !important; }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .latest-rail__hold > .rail-swallow, html body main.has-mega .latest-rail__hold > .rail-swallow *{ --tc: #121417 !important; --div-ink: #121417 !important; --k: #121417 !important; }
+  html body main.has-mega .latest-rail__hold > .rail-swallow .rail-swallow__body{ fill: #121417 !important; }
+}
