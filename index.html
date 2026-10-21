@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9d9a3f86">
+<link rel="stylesheet" href="style.css?v=d3a48367">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7253,7 +7253,8 @@
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
-      j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
+      if (j.ttEl) { var ttR0 = j.ttEl.getBoundingClientRect(); j.ttB = lastBaselineIn(j.ttEl, { bottom: ttR0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.ttEl).lineHeight) || 0); }
+      if (j.ttB == null) j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
       j.dkC = j.pdk ? firstCapTop(j.pdk) : null;
       j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
       if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
@@ -7295,7 +7296,7 @@
             if (j.hdB != null && j.dkT != null) {
               var mFoot = j.mB + inkDescentOf(j.mmEl);
               var gT = (j.ttT + upY) - (mFoot + upY + metaY);
-              var gB = (j.dkT + dekY) - (j.hdB + upY);
+              var gB = (j.dkT + dekY) - ((j.ttB != null ? j.ttB : j.hdB) + upY);
               var dl = (gB - gT) / 2;
               upY += dl; metaY -= dl;
             }
@@ -12250,22 +12251,27 @@ window.ncOpenH = function () {
       var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
     });
+    var cxR = bandRule.cx || (bandRule.cx = document.createElement('canvas').getContext('2d'));
+    var baseAt = function (el, atEnd) {
+      var z = document.createElement('span');
+      z.style.cssText = 'display:inline-block !important;width:0 !important;height:0 !important;padding:0 !important;margin:0 !important;border:0 !important;vertical-align:baseline !important';
+      if (atEnd) el.appendChild(z); else el.insertBefore(z, el.firstChild);
+      var y = z.getBoundingClientRect().bottom;
+      z.remove();
+      return y;
+    };
     [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
       var dk = sb.querySelector('.swap-body-dek'), tx = sb.querySelector('.swap-body-text'), dr = sb.querySelector(':scope > .nc-dek-rule');
-      var rgD = document.createRange(), rgT = document.createRange();
-      var lnD = null, tTop = null;
-      if (dk && tx && dk.textContent.trim() && tx.textContent.trim()) {
-        rgD.selectNodeContents(dk);
-        var rsD = [].filter.call(rgD.getClientRects(), function (q) { return q.width > 0 && q.height > 0; });
-        var lastQ = null; rsD.forEach(function (q) { if (!lastQ || q.bottom > lastQ.bottom) lastQ = q; });
-        rsD.forEach(function (q) { if (q.top < lastQ.bottom - 2 && q.bottom > lastQ.top + 2) lnD = lnD ? { l: Math.min(lnD.l, q.left), r: Math.max(lnD.r, q.right), b: Math.max(lnD.b, q.bottom) } : { l: q.left, r: q.right, b: q.bottom }; });
-        rgT.selectNodeContents(tx);
-        [].forEach.call(rgT.getClientRects(), function (q) { if (q.width > 0 && q.height > 0 && (tTop == null || q.top < tTop)) tTop = q.top; });
-      }
-      if (!lnD || tTop == null || tTop <= lnD.b) { if (dr) dr.remove(); return; }
+      var ok = dk && tx && dk.textContent.trim() && tx.textContent.trim() && getComputedStyle(dk).display !== 'none';
+      if (!ok) { if (dr) dr.remove(); return; }
+      var dBase = baseAt(dk, true), tBase = baseAt(tx, false), tcs = getComputedStyle(tx);
+      cxR.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
+      var tInk = tBase - (cxR.measureText((tx.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
+      var txR = tx.getBoundingClientRect();
+      if (!(tInk > dBase)) { if (dr) dr.remove(); return; }
       if (!dr) { dr = document.createElement('span'); dr.className = 'nc-dek-rule'; dr.setAttribute('aria-hidden', 'true'); sb.appendChild(dr); }
       var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
-      var dst = 'left:' + (Math.round(lnD.l) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((lnD.b + tTop) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(lnD.r - lnD.l) + 'px';
+      var dst = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((dBase + tInk - 1) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
       if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });

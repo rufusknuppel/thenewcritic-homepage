@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9d9a3f86">
+<link rel="stylesheet" href="style.css?v=d3a48367">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6385,7 +6385,8 @@
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
-      j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
+      if (j.ttEl) { var ttR0 = j.ttEl.getBoundingClientRect(); j.ttB = lastBaselineIn(j.ttEl, { bottom: ttR0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.ttEl).lineHeight) || 0); }
+      if (j.ttB == null) j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
       j.dkC = j.pdk ? firstCapTop(j.pdk) : null;
       j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
       if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
@@ -6427,7 +6428,7 @@
             if (j.hdB != null && j.dkT != null) {
               var mFoot = j.mB + inkDescentOf(j.mmEl);
               var gT = (j.ttT + upY) - (mFoot + upY + metaY);
-              var gB = (j.dkT + dekY) - (j.hdB + upY);
+              var gB = (j.dkT + dekY) - ((j.ttB != null ? j.ttB : j.hdB) + upY);
               var dl = (gB - gT) / 2;
               upY += dl; metaY -= dl;
             }
