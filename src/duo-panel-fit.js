@@ -8956,6 +8956,11 @@
   // (the title's last baseline to the dek's first ink: 26, the rule's 1 and 26 — "Space the top rule 26px from title
   // and dek", 2026-10-20)
   var TOP_RULE_GAP = 53;
+  // (52 over the rule over the dek since and 52 under the rule under it — "double the margins above the top rule and
+  // below the bottom rule", 2026-10-20: the title's baseline 52 over the top rule, the rule 26 over the dek's first ink;
+  // the dek's baseline 26 over the bottom rule, the rule 52 over the text's first ink)
+  TOP_RULE_GAP = 52 + 1 + 26;
+  var DEK_TO_TEXT = 26 + 1 + 52;
   // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
   var META_TITLE_GAP = 26;
   // (the dek and text 3 more over the foot — "Move body text another 3px
@@ -9754,7 +9759,7 @@
       // either side of it where it stood 18 over the title: 9 more)
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
       // (and what the rule over the dek opens between it and the title — TOP_RULE_GAP)
-      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2;
+      if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -9941,7 +9946,7 @@
           // (no rule between the dek and the text on the front page since, the text's first ink 54 under the dek's last
           // baseline — "Remove the rule between the dek and the body text", "Close the gap to 54px", 2026-10-14; style.css
           // NO RULE OVER THE BODY)
-          var dekToText = document.querySelector('main.logo-split:not(.foot-band-top)') && window.innerWidth >= 1024 ? 54 : RULE_AIR + FRAME + RULE_AIR;
+          var dekToText = document.querySelector('main.logo-split:not(.foot-band-top)') && window.innerWidth >= 1024 ? DEK_TO_TEXT : RULE_AIR + FRAME + RULE_AIR;
           var sH = between && dekUp ? midH + (j.ttB - j.ttT) + META_AIR + (j.dkB - j.dkC) + dekToText + (j.inB - j.txT)
             : between ? (metaOver ? midH + (j.hdB - j.ttT) : (j.ttB - top0) + midH) + RULE_AIR + FRAME + RULE_AIR + (j.dkB - j.dkC) + META_AIR + (j.inB - j.txT)
             : (j.hdB - top0) + midH + (dkF - j.dkT) + RULE_AIR + FRAME + RULE_AIR + (j.inB - j.txT);

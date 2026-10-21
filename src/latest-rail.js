@@ -3211,17 +3211,19 @@ window.ncOpenH = function () {
       if (!(tInk > dBase)) { if (dr) dr.remove(); return; }
       if (!dr) { dr = document.createElement('span'); dr.className = 'nc-dek-rule'; dr.setAttribute('aria-hidden', 'true'); sb.appendChild(dr); }
       var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
-      var dst = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((dBase + tInk - 1) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
+      var dst = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dBase) + 26 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
       if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
       // (and another over the dek, as wide, on the middle between the title's last baseline and the dek's first ink —
-      // "Add another rule above the dek between the dek and the title", 2026-10-20)
+      // "Add another rule above the dek between the dek and the title", 2026-10-20; each rule 26 off the dek since, the
+      // room beyond them doubled — "double the margins above the top rule and below the bottom rule": the top 26 over
+      // the dek's first ink, the bottom 26 under its last baseline, duo-panel-fit.js TOP_RULE_GAP, DEK_TO_TEXT)
       var tt = sb.querySelector('.swap-body-title'), du = sb.querySelector(':scope > .nc-dek-rule--top');
       var tBaseT = tt && tt.textContent.trim() ? baseAt(tt, true) : null, dFirst = baseAt(dk, false), dcs = getComputedStyle(dk);
       cxR.font = dcs.fontStyle + ' ' + dcs.fontWeight + ' ' + dcs.fontSize + ' ' + dcs.fontFamily;
       var dInk = dFirst - (cxR.measureText((dk.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
       if (tBaseT == null || !(dInk > tBaseT)) { if (du) du.remove(); return; }
       if (!du) { du = document.createElement('span'); du.className = 'nc-dek-rule nc-dek-rule--top'; du.setAttribute('aria-hidden', 'true'); sb.appendChild(du); }
-      var ust = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((tBaseT + dInk - 1) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
+      var ust = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round(dInk) - 27 - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
       if (du.__st !== ust) { du.__st = ust; du.style.cssText = ust; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });
