@@ -31239,6 +31239,13 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-style: italic !important; font-weight: 400 !important;
     font-size: 17.5px !important; line-height: 21px !important; letter-spacing: normal !important; text-transform: none !important;
   }
+  /* (everything in it the dek's own face, not the old Work Sans capitals its inner parts were still set in — which a
+     measure laid in it read, standing the dek's first ink 5 off: "Space the titles to the deks without the descenders
+     of the title", 2026-10-20) */
+  html body main.has-mega .page-rows .swap-body .swap-body-dek.swap-body-dek *{
+    font-family: inherit !important; font-style: inherit !important; font-weight: inherit !important; font-size: inherit !important;
+    line-height: inherit !important; letter-spacing: normal !important; text-transform: none !important;
+  }
   /* (a title in it, set in its own capitals before, upright in the italic, as the Garamond sets a title in italic words) */
   html body main.has-mega .page-rows .swap-body .swap-body-dek.swap-body-dek :is(em, i, cite){
     font-family: inherit !important; font-style: normal !important; font-weight: inherit !important; font-size: inherit !important;

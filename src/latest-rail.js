@@ -3187,24 +3187,31 @@ window.ncOpenH = function () {
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
     });
     // (a 1px rule between each post's dek and its body, as wide as the dek's last line and on the middle of the room
-    // between them — "add a 1 px rule between dek and body text the width of the last line of the dek", 2026-10-20: a
-    // span in the words' column, style.css THE RULE UNDER THE DEK)
+    // between them — "add a 1 px rule between dek and body text the width of the last line of the dek", 2026-10-20; as
+    // wide as the body's column since — "Make rule between dek and body the full width of the body text column" — and
+    // on the middle between the dek's last baseline and the body's first ink, the dek's descenders not counted — "Also
+    // space the deks to the rule without the descenders": a span in the words' column, style.css THE RULE UNDER THE DEK)
+    var cxR = bandRule.cx || (bandRule.cx = document.createElement('canvas').getContext('2d'));
+    var baseAt = function (el, atEnd) {
+      var z = document.createElement('span');
+      z.style.cssText = 'display:inline-block !important;width:0 !important;height:0 !important;padding:0 !important;margin:0 !important;border:0 !important;vertical-align:baseline !important';
+      if (atEnd) el.appendChild(z); else el.insertBefore(z, el.firstChild);
+      var y = z.getBoundingClientRect().bottom;
+      z.remove();
+      return y;
+    };
     [].forEach.call(document.querySelectorAll('.page-rows section.card .swap-body'), function (sb) {
       var dk = sb.querySelector('.swap-body-dek'), tx = sb.querySelector('.swap-body-text'), dr = sb.querySelector(':scope > .nc-dek-rule');
-      var rgD = document.createRange(), rgT = document.createRange();
-      var lnD = null, tTop = null;
-      if (dk && tx && dk.textContent.trim() && tx.textContent.trim()) {
-        rgD.selectNodeContents(dk);
-        var rsD = [].filter.call(rgD.getClientRects(), function (q) { return q.width > 0 && q.height > 0; });
-        var lastQ = null; rsD.forEach(function (q) { if (!lastQ || q.bottom > lastQ.bottom) lastQ = q; });
-        rsD.forEach(function (q) { if (q.top < lastQ.bottom - 2 && q.bottom > lastQ.top + 2) lnD = lnD ? { l: Math.min(lnD.l, q.left), r: Math.max(lnD.r, q.right), b: Math.max(lnD.b, q.bottom) } : { l: q.left, r: q.right, b: q.bottom }; });
-        rgT.selectNodeContents(tx);
-        [].forEach.call(rgT.getClientRects(), function (q) { if (q.width > 0 && q.height > 0 && (tTop == null || q.top < tTop)) tTop = q.top; });
-      }
-      if (!lnD || tTop == null || tTop <= lnD.b) { if (dr) dr.remove(); return; }
+      var ok = dk && tx && dk.textContent.trim() && tx.textContent.trim() && getComputedStyle(dk).display !== 'none';
+      if (!ok) { if (dr) dr.remove(); return; }
+      var dBase = baseAt(dk, true), tBase = baseAt(tx, false), tcs = getComputedStyle(tx);
+      cxR.font = tcs.fontStyle + ' ' + tcs.fontWeight + ' ' + tcs.fontSize + ' ' + tcs.fontFamily;
+      var tInk = tBase - (cxR.measureText((tx.textContent || '').trim().slice(0, 60)).actualBoundingBoxAscent || 0);
+      var txR = tx.getBoundingClientRect();
+      if (!(tInk > dBase)) { if (dr) dr.remove(); return; }
       if (!dr) { dr = document.createElement('span'); dr.className = 'nc-dek-rule'; dr.setAttribute('aria-hidden', 'true'); sb.appendChild(dr); }
       var dpo = dr.offsetParent || sb, dpr = dpo.getBoundingClientRect();
-      var dst = 'left:' + (Math.round(lnD.l) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((lnD.b + tTop) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(lnD.r - lnD.l) + 'px';
+      var dst = 'left:' + (Math.round(txR.left) - dpr.left + dpo.clientLeft).toFixed(2) + 'px;top:' + (Math.round((dBase + tInk - 1) / 2) - dpr.top + dpo.clientTop).toFixed(2) + 'px;width:' + Math.round(txR.width) + 'px';
       if (dr.__st !== dst) { dr.__st = dst; dr.style.cssText = dst; }
     });
     pics.sort(function (a, b) { return a[0] - b[0]; });

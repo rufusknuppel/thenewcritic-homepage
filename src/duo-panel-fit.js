@@ -9847,7 +9847,11 @@
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
-      j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
+      // (read off the line's own box less the face's descent below its baseline, as the byline's is, since — the
+      // canvas's guess at the title's leading stood it a few pixels off: "Space the titles to the deks without the
+      // descenders of the title", 2026-10-20)
+      if (j.ttEl) { var ttR0 = j.ttEl.getBoundingClientRect(); j.ttB = lastBaselineIn(j.ttEl, { bottom: ttR0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.ttEl).lineHeight) || 0); }
+      if (j.ttB == null) j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
       j.dkC = j.pdk ? firstCapTop(j.pdk) : null;
       j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
       if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
@@ -9952,7 +9956,9 @@
             if (j.hdB != null && j.dkT != null) {
               var mFoot = j.mB + inkDescentOf(j.mmEl);
               var gT = (j.ttT + upY) - (mFoot + upY + metaY);
-              var gB = (j.dkT + dekY) - (j.hdB + upY);
+              // (from the title's last baseline since, its descenders not counted — "Space the titles to the deks without
+              // the descenders of the title", 2026-10-20)
+              var gB = (j.dkT + dekY) - ((j.ttB != null ? j.ttB : j.hdB) + upY);
               var dl = (gB - gT) / 2;
               upY += dl; metaY -= dl;
             }
