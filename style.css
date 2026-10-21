@@ -16113,3 +16113,17 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
   html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash{ background: var(--k, #121417); }
   html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash > svg{ display: none; }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body .swap-body-dek.swap-body-dek{
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-style: italic !important; font-weight: 400 !important;
+    font-size: 17.5px !important; line-height: 21px !important; letter-spacing: normal !important; text-transform: none !important;
+  }
+  html body main.has-mega .page-rows .swap-body .swap-body-dek.swap-body-dek :is(em, i, cite){
+    font-family: inherit !important; font-style: normal !important; font-weight: inherit !important; font-size: inherit !important;
+    line-height: inherit !important; letter-spacing: normal !important; text-transform: none !important;
+  }
+}
+.nc-dek-rule{ display: none; }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-dek-rule.nc-dek-rule{ display: block !important; position: absolute !important; height: 0 !important; padding: 0 !important; margin: 0 !important; border: 0 !important; border-top: 1px solid var(--k, #121417) !important; pointer-events: none !important; }
+}
