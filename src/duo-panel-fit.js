@@ -8956,6 +8956,8 @@
   // (the title's last baseline to the dek's first ink: 26, the rule's 1 and 26 — "Space the top rule 26px from title
   // and dek", 2026-10-20)
   var TOP_RULE_GAP = 53;
+  // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
+  var META_TITLE_GAP = 26;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -9972,6 +9974,13 @@
               if (j.ttB != null) {
                 var pushD = TOP_RULE_GAP - ((j.dkT + dekY) - (j.ttB + upY));
                 if (pushD > 0) { dekY += pushD; upY -= pushD / 2; dekY -= pushD / 2; }
+              }
+              // (the byline's baseline META_TITLE_GAP over the title's first ink since, the gap the title's baseline keeps
+              // over the rule — "Center titles, set metadata to title as the same gap", 2026-10-20: the byline carried to
+              // it, and the stack moved by half of that so it stands centred still)
+              if (j.mB != null && j.ttT != null) {
+                var dM = ((j.ttT + upY) - (j.mB + upY + metaY)) - META_TITLE_GAP;
+                metaY += dM; upY -= dM / 2; dekY -= dM / 2;
               }
             }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);

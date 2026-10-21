@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=1052468a">
+<link rel="stylesheet" href="style.css?v=7293a102">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6713,6 +6713,7 @@
   var RULE_AIR = 54;
   var META_AIR = 36;
   var TOP_RULE_GAP = 53;
+  var META_TITLE_GAP = 26;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -7304,6 +7305,10 @@
               if (j.ttB != null) {
                 var pushD = TOP_RULE_GAP - ((j.dkT + dekY) - (j.ttB + upY));
                 if (pushD > 0) { dekY += pushD; upY -= pushD / 2; dekY -= pushD / 2; }
+              }
+              if (j.mB != null && j.ttT != null) {
+                var dM = ((j.ttT + upY) - (j.mB + upY + metaY)) - META_TITLE_GAP;
+                metaY += dM; upY -= dM / 2; dekY -= dM / 2;
               }
             }
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
