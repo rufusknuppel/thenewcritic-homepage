@@ -16391,13 +16391,23 @@ html body.archive-page main .op-track:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
 }
 body.archive-page .arc-bird .arc-bird__body{ transition: fill .15s ease; }
 body.archive-page .arc-bird:is(:hover, :focus-visible) .arc-bird__body{ fill: var(--nc-mark, #B3301E); }
-body.archive-page .arc .arc-head,
-body.archive-page .arc .arc-head :is(.arc-sort, .arc-shuffle){
+body.archive-page .arc :is(.arc-row, .arc-none){
   font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
   font-size: 19px;
+  line-height: 22px;
   letter-spacing: normal;
   text-transform: none;
 }
+body.archive-page .arc .arc-row{ padding-top: 16px; padding-bottom: calc(16px - var(--arc-rw, 1px)); }
+body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr) 88px 112px; }
+body.archive-page .arc .arc-row > .arc-date{ white-space: nowrap; }
+@media (min-width: 1024px) and (max-width: 1279px){
+  body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) 88px 112px; }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc-main{ --arc-cols: minmax(0, 1fr) auto; }
+}
+body.archive-page .arc-stack .arc-count{ position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 html.is-archive{
   --tw: #121417;
   --tc: #FFFFFF;

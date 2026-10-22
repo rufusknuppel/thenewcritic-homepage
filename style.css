@@ -31608,17 +31608,32 @@ html body.archive-page main .op-track:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
 /* THE ARCHIVE'S WAY HOME AND ITS COLUMN TITLES (2026-10-22 — "Have the wordmarks and bird route back the main page",
    "Use Garamond for the column titles"): the names and the column's bird link to the front page (build.js
    renderArchivePage), the bird red under the hand as the front page's corner bird is; the ledger's head in the band's
-   Garamond, its words as written, 19 on the head's 18 so the head keeps its 54 — the sorted one red with its arrow,
-   Shuffle gray, the rows still the meta's capitals */
+   Garamond for a while, then the other way round — "Make the title columns work sans and the ledger rows garamond":
+   the head the meta's Work Sans capitals as it was, every row in the band's Garamond, its words as written, 19 on 22,
+   the row still 54 from rule to rule when it keeps to a line (16 over the words, 16 under less the rule) */
 body.archive-page .arc-bird .arc-bird__body{ transition: fill .15s ease; }
 body.archive-page .arc-bird:is(:hover, :focus-visible) .arc-bird__body{ fill: var(--nc-mark, #B3301E); }
-body.archive-page .arc .arc-head,
-body.archive-page .arc .arc-head :is(.arc-sort, .arc-shuffle){
+body.archive-page .arc :is(.arc-row, .arc-none){
   font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
   font-size: 19px;
+  line-height: 22px;
   letter-spacing: normal;
   text-transform: none;
 }
+body.archive-page .arc .arc-row{ padding-top: 16px; padding-bottom: calc(16px - var(--arc-rw, 1px)); }
+/* (the dates wider in the Garamond, kept to a line) */
+body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr) 88px 112px; }
+body.archive-page .arc .arc-row > .arc-date{ white-space: nowrap; }
+@media (min-width: 1024px) and (max-width: 1279px){
+  body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) 88px 112px; }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc-main{ --arc-cols: minmax(0, 1fr) auto; }
+}
+/* (no count under the sections — "Remove the italics descriptor, e.g. "three pieces matching" in the side column",
+   2026-10-22: the line still there for a screen reader, which hears what a filter leaves; the field 27 under the
+   sections) */
+body.archive-page .arc-stack .arc-count{ position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* THE ARCHIVE TURNED OVER (2026-10-22 — "I want the background of the archive to charcoal and everything to flipped"):
    the whole page on the site's charcoal, as the front page's charcoal sections stand (THE SECTIONS ARE CHARCOAL, THEIR
