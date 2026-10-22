@@ -5241,7 +5241,7 @@ function markMega(html) {
   // A page carrying the front page's cards in a feature block (the
   // archive's, About's) takes the marks too, hero or no hero: the
   // cards' rules and the fitter read them.
-  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature|word-page)(?:\s[^"]*)?"/.test(html)) return html;
+  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature|word-page|archive-page)(?:\s[^"]*)?"/.test(html)) return html;
   // The ROOT carries the mark too: the canvas behind the page — what
   // shows when the reader pulls past the foot — is painted from the
   // root's own background (style.css, html.has-mega).
@@ -5297,7 +5297,7 @@ function holdFirstCovers(html, filename) {
   });
 }
 
-function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage, bare = false }) {
+function renderPageShell({ currentKey, title, description, bodyHtml, extraScripts = '', bodyClass = '', ogImage, bare = false, preMain = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -5321,7 +5321,7 @@ ${renderStampDefs()}
 <a class="skip-link" href="#main">Skip to content</a>
 
 ${bare ? '' : renderHeader(currentKey)}
-
+${preMain}
 <main id="main">
 ${bodyHtml}
 </main>
@@ -5961,62 +5961,11 @@ ${js}
 </script>`;
 }
 
-// THE ARCHIVE IS A LEDGER OF BANDS: one 36px band per post, the post's
-// title / author / tag / section / date in white courier across five
-// columns. A band is a LINK: clicking it goes straight to the post on
-// Substack. (The fold-out plate — cover left, excerpt right — is
-// retired; the front page's cards in the feature block carry the
-// previews now.)
-function renderLedgerRow(post) {
-  const d = post.date;
-  // Every date carries its year on the ledger — "Jul 15, 2026" — the
-  // current year included (the cards elsewhere drop it; the ledger is
-  // the one place the whole run is dated in full).
-  const dateStr =
-    d && !isNaN(d.getTime())
-      ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      : post.metaDate || '';
-  // Sort keys for the column-head controls (see src/ledger.js): author and
-  // section lowercased for a case-blind alphabetical order, the date as a
-  // plain epoch number.
-  const sortAttrs =
-    // Leading quotes/punctuation stripped so “Quoted” titles don't sort
-    // ahead of the alphabet.
-    ` data-title="${escapeHtml((post.title || '').toLowerCase().replace(/^[^\p{L}\p{N}]+/u, ''))}"` +
-    ` data-author="${escapeHtml((post.author || '').toLowerCase())}"` +
-    ` data-date="${d && !isNaN(d.getTime()) ? d.getTime() : 0}"` +
-    ` data-kicker="${escapeHtml((post.kicker || '').toLowerCase())}"` +
-    ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"` +
-    // The deep-link target: cards' author/kicker/date links arrive as
-    // #sort=<key>&post=<slug> and ledger.js lands on the matching item.
-    ` data-slug="${escapeHtml(slugOf(post.link))}"`;
-  return `
-  <div class="ledger-item"${sortAttrs}>
-    <a class="ledger-row" href="${escapeHtml(post.link)}" rel="noopener">
-      <span class="ledger-cell lc-title">${escapeHtml(post.title)}</span>
-      <span class="ledger-cell lc-author">${escapeHtml(post.author || '')}</span>
-      <span class="ledger-cell lc-kicker">${escapeHtml(post.kicker || '')}</span>
-      <span class="ledger-cell lc-section">${escapeHtml(post.sectionLabel || '')}</span>
-      <span class="ledger-cell lc-date">${escapeHtml(dateStr)}</span>
-    </a>
-  </div>`;
-}
-
 function renderLedgerScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/ledger.js'), 'utf8'));
   return `<script>
 ${js}
 </script>`;
-}
-
-// Column-head sort control: a stacked up/down arrow pair after the label.
-// Up = ascending (A–Z, oldest first), down = descending; the active
-// direction prints charcoal (see src/ledger.js).
-function sortArrows(key, label) {
-  return `<span class="arch-sort-arrows">
-        <button class="arch-sort" type="button" data-key="${key}" data-dir="asc" aria-label="Sort by ${label} ascending">&#9650;</button>
-        <button class="arch-sort" type="button" data-key="${key}" data-dir="desc" aria-label="Sort by ${label} descending">&#9660;</button>
-      </span>`;
 }
 
 // THE WORD PAGE IS THE FRONT PAGE'S ANATOMY (2026-09-17): the
@@ -6083,89 +6032,80 @@ function renderWordPage({ currentKey, title, description, mid, movements = [], e
   }).replace('<html lang="en">', '<html lang="en" class="ledger-root">');
 }
 
-// THE FEATURE BLOCK between the band and the column head: the front
-// page's own cards on charcoal — p(doom) as the lead essay, the two
-// postscripts as a pair, Freak Show as the mirrored essay to close —
-// with every hover, plate and preview the homepage gives them (the
-// homepage's scripts ride along; see extraScripts below).
+// The four posts the archive's Editors' Picks block opened on — the
+// block is struck (below), but the front page's EDITORS' PICKS section
+// still reads its posts from here.
 const LEDGER_FEATURE_SLUGS = {
   lead: 'pdoom',
   pair: ['curtis-yarvin-jr', 'beyond-pain-an-interview-with-the'],
   close: 'freak-show',
 };
-function renderLedgerFeature(features) {
-  if (!features) return '';
-  const rows = [
-    // EDITORS' PICKS stacked on the left margin, as THE LATEST stands on
-    // the front page's right (2026-09-18).
-    features.lead ? renderMegaHero(features.lead, { label: 'Essays', stack: 'Editors’ Picks', stackSide: 'left', stackHref: 'archive.html#section=editors' }) : '',
-    renderPostscriptPair(features.pair[0], features.pair[1]),
-    features.close ? renderMegaHero(features.close, { rev: true, label: 'Essays' }) : '',
-  ].filter(Boolean);
-  if (!rows.length) return '';
-  // The rows stand in the word page's first movement (m--latest, the
-  // front page's opening one), under the page's word: the cards'
-  // reveal, stacking and hover rules are written per movement, and
-  // the rows borrow the front page's wholesale (renderWordPage).
-  return rows.map((r) => `<div class="wrap m--latest">
-    ${r}
-  </div>`).join('\n  <div class="row-divider m--latest"></div>\n  ');
-}
 
-function renderArchivePage(posts, features) {
-  // THE COLUMN HEAD rides up over the pinned band and PINS at the top
-  // in its place, the ledger scrolling under it — so it stands in
-  // .page-rows itself, a level over the band and under the reprint,
-  // between SUBSCRIBE's movement and the rows' (style.css, THE WORD
-  // PAGES ON THE FRONT PAGE'S ANATOMY).
-  const headHtml = `<div class="ledger-head ledger-row">
-      <span class="ledger-cell lc-title"><span class="lc-label">Title</span>${sortArrows('title', 'title')}<button class="arch-shuffle" type="button" aria-label="Shuffle order">&#8644;</button></span>
-      <span class="ledger-cell lc-author"><span class="lc-label">Author</span>${sortArrows('author', 'author')}</span>
-      <span class="ledger-cell lc-kicker"><span class="lc-label">Tag</span>${sortArrows('kicker', 'tag')}</span>
-      <span class="ledger-cell lc-section"><span class="lc-label">Section</span>${sortArrows('section', 'section')}</span>
-      <span class="ledger-cell lc-date"><span class="lc-label">Date</span>${sortArrows('date', 'date')}</span>
-      <span class="ledger-cell lc-search"><input class="arch-search" type="search" placeholder="Search" aria-label="Search the ledger" autocomplete="off" spellcheck="false"><svg class="arch-search-glass" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><button class="arch-clear" type="button" hidden><span class="arch-clear-label">Clear filter</span><svg class="arch-clear-x" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true" focusable="false"><path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
+// THE ARCHIVE ON THE FRONT PAGE'S HEAD (2026-10-22 — "Redesign the
+// archive page. delete the editors pick portion at the bottom. use All
+// caps work sans and the thin gray rules from the homepage, with the
+// same header system as the homepage"): THE NEW CRITIC across the top
+// and the band under it — the nav, THE LAST MAGAZINE, the socials —
+// pinning to the window's top, the front page's own markup
+// (contentNameBlock, opBand) and its rule; under it the ledger alone,
+// every word in the meta's Work Sans capitals, a light gray rule under
+// each row. The Editors' Picks block under the ledger is struck. The
+// ledger's classes are its own (arc-*), not the old .ledger-*, so none
+// of the old anatomy's rules reach it (style.css, THE ARCHIVE ON THE
+// FRONT PAGE'S HEAD); src/archive.js seats the band and sorts, searches
+// and filters the rows.
+function arcSort(key, label) {
+  return `<span class="arc-sort">`
+    + `<button type="button" data-key="${key}" data-dir="asc" aria-label="Sort by ${label} ascending">&#9650;</button>`
+    + `<button type="button" data-key="${key}" data-dir="desc" aria-label="Sort by ${label} descending">&#9660;</button></span>`;
+}
+function renderArchiveRow(post) {
+  const d = post.date;
+  const ok = d && !isNaN(d.getTime());
+  // (every date with its year — the ledger is the one place the whole run is dated in full)
+  const dateStr = ok ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : post.metaDate || '';
+  // (sort keys lowercased, a title's leading quotes stripped so “Quoted” titles don't sort ahead of the alphabet; the
+  // slug is the deep links' target — #sort=<key>&post=<slug>, archiveHref)
+  const attrs = ` data-title="${escapeHtml((post.title || '').toLowerCase().replace(/^[^\p{L}\p{N}]+/u, ''))}"`
+    + ` data-author="${escapeHtml((post.author || '').toLowerCase())}"`
+    + ` data-kicker="${escapeHtml((post.kicker || '').toLowerCase())}"`
+    + ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"`
+    + ` data-date="${ok ? d.getTime() : 0}"`
+    + ` data-slug="${escapeHtml(slugOf(post.link))}"`;
+  return `
+      <a class="arc-row"${attrs} href="${escapeHtml(post.link)}" rel="noopener">`
+    + `<span class="arc-cell arc-title">${escapeHtml(post.title)}</span>`
+    + `<span class="arc-cell arc-author">${escapeHtml(post.author || '')}</span>`
+    + `<span class="arc-cell arc-kicker">${escapeHtml(post.kicker || '')}</span>`
+    + `<span class="arc-cell arc-section">${escapeHtml(post.sectionLabel || '')}</span>`
+    + `<span class="arc-cell arc-date">${escapeHtml(dateStr)}</span></a>`;
+}
+function renderArchivePage(posts) {
+  const head = `<div class="arc-head">
+      <span class="arc-cell arc-title"><span class="arc-label">Title</span>${arcSort('title', 'title')}<button class="arc-shuffle" type="button" aria-label="Shuffle order">Shuffle</button></span>
+      <span class="arc-cell arc-author"><span class="arc-label">Author</span>${arcSort('author', 'author')}</span>
+      <span class="arc-cell arc-kicker"><span class="arc-label">Tag</span>${arcSort('kicker', 'tag')}</span>
+      <span class="arc-cell arc-section"><span class="arc-label">Section</span>${arcSort('section', 'section')}</span>
+      <span class="arc-cell arc-date"><span class="arc-label">Date</span>${arcSort('date', 'date')}</span>
+      <span class="arc-cell arc-find"><input class="arc-search" type="search" placeholder="Search" aria-label="Search the archive" autocomplete="off" spellcheck="false"><button class="arc-clear" type="button" hidden>Clear</button></span>
     </div>`;
-  const ledgerHtml = `
-  <section class="ledger" aria-label="Every post">
-    <div class="ledger-body">${posts.map(renderLedgerRow).join('')}
+  // (the band's rule along its foot in the markup — the front page's script draws it there)
+  const bodyHtml = `${opBand().replace(/<\/div><\/div>$/, '<span class="nc-band-dash" aria-hidden="true"></span></div></div>')}
+<section class="arc" aria-label="Every post">
+    ${head}
+    <div class="arc-body">${posts.map(renderArchiveRow).join('')}
     </div>
-  </section>`;
-  return renderWordPage({
+    <p class="arc-none" hidden>Nothing matches</p>
+</section>`;
+  return renderPageShell({
     currentKey: 'archive',
     title: 'Archive',
-    // The band is the front page's own, the date in its middle
-    // (2026-09-17; it read Editors’ Picks for a spell).
-    // ARCHIVE over the feature block; SUBSCRIBE over the ledger; then
-    // the reprint. (The closing deck — ABOUT, STORE, EVENTS — is
-    // struck, 2026-09-17: the page goes from the ledger's last row
-    // straight to the reprint, as the front page goes from its last
-    // review row.)
-    // EDITORS' PICKS FALLS BELOW THE LEDGER (2026-09-19). The feature
-    // block stood between the band and the column head, so the archive
-    // opened on four hand-picked cards and the reader had to travel
-    // past them to reach the thing the page is for. The ledger comes
-    // first now and the picks close the page under it.
-    // THE WORD STAYS AT THE TOP. It is the page's title, not the
-    // feature block's, so it keeps its own movement above the column
-    // head — which is why the first entry carries a word and no body
-    // and the last a body and no word.
-    movements: [
-      { word: 'Archive', href: 'archive.html', hook: 'subscribe-band' },
-      // (SUBSCRIBE stood here between the feature block and the ledger
-      // head, 2026-09-18: struck. The offer is on the front page, in
-      // the nav's right slot and in the colophon; the archive is a
-      // place to look something up.)
-      { raw: headHtml },
-      { cls: 'm--ledger', body: ledgerHtml },
-      { mcls: 'm--latest', cls: 'm--picks', body: renderLedgerFeature(features) },
-    ],
-    // The homepage's own scripts for the feature block's cards — the
-    // fitter, the click-to-open plates, the cover colours, share, the
-    // drawn lines, the held heads — then the ledger's own.
-    extraScripts: renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript() + renderCoverCueScript()
-      + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderRailFixScript()
-      + renderLedgerScript(),
+    description: `Every post in ${SITE_NAME}, by title, author, tag, section and date.`,
+    preMain: contentNameBlock(),
+    bodyHtml,
+    bodyClass: 'archive-page',
+    bare: true,
+    extraScripts: `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, 'src/archive.js'), 'utf8'))}\n</script>`,
   });
 }
 
@@ -6592,7 +6532,7 @@ async function main() {
     if (manual) p.preview = manual;
   }
 
-  // Section column for the archive ledger (see renderLedgerRow) — same
+  // Section column for the archive ledger (see renderArchiveRow) — same
   // membership checks as the tagline logic above, as a bare column label.
   for (const p of archivePosts) {
     p.sectionLabel =
@@ -6698,22 +6638,12 @@ async function main() {
   }
 
   const archivePool = archivePosts;
-  // The archive's feature block reads the same post objects the
-  // homepage's rows do (heroArchive first — its objects carry the
-  // From the Archive tagline and previews), by slug.
-  const featureBySlug = (slug) =>
-    [heroArchive, essaysAll, postscriptAll, archivePosts].flat().find((p) => p && slugOf(p.link) === slug) || null;
-  const ledgerFeatures = {
-    lead: featureBySlug(LEDGER_FEATURE_SLUGS.lead),
-    pair: LEDGER_FEATURE_SLUGS.pair.map(featureBySlug),
-    close: featureBySlug(LEDGER_FEATURE_SLUGS.close),
-  };
 
   const pages = {
     'index.html': html,
     'about.html': renderAboutPage(founders, manifestoHtml,
       [heroArchive, essaysAll, postscriptAll, archivePosts].flat().find((p) => p && slugOf(p.link) === 'the-new-critic-secession') || null),
-    'archive.html': renderArchivePage(archivePool, ledgerFeatures),
+    'archive.html': renderArchivePage(archivePool),
   };
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
