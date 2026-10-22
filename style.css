@@ -31358,17 +31358,35 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
    the rules edge to edge across the window as the band's is, the words still on the nav's ink and the socials' ("Want
    ledger rules to stretch edge to edge") */
 html body.archive-page main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash{ left: 0 !important; width: 100% !important; }
+/* THE ARCHIVE ON THE FRONT PAGE'S ANATOMY (2026-10-22 — "Redesign the archive to match the homepage in whatever way you
+   seem fit. Keep the ledger idea"): the front page's two columns under the band — the ledger where its posts stand, its
+   rules from the window's left edge to the side column's gray rule, its words 54 in from either; and the side column
+   under the socials (--arc-col, the rule; --arc-hold-x, --arc-hold-w, the socials' box; archive.js), its hold pinned
+   under the band: the column's bird as tall as the name's capitals (--arc-bird), and under it the sections in the side
+   column's Garamond, the one the reader is in red as THE LATEST is there, a line in the column's italic counting what
+   the ledger holds, the search on a gray rule. The bird and the stack share what room the window leaves them in three
+   equal gaps — over the bird, between, under the stack — as the front page's column does, the room growing by the
+   band's climb as it rises (--op-s; a third of it to each gap, on the root's scroll timeline, no script) */
 body.archive-page .arc{
-  --arc-cols: minmax(0, 2.6fr) minmax(0, 1.3fr) minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.1fr);
   position: relative;
+  display: grid;
+  grid-template-columns: var(--arc-col, calc(100% - 327px)) minmax(0, 1fr);
+  align-items: stretch;
   padding: var(--arc-top, 0px) 0 108px;
-  /* (a window's room under the band however few rows a filter leaves, so the head can always pin under it) */
-  min-height: calc(var(--arc-top, 0px) + 100vh);
   box-sizing: border-box;
   background: #FFFFFF;
   color: var(--k, #121417);
 }
-body.archive-page .arc :is(.arc-head, .arc-row, .arc-none, .arc-search, .arc-clear, .arc-shuffle){
+body.archive-page .arc-main{
+  /* (title, author and tag in the room their nine-in-ten longest want, 2 : 1 : 1.4; the section and the date as wide as
+     their longest) */
+  --arc-cols: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr) 88px 96px;
+  min-width: 0;
+  /* (a window's room under the band however few rows a filter leaves, so the head can always pin under it and the
+     side column keeps its height) */
+  min-height: calc(100vh - var(--arc-band, 0px));
+}
+body.archive-page .arc :is(.arc-head, .arc-row, .arc-none, .arc-shuffle, .arc-sort){
   font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif);
   font-size: 13px;
   font-weight: 400;
@@ -31380,14 +31398,16 @@ body.archive-page .arc :is(.arc-head, .arc-row, .arc-none, .arc-search, .arc-cle
 body.archive-page .arc :is(.arc-head, .arc-row){
   display: grid;
   grid-template-columns: var(--arc-cols);
+  column-gap: 27px;
   align-items: center;
   min-height: 54px;
   box-sizing: border-box;
-  padding: 0 var(--arc-r, 54px) 0 var(--arc-l, 54px);
-  border-bottom: 1px solid var(--nc-rule, #D6D6D6);
+  /* (54 from rule to rule, the rule's own width taken out of the room under the words) */
+  padding: 18px 54px calc(18px - var(--arc-rw, 1px));
+  border-bottom: var(--arc-rw, 1px) solid var(--nc-rule, #D6D6D6);
 }
 @media (min-resolution: 2dppx){
-  body.archive-page .arc :is(.arc-head, .arc-row){ border-bottom-width: 0.5px; }
+  body.archive-page .arc{ --arc-rw: 0.5px; }
 }
 body.archive-page .arc .arc-head{
   position: sticky;
@@ -31395,14 +31415,10 @@ body.archive-page .arc .arc-head{
   z-index: 2;
   background: #FFFFFF;
 }
-body.archive-page .arc .arc-cell{
-  min-width: 0;
-  padding-right: 27px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-body.archive-page .arc .arc-head .arc-cell{ display: flex; align-items: center; gap: 9px; overflow: visible; }
+body.archive-page .arc .arc-cell{ min-width: 0; overflow-wrap: break-word; text-wrap: pretty; }
+body.archive-page .arc .arc-head .arc-cell{ display: flex; align-items: center; gap: 27px; }
+/* (the dates on the ledger's right edge, 54 in from the column's rule as the titles stand 54 in from the window's) */
+body.archive-page .arc .arc-date{ justify-content: flex-end; text-align: right; }
 body.archive-page .arc .arc-row{ color: inherit; text-decoration: none; }
 body.archive-page .arc .arc-row[hidden]{ display: none; }
 body.archive-page .arc .arc-row:is(:hover, :focus-visible, .is-target){ color: var(--nc-mark, #B3301E); outline: none; }
@@ -31410,41 +31426,125 @@ body.archive-page .arc .arc-row:is(:hover, :focus-visible, .is-target){ color: v
    window's width it glowed red over and under the row — "There's a highlight problem where the box glows red",
    2026-10-22; the words alone turn red) */
 body.archive-page .arc :is(a, button, input):is(:hover, :focus, :focus-visible){ box-shadow: none !important; }
-/* (the sort arrows small and gray, the standing order's red; Shuffle and the search's word gray till the hand) */
-body.archive-page .arc .arc-sort{ display: inline-flex; flex-direction: column; gap: 1px; }
-body.archive-page .arc .arc-sort button,
-body.archive-page .arc :is(.arc-shuffle, .arc-clear){
+/* (the head's words sort: the column the ledger stands in red with its arrow, the rest the ink, red under the hand;
+   Shuffle gray till the hand or till it has dealt) */
+body.archive-page .arc :is(.arc-sort, .arc-shuffle, .arc-clear){
   appearance: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  color: #9A9893;
-}
-body.archive-page .arc .arc-sort button{ display: block; font-size: 7px; line-height: 7px; }
-body.archive-page .arc .arc-sort button.is-on,
-body.archive-page .arc :is(.arc-sort button, .arc-shuffle, .arc-clear):hover{ color: var(--nc-mark, #B3301E); }
-body.archive-page .arc .arc-shuffle{ margin-left: 9px; }
-body.archive-page .arc .arc-clear{ color: var(--nc-mark, #B3301E); }
-body.archive-page .arc .arc-find{ justify-content: flex-end; padding-right: 0; }
-body.archive-page .arc .arc-search{
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: none;
+  color: inherit;
+  cursor: pointer;
+}
+/* (the arrow hung past the word, so each word stands on its column's edge — DATE's on the dates' right edge — lit or not) */
+body.archive-page .arc .arc-sort{ position: relative; }
+body.archive-page .arc .arc-sort::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin: -2px 0 0 7px;
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 4.5px solid currentColor;
+  visibility: hidden;
+}
+body.archive-page .arc .arc-sort[data-dir="asc"]::after{ border-top: 0; border-bottom: 4.5px solid currentColor; }
+body.archive-page .arc .arc-sort.is-on::after{ visibility: visible; }
+body.archive-page .arc .arc-shuffle{ color: #9A9893; }
+body.archive-page .arc :is(.arc-sort, .arc-shuffle):is(:hover, :focus-visible, .is-on){ color: var(--nc-mark, #B3301E); outline: none; }
+body.archive-page .arc .arc-none{ margin: 0; padding: 18px 54px; color: #9A9893; }
+/* (under 1280 the tag steps aside — the field still finds it — so the names and titles keep their words whole) */
+@media (min-width: 1024px) and (max-width: 1279px){
+  body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) 88px 96px; }
+  body.archive-page .arc :is(.arc-head, .arc-row) > .arc-kicker{ display: none; }
+}
+
+/* (the side column: its gray rule down its left side from the band's foot to the ledger's last row, half a pixel where
+   the screen has the pixels for it, as the front page's is) */
+body.archive-page .arc-side{ position: relative; min-width: 0; }
+body.archive-page .arc-side::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: var(--nc-rule, #D6D6D6);
+}
+@media (min-resolution: 2dppx){
+  body.archive-page .arc-side::before{ background: linear-gradient(to right, var(--nc-rule, #D6D6D6) 50%, transparent 50%); }
+}
+body.archive-page .arc-side__hold{
+  position: sticky;
+  top: var(--arc-band, 0px);
+  box-sizing: border-box;
+  height: calc(100vh - var(--arc-band, 0px));
+  width: var(--arc-hold-w, 220px);
+  margin-left: var(--arc-hold-x, 54px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+@keyframes arc-gap-one{ from { translate: 0 calc(var(--op-s, 0px) / -3); } to { translate: 0 0; } }
+@keyframes arc-gap-two{ from { translate: 0 calc(var(--op-s, 0px) * -2 / 3); } to { translate: 0 0; } }
+body.archive-page .arc-side__hold > :is(.arc-bird, .arc-stack){ animation: arc-gap-one linear both; animation-timeline: scroll(root); animation-range: 0px var(--op-s, 1px); }
+body.archive-page .arc-side__hold > .arc-stack{ animation-name: arc-gap-two; }
+body.archive-page .arc-bird{
+  display: block;
+  flex: none;
+  height: var(--arc-bird, 173.6px);
+  width: calc(var(--arc-bird, 173.6px) * var(--sw-ar, 0.9676));
+}
+body.archive-page .arc-bird > svg{ display: block; width: 100%; height: 100%; }
+body.archive-page .arc-bird .arc-bird__body{ fill: var(--k, #121417); }
+body.archive-page .arc-bird .arc-bird__beak{ fill: #FFFFFF; }
+body.archive-page .arc-stack{
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
   color: var(--k, #121417);
-  text-align: right;
+}
+/* (the sections as the side column sets them there — 19 on 27.5, commas between) */
+body.archive-page .arc-sections{ margin: 0; font-size: 19px; line-height: 27.5px; text-wrap: balance; }
+body.archive-page .arc-sections__a{ color: inherit; text-decoration: none; }
+body.archive-page .arc-sections__a:is(:hover, :focus-visible, .is-current){ color: var(--nc-mark, #B3301E); outline: none; }
+/* (and under them the column's italic, 20 on 28: the count, the field, Clear) */
+body.archive-page .arc-stack :is(.arc-count, .arc-search, .arc-clear){ font-family: inherit; font-size: 20px; font-style: italic; font-weight: 400; line-height: 28px; letter-spacing: normal; text-transform: none; }
+body.archive-page .arc-count{ margin: 27px 0 0; text-wrap: balance; }
+body.archive-page .arc-find{ display: block; width: 100%; margin-top: 27px; }
+body.archive-page .arc-find__label{ position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+body.archive-page .arc-search{
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 4px;
+  border: 0;
+  border-bottom: 1px solid var(--nc-rule, #D6D6D6);
+  border-radius: 0;
+  background: none;
+  color: var(--k, #121417);
+  text-align: center;
   outline: none;
 }
-body.archive-page .arc .arc-search::placeholder{ color: #9A9893; opacity: 1; }
-body.archive-page .arc .arc-search::-webkit-search-cancel-button{ -webkit-appearance: none; display: none; }
-body.archive-page .arc .arc-none{ margin: 0; padding: 18px var(--arc-r, 54px) 18px var(--arc-l, 54px); color: #9A9893; }
+@media (min-resolution: 2dppx){ body.archive-page .arc-search{ border-bottom-width: 0.5px; } }
+body.archive-page .arc .arc-search:focus{ border-bottom-color: var(--nc-mark, #B3301E); }
+body.archive-page .arc-search::placeholder{ color: #9A9893; opacity: 1; }
+body.archive-page .arc-search:focus::placeholder{ color: transparent; }
+body.archive-page .arc-search::-webkit-search-cancel-button{ -webkit-appearance: none; display: none; }
+body.archive-page .arc .arc-clear{ margin-top: 18px; color: #9A9893; }
+body.archive-page .arc .arc-clear[hidden]{ display: none; }
+body.archive-page .arc .arc-clear:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); outline: none; }
 /* (on a phone: the name across the top on one line, 36 in from the window's sides as the front page's stands there, the
    nav under it in the band, pinned, the rule under that; the ledger 52 in, as the front page's posts are, its title and
    date alone, the search a row of its own under the head) */
@@ -31481,7 +31581,7 @@ html body.archive-page main .op-track:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   html body.archive-page main.has-mega.has-mega .op-track > .op-band > :is(.rail-tlm, .op-tnc, .rail-socials):is(*, *){ display: none !important; }
   html body.archive-page main.has-mega.has-mega .op-track > .op-band > .rail-top.rail-top{ display: block !important; position: static !important; transform: none !important; }
   html body.archive-page main.has-mega.has-mega .op-track > .op-band .rail-top__a.rail-top__a{ font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-size: 18px !important; font-style: normal !important; color: var(--k, #121417) !important; text-decoration: none !important; }
-  html body.archive-page main.has-mega.has-mega .op-track > .op-band .rail-top__sep.rail-top__sep{ display: inline !important; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-size: 18px !important; }
+  html body.archive-page main.has-mega.has-mega .op-track > .op-band .rail-top__sep.rail-top__sep{ display: inline !important; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-size: 18px !important; color: var(--k, #121417) !important; }
   /* (the front page's painted side margins off, so the rows' rules reach the window's edges here too) */
   html body.archive-page main.has-mega.has-mega::before, html body.archive-page main.has-mega.has-mega::after{ display: none !important; }
   html body.archive-page main.has-mega.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash.nc-band-dash{
@@ -31491,10 +31591,16 @@ html body.archive-page main .op-track:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
     height: 1px !important;
     background: var(--nc-rule, #D6D6D6) !important;
   }
-  body.archive-page .arc{ --arc-cols: minmax(0, 1fr) auto; --arc-l: 52px; --arc-r: 52px; padding: 0 0 72px; }
-  body.archive-page .arc .arc-head{ top: 55px; grid-template-rows: 54px auto; }
+  /* (the ledger 52 in, as the front page's posts are, its title and date alone; the side column's sections, count and
+     search over it, the bird and the rule left to the wide window) */
+  body.archive-page .arc{ display: flex; flex-direction: column; padding: 0 0 72px; }
+  body.archive-page .arc-main{ --arc-cols: minmax(0, 1fr) auto; min-height: 0; }
+  body.archive-page .arc :is(.arc-head, .arc-row){ padding-left: 52px; padding-right: 52px; }
+  body.archive-page .arc .arc-head{ top: 55px; }
   body.archive-page .arc :is(.arc-author, .arc-kicker, .arc-section){ display: none !important; }
-  body.archive-page .arc .arc-date{ padding-right: 0; justify-content: flex-end; text-align: right; }
-  body.archive-page .arc .arc-find{ grid-column: 1 / -1; padding: 0 0 18px; justify-content: flex-start; }
-  body.archive-page .arc .arc-search{ text-align: left; }
+  body.archive-page .arc .arc-none{ padding: 18px 52px; }
+  body.archive-page .arc-side{ order: -1; }
+  body.archive-page .arc-side::before, body.archive-page .arc-bird{ display: none; }
+  body.archive-page .arc-side__hold{ position: static; height: auto; width: auto; margin: 0; padding: 27px 52px 36px; display: block; }
+  body.archive-page .arc-side__hold > :is(.arc-bird, .arc-stack){ animation: none; }
 }

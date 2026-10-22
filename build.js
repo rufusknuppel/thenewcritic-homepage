@@ -6047,17 +6047,25 @@ const LEDGER_FEATURE_SLUGS = {
 // same header system as the homepage"): THE NEW CRITIC across the top
 // and the band under it — the nav, THE LAST MAGAZINE, the socials —
 // pinning to the window's top, the front page's own markup
-// (contentNameBlock, opBand) and its rule; under it the ledger alone,
-// every word in the meta's Work Sans capitals, a light gray rule under
-// each row. The Editors' Picks block under the ledger is struck. The
+// (contentNameBlock, opBand) and its rule; under it the ledger, every
+// word in the meta's Work Sans capitals, a light gray rule under each
+// row. The Editors' Picks block under the ledger is struck. The
 // ledger's classes are its own (arc-*), not the old .ledger-*, so none
 // of the old anatomy's rules reach it (style.css, THE ARCHIVE ON THE
 // FRONT PAGE'S HEAD); src/archive.js seats the band and sorts, searches
 // and filters the rows.
-function arcSort(key, label) {
-  return `<span class="arc-sort">`
-    + `<button type="button" data-key="${key}" data-dir="asc" aria-label="Sort by ${label} ascending">&#9650;</button>`
-    + `<button type="button" data-key="${key}" data-dir="desc" aria-label="Sort by ${label} descending">&#9660;</button></span>`;
+// THE ARCHIVE ON THE FRONT PAGE'S ANATOMY (2026-10-22 — "Redesign the
+// archive to match the homepage in whatever way you seem fit. Keep the
+// ledger idea"): the front page's two columns — the ledger where the
+// posts stand, from the window's left edge to the column's gray rule,
+// and the side column under the socials, its hold pinned under the
+// band: the column's bird, the sections in the side column's Garamond
+// (the one the reader is in red, as THE LATEST is there), the search on
+// a gray rule, and an italic line saying what the ledger holds. The
+// column head sorts by its words.
+const ARC_SECTIONS = [['essays', 'Essays'], ['postscript', 'Postscript'], ['contra', 'Contra'], ['editors', 'Editors']];
+function arcSortBtn(key, label, on = '') {
+  return `<button class="arc-sort${on ? ' is-on' : ''}" type="button" data-key="${key}"${on ? ` data-dir="${on}"` : ''} aria-label="Sort by ${label.toLowerCase()}">${label}</button>`;
 }
 function renderArchiveRow(post) {
   const d = post.date;
@@ -6082,20 +6090,36 @@ function renderArchiveRow(post) {
 }
 function renderArchivePage(posts) {
   const head = `<div class="arc-head">
-      <span class="arc-cell arc-title"><span class="arc-label">Title</span>${arcSort('title', 'title')}<button class="arc-shuffle" type="button" aria-label="Shuffle order">Shuffle</button></span>
-      <span class="arc-cell arc-author"><span class="arc-label">Author</span>${arcSort('author', 'author')}</span>
-      <span class="arc-cell arc-kicker"><span class="arc-label">Tag</span>${arcSort('kicker', 'tag')}</span>
-      <span class="arc-cell arc-section"><span class="arc-label">Section</span>${arcSort('section', 'section')}</span>
-      <span class="arc-cell arc-date"><span class="arc-label">Date</span>${arcSort('date', 'date')}</span>
-      <span class="arc-cell arc-find"><input class="arc-search" type="search" placeholder="Search" aria-label="Search the archive" autocomplete="off" spellcheck="false"><button class="arc-clear" type="button" hidden>Clear</button></span>
+      <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">Shuffle</button></span>
+      <span class="arc-cell arc-author">${arcSortBtn('author', 'Author')}</span>
+      <span class="arc-cell arc-kicker">${arcSortBtn('kicker', 'Tag')}</span>
+      <span class="arc-cell arc-section">${arcSortBtn('section', 'Section')}</span>
+      <span class="arc-cell arc-date">${arcSortBtn('date', 'Date', 'desc')}</span>
     </div>`;
+  const sections = [`<a class="arc-sections__a is-current" href="archive.html" data-section="">The Archive</a>`]
+    .concat(ARC_SECTIONS.map(([k, w]) => `<a class="arc-sections__a" href="#section=${k}" data-section="${k}">${w}</a>`))
+    .join('<span class="arc-sections__sep">, </span>');
+  const side = `<aside class="arc-side" aria-label="Sections and search">
+    <div class="arc-side__hold">
+      ${railSwallow().replace(/rail-swallow/g, 'arc-bird')}
+      <div class="arc-stack">
+        <nav class="arc-sections" aria-label="Sections">${sections}</nav>
+        <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
+        <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
+        <button class="arc-clear" type="button" hidden>Clear</button>
+      </div>
+    </div>
+  </aside>`;
   // (the band's rule along its foot in the markup — the front page's script draws it there)
   const bodyHtml = `${opBand().replace(/<\/div><\/div>$/, '<span class="nc-band-dash" aria-hidden="true"></span></div></div>')}
 <section class="arc" aria-label="Every post">
+  <div class="arc-main">
     ${head}
     <div class="arc-body">${posts.map(renderArchiveRow).join('')}
     </div>
     <p class="arc-none" hidden>Nothing matches</p>
+  </div>
+  ${side}
 </section>`;
   return renderPageShell({
     currentKey: 'archive',
