@@ -16183,7 +16183,7 @@ body.archive-page .arc{
   align-items: stretch;
   padding: var(--arc-top, 0px) 0 108px;
   box-sizing: border-box;
-  background: #FFFFFF;
+  background: var(--tw, #FFFFFF);
   color: var(--k, #121417);
 }
 body.archive-page .arc-main{
@@ -16217,7 +16217,7 @@ body.archive-page .arc .arc-head{
   position: sticky;
   top: var(--arc-band, 0px);
   z-index: 2;
-  background: #FFFFFF;
+  background: var(--tw, #FFFFFF);
 }
 body.archive-page .arc .arc-cell{ min-width: 0; overflow-wrap: break-word; text-wrap: pretty; }
 body.archive-page .arc .arc-head .arc-cell{ display: flex; align-items: center; gap: 27px; }
@@ -16294,7 +16294,7 @@ body.archive-page .arc-bird{
 }
 body.archive-page .arc-bird > svg{ display: block; width: 100%; height: 100%; }
 body.archive-page .arc-bird .arc-bird__body{ fill: var(--k, #121417); }
-body.archive-page .arc-bird .arc-bird__beak{ fill: #FFFFFF; }
+body.archive-page .arc-bird .arc-bird__beak{ fill: var(--tw, #FFFFFF); }
 body.archive-page .arc-stack{
   display: flex;
   flex: none;
@@ -16364,7 +16364,7 @@ html body.archive-page main .op-track:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
     align-items: center;
     height: 54px !important;
     margin: 0 !important;
-    background: #FFFFFF !important;
+    background: var(--tw, #FFFFFF) !important;
   }
   html body.archive-page main.has-mega.has-mega .op-track > .op-band > :is(.rail-tlm, .op-tnc, .rail-socials):is(*, *){ display: none !important; }
   html body.archive-page main.has-mega.has-mega .op-track > .op-band > .rail-top.rail-top{ display: block !important; position: static !important; transform: none !important; }
@@ -16389,3 +16389,21 @@ html body.archive-page main .op-track:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r
   body.archive-page .arc-side__hold{ position: static; height: auto; width: auto; margin: 0; padding: 27px 52px 36px; display: block; }
   body.archive-page .arc-side__hold > :is(.arc-bird, .arc-stack){ animation: none; }
 }
+body.archive-page .arc-bird .arc-bird__body{ transition: fill .15s ease; }
+body.archive-page .arc-bird:is(:hover, :focus-visible) .arc-bird__body{ fill: var(--nc-mark, #B3301E); }
+body.archive-page .arc .arc-head,
+body.archive-page .arc .arc-head :is(.arc-sort, .arc-shuffle){
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+  font-size: 19px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+html.is-archive{
+  --tw: #121417;
+  --tc: #FFFFFF;
+  --g: #121417;
+  --k: #FFFFFF;
+  --nc-rule: #3B3D40;
+  background: #121417;
+}
+body.archive-page{ background: #121417; color: #FFFFFF; }
