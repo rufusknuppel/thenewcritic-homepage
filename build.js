@@ -310,11 +310,15 @@ function contentSocials() {
 // move socials into the 54px under CRITIC. Move THE LAST MAGAZINE into the 54px under NEW"): the 54 under the opening's
 // THE NEW CRITIC, pinned to the window's top once it gets there, the nav under THE, THE LAST MAGAZINE under NEW and the
 // socials under CRITIC (style.css THE BAND UNDER THE NAME; latest-rail.js seats it)
-function opBand() {
+// (the page the reader is on marked in its nav, its word in the page's highlight at rest — "On archive and about pages,
+// make the archive or about in the nav bar black resting or highlight", 2026-10-22: aria-current; style.css THE PAGE
+// IN THE NAV)
+function opBand(currentKey = '') {
   const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
+  const cur = (k) => (k === currentKey ? ' aria-current="page"' : '');
   const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="rail-top__a rail-top__dead">Store</span>']
-    .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
-    .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}">About</a>`] : [])
+    .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}"${cur('archive')}>Archive</a>`] : [])
+    .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
   const soc = contentSocials().replace('class="content-socials"', 'class="rail-socials"').replace(/content-socials__/g, 'rail-socials__');
   return `<div class="op-track"><div class="op-band">`
@@ -2041,11 +2045,11 @@ function authorDisplay(post, caps = true) {
 // A card's author/kicker/date each deep-link into the archive ledger:
 // sorted by that column, folded open at this post's row, so the reader
 // lands among its neighbors (the author's other pieces, the tag's other
-// posts, the date's contemporaries). src/ledger.js reads the hash.
+// posts, the date's contemporaries). src/archive.js reads the hash.
 function archiveHref(post, key) {
   // A KICKER OR AN AUTHOR FILTERS THE LEDGER (2026-09-17), as the OPS
   // words do by section: the archive opens on the column head with
-  // that kind's rows alone under it (src/ledger.js reads #topic= and
+  // that kind's rows alone under it (src/archive.js reads #topic= and
   // #author=). A date still sorts the ledger by date and lands on the
   // post itself.
   if (key === 'kicker' && post.kicker) return `archive.html#topic=${encodeURIComponent(post.kicker.toLowerCase())}`;
@@ -2249,7 +2253,7 @@ function renderNav(currentKey = 'home') {
 const SECTION_BANDS = {
   latest: { word: 'The Latest', href: './' },
   // The words go to the ledger, filtered to their kind (2026-09-17;
-  // src/ledger.js reads #section=), not to the section pages.
+  // src/archive.js reads #section=), not to the section pages.
   essays: { word: 'Essays', href: 'archive.html#section=essays' },
   postscript: { word: 'Postscript', href: 'archive.html#section=postscript' },
   contra: { word: 'Contra', href: 'archive.html#section=contra' },
@@ -2333,7 +2337,7 @@ const BAND_LINES = {
 // ALL … at the right, in the list's italic, to the section's page.
 // (SEE is struck: the line is a destination, not an instruction.)
 const SEE_ALL = { essays: 'All Essays', postscript: 'All Interviews', contra: 'All Criticism' };
-// The word pages (renderWordPage) take the masthead's band too, with
+// The word pages (the old Archive and About, gone since 2026-10-22) took the masthead's band too, with
 // their own line in the middle slot in place of the date (mid) and
 // their own link among the right slot's marked current (currentKey).
 // THE SOCIAL STACK IS STRUCK FROM THE MARGIN (2026-09-18). Substack,
@@ -5241,7 +5245,7 @@ function markMega(html) {
   // A page carrying the front page's cards in a feature block (the
   // archive's, About's) takes the marks too, hero or no hero: the
   // cards' rules and the fitter read them.
-  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature|word-page|archive-page)(?:\s[^"]*)?"/.test(html)) return html;
+  if (!/class="(?:[^"]*\s)?(?:card--mega|ledger-feature|word-page|archive-page|about-page)(?:\s[^"]*)?"/.test(html)) return html;
   // The ROOT carries the mark too: the canvas behind the page — what
   // shows when the reader pulls past the foot — is painted from the
   // root's own background (style.css, html.has-mega).
@@ -5781,21 +5785,19 @@ function manifestoPlateParas(html, max = 14) {
   }
   return out;
 }
+// ABOUT ON THE FRONT PAGE'S ANATOMY (2026-10-22 — "Redesign the about page in the same was as the archive redesign",
+// "have white background and keep current features, but update with new homepage"): the archive's head and columns on
+// the page's white (renderFrontAnatomy). Down the page's column About's five parts, each under a head in the ledger's
+// Work Sans capitals that pins under the band while it is read, a light gray rule under every head and row: the magazine
+// in a line of the front page's title Garamond; Subscribe's pitch, what a subscription brings and the way to it; the
+// masthead as a ledger — name, role, Substack — the roles in the order written (a masthead ranks), the names inside a
+// role by surname, each editor's face in the side column in the bird's place under the hand (the Founder left out, as
+// before); Contact's three ways; and the Secession as the front page sets a post, its picture beside its words, the
+// meta's capitals, the title, the dek and its preface, Read on to the post. In the side column the parts, the one the
+// reader is in red (src/about.js). The founders' faces come from give.html's signer blocks (written out in main), the
+// rest from assets/people/ (ADDITIONAL_PEOPLE_PHOTOS).
+const ABOUT_PARTS = [['about', 'About'], ['subscribe', 'Subscribe'], ['masthead', 'Masthead'], ['contact', 'Contact'], ['manifesto', 'Manifesto']];
 function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null) {
-  // The masthead panel: a centred list, one heading per role with its
-  // people under it, each name a link to that editor's Substack. The
-  // roles keep the order they are written in above — a masthead ranks,
-  // it doesn't alphabetize — and the names inside each role run
-  // alphabetically BY SURNAME (Augsberger, Kluger, Knuppel). A role with
-  // more than one person is pluralized; Art Director, held by one, is
-  // not. The Founder is left out, as she was from the medallion grid
-  // this replaces.
-  //
-  // Each name carries its own portrait, revealed on hover to one side of
-  // the name (see .mh-pfp in style.css) — sides alternating down the
-  // whole list, first name's to the left, so the column doesn't lean.
-  // Founders' headshots come from give.html's signer blocks (written out
-  // in main), the rest from assets/people/ (ADDITIONAL_PEOPLE_PHOTOS).
   const founderLookup = new Map(founders.map((f) => [f.name, f]));
   const surnameOf = (name) => name.trim().split(/\s+/).pop().toLowerCase();
   const mastheadPeople = ABOUT_PEOPLE
@@ -5813,223 +5815,74 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
     if (!byRole.has(p.role)) { byRole.set(p.role, []); roleOrder.push(p.role); }
     byRole.get(p.role).push(p);
   }
-  let sideIdx = 0;
-  const mastheadHtml = roleOrder
-    .map((role) => {
-      const people = byRole.get(role).slice().sort((a, b) => surnameOf(a.name).localeCompare(surnameOf(b.name)));
-      const heading = people.length > 1 ? `${role}s` : role;
-      const names = people
-        .map((p) => {
-          const side = sideIdx++ % 2 === 0 ? 'left' : 'right';
-          const tag = p.href ? 'a' : 'span';
-          const hrefAttr = p.href ? ` href="${escapeHtml(p.href)}" rel="noopener" target="_blank"` : '';
-          const pfp = p.photo
-            ? `<img class="mh-pfp" src="${escapeHtml(p.photo)}" alt="" aria-hidden="true" loading="lazy">`
-            : '';
-          return `<${tag} class="mh-name mh-name--${side}"${hrefAttr}>${escapeHtml(p.name)}${pfp}</${tag}>`;
-        })
-        .join('\n            ');
-      return `<div class="mh-group">
-            <p class="mh-role">${escapeHtml(heading)}</p>
-            ${names}
-          </div>`;
-    })
-    .join('\n          ');
+  const people = roleOrder.flatMap((role) => byRole.get(role).slice().sort((x, y) => surnameOf(x.name).localeCompare(surnameOf(y.name))));
+  const handleOf = (href) => (/substack\.com\/(@[\w.-]+)/.exec(href || '') || [])[1] || '';
+  const cell = (t, end = false) => `<span class="ab-cell${end ? ' ab-end' : ''}">${t}</span>`;
+  const out = (href) => (/^https?:/.test(href) ? ' rel="noopener" target="_blank"' : '');
+  const row = (href, cells, extra = '') => href
+    ? `<a class="ab-row${extra}" href="${escapeHtml(href)}"${out(href)}>${cells}</a>`
+    : `<div class="ab-row${extra}">${cells}</div>`;
+  const part = (key, label, inner, headCells = '') => `<section class="ab-part" id="${key}" aria-labelledby="ab-${key}">
+      <div class="ab-head"><h2 class="ab-cell" id="ab-${key}">${escapeHtml(label)}</h2>${headCells}</div>
+      ${inner}
+    </section>`;
 
-  // ABOUT IS A MOSAIC OF CARDS under the band (renderWordPage): seven
-  // cards on the charcoal, in the content cards' own cut — a courier
-  // kicker over a Garamond title, an italic dek, the body in the
-  // plates' 16 on 19.2, and a courier line at the foot where the cards
-  // print Read Preview. Three columns across the measure, the About and
-  // Give cards two wide, the Manifesto the whole row. The Letter stands
-  // whole (seven paragraphs fit its card); the Manifesto is PREVIEWED —
-  // its opening blocks, and READ ON goes to the post (manifestoPreview).
-  // (src/about-mosaic.js lands a hash on its card and keeps the clamp
-  // machinery for any card that asks for it.)
-  // A card whose title already names it (Contact, Masthead) carries
-  // no kicker — the courier line would only say the title
-  // again. The left column's three stand on charcoal, white.
-  // titleDek: the title said in the dek's own voice — the italic at 20
-  // — where a card is a short thing (Masthead, Contact) and the 48
-  // would shout.
-  // line: a courier line UNDER the title (the Subscribe card's sign-up
-  // clause), where the kicker stands over it.
-  const card = ({ key, size = '', kicker = '', title = '', titleDek = false, line = '', dek = '', body = '', foot = '', clamp = false, dark = false }) =>
-    `<article class="about-card${size ? ` about-card--${size}` : ''}${clamp ? ' about-card--clamped' : ''}${dark ? ' about-card--dark' : ''}" id="${key}" data-key="${key}">${kicker ? `
-      <p class="about-card-kicker">${escapeHtml(kicker)}</p>` : ''}${title ? `
-      <h3 class="about-card-title${titleDek ? ' about-card-title--dek' : ''}">${title}</h3>` : ''}${line ? `
-      <p class="about-card-kicker about-card-line">${line}</p>` : ''}${dek ? `
-      <p class="about-card-dek">${dek}</p>` : ''}${body ? `
-      <div class="about-card-body">${body}</div>` : ''}${foot ? `
-      <p class="about-card-foot">${foot}</p>` : ''}
+  const mastheadRows = people.map((p, i) => row(p.href,
+    cell(escapeHtml(p.name)) + cell(escapeHtml(p.role)) + cell(escapeHtml(handleOf(p.href)), true),
+    ` ab-person"${p.photo ? ` data-face="${i}` : ''}`)).join('\n      ');
+  const faces = people.map((p, i) => (p.photo ? `<img class="ab-face" data-face="${i}" src="${escapeHtml(p.photo)}" alt="" decoding="async">` : '')).join('');
+
+  // (the Secession's preface, the lines before its theses, as the front page prints a post's opening: the dateline, then
+  // the rest in one paragraph; the post's own preview where the manifesto didn't come)
+  const lines = manifestoPlateParas(manifestoHtml, 40);
+  const thesesAt = lines.findIndex((l) => /^the 42 theses/i.test(l) || /^\|\s*no\./i.test(l));
+  const preface = (thesesAt > 0 ? lines.slice(0, thesesAt) : []).map((l) => l.replace(/^\*+|\*+$/g, '').trim()).filter(Boolean);
+  const paras = preface.length ? [preface[0], preface.slice(1).join(' ')].filter(Boolean)
+    : ((manifestoPost && manifestoPost.previewParagraphs) || []).slice(0, 2);
+  const mp = manifestoPost || {};
+  const md = mp.date && !isNaN(mp.date.getTime()) ? mp.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const meta = [mp.author || SITE_NAME, md].filter(Boolean).join(', ');
+  const pic = mp.image
+    ? `<a class="ab-post__pic" href="${escapeHtml(MANIFESTO_URL)}" rel="noopener" target="_blank" tabindex="-1" aria-hidden="true"><img ${coverSrcAttrs(mp.image, COVER_SIZES.wide)} alt="" loading="lazy" decoding="async"></a>`
+    : '';
+  const post = `<article class="ab-post${pic ? '' : ' ab-post--bare'}">
+      ${pic}
+      <div class="ab-post__words">
+        <p class="ab-post__meta">${escapeHtml(meta)}</p>
+        <h3 class="ab-post__title"><a href="${escapeHtml(MANIFESTO_URL)}" rel="noopener" target="_blank">${escapeHtml(mp.title || 'The New Critic Secession')}</a></h3>
+        <p class="ab-post__dek">${escapeHtml(mp.subtitle || 'A Manifesto of 42 Theses')}</p>
+        ${paras.length ? `<div class="ab-post__body">${paras.map((t) => `<p>${escapeHtml(t)}</p>`).join('')}</div>` : ''}
+        <a class="ab-post__on" href="${escapeHtml(MANIFESTO_URL)}" rel="noopener" target="_blank">Read on ${ARROW_HTML}</a>
+      </div>
     </article>`;
-  const cards = [
-    card({
-      // No title: the card is the sentence, in the dek's voice.
-      key: 'about', dark: true,
-      dek: 'The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.',
-    }),
-    card({
-      // Subscribe leads in the dek's voice, linked; one sentence of
-      // body under it; the list; no foot line.
-      key: 'subscribe', dark: true, titleDek: true,
-      title: `<a href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`,
-      body: `<p>${SUBSCRIBE_PITCH}</p>
-      <ol class="mission-list">
-${SUBSCRIBE_GETS.map((g) => `        <li>${g}</li>`).join('\n')}
-      </ol>`,
-    }),
-    card({
-      key: 'contact', dark: true, titleDek: true,
-      title: 'Contact',
-      body: `<p>To pitch, submit, or place an inquiry, email <a href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
-      <p>Subscribe to our <a class="about-social" href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a>.<br>Follow us on <a class="about-social" href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a>.</p>`,
-    }),
-    card({
-      key: 'masthead', dark: true, titleDek: true,
-      title: 'Masthead',
-      body: `<div class="mh-list">
-          ${mastheadHtml}
-        </div>`,
-    }),
-    card({
-      key: 'manifesto', size: 'full', kicker: 'Manifesto',
-      title: 'The New Critic Secession',
-      dek: '<em>A Manifesto of 42 theses</em><br>March 24',
-      body: manifestoPreview(manifestoHtml) || `<p>The manifesto is <a href="${MANIFESTO_URL}" rel="noopener" target="_blank">published here</a>.</p>`,
-      foot: `<a href="${MANIFESTO_URL}" rel="noopener" target="_blank">Read on</a>`,
-    }),
-  ];
-  // TWO COLUMNS: the short cards — About, Subscribe, Masthead, Contact
-  // — stacked in a thinner column at the left, the right two thirds
-  // open; the Manifesto across both at
-  // the foot. Each column stacks its cards at their own heights, 72
-  // between.
-  const byKey = new Map(cards.map((html) => [/ id="([a-z]+)"/.exec(html)[1], html]));
-  const col = (keys) => `<div class="about-col">
-        ${keys.map((k) => byKey.get(k)).join('\n        ')}
-      </div>`;
-  let heroHtml = '';
-  if (manifestoPost) {
-    if (!(manifestoPost.previewParagraphs && manifestoPost.previewParagraphs.length)) {
-      const paras = manifestoPlateParas(manifestoHtml);
-      if (paras.length) manifestoPost.previewParagraphs = paras;
-    }
-    manifestoPost.kicker = manifestoPost.kicker || 'Manifesto';
-    // THE SECESSION AS A CONTRA CARD: the review's square cell — the
-    // picture at its head, the words under it — standing alone, centred
-    // under the column at the column's own width.
-    heroHtml = `
-  <div class="wrap m--latest about-hero">
-    <section class="card card--latest card--contra-trio about-contra">
-        ${renderContraCell(manifestoPost, { rev: false })}
-      </section>
-  </div>`;
-  }
-  const contentHtml = `<div class="ledger-content about-mosaic-block${heroHtml ? ' about-mosaic-block--hero-follows' : ''}">
-    <div class="about-mosaic">
-      ${col(['about', 'subscribe', 'masthead', 'contact'])}
-      ${heroHtml ? '' : byKey.get('manifesto')}
-    </div>
-  </div>${heroHtml}`;
-  return renderWordPage({
+
+  const mainHtml = [
+    part('about', 'About', `<p class="ab-lead">The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.</p>`),
+    part('subscribe', 'Subscribe', `<p class="ab-row ab-note">${escapeHtml(SUBSCRIBE_PITCH)}</p>
+      <ol class="ab-list">${SUBSCRIBE_GETS.map((g) => `<li class="ab-row">${cell(escapeHtml(g))}</li>`).join('')}</ol>
+      ${row(`${SITE_URL}/subscribe`, cell('Subscribe') + cell(ARROW_HTML, true), ' ab-go')}`),
+    part('masthead', 'Masthead', mastheadRows, cell('Role') + cell('Substack', true)),
+    part('contact', 'Contact', [
+      row('mailto:editors@thenewcritic.com', cell('Email') + cell('To pitch, submit, or place an inquiry') + cell('editors@thenewcritic.com', true)),
+      row('https://substack.com/@thenewcritic', cell('Substack') + cell('Subscribe to our Substack') + cell('@thenewcritic', true)),
+      row('https://www.instagram.com/the_newcritic/', cell('Instagram') + cell('Follow us on Instagram') + cell('@the_newcritic', true)),
+    ].join('\n      ')),
+    part('manifesto', 'Manifesto', post),
+  ].join('\n    ');
+  const parts = ABOUT_PARTS.map(([k, w], i) => `<a class="arc-sections__a${i ? '' : ' is-current'}" href="#${k}" data-part="${k}">${w}</a>`)
+    .join('<span class="arc-sections__sep">, </span>');
+  return renderFrontAnatomy({
     currentKey: 'about',
     title: 'About',
     description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
-    // The band is the front page's own, the date in its middle
-    // (2026-09-17; it read About The New Critic for a spell).
-    // ABOUT over the mosaic and the Secession's cell; then the reprint.
-    // (The closing deck — ARCHIVE, STORE, EVENTS — is struck, 2026-09-17.)
-    movements: [
-      { word: 'About', href: 'about.html', hook: 'subscribe-band', body: contentHtml },
-    ],
-    // With the hero on the page, the front page's scripts ride along for
-    // it (as on the archive's feature block).
-    extraScripts: (heroHtml
-      ? renderDuoPanelFitScript() + renderCardOpenScript() + renderChromeOpenScript() + renderCoverCueScript()
-        + renderCoverColorScript() + renderCopyLinkScript() + renderLineDrawScript() + renderRailFixScript()
-      : '') + renderAboutMosaicScript() + renderLedgerScript(),
-  // The body carries the page's own mark for what About alone does
-  // (style.css, body.about-page).
-  }).replace('<body class="ledger-page word-page">', '<body class="ledger-page word-page about-page">');
-}
-
-function renderAboutMosaicScript() {
-  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/about-mosaic.js'), 'utf8'));
-  return `<script>
-${js}
-</script>`;
-}
-
-function renderLedgerScript() {
-  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/ledger.js'), 'utf8'));
-  return `<script>
-${js}
-</script>`;
-}
-
-// THE WORD PAGE IS THE FRONT PAGE'S ANATOMY (2026-09-17): the
-// masthead's band pinned at the top from the first pixel, with the
-// page's own line in its middle and the light/dark toggle in its
-// right margin; the seam under it; then the page's WORD — ARCHIVE,
-// ABOUT — as the first movement's banner, in OPS Placard across the
-// measure exactly as ESSAYS opens the front page's second movement;
-// the content in that movement's body; further movements each on a
-// banner (SUBSCRIBE over the ledger); the closing deck — three words
-// one under another, each a bare banner — and the front page's own
-// foot: the reprint, the field and the colophon band. The front
-// page's style and fitter do the work; nothing here is the ledger's
-// own but the column head and the rows (src/ledger.js sorts them).
-// (The mast, the crimson spacer, the pinned .ledger-band, the deck
-// sections and the ledger reprint of the earlier anatomy are gone.)
-//   movements: [{ word, href, hook, body }] — the first is the page's
-//   own word; hook is one of the front page's three banner classes
-//   (subscribe-band, events-band, store-band — the style hooks every
-//   banner rule is keyed on); body is the movement's content, or
-//   nothing for a deck word.
-function renderWordPage({ currentKey, title, description, mid, movements = [], extraScripts = '' }) {
-  const banner = (m) => `<section class="page-banner ${m.hook || 'store-band'} page-banner--bare${m.apart ? ' page-banner--apart' : ''}">
-        ${bannerLines(m.above, 'above')}<a class="banner-name" href="${escapeHtml(m.href)}"${m.href.startsWith('http') ? ' rel="noopener"' : ''}>${escapeHtml(m.word)}</a>${bannerLines(m.below, 'below')}
-      </section>`;
-  //   An entry may instead be { raw } — markup set straight into
-  //   .page-rows between movements (the archive's column head, which
-  //   pins over the band like the reprint does) — or carry a body and
-  //   no word: a movement with no banner (the ledger's rows).
-  //   The opening movement is the front page's m--latest and the rest
-  //   are m--essays — which is position speaking for dress, and right
-  //   until a page wants a movement's dress somewhere other than where
-  //   its position would put it. { mcls } says which outright. (The
-  //   archive's feature block asks for this: it stands BELOW the ledger
-  //   now and still wants the opening movement's ground, and taking
-  //   both classes would not do — .m--essays states --paper after
-  //   .m--latest in the sheet, so the later one would win and the
-  //   cards would come up on the essays' ground.)
-  const movementHtml = movements.map((m, i) => m.raw ? `\n  ${m.raw}` : `
-  <div class="movement ${m.mcls || (i === 0 ? 'm--latest' : 'm--essays')}${m.cls ? ` ${m.cls}` : ''}">
-  ${m.word ? banner(m) : ''}${m.body ? `
-  <div class="movement-body">
-  ${m.body}
-  </div>` : ''}
-  </div>`).join('');
-  const bodyHtml = `
-  <div class="page-rows">
-  ${renderSectionBand('latest', { mid, currentKey, bareMid: true })}
-  ${subTicker('head')}
-  <div class="head-field" aria-hidden="true"></div>${movementHtml}${renderPageFoot()}
-  </div>
-  ${renderMarginalia()}`;
-  return renderPageShell({
-    currentKey,
-    title,
-    description,
-    bodyHtml,
-    // ledger-page keeps the column head's, the rows' and About's
-    // mosaic's own rules; word-page is the anatomy's mark (style.css,
-    // THE WORD PAGES ON THE FRONT PAGE'S ANATOMY; markMega reads it).
-    bodyClass: 'ledger-page word-page',
-    bare: true,
-    extraScripts,
-  }).replace('<html lang="en">', '<html lang="en" class="ledger-root">');
+    bodyClass: 'about-page',
+    label: 'About The New Critic',
+    mainHtml,
+    sideLabel: 'On this page',
+    stackHtml: `<nav class="arc-sections" aria-label="On this page">${parts}</nav>`,
+    birdExtra: faces,
+    script: 'src/about.js',
+  });
 }
 
 // The four posts the archive's Editors' Picks block opened on — the
@@ -6088,6 +5941,42 @@ function renderArchiveRow(post) {
     + `<span class="arc-cell arc-section">${escapeHtml(post.sectionLabel || '')}</span>`
     + `<span class="arc-cell arc-date">${escapeHtml(dateStr)}</span></a>`;
 }
+// THE FRONT PAGE'S ANATOMY ON A PAGE OF ITS OWN (2026-10-22 — the archive's first, then About's, "Redesign the about page
+// in the same was as the archive redesign", "have white background and keep current features, but update with new
+// homepage"): the front page's THE NEW CRITIC and the band under it, the page's nav word marked; then the page's own
+// column where the front page's posts stand and the side column under the socials — the bird, the page's stack under it.
+// The names and the bird the way back to the front page from here, not to this page's top — "Have the wordmarks and bird
+// route back the main page": the front page's #top links to the nav's Home; the bird a link too, as the front page's
+// corner bird was, out of the keys' way since the name over it is the same link. src/front-head.js seats it all; the
+// page's own script after it. (The column's classes are the archive's, arc-*, where it began; style.css shares their
+// rules between the two pages.)
+const FRONT_HOME = (SITE_LINKS.find((l) => l.key === 'home') || {}).href || './';
+function toFront(html) {
+  return html.replace(/href="#top"/g, `href="${FRONT_HOME}"`).replace(/to the top of the front page/g, 'to the front page');
+}
+function renderFrontAnatomy({ currentKey, title, description, bodyClass, label, mainHtml, sideLabel, stackHtml, birdExtra = '', script = '' }) {
+  const bird = railSwallow().replace(/rail-swallow/g, 'arc-bird')
+    .replace(/^<span class="arc-bird" aria-hidden="true"/, `<a class="arc-bird" href="${FRONT_HOME}" aria-hidden="true" tabindex="-1"`)
+    .replace(/<\/span>$/, `${birdExtra}</a>`);
+  // (the band's rule along its foot in the markup — the front page's script draws it there)
+  const bodyHtml = `${toFront(opBand(currentKey)).replace(/<\/div><\/div>$/, '<span class="nc-band-dash" aria-hidden="true"></span></div></div>')}
+<section class="arc" aria-label="${escapeHtml(label)}">
+  <div class="arc-main">
+    ${mainHtml}
+  </div>
+  <aside class="arc-side" aria-label="${escapeHtml(sideLabel)}">
+    <div class="arc-side__hold">
+      ${bird}
+      <div class="arc-stack">
+        ${stackHtml}
+      </div>
+    </div>
+  </aside>
+</section>`;
+  const js = ['src/front-head.js'].concat(script ? [script] : [])
+    .map((f) => `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, f), 'utf8'))}\n</script>`).join('\n');
+  return renderPageShell({ currentKey, title, description, preMain: toFront(contentNameBlock()), bodyHtml, bodyClass, bare: true, extraScripts: js });
+}
 function renderArchivePage(posts) {
   const head = `<div class="arc-head">
       <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">Shuffle</button></span>
@@ -6099,56 +5988,25 @@ function renderArchivePage(posts) {
   const sections = [`<a class="arc-sections__a is-current" href="archive.html" data-section="">The Archive</a>`]
     .concat(ARC_SECTIONS.map(([k, w]) => `<a class="arc-sections__a" href="#section=${k}" data-section="${k}">${w}</a>`))
     .join('<span class="arc-sections__sep">, </span>');
-  // (the names and the bird the way back to the front page from here, not to this page's top — "Have the wordmarks and
-  // bird route back the main page", 2026-10-22: the front page's #top links to the nav's Home; the bird a link too, as
-  // the front page's corner bird was, out of the keys' way since the name over it is the same link)
-  const home = (SITE_LINKS.find((l) => l.key === 'home') || {}).href || './';
-  const toFront = (html) => html.replace(/href="#top"/g, `href="${home}"`).replace(/to the top of the front page/g, 'to the front page');
-  const bird = railSwallow().replace(/rail-swallow/g, 'arc-bird')
-    .replace(/^<span class="arc-bird" aria-hidden="true"/, `<a class="arc-bird" href="${home}" aria-hidden="true" tabindex="-1"`)
-    .replace(/<\/span>$/, '</a>');
-  const side = `<aside class="arc-side" aria-label="Sections and search">
-    <div class="arc-side__hold">
-      ${bird}
-      <div class="arc-stack">
-        <nav class="arc-sections" aria-label="Sections">${sections}</nav>
-        <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
-        <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
-        <button class="arc-clear" type="button" hidden>Clear</button>
-      </div>
-    </div>
-  </aside>`;
-  // (the band's rule along its foot in the markup — the front page's script draws it there)
-  const bodyHtml = `${toFront(opBand()).replace(/<\/div><\/div>$/, '<span class="nc-band-dash" aria-hidden="true"></span></div></div>')}
-<section class="arc" aria-label="Every post">
-  <div class="arc-main">
-    ${head}
-    <div class="arc-body">${posts.map(renderArchiveRow).join('')}
-    </div>
-    <p class="arc-none" hidden>Nothing matches</p>
-  </div>
-  ${side}
-</section>`;
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
-  return renderPageShell({
+  return renderFrontAnatomy({
     currentKey: 'archive',
     title: 'Archive',
     description: `Every post in ${SITE_NAME}, by title, author, tag, section and date.`,
-    preMain: toFront(contentNameBlock()),
-    bodyHtml,
     bodyClass: 'archive-page',
-    bare: true,
-    extraScripts: `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, 'src/archive.js'), 'utf8'))}\n</script>`,
+    label: 'Every post',
+    mainHtml: `${head}
+    <div class="arc-body">${posts.map(renderArchiveRow).join('')}
+    </div>
+    <p class="arc-none" hidden>Nothing matches</p>`,
+    sideLabel: 'Sections and search',
+    stackHtml: `<nav class="arc-sections" aria-label="Sections">${sections}</nav>
+        <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
+        <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
+        <button class="arc-clear" type="button" hidden>Clear</button>`,
+    script: 'src/archive.js',
   }).replace('<html lang="en">', '<html lang="en" class="is-archive">').replace('<meta name="theme-color" content="#FFFFFF">', '<meta name="theme-color" content="#B3301E">');
-}
-
-// THE MANIFESTO, PREVIEWED: the About card carries the piece's opening —
-// its first two preformatted blocks, no photograph — and reads on to
-// the post itself.
-function manifestoPreview(html, blocks = 2) {
-  const parts = String(html || '').split(/(?=<pre class="manifesto-pre)|(?=<figure class="manifesto-fig)/);
-  return parts.filter((b) => b.startsWith('<pre class="manifesto-pre')).slice(0, blocks).join('\n');
 }
 
 // Extracts the three founders' name + headshot photo + signature + Substack
