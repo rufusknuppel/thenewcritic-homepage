@@ -6129,7 +6129,7 @@ function renderArchivePage(posts) {
   </div>
   ${side}
 </section>`;
-  // (the page turned over, charcoal from the root down — "I want the background of the archive to charcoal and
+  // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
   return renderPageShell({
     currentKey: 'archive',
@@ -6140,7 +6140,7 @@ function renderArchivePage(posts) {
     bodyClass: 'archive-page',
     bare: true,
     extraScripts: `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, 'src/archive.js'), 'utf8'))}\n</script>`,
-  }).replace('<html lang="en">', '<html lang="en" class="is-archive">').replace('<meta name="theme-color" content="#FFFFFF">', '<meta name="theme-color" content="#121417">');
+  }).replace('<html lang="en">', '<html lang="en" class="is-archive">').replace('<meta name="theme-color" content="#FFFFFF">', '<meta name="theme-color" content="#B3301E">');
 }
 
 // THE MANIFESTO, PREVIEWED: the About card carries the piece's opening —
