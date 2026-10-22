@@ -300,7 +300,7 @@ function stampWords() {
 function contentSocials() {
   return `<div class="content-socials">${[
     ['https://www.thenewcritic.com', 'Substack'],
-    ['https://www.instagram.com/thenewcritic', 'Instagram'],
+    ['https://www.instagram.com/the_newcritic/', 'Instagram'],
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="content-socials__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join('<span class="content-socials__sep">, </span>')}</div>`;
@@ -2374,7 +2374,7 @@ function renderSocialStack() {
   const x = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.153h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" fill="currentColor"/></svg>';
   const email = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
   const sep = '';
-  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/thenewcritic" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="https://x.com/thenewcritic" rel="noopener" aria-label="X">${x}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
+  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="https://x.com/thenewcritic" rel="noopener" aria-label="X">${x}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
 }
 // THE MIDDLE SLOT IS EMPTY ON THE WORD PAGES (2026-09-19). The
 // magazine's name stood a second time in the band's middle there —
@@ -2468,7 +2468,7 @@ function bandUnder() {
     .concat(ab ? [`<a class="band-under__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join(sep);
   const soc = [
     ['https://www.thenewcritic.com', 'Substack'],
-    ['https://www.instagram.com/thenewcritic', 'Instagram'],
+    ['https://www.instagram.com/the_newcritic/', 'Instagram'],
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="band-under__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(sep);
@@ -2631,7 +2631,7 @@ function renderPageFoot(onHome = false, onMark = false) {
 // the markup.
 function renderColophonBand(mk = '') {
   return `<nav class="section-band section-band--colophon section-band--three${mk}" aria-label="Colophon">
-    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
     <p class="band-deks band-dek"><span class="band-copyright">© The New Critic, Inc.</span></p>
     ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
@@ -2653,7 +2653,7 @@ function renderHomeColophon() {
   // the next: "Remove comma spacing from colophon")
   const links = [
     '<a href="https://www.thenewcritic.com" rel="noopener">Substack</a>',
-    '<a href="https://www.instagram.com/thenewcritic" rel="noopener">Instagram</a>',
+    '<a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a>',
     '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
     '<a href="mailto:editors@thenewcritic.com">Email</a>',
     '<span>© The New Critic, Inc.</span>',
@@ -2690,7 +2690,7 @@ function railCopy() {
 function railColo() {
   const socials = [
     ['https://www.thenewcritic.com', 'Substack'],
-    ['https://www.instagram.com/thenewcritic', 'Instagram'],
+    ['https://www.instagram.com/the_newcritic/', 'Instagram'],
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="rail-colo__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
