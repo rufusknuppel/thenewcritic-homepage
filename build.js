@@ -1864,6 +1864,21 @@ function extractParagraphs(html, max) {
   // when no real prose survives.
   const TRANSCRIPT_LINE = /^[A-Z]{3,} [A-Z“”"‘’']/;
   const transcript = [];
+  // A post's section masthead ("CONTRA", "POSTSCRIPT", "THE NEW CRITIC")
+  // marks where the piece itself begins. Anything above it is front
+  // matter — e.g. an unstarred, centered party invite ("This Saturday,
+  // October 24th… The New Critic will be hosting a party in SF's Mission
+  // district!") that reads as prose by every shape test. So the first
+  // masthead discards whatever was collected before it. Only the first:
+  // later all-caps labels ("A LETTER TO NEW CRITIC READERS") sit after
+  // real prose that must be kept. And only near the top: the scan keeps
+  // going past `max` for the first MASTHEAD_WINDOW paragraphs so a full
+  // invite can't end it before the masthead turns up, but a stray label
+  // deep in a body can't wipe out an opening already found.
+  const SECTION_MASTHEAD = /^(?:CONTRA|POSTSCRIPT|THE NEW CRITIC)$/;
+  const MASTHEAD_WINDOW = 12;
+  let sawMasthead = false;
+  let seen = 0;
   while ((m = re.exec(cleaned)) !== null) {
     if (/button-wrapper/.test(m[1])) continue;
     // The post's own <em>/<i> italics ride through the tag-stripping as
@@ -1901,6 +1916,14 @@ function extractParagraphs(html, max) {
     // slip every ^- and $-anchored pattern.
     let plain = stripEmMarkers(text);
     if (!plain) continue;
+    seen++;
+    if (!sawMasthead && seen <= MASTHEAD_WINDOW && SECTION_MASTHEAD.test(plain)) {
+      sawMasthead = true;
+      out.length = 0;
+      transcript.length = 0;
+      insideJunkAside = false;
+      continue;
+    }
     if (insideJunkAside) {
       if (plain.endsWith('*')) insideJunkAside = false;
       continue;
@@ -1923,7 +1946,7 @@ function extractParagraphs(html, max) {
     plain = plain.replace(/^\*+/, '').replace(/\*+$/, '').trim();
     if (looksLikeProse(plain)) {
       out.push(text);
-      if (out.length >= max) break;
+      if (out.length >= max && (sawMasthead || seen >= MASTHEAD_WINDOW)) break;
     } else if (
       !out.length &&
       transcript.length < max &&
@@ -1933,7 +1956,7 @@ function extractParagraphs(html, max) {
       transcript.push(text);
     }
   }
-  return out.length ? out : transcript;
+  return out.length ? out.slice(0, max) : transcript.slice(0, max);
 }
 
 function firstParagraph(html) {
