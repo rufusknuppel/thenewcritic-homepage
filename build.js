@@ -6099,9 +6099,17 @@ function renderArchivePage(posts) {
   const sections = [`<a class="arc-sections__a is-current" href="archive.html" data-section="">The Archive</a>`]
     .concat(ARC_SECTIONS.map(([k, w]) => `<a class="arc-sections__a" href="#section=${k}" data-section="${k}">${w}</a>`))
     .join('<span class="arc-sections__sep">, </span>');
+  // (the names and the bird the way back to the front page from here, not to this page's top — "Have the wordmarks and
+  // bird route back the main page", 2026-10-22: the front page's #top links to the nav's Home; the bird a link too, as
+  // the front page's corner bird was, out of the keys' way since the name over it is the same link)
+  const home = (SITE_LINKS.find((l) => l.key === 'home') || {}).href || './';
+  const toFront = (html) => html.replace(/href="#top"/g, `href="${home}"`).replace(/to the top of the front page/g, 'to the front page');
+  const bird = railSwallow().replace(/rail-swallow/g, 'arc-bird')
+    .replace(/^<span class="arc-bird" aria-hidden="true"/, `<a class="arc-bird" href="${home}" aria-hidden="true" tabindex="-1"`)
+    .replace(/<\/span>$/, '</a>');
   const side = `<aside class="arc-side" aria-label="Sections and search">
     <div class="arc-side__hold">
-      ${railSwallow().replace(/rail-swallow/g, 'arc-bird')}
+      ${bird}
       <div class="arc-stack">
         <nav class="arc-sections" aria-label="Sections">${sections}</nav>
         <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
@@ -6111,7 +6119,7 @@ function renderArchivePage(posts) {
     </div>
   </aside>`;
   // (the band's rule along its foot in the markup — the front page's script draws it there)
-  const bodyHtml = `${opBand().replace(/<\/div><\/div>$/, '<span class="nc-band-dash" aria-hidden="true"></span></div></div>')}
+  const bodyHtml = `${toFront(opBand()).replace(/<\/div><\/div>$/, '<span class="nc-band-dash" aria-hidden="true"></span></div></div>')}
 <section class="arc" aria-label="Every post">
   <div class="arc-main">
     ${head}
@@ -6121,16 +6129,18 @@ function renderArchivePage(posts) {
   </div>
   ${side}
 </section>`;
+  // (the page turned over, charcoal from the root down — "I want the background of the archive to charcoal and
+  // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
   return renderPageShell({
     currentKey: 'archive',
     title: 'Archive',
     description: `Every post in ${SITE_NAME}, by title, author, tag, section and date.`,
-    preMain: contentNameBlock(),
+    preMain: toFront(contentNameBlock()),
     bodyHtml,
     bodyClass: 'archive-page',
     bare: true,
     extraScripts: `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, 'src/archive.js'), 'utf8'))}\n</script>`,
-  });
+  }).replace('<html lang="en">', '<html lang="en" class="is-archive">').replace('<meta name="theme-color" content="#FFFFFF">', '<meta name="theme-color" content="#121417">');
 }
 
 // THE MANIFESTO, PREVIEWED: the About card carries the piece's opening —
