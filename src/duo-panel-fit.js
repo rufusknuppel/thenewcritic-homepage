@@ -9010,6 +9010,9 @@
   var META_RULES = false;
   // (one back since, under the byline alone, 27 either side of it — "Add the rule back but only under metadata", 2026-10-22)
   var META_RULE_UNDER = true;
+  // (the byline over the title again since, 27 over its first ink, the hairline kept where it stood, between the dek and
+  // the body — "move metadata above titles", "No keep rule where it is now", 2026-10-22)
+  var META_ABOVE = true;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -10077,6 +10080,16 @@
               dnY = (mFoot2 + xGap) - j.txT;
               hairD = META_RULES ? dkFoot + META_RULE_AIR + 0.5 : null;
               hairM = META_RULES || META_RULE_UNDER ? mFoot2 + META_RULE_AIR + 0.5 : null;
+            }
+            if (META_UNDER && META_ABOVE) {
+              var sH3 = (j.mB - j.mT) + META_RULE_AIR + (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + xGap + (j.inB - j.txT);
+              var y3 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH3) / 2));
+              upY = (y3 + (j.mB - j.mT) + META_RULE_AIR) - j.ttT;
+              metaY = y3 - j.mT - upY;
+              dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
+              dnY = (j.dkB + dekY + xGap) - j.txT;
+              hairM = null;
+              hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
             }
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
