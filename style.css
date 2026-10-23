@@ -31874,10 +31874,3 @@ body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-l > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ -webkit-mask-image: linear-gradient(to right, #000 calc(var(--hl-xl, 0px) + var(--hl-ga, 100000px)), transparent 0) !important; mask-image: linear-gradient(to right, #000 calc(var(--hl-xl, 0px) + var(--hl-ga, 100000px)), transparent 0) !important; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-r > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ -webkit-mask-image: linear-gradient(to right, transparent calc(var(--hl-xl, 0px) + var(--hl-gb, -100000px)), #000 0) !important; mask-image: linear-gradient(to right, transparent calc(var(--hl-xl, 0px) + var(--hl-gb, -100000px)), #000 0) !important; }
 }
-
-/* THE FORK FILLED (2026-10-22 — "fill in the fork with highlight color"): the fork round the byline the highlight's red,
-   the byline on it in the ground's colour — the charcoal stood too faint on the red at its size — and the charcoal under
-   the hand, where the red it turned to would vanish (duo-panel-fit.js seatHairlines writes the colour as --fork-ink) */
-/* (the byline in the charcoal on the red since, the ground's colour under the hand — "Make text black in fork") */
-:root{ --fork-ink: var(--tc, #121417); }
-html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: var(--tw, #FAF9F6); }

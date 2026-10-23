@@ -9459,8 +9459,6 @@
       var st = 'left:' + (j.tb.left - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + top.toFixed(2) + 'px;--hl-w:' + j.tb.width.toFixed(2) + 'px';
       // (the line under the dek forked round the byline on it: the line's own ink parted where the fork stands, the fork a
       // hexagon of the same half pixel — two slants out, a straight over the words and one under, two slants back)
-      // (filled with the highlight since, the byline in the ground's colour on it — "fill in the fork with highlight color",
-      // 2026-10-22; style.css THE FORK FILLED)
       var fk = j.body.querySelector(':scope > .nc-hairline-fork');
       if (k[0] === 'dek' && j.fork && j.mR && j.mR.width) {
         var ga = j.mR.left - FORK_PAD - FORK_RUN - j.tb.left, gb = j.mR.right + FORK_PAD + FORK_RUN - j.tb.left, fw = gb - ga;
@@ -9471,14 +9469,9 @@
         var hi = window.devicePixelRatio >= 2, o = hi ? 0.25 : 0.5, R = FORK_RISE;
         var fst = 'left:' + (j.mR.left - FORK_PAD - FORK_RUN - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + (top - R).toFixed(2) + 'px;width:' + fw.toFixed(2) + 'px;height:' + (2 * R + 1) + 'px';
         var d = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + (fw - FORK_RUN).toFixed(2) + 'L' + fw.toFixed(2) + ' ' + (R + o) + 'L' + (fw - FORK_RUN).toFixed(2) + ' ' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
-        var svg = '<svg width="' + fw.toFixed(2) + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + fw.toFixed(2) + ' ' + (2 * R + 1) + '" overflow="visible"><path d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--nc-mark, #B3301E); stroke: var(--nc-rule, #B3301E)"/></svg>';
+        var svg = '<svg width="' + fw.toFixed(2) + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + fw.toFixed(2) + ' ' + (2 * R + 1) + '" overflow="visible"><path d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/></svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
-        // (the byline in the ground's colour on the fork's red, written on it, past the sheet's heavier rules; charcoal under
-        // the hand, where the sheet turns --fork-ink: style.css THE FORK FILLED)
-        if (j.mmEl) [j.mmEl].concat([].slice.call(j.mmEl.querySelectorAll('a'))).forEach(function (e) {
-          e.style.setProperty('color', 'var(--fork-ink, #FAF9F6)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FAF9F6)', 'important');
-        });
       } else if (k[0] === 'dek' && fk) fk.remove();
       if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
     });
