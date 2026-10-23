@@ -11,6 +11,9 @@ const path = require('path');
 // Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
+const { loadStore, renderStoreBody } = require('./store.js');
+// The store's page (store.js; 2026-10-23) — every Store in the nav goes here.
+const STORE_HREF = 'store.html';
 // The built stylesheet's selectors made cheap to match, the cascade
 // unchanged (css-fast.js, THE STYLESHEET, CHEAP TO MATCH).
 const { fastCss } = require('./css-fast.js');
@@ -319,7 +322,7 @@ function contentSocials() {
 function opBand(currentKey = '') {
   const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
   const cur = (k) => (k === currentKey ? ' aria-current="page"' : '');
-  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="rail-top__a rail-top__dead">Store</span>']
+  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<a class="rail-top__a" href="${STORE_HREF}"${cur('store')}>Store</a>`]
     .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}"${cur('archive')}>Archive</a>`] : [])
     .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
@@ -2196,7 +2199,7 @@ function railLinks(currentKey = 'home') {
     // Store and Events stand in the list but go nowhere yet — plain
     // spans, no href, no hover; they take the list's cut by inheritance
     // and turn into navLink entries the day they have destinations.
-    + '\n      <li><span class="nav-links-dead">Store</span></li>'
+    + `\n      <li><a href="${STORE_HREF}">Store</a></li>`
     + '\n      <li><span class="nav-links-dead">Events</span></li>'
     // Subscribe rides in the list now — the one item that keeps a place
     // in the collapsed bar (see the ≤720px rules in style.css).
@@ -2308,7 +2311,7 @@ function bandDeks(m) {
     // and the list stands centred in the band (style.css)
     const about = by('about');
     const tlm = about ? a({ ...about, label: 'The Last Magazine' }) : '';
-    return [tlm, a(by('archive')), '<span class="nav-links-dead">Events</span>', '<span class="nav-links-dead">Store</span>'].filter(Boolean).join(BAND_SEP);
+    return [tlm, a(by('archive')), '<span class="nav-links-dead">Events</span>', `<a href="${STORE_HREF}">Store</a>`].filter(Boolean).join(BAND_SEP);
   }
   const list = m === 'contra' ? CONTRA_CATEGORIES : RAIL_CATEGORIES;
   return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(BAND_SEP);
@@ -2492,7 +2495,7 @@ function bandUnder() {
   const ab = by('about'), ar = by('archive');
   const sep = '<span class="band-under__sep">, </span>';
   const tlm = ab ? `<a class="band-under__a band-under__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="band-under__tlm">${escapeHtml(SITE_TAGLINE)}</span>`;
-  const nav = [`<a class="band-under__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, '<span class="band-under__a band-under__dead">Store</span>']
+  const nav = [`<a class="band-under__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<a class="band-under__a" href="${STORE_HREF}">Store</a>`]
     .concat(ar ? [`<a class="band-under__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
     .concat(ab ? [`<a class="band-under__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join(sep);
   const soc = [
@@ -2533,7 +2536,7 @@ function navStrip() {
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
     // (STORE and ARCHIVE change places, design/stacked-wordmark, at the
     // user's word — "switch archive and store")
-    dead('Store'),
+    `<a class="sub-ticker-half" href="${STORE_HREF}"><b>Store</b></a>`,
     // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-01, at the user's word
     // — "Replace about with The Last Magazine in helvetica style": the
     // About link reads THE LAST MAGAZINE in the strip's capitals, black
@@ -4016,7 +4019,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     const sep = '<span class="rail-nav__sep">, </span>';
     return `<nav class="rail-nav" aria-label="The New Critic">`
       + (ab ? `<a class="rail-nav__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="rail-nav__tlm">${escapeHtml(SITE_TAGLINE)}</span>`)
-      + `<span class="rail-nav__row"><a class="rail-nav__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>${sep}<span class="rail-nav__a rail-nav__dead">Store</span>`
+      + `<span class="rail-nav__row"><a class="rail-nav__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>${sep}<a class="rail-nav__a" href="${STORE_HREF}">Store</a>`
       + (ar ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ar.href)}">Archive</a>` : '')
       // (and About after it — "Add about after Archive", 2026-10-09)
       + (ab ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ab.href)}">About</a>` : '')
@@ -5953,6 +5956,20 @@ function renderFrontPage({ currentKey, title, description, bodyClass, bodyHtml, 
     .map((f) => `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, f), 'utf8'))}\n</script>`).join('\n');
   return renderPageShell({ currentKey, title, description, preMain: toFront(contentNameBlock()), bodyHtml: `${band}\n${bodyHtml}`, bodyClass, bare: true, extraScripts: js });
 }
+// THE STORE (2026-10-23 — "I want it to be on thenewcritic.com/store", "I want the store to have a charcoal
+// background"): About's page — the front page's name and band over it — on the dark ground whatever the reader's
+// choice elsewhere, the shelves and the bag under the band (store.js renders the body, src/store-bag.js runs it,
+// style.css THE STORE).
+function renderStorePage(store) {
+  return renderFrontPage({
+    currentKey: 'store',
+    title: 'Store',
+    description: 'Shirts, hats and other goods from The New Critic, the young American magazine.',
+    bodyClass: 'about-page store-page',
+    bodyHtml: renderStoreBody(store),
+    script: 'src/store-bag.js',
+  }).replace('<body class="about-page store-page">', '<body class="about-page store-page">\n<script>document.documentElement.setAttribute(\'data-theme\', \'dark\');</script>');
+}
 function renderArchivePage(posts) {
   const head = `<div class="arc-head">
       <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">&#8644;</button></span>
@@ -6512,6 +6529,7 @@ async function main() {
     'index.html': html,
     'about.html': renderAboutPage(founders),
     'archive.html': renderArchivePage(archivePool),
+    'store.html': renderStorePage(await loadStore()),
   };
 
   fs.mkdirSync(OUT_DIR, { recursive: true });

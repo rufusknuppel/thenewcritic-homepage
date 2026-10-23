@@ -32048,3 +32048,115 @@ body.archive-page .arc--whole .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1f
 @media (max-width: 1023px){
   body.archive-page .arc--whole .arc-main{ --arc-cols: minmax(0, 1fr); }
 }
+
+/* ---------- THE STORE (2026-10-23) ----------
+   "I want it to be on thenewcritic.com/store"; "I want the store to have a charcoal background": About's page — the
+   front page's name and band — on the dark ground (build.js renderStorePage sets it), then the store's own line pinned
+   under the band like About's parts (the shelves at the left, the bag at the right, the shelf being read in red), a
+   grid of square pictures with the name and price under each after the IDEA shop the colleague's list pointed to
+   (2 across on a phone, 3 from 768, 4 from 1280), a product's own view (its pictures down the left, the words and
+   choices pinned beside them), and the bag sliding in from the right (store.js, src/store-bag.js) */
+html body.store-page{ --sto-ground: #121417; --sto-ink: #FAF9F6; --sto-dim: rgba(250, 249, 246, 0.56); --sto-rule: rgba(250, 249, 246, 0.18); --sto-well: #1B1E22; background: var(--sto-ground); color: var(--sto-ink); }
+/* (as tall as the window under the band at least, so the page always scrolls the name up into the band — on a short
+   shelf the band's scroll-driven marks had no range and stood in their end state over THE LAST MAGAZINE) */
+body.store-page .sto{ position: relative; box-sizing: border-box; min-height: calc(100vh - var(--arc-band, 0px) + var(--arc-top, 0px)); margin: 0; padding: var(--arc-top, 0px) 0 108px; background: var(--sto-ground); color: var(--sto-ink); }
+body.store-page :is(.sto, .sto-bag) [hidden], body.store-page .sto-bag[hidden]{ display: none !important; }
+body.store-page :is(.sto, .sto-bag) :is(a, button):is(:hover, :focus, :focus-visible){ box-shadow: none !important; outline: none; }
+body.store-page :is(.sto, .sto-bag) :is(a, button):focus-visible{ outline: 1px solid var(--nc-mark, #B3301E) !important; outline-offset: 3px; }
+body.store-page :is(.sto, .sto-bag) :where(button){ appearance: none; margin: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+body.store-page :is(.sto, .sto-bag) :where(a){ color: inherit; text-decoration: none; }
+
+body.store-page .sto-bar{
+  position: sticky; top: var(--arc-band, 0px); z-index: 2;
+  display: flex; justify-content: space-between; align-items: center;
+  height: 54px; box-sizing: border-box; padding: 0 24px;
+  border-bottom: 1px solid var(--sto-rule); background: var(--sto-ground);
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19px; line-height: 27.5px; white-space: nowrap;
+}
+body.store-page .sto-shelf.is-on, body.store-page .sto-shelf:hover, body.store-page .sto-bag-open:hover{ color: var(--nc-mark, #B3301E); }
+body.store-page .sto.is-viewing .sto-shelf.is-on{ color: inherit; }
+body.store-page .sto-sample{
+  margin: 0; padding: 18px 24px 0; text-align: center; color: var(--sto-dim);
+  font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif); font-size: 13px; line-height: 18.2px; letter-spacing: 0.26px; text-transform: uppercase;
+}
+
+/* the shelves */
+body.store-page .sto-grid{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 16px; padding: 24px 16px 0; }
+@media (min-width: 768px){ body.store-page .sto-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 24px; padding: 36px 24px 0; } }
+@media (min-width: 1280px){ body.store-page .sto-grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+body.store-page .sto-tile{ display: block; }
+body.store-page .sto-tile__pic{ display: block; aspect-ratio: 1; overflow: hidden; background: var(--sto-well); }
+body.store-page .sto-tile__img{ display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+body.store-page .sto-tile:hover .sto-tile__img{ transform: scale(1.03); }
+body.store-page .sto-tile__name{ display: block; margin-top: 12px; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 20px; font-style: italic; line-height: 24px; }
+body.store-page .sto-tile:hover .sto-tile__name{ color: var(--nc-mark, #B3301E); }
+body.store-page :is(.sto-tile__price, .sto-view__price, .sto-opt__name, .sto-view__note, .sto-back, .sto-bag__title, .sto-bag-close, .sto-bag__ship, .sto-line__opts, .sto-line__qty, .sto-line__price, .sto-bag__sub, .sto-bag__empty, .sto-blank){
+  font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif); font-size: 13px; font-weight: 400; line-height: 18.2px; letter-spacing: 0.26px; text-transform: uppercase;
+}
+body.store-page .sto-tile__price{ display: block; margin-top: 4px; color: var(--sto-dim); }
+body.store-page .sto-blank{ display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 16px; box-sizing: border-box; background: var(--sto-well); color: var(--sto-dim); text-align: center; }
+
+/* a product's own view */
+body.store-page .sto-view{ display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px 36px; padding: 24px 16px 0; }
+@media (min-width: 1024px){ body.store-page .sto-view{ grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px 48px; padding: 36px 24px 0; } }
+body.store-page .sto-view__pics{ display: grid; gap: 16px; }
+body.store-page .sto-view__img{ display: block; width: 100%; height: auto; background: var(--sto-well); }
+body.store-page .sto-view__img.sto-blank{ display: flex; aspect-ratio: 1; height: auto; }
+body.store-page .sto-view__words{ align-self: start; max-width: 480px; }
+@media (min-width: 1024px){ body.store-page .sto-view__words{ position: sticky; top: calc(var(--arc-band, 0px) + 54px + 36px); } }
+body.store-page .sto-back{ grid-column: 1 / -1; justify-self: start; color: var(--sto-dim); }
+body.store-page .sto-back::before{ content: "\2190\00a0"; }
+body.store-page .sto-back:hover{ color: var(--nc-mark, #B3301E); }
+body.store-page .sto-view__name{ margin: 0; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 36px; font-style: italic; font-weight: 400; line-height: 40px; letter-spacing: normal; text-transform: none; }
+body.store-page .sto-view__price{ margin: 12px 0 0; }
+body.store-page .sto-view__desc{ margin-top: 24px; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 18px; line-height: 23px; }
+body.store-page .sto-view__desc p{ margin: 0; }
+body.store-page .sto-view__desc p + p{ margin-top: 11px; }
+body.store-page .sto-view__desc :is(ul, ol){ margin: 11px 0 0; padding-left: 20px; }
+body.store-page .sto-opt{ margin: 28px 0 0; padding: 0; border: 0; min-width: 0; }
+body.store-page .sto-opt__name{ display: block; float: left; width: 100%; margin: 0 0 10px; padding: 0; color: var(--sto-dim); }
+body.store-page .sto-opt__v{ display: inline-block; margin: 0 8px 8px 0; cursor: pointer; }
+body.store-page .sto-opt__v input{ position: absolute; opacity: 0; pointer-events: none; }
+body.store-page .sto-opt__v span{
+  display: inline-block; min-width: 44px; box-sizing: border-box; padding: 9px 14px; border: 1px solid var(--sto-rule); text-align: center;
+  font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif); font-size: 13px; line-height: 18.2px; letter-spacing: 0.26px; text-transform: uppercase;
+}
+body.store-page .sto-opt__v:hover span{ border-color: var(--sto-ink); }
+body.store-page .sto-opt__v input:checked + span{ background: var(--sto-ink); border-color: var(--sto-ink); color: var(--sto-ground); }
+body.store-page .sto-opt__v input:focus-visible + span{ outline: 1px solid var(--nc-mark, #B3301E); outline-offset: 2px; }
+body.store-page .sto .sto-add, body.store-page .sto-bag .sto-checkout{
+  display: block; width: 100%; height: 50px; margin-top: 32px; background: var(--sto-ink); color: var(--sto-ground); text-align: center;
+  font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif); font-size: 13px; line-height: 50px; letter-spacing: 1.3px; text-transform: uppercase;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+body.store-page .sto .sto-add:hover:not(:disabled), body.store-page .sto-bag .sto-checkout:hover:not(.is-shut){ background: var(--nc-mark, #B3301E); color: var(--sto-ink); }
+body.store-page .sto .sto-add:disabled{ opacity: 0.4; cursor: default; }
+body.store-page .sto-view__note{ margin: 16px 0 0; color: var(--sto-dim); }
+
+/* the bag — moved to the body's end by src/store-bag.js, out of main's stacking, so it lies over the name */
+body.store-page .sto-bag-count{ color: var(--sto-dim); }
+body.store-page .sto-bag{
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 2147483000; display: flex; flex-direction: column;
+  width: min(440px, 100vw); box-sizing: border-box; padding: 0 24px 24px;
+  background: var(--sto-ground); border-left: 1px solid var(--sto-rule); box-shadow: -24px 0 48px rgba(0, 0, 0, 0.35);
+}
+body.store-page .sto-bag.is-busy{ cursor: progress; }
+body.store-page .sto-bag.is-busy .sto-bag__lines{ opacity: 0.5; }
+body.store-page .sto-bag__head{ display: flex; justify-content: space-between; align-items: center; height: 54px; flex: none; border-bottom: 1px solid var(--sto-rule); }
+body.store-page .sto-bag-close:hover{ color: var(--nc-mark, #B3301E); }
+body.store-page .sto-bag__lines{ flex: 1 1 auto; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+body.store-page .sto-line{ display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 16px; align-items: start; padding: 18px 0; border-bottom: 1px solid var(--sto-rule); }
+body.store-page .sto-line__img{ display: block; width: 72px; height: 72px; object-fit: cover; background: var(--sto-well); }
+body.store-page .sto-line__words{ display: flex; flex-direction: column; gap: 4px; }
+body.store-page .sto-line__name{ font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 18px; font-style: italic; line-height: 22px; }
+body.store-page .sto-line__name:hover{ color: var(--nc-mark, #B3301E); }
+body.store-page .sto-line__opts{ color: var(--sto-dim); }
+body.store-page .sto-line__qty{ display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+body.store-page .sto-line__qty button{ width: 24px; height: 24px; border: 1px solid var(--sto-rule) !important; line-height: 22px; text-align: center; }
+body.store-page .sto-line__qty button:hover{ border-color: var(--sto-ink) !important; }
+body.store-page .sto-bag__empty{ flex: 1 1 auto; margin: 24px 0 0; color: var(--sto-dim); }
+body.store-page .sto-bag__foot{ flex: none; padding-top: 18px; }
+body.store-page .sto-bag__sub{ display: flex; justify-content: space-between; margin: 0; }
+body.store-page .sto-bag__ship{ margin: 6px 0 0; color: var(--sto-dim); }
+body.store-page .sto-bag .sto-checkout{ margin-top: 18px; }
+body.store-page .sto-bag .sto-checkout.is-shut{ height: auto; padding: 14px 12px; line-height: 18.2px; background: transparent; color: var(--sto-dim); border: 1px solid var(--sto-rule); cursor: not-allowed; }

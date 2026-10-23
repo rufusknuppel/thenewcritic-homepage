@@ -27,6 +27,7 @@ const STATIC_PAGES = new Set([
   '/', '/index.html',
   '/about.html',
   '/archive.html',
+  '/store', '/store.html',
   '/style.css',
   '/bird-mark.png',
   '/bird.png',
