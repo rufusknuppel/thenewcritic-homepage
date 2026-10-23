@@ -31983,3 +31983,9 @@ body.archive-page .arc--whole .arc-tags{ justify-content: center; }
 /* THE ARCHIVE'S RULES CHARCOAL (2026-10-22 — "I also want the rules on the archive page to be charcoal"): the ledger's
    rules, the head's and the search row's, and the line under the band, in the charcoal on the red, not the quarter white */
 html.is-archive{ --nc-rule: #121417; }
+
+/* THE LINE UNDER THE SEARCH (2026-10-22 — "I like having the line under search"): the field as wide as the side column's
+   was, centred, its rule under it again — half a pixel where the screen has the pixels for it */
+body.archive-page .arc--whole .arc-find{ flex: none; width: min(360px, 100%); }
+body.archive-page .arc--whole .arc-search{ padding: 0 0 4px; border-bottom: 1px solid var(--nc-rule, #D6D6D6); }
+@media (min-resolution: 2dppx){ body.archive-page .arc--whole .arc-search{ border-bottom-width: 0.5px; } }
