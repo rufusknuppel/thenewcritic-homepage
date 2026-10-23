@@ -7306,6 +7306,16 @@
       j.dkF = j.pkb ? titleInkFoot(j.pdk) : null;
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       j.mR = j.mmEl ? j.mmEl.getBoundingClientRect() : null;
+      if (j.mR && j.mR.width) {
+        var mcs = getComputedStyle(j.mmEl), mtx = (j.mmEl.textContent || '').trim();
+        if (mcs.textTransform === 'uppercase') mtx = mtx.toUpperCase();
+        measureCtx.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' ' + mcs.fontSize + ' ' + mcs.fontFamily;
+        try { measureCtx.letterSpacing = mcs.letterSpacing === 'normal' ? '0px' : mcs.letterSpacing; } catch (e) {}
+        var mmx = measureCtx.measureText(mtx);
+        try { measureCtx.letterSpacing = '0px'; } catch (e) {}
+        var pl0 = parseFloat(mcs.paddingLeft) || 0;
+        if (mmx.actualBoundingBoxRight > 0) j.mR = { left: j.mR.left + pl0 - mmx.actualBoundingBoxLeft, right: j.mR.left + pl0 + mmx.actualBoundingBoxRight, width: mmx.actualBoundingBoxLeft + mmx.actualBoundingBoxRight };
+      }
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
       if (j.ttEl) { var ttR0 = j.ttEl.getBoundingClientRect(); j.ttB = lastBaselineIn(j.ttEl, { bottom: ttR0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.ttEl).lineHeight) || 0); }
@@ -7398,7 +7408,8 @@
               upY = y4 - j.ttT;
               dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
               var lineY = j.dkB + dekY + META_RULE_AIR + 0.5;
-              metaY = lineY - (j.mT + j.mB) / 2 - upY;
+              var lineP = Math.round(lineY + j.sy - 0.25) - j.sy + (window.devicePixelRatio >= 2 ? 0.25 : 0.5);
+              metaY = lineP - (j.mT + j.mB) / 2 - upY;
               dnY = (lineY + 0.5 + META_RULE_AIR) - j.txT;
               hairM = null;
               hairD = lineY;
