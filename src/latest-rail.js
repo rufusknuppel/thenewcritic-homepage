@@ -3200,6 +3200,18 @@ window.ncOpenH = function () {
       var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
     });
+    // (the hairline under the byline or the dek carried across the air to the picture's outline — "connect the rule to the
+    // outline", 2026-10-22: how far past the body's column on the picture's side, on the words' column as --hl-xl or
+    // --hl-xr, read off the column where it now stands, carried; duo-panel-fit.js seatHairlines, style.css THE HAIRLINES
+    // MEET THE OUTLINE)
+    if (window.__ncPicBox) [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+      var sb = c.querySelector('.swap-body'), tx = sb && sb.querySelector('.swap-body-text'), pb = window.__ncPicBox(c);
+      if (!sb || !tx) return;
+      var tr = tx.getBoundingClientRect(), xl = 0, xr = 0;
+      if (pb && tr.width) { if (pb.r <= tr.left + 1) xl = Math.max(0, tr.left - pb.r); else if (pb.l >= tr.right - 1) xr = Math.max(0, pb.l - tr.right); }
+      var hx = xl.toFixed(2) + 'px|' + xr.toFixed(2) + 'px';
+      if (sb.__hx !== hx) { sb.__hx = hx; sb.style.setProperty('--hl-xl', xl.toFixed(2) + 'px'); sb.style.setProperty('--hl-xr', xr.toFixed(2) + 'px'); }
+    });
     // (a 1px rule between each post's dek and its body, as wide as the dek's last line and on the middle of the room
     // between them — "add a 1 px rule between dek and body text the width of the last line of the dek", 2026-10-20; as
     // wide as the body's column since — "Make rule between dek and body the full width of the body text column" — and

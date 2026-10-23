@@ -7887,7 +7887,8 @@
               // (27 under it since — "Start the top post 27 px under rule", 2026-10-20)
               // (29 since, the nav's baseline's distance over the rule — "Is that the same gap as between the bottom of
               // the nav and the rule? If not, make it equal", 2026-10-20: the nav's baseline stands 29¼ over it)
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 29;
+              // (54 since — "Start top post 54px below top band", 2026-10-22)
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
@@ -9017,6 +9018,17 @@
   TOP_RULE_GAP = 54;
   META_RULE_AIR = 54;
   META_TITLE_GAP = DEK_TO_TEXT = 54 + 1 + 54;
+  // (the byline to the title and the title to the dek a quarter less since, 40.5, the hairline's 54 either side kept —
+  // "Have gaps between the meta title and dek be 25% less", 2026-10-22)
+  var HEAD_GAP = 54 * 0.75;
+  TOP_RULE_GAP = HEAD_GAP;
+  // (the byline on the hairline since, the line broken round it, 54 between the dek and the line and between the line and
+  // the body — "Move metadata so that it prints on top of the rule", 2026-10-22; style.css THE BYLINE ON THE RULE)
+  var META_ON_RULE = true;
+  // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
+  // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
+  // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
+  var FORK_RISE = 14, FORK_RUN = 14, FORK_PAD = 9;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -9437,11 +9449,26 @@
   function seatHairlines(j, midM, midD) {
     [['meta', midM], ['dek', midD]].forEach(function (k) {
       var hl = j.body.querySelector(':scope > .nc-hairline--' + k[0]);
-      if (k[1] == null || !isFinite(k[1]) || !j.tb) { if (hl) hl.remove(); return; }
+      if (k[1] == null || !isFinite(k[1]) || !j.tb) { if (hl) hl.remove(); if (k[0] === 'dek') { var fk0 = j.body.querySelector(':scope > .nc-hairline-fork'); if (fk0) fk0.remove(); } return; }
       if (!hl) { hl = document.createElement('span'); hl.className = 'nc-hairline nc-hairline--' + k[0]; hl.setAttribute('aria-hidden', 'true'); j.body.appendChild(hl); }
       // (the box's top half the painted half, so the box a quarter over the middle)
       var top = Math.round(k[1] + j.sy - 0.25) - j.sy - j.bb.top - j.bcT;
-      var st = 'left:' + (j.tb.left - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + top.toFixed(2) + 'px;width:' + j.tb.width.toFixed(2) + 'px';
+      // (its width the body column's; latest-rail.js carries it on to the picture's outline, --hl-xl / --hl-xr)
+      var st = 'left:' + (j.tb.left - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + top.toFixed(2) + 'px;--hl-w:' + j.tb.width.toFixed(2) + 'px';
+      // (the line under the dek forked round the byline on it: the line's own ink parted where the fork stands, the fork a
+      // hexagon of the same half pixel — two slants out, a straight over the words and one under, two slants back)
+      var fk = j.body.querySelector(':scope > .nc-hairline-fork');
+      if (k[0] === 'dek' && j.fork && j.mR && j.mR.width) {
+        var ga = j.mR.left - FORK_PAD - FORK_RUN - j.tb.left, gb = j.mR.right + FORK_PAD + FORK_RUN - j.tb.left, fw = gb - ga;
+        st += ';--hl-ga:' + ga.toFixed(2) + 'px;--hl-gb:' + gb.toFixed(2) + 'px';
+        if (!fk) { fk = document.createElement('span'); fk.className = 'nc-hairline-fork'; fk.setAttribute('aria-hidden', 'true'); j.body.appendChild(fk); }
+        var hi = window.devicePixelRatio >= 2, o = hi ? 0.25 : 0.5, R = FORK_RISE;
+        var fst = 'left:' + (j.mR.left - FORK_PAD - FORK_RUN - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + (top - R).toFixed(2) + 'px;width:' + fw.toFixed(2) + 'px;height:' + (2 * R + 1) + 'px';
+        var d = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + (fw - FORK_RUN).toFixed(2) + 'L' + fw.toFixed(2) + ' ' + (R + o) + 'L' + (fw - FORK_RUN).toFixed(2) + ' ' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
+        var svg = '<svg width="' + fw.toFixed(2) + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + fw.toFixed(2) + ' ' + (2 * R + 1) + '" overflow="visible"><path d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/></svg>';
+        if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
+        if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
+      } else if (k[0] === 'dek' && fk) fk.remove();
       if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
     });
   }
@@ -9929,6 +9956,8 @@
       // (the title's first ink and the byline's ink, for the byline between
       // the title and the dek: THE BYLINE BETWEEN)
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
+      // (its words' reach across, for the fork round it: THE BYLINE ON THE RULE)
+      j.mR = j.mmEl ? j.mmEl.getBoundingClientRect() : null;
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
       // (read off the line's own box less the face's descent below its baseline, as the byline's is, since — the
@@ -9950,6 +9979,7 @@
     });
     // WRITE: the centring, and the bodies set
     twos.forEach(function (j) {
+      j.fork = false;
       if (!isFinite(j.inT)) { seatHairlines(j, null, null); return; }
       // (pinned, in its frame: the head's ink on the picture's top, the dek
       // and text's last baseline on its foot — THE FRAME ROUND THE PICTURE
@@ -10086,14 +10116,27 @@
               hairM = META_RULES || META_RULE_UNDER ? mFoot2 + META_RULE_AIR + 0.5 : null;
             }
             if (META_UNDER && META_ABOVE) {
-              var sH3 = (j.mB - j.mT) + META_RULE_AIR + (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + xGap + (j.inB - j.txT);
+              var sH3 = (j.mB - j.mT) + HEAD_GAP + (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + xGap + (j.inB - j.txT);
               var y3 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH3) / 2));
-              upY = (y3 + (j.mB - j.mT) + META_RULE_AIR) - j.ttT;
+              upY = (y3 + (j.mB - j.mT) + HEAD_GAP) - j.ttT;
               metaY = y3 - j.mT - upY;
               dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
               dnY = (j.dkB + dekY + xGap) - j.txT;
               hairM = null;
               hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
+            }
+            if (META_UNDER && META_ON_RULE) {
+              var sH4 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * META_RULE_AIR + 1 + (j.inB - j.txT);
+              var y4 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH4) / 2));
+              upY = y4 - j.ttT;
+              dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
+              var lineY = j.dkB + dekY + META_RULE_AIR + 0.5;
+              // (the byline's capitals on the line's middle)
+              metaY = lineY - (j.mT + j.mB) / 2 - upY;
+              dnY = (lineY + 0.5 + META_RULE_AIR) - j.txT;
+              hairM = null;
+              hairD = lineY;
+              j.fork = true;
             }
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;

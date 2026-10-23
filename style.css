@@ -31844,3 +31844,26 @@ body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(
 :root{ --nc-rule: var(--nc-mark, #B3301E); --nc-outline: #D6D6D6; }
 /* (the outlines round the pictures in the highlight too since — "Make the outlines around images highlight color too") */
 :root{ --nc-outline: var(--nc-mark, #B3301E); }
+
+/* THE HAIRLINES MEET THE OUTLINE (2026-10-22 — "connect the rule to the outline"): the hairline over the body run on
+   across the air to the picture's outline on its side, the body's column wide on the other (latest-rail.js --hl-xl,
+   --hl-xr; duo-panel-fit.js --hl-w) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ width: calc(var(--hl-w, 0px) + var(--hl-xl, 0px) + var(--hl-xr, 0px)) !important; margin-left: calc(-1 * var(--hl-xl, 0px)) !important; }
+}
+
+/* THE BYLINE ON THE RULE (2026-10-22 — "Move metadata so that it prints on top of the rule", "have the rule form a little
+   diamond looking thing around the metadata. with the rule branching out into a fork, straightening over the text, then
+   closing on the other side"): the byline as wide as its words, on the line's middle; the line parted there
+   (--hl-ga, --hl-gb) and a hexagon of the same half pixel drawn round the words in its place (duo-panel-fit.js
+   META_ON_RULE, seatHairlines, .nc-hairline-fork) */
+.nc-hairline-fork{ display: none; }
+@media (min-width: 1024px){
+  html body main.has-mega.wm-banded .page-rows .duo-half--mega > .swap-body.swap-body > .swap-body-head > .swap-body-meta.swap-body-meta:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ width: fit-content !important; margin-left: auto !important; margin-right: auto !important; }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
+    -webkit-mask-image: linear-gradient(to right, #000 calc(var(--hl-xl, 0px) + var(--hl-ga, 100000px)), transparent 0 calc(var(--hl-xl, 0px) + var(--hl-gb, 100000px)), #000 0) !important;
+    mask-image: linear-gradient(to right, #000 calc(var(--hl-xl, 0px) + var(--hl-ga, 100000px)), transparent 0 calc(var(--hl-xl, 0px) + var(--hl-gb, 100000px)), #000 0) !important;
+  }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline-fork.nc-hairline-fork:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: block !important; position: absolute !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; pointer-events: none !important; }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline-fork.nc-hairline-fork > svg{ display: block !important; overflow: visible !important; }
+}
