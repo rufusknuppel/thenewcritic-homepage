@@ -8996,6 +8996,10 @@
   // padding so all match distance from title to dek", 2026-10-22; seatHairlines lays them on the middles)
   META_TITLE_GAP = 39 + 1 + 39;
   DEK_TO_TEXT = 39 + 1 + 39;
+  // (the byline under the dek since, between two hairlines, that 39 either side of each and none over the title —
+  // "Move the work sans beneath the dek, with a divider above and beneath it remove the divider above title",
+  // 2026-10-22: seatSwapCols, THE BYLINE UNDER THE DEK)
+  var META_UNDER = true, META_RULE_AIR = 39;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -10046,6 +10050,23 @@
             // baseline and the body's first ink)
             hairM = ((j.mB + upY + metaY) + (j.ttT + upY)) / 2;
             hairD = ((j.dkB + dekY) + (j.txT + dnY)) / 2;
+            // THE BYLINE UNDER THE DEK (2026-10-22, at the user's words — "Move the work sans beneath the dek, with a
+            // divider above and beneath it remove the divider above title"): the title's first ink at the stack's
+            // top, the dek's first TOP_RULE_GAP under its last baseline, a hairline, the byline's capitals, a
+            // hairline and the body's first ink — META_RULE_AIR either side of each hairline, the whole centred in
+            // the picture's height as before; none over the title
+            if (META_UNDER) {
+              var sH2 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * (2 * META_RULE_AIR + 1) + (j.mB - j.mT) + (j.inB - j.txT);
+              var y2 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH2) / 2));
+              upY = y2 - j.ttT;
+              dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
+              var dkFoot = j.dkB + dekY, mCap = dkFoot + 2 * META_RULE_AIR + 1;
+              metaY = mCap - j.mT - upY;
+              var mFoot2 = j.mB + upY + metaY;
+              dnY = (mFoot2 + 2 * META_RULE_AIR + 1) - j.txT;
+              hairD = dkFoot + META_RULE_AIR + 0.5;
+              hairM = mFoot2 + META_RULE_AIR + 0.5;
+            }
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop - j.ttT;
