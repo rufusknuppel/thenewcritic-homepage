@@ -9476,7 +9476,7 @@
         var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - FORK_RUN - o).toFixed(2), Ro = (FORK_RUN + o).toFixed(2);
         var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
         var dR = 'M' + Ro + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + Ro + 'Z';
-        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--nc-mark, #B3301E); stroke: var(--nc-rule, #B3301E)"/>'; };
+        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #121417); stroke: var(--nc-rule, #B3301E)"/>'; };
         var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
