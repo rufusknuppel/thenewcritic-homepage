@@ -8988,6 +8988,9 @@
   DEK_TO_TEXT = 39;
   // (the byline's baseline to the title's first ink — "Center titles, set metadata to title as the same gap")
   var META_TITLE_GAP = 26;
+  // (the title's own 39 to the dek since — "Have the metadata padding above the title match the padding between title and
+  // dek", 2026-10-22: TOP_RULE_GAP)
+  META_TITLE_GAP = 39;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
