@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=a2999ac3">
+<link rel="stylesheet" href="style.css?v=176c48a9">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6742,6 +6742,7 @@
   TOP_RULE_GAP = HEAD_GAP;
   var META_ON_RULE = true;
   var FORK_RISE = 14, FORK_RUN = 14, FORK_PAD = 9;
+  FORK_PAD = 18;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -6995,9 +6996,12 @@
         var hi = window.devicePixelRatio >= 2, o = hi ? 0.25 : 0.5, R = FORK_RISE;
         var fst = 'left:' + (j.mR.left - FORK_PAD - FORK_RUN - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + (top - R).toFixed(2) + 'px;width:' + fw.toFixed(2) + 'px;height:' + (2 * R + 1) + 'px';
         var d = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + (fw - FORK_RUN).toFixed(2) + 'L' + fw.toFixed(2) + ' ' + (R + o) + 'L' + (fw - FORK_RUN).toFixed(2) + ' ' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
-        var svg = '<svg width="' + fw.toFixed(2) + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + fw.toFixed(2) + ' ' + (2 * R + 1) + '" overflow="visible"><path d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/></svg>';
+        var svg = '<svg width="' + fw.toFixed(2) + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + fw.toFixed(2) + ' ' + (2 * R + 1) + '" overflow="visible"><path d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--nc-mark, #B3301E); stroke: var(--nc-rule, #B3301E)"/></svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
+        if (j.mmEl) [j.mmEl].concat([].slice.call(j.mmEl.querySelectorAll('a'))).forEach(function (e) {
+          e.style.setProperty('color', 'var(--fork-ink, #FAF9F6)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FAF9F6)', 'important');
+        });
       } else if (k[0] === 'dek' && fk) fk.remove();
       if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
     });
@@ -7184,7 +7188,7 @@
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
                 var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
                 [mw, md].filter(Boolean).forEach(function (a0, k) {
-                  if (k) hm.appendChild(document.createTextNode(' \u00B7 '));
+                  if (k) hm.appendChild(document.createTextNode('\u00A0\u00A0\u00B7\u00A0\u00A0'));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
