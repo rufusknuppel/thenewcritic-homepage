@@ -4529,7 +4529,11 @@ ${renderCardRevealScript()}
 // fallback paint and one refit, rather than a blank page.
 // (Its commentary comes out at build time like the body scripts' —
 // slimJs — since 2026-09-24: half of the head's weight was the notes.)
-function renderFontGateScript() {
+// `fitted`: the page carries the panel fitter, whose first pass the
+// gate waits for (THE FIT, below). About and the archive carry none, and
+// waiting for an announcement that never comes held them blank until
+// the 8-second cap, every load (2026-10-22).
+function renderFontGateScript({ fitted = true } = {}) {
   return slimJs(`<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -5005,8 +5009,9 @@ function renderFontGateScript() {
   // before the listener because this runs in the HEAD, long before the
   // fitter has parsed — but also long before it could have announced,
   // so the listener is what actually answers on every real load.
+  // A page without the fitter has no pass to wait for.
   var fitDone = new Promise(function (resolve) {
-    if (window.__ncFitDone) { resolve(); return; }
+    if (${fitted ? 'window.__ncFitDone' : 'true'}) { resolve(); return; }
     addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
   }).then(function () { gate.fitted = performance.now(); });
   Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
@@ -5346,7 +5351,7 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 <style>:root{${WM_ROOT_VARS}}</style>
-${renderFontGateScript()}
+${renderFontGateScript({ fitted: extraScripts.includes("dispatchEvent(new Event('newcritic:fitdone'))") })}
 ${renderImgFadeScript()}
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
