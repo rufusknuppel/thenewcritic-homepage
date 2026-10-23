@@ -31899,6 +31899,10 @@ html body main.has-mega .duo-half--mega > .essay-acts.essay-acts > .essay-act.es
    the hand: "keep text red but remove fill") */
 :root{ --fork-ink: var(--nc-mark, #B3301E); --fork-fill: none; }
 html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: var(--tc, #121417); }
+/* (the byline back in the charcoal since, the highlight under the hand as everywhere — "Turn text in fork back to
+   charcoal") */
+:root{ --fork-ink: var(--tc, #121417); }
+html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: var(--nc-mark, #B3301E); }
 
 /* NOTHING ON THE PICTURE UNDER THE HAND (2026-10-22 — "Turn off image hover effect entirely"): no scrim, no outline —
    the picture still the post's link (src/essay-acts.js); at the outline's own weight, later in the sheet */
