@@ -32027,10 +32027,10 @@ body.archive-page .arc--whole .arc-tags .arc-sections__a.is-current::before{ bac
 }
 
 /* THE FORK RED (2026-10-23 — "fill the byline tags with red"): the fork round the byline filled with the highlight, its
-   outline the same red, the byline charcoal on it; under the hand the white, the red being the fill now
+   outline the same red, the byline charcoal on it; under the hand the white, the red being the fill now (the white written out: --tw is a length inside the cards)
    (duo-panel-fit.js seatHairlines reads --fork-fill and --fork-ink) */
 :root{ --fork-fill: var(--nc-mark, #B3301E); --fork-ink: var(--tc, #121417); }
-html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: var(--tw, #FAF9F6); }
+html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: #FAF9F6; }
 
 /* THE OUTLINE KEPT UNDER THE HAND (2026-10-23 — "The red outline around the images shouldn't disappear on hover"): the
    scrim's own outline gone (NOTHING ON THE PICTURE UNDER THE HAND), the picture's line no longer fades out for it */
