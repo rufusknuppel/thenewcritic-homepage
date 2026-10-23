@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=ad257f8d">
+<link rel="stylesheet" href="style.css?v=a2999ac3">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7184,7 +7184,7 @@
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
                 var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
                 [mw, md].filter(Boolean).forEach(function (a0, k) {
-                  if (k) hm.appendChild(document.createTextNode(', '));
+                  if (k) hm.appendChild(document.createTextNode(' \u00B7 '));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
@@ -12372,6 +12372,7 @@ window.ncOpenH = function () {
       if (pb && tr.width) { if (pb.r <= tr.left + 1) xl = Math.max(0, tr.left - pb.r); else if (pb.l >= tr.right - 1) xr = Math.max(0, pb.l - tr.right); }
       var hx = xl.toFixed(2) + 'px|' + xr.toFixed(2) + 'px';
       if (sb.__hx !== hx) { sb.__hx = hx; sb.style.setProperty('--hl-xl', xl.toFixed(2) + 'px'); sb.style.setProperty('--hl-xr', xr.toFixed(2) + 'px'); }
+      sb.classList.toggle('hl-pic-l', !!pb && xl > 0); sb.classList.toggle('hl-pic-r', !!pb && xr > 0);
     });
     var cxR = bandRule.cx || (bandRule.cx = document.createElement('canvas').getContext('2d'));
     var baseAt = function (el, atEnd) {
