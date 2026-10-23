@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=dec99fa0">
+<link rel="stylesheet" href="style.css?v=6350ca28">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6964,6 +6964,16 @@
       }
     });
   }
+  function seatHairlines(j, midM, midD) {
+    [['meta', midM], ['dek', midD]].forEach(function (k) {
+      var hl = j.body.querySelector(':scope > .nc-hairline--' + k[0]);
+      if (k[1] == null || !isFinite(k[1]) || !j.tb) { if (hl) hl.remove(); return; }
+      if (!hl) { hl = document.createElement('span'); hl.className = 'nc-hairline nc-hairline--' + k[0]; hl.setAttribute('aria-hidden', 'true'); j.body.appendChild(hl); }
+      var top = Math.round(k[1] + j.sy - 0.25) - j.sy - j.bb.top - j.bcT;
+      var st = 'left:' + (j.tb.left - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + top.toFixed(2) + 'px;width:' + j.tb.width.toFixed(2) + 'px';
+      if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
+    });
+  }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
     var jobs = [];
@@ -7247,6 +7257,7 @@
     });
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      j.sy = window.pageYOffset || 0; j.bcT = j.body.clientTop || 0; j.bcL = j.body.clientLeft || 0;
       j.hf = j.body.parentElement; j.hb = j.hf ? j.hf.getBoundingClientRect() : null;
       j.hd = j.body.querySelector(':scope > .swap-body-head');
       if (j.hd && !(j.hd.getBoundingClientRect().height > 0)) j.hd = null;
@@ -7281,11 +7292,11 @@
       }
     });
     twos.forEach(function (j) {
-      if (!isFinite(j.inT)) return;
+      if (!isFinite(j.inT)) { seatHairlines(j, null, null); return; }
       if (j.hd && j.slide && bandedInk() && j.inB != null) {
         var dnY = j.bb.bottom - INK_GAP - j.inB;
         var upY = j.bb.top + INK_GAP - j.inT;
-        var ruleTop = null;
+        var ruleTop = null, hairM = null, hairD = null;
         var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
         var between = stacked && j.mmEl && j.ttT != null && j.mT != null && j.mB != null && j.ttB != null && j.dkC != null;
         var metaY = null;
@@ -7326,6 +7337,8 @@
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
             if (dekToText !== RULE_AIR + FRAME + RULE_AIR) dnY = (j.dkB + dekY + dekToText) - j.txT;
+            hairM = ((j.mB + upY + metaY) + (j.ttT + upY)) / 2;
+            hairD = ((j.dkB + dekY) + (j.txT + dnY)) / 2;
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop - j.ttT;
@@ -7354,6 +7367,7 @@
         j.bt.style.transform = dn;
         if (j.mmEl) { if (metaY != null) j.mmEl.style.transform = 'translateY(' + metaY.toFixed(2) + 'px)'; else j.mmEl.style.removeProperty('transform'); }
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
+        seatHairlines(j, hairM, hairD);
         var rlOld = j.body.querySelector(':scope > .swap-body-rule');
         if (rlOld) rlOld.remove();
         var rl = j.hf && j.hf.querySelector(':scope > .swap-body-rule');
@@ -7381,6 +7395,7 @@
       j.bt.style.transform = shY;
       if (j.pdk) j.pdk.style.transform = shY;
       if (j.hd) j.hd.style.transform = shY;
+      seatHairlines(j, null, null);
     });
     twos.forEach(function (j) { j.bt.__swapKey = j.key; });
     jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
