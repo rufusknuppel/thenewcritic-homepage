@@ -31452,6 +31452,9 @@ body.archive-page .arc .arc-sort::after{
   visibility: hidden;
 }
 body.archive-page .arc .arc-sort[data-dir="asc"]::after{ border-top: 0; border-bottom: 4.5px solid currentColor; }
+/* (the date's caret on its left — "Move caret to the other side of date": DATE stands on the ledger's right edge with
+   the dates under it, the caret the same 7 off it on the inside) */
+body.archive-page .arc .arc-sort[data-key="date"]::after{ left: auto; right: 100%; margin: -2px 7px 0 0; }
 body.archive-page .arc .arc-sort.is-on::after{ visibility: visible; }
 body.archive-page .arc .arc-shuffle{ color: var(--arc-quiet, #9A9893); }
 body.archive-page .arc :is(.arc-sort, .arc-shuffle):is(:hover, :focus-visible, .is-on){ color: var(--nc-mark, #B3301E); outline: none; }
