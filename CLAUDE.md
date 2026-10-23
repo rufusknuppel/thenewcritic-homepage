@@ -122,6 +122,14 @@ branch, commits there, and leaves merging to the command center. The rules:
 - `assets/wordmark.svg` — the wordmark (THE NEW CRITIC, letters as
   outlines), the one editable source of the name; `wordmark.js` reads it
   and hands `build.js` each word (THE, NEW, CRITIC, CRI, TIC)
-- `style.css` — copied as-is into `dist/` on build
+- `style.css` — copied into `dist/` on build, comments stripped and its
+  selectors rewritten by `css-fast.js`
+- `css-fast.js` — makes the built sheet cheap to match without changing
+  the cascade: gathers each selector's weight padding (`:not(template)`
+  runs, `:is(*, .r…)`) into two pads at the head of its subject, and
+  splits a subject that is a multi-argument `:is()` into one selector per
+  argument. Write `style.css` as before; a selector it can't prove equal
+  (Chrome's and Firefox's specificity caps, see its header) is left as
+  written. A full-page restyle went ~123ms → ~69ms at 1440
 - `cloudflare/worker.js` — the apex edge router (deployed, unrouted)
 - `README.md` — how it is hosted and how to flip the apex

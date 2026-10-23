@@ -11,6 +11,9 @@ const path = require('path');
 // Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
+// The built stylesheet's selectors made cheap to match, the cascade
+// unchanged (css-fast.js, THE STYLESHEET, CHEAP TO MATCH).
+const { fastCss } = require('./css-fast.js');
 // The wordmark's words (THE, NEW, CRITIC, CRI, TIC), each in the files'
 // old contract, read off the one editable drawing (wordmark.js).
 const WORDMARK_WORDS = require('./wordmark.js').wordmarkWords(path.join(__dirname, 'assets', 'wordmark.svg'));
@@ -936,8 +939,11 @@ try { LAYOUT_OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, 'layout
 // so a rebuild leaves no diff and a ship carries only real change,
 // and browsers refetch exactly when the CSS is new.
 const crypto = require('crypto');
+// css-fast.js goes into it too: it rewrites the built sheet, so a change
+// there is new CSS even when style.css is the same.
 const BUILD_STAMP = crypto.createHash('sha1')
   .update(fs.readFileSync(path.join(__dirname, 'style.css')))
+  .update(fs.readFileSync(path.join(__dirname, 'css-fast.js')))
   .digest('hex').slice(0, 8);
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
@@ -4523,7 +4529,11 @@ ${renderCardRevealScript()}
 // fallback paint and one refit, rather than a blank page.
 // (Its commentary comes out at build time like the body scripts' —
 // slimJs — since 2026-09-24: half of the head's weight was the notes.)
-function renderFontGateScript() {
+// `fitted`: the page carries the panel fitter, whose first pass the
+// gate waits for (THE FIT, below). About and the archive carry none, and
+// waiting for an announcement that never comes held them blank until
+// the 8-second cap, every load (2026-10-22).
+function renderFontGateScript({ fitted = true } = {}) {
   return slimJs(`<style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
 (function () {
@@ -4999,8 +5009,9 @@ function renderFontGateScript() {
   // before the listener because this runs in the HEAD, long before the
   // fitter has parsed — but also long before it could have announced,
   // so the listener is what actually answers on every real load.
+  // A page without the fitter has no pass to wait for.
   var fitDone = new Promise(function (resolve) {
-    if (window.__ncFitDone) { resolve(); return; }
+    if (${fitted ? 'window.__ncFitDone' : 'true'}) { resolve(); return; }
     addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
   }).then(function () { gate.fitted = performance.now(); });
   Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
@@ -5251,7 +5262,7 @@ function ogTags({ title, description, pagePath, image }) {
 // can begin that way) — and the blank lines they leave go with them.
 // The sources stay as they are.
 function slimCss(css) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*\n+/g, '\n');
+  return fastCss(css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*\n+/g, '\n'));
 }
 function slimJs(js) {
   return js.replace(/^[ \t]*\/\/[^\n]*\n/gm, '').replace(/\n\s*\n+/g, '\n');
@@ -5340,7 +5351,7 @@ ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${curren
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="stylesheet" href="style.css?v=${BUILD_STAMP}">
 <style>:root{${WM_ROOT_VARS}}</style>
-${renderFontGateScript()}
+${renderFontGateScript({ fitted: extraScripts.includes("dispatchEvent(new Event('newcritic:fitdone'))") })}
 ${renderImgFadeScript()}
 </head>
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
