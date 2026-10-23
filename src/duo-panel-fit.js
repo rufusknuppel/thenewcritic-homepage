@@ -9471,9 +9471,11 @@
         // (the far end square since, a straight up its side where the line leaves off, the slants only where the line comes
         // in from the picture — "Make the far end of the fork a rectilinear end, not a triangle", 2026-10-22: both drawn,
         // the sheet showing the one for the picture's side, style.css THE FORK'S FAR END SQUARE)
-        var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - o).toFixed(2);
+        // (the square side where the slant would have begun, not out at the tip — "end should end where the fork would have
+        // started")
+        var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - FORK_RUN - o).toFixed(2), Ro = (FORK_RUN + o).toFixed(2);
         var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
-        var dR = 'M' + o + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + o + 'Z';
+        var dR = 'M' + Ro + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + Ro + 'Z';
         var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/>'; };
         var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
@@ -9786,7 +9788,8 @@
                   // the date and the author", 2026-10-22)
                   // (twice the space either side of it since — "double the space between the words and the dots", 2026-10-22)
                   // (an en dash since, not the dot — "use an – instead of a dot", 2026-10-22)
-                  if (k) hm.appendChild(document.createTextNode('\u00A0\u00A0\u2013\u00A0\u00A0'));
+                  // (the comma back since — "add back the comma between the author and date", 2026-10-22)
+                  if (k) hm.appendChild(document.createTextNode(', '));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
