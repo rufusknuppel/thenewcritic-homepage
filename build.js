@@ -5791,23 +5791,6 @@ const ADDITIONAL_PEOPLE_PHOTOS = {
 // rest. (It was a two-column card grid in the hover cards' skin — the
 // .mission-* card/band/column rules went with it; the masthead
 // medallions and the subscribe list keep their mission-* names.)
-// THE MANIFESTO AS A CARD: the About page closes on the Secession post
-// in the front page's own contra cell (renderContraCell) — cover,
-// courier, title, dek and the plate — when main() finds the post in the pool;
-// the preview card below is the fallback. The piece is preformatted
-// (no prose paragraphs for the plate to read), so its opening lines
-// are handed to the plate as paragraphs, read off the manifesto's own
-// rendered blocks.
-function manifestoPlateParas(html, max = 14) {
-  const out = [];
-  const re = /<span class="manifesto-line"[^>]*>([\s\S]*?)<\/span>/g;
-  let m;
-  while ((m = re.exec(String(html || ''))) && out.length < max) {
-    const t = m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
-    if (t) out.push(t);
-  }
-  return out;
-}
 // ABOUT ON THE FRONT PAGE'S HEAD (2026-10-22 — "Redesign the about page in the same was as the archive redesign", "have
 // white background and keep current features, but update with new homepage"; then "I like the old about style, remove
 // the side column. keep line of text but fix breakages"): the front page's name and band over About as it stood — its
@@ -5815,13 +5798,12 @@ function manifestoPlateParas(html, max = 14) {
 // column, pinned under the band, the one being read in red (src/about.js), and the magazine's line over the cards in the
 // front page's title Garamond. The masthead one role at a time — the roles in the order written (a masthead ranks), the
 // names inside a role by surname, a role held by more than one pluralized — each name its editor's Substack, their face
-// beside it under the hand, the sides alternating down the list; the Founder left out, as before. The Secession closes
-// it: its picture, its preface, Read on to the post. Mended from the old page: no word broken over a line, the address
-// kept whole, the centred paragraphs' lines balanced, and the Secession in the column's own cut, where the front page's
-// cell had come apart. The founders' faces come from give.html's signer blocks (written out in main), the rest from
+// beside it under the hand, the sides alternating down the list; the Founder left out, as before. (The Secession that
+// closed it is struck — "Remove the manifesto from the About page".) Mended from the old page: no word broken over a
+// line, the address kept whole, the centred paragraphs' lines balanced. The founders' faces come from give.html's signer blocks (written out in main), the rest from
 // assets/people/ (ADDITIONAL_PEOPLE_PHOTOS).
-const ABOUT_PARTS = [['about', 'About'], ['subscribe', 'Subscribe'], ['masthead', 'Masthead'], ['contact', 'Contact'], ['manifesto', 'Manifesto']];
-function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null) {
+const ABOUT_PARTS = [['about', 'About'], ['subscribe', 'Subscribe'], ['masthead', 'Masthead'], ['contact', 'Contact']];
+function renderAboutPage(founders = []) {
   const founderLookup = new Map(founders.map((f) => [f.name, f]));
   const surnameOf = (name) => name.trim().split(/\s+/).pop().toLowerCase();
   const mastheadPeople = ABOUT_PEOPLE
@@ -5855,17 +5837,6 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
         </div>`;
   }).join('\n        ');
 
-  // (the Secession's preface, the lines before its theses: the dateline, then the rest in one paragraph; the post's own
-  // preview where the manifesto didn't come)
-  const lines = manifestoPlateParas(manifestoHtml, 40);
-  const thesesAt = lines.findIndex((l) => /^the 42 theses/i.test(l) || /^\|\s*no\./i.test(l));
-  const preface = (thesesAt > 0 ? lines.slice(0, thesesAt) : []).map((l) => l.replace(/^\*+|\*+$/g, '').trim()).filter(Boolean);
-  const paras = preface.length ? [preface[0], preface.slice(1).join(' ')].filter(Boolean)
-    : ((manifestoPost && manifestoPost.previewParagraphs) || []).slice(0, 2);
-  const mp = manifestoPost || {};
-  const md = mp.date && !isNaN(mp.date.getTime()) ? mp.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-  const toPost = `href="${escapeHtml(MANIFESTO_URL)}" rel="noopener" target="_blank"`;
-
   const card = (key, title, inner) => `<section class="abo-card" id="${key}" aria-labelledby="abo-${key}">
       <h2 class="abo-title" id="abo-${key}">${title}</h2>
       ${inner}
@@ -5882,10 +5853,6 @@ function renderAboutPage(founders = [], manifestoHtml = '', manifestoPost = null
         <p>To pitch, submit, or place an inquiry, email <a class="abo-whole" href="mailto:editors@thenewcritic.com">editors@thenewcritic.com</a>.</p>
         <p>Subscribe to our <a href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a>.<br>Follow us on <a href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a>.</p>
       </div>`),
-    card('manifesto', `<a ${toPost}>${escapeHtml(mp.title || 'The New Critic Secession')}</a>`, `<p class="abo-role abo-role--under">${escapeHtml([mp.subtitle || 'A Manifesto of 42 Theses', md].filter(Boolean).join(', '))}</p>
-      ${mp.image ? `<a class="abo-pic" ${toPost} tabindex="-1" aria-hidden="true"><img ${coverSrcAttrs(mp.image, COVER_SIZES.pair)} alt="" loading="lazy" decoding="async"></a>` : ''}
-      ${paras.length ? `<div class="abo-body">${paras.map((t) => `<p>${escapeHtml(t)}</p>`).join('')}</div>` : ''}
-      <p class="abo-foot"><a ${toPost}>Read on ${ARROW_HTML}</a></p>`),
   ].join('\n    ');
   const parts = ABOUT_PARTS.map(([k, w], i) => `<a class="abo-parts__a${i ? '' : ' is-current'}" href="#${k}" data-part="${k}">${w}</a>`)
     .join('<span class="abo-parts__sep">, </span>');
@@ -6533,12 +6500,6 @@ async function main() {
   // give.html is only mined for assets now (see GIVE_SRC_PATH): the
   // founders' Substack links and signature images, the latter written out
   // from their inline base64 to real cacheable files.
-  // The About page's Manifesto section reprints the Secession post —
-  // one more post-page fetch, counted with the rest (a failure here
-  // trips the same "post pages failed to fetch" warning).
-  console.log('Fetching the Secession manifesto');
-  const manifestoHtml = await fetchManifesto();
-
   console.log('Reading give.html');
   const giveSrc = fs.readFileSync(GIVE_SRC_PATH, 'utf8');
   const founders = extractFounders(giveSrc);
@@ -6555,8 +6516,7 @@ async function main() {
 
   const pages = {
     'index.html': html,
-    'about.html': renderAboutPage(founders, manifestoHtml,
-      [heroArchive, essaysAll, postscriptAll, archivePosts].flat().find((p) => p && slugOf(p.link) === 'the-new-critic-secession') || null),
+    'about.html': renderAboutPage(founders),
     'archive.html': renderArchivePage(archivePool),
   };
 

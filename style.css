@@ -31610,17 +31610,19 @@ html body:is(.archive-page, .about-page) main .op-track:is(*, .r.r.r.r.r.r.r.r.r
    renderArchivePage), the bird red under the hand as the front page's corner bird is; the ledger's head in the band's
    Garamond for a while, then the other way round — "Make the title columns work sans and the ledger rows garamond":
    the head the meta's Work Sans capitals as it was, every row in the band's Garamond, its words as written, 19 on 22,
-   the row still 54 from rule to rule when it keeps to a line (16 over the words, 16 under less the rule) */
+   the row still 54 from rule to rule when it keeps to a line (16 over the words, 16 under less the rule). Then at the
+   body preview's size — "Make ledger font on [the archive] page the same size as body text preview" — 16 on 19.2, the
+   room over and under the words 17.4 so the row keeps its 54 */
 body.archive-page .arc-bird .arc-bird__body{ transition: fill .15s ease; }
 body.archive-page .arc-bird:is(:hover, :focus-visible) .arc-bird__body{ fill: var(--nc-mark, #B3301E); }
 body.archive-page .arc :is(.arc-row, .arc-none){
   font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
-  font-size: 19px;
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 19.2px;
   letter-spacing: normal;
   text-transform: none;
 }
-body.archive-page .arc .arc-row{ padding-top: 16px; padding-bottom: calc(16px - var(--arc-rw, 1px)); }
+body.archive-page .arc .arc-row{ padding-top: 17.4px; padding-bottom: calc(17.4px - var(--arc-rw, 1px)); }
 /* (the dates wider in the Garamond, kept to a line) */
 body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr) 88px 112px; }
 body.archive-page .arc .arc-row > .arc-date{ white-space: nowrap; }
@@ -31711,15 +31713,16 @@ body.about-page .abo-parts__line{ display: block; }
 body.about-page .abo-parts__a{ color: inherit; text-decoration: none; }
 body.about-page .abo-parts__a:is(:hover, :focus-visible, .is-current){ color: var(--nc-mark, #B3301E); }
 body.about-page :is(.abo-lead, .abo-card){ scroll-margin-top: calc(var(--arc-band, 0px) + 54px); }
-/* (the magazine's line, the front page's title Garamond, its lines balanced) */
+/* (the magazine's line, the front page's title Garamond at the cards' titles' size — "Make the opening paragraph the
+   same size as the section titles" — its lines balanced) */
 body.about-page .abo-lead{
   max-width: 960px;
   margin: 0 auto;
   padding: 72px 54px 0;
   font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
-  font-size: 43.75px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 48px;
+  line-height: 24px;
   text-align: center;
   text-wrap: balance;
 }
@@ -31760,7 +31763,6 @@ body.about-page .abo-role{
   letter-spacing: 0.26px;
   text-transform: uppercase;
 }
-body.about-page .abo-role--under{ margin: 6px 0 0; }
 body.about-page .abo-masthead{ margin-top: 24px; }
 body.about-page .abo-group + .abo-group{ margin-top: 24px; }
 body.about-page .abo-name{
@@ -31798,26 +31800,15 @@ body.about-page .abo-name:is(:hover, :focus-visible) .abo-face{ opacity: 1; }
 @media (max-width: 900px), (hover: none){
   body.about-page .abo-face{ display: none; }
 }
-/* (the Secession: its title, the dek's line in capitals under it, the picture at the words' width, the preface, Read on) */
-body.about-page .abo-pic{ display: block; margin-top: 24px; }
-body.about-page .abo-pic img{ display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-body.about-page .abo-foot{
-  margin: 24px 0 0;
-  font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif);
-  font-size: 13px;
-  line-height: 18px;
-  letter-spacing: 0.26px;
-  text-transform: uppercase;
-}
-body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a){ color: inherit; text-decoration: none; }
-body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
+body.about-page .abo :is(.abo-title a, .abo-body a){ color: inherit; text-decoration: none; }
+body.about-page .abo :is(.abo-title a, .abo-body a, a.abo-name):is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
 /* (one column on a phone: the line smaller so it keeps to one, pinned under the phone's band; the magazine's line
    smaller; the cards the window's width less the gutters) */
 @media (max-width: 1023px){
   body.about-page .abo{ padding: 0 0 72px; }
   body.about-page .abo-parts{ top: 55px; font-size: min(17px, calc((100vw - 32px) / 20)); }
   body.about-page :is(.abo-lead, .abo-card){ scroll-margin-top: calc(55px + 54px); }
-  body.about-page .abo-lead{ padding: 48px 36px 0; font-size: 32px; line-height: 36px; }
+  body.about-page .abo-lead{ padding: 48px 36px 0; }
   body.about-page .abo-card{ padding: 0 36px; }
 }
 
