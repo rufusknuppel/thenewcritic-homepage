@@ -31989,3 +31989,32 @@ html.is-archive{ --nc-rule: #121417; }
 body.archive-page .arc--whole .arc-find{ flex: none; width: min(360px, 100%); }
 body.archive-page .arc--whole .arc-search{ padding: 0 0 4px; border-bottom: 1px solid var(--nc-rule, #D6D6D6); }
 @media (min-resolution: 2dppx){ body.archive-page .arc--whole .arc-search{ border-bottom-width: 0.5px; } }
+
+/* THE TAGS IN THE BYLINE'S SHAPE (2026-10-22 — "shape the tags like the tags for the byline on the homepage"): each tag
+   the front page's fork round its byline — slanted in at 45 on its left, square on its right — in a line of the rules'
+   width: the shape filled in the line's colour and, the line's width in, again in the page's (or, for the section the
+   ledger shows, in the ink) */
+body.archive-page .arc--whole .arc-tags .arc-sections__a{
+  position: relative;
+  isolation: isolate;
+  padding: 4px 11px 4px 24px;
+  border: 0;
+  background: none;
+  --tag-run: 13px;
+  --tag-fill: var(--tw, #FAF9F6);
+}
+body.archive-page .arc--whole .arc-tags .arc-sections__a::before,
+body.archive-page .arc--whole .arc-tags .arc-sections__a::after{
+  content: "";
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(var(--tag-run) 0, 100% 0, 100% 100%, var(--tag-run) 100%, 0 50%);
+}
+body.archive-page .arc--whole .arc-tags .arc-sections__a::before{ inset: 0; background: currentColor; }
+body.archive-page .arc--whole .arc-tags .arc-sections__a::after{
+  inset: var(--arc-rw, 1px);
+  --tag-run: calc(13px - var(--arc-rw, 1px) * 0.41);
+  background: var(--tag-fill);
+}
+body.archive-page .arc--whole .arc-tags .arc-sections__a.is-current{ background: none; color: var(--tw, #FAF9F6); --tag-fill: var(--k, #121417); }
+body.archive-page .arc--whole .arc-tags .arc-sections__a.is-current::before{ background: var(--k, #121417); }
