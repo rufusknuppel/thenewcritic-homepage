@@ -16570,3 +16570,4 @@ body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ background: linear-gradient(to bottom, var(--nc-rule, #D6D6D6) 50%, transparent 50%) !important; }
 }
 :root{ --nc-rule: var(--nc-mark, #B3301E); --nc-outline: #D6D6D6; }
+:root{ --nc-outline: var(--nc-mark, #B3301E); }

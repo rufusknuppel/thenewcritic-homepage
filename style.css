@@ -31842,3 +31842,5 @@ body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(
    highlight's red, and the pictures' outlines and the About faces' rings held in the light gray on a token of their own
    (--nc-outline) */
 :root{ --nc-rule: var(--nc-mark, #B3301E); --nc-outline: #D6D6D6; }
+/* (the outlines round the pictures in the highlight too since — "Make the outlines around images highlight color too") */
+:root{ --nc-outline: var(--nc-mark, #B3301E); }
