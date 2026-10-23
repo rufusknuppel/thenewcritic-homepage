@@ -5910,8 +5910,9 @@ function arcSortBtn(key, label, on = '') {
 function renderArchiveRow(post) {
   const d = post.date;
   const ok = d && !isNaN(d.getTime());
-  // (every date with its year — the ledger is the one place the whole run is dated in full)
-  const dateStr = ok ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : post.metaDate || '';
+  // (every date with its year — the ledger is the one place the whole run is dated in full — in figures, month, day and
+  // the year's last two, no zeros before them: "write the date as 9.5.26")
+  const dateStr = ok ? `${d.getMonth() + 1}.${d.getDate()}.${String(d.getFullYear()).slice(-2)}` : post.metaDate || '';
   // (sort keys lowercased, a title's leading quotes stripped so “Quoted” titles don't sort ahead of the alphabet; the
   // slug is the deep links' target — #sort=<key>&post=<slug>, archiveHref)
   const attrs = ` data-title="${escapeHtml((post.title || '').toLowerCase().replace(/^[^\p{L}\p{N}]+/u, ''))}"`
