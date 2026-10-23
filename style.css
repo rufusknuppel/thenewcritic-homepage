@@ -31874,3 +31874,10 @@ body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-l > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ -webkit-mask-image: linear-gradient(to right, #000 calc(var(--hl-xl, 0px) + var(--hl-ga, 100000px)), transparent 0) !important; mask-image: linear-gradient(to right, #000 calc(var(--hl-xl, 0px) + var(--hl-ga, 100000px)), transparent 0) !important; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-r > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ -webkit-mask-image: linear-gradient(to right, transparent calc(var(--hl-xl, 0px) + var(--hl-gb, -100000px)), #000 0) !important; mask-image: linear-gradient(to right, transparent calc(var(--hl-xl, 0px) + var(--hl-gb, -100000px)), #000 0) !important; }
 }
+
+/* THE FORK'S FAR END SQUARE (2026-10-22 — "Make the far end of the fork a rectilinear end, not a triangle"): the fork
+   drawn both ways, slanted where the line comes in from the picture and square where it leaves off; the one for the
+   picture's side shown (latest-rail.js hl-pic-l / hl-pic-r; the picture on the left till that is read) */
+.swap-body .nc-hairline-fork path.fk-pic-r{ display: none; }
+.swap-body.hl-pic-r .nc-hairline-fork path.fk-pic-l{ display: none; }
+.swap-body.hl-pic-r .nc-hairline-fork path.fk-pic-r{ display: inline; }

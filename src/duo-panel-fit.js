@@ -9468,8 +9468,14 @@
         if (!fk) { fk = document.createElement('span'); fk.className = 'nc-hairline-fork'; fk.setAttribute('aria-hidden', 'true'); j.body.appendChild(fk); }
         var hi = window.devicePixelRatio >= 2, o = hi ? 0.25 : 0.5, R = FORK_RISE;
         var fst = 'left:' + (j.mR.left - FORK_PAD - FORK_RUN - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + (top - R).toFixed(2) + 'px;width:' + fw.toFixed(2) + 'px;height:' + (2 * R + 1) + 'px';
-        var d = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + (fw - FORK_RUN).toFixed(2) + 'L' + fw.toFixed(2) + ' ' + (R + o) + 'L' + (fw - FORK_RUN).toFixed(2) + ' ' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
-        var svg = '<svg width="' + fw.toFixed(2) + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + fw.toFixed(2) + ' ' + (2 * R + 1) + '" overflow="visible"><path d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/></svg>';
+        // (the far end square since, a straight up its side where the line leaves off, the slants only where the line comes
+        // in from the picture — "Make the far end of the fork a rectilinear end, not a triangle", 2026-10-22: both drawn,
+        // the sheet showing the one for the picture's side, style.css THE FORK'S FAR END SQUARE)
+        var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - o).toFixed(2);
+        var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
+        var dR = 'M' + o + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + o + 'Z';
+        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/>'; };
+        var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
       } else if (k[0] === 'dek' && fk) fk.remove();
