@@ -31878,5 +31878,6 @@ body.about-page .abo :is(.abo-title a, .abo-body a, .abo-foot a, a.abo-name):is(
 /* THE FORK FILLED (2026-10-22 — "fill in the fork with highlight color"): the fork round the byline the highlight's red,
    the byline on it in the ground's colour — the charcoal stood too faint on the red at its size — and the charcoal under
    the hand, where the red it turned to would vanish (duo-panel-fit.js seatHairlines writes the colour as --fork-ink) */
-:root{ --fork-ink: var(--tw, #FAF9F6); }
-html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: var(--tc, #121417); }
+/* (the byline in the charcoal on the red since, the ground's colour under the hand — "Make text black in fork") */
+:root{ --fork-ink: var(--tc, #121417); }
+html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: var(--tw, #FAF9F6); }
