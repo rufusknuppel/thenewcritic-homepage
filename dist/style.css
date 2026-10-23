@@ -15921,3 +15921,10 @@ html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .duo-half--mega.duo-half--mega:is(.is-acts, .is-acts-held) > .nc-pic-line{ opacity: 1; }
 }
+body.archive-page .arc--whole .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr); }
+@media (min-width: 1024px) and (max-width: 1279px){
+  body.archive-page .arc--whole .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr); }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc--whole .arc-main{ --arc-cols: minmax(0, 1fr); }
+}

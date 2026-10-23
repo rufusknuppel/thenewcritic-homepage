@@ -2918,8 +2918,8 @@ function sideStacksHtml(post) {
   const line = (text, cls, href) => text
     ? `<p class="cover-meta cover-meta--kick cover-meta--corner cover-meta--${cls}"><span class="cover-kicker"><a href="${escapeHtml(href)}">${escapeHtml(text)}</a></span></p>`
     : '';
-  return line(metaDateText(post), 'cdate', archiveHref(post, 'date'))
-    + line(post.kicker, 'ckick', archiveHref(post, 'kicker'));
+  // (no date in the corner since — "Remove the date from the site", 2026-10-23; the fitter seats what stands)
+  return line(post.kicker, 'ckick', archiveHref(post, 'kicker'));
 }
 // THE FRAME'S HEAD BAND carries the byline at its left (seatMatterMeta
 // seats it); the date, the kicker and Preview take the other corners.
@@ -5921,9 +5921,6 @@ function arcSortBtn(key, label, on = '') {
 function renderArchiveRow(post) {
   const d = post.date;
   const ok = d && !isNaN(d.getTime());
-  // (every date with its year — the ledger is the one place the whole run is dated in full — in figures, month, day and
-  // the year's last two, no zeros before them: "write the date as 9.5.26")
-  const dateStr = ok ? `${d.getMonth() + 1}.${d.getDate()}.${String(d.getFullYear()).slice(-2)}` : post.metaDate || '';
   // (sort keys lowercased, a title's leading quotes stripped so “Quoted” titles don't sort ahead of the alphabet; the
   // slug is the deep links' target — #sort=<key>&post=<slug>, archiveHref)
   const attrs = ` data-title="${escapeHtml((post.title || '').toLowerCase().replace(/^[^\p{L}\p{N}]+/u, ''))}"`
@@ -5936,8 +5933,8 @@ function renderArchiveRow(post) {
       <a class="arc-row"${attrs} href="${escapeHtml(post.link)}" rel="noopener">`
     + `<span class="arc-cell arc-title">${escapeHtml(post.title)}</span>`
     + `<span class="arc-cell arc-author">${escapeHtml(post.author || '')}</span>`
-    + `<span class="arc-cell arc-kicker">${escapeHtml(post.kicker || '')}</span>`
-    + `<span class="arc-cell arc-date">${escapeHtml(dateStr)}</span></a>`;
+    + `<span class="arc-cell arc-kicker">${escapeHtml(post.kicker || '')}</span></a>`;
+  // (no Date column since — "Remove the date from the site", 2026-10-23: the rows keep data-date, newest first)
 }
 // THE FRONT PAGE'S HEAD ON A PAGE OF ITS OWN (2026-10-22 — the archive's first, then About's, "Redesign the about page in
 // the same was as the archive redesign", "have white background and keep current features, but update with new
@@ -5961,7 +5958,6 @@ function renderArchivePage(posts) {
       <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">&#8644;</button></span>
       <span class="arc-cell arc-author">${arcSortBtn('author', 'Author')}</span>
       <span class="arc-cell arc-kicker">${arcSortBtn('kicker', 'Tag')}</span>
-      <span class="arc-cell arc-date">${arcSortBtn('date', 'Date', 'desc')}</span>
     </div>`;
   // THE SEARCH ROW AND THE SECTIONS' TAGS (2026-10-22 — "Remove side column from the archive page. Above the column row,
   // add an empty search row, with certain filters as tags beneath like essays/postscript/contra. Remove the Section

@@ -9788,8 +9788,8 @@
                 var hm = document.createElement('span');
                 hm.className = 'swap-body-meta';
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
-                var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
-                [mw, md].filter(Boolean).forEach(function (a0, k) {
+                // (the writer alone since, no date — "Remove the date from the site", 2026-10-23)
+                [mw].filter(Boolean).forEach(function (a0, k) {
                   // (a small dot between the writer and the date since, not a comma — "Replace the comma with a small dot between
                   // the date and the author", 2026-10-22)
                   // (twice the space either side of it since — "double the space between the words and the dots", 2026-10-22)

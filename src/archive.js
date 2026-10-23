@@ -95,8 +95,8 @@
     if (f.author) ctx += ' by ' + nb(nameOf('author', f.author));
     if (f.topic) ctx += ' on ' + q(nameOf('kicker', f.topic));
     var t = !n ? 'nothing' + ctx + (f.words ? ' matches ' + q(f.words) : '')
-      : inWords(n) + (n === 1 ? ' piece' : ' pieces') + ctx + (f.words ? ' matching ' + q(f.words) : '')
-        + (n > 1 && oldest ? ' since ' + MONTHS[oldest.getMonth()] + '\u00A0' + oldest.getFullYear() : '');
+      : inWords(n) + (n === 1 ? ' piece' : ' pieces') + ctx + (f.words ? ' matching ' + q(f.words) : '');
+    // (no 'since' and its month after the count — "Remove the date from the site", 2026-10-23)
     count.textContent = t.charAt(0).toUpperCase() + t.slice(1);
   };
   var filtered = false;
