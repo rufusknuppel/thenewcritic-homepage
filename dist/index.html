@@ -6732,6 +6732,7 @@
   TOP_RULE_GAP = 27;
   META_RULE_AIR = 27;
   META_TITLE_GAP = DEK_TO_TEXT = 27 + 1 + 27;
+  var META_RULES = false;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -7346,16 +7347,17 @@
             hairM = ((j.mB + upY + metaY) + (j.ttT + upY)) / 2;
             hairD = ((j.dkB + dekY) + (j.txT + dnY)) / 2;
             if (META_UNDER) {
-              var sH2 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * (2 * META_RULE_AIR + 1) + (j.mB - j.mT) + (j.inB - j.txT);
+              var mGap = META_RULES ? 2 * META_RULE_AIR + 1 : META_RULE_AIR;
+              var sH2 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * mGap + (j.mB - j.mT) + (j.inB - j.txT);
               var y2 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH2) / 2));
               upY = y2 - j.ttT;
               dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
-              var dkFoot = j.dkB + dekY, mCap = dkFoot + 2 * META_RULE_AIR + 1;
+              var dkFoot = j.dkB + dekY, mCap = dkFoot + mGap;
               metaY = mCap - j.mT - upY;
               var mFoot2 = j.mB + upY + metaY;
-              dnY = (mFoot2 + 2 * META_RULE_AIR + 1) - j.txT;
-              hairD = dkFoot + META_RULE_AIR + 0.5;
-              hairM = mFoot2 + META_RULE_AIR + 0.5;
+              dnY = (mFoot2 + mGap) - j.txT;
+              hairD = META_RULES ? dkFoot + META_RULE_AIR + 0.5 : null;
+              hairM = META_RULES ? mFoot2 + META_RULE_AIR + 0.5 : null;
             }
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;

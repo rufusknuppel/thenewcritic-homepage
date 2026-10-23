@@ -9005,6 +9005,9 @@
   TOP_RULE_GAP = 27;
   META_RULE_AIR = 27;
   META_TITLE_GAP = DEK_TO_TEXT = 27 + 1 + 27;
+  // (the hairlines gone since and their room closed, the byline 27 under the dek and the body 27 under the byline —
+  // "Remove the rules around the metadata", 2026-10-22: seatHairlines lays none)
+  var META_RULES = false;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -10061,16 +10064,17 @@
             // hairline and the body's first ink — META_RULE_AIR either side of each hairline, the whole centred in
             // the picture's height as before; none over the title
             if (META_UNDER) {
-              var sH2 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * (2 * META_RULE_AIR + 1) + (j.mB - j.mT) + (j.inB - j.txT);
+              var mGap = META_RULES ? 2 * META_RULE_AIR + 1 : META_RULE_AIR;
+              var sH2 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * mGap + (j.mB - j.mT) + (j.inB - j.txT);
               var y2 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH2) / 2));
               upY = y2 - j.ttT;
               dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
-              var dkFoot = j.dkB + dekY, mCap = dkFoot + 2 * META_RULE_AIR + 1;
+              var dkFoot = j.dkB + dekY, mCap = dkFoot + mGap;
               metaY = mCap - j.mT - upY;
               var mFoot2 = j.mB + upY + metaY;
-              dnY = (mFoot2 + 2 * META_RULE_AIR + 1) - j.txT;
-              hairD = dkFoot + META_RULE_AIR + 0.5;
-              hairM = mFoot2 + META_RULE_AIR + 0.5;
+              dnY = (mFoot2 + mGap) - j.txT;
+              hairD = META_RULES ? dkFoot + META_RULE_AIR + 0.5 : null;
+              hairM = META_RULES ? mFoot2 + META_RULE_AIR + 0.5 : null;
             }
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
