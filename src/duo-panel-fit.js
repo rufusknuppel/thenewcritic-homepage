@@ -9013,6 +9013,10 @@
   // (the byline over the title again since, 27 over its first ink, the hairline kept where it stood, between the dek and
   // the body — "move metadata above titles", "No keep rule where it is now", 2026-10-22)
   var META_ABOVE = true;
+  // (54 for every gap since — "Increase gaps to 54px", 2026-10-22)
+  TOP_RULE_GAP = 54;
+  META_RULE_AIR = 54;
+  META_TITLE_GAP = DEK_TO_TEXT = 54 + 1 + 54;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
