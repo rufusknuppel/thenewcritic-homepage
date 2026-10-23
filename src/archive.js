@@ -181,4 +181,20 @@
     if (search) search.value = '';
     applyFilter(); toHead();
   });
+
+  // (the marks lit under the hand, as on the front page — "Highlight should work on wordmark on archive", 2026-10-23:
+  // latest-rail.js wires them there and is not on this page; the same main.nc-hot-* classes, so style.css THE MARKS LIT
+  // TOGETHER paints them, in the white here; on body too, the name standing outside main — style.css THE ARCHIVE'S NAME LIT)
+  var mn = document.querySelector('main');
+  if (mn) [].forEach.call(document.querySelectorAll('a.content-name .content-name__block > .tnc-words, main .op-band > a.rail-tlm, main .op-band > a.op-tnc'), function (el) {
+    var band2 = el.matches('main .op-band > a');
+    el.addEventListener('mouseenter', function () {
+      // (the band's two names stand one over the other, the one faded out still under the hand: the one showing is lit)
+      var tlm = el.classList.contains('rail-tlm');
+      if (band2 && parseFloat(getComputedStyle(el).opacity) < 0.5) tlm = !tlm;
+      mn.classList.add(tlm ? 'nc-hot-tlm' : 'nc-hot-tnc');
+      document.body.classList.add(tlm ? 'nc-hot-tlm' : 'nc-hot-tnc');
+    });
+    el.addEventListener('mouseleave', function () { mn.classList.remove('nc-hot-tlm', 'nc-hot-tnc'); document.body.classList.remove('nc-hot-tlm', 'nc-hot-tnc'); });
+  });
 })();
