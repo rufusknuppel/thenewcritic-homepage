@@ -9000,6 +9000,11 @@
   // "Move the work sans beneath the dek, with a divider above and beneath it remove the divider above title",
   // 2026-10-22: seatSwapCols, THE BYLINE UNDER THE DEK)
   var META_UNDER = true, META_RULE_AIR = 39;
+  // (27 for every gap since, the title to the dek and either side of each hairline — "Reduce the gaps to 27px",
+  // 2026-10-22)
+  TOP_RULE_GAP = 27;
+  META_RULE_AIR = 27;
+  META_TITLE_GAP = DEK_TO_TEXT = 27 + 1 + 27;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
