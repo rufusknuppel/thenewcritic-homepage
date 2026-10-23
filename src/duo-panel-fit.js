@@ -9403,6 +9403,22 @@
       }
     });
   }
+  // THE HAIRLINES (2026-10-22, at the user's words — "Add a .5 px black rule between the metadata and the title and
+  // between the dek and the body text", "charcoal"): a span in the words' column over the title and one under the dek,
+  // as wide as the body's column, each on the whole pixel of the page nearest the middle of its air — the byline's
+  // baseline to the title's first ink, the dek's last baseline to the body's first (seatSwapCols reads the middles;
+  // style.css THE HAIRLINES OVER THE TITLE AND UNDER THE DEK paints them)
+  function seatHairlines(j, midM, midD) {
+    [['meta', midM], ['dek', midD]].forEach(function (k) {
+      var hl = j.body.querySelector(':scope > .nc-hairline--' + k[0]);
+      if (k[1] == null || !isFinite(k[1]) || !j.tb) { if (hl) hl.remove(); return; }
+      if (!hl) { hl = document.createElement('span'); hl.className = 'nc-hairline nc-hairline--' + k[0]; hl.setAttribute('aria-hidden', 'true'); j.body.appendChild(hl); }
+      // (the box's top half the painted half, so the box a quarter over the middle)
+      var top = Math.round(k[1] + j.sy - 0.25) - j.sy - j.bb.top - j.bcT;
+      var st = 'left:' + (j.tb.left - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + top.toFixed(2) + 'px;width:' + j.tb.width.toFixed(2) + 'px';
+      if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
+    });
+  }
   function seatSwapCols() {
     var px = function (v) { return parseFloat(v) || 0; };
     var jobs = [];
@@ -9856,6 +9872,8 @@
     // READ: the ink
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      // (the page's scroll and the column's border, for THE HAIRLINES' whole pixels)
+      j.sy = window.pageYOffset || 0; j.bcT = j.body.clientTop || 0; j.bcL = j.body.clientLeft || 0;
       // (the card's half, where the rule over the dek stands since it runs
       // under the picture: THE RULE FROM EDGE TO EDGE)
       j.hf = j.body.parentElement; j.hb = j.hf ? j.hf.getBoundingClientRect() : null;
@@ -9906,7 +9924,7 @@
     });
     // WRITE: the centring, and the bodies set
     twos.forEach(function (j) {
-      if (!isFinite(j.inT)) return;
+      if (!isFinite(j.inT)) { seatHairlines(j, null, null); return; }
       // (pinned, in its frame: the head's ink on the picture's top, the dek
       // and text's last baseline on its foot — THE FRAME ROUND THE PICTURE
       // ALONE)
@@ -9920,7 +9938,7 @@
         // dek's first ink 54 under it, the dek's last baseline 27 over the
         // text, and the whole stack centred in the picture's height — no
         // nearer its top or foot than the 27 pins it stood on before
-        var ruleTop = null;
+        var ruleTop = null, hairM = null, hairD = null;
         var stacked = j.hdB != null && j.pdk && j.dkT != null && j.dkB != null && j.txT != null;
         // (THE DEK UNDER THE TITLE, later that day — "Move dek under
         // title": the dek's first ink 27 under the title's lowest, over the
@@ -10019,6 +10037,10 @@
             ruleTop = Math.round(j.dkB + dekY + RULE_AIR);
             dnY = (ruleTop + FRAME + RULE_AIR) - j.txT;
             if (dekToText !== RULE_AIR + FRAME + RULE_AIR) dnY = (j.dkB + dekY + dekToText) - j.txT;
+            // (THE HAIRLINES on the middles: of the byline's baseline and the title's first ink, of the dek's last
+            // baseline and the body's first ink)
+            hairM = ((j.mB + upY + metaY) + (j.ttT + upY)) / 2;
+            hairD = ((j.dkB + dekY) + (j.txT + dnY)) / 2;
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
             upY = tTop - j.ttT;
@@ -10050,6 +10072,7 @@
         // over the dek, a whole pixel — "move rule above dek", 2026-10-05;
         // it stood between the dek and the text for an hour)
         if (j.pdk) j.pdk.style.transform = 'translateY(' + dekY.toFixed(2) + 'px)';
+        seatHairlines(j, hairM, hairD);
         // (a 2 rule between the dek and the text, halfway between their
         // boxes, from the picture's frame to the column's outer edge —
         // "place a 2px line between dek and body text that extends to edge
@@ -10108,6 +10131,7 @@
       j.bt.style.transform = shY;
       if (j.pdk) j.pdk.style.transform = shY;
       if (j.hd) j.hd.style.transform = shY;
+      seatHairlines(j, null, null);
     });
     twos.forEach(function (j) { j.bt.__swapKey = j.key; });
     jobs.forEach(function (j) { if (j.set) j.body.classList.add('is-set'); });
