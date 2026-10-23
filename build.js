@@ -5926,7 +5926,6 @@ function renderArchiveRow(post) {
     + `<span class="arc-cell arc-title">${escapeHtml(post.title)}</span>`
     + `<span class="arc-cell arc-author">${escapeHtml(post.author || '')}</span>`
     + `<span class="arc-cell arc-kicker">${escapeHtml(post.kicker || '')}</span>`
-    + `<span class="arc-cell arc-section">${escapeHtml(post.sectionLabel || '')}</span>`
     + `<span class="arc-cell arc-date">${escapeHtml(dateStr)}</span></a>`;
 }
 // THE FRONT PAGE'S HEAD ON A PAGE OF ITS OWN (2026-10-22 — the archive's first, then About's, "Redesign the about page in
@@ -5946,56 +5945,43 @@ function renderFrontPage({ currentKey, title, description, bodyClass, bodyHtml, 
     .map((f) => `<script>\n${slimJs(fs.readFileSync(path.join(__dirname, f), 'utf8'))}\n</script>`).join('\n');
   return renderPageShell({ currentKey, title, description, preMain: toFront(contentNameBlock()), bodyHtml: `${band}\n${bodyHtml}`, bodyClass, bare: true, extraScripts: js });
 }
-// THE FRONT PAGE'S ANATOMY ON THE ARCHIVE (2026-10-22): under that head, the page's own column where the front page's
-// posts stand and the side column under the socials — the bird, the page's stack under it; the bird a way home as the
-// names are, as the front page's corner bird was, out of the keys' way since the name over it is the same link
-function renderFrontAnatomy({ currentKey, title, description, bodyClass, label, mainHtml, sideLabel, stackHtml, script = '' }) {
-  const bird = railSwallow().replace(/rail-swallow/g, 'arc-bird')
-    .replace(/^<span class="arc-bird" aria-hidden="true"/, `<a class="arc-bird" href="${FRONT_HOME}" aria-hidden="true" tabindex="-1"`)
-    .replace(/<\/span>$/, '</a>');
-  return renderFrontPage({ currentKey, title, description, bodyClass, script, bodyHtml: `<section class="arc" aria-label="${escapeHtml(label)}">
-  <div class="arc-main">
-    ${mainHtml}
-  </div>
-  <aside class="arc-side" aria-label="${escapeHtml(sideLabel)}">
-    <div class="arc-side__hold">
-      ${bird}
-      <div class="arc-stack">
-        ${stackHtml}
-      </div>
-    </div>
-  </aside>
-</section>` });
-}
 function renderArchivePage(posts) {
   const head = `<div class="arc-head">
       <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">&#8644;</button></span>
       <span class="arc-cell arc-author">${arcSortBtn('author', 'Author')}</span>
       <span class="arc-cell arc-kicker">${arcSortBtn('kicker', 'Tag')}</span>
-      <span class="arc-cell arc-section">${arcSortBtn('section', 'Section')}</span>
       <span class="arc-cell arc-date">${arcSortBtn('date', 'Date', 'desc')}</span>
     </div>`;
-  const sections = [`<a class="arc-sections__a is-current" href="archive.html" data-section="">The Archive</a>`]
+  // THE SEARCH ROW AND THE SECTIONS' TAGS (2026-10-22 — "Remove side column from the archive page. Above the column row,
+  // add an empty search row, with certain filters as tags beneath like essays/postscript/contra. Remove the Section
+  // column"): the ledger the window's width, the field a row of its own over the head and the sections under it as
+  // tags, All first; the section no column of its own, the rows keeping it for the tags (src/archive.js, unchanged:
+  // .arc-sections__a, .arc-search, .arc-clear, .arc-count)
+  const tags = [`<a class="arc-sections__a is-current" href="archive.html" data-section="">All</a>`]
     .concat(ARC_SECTIONS.map(([k, w]) => `<a class="arc-sections__a" href="#section=${k}" data-section="${k}">${w}</a>`))
-    .join('<span class="arc-sections__sep">, </span>');
+    .join('');
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
-  return renderFrontAnatomy({
+  return renderFrontPage({
     currentKey: 'archive',
     title: 'Archive',
-    description: `Every post in ${SITE_NAME}, by title, author, tag, section and date.`,
+    description: `Every post in ${SITE_NAME}, by title, author, tag and date.`,
     bodyClass: 'archive-page',
-    label: 'Every post',
-    mainHtml: `${head}
+    script: 'src/archive.js',
+    bodyHtml: `<section class="arc arc--whole" aria-label="Every post">
+  <div class="arc-main">
+    <div class="arc-find-row">
+      <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
+      <button class="arc-clear" type="button" hidden>Clear</button>
+    </div>
+    <nav class="arc-sections arc-tags" aria-label="Sections">${tags}</nav>
+    <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
+    ${head}
     <div class="arc-body">${posts.map(renderArchiveRow).join('')}
     </div>
-    <p class="arc-none" hidden>Nothing matches</p>`,
-    sideLabel: 'Sections and search',
-    stackHtml: `<nav class="arc-sections" aria-label="Sections">${sections}</nav>
-        <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
-        <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
-        <button class="arc-clear" type="button" hidden>Clear</button>`,
-    script: 'src/archive.js',
+    <p class="arc-none" hidden>Nothing matches</p>
+  </div>
+</section>`,
   }).replace('<html lang="en">', '<html lang="en" class="is-archive">').replace('<meta name="theme-color" content="#FAF9F6">', '<meta name="theme-color" content="#B3301E">');
 }
 
