@@ -5968,7 +5968,7 @@ function renderFrontAnatomy({ currentKey, title, description, bodyClass, label, 
 }
 function renderArchivePage(posts) {
   const head = `<div class="arc-head">
-      <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">Shuffle</button></span>
+      <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">&#8644;</button></span>
       <span class="arc-cell arc-author">${arcSortBtn('author', 'Author')}</span>
       <span class="arc-cell arc-kicker">${arcSortBtn('kicker', 'Tag')}</span>
       <span class="arc-cell arc-section">${arcSortBtn('section', 'Section')}</span>
