@@ -31752,15 +31752,13 @@ body.about-page .abo-body p + p{ margin-top: 19.2px; }
 body.about-page .abo-whole{ white-space: nowrap; }
 body.about-page .abo-list{ display: table; margin: 19.2px auto 0; padding: 0 0 0 22.4px; text-align: left; }
 body.about-page .abo-list li{ margin: 0; padding: 0; }
-/* (the ledger's Work Sans capitals at the body preview's size — "Make ledger font on about page the same size as body
-   text preview" — 16px on its 19.2px line, the tracking kept at .02em) */
 body.about-page .abo-role{
   margin: 0 0 6px;
   font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 19.2px;
-  letter-spacing: 0.32px;
+  line-height: 18.2px;
+  letter-spacing: 0.26px;
   text-transform: uppercase;
 }
 body.about-page .abo-masthead{ margin-top: 24px; }
