@@ -298,7 +298,7 @@
     else watch();
   }).then(function () { gate.covers = performance.now(); });
   var fitDone = new Promise(function (resolve) {
-    if (window.__ncFitDone) { resolve(); return; }
+    if (true) { resolve(); return; }
     addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
   }).then(function () { gate.fitted = performance.now(); });
   Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
