@@ -9724,9 +9724,7 @@
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
                 var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
                 [mw, md].filter(Boolean).forEach(function (a0, k) {
-                  // (no comma between since, the writer flush left and the date flush right — "Have the metadata sit aligned
-                  // right and left. no comma in between", 2026-10-22; style.css THE BYLINE AT BOTH EDGES)
-                  if (k) hm.appendChild(document.createTextNode(' '));
+                  if (k) hm.appendChild(document.createTextNode(', '));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
