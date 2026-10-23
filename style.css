@@ -16500,10 +16500,10 @@ body.about-page .abo-list li{ margin: 0; padding: 0; }
 body.about-page .abo-role{
   margin: 0 0 6px;
   font-family: var(--byline-face, 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 18.2px;
-  letter-spacing: 0.26px;
+  line-height: 19.2px;
+  letter-spacing: 0.32px;
   text-transform: uppercase;
 }
 body.about-page .abo-masthead{ margin-top: 24px; }
