@@ -6995,9 +6995,9 @@
         if (!fk) { fk = document.createElement('span'); fk.className = 'nc-hairline-fork'; fk.setAttribute('aria-hidden', 'true'); j.body.appendChild(fk); }
         var hi = window.devicePixelRatio >= 2, o = hi ? 0.25 : 0.5, R = FORK_RISE;
         var fst = 'left:' + (j.mR.left - FORK_PAD - FORK_RUN - j.bb.left - j.bcL).toFixed(2) + 'px;top:' + (top - R).toFixed(2) + 'px;width:' + fw.toFixed(2) + 'px;height:' + (2 * R + 1) + 'px';
-        var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - o).toFixed(2);
+        var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - FORK_RUN - o).toFixed(2), Ro = (FORK_RUN + o).toFixed(2);
         var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
-        var dR = 'M' + o + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + o + 'Z';
+        var dR = 'M' + Ro + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + Ro + 'Z';
         var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" fill="none" stroke-width="' + (hi ? 0.5 : 1) + '" style="stroke: var(--nc-rule, #B3301E)"/>'; };
         var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
@@ -7188,7 +7188,7 @@
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
                 var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
                 [mw, md].filter(Boolean).forEach(function (a0, k) {
-                  if (k) hm.appendChild(document.createTextNode('\u00A0\u00A0\u2013\u00A0\u00A0'));
+                  if (k) hm.appendChild(document.createTextNode(', '));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
