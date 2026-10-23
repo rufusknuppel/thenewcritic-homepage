@@ -16643,3 +16643,11 @@ body.archive-page .arc--whole .arc-count{ position: absolute; width: 1px; height
   body.archive-page .arc--whole .arc-find-row{ padding: 13px 52px; }
   body.archive-page .arc--whole .arc-tags{ padding: 0 52px 18px; }
 }
+body.archive-page .arc--whole .arc-find-row{ position: relative; justify-content: center; }
+body.archive-page .arc--whole .arc-search{ text-align: center; }
+body.archive-page .arc--whole .arc-find-row > .arc-clear{ position: absolute; right: 54px; top: 50%; transform: translateY(-50%); }
+body.archive-page .arc--whole .arc-tags{ justify-content: center; }
+@media (max-width: 1023px){
+  body.archive-page .arc--whole .arc-find-row > .arc-clear{ right: 52px; }
+}
+html.is-archive{ --nc-rule: #121417; }

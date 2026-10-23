@@ -31969,3 +31969,17 @@ body.archive-page .arc--whole .arc-count{ position: absolute; width: 1px; height
   body.archive-page .arc--whole .arc-find-row{ padding: 13px 52px; }
   body.archive-page .arc--whole .arc-tags{ padding: 0 52px 18px; }
 }
+
+/* THE SEARCH CENTRED (2026-10-22 — "I want search to be centered"): the field's word on the ledger's middle, the tags
+   centred under it, Clear held on the row's right edge so it moves neither */
+body.archive-page .arc--whole .arc-find-row{ position: relative; justify-content: center; }
+body.archive-page .arc--whole .arc-search{ text-align: center; }
+body.archive-page .arc--whole .arc-find-row > .arc-clear{ position: absolute; right: 54px; top: 50%; transform: translateY(-50%); }
+body.archive-page .arc--whole .arc-tags{ justify-content: center; }
+@media (max-width: 1023px){
+  body.archive-page .arc--whole .arc-find-row > .arc-clear{ right: 52px; }
+}
+
+/* THE ARCHIVE'S RULES CHARCOAL (2026-10-22 — "I also want the rules on the archive page to be charcoal"): the ledger's
+   rules, the head's and the search row's, and the line under the band, in the charcoal on the red, not the quarter white */
+html.is-archive{ --nc-rule: #121417; }
