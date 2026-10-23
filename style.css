@@ -31664,6 +31664,11 @@ html.is-archive :is(a.content-name, a.op-tnc, a.rail-tlm, a.arc-bird){
   --nc-mark: #FAF9F6;
   color: #121417;
 }
+/* (the shuffle, the search's word and its Clear the white, not the softer white — "Shuffle button and search should be
+   white not gray"; the ink under the hand still) */
+body.archive-page .arc :is(.arc-shuffle, .arc-clear){ color: var(--k, #FAF9F6); }
+body.archive-page .arc :is(.arc-shuffle, .arc-clear):is(:hover, :focus-visible, .is-on){ color: var(--nc-mark, #121417); }
+body.archive-page .arc-search::placeholder{ color: var(--k, #FAF9F6); }
 
 
 /* THE PAGE IN THE NAV (2026-10-22 — "On archive and about pages, make the archive or about in the nav bar black resting",
