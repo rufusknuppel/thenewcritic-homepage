@@ -11,6 +11,9 @@ const path = require('path');
 // Hand-edited per-post text overrides (kicker/title/dek/meta/preview),
 // keyed by URL slug — see the field guide at the top of that file.
 const CONTENT_OVERRIDES = require('./content-overrides.js');
+// The built stylesheet's selectors made cheap to match, the cascade
+// unchanged (css-fast.js, THE STYLESHEET, CHEAP TO MATCH).
+const { fastCss } = require('./css-fast.js');
 // The wordmark's words (THE, NEW, CRITIC, CRI, TIC), each in the files'
 // old contract, read off the one editable drawing (wordmark.js).
 const WORDMARK_WORDS = require('./wordmark.js').wordmarkWords(path.join(__dirname, 'assets', 'wordmark.svg'));
@@ -936,8 +939,11 @@ try { LAYOUT_OVERRIDES = JSON.parse(fs.readFileSync(path.join(__dirname, 'layout
 // so a rebuild leaves no diff and a ship carries only real change,
 // and browsers refetch exactly when the CSS is new.
 const crypto = require('crypto');
+// css-fast.js goes into it too: it rewrites the built sheet, so a change
+// there is new CSS even when style.css is the same.
 const BUILD_STAMP = crypto.createHash('sha1')
   .update(fs.readFileSync(path.join(__dirname, 'style.css')))
+  .update(fs.readFileSync(path.join(__dirname, 'css-fast.js')))
   .digest('hex').slice(0, 8);
 const FEED_URL = 'https://www.thenewcritic.com/feed';
 const SITE_NAME = 'The New Critic';
@@ -5251,7 +5257,7 @@ function ogTags({ title, description, pagePath, image }) {
 // can begin that way) — and the blank lines they leave go with them.
 // The sources stay as they are.
 function slimCss(css) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*\n+/g, '\n');
+  return fastCss(css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*\n+/g, '\n'));
 }
 function slimJs(js) {
   return js.replace(/^[ \t]*\/\/[^\n]*\n/gm, '').replace(/\n\s*\n+/g, '\n');
