@@ -9779,7 +9779,8 @@
                   // (a small dot between the writer and the date since, not a comma — "Replace the comma with a small dot between
                   // the date and the author", 2026-10-22)
                   // (twice the space either side of it since — "double the space between the words and the dots", 2026-10-22)
-                  if (k) hm.appendChild(document.createTextNode('\u00A0\u00A0\u00B7\u00A0\u00A0'));
+                  // (an en dash since, not the dot — "use an – instead of a dot", 2026-10-22)
+                  if (k) hm.appendChild(document.createTextNode('\u00A0\u00A0\u2013\u00A0\u00A0'));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
