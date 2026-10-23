@@ -31610,17 +31610,19 @@ html body:is(.archive-page, .about-page) main .op-track:is(*, .r.r.r.r.r.r.r.r.r
    renderArchivePage), the bird red under the hand as the front page's corner bird is; the ledger's head in the band's
    Garamond for a while, then the other way round — "Make the title columns work sans and the ledger rows garamond":
    the head the meta's Work Sans capitals as it was, every row in the band's Garamond, its words as written, 19 on 22,
-   the row still 54 from rule to rule when it keeps to a line (16 over the words, 16 under less the rule) */
+   the row still 54 from rule to rule when it keeps to a line (16 over the words, 16 under less the rule). Then at the
+   body preview's size — "Make ledger font on [the archive] page the same size as body text preview" — 16 on 19.2, the
+   room over and under the words 17.4 so the row keeps its 54 */
 body.archive-page .arc-bird .arc-bird__body{ transition: fill .15s ease; }
 body.archive-page .arc-bird:is(:hover, :focus-visible) .arc-bird__body{ fill: var(--nc-mark, #B3301E); }
 body.archive-page .arc :is(.arc-row, .arc-none){
   font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
-  font-size: 19px;
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 19.2px;
   letter-spacing: normal;
   text-transform: none;
 }
-body.archive-page .arc .arc-row{ padding-top: 16px; padding-bottom: calc(16px - var(--arc-rw, 1px)); }
+body.archive-page .arc .arc-row{ padding-top: 17.4px; padding-bottom: calc(17.4px - var(--arc-rw, 1px)); }
 /* (the dates wider in the Garamond, kept to a line) */
 body.archive-page .arc-main{ --arc-cols: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr) 88px 112px; }
 body.archive-page .arc .arc-row > .arc-date{ white-space: nowrap; }
