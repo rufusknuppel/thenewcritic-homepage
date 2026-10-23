@@ -6734,6 +6734,7 @@
   META_TITLE_GAP = DEK_TO_TEXT = 27 + 1 + 27;
   var META_RULES = false;
   var META_RULE_UNDER = true;
+  var META_ABOVE = true;
   var BODY_UP = 3;
   var INK_GAP = 27;
   var HEAD_DOWN = 3;
@@ -7359,6 +7360,16 @@
               dnY = (mFoot2 + xGap) - j.txT;
               hairD = META_RULES ? dkFoot + META_RULE_AIR + 0.5 : null;
               hairM = META_RULES || META_RULE_UNDER ? mFoot2 + META_RULE_AIR + 0.5 : null;
+            }
+            if (META_UNDER && META_ABOVE) {
+              var sH3 = (j.mB - j.mT) + META_RULE_AIR + (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + xGap + (j.inB - j.txT);
+              var y3 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH3) / 2));
+              upY = (y3 + (j.mB - j.mT) + META_RULE_AIR) - j.ttT;
+              metaY = y3 - j.mT - upY;
+              dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
+              dnY = (j.dkB + dekY + xGap) - j.txT;
+              hairM = null;
+              hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
             }
           } else if (between && metaOver) {
             var tTop = y0 + (j.mB - j.mT) + META_AIR;
