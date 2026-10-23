@@ -8991,6 +8991,11 @@
   // (the title's own 39 to the dek since — "Have the metadata padding above the title match the padding between title and
   // dek", 2026-10-22: TOP_RULE_GAP)
   META_TITLE_GAP = 39;
+  // (that 39 either side of each hairline since — the byline's baseline 39 over the one over the title and it 39 over the
+  // title's first ink, the dek's last baseline 39 over the one under it and it 39 over the body's first ink: "Increase
+  // padding so all match distance from title to dek", 2026-10-22; seatHairlines lays them on the middles)
+  META_TITLE_GAP = 39 + 1 + 39;
+  DEK_TO_TEXT = 39 + 1 + 39;
   // (the dek and text 3 more over the foot — "Move body text another 3px
   // up", 2026-10-04: the last baseline 8 over the picture's foot)
   var BODY_UP = 3;
@@ -9719,7 +9724,9 @@
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
                 var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
                 [mw, md].filter(Boolean).forEach(function (a0, k) {
-                  if (k) hm.appendChild(document.createTextNode(', '));
+                  // (no comma between since, the writer flush left and the date flush right — "Have the metadata sit aligned
+                  // right and left. no comma in between", 2026-10-22; style.css THE BYLINE AT BOTH EDGES)
+                  if (k) hm.appendChild(document.createTextNode(' '));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');
