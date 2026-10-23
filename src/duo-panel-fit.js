@@ -9962,6 +9962,18 @@
       j.mmEl = j.hd ? j.hd.querySelector('.swap-body-meta') : null;
       // (its words' reach across, for the fork round it: THE BYLINE ON THE RULE)
       j.mR = j.mmEl ? j.mmEl.getBoundingClientRect() : null;
+      // (its ink's reach across, not its box's — the box carries the tracking after the last letter and the letters' own
+      // side bearings, and the fork round it stood a pixel wider on the right: "text feels off center in fork")
+      if (j.mR && j.mR.width) {
+        var mcs = getComputedStyle(j.mmEl), mtx = (j.mmEl.textContent || '').trim();
+        if (mcs.textTransform === 'uppercase') mtx = mtx.toUpperCase();
+        measureCtx.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' ' + mcs.fontSize + ' ' + mcs.fontFamily;
+        try { measureCtx.letterSpacing = mcs.letterSpacing === 'normal' ? '0px' : mcs.letterSpacing; } catch (e) {}
+        var mmx = measureCtx.measureText(mtx);
+        try { measureCtx.letterSpacing = '0px'; } catch (e) {}
+        var pl0 = parseFloat(mcs.paddingLeft) || 0;
+        if (mmx.actualBoundingBoxRight > 0) j.mR = { left: j.mR.left + pl0 - mmx.actualBoundingBoxLeft, right: j.mR.left + pl0 + mmx.actualBoundingBoxRight, width: mmx.actualBoundingBoxLeft + mmx.actualBoundingBoxRight };
+      }
       j.ttEl = j.hd ? j.hd.querySelector('.swap-body-title') : null;
       j.ttT = j.ttEl ? firstInkTop(j.ttEl) : null;
       // (read off the line's own box less the face's descent below its baseline, as the byline's is, since — the
@@ -10135,8 +10147,10 @@
               upY = y4 - j.ttT;
               dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
               var lineY = j.dkB + dekY + META_RULE_AIR + 0.5;
-              // (the byline's capitals on the line's middle)
-              metaY = lineY - (j.mT + j.mB) / 2 - upY;
+              // (the byline's capitals on the line's middle — the line as it is painted, on its whole pixel, so they stand
+              // as far from the fork's top straight as from its bottom: "text feels off center in fork", 2026-10-22)
+              var lineP = Math.round(lineY + j.sy - 0.25) - j.sy + (window.devicePixelRatio >= 2 ? 0.25 : 0.5);
+              metaY = lineP - (j.mT + j.mB) / 2 - upY;
               dnY = (lineY + 0.5 + META_RULE_AIR) - j.txT;
               hairM = null;
               hairD = lineY;
