@@ -9460,6 +9460,8 @@
       var fk = j.body.querySelector(':scope > .nc-hairline-fork');
       if (k[0] === 'dek' && j.fork && j.mR && j.mR.width) {
         var ga = j.mR.left - FORK_PAD - FORK_RUN - j.tb.left, gb = j.mR.right + FORK_PAD + FORK_RUN - j.tb.left, fw = gb - ga;
+        // (none past where the fork closes since, on the picture's far side — "Remove the rule after the fork closes",
+        // 2026-10-22: style.css by the side latest-rail.js marks, hl-pic-l / hl-pic-r)
         st += ';--hl-ga:' + ga.toFixed(2) + 'px;--hl-gb:' + gb.toFixed(2) + 'px';
         if (!fk) { fk = document.createElement('span'); fk.className = 'nc-hairline-fork'; fk.setAttribute('aria-hidden', 'true'); j.body.appendChild(fk); }
         var hi = window.devicePixelRatio >= 2, o = hi ? 0.25 : 0.5, R = FORK_RISE;
@@ -9772,7 +9774,9 @@
                 var mw = j.card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
                 var md = j.card.querySelector('.cover-meta--cdate .cover-kicker a');
                 [mw, md].filter(Boolean).forEach(function (a0, k) {
-                  if (k) hm.appendChild(document.createTextNode(', '));
+                  // (a small dot between the writer and the date since, not a comma — "Replace the comma with a small dot between
+                  // the date and the author", 2026-10-22)
+                  if (k) hm.appendChild(document.createTextNode(' \u00B7 '));
                   var a1 = a0.cloneNode(true);
                   a1.className = 'swap-body-meta-a';
                   a1.removeAttribute('style');

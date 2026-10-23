@@ -3211,6 +3211,9 @@ window.ncOpenH = function () {
       if (pb && tr.width) { if (pb.r <= tr.left + 1) xl = Math.max(0, tr.left - pb.r); else if (pb.l >= tr.right - 1) xr = Math.max(0, pb.l - tr.right); }
       var hx = xl.toFixed(2) + 'px|' + xr.toFixed(2) + 'px';
       if (sb.__hx !== hx) { sb.__hx = hx; sb.style.setProperty('--hl-xl', xl.toFixed(2) + 'px'); sb.style.setProperty('--hl-xr', xr.toFixed(2) + 'px'); }
+      // (and which side the picture is on, so the line goes no farther than the fork on the other: "Remove the rule after the
+      // fork closes", 2026-10-22)
+      sb.classList.toggle('hl-pic-l', !!pb && xl > 0); sb.classList.toggle('hl-pic-r', !!pb && xr > 0);
     });
     // (a 1px rule between each post's dek and its body, as wide as the dek's last line and on the middle of the room
     // between them — "add a 1 px rule between dek and body text the width of the last line of the dek", 2026-10-20; as
