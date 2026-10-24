@@ -5986,6 +5986,15 @@ function arcIndexRest(key, p) {
   if (key === 'contra' && /^contra\s+\S/i.test(p.subtitle || '')) return contraWorkDek(p.subtitle.replace(/^contra\s+/i, ''));
   return '';
 }
+// (the cover a hand on the entry shows in the right column: a copy 480 wide, enough for the column at 2x, and its
+// proportions where its file name gives them — "Create a right column that matches the search column that displays the
+// image for the hovered post...", 2026-10-23; src/archive.js)
+function arcIndexPic(p) {
+  if (!p.image) return '';
+  const src = cdnVariant(p.image, 480) || p.image;
+  const d = /_(\d+)x(\d+)\.[a-z]+/i.exec(decodeURIComponent(p.image));
+  return ` data-img="${escapeHtml(src)}"` + (d ? ` data-ar="${(+d[1] / +d[2]).toFixed(4)}"` : '');
+}
 function renderArchiveIndexSection(key, label, posts) {
   // (no letters and no A to Z since — "Remove the alphabetical", 2026-10-23: the titles newest first, as the feed has them)
   const mine = posts.filter((p) => arcIndexSection(p) === key);
@@ -6000,7 +6009,7 @@ function renderArchiveIndexSection(key, label, posts) {
   // for resting", 2026-10-23)
   const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
     + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
-    + ` data-kicker="${escapeHtml((p.kicker || ARC_TAGS[slugOf(p.link)] || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
+    + ` data-kicker="${escapeHtml((p.kicker || ARC_TAGS[slugOf(p.link)] || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}"${arcIndexPic(p)}>`
     + `<span class="arc-ix-by">${escapeHtml(p.author || '')}</span><span class="arc-ix-title">${arcIndexRest(key, p) ? `<span class="arc-ix-subj">${arcIndexRest(key, p)}</span><span class="arc-ix-ttl">${escapeHtml(p.title)}</span>` : escapeHtml(p.title)}</span><span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
   return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
       <h2 class="arc-ix-sec__name">${label}</h2>
@@ -6037,6 +6046,7 @@ function renderArchivePage(posts) {
       ${tags}
     </div>
     <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
+    <aside class="arc-pic" aria-hidden="true"><img class="arc-pic__img" alt="" hidden></aside>
     <div class="arc-ix">
     ${cols}
     </div>
