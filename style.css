@@ -32584,3 +32584,54 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
   body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ display: none; }
   body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) :is(.arc-ix-by, .arc-ix-on){ display: inline; }
 }
+
+/* NOTHING MOVES UNDER THE HAND (2026-10-23 — "Text moves on hover"): the writer and the date, put in under the hand,
+   grew the line a pixel (their smaller italic set on the title's baseline) and, beside a long title, broke onto a line
+   of their own — every entry under them stepping down. On the title's line always since, their line no taller than
+   the title's, and what runs past the column's room running out to the right, cut at the page's edge */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ flex-wrap: nowrap; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ flex: 0 0 auto; max-width: 100%; }
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ line-height: 20px; flex: none; }
+  body.archive-page .arc--index .arc-main{ overflow-x: clip; }
+}
+
+/* THE DIVIDER 108 RIGHT, THE INDEX WITH IT (2026-10-23 — "Move the vertical divider 108px right and text with it"): the
+   rule 54 past the window's middle and the index's left edge 108 past it, the index as wide as it was (its right edge
+   54 short of the window's); the search centred on the wider room left of the rule */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: calc(50% + 108px) minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-main::before{ left: calc(50% + 54px); }
+  body.archive-page .arc--index .arc-main > :is(.arc-ix, .arc-ix--foot, .arc-none){ padding-right: 54px; }
+}
+/* (left, not right — "SOrry I menat left", 2026-10-23: the rule 162 short of the window's middle and the index's left
+   edge 108 short of it, the index its 558 wide as before; the search centred on the narrower room left of the rule) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: calc(50% - 108px) minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-main::before{ left: calc(50% - 162px); }
+  body.archive-page .arc--index .arc-main > :is(.arc-ix, .arc-ix--foot, .arc-none){ padding-right: 54px; }
+  body.archive-page .arc--index .arc-ix,
+  body.archive-page .arc--index .arc-ix--foot{ grid-template-columns: minmax(0, 558px); justify-content: start; }
+  body.archive-page .arc--index .arc-main > .arc-none{ max-width: 558px; }
+}
+
+/* THE SEARCH'S COLUMN THE FRONT PAGE'S SIDE COLUMN'S WIDTH (2026-10-23 — "Make the search column the same size as the
+   sidebar on the homepage"): the front page sets its column off its name's letters (latest-rail.js), 310 at 1024, 327 at
+   1440, 345 at 1920 — here the line through those, 270 + 3.89vw, within a pixel of each; the rule on the column's
+   edge, the index 54 past it, the search centred on the column */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: calc(270px + 3.89vw + 54px) minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-main::before{ left: calc(270px + 3.89vw); }
+}
+
+/* THE TITLES AT THE SIDE COLUMN'S SIZE (2026-10-23 — "Make the title font size smaller, the same size as the
+   highlights"): the index's titles at the front page's side column's 17.5 on 28, the writer and the date under the hand
+   a size down from them, 15 */
+body.archive-page .arc--index .arc-ix-item{ font-size: 17.5px; line-height: 28px; }
+body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-size: 15px; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ line-height: 18px; }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ line-height: 22px; }
+}

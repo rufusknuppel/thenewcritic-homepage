@@ -16324,3 +16324,34 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
   body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ display: none; }
   body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by,body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ display: inline; }
 }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ flex-wrap: nowrap; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ flex: 0 0 auto; max-width: 100%; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ line-height: 20px; flex: none; }
+  body.archive-page .arc--index .arc-main{ overflow-x: clip; }
+}
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: calc(50% + 108px) minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-main::before{ left: calc(50% + 54px); }
+  body.archive-page .arc--index .arc-main > .arc-ix,body.archive-page .arc--index .arc-main > .arc-ix--foot,body.archive-page .arc--index .arc-main > .arc-none{ padding-right: 54px; }
+}
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: calc(50% - 108px) minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-main::before{ left: calc(50% - 162px); }
+  body.archive-page .arc--index .arc-main > .arc-ix,body.archive-page .arc--index .arc-main > .arc-ix--foot,body.archive-page .arc--index .arc-main > .arc-none{ padding-right: 54px; }
+  body.archive-page .arc--index .arc-ix,
+  body.archive-page .arc--index .arc-ix--foot{ grid-template-columns: minmax(0, 558px); justify-content: start; }
+  body.archive-page .arc--index .arc-main > .arc-none{ max-width: 558px; }
+}
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: calc(270px + 3.89vw + 54px) minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-main::before{ left: calc(270px + 3.89vw); }
+}
+body.archive-page .arc--index .arc-ix-item{ font-size: 17.5px; line-height: 28px; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ font-size: 15px; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ line-height: 18px; }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ line-height: 22px; }
+}
