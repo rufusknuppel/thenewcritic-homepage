@@ -16150,3 +16150,11 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(:empty)::after{ content: ",\00a0"; }
 }
 @media (hover: none){ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ opacity: 1; } }
+body.archive-page .arc--index .arc-ix,
+body.archive-page .arc--index .arc-ix--foot{
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+  row-gap: 72px;
+}
+body.archive-page .arc--index .arc-ix--foot{ padding-top: 72px; }
+body.archive-page .arc--index .arc-ix--foot .arc-ix-sec{ grid-column: 1; }
