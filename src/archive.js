@@ -126,27 +126,20 @@
     });
   });
 
-  // THE COVER IN THE RIGHT COLUMN (2026-10-23 — "Create a right column that matches the search column that displays the
-  // image for the hovered post in the correct dimensions with the outline of the homepage and the proportional size"):
-  // a hand on an entry, or the keys on it, puts its post's cover in the right column in the box its kind has on the
-  // front page (build.js arcIndexPic: the ratio and the crop's focus), the front page's outline round it;
-  // it stays till another entry takes its place (style.css THE COVER IN THE RIGHT COLUMN)
-  var pic = arc.querySelector('.arc-pic__img');
-  if (pic) {
-    var showPic = function (r) {
-      var src = r.getAttribute('data-img');
-      if (!src) return;
-      var ar = parseFloat(r.getAttribute('data-ar'));
-      if (ar) pic.style.setProperty('--ar', String(ar)); else pic.style.removeProperty('--ar');
-      pic.style.objectPosition = r.getAttribute('data-pos') || '';
-      if (pic.getAttribute('src') !== src) pic.src = src;
-      pic.hidden = false;
-    };
-    items.forEach(function (r) {
-      r.addEventListener('mouseenter', function () { showPic(r); });
-      r.addEventListener('focus', function () { showPic(r); });
-    });
-  }
+  // THE SIDE COLUMNS ON THE WINDOW'S MIDDLE FROM THE FIRST LOOK (2026-10-23 — "search should look vertically centered
+  // on inital load"): the two side columns are the window's height less the band, centred in themselves, so while the
+  // head still stands over them (before they pin) their middles hang below the window's room; lifted half the head's
+  // height still showing, the search stands on the middle of what is seen, and settle home as they pin
+  // (style.css THE SIDE COLUMNS LIFTED)
+  var lift = function () {
+    var cut = arcMain.getBoundingClientRect().top - (parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH());
+    arcMain.style.setProperty('--arc-lift', Math.max(0, cut / 2).toFixed(1) + 'px');
+  };
+  lift();
+  addEventListener('scroll', lift, { passive: true });
+  addEventListener('resize', lift);
+
+  // (no cover in the right column since — "Remove the image from the side column", 2026-10-23)
 
   // (the marks lit under the hand, as on the front page — "Highlight should work on wordmark on archive", 2026-10-23:
   // latest-rail.js wires them there and is not on this page; the same main.nc-hot-* classes, so style.css THE MARKS LIT
