@@ -32475,3 +32475,26 @@ body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ ba
   body.archive-page .arc--index .arc-ix-tags::-webkit-scrollbar{ display: none; }
   body.archive-page .arc--index .arc-ix-tags__row{ flex-wrap: nowrap; }
 }
+
+/* THE SEARCH CENTRED, A RULE DOWN THE MIDDLE (2026-10-23 — "Center the search, draw a vertical rule 54px from the left
+   of the left align"): from 1024 up a hairline of the rules' charcoal down the page 54 short of the index's left edge
+   (the window's middle), from the band to the foot; the field, Clear and the tags centred on the room left of it */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ position: relative; }
+  body.archive-page .arc--index .arc-main::before{
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: calc(50% - 54px);
+    width: 1px;
+    background: var(--nc-rule, #121417);
+    pointer-events: none;
+  }
+  body.archive-page .arc--index .arc-main > .arc-find-row{ align-items: center; padding-right: 108px; }
+  body.archive-page .arc--index .arc-main > .arc-find-row .arc-search{ text-align: center; }
+  body.archive-page .arc--index .arc-ix-tags{ align-items: center; }
+  body.archive-page .arc--index .arc-ix-tags__row{ justify-content: center; }
+}
+@media (min-width: 1024px) and (min-resolution: 2dppx){
+  body.archive-page .arc--index .arc-main::before{ width: 0.5px; }
+}
