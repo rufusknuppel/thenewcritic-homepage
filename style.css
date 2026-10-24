@@ -32951,3 +32951,7 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek__title{ font-style: italic; }
 }
+/* (the title over the opening two larger — "make the title text size 2pt bigger in body preview", 2026-10-24) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek__title{ font-size: 19.5px; }
+}
