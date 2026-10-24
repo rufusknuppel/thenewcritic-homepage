@@ -32880,3 +32880,13 @@ body.archive-page .arc--index .arc-ix--foot .arc-ix-grp:last-child .arc-ix-item:
      at 1280 and put every line under it out of step) */
   body.archive-page .arc--index .arc-ix-item .arc-ix-title{ white-space: nowrap; max-width: none; }
 }
+
+/* THE WRITERS LINE FOR LINE WITH THE TITLES (2026-10-24 — "Why do authors and titles not line up? line spacing seems
+   off"): each name's row had the page's own Helvetica line under the name (16.8 on 27.72), and with the real faces in
+   it stood 29 high to the titles' 28, the names a pixel further behind each row down; the row a flex line of the name
+   alone since, 28 high as the name is */
+body.archive-page .arc--index .arc-who__list li{ display: flex; justify-content: flex-start; height: 28px; }
+body.archive-page .arc--index .arc-who__w{ display: block; }
+@media (min-width: 1280px){
+  body.archive-page .arc--index .arc-who__list li{ justify-content: flex-end; }
+}

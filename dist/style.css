@@ -16523,3 +16523,8 @@ body.archive-page .arc--index .arc-ix--foot .arc-ix-grp:last-child .arc-ix-item:
 @media (min-width: 1280px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item .arc-ix-title{ white-space: nowrap; max-width: none; }
 }
+body.archive-page .arc--index .arc-who__list li{ display: flex; justify-content: flex-start; height: 28px; }
+body.archive-page .arc--index .arc-who__w{ display: block; }
+@media (min-width: 1280px){
+  body.archive-page .arc--index .arc-who__list li{ justify-content: flex-end; }
+}
