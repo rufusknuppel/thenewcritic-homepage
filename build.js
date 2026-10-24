@@ -5989,11 +5989,20 @@ function arcIndexRest(key, p) {
 // (the cover a hand on the entry shows in the right column: a copy 480 wide, enough for the column at 2x, and its
 // proportions where its file name gives them — "Create a right column that matches the search column that displays the
 // image for the hovered post...", 2026-10-23; src/archive.js)
+// (the cover in the box its kind has on the front page — "Have them render in the aspect ratios they would on the main
+// page", 2026-10-23; style.css EVERY PICTURE FILLS THE SCREEN IN ITS SHAPE: a review square, an essay the half's width
+// by the screen's room under the band (649 by 682 at 1440), a postscript its own proportions held between 4:5 and 2:3
+// (4:5 where the file names none) — cropped to it on the post's own focus, as there)
 function arcIndexPic(p) {
   if (!p.image) return '';
   const src = cdnVariant(p.image, 480) || p.image;
   const d = /_(\d+)x(\d+)\.[a-z]+/i.exec(decodeURIComponent(p.image));
-  return ` data-img="${escapeHtml(src)}"` + (d ? ` data-ar="${(+d[1] / +d[2]).toFixed(4)}"` : '');
+  const sec = arcIndexSection(p);
+  const ar = sec === 'contra' ? 1 : sec === 'postscript'
+    ? 1 / Math.min(1.5, Math.max(1.25, d && +d[1] > 0 ? +d[2] / +d[1] : 1.25))
+    : 649 / 682;
+  const pos = p.focal || (p.head ? `${(p.head[0] * 100).toFixed(1)}% ${(p.head[1] * 100).toFixed(1)}%` : '');
+  return ` data-img="${escapeHtml(src)}" data-ar="${ar.toFixed(4)}"` + (pos ? ` data-pos="${escapeHtml(pos)}"` : '');
 }
 function renderArchiveIndexSection(key, label, posts) {
   // (no letters and no A to Z since — "Remove the alphabetical", 2026-10-23: the titles newest first, as the feed has them)

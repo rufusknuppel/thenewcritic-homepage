@@ -128,8 +128,8 @@
 
   // THE COVER IN THE RIGHT COLUMN (2026-10-23 — "Create a right column that matches the search column that displays the
   // image for the hovered post in the correct dimensions with the outline of the homepage and the proportional size"):
-  // a hand on an entry, or the keys on it, puts its post's cover in the right column, whole, in its own proportions
-  // (its box given them before the file arrives, where build.js could read them), the front page's outline round it;
+  // a hand on an entry, or the keys on it, puts its post's cover in the right column in the box its kind has on the
+  // front page (build.js arcIndexPic: the ratio and the crop's focus), the front page's outline round it;
   // it stays till another entry takes its place (style.css THE COVER IN THE RIGHT COLUMN)
   var pic = arc.querySelector('.arc-pic__img');
   if (pic) {
@@ -137,7 +137,8 @@
       var src = r.getAttribute('data-img');
       if (!src) return;
       var ar = parseFloat(r.getAttribute('data-ar'));
-      if (ar) pic.style.aspectRatio = String(ar); else pic.style.removeProperty('aspect-ratio');
+      if (ar) pic.style.setProperty('--ar', String(ar)); else pic.style.removeProperty('--ar');
+      pic.style.objectPosition = r.getAttribute('data-pos') || '';
       if (pic.getAttribute('src') !== src) pic.src = src;
       pic.hidden = false;
     };

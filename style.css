@@ -32696,3 +32696,24 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-siz
     justify-content: center;
   }
 }
+
+/* THE COVERS IN THEIR FRONT-PAGE BOXES (2026-10-23 — "Have the margins for the images be 18px. Have them render in the
+   aspect ratios they would on the main page" / "And vertically center the images"): the cover's column pinned under the
+   band the window's height less the band, as the search's is, the cover on its middle top to bottom, 18 in from either
+   side; the box its kind's on the front page (--ar, width over height, off build.js arcIndexPic), the column's width or
+   the window's room 18 over and under, whichever is less, the picture cropped to it on its focus */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-pic{
+    height: calc(100vh - var(--arc-band, 0px));
+    padding: 18px;
+    align-items: center;
+  }
+  body.archive-page .arc--index .arc-pic__img{
+    width: min(100%, calc((100vh - var(--arc-band, 0px) - 36px) * var(--ar, 1)));
+    max-width: none;
+    max-height: none;
+    height: auto;
+    aspect-ratio: var(--ar, 1);
+    object-fit: cover;
+  }
+}
