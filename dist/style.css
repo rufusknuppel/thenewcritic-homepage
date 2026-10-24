@@ -16600,3 +16600,17 @@ html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){
   }
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ color: #B3301E; --nc-mark: #B3301E; --hl-ink: #B3301E; }
 }
+body.archive-page .arc--index .arc-who__list li{ justify-content: flex-start; }
+body.archive-page .arc--index .arc-main > .arc-ix--foot{ padding-bottom: 0; }
+body.archive-page .arc--index .arc-who{ padding: 72px 36px 54px; text-align: left; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{
+    grid-template-columns: calc(270px + 3.89vw + 54px) minmax(0, 1fr) calc(270px + 3.89vw);
+  }
+  body.archive-page .arc--index .arc-main > .arc-ix--foot{ grid-column: 2; grid-row: 2; }
+  body.archive-page .arc--index .arc-main > .arc-who{ grid-column: 2; grid-row: 3; padding: 72px 54px 54px 0; text-align: left; }
+  body.archive-page .arc--index .arc-main > .arc-peek{ grid-column: 3; }
+}
+@media (max-width: 1023.98px){
+  body.archive-page .arc--index .arc-who{ padding-top: 84px; }
+}

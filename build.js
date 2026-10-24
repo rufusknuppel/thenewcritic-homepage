@@ -6083,8 +6083,8 @@ function renderArchivePage(posts) {
     <div class="arc-ix">
     ${cols}
     </div>
-    ${writersHtml}
     <div class="arc-ix arc-ix--foot">${eds}</div>
+    ${writersHtml}
     <p class="arc-none" hidden>Nothing matches</p>
     <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><div class="arc-peek__body"></div></aside>
   </div>
