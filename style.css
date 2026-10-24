@@ -16705,12 +16705,12 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
   body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:focus{
     border-bottom: 0;
     padding-bottom: 1px;
-    background: linear-gradient(var(--nc-rule, #B3301E), var(--nc-rule, #B3301E)) no-repeat center bottom / calc(var(--find-w, 60px) + 18px) 1px;
+    background: linear-gradient(var(--nc-rule, #B3301E), var(--nc-rule, #B3301E)) no-repeat center bottom / 100% 1px;
   }
 }
 @media (min-width: 1024px) and (min-resolution: 2dppx){
   body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search,
   body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:focus{
-    background-size: calc(var(--find-w, 60px) + 18px) 0.5px;
+    background-size: 100% 0.5px;
   }
 }
