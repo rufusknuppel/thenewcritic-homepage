@@ -5990,17 +5990,22 @@ function arcIndexRest(key, p) {
 // proportions where its file name gives them — "Create a right column that matches the search column that displays the
 // image for the hovered post...", 2026-10-23; src/archive.js)
 // (the cover in the box its kind has on the front page — "Have them render in the aspect ratios they would on the main
-// page", 2026-10-23; style.css EVERY PICTURE FILLS THE SCREEN IN ITS SHAPE: a review square, an essay the half's width
-// by the screen's room under the band (649 by 682 at 1440), a postscript its own proportions held between 4:5 and 2:3
+// page", 2026-10-23; style.css EVERY PICTURE FILLS THE SCREEN IN ITS SHAPE: a review square, an essay landscape 5:4
+// (BIGGER ESSAYS — "Essays should be wider than tall"), a postscript its own proportions held between 4:5 and 2:3
 // (4:5 where the file names none) — cropped to it on the post's own focus, as there)
 function arcIndexPic(p) {
   if (!p.image) return '';
-  const src = cdnVariant(p.image, 480) || p.image;
   const d = /_(\d+)x(\d+)\.[a-z]+/i.exec(decodeURIComponent(p.image));
   const sec = arcIndexSection(p);
   const ar = sec === 'contra' ? 1 : sec === 'postscript'
     ? 1 / Math.min(1.5, Math.max(1.25, d && +d[1] > 0 ? +d[2] / +d[1] : 1.25))
-    : 649 / 682;
+    : 5 / 4;
+  // (sharp on a 2x screen, the cover filling a box up to 345 wide and 460 tall at 1920: the box's height over the
+  // file's own proportions, when the box crops its sides, wants a wider file than the box's width — "Want it to look
+  // higher quality", 2026-10-23; the 480 had been blurred at 2x)
+  const nat = d && +d[2] > 0 ? +d[1] / +d[2] : 1.5;
+  const need = 2 * Math.max(345, 345 / ar * nat);
+  const src = cdnVariant(p.image, [800, 1200, 1600].find((w) => w >= need) || 1600) || p.image;
   const pos = p.focal || (p.head ? `${(p.head[0] * 100).toFixed(1)}% ${(p.head[1] * 100).toFixed(1)}%` : '');
   return ` data-img="${escapeHtml(src)}" data-ar="${ar.toFixed(4)}"` + (pos ? ` data-pos="${escapeHtml(pos)}"` : '');
 }
@@ -6030,15 +6035,8 @@ function renderArchiveIndexSection(key, label, posts) {
 function renderArchivePage(posts) {
   const cols = ARC_SECTIONS.filter(([k]) => k !== 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('\n    ');
   const eds = ARC_SECTIONS.filter(([k]) => k === 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('');
-  // THE TAGS UNDER THE SEARCH (2026-10-23 — "Under search offer a number of tags in work sans like the dog tags on the
-  // homepage: Section (Essays/Postscript/Contra/Editors), Art, Music..."): the four sections, then Contra's tags A to Z,
-  // each in the front page's byline tag; one pressed keeps its kind alone, pressed again lets it go (src/archive.js)
-  const ctags = [...new Set(posts.filter((p) => arcIndexSection(p) === 'contra').map((p) => (p.kicker || ARC_TAGS[slugOf(p.link)] || '').trim()).filter(Boolean))]
-    .sort((x, y) => x.localeCompare(y));
-  const tagA = (kind, v, w) => `<a class="arc-ix-tag" href="#${kind}=${encodeURIComponent(v)}" data-kind="${kind}" data-v="${escapeHtml(v)}">${escapeHtml(w)}</a>`;
-  const tags = `<nav class="arc-ix-tags" aria-label="Sections and tags">`
-    + `<div class="arc-ix-tags__row">${ARC_SECTIONS.map(([k, w]) => tagA('section', k, w)).join('')}</div>`
-    + `<div class="arc-ix-tags__row">${ctags.map((t) => tagA('topic', t.toLowerCase(), t)).join('')}</div></nav>`;
+  // (no tags under the search since — "Remove tags from the search section", 2026-10-23; the cards' #section= and
+  // #topic= links still narrow the index, src/archive.js)
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
   return renderFrontPage({
@@ -6052,7 +6050,6 @@ function renderArchivePage(posts) {
     <div class="arc-find-row">
       <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
       <button class="arc-clear" type="button" hidden>Clear</button>
-      ${tags}
     </div>
     <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
     <aside class="arc-pic" aria-hidden="true"><img class="arc-pic__img" alt="" hidden></aside>
