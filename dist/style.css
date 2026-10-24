@@ -16110,3 +16110,15 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-meta{
 }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-meta{ max-height: 96px; opacity: 1; }
 @media (hover: none){ body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ max-height: none; opacity: 1; } }
+body.archive-page .arc--index .arc-ix-sec{ text-align: center; }
+body.archive-page .arc--index .arc-ix--foot{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 54px;
+}
+body.archive-page .arc--index .arc-ix--foot .arc-ix-sec{ grid-column: 2; }
+body.archive-page .arc--index .arc-ix--foot .arc-ix-sec__groups{ columns: auto; column-count: 1; }
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-ix--foot{ grid-template-columns: minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-ix--foot .arc-ix-sec{ grid-column: 1; }
+}
