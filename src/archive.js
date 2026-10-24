@@ -85,24 +85,6 @@
     if (search && name) search.value = name;
   };
 
-  // (the field's words measured for its line, which runs 9 past them either side — style.css THE SEARCH'S LINE AS WIDE
-  // AS ITS WORDS: the typed words, or Search while none are)
-  if (search) {
-    var wCtx = document.createElement('canvas').getContext('2d');
-    var lineUnder = function () {
-      var cs = getComputedStyle(search);
-      var ph = getComputedStyle(search, '::placeholder');
-      var typed = search.value;
-      var c = typed ? cs : ph;
-      wCtx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily;
-      var w = Math.min(wCtx.measureText(typed || search.placeholder || '').width, search.clientWidth - 18);
-      search.style.setProperty('--find-w', w.toFixed(2) + 'px');
-    };
-    lineUnder();
-    search.addEventListener('input', lineUnder);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(lineUnder);
-    afterFilter.push(lineUnder);
-  }
 
   // THE LANDING: a named title in the middle of the room under the band
   var findRow = arc.querySelector('.arc-find-row');
