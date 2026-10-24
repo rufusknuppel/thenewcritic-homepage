@@ -32212,3 +32212,47 @@ body.archive-page .arc--index .arc-none{ padding: 54px; font-family: garamond-pr
   body.archive-page .arc--index .arc-ix--foot .arc-ix-sec__groups{ columns: 1; }
   body.archive-page .arc--index .arc-ix-sec__name{ margin-bottom: 24px; }
 }
+
+/* THE INDEX UNLETTERED (2026-10-23 — "Remove the alphabetical"): the titles newest first, no letters over them (build.js
+   renderArchiveIndexSection); each section one run of titles, Editors' run free to break across its three columns */
+body.archive-page .arc--index .arc-ix-grp{ padding-bottom: 0; }
+body.archive-page .arc--index .arc-ix--foot .arc-ix-grp{ break-inside: auto; }
+body.archive-page .arc--index .arc-ix--foot .arc-ix-item{ break-inside: avoid; }
+
+/* NO LINE UNDER THE SEARCH (2026-10-23 — "Remove the line from under search"): the field's word alone, no rule under it,
+   focused or not */
+body.archive-page .arc.arc--whole .arc-search,
+body.archive-page .arc.arc--whole .arc-search:focus{ border-bottom: 0; }
+
+/* CONTRA BY ITS TAG (2026-10-23 — "Arrange contras by Music/Theater/etc. tag"): Contra's titles under their tags, each
+   tag in the quiet italic the letters stood in, 24 between one tag's run and the next (build.js renderArchiveIndexSection) */
+body.archive-page .arc--index .arc-ix-sec--contra .arc-ix-grp{ padding-bottom: 24px; }
+
+/* THE WRITER AND THE DATE IN ITALIC (2026-10-23 — "make the author and date italics"): after each title in the index,
+   the comma, the writer and the date in the Garamond's italic */
+body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ font-style: italic; }
+
+/* THE WRITER AND THE DATE UNDER THE TITLE (2026-10-23 — "Put the author and date in an indented row beneath the title"):
+   the italic line its own row under the title, 27 in, the title and its line one entry, 12 between one entry and the next */
+body.archive-page .arc--index .arc-ix-item{ margin-bottom: 12px; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ display: block; padding-left: 27px; }
+
+/* THE SEARCH A PINNED BAND (2026-10-23 — "Add a thin rule under the search, should be a band pinned to the top"): the
+   search's row the window's width, pinned under the band as the ledger's head was, on the page's ground, the rules'
+   hairline along its foot (the archive's charcoal) */
+body.archive-page .arc--index .arc-find-row{
+  position: sticky;
+  top: var(--arc-band, 0px);
+  z-index: 3;
+  padding-bottom: 13px;
+  background: var(--tw, #B3301E);
+  border-bottom: 1px solid var(--nc-rule, #121417);
+}
+@media (min-resolution: 2dppx){ body.archive-page .arc--index .arc-find-row{ border-bottom-width: 0.5px; } }
+@media (max-width: 1023px){ body.archive-page .arc--index .arc-find-row{ top: 55px; } }
+/* (the search's word and Clear on the band's middle line — "search and clear should be vertically centered in band",
+   2026-10-23: the band 54 high and its row centred, the field no foot of its own since its line went, Clear on the
+   middle too) */
+body.archive-page .arc--index .arc-find-row{ height: 54px; min-height: 0; box-sizing: border-box; padding-top: 0; padding-bottom: 0; align-items: center; }
+body.archive-page .arc--index .arc-find-row .arc-search{ padding: 0; }
+body.archive-page .arc--index .arc-find-row .arc-clear{ top: 50%; transform: translateY(-50%); }

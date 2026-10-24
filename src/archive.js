@@ -64,11 +64,13 @@
   };
 
   // THE LANDING: a named title in the middle of the room under the band
+  var findRow = arc.querySelector('.arc-find-row');
   var bandH = function () { return band ? band.getBoundingClientRect().height : 0; };
   var target = null;
   var land = function () {
     if (!target) return;
-    var top = bandH(), r = target.getBoundingClientRect(), room = de.clientHeight - top;
+    // (under the band and the search's row pinned under it)
+    var top = bandH() + (findRow ? findRow.offsetHeight : 0), r = target.getBoundingClientRect(), room = de.clientHeight - top;
     window.scrollTo({ top: Math.max(0, window.pageYOffset + r.top - top - Math.max(0, (room - r.height) / 2)), behavior: 'instant' });
   };
   var arcMain = arc.querySelector('.arc-main') || arc;

@@ -5957,25 +5957,33 @@ function renderStorePage(store) {
 function arcIndexKey(title) {
   return String(title || '').replace(/\u00AD/g, '').replace(/^[^\p{L}\p{N}]+/u, '').replace(/^(the|an|a)\s+/i, '').toLowerCase();
 }
+// (after each title a comma, the writer, a comma and the date in figures, M.D.YY — "Next the essay titles, add a comma,
+// then the Author name, then the date in M.D.YY", 2026-10-23; a line of its own under the title since, no comma before it —
+// "Put the author and date in an indented row beneath the title")
+function arcIndexMeta(p) {
+  const d = p.date;
+  const ds = d && !isNaN(d.getTime()) ? `${d.getMonth() + 1}.${d.getDate()}.${String(d.getFullYear()).slice(-2)}` : '';
+  const parts = [p.author, ds].filter(Boolean);
+  return parts.length ? `<span class="arc-ix-meta">${escapeHtml(parts.join(', '))}</span>` : '';
+}
 function renderArchiveIndexSection(key, label, posts) {
-  const items = posts.filter((p) => (p.sectionLabel || '').toLowerCase() === key)
-    .map((p) => ({ p, k: arcIndexKey(p.title) }))
-    .sort((x, y) => x.k.localeCompare(y.k));
-  const groups = [];
-  items.forEach(({ p, k }) => {
-    const ch = (k.normalize('NFD').charAt(0) || '#').toUpperCase();
-    const letter = /[A-Z]/.test(ch) ? ch : '#';
-    if (!groups.length || groups[groups.length - 1].letter !== letter) groups.push({ letter, posts: [] });
-    groups[groups.length - 1].posts.push(p);
-  });
+  // (no letters and no A to Z since — "Remove the alphabetical", 2026-10-23: the titles newest first, as the feed has them)
+  const mine = posts.filter((p) => (p.sectionLabel || '').toLowerCase() === key);
+  // (Contra by its tag since — Books, Movies, Music, Theater … A to Z, newest first under each, the untagged last under
+  // Other: "Arrange contras by Music/Theater/etc. tag", 2026-10-23)
+  const groups = key !== 'contra' ? [{ posts: mine }] : (() => {
+    const by = new Map();
+    mine.forEach((p) => { const t = (p.kicker || '').trim(); if (!by.has(t)) by.set(t, []); by.get(t).push(p); });
+    return [...by.keys()].sort((x, y) => (!x) - (!y) || x.localeCompare(y)).map((t) => ({ tag: t || 'Other', posts: by.get(t) }));
+  })();
   const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
     + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
     + ` data-kicker="${escapeHtml((p.kicker || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
-    + `${escapeHtml(p.title)}</a>`;
+    + `${escapeHtml(p.title)}${arcIndexMeta(p)}</a>`;
   return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
       <h2 class="arc-ix-sec__name">${label}</h2>
       <div class="arc-ix-sec__groups">${groups.map((g) => `
-        <div class="arc-ix-grp"><h3 class="arc-ix-grp__letter">${g.letter}</h3>${g.posts.map(item).join('')}</div>`).join('')}
+        <div class="arc-ix-grp">${g.tag ? `<h3 class="arc-ix-grp__letter arc-ix-grp__tag">${escapeHtml(g.tag)}</h3>` : ''}${g.posts.map(item).join('')}</div>`).join('')}
       </div>
     </section>`;
 }
