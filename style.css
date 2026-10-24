@@ -16720,3 +16720,7 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-l > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r).nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline{ width: calc(var(--hl-w, 0px) + var(--hl-xl, 0px) + var(--hl-xr, 0px) + var(--hl-reach, 0px)) !important; }
   html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-r > span:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r).nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline{ width: calc(var(--hl-w, 0px) + var(--hl-xl, 0px) + var(--hl-xr, 0px) + var(--hl-edge, 0px)) !important; margin-left: calc(-1 * var(--hl-xl, 0px) - var(--hl-edge, 0px)) !important; }
 }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-find-row{ grid-column: 1; }
+  body.archive-page .arc--index .arc-main > .arc-peek{ grid-column: 3; }
+}
