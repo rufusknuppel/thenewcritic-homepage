@@ -16294,3 +16294,25 @@ body.archive-page .arc--index .arc-none{
   body.archive-page .arc--index .arc-none{ padding: 36px 36px 108px; }
 }
 body.archive-page .arc--index .arc-ix-grp__tag{ color: #FAF9F6; }
+html.is-archive{
+  --tw: #FAF9F6;
+  --tc: #121417;
+  --g: #FAF9F6;
+  --k: #121417;
+  --nc-mark: #B3301E;
+  --nc-rule: #121417;
+  --nc-outline: #B3301E;
+  --arc-quiet: #9A9893;
+  background: #FAF9F6;
+}
+body.archive-page{ background: #FAF9F6; color: #121417; }
+html.is-archive a.content-name,html.is-archive a.op-tnc,html.is-archive a.rail-tlm,html.is-archive a.arc-bird{ --nc-mark: #B3301E; }
+body.archive-page .arc--index .arc-ix-item,body.archive-page .arc--index .arc-clear,body.archive-page .arc--index .arc-ix-sec__name,body.archive-page .arc--index .arc-ix-grp__tag,body.archive-page .arc--index .arc-none,
+body.archive-page .arc--index .arc-search,
+body.archive-page .arc--index .arc-search::placeholder{ color: #121417; }
+body.archive-page .arc--index .arc-ix-item,body.archive-page .arc--index .arc-clear{ --nc-mark: #B3301E; --hl-ink: #B3301E; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible),body.archive-page .arc--index .arc-clear:is(:hover, :focus-visible),
+body.archive-page .arc--index .arc-ix-item.is-target{ color: #B3301E; }
+body.archive-page .arc--index .arc-ix-tag{ background: #B3301E; color: #121417; --nc-mark: #FAF9F6; --hl-ink: #FAF9F6; }
+body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ background: #121417; color: #FAF9F6; }
+html.is-archive{ --nc-rule: #B3301E; }
