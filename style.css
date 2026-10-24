@@ -16316,3 +16316,6 @@ body.archive-page .arc--index .arc-ix-item.is-target{ color: #B3301E; }
 body.archive-page .arc--index .arc-ix-tag{ background: #B3301E; color: #121417; --nc-mark: #FAF9F6; --hl-ink: #FAF9F6; }
 body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ background: #121417; color: #FAF9F6; }
 html.is-archive{ --nc-rule: #B3301E; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-ttl{ display: none; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-subj{ display: none; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-ttl{ display: inline; }
