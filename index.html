@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4d857a12">
+<link rel="stylesheet" href="style.css?v=ba7676f6">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7004,6 +7004,16 @@
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
         if (j.mmEl) [j.mmEl].concat([].slice.call(j.mmEl.querySelectorAll('a'))).forEach(function (e) {
           e.style.setProperty('color', 'var(--fork-ink, #FAF9F6)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FAF9F6)', 'important');
+        });
+        if (j.mmEl) [].forEach.call(j.mmEl.querySelectorAll('a'), function (a) {
+          if (a.__forkHot) return;
+          a.__forkHot = true;
+          var body = j.body;
+          var mark = function (on) { var f = body.querySelector(':scope > .nc-hairline-fork'); if (f) f.classList.toggle('is-hot', on); };
+          a.addEventListener('mouseenter', function () { mark(true); });
+          a.addEventListener('mouseleave', function () { mark(false); });
+          a.addEventListener('focus', function () { mark(true); });
+          a.addEventListener('blur', function () { mark(false); });
         });
       } else if (k[0] === 'dek' && fk) fk.remove();
       if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
