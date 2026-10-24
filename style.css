@@ -32929,32 +32929,10 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by--subj{ display: none; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-subj{ display: inline; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-ttl{ display: none; }
 
-/* THE TITLE OVER THE OPENING (2026-10-24 — "In body text preview column have the title of the post displayed centered
-   above the body text"): the post's title over its opening, centred across the column, in the index's type (17.5 on
-   28), a line of the opening's (19.2) under it; the opening fitted to the room left under it (src/archive.js) */
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__title{
-    flex: none;
-    margin: 0 0 19.2px;
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
-    font-size: 17.5px; line-height: 28px; font-style: normal;
-    text-align: center;
-    text-wrap: balance;
-    color: #121417;
-  }
-}
 /* (a writer narrowed out of the column gone from it — the row's flex had held it there: "with only their name remaining
    in the writers column", 2026-10-24) */
 body.archive-page .arc--index .arc-who__list li[hidden],
 body.archive-page .arc--index .arc-who[hidden]{ display: none; }
-/* (the title over the opening in the italic — "italicize the title in the body preview", 2026-10-24) */
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__title{ font-style: italic; }
-}
-/* (the title over the opening two larger — "make the title text size 2pt bigger in body preview", 2026-10-24) */
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__title{ font-size: 19.5px; }
-}
 
 /* THE HAND ON THE WORDS ALONE (2026-10-24 — "Only have the date and title activate the hover"): from 1024 up an entry no
    wider than its title and date, so the room past them is no part of it and lights nothing; once lit, the writer's tag
@@ -32967,7 +32945,7 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > .arc-peek{ padding-top: 41px; padding-bottom: 41px; }
 }
-/* (the opening's ink on the column's middle: the title and the opening nudged together by --peek-nudge,
+/* (the opening's ink on the column's middle: the opening nudged by --peek-nudge,
    src/archive.js inkPeek — "make sure ink is vertically centered in body text column", 2026-10-24) */
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek > *{ translate: 0 var(--peek-nudge, 0px); }

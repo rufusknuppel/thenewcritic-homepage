@@ -6038,9 +6038,7 @@ function archivePeekJson(posts) {
     const keep = [];
     let n = 0;
     for (const t of paras) { if (n >= 2000) break; keep.push(emHtml(t)); n += t.length; }
-    // (its title with it, centred over the opening — "In body text preview column have the title of the post displayed
-    // centered above the body text", 2026-10-24)
-    peek[slugOf(p.link)] = [escapeHtml(p.title || ''), keep];
+    peek[slugOf(p.link)] = keep;
   }
   return JSON.stringify(peek);
 }
@@ -6088,7 +6086,7 @@ function renderArchivePage(posts) {
     ${writersHtml}
     <div class="arc-ix arc-ix--foot">${eds}</div>
     <p class="arc-none" hidden>Nothing matches</p>
-    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><p class="arc-peek__title"></p><div class="arc-peek__body"></div></aside>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><div class="arc-peek__body"></div></aside>
   </div>
 </section>`,
   }).replace('<html lang="en">', '<html lang="en" class="is-archive">');

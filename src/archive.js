@@ -220,7 +220,7 @@
   // (style.css THE POST'S OPENING IN THE RIGHT COLUMN)
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
-    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
     // THE CUT AS THE FRONT PAGE'S (2026-10-24 — "have ellipsis for body preview work exactly as it does on homepage body
     // previews": duo-panel-fit.js cutPlates): the paragraph crossing the column's foot cut to the last whole word the
     // room holds, its trailing point or comma given up to the … joined on ("below." reads "below…"), the … in a mark of
@@ -291,30 +291,34 @@
       inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       return inkCtx.measureText(text);
     };
-    var lastLineOf = function (el) {
+    // (a paragraph's first or last line, as set: its letters from the end it starts at, while they stand on one line)
+    var lineOf = function (el, fromEnd) {
       var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), t, nodes = [];
       while ((t = tw.nextNode())) nodes.push(t);
+      if (fromEnd) nodes.reverse();
       var out = '', lineTop = null, rng = document.createRange();
-      for (var i = nodes.length - 1; i >= 0; i--) {
-        for (var c = nodes[i].nodeValue.length - 1; c >= 0; c--) {
+      for (var i = 0; i < nodes.length; i++) {
+        var v = nodes[i].nodeValue;
+        for (var j = 0; j < v.length; j++) {
+          var c = fromEnd ? v.length - 1 - j : j;
           rng.setStart(nodes[i], c); rng.setEnd(nodes[i], c + 1);
           var r = rng.getBoundingClientRect();
           if (!r.height) continue;
           if (lineTop == null) lineTop = r.top;
           else if (Math.abs(r.top - lineTop) > 2) return out;
-          out = nodes[i].nodeValue.charAt(c) + out;
+          out = fromEnd ? v.charAt(c) + out : out + v.charAt(c);
         }
       }
       return out;
     };
     var inkPeek = function () {
       peek.style.setProperty('--peek-nudge', '0px');
-      var lastP = peekBody.lastElementChild;
-      if (!peekTitle.textContent || !lastP) return;
-      var top = baseOf(peekTitle, false) - inkOf(peekTitle, peekTitle.textContent).actualBoundingBoxAscent;
-      // (the foot the opening's last line's: its baseline and the deepest of its letters under it — Read on, that stood
-      // under it, gone: "remove read on entirely", 2026-10-24)
-      var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lastLineOf(lastP)).actualBoundingBoxDescent);
+      var firstP = peekBody.firstElementChild, lastP = peekBody.lastElementChild;
+      if (!firstP) return;
+      // (from the opening's first line's tallest letters to its last line's deepest — the title, that stood over it,
+      // gone: "remove title from the body preview", 2026-10-24; Read on, under it, before)
+      var top = baseOf(firstP, false) - inkOf(firstP, lineOf(firstP, false)).actualBoundingBoxAscent;
+      var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lineOf(lastP, true)).actualBoundingBoxDescent);
       var k = peek.getBoundingClientRect();
       peek.style.setProperty('--peek-nudge', ((k.top + k.bottom) / 2 - (top + foot) / 2).toFixed(2) + 'px');
     };
@@ -323,8 +327,7 @@
       var d = peekData[r.getAttribute('data-slug')];
       if (!d) return;
       peekAt = r;
-      peekTitle.innerHTML = d[0];
-      peekBody.innerHTML = d[1].map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       // (fitted once, to the room the window shows under the head as it is shown — the column less 54 over and under,
       // less the head still showing — then let go to its own height, so the lines are kept as the head scrolls away
@@ -334,17 +337,24 @@
       // page the hand is: "have the body text preview only be as tall as the opening viewport allows", 2026-10-24)
       var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
-      var tcs = getComputedStyle(peekTitle);
-      var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
       var pcs = getComputedStyle(peek), pad = (parseFloat(pcs.paddingTop) || 0) + (parseFloat(pcs.paddingBottom) || 0);
-      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - titleH) + 'px';
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
       inkPeek();
     };
+    // (the entry the hand last came onto stays lit — its title in the red, its date, its tag — when the hand leaves it,
+    // till another entry takes its place: "leave hover until something else deactivates it", 2026-10-24; lit as a
+    // landing is, is-target, whose look is the hand's)
+    var lit = null;
+    var light = function (r) {
+      if (lit && lit !== r && lit !== target) lit.classList.remove('is-target');
+      r.classList.add('is-target');
+      lit = r;
+    };
     items.forEach(function (r) {
-      r.addEventListener('mouseenter', function () { showPeek(r); });
-      r.addEventListener('focus', function () { showPeek(r); });
+      r.addEventListener('mouseenter', function () { light(r); showPeek(r); });
+      r.addEventListener('focus', function () { light(r); showPeek(r); });
     });
     // (the openings fetched once the page is in — archive-peek.json, beside the page — and the entry under the hand
     // meanwhile shown when they come)
