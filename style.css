@@ -33198,3 +33198,8 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-siz
 @media (min-width: 1024px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ color: #121417; --nc-mark: #121417; --hl-ink: #121417; }
 }
+/* (the writer under the hand its size and place kept, the titles' 17.5 on their baseline, and lit red — "when I hover on
+   author name on archive, it should keep size and position and highlight red", 2026-10-24) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-size: inherit; top: 0.5px; color: #B3301E; --nc-mark: #B3301E; --hl-ink: #B3301E; }
+}
