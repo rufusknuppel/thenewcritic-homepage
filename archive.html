@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=1b4efa56">
+<link rel="stylesheet" href="style.css?v=d8384801">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -1029,7 +1029,7 @@
     };
     if (document.readyState === 'complete') loadPeek(); else addEventListener('load', loadPeek, { once: true });
     var showTop = function () {
-      for (var i = 0; i < items.length; i++) if (!items[i].hidden) { showPeek(items[i]); return; }
+      for (var i = 0; i < items.length; i++) if (!items[i].hidden) { light(items[i]); showPeek(items[i]); return; }
     };
     afterFilter.push(showTop);
     showTop();
