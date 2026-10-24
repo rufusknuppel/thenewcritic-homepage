@@ -214,33 +214,58 @@
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
     var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekOn = peek.querySelector('.arc-peek__on'), peekAt = null;
+    // THE CUT AS THE FRONT PAGE'S (2026-10-24 — "have ellipsis for body preview work exactly as it does on homepage body
+    // previews": duo-panel-fit.js cutPlates): the paragraph crossing the column's foot cut to the last whole word the
+    // room holds, its trailing point or comma given up to the … joined on ("below." reads "below…"), the … in a mark of
+    // no width so it costs the line nothing — set in the line where the line has room for it; an opening that ends on a
+    // whole paragraph closes on a … too, its full stop traded for it
+    var cutTo = function (p, html, n) {
+      p.innerHTML = html;
+      var tw = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), t, seen = 0, last = null;
+      while ((t = tw.nextNode())) {
+        var re = /\S+/g, m, end = -1;
+        while ((m = re.exec(t.nodeValue))) { if (++seen === n) { end = m.index + m[0].length; break; } }
+        if (end > -1) { t.nodeValue = t.nodeValue.slice(0, end); last = t; break; }
+      }
+      if (!last) return;
+      for (var nd = last; nd && nd !== p; nd = nd.parentNode) while (nd.nextSibling) nd.parentNode.removeChild(nd.nextSibling);
+      last.nodeValue = last.nodeValue.replace(/[.,;:\s]+$/, '');
+      var mark = document.createElement('span');
+      mark.className = 'cut-mark';
+      mark.textContent = '…';
+      p.appendChild(mark);
+    };
+    var cutPara = function (p, foot) {
+      var html = p.innerHTML, words = (p.textContent.match(/\S+/g) || []).length;
+      var lo = 0, hi = words;
+      while (lo < hi) {
+        var mid = (lo + hi + 1) >> 1;
+        cutTo(p, html, mid);
+        if (p.getBoundingClientRect().bottom > foot + 0.5) hi = mid - 1; else lo = mid;
+      }
+      if (!lo) return false;
+      cutTo(p, html, lo);
+      var mk = p.querySelector('.cut-mark'), h0 = p.getBoundingClientRect().height;
+      mk.classList.add('is-set');
+      if (p.getBoundingClientRect().height > h0 + 1) mk.classList.remove('is-set');
+      return true;
+    };
     var fitPeek = function () {
       var paras = [].slice.call(peekBody.children);
-      paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
       var foot = peekBody.getBoundingClientRect().bottom;
       for (var i = 0; i < paras.length; i++) {
-        var r = paras[i].getBoundingClientRect();
-        if (r.bottom <= foot + 0.5) continue;
-        var lh = parseFloat(getComputedStyle(paras[i]).lineHeight) || 19.2;
-        var lines = Math.floor((foot - r.top + 0.5) / lh);
+        if (paras[i].getBoundingClientRect().bottom <= foot + 0.5) continue;
         for (var j = paras.length - 1; j > i; j--) peekBody.removeChild(paras[j]);
-        if (lines < 1) peekBody.removeChild(paras[i]);
-        else { paras[i].classList.add('is-cut'); paras[i].style.setProperty('-webkit-line-clamp', String(lines)); }
+        if (!cutPara(paras[i], foot)) peekBody.removeChild(paras[i]);
         break;
       }
-      // (an ellipsis at the end of every opening — "Add ellipsis to the end of all body text previews on the archive",
-      // 2026-10-24: one that ends on a whole paragraph gets it after the paragraph's last word, its full stop turned into
-      // it; cut short again if that runs it past the foot, the clamp's own ellipsis then)
       var last = peekBody.lastElementChild;
-      if (last && !last.classList.contains('is-cut')) {
+      if (last && !last.querySelector('.cut-mark') && !/…\s*$/.test(last.textContent)) {
         var tw = document.createTreeWalker(last, NodeFilter.SHOW_TEXT), tn = null, n;
         while ((n = tw.nextNode())) if (n.nodeValue.trim()) tn = n;
-        if (tn) tn.nodeValue = tn.nodeValue.replace(/[\s.…]*$/, '') + '…';
-        var lr = last.getBoundingClientRect();
-        if (lr.bottom > foot + 0.5) {
-          var lh2 = parseFloat(getComputedStyle(last).lineHeight) || 19.2;
-          last.classList.add('is-cut'); last.style.setProperty('-webkit-line-clamp', String(Math.max(1, Math.floor((foot - lr.top + 0.5) / lh2))));
-        }
+        if (tn) tn.nodeValue = tn.nodeValue.replace(/[.\s]*$/, '') + '…';
+        // (the … run onto a line past the foot: the paragraph cut as a crossing one is)
+        if (last.getBoundingClientRect().bottom > foot + 0.5 && !cutPara(last, foot)) peekBody.removeChild(last);
       }
     };
     // (the ink centred, not the lines: the title's letters' tops and Read on's letters' feet as far from the column's

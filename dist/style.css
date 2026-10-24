@@ -16597,3 +16597,5 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek__on{ font-size: 17.5px; line-height: 28px; }
 }
+body.archive-page .arc--index .arc-peek__p .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
+body.archive-page .arc--index .arc-peek__p .cut-mark.is-set{ display: inline; width: auto; }

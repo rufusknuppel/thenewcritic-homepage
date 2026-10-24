@@ -33001,3 +33001,7 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek__on{ font-size: 17.5px; line-height: 28px; }
 }
+/* (the opening's … in the front page's mark: no width, hanging past the line, set in it where the line has room —
+   .latest-plate .cut-mark; the clamp's own ellipsis no longer used) */
+body.archive-page .arc--index .arc-peek__p .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
+body.archive-page .arc--index .arc-peek__p .cut-mark.is-set{ display: inline; width: auto; }
