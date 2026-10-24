@@ -1035,7 +1035,7 @@ function applyContentOverrides(posts) {
     if (!o) continue;
     if (o.title) p.title = o.title;
     if (o.dek) p.subtitle = o.dek;
-    if (o.author) p.author = o.author;
+    if (o.author) p.author = curlyApos(o.author);
     if (o.date) p.metaDate = o.date;
     if (o.kicker) p.kicker = o.kicker;
     if (o.focal) p.focal = o.focal;
@@ -1287,7 +1287,7 @@ function normalizeTagPost(p) {
     link: p.canonical_url || '',
     image: p.cover_image || '',
     date: new Date(p.post_date),
-    author: (byline && byline.name) || SITE_NAME,
+    author: curlyApos((byline && byline.name) || SITE_NAME),
     // Likes only (item 4) — restacks excluded so "Most Popular" reflects reactions, not shares.
     reactionCount: Object.values(p.reactions || {}).reduce((a, b) => a + b, 0),
   };
@@ -1620,6 +1620,12 @@ const EM_CLOSE = '\u0002';
 
 function stripEmMarkers(text) {
   return (text || '').replace(/[\u0001\u0002]/g, '');
+}
+
+// A writer's name with the typewriter apostrophe turned to the curly one — "I want Bentham's to feature a curly
+// apostrophe", 2026-10-24 (Bentham’s Bulldog); a name has no quotation marks, so every straight one is an apostrophe
+function curlyApos(name) {
+  return String(name).replace(/'/g, '\u2019');
 }
 
 function emHtml(text) {
@@ -2048,7 +2054,7 @@ function normalizeRssItem(item) {
     link: item.link,
     image: item.image,
     date: item.dateObj,
-    author: item.creator || SITE_NAME,
+    author: curlyApos(item.creator || SITE_NAME),
     reactionCount: 0,
   };
 }
@@ -6034,6 +6040,16 @@ function renderArchivePage(posts) {
   const eds = ARC_SECTIONS.filter(([k]) => k === 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('');
   // (no tags under the search since — "Remove tags from the search section", 2026-10-23; the cards' #section= and
   // #topic= links still narrow the index, src/archive.js)
+  // THE ESSAYS' WRITERS (2026-10-24 — "Add another column next to the body text preview that lists all the essay authors.
+  // Right align this section. When someone clicks the name of the author should be a filter on the search function"):
+  // every writer of an essay, a shared byline split into its names, A to Z by surname, each a button that puts the
+  // name in the search (src/archive.js)
+  const writers = [...new Set(posts.filter((p) => arcIndexSection(p) === 'essays')
+    .flatMap((p) => (p.author || '').split(/\s*(?:&|,|\band\b)\s*/)).map((n) => n.trim()).filter(Boolean))];
+  const surname = (n) => n.split(/\s+/).pop().toLowerCase();
+  writers.sort((x, y) => surname(x).localeCompare(surname(y)) || x.localeCompare(y));
+  const writersHtml = `<nav class="arc-who" aria-label="The essays' writers"><h2 class="arc-ix-sec__name arc-who__name">Writers</h2>`
+    + `<ul class="arc-who__list">${writers.map((n) => `<li><button class="arc-who__w" type="button" data-name="${escapeHtml(n)}">${escapeHtml(n)}</button></li>`).join('')}</ul></nav>`;
   const peekJson = archivePeekJson(posts);
   const peekV = crypto.createHash('sha1').update(peekJson).digest('hex').slice(0, 10);
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
@@ -6054,6 +6070,7 @@ function renderArchivePage(posts) {
     <div class="arc-ix">
     ${cols}
     </div>
+    ${writersHtml}
     <div class="arc-ix arc-ix--foot">${eds}</div>
     <p class="arc-none" hidden>Nothing matches</p>
     <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><div class="arc-peek__body"></div></aside>

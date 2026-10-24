@@ -25,7 +25,7 @@
   };
   var textOf = function (r) {
     if (r.__t == null) r.__t = [r.getAttribute('data-title'), r.textContent, r.getAttribute('data-author'),
-      r.getAttribute('data-kicker'), r.getAttribute('data-section')].join(' ').replace(/­/g, '').toLowerCase();
+      r.getAttribute('data-kicker'), r.getAttribute('data-section')].join(' ').replace(/­/g, '').replace(/[‘’]/g, "'").toLowerCase();
     return r.__t;
   };
   // (what is left, in words, for a reader that hears it — "Ninety-six pieces", "Nothing matches “zzz”")
@@ -39,11 +39,12 @@
       : inWords(n) + (n === 1 ? ' piece' : ' pieces') + (words ? ' matching “' + words + '”' : '');
     count.textContent = t.charAt(0).toUpperCase() + t.slice(1);
   };
+  var afterFilter = [];
   var applyFilter = function () {
     var hp = readHash();
     var sec = (hp.section || '').toLowerCase(), topic = (hp.topic || '').toLowerCase();
     var typed = search ? search.value.trim() : '';
-    var words = typed.toLowerCase().split(/\s+/).filter(Boolean);
+    var words = typed.replace(/[‘’]/g, "'").toLowerCase().split(/\s+/).filter(Boolean);
     var shown = 0;
     items.forEach(function (r) {
       var on = (!sec || r.getAttribute('data-section') === sec) && (!topic || r.getAttribute('data-kicker') === topic);
@@ -59,6 +60,7 @@
     if (none) none.hidden = shown > 0;
     // (nothing left: the index's columns go and the line stands where Essays stood — style.css NOTHING WHERE ESSAYS STANDS)
     arc.classList.toggle('is-empty', !shown);
+    afterFilter.forEach(function (f) { f(); });
   };
   // (a writer's or a tag's link fills the field with the name, as the reader would have typed it)
   var fromHash = function () {
@@ -139,6 +141,58 @@
   addEventListener('scroll', lift, { passive: true });
   addEventListener('resize', lift);
 
+  // THE ESSAYS' WRITERS (2026-10-24 — "When someone clicks the name of the author should be a filter on the search
+  // function"): a writer pressed puts the name in the search, as typed, and the index narrows to them; pressed again,
+  // or another typed over it, lets it go (build.js renderArchivePage)
+  var whos = [].slice.call(arc.querySelectorAll('.arc-who__w'));
+  var markWho = function () {
+    var v = search ? search.value.trim().toLowerCase() : '';
+    whos.forEach(function (b) { var on = b.getAttribute('data-name').toLowerCase() === v; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+  };
+  whos.forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (!search) return;
+      var n = b.getAttribute('data-name');
+      search.value = search.value.trim().toLowerCase() === n.toLowerCase() ? '' : n;
+      if (target) { target.classList.remove('is-target'); target = null; }
+      applyFilter(); markWho(); toHead();
+    });
+  });
+  if (search) { search.addEventListener('input', markWho); search.addEventListener('keyup', markWho); }
+  // (the writers narrowed with the index to those whose essays still stand in it, the column gone when none do —
+  // "Writers list should also shrink on search", 2026-10-24)
+  var whoCol = arc.querySelector('.arc-who');
+  var shrinkWho = function () {
+    var left = {};
+    items.forEach(function (r) {
+      if (r.hidden || r.getAttribute('data-section') !== 'essays') return;
+      (r.getAttribute('data-author') || '').split(/\s*(?:&|,|\band\b)\s*/).forEach(function (n) { if (n.trim()) left[n.trim()] = 1; });
+    });
+    var any = false;
+    whos.forEach(function (b) { var on = !!left[b.getAttribute('data-name').toLowerCase()]; b.parentNode.hidden = !on; any = any || on; });
+    if (whoCol) whoCol.hidden = !any;
+  };
+  afterFilter.push(shrinkWho);
+  shrinkWho();
+  if (clear) clear.addEventListener('click', markWho);
+  markWho();
+
+  // (the writer's tag beside a title pressed puts the writer in the search, as their name in the writers' column does,
+  // and the link to the post is not followed — "I want to be able to move my mouse, hover the tag with the author name,
+  // click on that name and have the filter applied", 2026-10-24)
+  items.forEach(function (r) {
+    var by = r.querySelector('.arc-ix-by');
+    if (!by) return;
+    by.addEventListener('click', function (e) {
+      if (!search || !by.textContent.trim() || !matchMedia('(min-width: 1024px) and (hover: hover)').matches) return;
+      e.preventDefault(); e.stopPropagation();
+      var n = by.textContent.trim();
+      search.value = search.value.trim().toLowerCase() === n.toLowerCase() ? '' : n;
+      if (target) { target.classList.remove('is-target'); target = null; }
+      applyFilter(); markWho(); toHead();
+    });
+  });
+
   // THE POST'S OPENING IN THE RIGHT COLUMN (2026-10-24 — "On hover, I want the right column to fill with a body text
   // preview of the post, set 54px from top bottom and sides"; no date in it since — "Remove the date from the preview
   // column"): a hand on an entry, or the keys on it, fills the right column with its opening paragraphs (build.js
@@ -170,7 +224,17 @@
       peekAt = r;
       peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
+      // (fitted once, to the room the window shows under the head as it is shown — the column less 54 over and under,
+      // less the head still showing — then let go to its own height, so the lines are kept as the head scrolls away
+      // and the block is centred in the column, as the search is — "for preview text, when the column grows in height
+      // on scroll, don't add more lines, recenter existing lines the way search does", 2026-10-24)
+      // (the room always the opening view's — the window under the whole head, at the page's top — however far down the
+      // page the hand is: "have the body text preview only be as tall as the opening viewport allows", 2026-10-24)
+      var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
+      var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - 108 - head0) + 'px';
       fitPeek();
+      peekBody.style.maxHeight = '';
     };
     items.forEach(function (r) {
       r.addEventListener('mouseenter', function () { showPeek(r); });
@@ -185,18 +249,15 @@
       }).catch(function () {});
     };
     if (document.readyState === 'complete') loadPeek(); else addEventListener('load', loadPeek, { once: true });
+    // (the top entry's opening there from the first look — the newest essay — and the search's top result as the
+    // index narrows, till a hand comes onto an entry — "Auto display on open the most recent essay" / "Or whatever the
+    // top result is of the search", 2026-10-24)
+    var showTop = function () {
+      for (var i = 0; i < items.length; i++) if (!items[i].hidden) { showPeek(items[i]); return; }
+    };
+    afterFilter.push(showTop);
+    showTop();
     addEventListener('resize', function () { if (peekAt) showPeek(peekAt); });
-    // (the column as tall as the room under the head while the head still shows — style.css — so the text is fitted
-    // again as the head scrolls away, once a frame)
-    var peekLift = null, peekFrame = 0;
-    addEventListener('scroll', function () {
-      if (!peekAt || peekFrame) return;
-      peekFrame = requestAnimationFrame(function () {
-        peekFrame = 0;
-        var l = arcMain.style.getPropertyValue('--arc-lift');
-        if (l !== peekLift) { peekLift = l; showPeek(peekAt); }
-      });
-    }, { passive: true });
   }
 
   // (the marks lit under the hand, as on the front page — "Highlight should work on wordmark on archive", 2026-10-23:
