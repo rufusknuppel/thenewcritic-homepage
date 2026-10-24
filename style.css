@@ -16724,3 +16724,10 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
   body.archive-page .arc--index .arc-main > .arc-find-row{ grid-column: 1; }
   body.archive-page .arc--index .arc-main > .arc-peek{ grid-column: 3; }
 }
+body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ font-size: inherit; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ font-size: inherit; top: 0.5px; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ color: #121417; --nc-mark: #121417; --hl-ink: #121417; }
+}
