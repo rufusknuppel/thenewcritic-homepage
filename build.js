@@ -6031,7 +6031,8 @@ function renderArchivePage(posts) {
     <p class="arc-none" hidden>Nothing matches</p>
   </div>
 </section>`,
-  }).replace('<html lang="en">', '<html lang="en" class="is-archive">').replace('<meta name="theme-color" content="#FAF9F6">', '<meta name="theme-color" content="#B3301E">');
+  }).replace('<html lang="en">', '<html lang="en" class="is-archive">');
+  // (the browser's bar the page's white again since — "Scrap the highlight color background", 2026-10-23)
 }
 
 // Extracts the three founders' name + headshot photo + signature + Substack

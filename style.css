@@ -32537,3 +32537,34 @@ body.archive-page .arc--index .arc-none{
 }
 /* (Contra's tags over their runs white too — "Make art/movies/books white too", 2026-10-23) */
 body.archive-page .arc--index .arc-ix-grp__tag{ color: #FAF9F6; }
+
+/* THE ARCHIVE ON THE WHITE AGAIN (2026-10-23 — "Scrap the highlight color background"): the red ground gone — the page
+   the front page's white, its words the ink, the highlight the red again, the names lit red under the hand as on the
+   front page; the rules kept the charcoal the archive asked for. The index's own colours, set for the red, turned
+   back with it: the titles, the sections' and Contra's names, the field, Clear and Nothing matches in the ink, a title
+   under the hand in the red; the tags under the field the front page's byline tag as it stands there — the red with
+   the ink on it — and the one pressed, or under the hand, the ink with the white on it */
+html.is-archive{
+  --tw: #FAF9F6;
+  --tc: #121417;
+  --g: #FAF9F6;
+  --k: #121417;
+  --nc-mark: #B3301E;
+  --nc-rule: #121417;
+  --nc-outline: #B3301E;
+  --arc-quiet: #9A9893;
+  background: #FAF9F6;
+}
+body.archive-page{ background: #FAF9F6; color: #121417; }
+html.is-archive :is(a.content-name, a.op-tnc, a.rail-tlm, a.arc-bird){ --nc-mark: #B3301E; }
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear, .arc-ix-sec__name, .arc-ix-grp__tag, .arc-none),
+body.archive-page .arc--index .arc-search,
+body.archive-page .arc--index .arc-search::placeholder{ color: #121417; }
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear){ --nc-mark: #B3301E; --hl-ink: #B3301E; }
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear):is(:hover, :focus-visible),
+body.archive-page .arc--index .arc-ix-item.is-target{ color: #B3301E; }
+body.archive-page .arc--index .arc-ix-tag{ background: #B3301E; color: #121417; --nc-mark: #FAF9F6; --hl-ink: #FAF9F6; }
+body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ background: #121417; color: #FAF9F6; }
+/* (the archive's rules the highlight, as the front page's — "Have the rules be highlight colored", 2026-10-23: the band's
+   foot, the line down the middle, the search band's foot on a phone) */
+html.is-archive{ --nc-rule: #B3301E; }
