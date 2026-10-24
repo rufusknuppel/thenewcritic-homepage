@@ -4227,7 +4227,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     // (the bird no longer under the kickers since — "Remove bird from beneath The Latest", 2026-10-13: railBird kept,
     // unused)
     }).join('')}</ul>` + (void railBird, '')
-    + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">View all</a>`
+    + `<a class="latest-rail__all" href="${escapeHtml(sec.href)}">See All</a>`
     + railCues(si)
     + `</div>${si === 0 ? railCopy() : ''}</div></aside>`;
   // THE NEXT SECTION FORETOLD (2026-10-04, at the user's words — "36px from
