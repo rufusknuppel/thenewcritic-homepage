@@ -32678,3 +32678,19 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-siz
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > .arc-find-row{ translate: 0 calc(-1 * var(--arc-lift, 0px)); }
 }
+
+/* CLEAR UNDER THE SEARCH (2026-10-24 — "Clear should appear below search, shouldn't move search. And clear should have
+   an x beside it and should be smaller like the titles in the archive list. and unitalicized"): upright, at the index's
+   17.5 on 28, a × after it; from 1024 up laid on the line under the field, out of the column's flow, so the field stays
+   on the column's middle whether it shows or not */
+body.archive-page .arc--index .arc-find-row .arc-clear{ font-size: 17.5px; line-height: 28px; font-style: normal; }
+body.archive-page .arc--index .arc-find-row .arc-clear::after{ content: "\00D7"; margin-left: 0.3em; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-find-row .arc-clear{
+    position: absolute;
+    top: calc(50% + 14px);
+    left: 54px; right: 108px;
+    width: auto;
+    text-align: center;
+  }
+}
