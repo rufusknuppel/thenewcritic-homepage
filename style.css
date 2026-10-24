@@ -16402,3 +16402,18 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     justify-content: center;
   }
 }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-pic{
+    height: calc(100vh - var(--arc-band, 0px));
+    padding: 18px;
+    align-items: center;
+  }
+  body.archive-page .arc--index .arc-pic__img{
+    width: min(100%, calc((100vh - var(--arc-band, 0px) - 36px) * var(--ar, 1)));
+    max-width: none;
+    max-height: none;
+    height: auto;
+    aspect-ratio: var(--ar, 1);
+    object-fit: cover;
+  }
+}
