@@ -7210,8 +7210,9 @@
                 var lk0 = j.card.querySelector('a.card-image-link'), on0 = lk0 && lk0.getAttribute('data-on');
                 var sc0 = lk0 && lk0.getAttribute('data-sec');
                 if (sc0) {
-                  var hs0 = document.createElement('span');
-                  hs0.className = 'swap-body-sec';
+                  var hs0 = document.createElement('a');
+                  hs0.className = 'swap-body-sec hl-ink';
+                  hs0.href = 'archive.html#section=' + sc0.toLowerCase();
                   hs0.textContent = sc0;
                   hm.appendChild(hs0);
                 }
