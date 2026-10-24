@@ -3090,7 +3090,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
           <a class="duo-essays-btn card-category-btn pc pc-left" href="archive.html">The Latest</a>
           ${artBoxHtml(post)}${readNowHtml}
         </div>`;
-  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" data-on="${arcIndexDate(post)}" rel="noopener">
+  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" data-on="${arcIndexDate(post)}" data-sec="${escapeHtml(SECTION_BY_LINK.get(post.link) || '')}" rel="noopener">
         ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
       </a></span>`;
 
@@ -3382,7 +3382,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // title facing from a centred column on the left (the CSS pins the
   // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
-        <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" data-on="${arcIndexDate(post)}" rel="noopener">
+        <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" data-on="${arcIndexDate(post)}" data-sec="${escapeHtml(SECTION_BY_LINK.get(post.link) || '')}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
@@ -5981,6 +5981,7 @@ function arcIndexDate(p) {
 // Critic's Criticism to editors", 2026-10-23)
 // (the index's tags for the Contras the feed leaves untagged — "Depleted Shells is Art, and McNally the Younger is Food",
 // 2026-10-23; here and not in content-overrides.js, where a kicker would stand in the front page's column for the title)
+const SECTION_BY_LINK = new Map();
 const ARC_TAGS = { 'depleted-shells': 'Art', 'mcnally-the-younger': 'Food' };
 function arcIndexSection(p) {
   if (/new critic.s criticism/i.test(p.kicker || '')) return 'editors';
@@ -6509,6 +6510,12 @@ async function main() {
       : 'From the Editors';
     const manual = lookupContraPreview(p.link);
     if (manual) p.preview = manual;
+  }
+
+  // (and every link's section for the front page's row over the title — "between author and date on homepage, add Contra
+  // or Essays or Postscript", 2026-10-24: the cards' own post objects carry no sectionLabel; SECTION_BY_LINK)
+  for (const [list, label] of [[essaysAll, 'Essays'], [contraAll, 'Contra'], [postscriptAll, 'Postscript']]) {
+    for (const q of list) SECTION_BY_LINK.set(q.link, label);
   }
 
   // Section column for the archive ledger (see renderArchiveRow) — same

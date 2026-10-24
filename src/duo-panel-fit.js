@@ -9821,6 +9821,15 @@
                 // (and the date after the writer again — "Add author name and date in a dek style row above the title",
                 // 2026-10-24: M.D.YY, as the archive gives it, off the picture's link)
                 var lk0 = j.card.querySelector('a.card-image-link'), on0 = lk0 && lk0.getAttribute('data-on');
+                // (and the post's section between them, upright — "between author and date on homepage, add Contra or
+                // Essays or Postscript between in non-italics", 2026-10-24: 18 either side, as the date)
+                var sc0 = lk0 && lk0.getAttribute('data-sec');
+                if (sc0) {
+                  var hs0 = document.createElement('span');
+                  hs0.className = 'swap-body-sec';
+                  hs0.textContent = sc0;
+                  hm.appendChild(hs0);
+                }
                 // (no comma since, the two 18 apart as the archive's ledger sets its title and date — "space author and
                 // date like the archive page does", "no comma", 2026-10-24: the date's margin, below)
                 if (on0) {
@@ -9856,7 +9865,10 @@
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
-                  if (el.classList.contains('swap-body-on')) { if (wide) el.style.setProperty('margin-left', '18px', 'important'); else el.style.removeProperty('margin-left'); }
+                  if (el.classList.contains('swap-body-on') || el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('margin-left', '18px', 'important'); else el.style.removeProperty('margin-left'); }
+                  if (el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('font-style', 'normal', 'important'); }
+                  // (the row on one line, into the column's air where a long name needs it — at 1024 four broke in two)
+                  if (!k) { if (wide) el.style.setProperty('white-space', 'nowrap', 'important'); else el.style.removeProperty('white-space'); }
                 });
               }
               // (two columns, filled in turn and cut on a whole line — or,

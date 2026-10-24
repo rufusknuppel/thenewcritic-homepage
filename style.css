@@ -33184,3 +33184,16 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
   body.archive-page .arc--index .arc-main > .arc-find-row{ grid-column: 1; }
   body.archive-page .arc--index .arc-main > .arc-peek{ grid-column: 3; }
 }
+
+/* THE WRITER AND THE DATE AT THE TITLES' SIZE (2026-10-24 — "Make author and date on the archive page the same size as
+   the titles"): the entry's own size, the titles' 17.5 from 1024 up, at every width; on the titles' baseline, the lift
+   the smaller size took gone */
+body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-size: inherit; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-size: inherit; top: 0.5px; }
+}
+/* (the writer and the date the ink beside the lit title, not its red — "have author and date appear as black on hover on
+   the archive", 2026-10-24; the tokens the links' own hover paints with set to the ink too) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ color: #121417; --nc-mark: #121417; --hl-ink: #121417; }
+}
