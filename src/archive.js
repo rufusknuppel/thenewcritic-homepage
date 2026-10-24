@@ -213,7 +213,7 @@
   // (style.css THE POST'S OPENING IN THE RIGHT COLUMN)
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
-    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekOn = peek.querySelector('.arc-peek__on'), peekAt = null;
     var fitPeek = function () {
       var paras = [].slice.call(peekBody.children);
       paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
@@ -249,6 +249,9 @@
       if (!d) return;
       peekAt = r;
       peekTitle.innerHTML = d[0];
+      // (Read on… under it, to the post — "below the body text preview add an italics in the same size as the title that
+      // says Read On...and links to the post", 2026-10-24; out of the keys' round, the entry being the post's link there)
+      if (peekOn) peekOn.href = r.href;
       peekBody.innerHTML = d[1].map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       // (fitted once, to the room the window shows under the head as it is shown — the column less 54 over and under,
@@ -261,6 +264,7 @@
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
       var tcs = getComputedStyle(peekTitle);
       var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
+      if (peekOn) { var ocs = getComputedStyle(peekOn); titleH += peekOn.offsetHeight + (parseFloat(ocs.marginTop) || 0) + (parseFloat(ocs.marginBottom) || 0); }
       peekBody.style.maxHeight = Math.max(0, peek.clientHeight - 108 - head0 - titleH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
