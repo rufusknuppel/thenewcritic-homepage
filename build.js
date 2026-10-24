@@ -6620,7 +6620,9 @@ async function main() {
   const archivePool = archivePosts;
 
   const pages = {
-    'index.html': html,
+    // (the deks' opening On and Contra in lower case on the front page — "lowercase on and contra on homepage", "the
+    // deks only", 2026-10-24; the cards' deks are the copies the overlays and the hidden twins are made from)
+    'index.html': html.replace(/(<p class="card-dek"[^>]*>(?:\s|<[^>]+>)*)(On|Contra)(?=\s)/g, (m, a, w) => a + w.toLowerCase()),
     'about.html': renderAboutPage(founders),
     'archive.html': renderArchivePage(archivePool),
     'store.html': renderStorePage(await loadStore()),
