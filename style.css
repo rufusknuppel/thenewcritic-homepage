@@ -32574,3 +32574,13 @@ html.is-archive{ --nc-rule: #B3301E; }
 body.archive-page .arc--index .arc-ix-item .arc-ix-ttl{ display: none; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-subj{ display: none; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-ttl{ display: inline; }
+
+/* THE SUBJECT ON ONE LINE (2026-10-23 — "Adelstein, birnbaum and wllen should be one line"): the writer and the date,
+   unseen at rest, took their room beside the title all the same, and a long run of writers squeezed the subject into
+   three lines; out of the line at rest since, put in under the hand, and dropped under the title when they don't fit
+   beside it */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ flex-wrap: wrap; }
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ display: none; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) :is(.arc-ix-by, .arc-ix-on){ display: inline; }
+}

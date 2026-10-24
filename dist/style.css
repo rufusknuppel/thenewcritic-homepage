@@ -16319,3 +16319,8 @@ html.is-archive{ --nc-rule: #B3301E; }
 body.archive-page .arc--index .arc-ix-item .arc-ix-ttl{ display: none; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-subj{ display: none; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-ttl{ display: inline; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ flex-wrap: wrap; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ display: none; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by,body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ display: inline; }
+}
