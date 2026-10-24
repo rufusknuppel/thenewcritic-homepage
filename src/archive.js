@@ -368,8 +368,10 @@
     // (the top entry's opening there from the first look — the newest essay — and the search's top result as the
     // index narrows, till a hand comes onto an entry — "Auto display on open the most recent essay" / "Or whatever the
     // top result is of the search", 2026-10-24)
+    // (and lit, as the hand lights one, since its opening is the one showing — "When archive page opens, I want top post
+    // to be hovered because preview text is showing", 2026-10-24)
     var showTop = function () {
-      for (var i = 0; i < items.length; i++) if (!items[i].hidden) { showPeek(items[i]); return; }
+      for (var i = 0; i < items.length; i++) if (!items[i].hidden) { light(items[i]); showPeek(items[i]); return; }
     };
     afterFilter.push(showTop);
     showTop();

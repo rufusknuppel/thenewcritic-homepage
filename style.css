@@ -33054,3 +33054,85 @@ body.archive-page .arc--index .arc-who{ padding: 72px 36px 54px; text-align: lef
   /* (a title run long under the search's column passes under it, as under the opening's before) */
   body.archive-page .arc--index .arc-main > .arc-find-row{ z-index: 3; background: #FAF9F6; }
 }
+
+/* THE LEDGER CENTRED (2026-10-24 — "center the ledger on the archive page", each line on the column's middle): the
+   sections' and Contra's heads, every entry (its title and date together), the writers and Nothing matches set on the
+   middle of the index's column, each line ragged both sides. The writer's tag hangs 18 past the date, out of the line,
+   so the hand putting it in moves nothing */
+body.archive-page .arc--index .arc-ix{ grid-template-columns: minmax(0, 1fr); }
+body.archive-page .arc--index :is(.arc-ix-sec__name, .arc-ix-grp__tag, .arc-none){ text-align: center; }
+body.archive-page .arc--index .arc-ix-item{ width: fit-content; margin-left: auto; margin-right: auto; justify-content: center; }
+body.archive-page .arc--index .arc-who{ text-align: center; }
+body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-who{ text-align: center; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ position: relative; overflow: visible; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ position: absolute; left: calc(100% + 18px); top: 0; margin: 0; }
+}
+
+/* THE WRITER IN THE ITALIC LEFT OF THE TITLE (2026-10-24 — "I want to remove the author tag and instead have in italics to
+   the left of the title"): from 1024 up, under the hand (and on the entry lit), the writer — a postscript's subject —
+   no tag but the dates' small italic (15), 18 left of the title, hung out of the line so the centred line keeps its
+   place; in the line's colour, the red when lit; still pressed to narrow the index to them (src/archive.js) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{
+    position: absolute;
+    left: auto; right: calc(100% + 18px); top: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    clip-path: none;
+    background: none;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+    font-size: 15px; font-style: italic; font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: inherit;
+    --nc-mark: inherit; --hl-ink: inherit;
+    white-space: nowrap;
+  }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by::before{ content: none; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  /* (on the title's baseline: the smaller italic in the same 28 line stood a pixel and a half high of it) */
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ top: 1.5px; }
+}
+/* (on a phone each entry the column's width, its title and the writer and date under it centred in it — an entry as
+   wide as its words, there, took the width of the writer's line and stood its title off the middle) */
+@media (max-width: 1023.98px){
+  body.archive-page .arc--index .arc-ix-item{ width: auto; margin-left: 0; margin-right: 0; justify-content: center; text-align: center; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ text-align: center; }
+}
+/* (the writer — a postscript's subject — in its italic left of the title at rest too, not the hand's alone: "have the
+   authors resting", 2026-10-24; the ink at rest, the red with the line when lit) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(.arc-ix-by--writer){ display: block; }
+}
+
+/* CENTRED ON THE TITLE, THE WRITER AND DATE THE HAND'S (2026-10-24 — "Actually center based on titles then have both
+   date and author hover"): from 1024 up each line centred on its title alone; the writer hung 18 to its left and the
+   date 18 to its right, both out of the line, both shown only under the hand (and on the entry lit), so nothing moves
+   when they come */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(.arc-ix-by--writer),
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ display: none; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by:not(.arc-ix-by--writer),
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ display: block; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{
+    position: absolute;
+    left: calc(100% + 18px); top: 1.5px;
+    margin: 0;
+    font-size: 15px; font-style: italic; line-height: 28px;
+    white-space: nowrap;
+  }
+}
+/* (the writer under the hand the ink again, apart from the red of the line it hangs off, the tell it narrows the index
+   to them — "Have author hover back to black text for filter", 2026-10-24) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ color: #121417; --nc-mark: #121417; --hl-ink: #121417; cursor: pointer; }
+}

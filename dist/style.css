@@ -16636,3 +16636,63 @@ body.archive-page .arc--index .arc-who{ padding: 72px 36px 54px; text-align: lef
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > .arc-find-row{ z-index: 3; background: #FAF9F6; }
 }
+body.archive-page .arc--index .arc-ix{ grid-template-columns: minmax(0, 1fr); }
+body.archive-page .arc--index .arc-ix-sec__name,body.archive-page .arc--index .arc-ix-grp__tag,body.archive-page .arc--index .arc-none{ text-align: center; }
+body.archive-page .arc--index .arc-ix-item{ width: fit-content; margin-left: auto; margin-right: auto; justify-content: center; }
+body.archive-page .arc--index .arc-who{ text-align: center; }
+body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-who{ text-align: center; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ position: relative; overflow: visible; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ position: absolute; left: calc(100% + 18px); top: 0; margin: 0; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{
+    position: absolute;
+    left: auto; right: calc(100% + 18px); top: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    clip-path: none;
+    background: none;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+    font-size: 15px; font-style: italic; font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: inherit;
+    --nc-mark: inherit; --hl-ink: inherit;
+    white-space: nowrap;
+  }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by::before{ content: none; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ top: 1.5px; }
+}
+@media (max-width: 1023.98px){
+  body.archive-page .arc--index .arc-ix-item{ width: auto; margin-left: 0; margin-right: 0; justify-content: center; text-align: center; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ text-align: center; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(.arc-ix-by--writer){ display: block; }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(.arc-ix-by--writer),
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ display: none; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by:not(.arc-ix-by--writer),
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ display: block; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{
+    position: absolute;
+    left: calc(100% + 18px); top: 1.5px;
+    margin: 0;
+    font-size: 15px; font-style: italic; line-height: 28px;
+    white-space: nowrap;
+  }
+}
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ color: #121417; --nc-mark: #121417; --hl-ink: #121417; cursor: pointer; }
+}
