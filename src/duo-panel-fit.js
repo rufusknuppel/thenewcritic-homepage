@@ -9821,8 +9821,9 @@
                 // (and the date after the writer again — "Add author name and date in a dek style row above the title",
                 // 2026-10-24: M.D.YY, as the archive gives it, off the picture's link)
                 var lk0 = j.card.querySelector('a.card-image-link'), on0 = lk0 && lk0.getAttribute('data-on');
+                // (no comma since, the two 18 apart as the archive's ledger sets its title and date — "space author and
+                // date like the archive page does", "no comma", 2026-10-24: the date's margin, below)
                 if (on0) {
-                  if (mw) hm.appendChild(document.createTextNode(', '));
                   var hd0 = document.createElement('span');
                   hd0.className = 'swap-body-on';
                   hd0.textContent = on0;
@@ -9853,6 +9854,7 @@
                     if (!wide) el.style.removeProperty(pp);
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
+                  if (el.classList.contains('swap-body-on')) { if (wide) el.style.setProperty('margin-left', '18px', 'important'); else el.style.removeProperty('margin-left'); }
                 });
               }
               // (two columns, filled in turn and cut on a whole line — or,
