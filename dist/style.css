@@ -16588,3 +16588,6 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > .arc-peek{ padding-top: 41px; padding-bottom: 41px; }
 }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek__on{ font-size: 15px; line-height: 20px; }
+}
