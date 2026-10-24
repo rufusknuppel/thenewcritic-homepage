@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b192ce52">
+<link rel="stylesheet" href="style.css?v=a2518126">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -393,7 +393,7 @@
       </div>
     </section></div>
     <p class="arc-none" hidden>Nothing matches</p>
-    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=642a992e2c"><p class="arc-peek__title"></p><div class="arc-peek__body"></div></aside>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=c7e217d1ca"><div class="arc-peek__body"></div></aside>
   </div>
 </section>
 </main>
@@ -907,7 +907,7 @@
   });
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
-    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
     var cutTo = function (p, html, n) {
       p.innerHTML = html;
       var tw = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), t, seen = 0, last = null;
@@ -968,28 +968,31 @@
       inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       return inkCtx.measureText(text);
     };
-    var lastLineOf = function (el) {
+    var lineOf = function (el, fromEnd) {
       var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), t, nodes = [];
       while ((t = tw.nextNode())) nodes.push(t);
+      if (fromEnd) nodes.reverse();
       var out = '', lineTop = null, rng = document.createRange();
-      for (var i = nodes.length - 1; i >= 0; i--) {
-        for (var c = nodes[i].nodeValue.length - 1; c >= 0; c--) {
+      for (var i = 0; i < nodes.length; i++) {
+        var v = nodes[i].nodeValue;
+        for (var j = 0; j < v.length; j++) {
+          var c = fromEnd ? v.length - 1 - j : j;
           rng.setStart(nodes[i], c); rng.setEnd(nodes[i], c + 1);
           var r = rng.getBoundingClientRect();
           if (!r.height) continue;
           if (lineTop == null) lineTop = r.top;
           else if (Math.abs(r.top - lineTop) > 2) return out;
-          out = nodes[i].nodeValue.charAt(c) + out;
+          out = fromEnd ? v.charAt(c) + out : out + v.charAt(c);
         }
       }
       return out;
     };
     var inkPeek = function () {
       peek.style.setProperty('--peek-nudge', '0px');
-      var lastP = peekBody.lastElementChild;
-      if (!peekTitle.textContent || !lastP) return;
-      var top = baseOf(peekTitle, false) - inkOf(peekTitle, peekTitle.textContent).actualBoundingBoxAscent;
-      var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lastLineOf(lastP)).actualBoundingBoxDescent);
+      var firstP = peekBody.firstElementChild, lastP = peekBody.lastElementChild;
+      if (!firstP) return;
+      var top = baseOf(firstP, false) - inkOf(firstP, lineOf(firstP, false)).actualBoundingBoxAscent;
+      var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lineOf(lastP, true)).actualBoundingBoxDescent);
       var k = peek.getBoundingClientRect();
       peek.style.setProperty('--peek-nudge', ((k.top + k.bottom) / 2 - (top + foot) / 2).toFixed(2) + 'px');
     };
@@ -998,22 +1001,25 @@
       var d = peekData[r.getAttribute('data-slug')];
       if (!d) return;
       peekAt = r;
-      peekTitle.innerHTML = d[0];
-      peekBody.innerHTML = d[1].map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
-      var tcs = getComputedStyle(peekTitle);
-      var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
       var pcs = getComputedStyle(peek), pad = (parseFloat(pcs.paddingTop) || 0) + (parseFloat(pcs.paddingBottom) || 0);
-      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - titleH) + 'px';
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
       inkPeek();
     };
+    var lit = null;
+    var light = function (r) {
+      if (lit && lit !== r && lit !== target) lit.classList.remove('is-target');
+      r.classList.add('is-target');
+      lit = r;
+    };
     items.forEach(function (r) {
-      r.addEventListener('mouseenter', function () { showPeek(r); });
-      r.addEventListener('focus', function () { showPeek(r); });
+      r.addEventListener('mouseenter', function () { light(r); showPeek(r); });
+      r.addEventListener('focus', function () { light(r); showPeek(r); });
     });
     var loadPeek = function () {
       fetch(peek.getAttribute('data-src')).then(function (res) { return res.json(); }).then(function (d) {
