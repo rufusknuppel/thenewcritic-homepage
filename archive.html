@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d8af4f85">
+<link rel="stylesheet" href="style.css?v=83156f22">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -392,6 +392,7 @@
       </div>
     </section></div>
     <p class="arc-none" hidden>Nothing matches</p>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=c7e217d1ca"><div class="arc-peek__body"></div></aside>
   </div>
 </section>
 </main>
@@ -847,6 +848,55 @@
   lift();
   addEventListener('scroll', lift, { passive: true });
   addEventListener('resize', lift);
+  var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
+  if (peek && peek.getAttribute('data-src') && window.fetch) {
+    var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var fitPeek = function () {
+      var paras = [].slice.call(peekBody.children);
+      paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
+      var foot = peekBody.getBoundingClientRect().bottom;
+      for (var i = 0; i < paras.length; i++) {
+        var r = paras[i].getBoundingClientRect();
+        if (r.bottom <= foot + 0.5) continue;
+        var lh = parseFloat(getComputedStyle(paras[i]).lineHeight) || 19.2;
+        var lines = Math.floor((foot - r.top + 0.5) / lh);
+        for (var j = paras.length - 1; j > i; j--) peekBody.removeChild(paras[j]);
+        if (lines < 1) peekBody.removeChild(paras[i]);
+        else { paras[i].classList.add('is-cut'); paras[i].style.setProperty('-webkit-line-clamp', String(lines)); }
+        break;
+      }
+    };
+    var showPeek = function (r) {
+      if (!peekData) { peekWant = r; return; }
+      var d = peekData[r.getAttribute('data-slug')];
+      if (!d) return;
+      peekAt = r;
+      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      peek.classList.add('is-on');
+      fitPeek();
+    };
+    items.forEach(function (r) {
+      r.addEventListener('mouseenter', function () { showPeek(r); });
+      r.addEventListener('focus', function () { showPeek(r); });
+    });
+    var loadPeek = function () {
+      fetch(peek.getAttribute('data-src')).then(function (res) { return res.json(); }).then(function (d) {
+        peekData = d;
+        if (peekWant) showPeek(peekWant);
+      }).catch(function () {});
+    };
+    if (document.readyState === 'complete') loadPeek(); else addEventListener('load', loadPeek, { once: true });
+    addEventListener('resize', function () { if (peekAt) showPeek(peekAt); });
+    var peekLift = null, peekFrame = 0;
+    addEventListener('scroll', function () {
+      if (!peekAt || peekFrame) return;
+      peekFrame = requestAnimationFrame(function () {
+        peekFrame = 0;
+        var l = arcMain.style.getPropertyValue('--arc-lift');
+        if (l !== peekLift) { peekLift = l; showPeek(peekAt); }
+      });
+    }, { passive: true });
+  }
   var mn = document.querySelector('main');
   if (mn) [].forEach.call(document.querySelectorAll('a.content-name .content-name__block > .tnc-words, main .op-band > a.rail-tlm, main .op-band > a.op-tnc'), function (el) {
     var band2 = el.matches('main .op-band > a');
