@@ -75,6 +75,13 @@
     var hp = readHash();
     // (a tag's link is a tag of its own here since — the tags under the field — and keeps its kind alone)
     var name = hp.author || '';
+    // (a link's name set as the writer's own, capitals and all — a lowercased one from an older link put back as the
+    // index writes it: a writer in the writers' column, else the byline it matches)
+    if (name) {
+      var low = name.toLowerCase(), as = null;
+      [].forEach.call(arc.querySelectorAll('.arc-who__w, .arc-ix-by'), function (e) { var t = e.textContent.trim(); if (!as && t.toLowerCase() === low) as = t; });
+      if (as) name = as;
+    }
     if (search && name) search.value = name;
   };
 

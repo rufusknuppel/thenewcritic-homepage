@@ -2091,7 +2091,9 @@ function archiveHref(post, key) {
   // #author=). A date still sorts the ledger by date and lands on the
   // post itself.
   if (key === 'kicker' && post.kicker) return `archive.html#topic=${encodeURIComponent(post.kicker.toLowerCase())}`;
-  if (key === 'author' && post.author) return `archive.html#author=${encodeURIComponent(post.author.toLowerCase())}`;
+  // (the name as written, so the archive's field reads it so — "When someone clicks the name of the author on the
+  // homepage, should be capitalized properly in the search", 2026-10-24)
+  if (key === 'author' && post.author) return `archive.html#author=${encodeURIComponent(post.author)}`;
   return `archive.html#sort=${key}&post=${slugOf(post.link)}`;
 }
 
