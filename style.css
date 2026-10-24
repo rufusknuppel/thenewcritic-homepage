@@ -32943,3 +32943,7 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
     color: #121417;
   }
 }
+/* (a writer narrowed out of the column gone from it — the row's flex had held it there: "with only their name remaining
+   in the writers column", 2026-10-24) */
+body.archive-page .arc--index .arc-who__list li[hidden],
+body.archive-page .arc--index .arc-who[hidden]{ display: none; }
