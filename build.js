@@ -5928,7 +5928,8 @@ const LEDGER_FEATURE_SLUGS = {
 // (the one the reader is in red, as THE LATEST is there), the search on
 // a gray rule, and an italic line saying what the ledger holds. The
 // column head sorts by its words.
-const ARC_SECTIONS = [['essays', 'Essays'], ['postscript', 'Postscript'], ['contra', 'Contra'], ['editors', 'Editors']];
+// (the Editors' section named Editors' Notes — "Have the editors section say Editors' Notes", 2026-10-24)
+const ARC_SECTIONS = [['essays', 'Essays'], ['postscript', 'Postscript'], ['contra', 'Contra'], ['editors', 'Editors’ Notes']];
 // THE FRONT PAGE'S HEAD ON A PAGE OF ITS OWN (2026-10-22 — the archive's first, then About's, "Redesign the about page in
 // the same was as the archive redesign", "have white background and keep current features, but update with new
 // homepage"): the front page's THE NEW CRITIC and the band under it, the page's nav word marked, and the page's own body
