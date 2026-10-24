@@ -139,7 +139,65 @@
   addEventListener('scroll', lift, { passive: true });
   addEventListener('resize', lift);
 
-  // (no cover in the right column since — "Remove the image from the side column", 2026-10-23)
+  // THE POST'S OPENING IN THE RIGHT COLUMN (2026-10-24 — "On hover, I want the right column to fill with a body text
+  // preview of the post, set 54px from top bottom and sides"; no date in it since — "Remove the date from the preview
+  // column"): a hand on an entry, or the keys on it, fills the right column with its opening paragraphs (build.js
+  // renderArchivePage); the paragraphs that would run past the column's foot dropped and the one crossing it cut at its
+  // last whole line with an ellipsis, as the front page's previews are; it stays till another entry takes its place
+  // (style.css THE POST'S OPENING IN THE RIGHT COLUMN)
+  var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
+  if (peek && peek.getAttribute('data-src') && window.fetch) {
+    var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var fitPeek = function () {
+      var paras = [].slice.call(peekBody.children);
+      paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
+      var foot = peekBody.getBoundingClientRect().bottom;
+      for (var i = 0; i < paras.length; i++) {
+        var r = paras[i].getBoundingClientRect();
+        if (r.bottom <= foot + 0.5) continue;
+        var lh = parseFloat(getComputedStyle(paras[i]).lineHeight) || 19.2;
+        var lines = Math.floor((foot - r.top + 0.5) / lh);
+        for (var j = paras.length - 1; j > i; j--) peekBody.removeChild(paras[j]);
+        if (lines < 1) peekBody.removeChild(paras[i]);
+        else { paras[i].classList.add('is-cut'); paras[i].style.setProperty('-webkit-line-clamp', String(lines)); }
+        break;
+      }
+    };
+    var showPeek = function (r) {
+      if (!peekData) { peekWant = r; return; }
+      var d = peekData[r.getAttribute('data-slug')];
+      if (!d) return;
+      peekAt = r;
+      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      peek.classList.add('is-on');
+      fitPeek();
+    };
+    items.forEach(function (r) {
+      r.addEventListener('mouseenter', function () { showPeek(r); });
+      r.addEventListener('focus', function () { showPeek(r); });
+    });
+    // (the openings fetched once the page is in — archive-peek.json, beside the page — and the entry under the hand
+    // meanwhile shown when they come)
+    var loadPeek = function () {
+      fetch(peek.getAttribute('data-src')).then(function (res) { return res.json(); }).then(function (d) {
+        peekData = d;
+        if (peekWant) showPeek(peekWant);
+      }).catch(function () {});
+    };
+    if (document.readyState === 'complete') loadPeek(); else addEventListener('load', loadPeek, { once: true });
+    addEventListener('resize', function () { if (peekAt) showPeek(peekAt); });
+    // (the column as tall as the room under the head while the head still shows — style.css — so the text is fitted
+    // again as the head scrolls away, once a frame)
+    var peekLift = null, peekFrame = 0;
+    addEventListener('scroll', function () {
+      if (!peekAt || peekFrame) return;
+      peekFrame = requestAnimationFrame(function () {
+        peekFrame = 0;
+        var l = arcMain.style.getPropertyValue('--arc-lift');
+        if (l !== peekLift) { peekLift = l; showPeek(peekAt); }
+      });
+    }, { passive: true });
+  }
 
   // (the marks lit under the hand, as on the front page — "Highlight should work on wordmark on archive", 2026-10-23:
   // latest-rail.js wires them there and is not on this page; the same main.nc-hot-* classes, so style.css THE MARKS LIT

@@ -32694,3 +32694,84 @@ body.archive-page .arc--index .arc-find-row .arc-clear::after{ content: "\00D7";
     text-align: center;
   }
 }
+
+/* THE POST'S OPENING IN THE RIGHT COLUMN (2026-10-24 — "On hover, I want the right column to fill with a body text
+   preview of the post, set 54px from top bottom and sides. Above the body text preview I want there to be the date"):
+   from 1024 up the right column, pinned under the band, 54 in on all four sides, holds the hovered post's opening
+   paragraphs (the date out of it since — "Remove the date from the preview column") in the front page's preview type (16 on 19.2, a line's space between
+   paragraphs), the last cut at its last whole line with an ellipsis (src/archive.js fitPeek). While the head still
+   shows over it the column is only as tall as the room under the head (--arc-lift, THE SIDE COLUMNS LIFTED), so its foot
+   stands 54 over the window's. Empty until a hand first comes onto an entry. No hand on a phone, so no column there */
+.arc-peek{ display: none; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-peek{
+    display: flex;
+    flex-direction: column;
+    grid-column: 3; grid-row: 1 / span 3;
+    position: sticky; top: var(--arc-band, 0px);
+    align-self: start;
+    box-sizing: border-box;
+    height: calc(100vh - var(--arc-band, 0px) - 2 * var(--arc-lift, 0px));
+    padding: 54px;
+    visibility: hidden;
+    color: #121417;
+  }
+  body.archive-page .arc--index .arc-main > .arc-peek.is-on{ visibility: visible; }
+  body.archive-page .arc--index .arc-peek__body{ flex: 1 1 0; min-height: 0; overflow: hidden; }
+  body.archive-page .arc--index .arc-peek__p{
+    margin: 0;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+    font-size: 16px; line-height: 19.2px; font-style: normal;
+    hyphens: auto; -webkit-hyphens: auto;
+    text-wrap: pretty;
+  }
+  body.archive-page .arc--index .arc-peek__p + .arc-peek__p{ margin-top: 19.2px; }
+  body.archive-page .arc--index .arc-peek__p.is-cut{ display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+}
+
+/* THE WRITER IN THE FRONT PAGE'S TAG (2026-10-24 — "Next to the title I want the author name to appear in a work sans
+   tag, like the homepage"): from 1024 up, under the hand, the writer beside the title in the front page's byline tag —
+   Work Sans capitals 13 on 18, the fork pointed on its left, 28 high (the title's own line, so nothing moves), filled
+   with the red and the ink on it — 18 off the title; the date gone from the line to the right column's head (THE POST'S
+   OPENING IN THE RIGHT COLUMN). A tag running past the index's room is cut at its edge, not under the right column */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ overflow-x: clip; align-items: center; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ display: none; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by{ display: inline-block; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{
+    box-sizing: border-box;
+    height: 28px;
+    margin: 0 0 0 18px;
+    padding: 5px 16px 5px 28px;
+    clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+    /* (the red a picture, not a colour: the site's link hover clears a link's and its insides' background-color) */
+    background: linear-gradient(#B3301E, #B3301E);
+    color: #121417;
+    --nc-mark: #121417; --hl-ink: #121417;
+    font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px; font-weight: 400; font-style: normal;
+    line-height: 18px;
+    letter-spacing: 0.26px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(:empty)::after{ content: none; }
+}
+@media (min-width: 1024px){
+  /* (an italic word in the opening no taller than the line it sits on, so every line is the 19.2 the clamp counts) */
+  body.archive-page .arc--index .arc-peek__p :is(em, i, b, strong, a){ line-height: 0; }
+}
+
+/* THE DATE BESIDE THE TITLE (2026-10-24 — "Display the date next to the title in the archive as a small italics
+   section"): from 1024 up, under the hand, the date in its small italic (15) 18 after the title, then the writer's tag
+   18 after it — title, date, tag, on the title's one line */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ order: 0; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ order: 1; margin: 0 0 0 18px; font-style: italic; font-size: 15px; line-height: 20px; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ order: 2; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ display: inline; }
+}
+/* (the date beside the title at rest too — "Have date display on resting", 2026-10-24; the writer's tag still the hand's) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ display: inline; }
+}

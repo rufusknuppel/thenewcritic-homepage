@@ -6012,11 +6012,30 @@ function renderArchiveIndexSection(key, label, posts) {
       </div>
     </section>`;
 }
+function archivePeekJson(posts) {
+  // THE POST'S OPENING IN THE RIGHT COLUMN (2026-10-24 — "On hover, I want the right column to fill with a body text
+  // preview of the post, set 54px from top bottom and sides"; the date out of it since — "Remove the date from the
+  // preview column"): each post's opening paragraphs, the front page's preview (previewParagraphs, else the feed's preview),
+  // enough to fill the tallest column (about 2000 letters, the paragraph that crosses it kept whole for the clamp to cut),
+  // written beside the page as archive-peek.json and fetched by src/archive.js once the page is in, so the page itself
+  // stays light
+  const peek = {};
+  for (const p of posts) {
+    const paras = p.previewParagraphs && p.previewParagraphs.length ? p.previewParagraphs : (p.preview ? [p.preview] : []);
+    const keep = [];
+    let n = 0;
+    for (const t of paras) { if (n >= 2000) break; keep.push(emHtml(t)); n += t.length; }
+    peek[slugOf(p.link)] = keep;
+  }
+  return JSON.stringify(peek);
+}
 function renderArchivePage(posts) {
   const cols = ARC_SECTIONS.filter(([k]) => k !== 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('\n    ');
   const eds = ARC_SECTIONS.filter(([k]) => k === 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('');
   // (no tags under the search since — "Remove tags from the search section", 2026-10-23; the cards' #section= and
   // #topic= links still narrow the index, src/archive.js)
+  const peekJson = archivePeekJson(posts);
+  const peekV = crypto.createHash('sha1').update(peekJson).digest('hex').slice(0, 10);
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
   return renderFrontPage({
@@ -6037,6 +6056,7 @@ function renderArchivePage(posts) {
     </div>
     <div class="arc-ix arc-ix--foot">${eds}</div>
     <p class="arc-none" hidden>Nothing matches</p>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><div class="arc-peek__body"></div></aside>
   </div>
 </section>`,
   }).replace('<html lang="en">', '<html lang="en" class="is-archive">');
@@ -6571,6 +6591,7 @@ async function main() {
     fs.writeFileSync(path.join(OUT_DIR, filename), markMega(holdFirstCovers(content, filename)), 'utf8');
     console.log(`Wrote ${path.join(OUT_DIR, filename)}`);
   }
+  fs.writeFileSync(path.join(OUT_DIR, 'archive-peek.json'), archivePeekJson(archivePool), 'utf8');
   fs.writeFileSync(path.join(OUT_DIR, 'style.css'), slimCss(fs.readFileSync(path.join(__dirname, 'style.css'), 'utf8')), 'utf8');
   // The site runs on system faces now, so there may be no fonts/ to copy.
   // Guarded because this loop sits BEFORE the asset copies below — an
