@@ -32256,3 +32256,17 @@ body.archive-page .arc--index .arc-find-row{
 body.archive-page .arc--index .arc-find-row{ height: 54px; min-height: 0; box-sizing: border-box; padding-top: 0; padding-bottom: 0; align-items: center; }
 body.archive-page .arc--index .arc-find-row .arc-search{ padding: 0; }
 body.archive-page .arc--index .arc-find-row .arc-clear{ top: 50%; transform: translateY(-50%); }
+
+/* THE INDEX IN THE QUIET WHITE, ITS SECOND LINE UNDER THE HAND (2026-10-23 — "Have all the text in the archive be that
+   gray color until hovered. have the second row only appear on hover"): every word of the index — the titles, the
+   field's word, Clear — in the quiet white the sections' names stand in, an entry going to the highlight under the hand;
+   the writer and the date shown only then, their line's room kept so nothing moves as the hand passes; on a screen with
+   no hand (a phone) the line always shown */
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear),
+body.archive-page .arc--index .arc-search,
+body.archive-page .arc--index .arc-search::placeholder{ color: var(--arc-quiet, rgba(255, 255, 255, 0.62)); }
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear):is(:hover, :focus-visible),
+body.archive-page .arc--index .arc-ix-item.is-target{ color: var(--nc-mark, #121417); }
+body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ opacity: 0; transition: opacity .15s ease; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-meta{ opacity: 1; }
+@media (hover: none){ body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ opacity: 1; } }

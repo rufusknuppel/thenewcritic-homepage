@@ -5966,9 +5966,15 @@ function arcIndexMeta(p) {
   const parts = [p.author, ds].filter(Boolean);
   return parts.length ? `<span class="arc-ix-meta">${escapeHtml(parts.join(', '))}</span>` : '';
 }
+// (the index's section for a post — its own, but the paper's criticism of itself stands with the Editors: "Move The New
+// Critic's Criticism to editors", 2026-10-23)
+function arcIndexSection(p) {
+  if (/new critic.s criticism/i.test(p.kicker || '')) return 'editors';
+  return (p.sectionLabel || '').toLowerCase();
+}
 function renderArchiveIndexSection(key, label, posts) {
   // (no letters and no A to Z since — "Remove the alphabetical", 2026-10-23: the titles newest first, as the feed has them)
-  const mine = posts.filter((p) => (p.sectionLabel || '').toLowerCase() === key);
+  const mine = posts.filter((p) => arcIndexSection(p) === key);
   // (Contra by its tag since — Books, Movies, Music, Theater … A to Z, newest first under each, the untagged last under
   // Other: "Arrange contras by Music/Theater/etc. tag", 2026-10-23)
   const groups = key !== 'contra' ? [{ posts: mine }] : (() => {
