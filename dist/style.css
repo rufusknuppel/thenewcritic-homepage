@@ -16561,3 +16561,6 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
 }
 body.archive-page .arc--index .arc-who__list li[hidden],
 body.archive-page .arc--index .arc-who[hidden]{ display: none; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek__title{ font-style: italic; }
+}

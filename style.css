@@ -32947,3 +32947,7 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
    in the writers column", 2026-10-24) */
 body.archive-page .arc--index .arc-who__list li[hidden],
 body.archive-page .arc--index .arc-who[hidden]{ display: none; }
+/* (the title over the opening in the italic — "italicize the title in the body preview", 2026-10-24) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek__title{ font-style: italic; }
+}
