@@ -5992,9 +5992,6 @@ function arcIndexRest(key, p) {
   if (key === 'contra' && /^contra\s+\S/i.test(p.subtitle || '')) return contraWorkDek(p.subtitle.replace(/^contra\s+/i, ''));
   return '';
 }
-// (the cover a hand on the entry shows in the right column: a copy 480 wide, enough for the column at 2x, and its
-// proportions where its file name gives them — "Create a right column that matches the search column that displays the
-// image for the hovered post...", 2026-10-23; src/archive.js)
 function renderArchiveIndexSection(key, label, posts) {
   // (no letters and no A to Z since — "Remove the alphabetical", 2026-10-23: the titles newest first, as the feed has them)
   const mine = posts.filter((p) => arcIndexSection(p) === key);
@@ -6005,12 +6002,20 @@ function renderArchiveIndexSection(key, label, posts) {
     mine.forEach((p) => { const t = (p.kicker || ARC_TAGS[slugOf(p.link)] || '').trim(); if (!by.has(t)) by.set(t, []); by.get(t).push(p); });
     return [...by.keys()].sort((x, y) => (!x) - (!y) || x.localeCompare(y)).map((t) => ({ tag: t || 'Other', posts: by.get(t) }));
   })();
-  // (a postscript by its subject at rest, its title under the hand — "In postscript section, use subject instead of title
-  // for resting", 2026-10-23)
-  const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
-    + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
-    + ` data-kicker="${escapeHtml((p.kicker || ARC_TAGS[slugOf(p.link)] || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
-    + `<span class="arc-ix-by">${escapeHtml(p.author || '')}</span><span class="arc-ix-title">${arcIndexRest(key, p) ? `<span class="arc-ix-subj">${arcIndexRest(key, p)}</span><span class="arc-ix-ttl">${escapeHtml(p.title)}</span>` : escapeHtml(p.title)}</span><span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
+  // (a contra by the work it answers at rest, its title under the hand; a postscript by its title, its subject the chip
+  // under the hand in the writer's place — "Have the postscripts be the title resting, and the subject as the chip",
+  // 2026-10-24; the writer kept for a phone, which shows no chip)
+  const item = (p) => {
+    const rest = arcIndexRest(key, p);
+    const subj = key === 'postscript' && rest;
+    return `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
+      + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
+      + ` data-kicker="${escapeHtml((p.kicker || ARC_TAGS[slugOf(p.link)] || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
+      + (subj ? `<span class="arc-ix-by arc-ix-by--subj">${subj}</span>` : '')
+      + `<span class="arc-ix-by${subj ? ' arc-ix-by--writer' : ''}">${escapeHtml(p.author || '')}</span>`
+      + `<span class="arc-ix-title">${rest && !subj ? `<span class="arc-ix-subj">${rest}</span><span class="arc-ix-ttl">${escapeHtml(p.title)}</span>` : escapeHtml(p.title)}</span>`
+      + `<span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
+  };
   return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
       <h2 class="arc-ix-sec__name">${label}</h2>
       <div class="arc-ix-sec__groups">${groups.map((g) => `
@@ -6031,7 +6036,9 @@ function archivePeekJson(posts) {
     const keep = [];
     let n = 0;
     for (const t of paras) { if (n >= 2000) break; keep.push(emHtml(t)); n += t.length; }
-    peek[slugOf(p.link)] = keep;
+    // (its title with it, centred over the opening — "In body text preview column have the title of the post displayed
+    // centered above the body text", 2026-10-24)
+    peek[slugOf(p.link)] = [escapeHtml(p.title || ''), keep];
   }
   return JSON.stringify(peek);
 }
@@ -6040,15 +6047,21 @@ function renderArchivePage(posts) {
   const eds = ARC_SECTIONS.filter(([k]) => k === 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('');
   // (no tags under the search since — "Remove tags from the search section", 2026-10-23; the cards' #section= and
   // #topic= links still narrow the index, src/archive.js)
-  // THE ESSAYS' WRITERS (2026-10-24 — "Add another column next to the body text preview that lists all the essay authors.
+  // THE WRITERS (2026-10-24 — "Add another column next to the body text preview that lists all the essay authors.
   // Right align this section. When someone clicks the name of the author should be a filter on the search function"):
-  // every writer of an essay, a shared byline split into its names, A to Z by surname, each a button that puts the
+  // every writer of an essay (and a contra, below), a shared byline split into its names, each a button that puts the
   // name in the search (src/archive.js)
-  const writers = [...new Set(posts.filter((p) => arcIndexSection(p) === 'essays')
-    .flatMap((p) => (p.author || '').split(/\s*(?:&|,|\band\b)\s*/)).map((n) => n.trim()).filter(Boolean))];
+  // (the writers of the contras too since, most pieces first — essays and contras counted together — and A to Z by
+  // surname among the same count: "order writers alphabetically by the most essays/contras they have authored",
+  // 2026-10-24)
+  const pieces = new Map();
+  posts.filter((p) => ['essays', 'contra'].includes(arcIndexSection(p)))
+    .forEach((p) => new Set((p.author || '').split(/\s*(?:&|,|\band\b)\s*/).map((n) => n.trim()).filter(Boolean))
+      .forEach((n) => pieces.set(n, (pieces.get(n) || 0) + 1)));
+  const writers = [...pieces.keys()];
   const surname = (n) => n.split(/\s+/).pop().toLowerCase();
-  writers.sort((x, y) => surname(x).localeCompare(surname(y)) || x.localeCompare(y));
-  const writersHtml = `<nav class="arc-who" aria-label="The essays' writers"><h2 class="arc-ix-sec__name arc-who__name">Writers</h2>`
+  writers.sort((x, y) => pieces.get(y) - pieces.get(x) || surname(x).localeCompare(surname(y)) || x.localeCompare(y));
+  const writersHtml = `<nav class="arc-who" aria-label="The writers"><h2 class="arc-ix-sec__name arc-who__name">Writers</h2>`
     + `<ul class="arc-who__list">${writers.map((n) => `<li><button class="arc-who__w" type="button" data-name="${escapeHtml(n)}">${escapeHtml(n)}</button></li>`).join('')}</ul></nav>`;
   const peekJson = archivePeekJson(posts);
   const peekV = crypto.createHash('sha1').update(peekJson).digest('hex').slice(0, 10);
@@ -6073,7 +6086,7 @@ function renderArchivePage(posts) {
     ${writersHtml}
     <div class="arc-ix arc-ix--foot">${eds}</div>
     <p class="arc-none" hidden>Nothing matches</p>
-    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><div class="arc-peek__body"></div></aside>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><p class="arc-peek__title"></p><div class="arc-peek__body"></div></aside>
   </div>
 </section>`,
   }).replace('<html lang="en">', '<html lang="en" class="is-archive">');

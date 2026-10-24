@@ -32913,3 +32913,33 @@ body.archive-page .arc--index .arc-who__w{ display: block; }
    archive's writer's tag's hover (THE WRITER'S TAG OUTLINED UNDER THE HAND); the link marks the fork, is-hot
    (duo-panel-fit.js seatHairlines) */
 html body main.has-mega .nc-hairline-fork.is-hot{ --fork-fill: #121417; }
+
+/* A POSTSCRIPT BY ITS TITLE, ITS SUBJECT THE CHIP (2026-10-24 — "Have the postscripts be the title resting, and the
+   subject as the chip"): from 1024 up the subject in the writer's tag under the hand, the writer out of it; on a phone,
+   with no chip, the writer under the title as before (build.js renderArchiveIndexSection) */
+body.archive-page .arc--index .arc-ix-item .arc-ix-by--subj{ display: none; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by--writer{ display: none; }
+  body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by--writer{ display: none; }
+}
+
+/* A CONTRA BY ITS WORK UNDER THE HAND TOO (2026-10-24 — "for the contras, on hover, work should remain, shouldn't flip to
+   title"): the work it answers at rest and under the hand, its title kept for the search alone (the postscripts by
+   their titles since, so the work's swap was the contras' alone) */
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-subj{ display: inline; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-ttl{ display: none; }
+
+/* THE TITLE OVER THE OPENING (2026-10-24 — "In body text preview column have the title of the post displayed centered
+   above the body text"): the post's title over its opening, centred across the column, in the index's type (17.5 on
+   28), a line of the opening's (19.2) under it; the opening fitted to the room left under it (src/archive.js) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek__title{
+    flex: none;
+    margin: 0 0 19.2px;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+    font-size: 17.5px; line-height: 28px; font-style: normal;
+    text-align: center;
+    text-wrap: balance;
+    color: #121417;
+  }
+}

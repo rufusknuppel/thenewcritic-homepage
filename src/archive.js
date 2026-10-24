@@ -39,16 +39,24 @@
       : inWords(n) + (n === 1 ? ' piece' : ' pieces') + (words ? ' matching “' + words + '”' : '');
     count.textContent = t.charAt(0).toUpperCase() + t.slice(1);
   };
+  var writerNames = {};
+  [].forEach.call(arc.querySelectorAll('.arc-who__w'), function (b) { writerNames[b.getAttribute('data-name').toLowerCase()] = 1; });
   var afterFilter = [];
   var applyFilter = function () {
     var hp = readHash();
     var sec = (hp.section || '').toLowerCase(), topic = (hp.topic || '').toLowerCase();
     var typed = search ? search.value.trim() : '';
     var words = typed.replace(/[‘’]/g, "'").toLowerCase().split(/\s+/).filter(Boolean);
+    // (a writer's whole name in the field — pressed in the writers' column, on their tag, or typed — keeps their essays
+    // and contras alone, the postscripts they sat down for out: "Postscripts shouldn't be listed under writers for Elan,
+    // Tessa, and Rufus", 2026-10-24)
+    var who = writerNames[typed.toLowerCase()] ? typed.toLowerCase() : '';
     var shown = 0;
     items.forEach(function (r) {
       var on = (!sec || r.getAttribute('data-section') === sec) && (!topic || r.getAttribute('data-kicker') === topic);
-      if (on) for (var w = 0; w < words.length; w++) if (textOf(r).indexOf(words[w]) < 0) { on = false; break; }
+      if (on && who) on = /^(essays|contra)$/.test(r.getAttribute('data-section'))
+        && (r.getAttribute('data-author') || '').split(/\s*(?:&|,|\band\b)\s*/).some(function (n) { return n.trim() === who; });
+      else if (on) for (var w = 0; w < words.length; w++) if (textOf(r).indexOf(words[w]) < 0) { on = false; break; }
       r.hidden = !on;
       if (on) shown++;
     });
@@ -159,17 +167,21 @@
     });
   });
   if (search) { search.addEventListener('input', markWho); search.addEventListener('keyup', markWho); }
-  // (the writers narrowed with the index to those whose essays still stand in it, the column gone when none do —
+  // (the writers narrowed with the index to those whose essays and contras still stand in it, the column gone when none do —
   // "Writers list should also shrink on search", 2026-10-24)
   var whoCol = arc.querySelector('.arc-who');
   var shrinkWho = function () {
     var left = {};
     items.forEach(function (r) {
-      if (r.hidden || r.getAttribute('data-section') !== 'essays') return;
+      if (r.hidden || (r.getAttribute('data-section') !== 'essays' && r.getAttribute('data-section') !== 'contra')) return;
       (r.getAttribute('data-author') || '').split(/\s*(?:&|,|\band\b)\s*/).forEach(function (n) { if (n.trim()) left[n.trim()] = 1; });
     });
+    // (a writer pressed — or typed whole — stands alone, a co-writer of theirs out of it: "When a writer is clicked for a
+    // filter, their name should be the only one displayed in the writer list", 2026-10-24)
+    var v = search ? search.value.trim().toLowerCase() : '';
+    var one = whos.some(function (b) { return b.getAttribute('data-name').toLowerCase() === v; });
     var any = false;
-    whos.forEach(function (b) { var on = !!left[b.getAttribute('data-name').toLowerCase()]; b.parentNode.hidden = !on; any = any || on; });
+    whos.forEach(function (b) { var nm = b.getAttribute('data-name').toLowerCase(); var on = one ? nm === v : !!left[nm]; b.parentNode.hidden = !on; any = any || on; });
     if (whoCol) whoCol.hidden = !any;
   };
   afterFilter.push(shrinkWho);
@@ -201,7 +213,7 @@
   // (style.css THE POST'S OPENING IN THE RIGHT COLUMN)
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
-    var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
     var fitPeek = function () {
       var paras = [].slice.call(peekBody.children);
       paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
@@ -236,7 +248,8 @@
       var d = peekData[r.getAttribute('data-slug')];
       if (!d) return;
       peekAt = r;
-      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      peekTitle.innerHTML = d[0];
+      peekBody.innerHTML = d[1].map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       // (fitted once, to the room the window shows under the head as it is shown — the column less 54 over and under,
       // less the head still showing — then let go to its own height, so the lines are kept as the head scrolls away
@@ -246,7 +259,9 @@
       // page the hand is: "have the body text preview only be as tall as the opening viewport allows", 2026-10-24)
       var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
-      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - 108 - head0) + 'px';
+      var tcs = getComputedStyle(peekTitle);
+      var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - 108 - head0 - titleH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
     };
