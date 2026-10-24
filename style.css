@@ -32357,3 +32357,68 @@ body.archive-page .arc--index .arc-ix--foot{
 }
 body.archive-page .arc--index .arc-ix--foot{ padding-top: 72px; }
 body.archive-page .arc--index .arc-ix--foot .arc-ix-sec{ grid-column: 1; }
+
+/* THE COLUMN SET LEFT (2026-10-23 — "Left align"): the section names, tags and titles flush to the column's left edge;
+   under the hand the writer hangs out to the title's left, in the margin, and the date follows it on the right; on a
+   phone "Writer, date" flush left under the title */
+body.archive-page .arc--index .arc-ix-sec{ text-align: left; }
+body.archive-page .arc--index .arc-ix-item{ grid-template-columns: 0 auto minmax(0, 1fr); column-gap: 0; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-title{ text-align: left; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-by{ margin-right: 18px; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-on{ margin-left: 18px; }
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-ix-item{ grid-template-columns: auto minmax(0, 1fr); }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ justify-self: start; margin-right: 0; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ margin-left: 0; }
+}
+@media (max-width: 1023px){
+  /* (a phone's second line wrapping as it must: a long run of writers ran off the window) */
+  body.archive-page .arc--index .arc-ix-item{ display: block; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ display: block; }
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ display: inline; white-space: normal; margin: 0; }
+}
+
+/* THE INDEX WHITE, THE CHARCOAL UNDER THE HAND (2026-10-23 — "Make text white and highlight black"): the titles, the
+   field's word and Clear in the white; an entry under the hand, and the one a link lands on, in the charcoal, through
+   the site hover's own tokens; the sections' names and tags stay the quiet white, the labels over it */
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear),
+body.archive-page .arc--index .arc-search,
+body.archive-page .arc--index .arc-search::placeholder{ color: #FAF9F6; }
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear){ --nc-mark: #121417; --hl-ink: #121417; }
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear):is(:hover, :focus-visible),
+body.archive-page .arc--index .arc-ix-item.is-target{ color: #121417; }
+
+/* THE SEARCH A COLUMN OF ITS OWN (2026-10-23 — "Make search into a left column on its own"): from 1024 up the page three
+   columns — the field in the left one, flush left 54 in, pinned under the band as the page runs, level with the first
+   section's name; the index in the middle one; the band and its rule gone; Clear under the field's word. A phone keeps
+   the pinned band over the index */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 760px) minmax(0, 1fr);
+    align-items: start;
+  }
+  body.archive-page .arc--index .arc-main > .arc-find-row{
+    grid-column: 1; grid-row: 1 / span 3;
+    position: sticky; top: var(--arc-band, 0px);
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+    height: auto; padding: 54px 54px 0;
+    background: none; border: 0;
+  }
+  body.archive-page .arc--index .arc-main > .arc-find-row .arc-find{ width: 100%; }
+  body.archive-page .arc--index .arc-main > .arc-find-row .arc-search{ top: 0; width: 100%; text-align: left; }
+  body.archive-page .arc--index .arc-main > .arc-find-row .arc-clear{ position: static; transform: none; }
+  body.archive-page .arc--index .arc-main > :is(.arc-ix, .arc-ix--foot, .arc-none){ grid-column: 2; padding-left: 0; padding-right: 0; }
+  body.archive-page .arc--index .arc-main > .arc-ix{ grid-row: 1; }
+  body.archive-page .arc--index .arc-main > .arc-ix--foot{ grid-row: 2; }
+  body.archive-page .arc--index .arc-main > .arc-none{ grid-row: 3; }
+}
+@media (max-width: 1023px){
+  /* (the title first and "Writer, date" one line under it, the markup's order being writer, title, date) */
+  body.archive-page .arc--index .arc-ix-item{ display: flex; flex-wrap: wrap; align-items: baseline; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ order: 0; flex: 0 0 100%; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ order: 1; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ order: 2; }
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ line-height: 24px; }
+  body.archive-page .arc--index .arc-ix-item{ margin-bottom: 12px; }
+}
