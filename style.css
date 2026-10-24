@@ -32976,3 +32976,7 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
    .latest-plate .cut-mark; the clamp's own ellipsis no longer used) */
 body.archive-page .arc--index .arc-peek__p .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
 body.archive-page .arc--index .arc-peek__p .cut-mark.is-set{ display: inline; width: auto; }
+/* (the opening's column 54 over and under again, as at its sides — "increase top and bottom back to 54px", 2026-10-24) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-peek{ padding-top: 54px; padding-bottom: 54px; }
+}
