@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d8384801">
+<link rel="stylesheet" href="style.css?v=e8f6c546">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -802,6 +802,22 @@
     }
     if (search && name) search.value = name;
   };
+  if (search) {
+    var wCtx = document.createElement('canvas').getContext('2d');
+    var lineUnder = function () {
+      var cs = getComputedStyle(search);
+      var ph = getComputedStyle(search, '::placeholder');
+      var typed = search.value;
+      var c = typed ? cs : ph;
+      wCtx.font = c.fontStyle + ' ' + c.fontWeight + ' ' + c.fontSize + ' ' + c.fontFamily;
+      var w = Math.min(wCtx.measureText(typed || search.placeholder || '').width, search.clientWidth - 18);
+      search.style.setProperty('--find-w', w.toFixed(2) + 'px');
+    };
+    lineUnder();
+    search.addEventListener('input', lineUnder);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(lineUnder);
+    afterFilter.push(lineUnder);
+  }
   var findRow = arc.querySelector('.arc-find-row');
   var bandH = function () { return band ? band.getBoundingClientRect().height : 0; };
   var target = null;
