@@ -57,6 +57,8 @@
     if (clear) clear.hidden = !(sec || topic || words.length);
     tagAs.forEach(function (t) { var v = t.getAttribute('data-v'), k = t.getAttribute('data-kind'); var on = (k === 'section' ? sec : topic) === v; t.classList.toggle('is-on', on); if (on) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
     if (none) none.hidden = shown > 0;
+    // (nothing left: the index's columns go and the line stands where Essays stood — style.css NOTHING WHERE ESSAYS STANDS)
+    arc.classList.toggle('is-empty', !shown);
   };
   // (a writer's or a tag's link fills the field with the name, as the reader would have typed it)
   var fromHash = function () {

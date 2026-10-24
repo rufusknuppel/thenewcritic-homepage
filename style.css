@@ -32514,3 +32514,26 @@ body.archive-page .arc--index .arc-ix-sec__name{ color: #FAF9F6; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > :is(.arc-ix, .arc-ix--foot, .arc-none){ padding-right: 162px; }
 }
+
+/* NOTHING WHERE ESSAYS STANDS (2026-10-23 — "Have the nothing matches appear where Essays would be in white"): when the
+   field and the tags leave nothing, the index's columns go and "Nothing matches" stands in Essays' place — its italic at
+   22 on 28, 54 under the band to its ink — in the white (src/archive.js sets .is-empty) */
+body.archive-page .arc--index.is-empty :is(.arc-ix, .arc-ix--foot){ display: none; }
+body.archive-page .arc--index .arc-none{
+  margin: 0;
+  padding: 49.4px 0 108px;
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 28px;
+  color: #FAF9F6;
+}
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-none{ grid-row: 1; padding-right: 162px; }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-none{ padding: 36px 36px 108px; }
+}
+/* (Contra's tags over their runs white too — "Make art/movies/books white too", 2026-10-23) */
+body.archive-page .arc--index .arc-ix-grp__tag{ color: #FAF9F6; }
