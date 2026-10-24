@@ -32160,3 +32160,55 @@ body.store-page .sto-bag__sub{ display: flex; justify-content: space-between; ma
 body.store-page .sto-bag__ship{ margin: 6px 0 0; color: var(--sto-dim); }
 body.store-page .sto-bag .sto-checkout{ margin-top: 18px; }
 body.store-page .sto-bag .sto-checkout.is-shut{ height: auto; padding: 14px 12px; line-height: 18.2px; background: transparent; color: var(--sto-dim); border: 1px solid var(--sto-rule); cursor: not-allowed; }
+
+/* THE ARCHIVE AN INDEX (2026-10-23 — "I want the archive to look like this, with three columns though. Essays Postscript
+   Contra, and then below it Editors"): a book's index after the one the user sent — each section's name in the quiet
+   italic over its column, its titles A to Z under the quiet italic letters, the titles the Garamond of the page's ink;
+   Essays, Postscript and Contra the three columns, Editors across the foot under them, its letters running in three
+   columns of their own; one column on a phone (build.js renderArchivePage, src/archive.js) */
+body.archive-page .arc--index .arc-main{ display: block; }
+body.archive-page .arc--index .arc-find-row{ padding-bottom: 0; }
+body.archive-page .arc--index .arc-ix{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 54px;
+  align-items: start;
+  padding: 54px 54px 0;
+}
+body.archive-page .arc--index .arc-ix--foot{ display: block; padding-bottom: 108px; }
+/* (no section padding of the page's own sections here: the gaps are the index's) */
+body.archive-page .arc--index .arc-ix .arc-ix-sec{ padding: 0; margin: 0; }
+body.archive-page .arc--index .arc-ix--foot .arc-ix-sec__groups{ columns: 3; column-gap: 54px; }
+body.archive-page .arc--index .arc-ix-sec[hidden],
+body.archive-page .arc--index .arc-ix-grp[hidden],
+body.archive-page .arc--index .arc-ix-item[hidden]{ display: none; }
+body.archive-page .arc--index :is(.arc-ix-sec__name, .arc-ix-grp__letter){
+  margin: 0;
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--arc-quiet, rgba(255, 255, 255, 0.62));
+}
+body.archive-page .arc--index .arc-ix-sec__name{ font-size: 22px; line-height: 28px; margin-bottom: 36px; }
+body.archive-page .arc--index .arc-ix-grp{ break-inside: avoid; padding-bottom: 24px; }
+body.archive-page .arc--index .arc-ix-grp__letter{ font-size: 18px; line-height: 24px; margin-bottom: 4px; }
+body.archive-page .arc--index .arc-ix-item{
+  display: block;
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+  font-size: 20px;
+  line-height: 32px;
+  color: var(--k, #FAF9F6);
+  text-decoration: none;
+  hyphens: manual;
+}
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible){ color: var(--nc-mark, #121417); outline: none; }
+body.archive-page .arc--index .arc-ix-item.is-target{ color: var(--nc-mark, #121417); }
+body.archive-page .arc--index .arc-none{ padding: 54px; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: italic; font-size: 20px; }
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-ix{ grid-template-columns: minmax(0, 1fr); row-gap: 54px; padding: 36px 36px 0; }
+  body.archive-page .arc--index .arc-ix--foot{ padding: 54px 36px 72px; }
+  body.archive-page .arc--index .arc-ix--foot .arc-ix-sec__groups{ columns: 1; }
+  body.archive-page .arc--index .arc-ix-sec__name{ margin-bottom: 24px; }
+}

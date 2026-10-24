@@ -5918,27 +5918,6 @@ const LEDGER_FEATURE_SLUGS = {
 // a gray rule, and an italic line saying what the ledger holds. The
 // column head sorts by its words.
 const ARC_SECTIONS = [['essays', 'Essays'], ['postscript', 'Postscript'], ['contra', 'Contra'], ['editors', 'Editors']];
-function arcSortBtn(key, label, on = '') {
-  return `<button class="arc-sort${on ? ' is-on' : ''}" type="button" data-key="${key}"${on ? ` data-dir="${on}"` : ''} aria-label="Sort by ${label.toLowerCase()}">${label}</button>`;
-}
-function renderArchiveRow(post) {
-  const d = post.date;
-  const ok = d && !isNaN(d.getTime());
-  // (sort keys lowercased, a title's leading quotes stripped so “Quoted” titles don't sort ahead of the alphabet; the
-  // slug is the deep links' target — #sort=<key>&post=<slug>, archiveHref)
-  const attrs = ` data-title="${escapeHtml((post.title || '').toLowerCase().replace(/^[^\p{L}\p{N}]+/u, ''))}"`
-    + ` data-author="${escapeHtml((post.author || '').toLowerCase())}"`
-    + ` data-kicker="${escapeHtml((post.kicker || '').toLowerCase())}"`
-    + ` data-section="${escapeHtml((post.sectionLabel || '').toLowerCase())}"`
-    + ` data-date="${ok ? d.getTime() : 0}"`
-    + ` data-slug="${escapeHtml(slugOf(post.link))}"`;
-  return `
-      <a class="arc-row"${attrs} href="${escapeHtml(post.link)}" rel="noopener">`
-    + `<span class="arc-cell arc-title">${escapeHtml(post.title)}</span>`
-    + `<span class="arc-cell arc-author">${escapeHtml(post.author || '')}</span>`
-    + `<span class="arc-cell arc-kicker">${escapeHtml(post.kicker || '')}</span></a>`;
-  // (no Date column since — "Remove the date from the site", 2026-10-23: the rows keep data-date, newest first)
-}
 // THE FRONT PAGE'S HEAD ON A PAGE OF ITS OWN (2026-10-22 — the archive's first, then About's, "Redesign the about page in
 // the same was as the archive redesign", "have white background and keep current features, but update with new
 // homepage"): the front page's THE NEW CRITIC and the band under it, the page's nav word marked, and the page's own body
@@ -5970,39 +5949,58 @@ function renderStorePage(store) {
     script: 'src/store-bag.js',
   }).replace('<body class="about-page store-page">', '<body class="about-page store-page">\n<script>document.documentElement.setAttribute(\'data-theme\', \'dark\');</script>');
 }
+// THE ARCHIVE AN INDEX (2026-10-23 — "I want the archive to look like this, with three columns though. Essays Postscript
+// Contra, and then below it Editors"): a book's index, not a ledger — each section a column of its titles, A to Z under
+// italic letters (a leading The, A or An set aside for the order, as an index does), every title its post's link; Editors
+// across the foot under the three. The field over it narrows it as before; the sections' tags gone, the columns being
+// the sections (src/archive.js; style.css THE ARCHIVE AN INDEX)
+function arcIndexKey(title) {
+  return String(title || '').replace(/\u00AD/g, '').replace(/^[^\p{L}\p{N}]+/u, '').replace(/^(the|an|a)\s+/i, '').toLowerCase();
+}
+function renderArchiveIndexSection(key, label, posts) {
+  const items = posts.filter((p) => (p.sectionLabel || '').toLowerCase() === key)
+    .map((p) => ({ p, k: arcIndexKey(p.title) }))
+    .sort((x, y) => x.k.localeCompare(y.k));
+  const groups = [];
+  items.forEach(({ p, k }) => {
+    const ch = (k.normalize('NFD').charAt(0) || '#').toUpperCase();
+    const letter = /[A-Z]/.test(ch) ? ch : '#';
+    if (!groups.length || groups[groups.length - 1].letter !== letter) groups.push({ letter, posts: [] });
+    groups[groups.length - 1].posts.push(p);
+  });
+  const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
+    + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
+    + ` data-kicker="${escapeHtml((p.kicker || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
+    + `${escapeHtml(p.title)}</a>`;
+  return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
+      <h2 class="arc-ix-sec__name">${label}</h2>
+      <div class="arc-ix-sec__groups">${groups.map((g) => `
+        <div class="arc-ix-grp"><h3 class="arc-ix-grp__letter">${g.letter}</h3>${g.posts.map(item).join('')}</div>`).join('')}
+      </div>
+    </section>`;
+}
 function renderArchivePage(posts) {
-  const head = `<div class="arc-head">
-      <span class="arc-cell arc-title">${arcSortBtn('title', 'Title')}<button class="arc-shuffle" type="button" aria-label="Shuffle the order">&#8644;</button></span>
-      <span class="arc-cell arc-author">${arcSortBtn('author', 'Author')}</span>
-      <span class="arc-cell arc-kicker">${arcSortBtn('kicker', 'Tag')}</span>
-    </div>`;
-  // THE SEARCH ROW AND THE SECTIONS' TAGS (2026-10-22 — "Remove side column from the archive page. Above the column row,
-  // add an empty search row, with certain filters as tags beneath like essays/postscript/contra. Remove the Section
-  // column"): the ledger the window's width, the field a row of its own over the head and the sections under it as
-  // tags, All first; the section no column of its own, the rows keeping it for the tags (src/archive.js, unchanged:
-  // .arc-sections__a, .arc-search, .arc-clear, .arc-count)
-  const tags = [`<a class="arc-sections__a is-current" href="archive.html" data-section="">All</a>`]
-    .concat(ARC_SECTIONS.map(([k, w]) => `<a class="arc-sections__a" href="#section=${k}" data-section="${k}">${w}</a>`))
-    .join('');
+  const cols = ARC_SECTIONS.filter(([k]) => k !== 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('\n    ');
+  const eds = ARC_SECTIONS.filter(([k]) => k === 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('');
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
   return renderFrontPage({
     currentKey: 'archive',
     title: 'Archive',
-    description: `Every post in ${SITE_NAME}, by title, author, tag and date.`,
+    description: `Every post in ${SITE_NAME}, by section, title to title.`,
     bodyClass: 'archive-page',
     script: 'src/archive.js',
-    bodyHtml: `<section class="arc arc--whole" aria-label="Every post">
+    bodyHtml: `<section class="arc arc--whole arc--index" aria-label="Every post">
   <div class="arc-main">
     <div class="arc-find-row">
       <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
       <button class="arc-clear" type="button" hidden>Clear</button>
     </div>
-    <nav class="arc-sections arc-tags" aria-label="Sections">${tags}</nav>
     <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
-    ${head}
-    <div class="arc-body">${posts.map(renderArchiveRow).join('')}
+    <div class="arc-ix">
+    ${cols}
     </div>
+    <div class="arc-ix arc-ix--foot">${eds}</div>
     <p class="arc-none" hidden>Nothing matches</p>
   </div>
 </section>`,
