@@ -16276,3 +16276,21 @@ body.archive-page .arc--index .arc-ix-sec__name{ color: #FAF9F6; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > .arc-ix,body.archive-page .arc--index .arc-main > .arc-ix--foot,body.archive-page .arc--index .arc-main > .arc-none{ padding-right: 162px; }
 }
+body.archive-page .arc--index.is-empty .arc-ix,body.archive-page .arc--index.is-empty .arc-ix--foot{ display: none; }
+body.archive-page .arc--index .arc-none{
+  margin: 0;
+  padding: 49.4px 0 108px;
+  font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 28px;
+  color: #FAF9F6;
+}
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-none{ grid-row: 1; padding-right: 162px; }
+}
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-none{ padding: 36px 36px 108px; }
+}
+body.archive-page .arc--index .arc-ix-grp__tag{ color: #FAF9F6; }
