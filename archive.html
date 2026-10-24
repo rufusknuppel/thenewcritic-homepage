@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=9141798a">
+<link rel="stylesheet" href="style.css?v=4de96acf">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -903,30 +903,52 @@
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
     var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekOn = peek.querySelector('.arc-peek__on'), peekAt = null;
+    var cutTo = function (p, html, n) {
+      p.innerHTML = html;
+      var tw = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), t, seen = 0, last = null;
+      while ((t = tw.nextNode())) {
+        var re = /\S+/g, m, end = -1;
+        while ((m = re.exec(t.nodeValue))) { if (++seen === n) { end = m.index + m[0].length; break; } }
+        if (end > -1) { t.nodeValue = t.nodeValue.slice(0, end); last = t; break; }
+      }
+      if (!last) return;
+      for (var nd = last; nd && nd !== p; nd = nd.parentNode) while (nd.nextSibling) nd.parentNode.removeChild(nd.nextSibling);
+      last.nodeValue = last.nodeValue.replace(/[.,;:\s]+$/, '');
+      var mark = document.createElement('span');
+      mark.className = 'cut-mark';
+      mark.textContent = '…';
+      p.appendChild(mark);
+    };
+    var cutPara = function (p, foot) {
+      var html = p.innerHTML, words = (p.textContent.match(/\S+/g) || []).length;
+      var lo = 0, hi = words;
+      while (lo < hi) {
+        var mid = (lo + hi + 1) >> 1;
+        cutTo(p, html, mid);
+        if (p.getBoundingClientRect().bottom > foot + 0.5) hi = mid - 1; else lo = mid;
+      }
+      if (!lo) return false;
+      cutTo(p, html, lo);
+      var mk = p.querySelector('.cut-mark'), h0 = p.getBoundingClientRect().height;
+      mk.classList.add('is-set');
+      if (p.getBoundingClientRect().height > h0 + 1) mk.classList.remove('is-set');
+      return true;
+    };
     var fitPeek = function () {
       var paras = [].slice.call(peekBody.children);
-      paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
       var foot = peekBody.getBoundingClientRect().bottom;
       for (var i = 0; i < paras.length; i++) {
-        var r = paras[i].getBoundingClientRect();
-        if (r.bottom <= foot + 0.5) continue;
-        var lh = parseFloat(getComputedStyle(paras[i]).lineHeight) || 19.2;
-        var lines = Math.floor((foot - r.top + 0.5) / lh);
+        if (paras[i].getBoundingClientRect().bottom <= foot + 0.5) continue;
         for (var j = paras.length - 1; j > i; j--) peekBody.removeChild(paras[j]);
-        if (lines < 1) peekBody.removeChild(paras[i]);
-        else { paras[i].classList.add('is-cut'); paras[i].style.setProperty('-webkit-line-clamp', String(lines)); }
+        if (!cutPara(paras[i], foot)) peekBody.removeChild(paras[i]);
         break;
       }
       var last = peekBody.lastElementChild;
-      if (last && !last.classList.contains('is-cut')) {
+      if (last && !last.querySelector('.cut-mark') && !/…\s*$/.test(last.textContent)) {
         var tw = document.createTreeWalker(last, NodeFilter.SHOW_TEXT), tn = null, n;
         while ((n = tw.nextNode())) if (n.nodeValue.trim()) tn = n;
-        if (tn) tn.nodeValue = tn.nodeValue.replace(/[\s.…]*$/, '') + '…';
-        var lr = last.getBoundingClientRect();
-        if (lr.bottom > foot + 0.5) {
-          var lh2 = parseFloat(getComputedStyle(last).lineHeight) || 19.2;
-          last.classList.add('is-cut'); last.style.setProperty('-webkit-line-clamp', String(Math.max(1, Math.floor((foot - lr.top + 0.5) / lh2))));
-        }
+        if (tn) tn.nodeValue = tn.nodeValue.replace(/[.\s]*$/, '') + '…';
+        if (last.getBoundingClientRect().bottom > foot + 0.5 && !cutPara(last, foot)) peekBody.removeChild(last);
       }
     };
     var inkCtx = document.createElement('canvas').getContext('2d');
