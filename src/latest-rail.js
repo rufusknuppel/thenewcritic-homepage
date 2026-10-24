@@ -3211,6 +3211,18 @@ window.ncOpenH = function () {
       if (pb && tr.width) { if (pb.r <= tr.left + 1) xl = Math.max(0, tr.left - pb.r); else if (pb.l >= tr.right - 1) xr = Math.max(0, pb.l - tr.right); }
       var hx = xl.toFixed(2) + 'px|' + xr.toFixed(2) + 'px';
       if (sb.__hx !== hx) { sb.__hx = hx; sb.style.setProperty('--hl-xl', xl.toFixed(2) + 'px'); sb.style.setProperty('--hl-xr', xr.toFixed(2) + 'px'); }
+      // (and the words' distance from the page's left edge, for the rule run out to it where the picture stands on the
+      // right — "Posts with a rule extending left from image should connect to left edge of page", 2026-10-24; style.css
+      // THE RULE WHOLE, --hl-edge)
+      var eg = Math.max(0, tr.left).toFixed(2) + 'px';
+      if (sb.style.getPropertyValue('--hl-edge') !== eg) sb.style.setProperty('--hl-edge', eg);
+      // (and how far the column's rule stands past the words' right, where the picture stands on the left — "Extend the
+      // rule from the image to … the side column vertical rule": the rule the window's width less the column's, which is
+      // --nc-rule-x and its 57 of margin and line, above — run a pixel into the rule, so no hair of ground shows between)
+      var nrx = parseFloat(document.documentElement.style.getPropertyValue('--nc-rule-x'));
+      var rc = isNaN(nrx) ? 0 : Math.max(0, (window.innerWidth - nrx - 56) - tr.right);
+      var rch = rc.toFixed(2) + 'px';
+      if (sb.style.getPropertyValue('--hl-reach') !== rch) sb.style.setProperty('--hl-reach', rch);
       // (and which side the picture is on, so the line goes no farther than the fork on the other: "Remove the rule after the
       // fork closes", 2026-10-22)
       sb.classList.toggle('hl-pic-l', !!pb && xl > 0); sb.classList.toggle('hl-pic-r', !!pb && xr > 0);

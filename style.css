@@ -33161,3 +33161,19 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
   }
 }
 /* (the line the field's whole width since, not its words' — "make the search line as wide as search", 2026-10-24) */
+
+
+/* THE RULE WHOLE (2026-10-24 — "Remove the author tag from the homepage. Extend the rule from the image to the side or
+   the side column vertical rule"; "Posts with a rule extending left from image should connect to left edge of page"; the
+   writer and the date beside the title tried and scrapped, "Actually just scrap author/date from homepage"): no tag on
+   the rule and no fork round it — the tag kept, unseen, for the stack's measure — the rule whole from the picture's
+   outline to the side's rule (the picture on the left; latest-rail.js --hl-reach) or to the page's left edge (the
+   picture on the right; --hl-edge) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > .swap-body-head > .swap-body-meta.swap-body-meta.swap-body-meta:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ visibility: hidden !important; pointer-events: none !important; }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline-fork.nc-hairline-fork.nc-hairline-fork:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ display: none !important; }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ -webkit-mask-image: none !important; mask-image: none !important; }
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-l > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ width: calc(var(--hl-w, 0px) + var(--hl-xl, 0px) + var(--hl-xr, 0px) + var(--hl-reach, 0px)) !important; }
+  /* (and out to the page's left edge where the picture stands on the right — 2026-10-24, --hl-edge) */
+  html body main.has-mega .page-rows .swap-body.swap-body.swap-body.hl-pic-r > span.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline.nc-hairline:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ width: calc(var(--hl-w, 0px) + var(--hl-xl, 0px) + var(--hl-xr, 0px) + var(--hl-edge, 0px)) !important; margin-left: calc(-1 * var(--hl-xl, 0px) - var(--hl-edge, 0px)) !important; }
+}
