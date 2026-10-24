@@ -243,6 +243,30 @@
         }
       }
     };
+    // (the ink centred, not the lines: the title's letters' tops and Read on's letters' feet as far from the column's
+    // middle as each other — the title's line has more room over its capitals than Read on's has under its baseline, so
+    // the block, centred by its lines, stood low; nudged by the difference, --peek-nudge — "make sure ink is vertically
+    // centered in body text column", 2026-10-24)
+    var inkCtx = document.createElement('canvas').getContext('2d');
+    var baseOf = function (el, atEnd) {
+      var m = document.createElement('span');
+      m.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      if (atEnd) el.appendChild(m); else el.insertBefore(m, el.firstChild);
+      var y = m.getBoundingClientRect().top; m.remove(); return y;
+    };
+    var inkOf = function (el, text) {
+      var cs = getComputedStyle(el);
+      inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      return inkCtx.measureText(text);
+    };
+    var inkPeek = function () {
+      peek.style.setProperty('--peek-nudge', '0px');
+      if (!peekTitle.textContent || !peekOn) return;
+      var top = baseOf(peekTitle, false) - inkOf(peekTitle, peekTitle.textContent).actualBoundingBoxAscent;
+      var foot = baseOf(peekOn, true) + Math.max(0, inkOf(peekOn, peekOn.textContent).actualBoundingBoxDescent);
+      var k = peek.getBoundingClientRect();
+      peek.style.setProperty('--peek-nudge', ((k.top + k.bottom) / 2 - (top + foot) / 2).toFixed(2) + 'px');
+    };
     var showPeek = function (r) {
       if (!peekData) { peekWant = r; return; }
       var d = peekData[r.getAttribute('data-slug')];
@@ -269,6 +293,7 @@
       peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - titleH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
+      inkPeek();
     };
     items.forEach(function (r) {
       r.addEventListener('mouseenter', function () { showPeek(r); });

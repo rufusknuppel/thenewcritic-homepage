@@ -32991,3 +32991,13 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek__on{ font-size: 15px; line-height: 20px; }
 }
+/* (the opening's ink on the column's middle: the title, the opening and Read on nudged together by --peek-nudge,
+   src/archive.js inkPeek — "make sure ink is vertically centered in body text column", 2026-10-24) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek > *{ translate: 0 var(--peek-nudge, 0px); }
+}
+/* (Read on… at the index's titles' size after all, 17.5 on 28, still the italic — "actually make size of titles in the
+   ledger", 2026-10-24) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-peek__on{ font-size: 17.5px; line-height: 28px; }
+}
