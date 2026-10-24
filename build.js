@@ -6088,7 +6088,7 @@ function renderArchivePage(posts) {
     ${writersHtml}
     <div class="arc-ix arc-ix--foot">${eds}</div>
     <p class="arc-none" hidden>Nothing matches</p>
-    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><p class="arc-peek__title"></p><div class="arc-peek__body"></div><a class="arc-peek__on" href="#" tabindex="-1">Read on</a></aside>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=${peekV}"><p class="arc-peek__title"></p><div class="arc-peek__body"></div></aside>
   </div>
 </section>`,
   }).replace('<html lang="en">', '<html lang="en" class="is-archive">');

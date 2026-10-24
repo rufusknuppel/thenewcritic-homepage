@@ -220,7 +220,7 @@
   // (style.css THE POST'S OPENING IN THE RIGHT COLUMN)
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
-    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekOn = peek.querySelector('.arc-peek__on'), peekAt = null;
+    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
     // THE CUT AS THE FRONT PAGE'S (2026-10-24 — "have ellipsis for body preview work exactly as it does on homepage body
     // previews": duo-panel-fit.js cutPlates): the paragraph crossing the column's foot cut to the last whole word the
     // room holds, its trailing point or comma given up to the … joined on ("below." reads "below…"), the … in a mark of
@@ -275,9 +275,9 @@
         if (last.getBoundingClientRect().bottom > foot + 0.5 && !cutPara(last, foot)) peekBody.removeChild(last);
       }
     };
-    // (the ink centred, not the lines: the title's letters' tops and Read on's letters' feet as far from the column's
-    // middle as each other — the title's line has more room over its capitals than Read on's has under its baseline, so
-    // the block, centred by its lines, stood low; nudged by the difference, --peek-nudge — "make sure ink is vertically
+    // (the ink centred, not the lines: the title's letters' tops and the opening's last letters' feet as far from the
+    // column's middle as each other — the title's line has more room over its capitals than the last line has under its
+    // letters, so the block, centred by its lines, stood low; nudged by the difference, --peek-nudge — "make sure ink is vertically
     // centered in body text column", 2026-10-24)
     var inkCtx = document.createElement('canvas').getContext('2d');
     var baseOf = function (el, atEnd) {
@@ -291,11 +291,30 @@
       inkCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       return inkCtx.measureText(text);
     };
+    var lastLineOf = function (el) {
+      var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), t, nodes = [];
+      while ((t = tw.nextNode())) nodes.push(t);
+      var out = '', lineTop = null, rng = document.createRange();
+      for (var i = nodes.length - 1; i >= 0; i--) {
+        for (var c = nodes[i].nodeValue.length - 1; c >= 0; c--) {
+          rng.setStart(nodes[i], c); rng.setEnd(nodes[i], c + 1);
+          var r = rng.getBoundingClientRect();
+          if (!r.height) continue;
+          if (lineTop == null) lineTop = r.top;
+          else if (Math.abs(r.top - lineTop) > 2) return out;
+          out = nodes[i].nodeValue.charAt(c) + out;
+        }
+      }
+      return out;
+    };
     var inkPeek = function () {
       peek.style.setProperty('--peek-nudge', '0px');
-      if (!peekTitle.textContent || !peekOn) return;
+      var lastP = peekBody.lastElementChild;
+      if (!peekTitle.textContent || !lastP) return;
       var top = baseOf(peekTitle, false) - inkOf(peekTitle, peekTitle.textContent).actualBoundingBoxAscent;
-      var foot = baseOf(peekOn, true) + Math.max(0, inkOf(peekOn, peekOn.textContent).actualBoundingBoxDescent);
+      // (the foot the opening's last line's: its baseline and the deepest of its letters under it — Read on, that stood
+      // under it, gone: "remove read on entirely", 2026-10-24)
+      var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lastLineOf(lastP)).actualBoundingBoxDescent);
       var k = peek.getBoundingClientRect();
       peek.style.setProperty('--peek-nudge', ((k.top + k.bottom) / 2 - (top + foot) / 2).toFixed(2) + 'px');
     };
@@ -305,9 +324,6 @@
       if (!d) return;
       peekAt = r;
       peekTitle.innerHTML = d[0];
-      // (Read on… under it, to the post — "below the body text preview add an italics in the same size as the title that
-      // says Read On...and links to the post", 2026-10-24; out of the keys' round, the entry being the post's link there)
-      if (peekOn) peekOn.href = r.href;
       peekBody.innerHTML = d[1].map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       // (fitted once, to the room the window shows under the head as it is shown — the column less 54 over and under,
@@ -320,7 +336,6 @@
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
       var tcs = getComputedStyle(peekTitle);
       var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
-      if (peekOn) { var ocs = getComputedStyle(peekOn); titleH += peekOn.offsetHeight + (parseFloat(ocs.marginTop) || 0) + (parseFloat(ocs.marginBottom) || 0); }
       var pcs = getComputedStyle(peek), pad = (parseFloat(pcs.paddingTop) || 0) + (parseFloat(pcs.paddingBottom) || 0);
       peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - titleH) + 'px';
       fitPeek();

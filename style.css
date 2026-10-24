@@ -32956,26 +32956,6 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
   body.archive-page .arc--index .arc-peek__title{ font-size: 19.5px; }
 }
 
-/* READ ON UNDER THE OPENING (2026-10-24 — "below the body text preview add an italics in the same size as the title that
-   says Read On...and links to the post"): Read on… under the opening, the post's link, in the title's italic at 19.5
-   on 28, centred as it is, a line of the opening's (19.2) over it; the ink, the red under the hand; the opening fitted
-   to the room left between the two (src/archive.js) */
-.arc-peek__on{ display: none; }
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__on{
-    display: block;
-    flex: none;
-    margin: 19.2px 0 0;
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
-    font-size: 19.5px; line-height: 28px; font-style: italic;
-    text-align: center;
-    text-decoration: none;
-    color: #121417;
-    --nc-mark: #B3301E; --hl-ink: #B3301E;
-  }
-  body.archive-page .arc--index .arc-peek__on:is(:hover, :focus-visible){ color: #B3301E; }
-}
-
 /* THE HAND ON THE WORDS ALONE (2026-10-24 — "Only have the date and title activate the hover"): from 1024 up an entry no
    wider than its title and date, so the room past them is no part of it and lights nothing; once lit, the writer's tag
    it puts beside them is part of it, so the hand can go on to the tag */
@@ -32987,19 +32967,10 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-main > .arc-peek{ padding-top: 41px; padding-bottom: 41px; }
 }
-/* (Read on… at the dates' size, their small italic 15 on 20 — "make read on the size of the dates", 2026-10-24) */
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__on{ font-size: 15px; line-height: 20px; }
-}
-/* (the opening's ink on the column's middle: the title, the opening and Read on nudged together by --peek-nudge,
+/* (the opening's ink on the column's middle: the title and the opening nudged together by --peek-nudge,
    src/archive.js inkPeek — "make sure ink is vertically centered in body text column", 2026-10-24) */
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek > *{ translate: 0 var(--peek-nudge, 0px); }
-}
-/* (Read on… at the index's titles' size after all, 17.5 on 28, still the italic — "actually make size of titles in the
-   ledger", 2026-10-24) */
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__on{ font-size: 17.5px; line-height: 28px; }
 }
 /* (the opening's … in the front page's mark: no width, hanging past the line, set in it where the line has room —
    .latest-plate .cut-mark; the clamp's own ellipsis no longer used) */
