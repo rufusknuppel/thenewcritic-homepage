@@ -16734,3 +16734,13 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
 @media (min-width: 1024px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-size: inherit; top: 0.5px; color: #B3301E; --nc-mark: #B3301E; --hl-ink: #B3301E; }
 }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-ix{ row-gap: 108px; }
+  body.archive-page .arc--index .arc-ix-sec--contra .arc-ix-grp{ padding-bottom: 0; }
+  body.archive-page .arc--index .arc-ix-sec--contra .arc-ix-grp:not([hidden]) ~ .arc-ix-grp:not([hidden]){ padding-top: 24px; }
+  body.archive-page .arc--index .arc-main > .arc-ix--foot{ padding-top: 108px; }
+  body.archive-page .arc--index .arc-main > .arc-ix--foot:not(:has(.arc-ix-sec:not([hidden]))){ padding-top: 0; }
+  body.archive-page .arc--index .arc-main > .arc-who{ padding-top: 108px; }
+  body.archive-page .arc--index .arc-main{ grid-template-rows: auto auto auto 1fr; }
+  body.archive-page .arc--index .arc-main > .arc-find-row,body.archive-page .arc--index .arc-main > .arc-peek{ grid-row: 1 / 5; }
+}

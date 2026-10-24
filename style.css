@@ -33203,3 +33203,21 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-siz
 @media (min-width: 1024px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-size: inherit; top: 0.5px; color: #B3301E; --nc-mark: #B3301E; --hl-ink: #B3301E; }
 }
+
+/* 108 BETWEEN THE SECTIONS (2026-10-24 — "have gaps of 108px between sections on the archive page", "on search, keep
+   these gaps"): from 1024 up, from one section's last entry to the next one's name 108 — Essays, Postscript, Contra,
+   Editors, Writers — the same under a search, which hides whole sections and groups: the 24 between Contra's tag groups
+   laid over each shown group after a shown one, not under every group (so none trails the section), and the Editors'
+   block no room at all while its section is hidden */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-ix{ row-gap: 108px; }
+  body.archive-page .arc--index .arc-ix-sec--contra .arc-ix-grp{ padding-bottom: 0; }
+  body.archive-page .arc--index .arc-ix-sec--contra .arc-ix-grp:not([hidden]) ~ .arc-ix-grp:not([hidden]){ padding-top: 24px; }
+  body.archive-page .arc--index .arc-main > .arc-ix--foot{ padding-top: 108px; }
+  body.archive-page .arc--index .arc-main > .arc-ix--foot:not(:has(.arc-ix-sec:not([hidden]))){ padding-top: 0; }
+  body.archive-page .arc--index .arc-main > .arc-who{ padding-top: 108px; }
+  /* (and the search's and the opening's columns, as tall as the window, spanning a last flexible row of their own, so
+     a short index leaves its spare height under Writers, not between the sections — "Collegiate" left 361 over them) */
+  body.archive-page .arc--index .arc-main{ grid-template-rows: auto auto auto 1fr; }
+  body.archive-page .arc--index .arc-main > :is(.arc-find-row, .arc-peek){ grid-row: 1 / 5; }
+}
