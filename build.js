@@ -5987,7 +5987,7 @@ function renderArchiveIndexSection(key, label, posts) {
   })();
   const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
     + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
-    + ` data-kicker="${escapeHtml((p.kicker || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
+    + ` data-kicker="${escapeHtml((p.kicker || ARC_TAGS[slugOf(p.link)] || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
     + `<span class="arc-ix-by">${escapeHtml(p.author || '')}</span><span class="arc-ix-title">${escapeHtml(p.title)}</span><span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
   return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
       <h2 class="arc-ix-sec__name">${label}</h2>
@@ -5999,6 +5999,15 @@ function renderArchiveIndexSection(key, label, posts) {
 function renderArchivePage(posts) {
   const cols = ARC_SECTIONS.filter(([k]) => k !== 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('\n    ');
   const eds = ARC_SECTIONS.filter(([k]) => k === 'editors').map(([k, w]) => renderArchiveIndexSection(k, w, posts)).join('');
+  // THE TAGS UNDER THE SEARCH (2026-10-23 — "Under search offer a number of tags in work sans like the dog tags on the
+  // homepage: Section (Essays/Postscript/Contra/Editors), Art, Music..."): the four sections, then Contra's tags A to Z,
+  // each in the front page's byline tag; one pressed keeps its kind alone, pressed again lets it go (src/archive.js)
+  const ctags = [...new Set(posts.filter((p) => arcIndexSection(p) === 'contra').map((p) => (p.kicker || ARC_TAGS[slugOf(p.link)] || '').trim()).filter(Boolean))]
+    .sort((x, y) => x.localeCompare(y));
+  const tagA = (kind, v, w) => `<a class="arc-ix-tag" href="#${kind}=${encodeURIComponent(v)}" data-kind="${kind}" data-v="${escapeHtml(v)}">${escapeHtml(w)}</a>`;
+  const tags = `<nav class="arc-ix-tags" aria-label="Sections and tags">`
+    + `<div class="arc-ix-tags__row">${ARC_SECTIONS.map(([k, w]) => tagA('section', k, w)).join('')}</div>`
+    + `<div class="arc-ix-tags__row">${ctags.map((t) => tagA('topic', t.toLowerCase(), t)).join('')}</div></nav>`;
   // (the page turned over, charcoal from the root down, red since — "I want the background of the archive to charcoal and
   // everything to flipped", 2026-10-22: html.is-archive, style.css THE ARCHIVE TURNED OVER; the browser's bar with it)
   return renderFrontPage({
@@ -6012,6 +6021,7 @@ function renderArchivePage(posts) {
     <div class="arc-find-row">
       <label class="arc-find"><span class="arc-find__label">Search the archive</span><input class="arc-search" type="search" placeholder="Search" autocomplete="off" spellcheck="false"></label>
       <button class="arc-clear" type="button" hidden>Clear</button>
+      ${tags}
     </div>
     <p class="arc-count" aria-live="polite">${posts.length} pieces</p>
     <div class="arc-ix">

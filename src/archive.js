@@ -14,6 +14,7 @@
   var none = arc.querySelector('.arc-none');
   var search = arc.querySelector('.arc-search'), clear = arc.querySelector('.arc-clear');
   var count = arc.querySelector('.arc-count');
+  var tagAs = [].slice.call(arc.querySelectorAll('.arc-ix-tag'));
   var readHash = function () {
     var hp = {};
     location.hash.slice(1).split('&').forEach(function (kv) {
@@ -40,12 +41,12 @@
   };
   var applyFilter = function () {
     var hp = readHash();
-    var sec = (hp.section || '').toLowerCase();
+    var sec = (hp.section || '').toLowerCase(), topic = (hp.topic || '').toLowerCase();
     var typed = search ? search.value.trim() : '';
     var words = typed.toLowerCase().split(/\s+/).filter(Boolean);
     var shown = 0;
     items.forEach(function (r) {
-      var on = !sec || r.getAttribute('data-section') === sec;
+      var on = (!sec || r.getAttribute('data-section') === sec) && (!topic || r.getAttribute('data-kicker') === topic);
       if (on) for (var w = 0; w < words.length; w++) if (textOf(r).indexOf(words[w]) < 0) { on = false; break; }
       r.hidden = !on;
       if (on) shown++;
@@ -53,13 +54,15 @@
     grps.forEach(function (g) { g.hidden = !g.querySelector('.arc-ix-item:not([hidden])'); });
     secs.forEach(function (s) { s.hidden = !s.querySelector('.arc-ix-item:not([hidden])'); });
     say(shown, typed);
-    if (clear) clear.hidden = !(sec || words.length);
+    if (clear) clear.hidden = !(sec || topic || words.length);
+    tagAs.forEach(function (t) { var v = t.getAttribute('data-v'), k = t.getAttribute('data-kind'); var on = (k === 'section' ? sec : topic) === v; t.classList.toggle('is-on', on); if (on) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
     if (none) none.hidden = shown > 0;
   };
   // (a writer's or a tag's link fills the field with the name, as the reader would have typed it)
   var fromHash = function () {
     var hp = readHash();
-    var name = hp.author || hp.topic || '';
+    // (a tag's link is a tag of its own here since — the tags under the field — and keeps its kind alone)
+    var name = hp.author || '';
     if (search && name) search.value = name;
   };
 
@@ -104,6 +107,21 @@
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
     if (search) search.value = '';
     applyFilter(); toHead();
+  });
+
+  // (a tag pressed keeps its kind alone — a section, a tag, or one of each — and pressed again lets it go; the field's
+  // words kept)
+  tagAs.forEach(function (t) {
+    t.addEventListener('click', function (e) {
+      e.preventDefault();
+      var hp = readHash(), k = t.getAttribute('data-kind'), v = t.getAttribute('data-v');
+      if (hp[k] === v) delete hp[k]; else hp[k] = v;
+      delete hp.post; delete hp.sort;
+      var h = Object.keys(hp).map(function (q) { return q + '=' + encodeURIComponent(hp[q]); }).join('&');
+      try { history.replaceState(null, '', location.pathname + location.search + (h ? '#' + h : '')); } catch (er) { location.hash = h; }
+      if (target) { target.classList.remove('is-target'); target = null; }
+      applyFilter(); toHead();
+    });
   });
 
   // (the marks lit under the hand, as on the front page — "Highlight should work on wordmark on archive", 2026-10-23:
