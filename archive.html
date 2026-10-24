@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d5204c73">
+<link rel="stylesheet" href="style.css?v=09a474dc">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -393,7 +393,7 @@
       </div>
     </section></div>
     <p class="arc-none" hidden>Nothing matches</p>
-    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=642a992e2c"><p class="arc-peek__title"></p><div class="arc-peek__body"></div></aside>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=642a992e2c"><p class="arc-peek__title"></p><div class="arc-peek__body"></div><a class="arc-peek__on" href="#" tabindex="-1">Read on…</a></aside>
   </div>
 </section>
 </main>
@@ -902,7 +902,7 @@
   });
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
-    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var peekTitle = peek.querySelector('.arc-peek__title'), peekBody = peek.querySelector('.arc-peek__body'), peekOn = peek.querySelector('.arc-peek__on'), peekAt = null;
     var fitPeek = function () {
       var paras = [].slice.call(peekBody.children);
       paras.forEach(function (p) { p.style.removeProperty('-webkit-line-clamp'); p.classList.remove('is-cut'); });
@@ -935,12 +935,14 @@
       if (!d) return;
       peekAt = r;
       peekTitle.innerHTML = d[0];
+      if (peekOn) peekOn.href = r.href;
       peekBody.innerHTML = d[1].map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
       var tcs = getComputedStyle(peekTitle);
       var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
+      if (peekOn) { var ocs = getComputedStyle(peekOn); titleH += peekOn.offsetHeight + (parseFloat(ocs.marginTop) || 0) + (parseFloat(ocs.marginBottom) || 0); }
       peekBody.style.maxHeight = Math.max(0, peek.clientHeight - 108 - head0 - titleH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
