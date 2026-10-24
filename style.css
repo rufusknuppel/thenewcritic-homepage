@@ -16268,3 +16268,11 @@ body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ ba
 @media (min-width: 1024px) and (min-resolution: 2dppx){
   body.archive-page .arc--index .arc-main::before{ width: 0.5px; }
 }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-ix{ padding-top: 49.4px; }
+  body.archive-page .arc--index .arc-main > .arc-find-row{ padding-top: 49.84px; }
+}
+body.archive-page .arc--index .arc-ix-sec__name{ color: #FAF9F6; }
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-ix,body.archive-page .arc--index .arc-main > .arc-ix--foot,body.archive-page .arc--index .arc-main > .arc-none{ padding-right: 162px; }
+}
