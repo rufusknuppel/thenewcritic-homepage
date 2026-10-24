@@ -32498,3 +32498,19 @@ body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ ba
 @media (min-width: 1024px) and (min-resolution: 2dppx){
   body.archive-page .arc--index .arc-main::before{ width: 0.5px; }
 }
+
+/* 54 FROM THE BAND TO THE INK (2026-10-23 — "Have 54px between top band and Essays/search"): the band's foot to the top
+   of "Essays" and of "Search" — their capitals' ink, not their line boxes, which stand 5.6 and 5.2 over it — 54,
+   measured at 2x off the band's rule to the first row of ink */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-ix{ padding-top: 49.4px; }
+  body.archive-page .arc--index .arc-main > .arc-find-row{ padding-top: 49.84px; }
+}
+
+/* THE SECTIONS' NAMES WHITE (2026-10-23 — "Make section titles white too"): Essays, Postscript, Contra and Editors in the
+   white of the titles under them; Contra's tags over their runs keep the quiet white */
+body.archive-page .arc--index .arc-ix-sec__name{ color: #FAF9F6; }
+/* (the index's column 108 narrower — "narrow the right column by 108px", 2026-10-23: 162 short of the window's edge, not 54) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > :is(.arc-ix, .arc-ix--foot, .arc-none){ padding-right: 162px; }
+}
