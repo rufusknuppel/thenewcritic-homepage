@@ -795,6 +795,11 @@
   var fromHash = function () {
     var hp = readHash();
     var name = hp.author || '';
+    if (name) {
+      var low = name.toLowerCase(), as = null;
+      [].forEach.call(arc.querySelectorAll('.arc-who__w, .arc-ix-by'), function (e) { var t = e.textContent.trim(); if (!as && t.toLowerCase() === low) as = t; });
+      if (as) name = as;
+    }
     if (search && name) search.value = name;
   };
   var findRow = arc.querySelector('.arc-find-row');
