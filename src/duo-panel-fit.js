@@ -9825,8 +9825,11 @@
                 // Essays or Postscript between in non-italics", 2026-10-24: 18 either side, as the date)
                 var sc0 = lk0 && lk0.getAttribute('data-sec');
                 if (sc0) {
-                  var hs0 = document.createElement('span');
-                  hs0.className = 'swap-body-sec';
+                  // (a link to the archive with that section alone — "contra/essays/postscript should take you to the
+                  // archive with that filter engaged", 2026-10-24: src/archive.js reads #section=)
+                  var hs0 = document.createElement('a');
+                  hs0.className = 'swap-body-sec hl-ink';
+                  hs0.href = 'archive.html#section=' + sc0.toLowerCase();
                   hs0.textContent = sc0;
                   hm.appendChild(hs0);
                 }
