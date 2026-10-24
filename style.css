@@ -32270,3 +32270,21 @@ body.archive-page .arc--index .arc-ix-item.is-target{ color: var(--nc-mark, #121
 body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ opacity: 0; transition: opacity .15s ease; }
 body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-meta{ opacity: 1; }
 @media (hover: none){ body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ opacity: 1; } }
+/* (the white under the hand, not the charcoal — "Have the highlight be white", 2026-10-23) */
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear):is(:hover, :focus-visible),
+body.archive-page .arc--index .arc-ix-item.is-target{ color: #FAF9F6; }
+/* (the site's own hover — !important, off --nc-mark and --hl-ink — takes the white here through its tokens) */
+body.archive-page .arc--index :is(.arc-ix-item, .arc-clear){ --nc-mark: #FAF9F6; --hl-ink: #FAF9F6; }
+
+/* THE SECOND LINE OPENING OUT OF THE TITLE (2026-10-23 — "Remove the indent, have the expansion come from the text"): the
+   writer and the date flush with the title, folded shut under it at rest, opening down out of it under the hand — no
+   empty room kept between the titles; on a phone, always open */
+body.archive-page .arc--index .arc-ix-item .arc-ix-meta{
+  padding-left: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .2s ease, opacity .2s ease;
+}
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-meta{ max-height: 96px; opacity: 1; }
+@media (hover: none){ body.archive-page .arc--index .arc-ix-item .arc-ix-meta{ max-height: none; opacity: 1; } }
