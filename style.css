@@ -33136,3 +33136,27 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
 @media (min-width: 1024px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ color: #121417; --nc-mark: #121417; --hl-ink: #121417; cursor: pointer; }
 }
+@media (min-width: 1024px) and (hover: hover){
+  /* (no fork under the writer under the hand — the tag's old hover laid its ink on the name: "meant black text not the
+     tag", 2026-10-24) */
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover::before{ content: none; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ background: none; clip-path: none; }
+}
+
+/* THE SEARCH'S LINE AS WIDE AS ITS WORDS (2026-10-24 — "make the line under search the width of search" / "plus 9px on
+   either side"): the hairline under the field drawn under its words alone — Search, or what is typed — 9 past them
+   either side, centred as they are; their width measured as they change (src/archive.js, --find-w) */
+@media (min-width: 1024px){
+  body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search,
+  body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:focus{
+    border-bottom: 0;
+    padding-bottom: 1px;
+    background: linear-gradient(var(--nc-rule, #B3301E), var(--nc-rule, #B3301E)) no-repeat center bottom / calc(var(--find-w, 60px) + 18px) 1px;
+  }
+}
+@media (min-width: 1024px) and (min-resolution: 2dppx){
+  body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search,
+  body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:focus{
+    background-size: calc(var(--find-w, 60px) + 18px) 0.5px;
+  }
+}
