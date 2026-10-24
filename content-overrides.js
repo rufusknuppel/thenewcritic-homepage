@@ -425,6 +425,9 @@ module.exports = {
   },
   'jasmine-suns-project-of-self-transformation': {
     kicker: 'Becoming a Tech Journalist',
+    // (her name, not the dek's "The tech reporter" — "have the tech reporter say Jasmine Sun on the homepage", 2026-10-24)
+    psName: 'Jasmine Sun',
+    byline: 'Jasmine Sun',
     head: [0.38, 0.44],
     zoom: 1,
   },
