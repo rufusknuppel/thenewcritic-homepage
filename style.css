@@ -16567,21 +16567,6 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
 @media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek__title{ font-size: 19.5px; }
 }
-.arc-peek__on{ display: none; }
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__on{
-    display: block;
-    flex: none;
-    margin: 19.2px 0 0;
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif;
-    font-size: 19.5px; line-height: 28px; font-style: italic;
-    text-align: center;
-    text-decoration: none;
-    color: #121417;
-    --nc-mark: #B3301E; --hl-ink: #B3301E;
-  }
-  body.archive-page .arc--index .arc-peek__on:is(:hover, :focus-visible){ color: #B3301E; }
-}
 @media (min-width: 1024px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item{ width: fit-content; max-width: none; }
 }
@@ -16589,13 +16574,7 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
   body.archive-page .arc--index .arc-main > .arc-peek{ padding-top: 41px; padding-bottom: 41px; }
 }
 @media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__on{ font-size: 15px; line-height: 20px; }
-}
-@media (min-width: 1024px){
   body.archive-page .arc--index .arc-peek > *{ translate: 0 var(--peek-nudge, 0px); }
-}
-@media (min-width: 1024px){
-  body.archive-page .arc--index .arc-peek__on{ font-size: 17.5px; line-height: 28px; }
 }
 body.archive-page .arc--index .arc-peek__p .cut-mark{ display: inline-block; width: 0; overflow: visible; white-space: nowrap; }
 body.archive-page .arc--index .arc-peek__p .cut-mark.is-set{ display: inline; width: auto; }
