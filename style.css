@@ -33151,16 +33151,17 @@ body.archive-page .arc--index .arc-who__list li{ justify-content: center; }
   body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:focus{
     border-bottom: 0;
     padding-bottom: 1px;
-    background: linear-gradient(var(--nc-rule, #B3301E), var(--nc-rule, #B3301E)) no-repeat center bottom / 100% 1px;
+    background: linear-gradient(var(--nc-rule, #B3301E), var(--nc-rule, #B3301E)) no-repeat center bottom / calc(100% - 36px) 1px;
   }
 }
 @media (min-width: 1024px) and (min-resolution: 2dppx){
   body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search,
   body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:focus{
-    background-size: 100% 0.5px;
+    background-size: calc(100% - 36px) 0.5px;
   }
 }
-/* (the line the field's whole width since, not its words' — "make the search line as wide as search", 2026-10-24) */
+/* (the line the field's whole width since, not its words' — "make the search line as wide as search", 2026-10-24 — and
+   18 in from either end of it since, "make line under search 18px narrower on either side") */
 
 
 /* THE RULE WHOLE (2026-10-24 — "Remove the author tag from the homepage. Extend the rule from the image to the side or
