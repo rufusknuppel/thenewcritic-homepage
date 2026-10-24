@@ -32975,3 +32975,15 @@ body.archive-page .arc--index .arc-who[hidden]{ display: none; }
   }
   body.archive-page .arc--index .arc-peek__on:is(:hover, :focus-visible){ color: #B3301E; }
 }
+
+/* THE HAND ON THE WORDS ALONE (2026-10-24 — "Only have the date and title activate the hover"): from 1024 up an entry no
+   wider than its title and date, so the room past them is no part of it and lights nothing; once lit, the writer's tag
+   it puts beside them is part of it, so the hand can go on to the tag */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item{ width: fit-content; max-width: none; }
+}
+/* (the opening's column 41 over and under, 54 still at its sides — "Have only 41px on top and bottom padding for body
+   text preview column", 2026-10-24; the opening fitted to the room inside it, src/archive.js) */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main > .arc-peek{ padding-top: 41px; padding-bottom: 41px; }
+}

@@ -265,7 +265,8 @@
       var tcs = getComputedStyle(peekTitle);
       var titleH = peekTitle.offsetHeight + (parseFloat(tcs.marginTop) || 0) + (parseFloat(tcs.marginBottom) || 0);
       if (peekOn) { var ocs = getComputedStyle(peekOn); titleH += peekOn.offsetHeight + (parseFloat(ocs.marginTop) || 0) + (parseFloat(ocs.marginBottom) || 0); }
-      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - 108 - head0 - titleH) + 'px';
+      var pcs = getComputedStyle(peek), pad = (parseFloat(pcs.paddingTop) || 0) + (parseFloat(pcs.paddingBottom) || 0);
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - titleH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
     };
