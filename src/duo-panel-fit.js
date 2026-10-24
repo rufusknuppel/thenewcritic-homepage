@@ -9851,7 +9851,9 @@
                 var wide = window.innerWidth >= 1024;
                 [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
-                    if (!wide) el.style.removeProperty(pp);
+                    // (the link's own ink and ground left to the sheet, so it lights under the hand as every link does —
+                    // "author names should highlight", 2026-10-24)
+                    if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
                   if (el.classList.contains('swap-body-on')) { if (wide) el.style.setProperty('margin-left', '18px', 'important'); else el.style.removeProperty('margin-left'); }
