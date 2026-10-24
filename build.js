@@ -5960,14 +5960,17 @@ function arcIndexKey(title) {
 // (after each title a comma, the writer, a comma and the date in figures, M.D.YY — "Next the essay titles, add a comma,
 // then the Author name, then the date in M.D.YY", 2026-10-23; a line of its own under the title since, no comma before it —
 // "Put the author and date in an indented row beneath the title")
-function arcIndexMeta(p) {
+// (the writer to the title's left and the date to its right since — "I want the author and date to appear on either side of
+// the title", 2026-10-23)
+function arcIndexDate(p) {
   const d = p.date;
-  const ds = d && !isNaN(d.getTime()) ? `${d.getMonth() + 1}.${d.getDate()}.${String(d.getFullYear()).slice(-2)}` : '';
-  const parts = [p.author, ds].filter(Boolean);
-  return parts.length ? `<span class="arc-ix-meta">${escapeHtml(parts.join(', '))}</span>` : '';
+  return d && !isNaN(d.getTime()) ? `${d.getMonth() + 1}.${d.getDate()}.${String(d.getFullYear()).slice(-2)}` : '';
 }
 // (the index's section for a post — its own, but the paper's criticism of itself stands with the Editors: "Move The New
 // Critic's Criticism to editors", 2026-10-23)
+// (the index's tags for the Contras the feed leaves untagged — "Depleted Shells is Art, and McNally the Younger is Food",
+// 2026-10-23; here and not in content-overrides.js, where a kicker would stand in the front page's column for the title)
+const ARC_TAGS = { 'depleted-shells': 'Art', 'mcnally-the-younger': 'Food' };
 function arcIndexSection(p) {
   if (/new critic.s criticism/i.test(p.kicker || '')) return 'editors';
   return (p.sectionLabel || '').toLowerCase();
@@ -5979,13 +5982,13 @@ function renderArchiveIndexSection(key, label, posts) {
   // Other: "Arrange contras by Music/Theater/etc. tag", 2026-10-23)
   const groups = key !== 'contra' ? [{ posts: mine }] : (() => {
     const by = new Map();
-    mine.forEach((p) => { const t = (p.kicker || '').trim(); if (!by.has(t)) by.set(t, []); by.get(t).push(p); });
+    mine.forEach((p) => { const t = (p.kicker || ARC_TAGS[slugOf(p.link)] || '').trim(); if (!by.has(t)) by.set(t, []); by.get(t).push(p); });
     return [...by.keys()].sort((x, y) => (!x) - (!y) || x.localeCompare(y)).map((t) => ({ tag: t || 'Other', posts: by.get(t) }));
   })();
   const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
     + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
     + ` data-kicker="${escapeHtml((p.kicker || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
-    + `${escapeHtml(p.title)}${arcIndexMeta(p)}</a>`;
+    + `<span class="arc-ix-by">${escapeHtml(p.author || '')}</span><span class="arc-ix-title">${escapeHtml(p.title)}</span><span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
   return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
       <h2 class="arc-ix-sec__name">${label}</h2>
       <div class="arc-ix-sec__groups">${groups.map((g) => `

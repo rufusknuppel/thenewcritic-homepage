@@ -36,17 +36,11 @@
 //             CSS background-position, e.g. '50% 52.5%'
 
 module.exports = {
-  // (its Contra tag — "Depleted Shells is Art", 2026-10-23)
-  'depleted-shells': {
-    kicker: 'Art',
-  },
   // (the paper above and below the drawing cropped out of the frame —
   // "Zoom in on the george mcnally so the top and bottom borders aren't
   // visible in the frame", 2026-10-14: the drawing stands from rows 80
   // to 830 of the scan's 912)
   'mcnally-the-younger': {
-    // (its Contra tag — "McNally the Younger is Food", 2026-10-23)
-    kicker: 'Food',
     boxZoom: 1.24,
     boxPos: '50% 49%',
   },

@@ -16122,3 +16122,31 @@ body.archive-page .arc--index .arc-ix--foot .arc-ix-sec__groups{ columns: auto; 
   body.archive-page .arc--index .arc-ix--foot{ grid-template-columns: minmax(0, 1fr); }
   body.archive-page .arc--index .arc-ix--foot .arc-ix-sec{ grid-column: 1; }
 }
+body.archive-page .arc--index .arc-ix-item{ margin-bottom: 0; }
+body.archive-page .arc--index .arc-find-row .arc-search{ position: relative; top: 2.25px; }
+body.archive-page .arc--index .arc-find-row .arc-clear{ transform: translateY(calc(-50% + 2.25px)); }
+body.archive-page .arc--index .arc-ix-item{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 18px;
+  align-items: baseline;
+}
+body.archive-page .arc--index .arc-ix-item .arc-ix-title{ grid-column: 2; text-align: center; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{
+  font-style: italic;
+  font-size: 17px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+body.archive-page .arc--index .arc-ix-item .arc-ix-by{ grid-column: 1; grid-row: 1; justify-self: end; }
+body.archive-page .arc--index .arc-ix-item .arc-ix-on{ grid-column: 3; grid-row: 1; justify-self: start; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-by,body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-on{ opacity: 1; }
+@media (max-width: 1023px){
+  body.archive-page .arc--index .arc-ix-item{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 0; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ grid-column: 1 / -1; grid-row: 1; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ grid-column: 1; grid-row: 2; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ grid-column: 2; grid-row: 2; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(:empty)::after{ content: ",\00a0"; }
+}
+@media (hover: none){ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ opacity: 1; } }
