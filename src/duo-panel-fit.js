@@ -9025,6 +9025,10 @@
   // (the byline on the hairline since, the line broken round it, 54 between the dek and the line and between the line and
   // the body — "Move metadata so that it prints on top of the rule", 2026-10-22; style.css THE BYLINE ON THE RULE)
   var META_ON_RULE = true;
+  // (off the rule again since, the writer and the date in a row over the title, set as the dek is — "Add author name and
+  // date in a dek style row above the title", 2026-10-24: META_ABOVE's stack, the hairline under the dek; style.css THE
+  // WRITER AND THE DATE OVER THE TITLE)
+  META_ON_RULE = false;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9814,6 +9818,16 @@
                   a1.removeAttribute('style');
                   hm.appendChild(a1);
                 });
+                // (and the date after the writer again — "Add author name and date in a dek style row above the title",
+                // 2026-10-24: M.D.YY, as the archive gives it, off the picture's link)
+                var lk0 = j.card.querySelector('a.card-image-link'), on0 = lk0 && lk0.getAttribute('data-on');
+                if (on0) {
+                  if (mw) hm.appendChild(document.createTextNode(', '));
+                  var hd0 = document.createElement('span');
+                  hd0.className = 'swap-body-on';
+                  hd0.textContent = on0;
+                  hm.appendChild(hd0);
+                }
                 var stl = j.card.querySelector('.swap-title');
                 var lk = j.card.querySelector('a.card-image-link');
                 var ht = document.createElement(lk ? 'a' : 'span');
@@ -9826,6 +9840,21 @@
                 hd.appendChild(ht);
               }
               if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
+              // (the writer and the date set as the dek is from 1024 up — the Garamond's italic at 17.5 on 21, style.css
+              // THE DEK IN THE GARAMOND'S ITALIC — in the ink: "Add author name and date in a dek style row above the
+              // title", 2026-10-24; written on the row and its parts, since the sheet's weighted rules for the tag it was
+              // outweigh any it could add)
+              var hm1 = hd.querySelector('.swap-body-meta');
+              if (hm1) {
+                var DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '17.5px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'italic', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                var wide = window.innerWidth >= 1024;
+                [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
+                  for (var pp in DEK_ROW) {
+                    if (!wide) el.style.removeProperty(pp);
+                    else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
+                  }
+                });
+              }
               // (two columns, filled in turn and cut on a whole line — or,
               // where the whole preview fits, balanced between the two at
               // its own height: either way the block stands centred in

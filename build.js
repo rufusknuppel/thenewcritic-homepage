@@ -1935,6 +1935,9 @@ function extractParagraphs(html, max) {
     // slip every ^- and $-anchored pattern.
     let plain = stripEmMarkers(text);
     if (!plain) continue;
+    // (a print reprint's note — "This article originally appeared in Issue 14: Risk. Subscribe to the print magazine…" —
+    // is no part of the piece: "Remove this paragraph from the Is gen z afraid of risk preview", 2026-10-24)
+    if (/originally appeared in/i.test(plain) && /subscribe/i.test(plain)) continue;
     seen++;
     if (!sawMasthead && seen <= MASTHEAD_WINDOW && SECTION_MASTHEAD.test(plain)) {
       sawMasthead = true;
@@ -3087,7 +3090,7 @@ function renderCard(post, { dekLength = 110, eager = false, kicker = '' } = {}) 
           <a class="duo-essays-btn card-category-btn pc pc-left" href="archive.html">The Latest</a>
           ${artBoxHtml(post)}${readNowHtml}
         </div>`;
-  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
+  const imageHtml = `<span class="card-image-frame"><a class="card-image-link" href="${escapeHtml(post.link)}" data-on="${arcIndexDate(post)}" rel="noopener">
         ${post.image ? `<img class="card-image" src="${escapeHtml(post.image)}" alt=""${focalStyle(post)} ${imgAttrs}>` : '<span class="card-image card-image--blank"></span>'}
       </a></span>`;
 
@@ -3379,7 +3382,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // title facing from a centred column on the left (the CSS pins the
   // strip over the right column; the markup is one shared path).
   return `<div class="duo-half${halfClass ? ` ${halfClass}` : ''}${sectionClass}">
-        <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" rel="noopener">
+        <span class="card-image-frame duo-card-image"><a class="card-image-link" href="${escapeHtml(post.link)}" data-on="${arcIndexDate(post)}" rel="noopener">
           ${post.image ? `<img class="card-image" ${coverSrcAttrs(post.image, halfClass.includes('duo-half--wide') ? COVER_SIZES.wide : COVER_SIZES.cell)} alt=""${focalStyle(post)} loading="eager" fetchpriority="low" decoding="async">` : '<span class="card-image card-image--blank"></span>'}
         </a></span>
         <div class="duo-panel">
