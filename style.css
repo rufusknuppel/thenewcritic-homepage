@@ -32890,3 +32890,26 @@ body.archive-page .arc--index .arc-who__w{ display: block; }
 @media (min-width: 1280px){
   body.archive-page .arc--index .arc-who__list li{ justify-content: flex-end; }
 }
+
+/* THE WRITER'S TAG OUTLINED UNDER THE HAND (2026-10-24 — "have tags hover with a .5 px red outline"): the tag under the
+   hand the ink with the white on it, a half pixel of the red round its whole fork. The fork is a clip, which cuts an
+   outline away, so the tag is painted the red and the ink laid in it on a fork of its own, inset a half pixel square to
+   every edge (0.707 at the left, so the slanted edges are a half pixel apart too) */
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ position: relative; isolation: isolate; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ background: linear-gradient(#B3301E, #B3301E); }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover::before{
+    content: "";
+    position: absolute;
+    inset: 0.5px 0.5px 0.5px 0.707px;
+    z-index: -1;
+    clip-path: polygon(13.5px 0, 100% 0, 100% 100%, 13.5px 100%, 0 50%);
+    background: #121417;
+  }
+}
+
+/* THE FORK OUTLINED UNDER THE HAND (2026-10-24 — "do the same hover on the homepage for authors"): the byline's fork,
+   under the hand, filled with the ink, the white on it, and its own half pixel of the red round it showing — the
+   archive's writer's tag's hover (THE WRITER'S TAG OUTLINED UNDER THE HAND); the link marks the fork, is-hot
+   (duo-panel-fit.js seatHairlines) */
+html body main.has-mega .nc-hairline-fork.is-hot{ --fork-fill: #121417; }

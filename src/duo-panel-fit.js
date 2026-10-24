@@ -9486,6 +9486,19 @@
         if (j.mmEl) [j.mmEl].concat([].slice.call(j.mmEl.querySelectorAll('a'))).forEach(function (e) {
           e.style.setProperty('color', 'var(--fork-ink, #FAF9F6)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FAF9F6)', 'important');
         });
+        // (the fork under the hand the ink, its half pixel of the red round it showing — "do the same hover on the
+        // homepage for authors", 2026-10-24, as the archive's writer's tag: the fork is no child of the byline's link, so
+        // the link marks it, is-hot; style.css THE FORK OUTLINED UNDER THE HAND)
+        if (j.mmEl) [].forEach.call(j.mmEl.querySelectorAll('a'), function (a) {
+          if (a.__forkHot) return;
+          a.__forkHot = true;
+          var body = j.body;
+          var mark = function (on) { var f = body.querySelector(':scope > .nc-hairline-fork'); if (f) f.classList.toggle('is-hot', on); };
+          a.addEventListener('mouseenter', function () { mark(true); });
+          a.addEventListener('mouseleave', function () { mark(false); });
+          a.addEventListener('focus', function () { mark(true); });
+          a.addEventListener('blur', function () { mark(false); });
+        });
       } else if (k[0] === 'dek' && fk) fk.remove();
       if (hl.__st !== st) { hl.__st = st; hl.style.cssText = st; }
     });

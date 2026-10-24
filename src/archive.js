@@ -216,6 +216,20 @@
         else { paras[i].classList.add('is-cut'); paras[i].style.setProperty('-webkit-line-clamp', String(lines)); }
         break;
       }
+      // (an ellipsis at the end of every opening — "Add ellipsis to the end of all body text previews on the archive",
+      // 2026-10-24: one that ends on a whole paragraph gets it after the paragraph's last word, its full stop turned into
+      // it; cut short again if that runs it past the foot, the clamp's own ellipsis then)
+      var last = peekBody.lastElementChild;
+      if (last && !last.classList.contains('is-cut')) {
+        var tw = document.createTreeWalker(last, NodeFilter.SHOW_TEXT), tn = null, n;
+        while ((n = tw.nextNode())) if (n.nodeValue.trim()) tn = n;
+        if (tn) tn.nodeValue = tn.nodeValue.replace(/[\s.…]*$/, '') + '…';
+        var lr = last.getBoundingClientRect();
+        if (lr.bottom > foot + 0.5) {
+          var lh2 = parseFloat(getComputedStyle(last).lineHeight) || 19.2;
+          last.classList.add('is-cut'); last.style.setProperty('-webkit-line-clamp', String(Math.max(1, Math.floor((foot - lr.top + 0.5) / lh2))));
+        }
+      }
     };
     var showPeek = function (r) {
       if (!peekData) { peekWant = r; return; }

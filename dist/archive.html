@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=4d857a12">
+<link rel="stylesheet" href="style.css?v=ba7676f6">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -909,6 +909,17 @@
         if (lines < 1) peekBody.removeChild(paras[i]);
         else { paras[i].classList.add('is-cut'); paras[i].style.setProperty('-webkit-line-clamp', String(lines)); }
         break;
+      }
+      var last = peekBody.lastElementChild;
+      if (last && !last.classList.contains('is-cut')) {
+        var tw = document.createTreeWalker(last, NodeFilter.SHOW_TEXT), tn = null, n;
+        while ((n = tw.nextNode())) if (n.nodeValue.trim()) tn = n;
+        if (tn) tn.nodeValue = tn.nodeValue.replace(/[\s.…]*$/, '') + '…';
+        var lr = last.getBoundingClientRect();
+        if (lr.bottom > foot + 0.5) {
+          var lh2 = parseFloat(getComputedStyle(last).lineHeight) || 19.2;
+          last.classList.add('is-cut'); last.style.setProperty('-webkit-line-clamp', String(Math.max(1, Math.floor((foot - lr.top + 0.5) / lh2))));
+        }
       }
     };
     var showPeek = function (r) {
