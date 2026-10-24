@@ -16731,3 +16731,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
 @media (min-width: 1024px) and (hover: hover){
   body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ color: #121417; --nc-mark: #121417; --hl-ink: #121417; }
 }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-size: inherit; top: 0.5px; color: #B3301E; --nc-mark: #B3301E; --hl-ink: #B3301E; }
+}
