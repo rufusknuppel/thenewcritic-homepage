@@ -33004,3 +33004,27 @@ body.archive-page .arc--index .arc-peek__p .cut-mark.is-set{ display: inline; wi
     -webkit-text-fill-color: currentColor !important;
   }
 }
+
+/* EVERY TAG THE INK WITH THE WHITE ON IT, THE RED ROUND IT (2026-10-24 — "display all tags as resting white on charcoal
+   with red outline, hover with red text"): the front page's byline fork and the archive's writer's and subject's tags
+   at rest the charcoal, their words the white, a half pixel of the red round them; under the hand the words the red,
+   the fill and the outline kept */
+:root{ --fork-fill: #121417; --fork-ink: #FAF9F6; }
+html body main.has-mega .page-rows .swap-body-meta a:is(:hover, :focus-visible){ --fork-ink: #B3301E; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{
+    background: linear-gradient(#B3301E, #B3301E);
+    color: #FAF9F6;
+    --nc-mark: #FAF9F6; --hl-ink: #FAF9F6;
+  }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by::before{
+    content: "";
+    position: absolute;
+    inset: 0.5px 0.5px 0.5px 0.707px;
+    z-index: -1;
+    clip-path: polygon(13.5px 0, 100% 0, 100% 100%, 13.5px 100%, 0 50%);
+    background: #121417;
+  }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ color: #B3301E; --nc-mark: #B3301E; --hl-ink: #B3301E; }
+}
