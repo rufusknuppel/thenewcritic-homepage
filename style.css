@@ -16559,3 +16559,5 @@ body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target
     color: #121417;
   }
 }
+body.archive-page .arc--index .arc-who__list li[hidden],
+body.archive-page .arc--index .arc-who[hidden]{ display: none; }
