@@ -32422,3 +32422,19 @@ body.archive-page .arc--index .arc-ix-item.is-target{ color: #121417; }
   body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ line-height: 24px; }
   body.archive-page .arc--index .arc-ix-item{ margin-bottom: 12px; }
 }
+
+/* THE WRITER AND THE DATE AFTER THE TITLE, THE COLUMN FROM THE MIDDLE (2026-10-23 — "Move author and date to the right.
+   Have left of the column sit in the dead center"): from 1024 up the index's left edge on the window's middle line, the
+   search's column the whole left half, the index's the right half to 54 short of the edge; under the hand "Writer,
+   date" after the title on its line, 18 on */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main{ grid-template-columns: 50% 50%; }
+  body.archive-page .arc--index .arc-main > :is(.arc-ix, .arc-ix--foot, .arc-none){ padding-right: 54px; }
+  body.archive-page .arc--index .arc-ix,
+  body.archive-page .arc--index .arc-ix--foot{ grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+  body.archive-page .arc--index .arc-ix-item{ display: flex; align-items: baseline; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-title{ order: 0; flex: 0 1 auto; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by{ order: 1; margin: 0 0 0 18px; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-on{ order: 2; margin: 0; }
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:not(:empty)::after{ content: ",\00a0"; }
+}
