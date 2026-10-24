@@ -5975,6 +5975,17 @@ function arcIndexSection(p) {
   if (/new critic.s criticism/i.test(p.kicker || '')) return 'editors';
   return (p.sectionLabel || '').toLowerCase();
 }
+// (what an entry shows at rest where it isn't its title, as markup: a postscript its subject — "In postscript section, use
+// subject instead of title for resting" — and a contra the work it answers, the artist's and the work's name, the work's
+// in italic — "For contra use the name of the work of art so Olivia Rodgrigo's You seem...", 2026-10-23)
+// (a subject the dek gives by its role, named — "Use Jasmine Sun instead of The tech reporter", 2026-10-23; here, not in
+// content-overrides.js, so the front page's postscript card stays as it stands)
+const ARC_SUBJECTS = { 'jasmine-suns-project-of-self-transformation': 'Jasmine Sun' };
+function arcIndexRest(key, p) {
+  if (key === 'postscript' && (ARC_SUBJECTS[slugOf(p.link)] || p.psName)) return escapeHtml(ARC_SUBJECTS[slugOf(p.link)] || p.psName);
+  if (key === 'contra' && /^contra\s+\S/i.test(p.subtitle || '')) return contraWorkDek(p.subtitle.replace(/^contra\s+/i, ''));
+  return '';
+}
 function renderArchiveIndexSection(key, label, posts) {
   // (no letters and no A to Z since — "Remove the alphabetical", 2026-10-23: the titles newest first, as the feed has them)
   const mine = posts.filter((p) => arcIndexSection(p) === key);
@@ -5985,10 +5996,12 @@ function renderArchiveIndexSection(key, label, posts) {
     mine.forEach((p) => { const t = (p.kicker || ARC_TAGS[slugOf(p.link)] || '').trim(); if (!by.has(t)) by.set(t, []); by.get(t).push(p); });
     return [...by.keys()].sort((x, y) => (!x) - (!y) || x.localeCompare(y)).map((t) => ({ tag: t || 'Other', posts: by.get(t) }));
   })();
+  // (a postscript by its subject at rest, its title under the hand — "In postscript section, use subject instead of title
+  // for resting", 2026-10-23)
   const item = (p) => `<a class="arc-ix-item" href="${escapeHtml(p.link)}" rel="noopener"`
     + ` data-title="${escapeHtml(arcIndexKey(p.title))}" data-author="${escapeHtml((p.author || '').toLowerCase())}"`
     + ` data-kicker="${escapeHtml((p.kicker || ARC_TAGS[slugOf(p.link)] || '').toLowerCase())}" data-section="${key}" data-slug="${escapeHtml(slugOf(p.link))}">`
-    + `<span class="arc-ix-by">${escapeHtml(p.author || '')}</span><span class="arc-ix-title">${escapeHtml(p.title)}</span><span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
+    + `<span class="arc-ix-by">${escapeHtml(p.author || '')}</span><span class="arc-ix-title">${arcIndexRest(key, p) ? `<span class="arc-ix-subj">${arcIndexRest(key, p)}</span><span class="arc-ix-ttl">${escapeHtml(p.title)}</span>` : escapeHtml(p.title)}</span><span class="arc-ix-on">${arcIndexDate(p)}</span></a>`;
   return `<section class="arc-ix-sec arc-ix-sec--${key}" data-section="${key}" aria-label="${label}">
       <h2 class="arc-ix-sec__name">${label}</h2>
       <div class="arc-ix-sec__groups">${groups.map((g) => `

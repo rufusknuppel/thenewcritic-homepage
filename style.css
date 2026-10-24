@@ -32568,3 +32568,9 @@ body.archive-page .arc--index .arc-ix-tag:is(:hover, :focus-visible, .is-on){ ba
 /* (the archive's rules the highlight, as the front page's — "Have the rules be highlight colored", 2026-10-23: the band's
    foot, the line down the middle, the search band's foot on a phone) */
 html.is-archive{ --nc-rule: #B3301E; }
+
+/* A POSTSCRIPT BY ITS SUBJECT (2026-10-23 — "In postscript section, use subject instead of title for resting"): in the
+   Postscript section the one the issue sat down with at rest, the post's title in its place under the hand (build.js) */
+body.archive-page .arc--index .arc-ix-item .arc-ix-ttl{ display: none; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-subj{ display: none; }
+body.archive-page .arc--index .arc-ix-item:is(:hover, :focus-visible, .is-target) .arc-ix-ttl{ display: inline; }
