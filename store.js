@@ -44,10 +44,13 @@ const PRODUCTS_QUERY = `query StoreProducts {
 }`;
 
 // The Storefront API's product, cut down to what the page shows. The
-// shelf a product stands on is its first collection, else its type.
+// shelf a product stands on is its first collection (not Shopify's own
+// "Home page" one), else its type, said in the plural ("T-Shirt" stands
+// on T-Shirts).
+const plural = (w) => (/s$/i.test(w) ? w : `${w}s`);
 function normalize(p) {
-  const coll = (p.collections && p.collections.nodes[0]) || null;
-  const shelf = coll ? coll.title : (p.productType || 'Goods');
+  const coll = ((p.collections && p.collections.nodes) || []).find((c) => c.handle !== 'frontpage') || null;
+  const shelf = coll ? coll.title : (p.productType ? plural(p.productType) : 'Goods');
   const variants = p.variants.nodes.map((v) => ({
     id: v.id,
     title: v.title,
