@@ -1117,6 +1117,49 @@ var ncStemX = function () {
     r.classList.add('is-merged');
     r.setAttribute('aria-hidden', 'true');
   });
+  // THE COLUMN'S WORDS STILL (2026-10-25 — "Fix the kicker section on the latest. It moves around way too much, feels
+  // glitchy"): each section's kickers stood in the stack whether open or shut, the shut ones 19 tall apiece, so the open
+  // one stood lower the further down the page its section came, and it opened and shut on a 0.45s ease the seat read
+  // part way through and then made up for, the bird and the sections' line jumping 13 to 24 with it. Now a shut
+  // section's words stand out of the stack, unseen, and the open one's list and See All stand whole, no ease: its words
+  // under the sections' line in one place for every section, the new ones fading in. Written on the elements, since the
+  // sheet's weighted rules for the column outweigh any it could add.
+  var STILL_FADE = '0.25s';
+  var still = function (w) {
+    var on = w.classList.contains('is-current');
+    var set = function (el, prop, v) { if (el.style.getPropertyValue(prop) !== v || el.style.getPropertyPriority(prop) !== 'important') el.style.setProperty(prop, v, 'important'); };
+    set(w, 'position', on ? 'relative' : 'absolute');
+    set(w, 'left', '0px'); set(w, 'right', '0px');
+    set(w, 'visibility', on ? 'visible' : 'hidden');
+    set(w, 'opacity', on ? '1' : '0');
+    set(w, 'pointer-events', on ? 'auto' : 'none');
+    set(w, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
+    [].forEach.call(w.querySelectorAll(':scope > .latest-rail__list, :scope > .latest-rail__all'), function (el) {
+      set(el, 'max-height', 'none');
+      set(el, 'transition', 'none');
+    });
+  };
+  // (and every section's words as tall as the tallest's, so the stack stands as tall for Editors' Picks' four as for the
+  // others' six, and nothing over it moves when it opens: read with none held, then held)
+  var stillAll = function () {
+    if (!hold0) return;
+    var ws = [].slice.call(hold0.querySelectorAll(':scope > .latest-rail__in'));
+    ws.forEach(still);
+    ws.forEach(function (w) { w.style.removeProperty('min-height'); });
+    // (every list off the sections' line as far as the open one's is, the gap the sheet gives the open one alone, so the
+    // shut ones read their true height and a new one fades in where the last stood)
+    var cur = ws.filter(function (w) { return w.classList.contains('is-current'); })[0], cl = cur && cur.querySelector(':scope > .latest-rail__list');
+    ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur) l.style.removeProperty('margin-top'); });
+    var gap = cl ? getComputedStyle(cl).marginTop : '';
+    if (gap) ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur && l.style.getPropertyValue('margin-top') !== gap) l.style.setProperty('margin-top', gap, 'important'); });
+    var mh = 0;
+    ws.forEach(function (w) { mh = Math.max(mh, w.offsetHeight); });
+    var v = mh ? mh + 'px' : '';
+    ws.forEach(function (w) { if (v) w.style.setProperty('min-height', v, 'important'); });
+  };
+  stillAll();
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, stillAll, { passive: true }); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(stillAll);
   var wordsOf = function (rail) {
     return document.querySelector('.latest-rail__in[data-sec="' + rail.getAttribute('data-sec') + '"]') || rail;
   };
@@ -1300,6 +1343,7 @@ var ncStemX = function () {
     [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in'), function (w) {
       w.classList.toggle('is-current', w.getAttribute('data-sec') === key);
     });
+    stillAll();
   };
   // (ONE SECTION OPENS ON THE WAY, 2026-10-06 — "When you're in the latest,
   // and you click editor's picks, editor's picks opens and closes twice":
@@ -2760,7 +2804,10 @@ var ncStemX = function () {
                 // latest from this rule to the bottom of the site", 2026-10-20: the line the pixel under the band's foot,
                 // so the three spaces begin a pixel under the hold's top)
                 if (bandE) aN = -1;
-                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
+                // (the stack as tall as its longest section's list makes it, as stackB reads it, not the open one's — a
+                // shorter list, Editors' Picks' four, re-centred the bird and the sections' line 19 and 37 lower when it
+                // opened: "It moves around way too much, feels glitchy", 2026-10-25)
+                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height);
                 // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
                 // the site", 2026-10-16: The Latest off the first picture's middle, its --rl-pt moved to its capitals)
