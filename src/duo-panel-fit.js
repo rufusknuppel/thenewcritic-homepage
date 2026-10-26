@@ -9029,6 +9029,11 @@
   // date in a dek style row above the title", 2026-10-24: META_ABOVE's stack, the hairline under the dek; style.css THE
   // WRITER AND THE DATE OVER THE TITLE)
   META_ON_RULE = false;
+  // (the row under the title since and the dek under the rule — "Move the meta data under title and the dek under the
+  // rule, have 27px between metadata and rule and dek and rule", 2026-10-25: the row's capitals HEAD_GAP under the title's
+  // last baseline, the rule ROW_RULE_AIR under the row's baseline, the dek's first ink ROW_RULE_AIR under the rule, and
+  // the body's first ink META_RULE_AIR under the dek's last baseline, as it stood under the rule)
+  var META_UNDER_TITLE = true, ROW_RULE_AIR = 27;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9941,6 +9946,8 @@
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
       // (and what the rule over the dek opens between it and the title — TOP_RULE_GAP)
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
+      // (and what the row under the title and the dek under the rule take against the stack before them)
+      if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (2 * ROW_RULE_AIR + 1 + META_RULE_AIR) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -10220,6 +10227,17 @@
               dnY = (j.dkB + dekY + xGap) - j.txT;
               hairM = null;
               hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
+            }
+            if (META_UNDER && META_UNDER_TITLE) {
+              var sH6 = (j.ttB - j.ttT) + HEAD_GAP + (j.mB - j.mT) + 2 * ROW_RULE_AIR + 1 + (j.dkB - j.dkT) + META_RULE_AIR + (j.inB - j.txT);
+              var y6 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH6) / 2));
+              upY = y6 - j.ttT;
+              metaY = (j.ttB + upY + HEAD_GAP) - j.mT - upY;
+              var lineY6 = (j.mB + upY + metaY) + ROW_RULE_AIR + 0.5;
+              dekY = (lineY6 + 0.5 + ROW_RULE_AIR) - j.dkT;
+              dnY = (j.dkB + dekY + META_RULE_AIR) - j.txT;
+              hairM = null;
+              hairD = lineY6;
             }
             if (META_UNDER && META_ON_RULE) {
               var sH4 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * META_RULE_AIR + 1 + (j.inB - j.txT);
