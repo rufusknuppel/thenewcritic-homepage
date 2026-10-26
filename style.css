@@ -33222,3 +33222,10 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-siz
   body.archive-page .arc--index .arc-main{ grid-template-rows: auto auto auto 1fr; }
   body.archive-page .arc--index .arc-main > :is(.arc-find-row, .arc-peek){ grid-row: 1 / 5; }
 }
+/* (the writer and the date upright, as on the front page's row — "unitalicize author and date. do the same in the
+   archive", 2026-10-25) */
+body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-style: normal; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on),
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-style: normal; }
+}

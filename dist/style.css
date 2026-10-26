@@ -16744,3 +16744,8 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body.archive-page .arc--index .arc-main{ grid-template-rows: auto auto auto 1fr; }
   body.archive-page .arc--index .arc-main > .arc-find-row,body.archive-page .arc--index .arc-main > .arc-peek{ grid-row: 1 / 5; }
 }
+body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on{ font-style: normal; }
+@media (min-width: 1024px) and (hover: hover){
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on,
+  body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-style: normal; }
+}

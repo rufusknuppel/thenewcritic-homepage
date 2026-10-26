@@ -9862,13 +9862,14 @@
                 hd.appendChild(ht);
               }
               if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
+              // (upright since, "unitalicize author and date", 2026-10-25)
               // (the writer and the date set as the dek is from 1024 up — the Garamond's italic at 17.5 on 21, style.css
               // THE DEK IN THE GARAMOND'S ITALIC — in the ink: "Add author name and date in a dek style row above the
               // title", 2026-10-24; written on the row and its parts, since the sheet's weighted rules for the tag it was
               // outweigh any it could add)
               var hm1 = hd.querySelector('.swap-body-meta');
               if (hm1) {
-                var DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '17.5px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'italic', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                var DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '17.5px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
