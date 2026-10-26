@@ -31,8 +31,10 @@
   // THE LANDING: a part the link names (about.html#masthead) under the line — the browser takes the anchor before
   // src/front-head.js has seated the band, so it is taken again once it has, and while the faces and the band settle,
   // till the reader moves
+  // (the parts by their own ids since the line of them went — "Remove the band under the top band on the about page",
+  // 2026-10-25)
   var named = location.hash.length > 1 ? document.getElementById(location.hash.slice(1)) : null;
-  if (named && parts.indexOf(named) >= 0) {
+  if (named && ['about', 'subscribe', 'masthead', 'contact'].indexOf(named.id) >= 0) {
     var land = function () { named.scrollIntoView({ block: 'start', behavior: 'instant' }); };
     var tries = 0, settle = setInterval(function () { land(); if (++tries >= 6) clearInterval(settle); }, 250);
     ['wheel', 'touchstart', 'keydown'].forEach(function (ev) { addEventListener(ev, function () { clearInterval(settle); }, { once: true, passive: true }); });

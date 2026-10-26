@@ -5827,7 +5827,6 @@ const ADDITIONAL_PEOPLE_PHOTOS = {
 // closed it is struck — "Remove the manifesto from the About page".) Mended from the old page: no word broken over a
 // line, the address kept whole, the centred paragraphs' lines balanced. The founders' faces come from give.html's signer blocks (written out in main), the rest from
 // assets/people/ (ADDITIONAL_PEOPLE_PHOTOS).
-const ABOUT_PARTS = [['about', 'About'], ['subscribe', 'Subscribe'], ['masthead', 'Masthead'], ['contact', 'Contact']];
 function renderAboutPage(founders = []) {
   const founderLookup = new Map(founders.map((f) => [f.name, f]));
   const surnameOf = (name) => name.trim().split(/\s+/).pop().toLowerCase();
@@ -5879,15 +5878,14 @@ function renderAboutPage(founders = []) {
         <p>Subscribe to our <a href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a>.<br>Follow us on <a href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a>.</p>
       </div>`),
   ].join('\n    ');
-  const parts = ABOUT_PARTS.map(([k, w], i) => `<a class="abo-parts__a${i ? '' : ' is-current'}" href="#${k}" data-part="${k}">${w}</a>`)
-    .join('<span class="abo-parts__sep">, </span>');
+  // (no line of the page's parts under the band since — "Remove the band under the top band on the about page",
+  // 2026-10-25; the parts keep their ids, so about.html#masthead still lands on its part, src/about.js)
   return renderFrontPage({
     currentKey: 'about',
     title: 'About',
     description: 'The New Critic is the young American magazine. Essays, interviews, and criticism by and for generation z.',
     bodyClass: 'about-page',
     bodyHtml: `<section class="abo" aria-label="About The New Critic">
-  <nav class="abo-parts" aria-label="On this page"><span class="abo-parts__line">${parts}</span></nav>
   <p class="abo-lead" id="about">The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.</p>
   <div class="abo-col">
     ${cards}
