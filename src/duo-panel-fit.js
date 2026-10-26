@@ -9032,8 +9032,12 @@
   // (the row under the title since and the dek under the rule — "Move the meta data under title and the dek under the
   // rule, have 27px between metadata and rule and dek and rule", 2026-10-25: the row's capitals HEAD_GAP under the title's
   // last baseline, the rule ROW_RULE_AIR under the row's baseline, the dek's first ink ROW_RULE_AIR under the rule, and
-  // the body's first ink META_RULE_AIR under the dek's last baseline, as it stood under the rule)
+  // the body's first ink DEK_BODY_GAP under the dek's last baseline)
   var META_UNDER_TITLE = true, ROW_RULE_AIR = 27;
+  // (54 from the title's last baseline to the row's capitals for a minute — "have 54px between title and writer" — and
+  // 40.5 since, the dek's last baseline to the body's first ink the same, "actually have 40.5 for both title/writer and
+  // dek/body", 2026-10-25 — and 27 for both since, "actually set both to 27px")
+  var TITLE_ROW_GAP = 27, DEK_BODY_GAP = 27;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9947,7 +9951,7 @@
       // (and what the rule over the dek opens between it and the title — TOP_RULE_GAP)
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
       // (and what the row under the title and the dek under the rule take against the stack before them)
-      if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (2 * ROW_RULE_AIR + 1 + META_RULE_AIR) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
+      if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (TITLE_ROW_GAP - HEAD_GAP) + (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -10229,13 +10233,13 @@
               hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
             }
             if (META_UNDER && META_UNDER_TITLE) {
-              var sH6 = (j.ttB - j.ttT) + HEAD_GAP + (j.mB - j.mT) + 2 * ROW_RULE_AIR + 1 + (j.dkB - j.dkT) + META_RULE_AIR + (j.inB - j.txT);
+              var sH6 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + 2 * ROW_RULE_AIR + 1 + (j.dkB - j.dkT) + DEK_BODY_GAP + (j.inB - j.txT);
               var y6 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH6) / 2));
               upY = y6 - j.ttT;
-              metaY = (j.ttB + upY + HEAD_GAP) - j.mT - upY;
+              metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
               var lineY6 = (j.mB + upY + metaY) + ROW_RULE_AIR + 0.5;
               dekY = (lineY6 + 0.5 + ROW_RULE_AIR) - j.dkT;
-              dnY = (j.dkB + dekY + META_RULE_AIR) - j.txT;
+              dnY = (j.dkB + dekY + DEK_BODY_GAP) - j.txT;
               hairM = null;
               hairD = lineY6;
             }
