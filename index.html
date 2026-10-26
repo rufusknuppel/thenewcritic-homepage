@@ -6743,6 +6743,7 @@
   var META_ON_RULE = true;
   META_ON_RULE = false;
   var META_UNDER_TITLE = true, ROW_RULE_AIR = 27;
+  var TITLE_ROW_GAP = 27, DEK_BODY_GAP = 27;
   var FORK_RISE = 14, FORK_RUN = 14, FORK_PAD = 9;
   FORK_PAD = 18;
   var BODY_UP = 3;
@@ -7288,7 +7289,7 @@
       if (hh) { var hr = hh.getBoundingClientRect(); if (hr.height > 0) j.pdkH += hr.height + SWAP_PAD; }
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
-      if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (2 * ROW_RULE_AIR + 1 + META_RULE_AIR) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
+      if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (TITLE_ROW_GAP - HEAD_GAP) + (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
     });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
@@ -7451,13 +7452,13 @@
               hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
             }
             if (META_UNDER && META_UNDER_TITLE) {
-              var sH6 = (j.ttB - j.ttT) + HEAD_GAP + (j.mB - j.mT) + 2 * ROW_RULE_AIR + 1 + (j.dkB - j.dkT) + META_RULE_AIR + (j.inB - j.txT);
+              var sH6 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + 2 * ROW_RULE_AIR + 1 + (j.dkB - j.dkT) + DEK_BODY_GAP + (j.inB - j.txT);
               var y6 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH6) / 2));
               upY = y6 - j.ttT;
-              metaY = (j.ttB + upY + HEAD_GAP) - j.mT - upY;
+              metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
               var lineY6 = (j.mB + upY + metaY) + ROW_RULE_AIR + 0.5;
               dekY = (lineY6 + 0.5 + ROW_RULE_AIR) - j.dkT;
-              dnY = (j.dkB + dekY + META_RULE_AIR) - j.txT;
+              dnY = (j.dkB + dekY + DEK_BODY_GAP) - j.txT;
               hairM = null;
               hairD = lineY6;
             }
