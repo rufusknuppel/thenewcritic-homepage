@@ -9029,10 +9029,6 @@
   // date in a dek style row above the title", 2026-10-24: META_ABOVE's stack, the hairline under the dek; style.css THE
   // WRITER AND THE DATE OVER THE TITLE)
   META_ON_RULE = false;
-  // (and under the rule since, the title and the dek over the rule and the row between the rule and the body text — "move
-  // the metadata line below the rule", "on the homepage", 2026-10-25: its capitals HEAD_GAP under the rule and the body's
-  // first ink HEAD_GAP under its baseline)
-  var META_BELOW_RULE = true;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9945,8 +9941,6 @@
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
       // (and what the rule over the dek opens between it and the title — TOP_RULE_GAP)
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
-      // (and the more the row under the rule takes: a gap either side of it where it had one over the title)
-      if (META_BELOW_RULE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += HEAD_GAP;
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -10226,17 +10220,6 @@
               dnY = (j.dkB + dekY + xGap) - j.txT;
               hairM = null;
               hairD = META_RULE_UNDER ? (j.dkB + dekY) + META_RULE_AIR + 0.5 : null;
-            }
-            if (META_UNDER && META_BELOW_RULE) {
-              var sH5 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + META_RULE_AIR + 1 + HEAD_GAP + (j.mB - j.mT) + HEAD_GAP + (j.inB - j.txT);
-              var y5 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH5) / 2));
-              upY = y5 - j.ttT;
-              dekY = (j.ttB + upY + TOP_RULE_GAP) - j.dkT;
-              var lineY5 = j.dkB + dekY + META_RULE_AIR + 0.5;
-              metaY = (lineY5 + 0.5 + HEAD_GAP) - j.mT - upY;
-              dnY = (j.mB + upY + metaY + HEAD_GAP) - j.txT;
-              hairM = null;
-              hairD = lineY5;
             }
             if (META_UNDER && META_ON_RULE) {
               var sH4 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * META_RULE_AIR + 1 + (j.inB - j.txT);
