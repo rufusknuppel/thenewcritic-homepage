@@ -11135,6 +11135,38 @@ var ncStemX = function () {
     r.classList.add('is-merged');
     r.setAttribute('aria-hidden', 'true');
   });
+  var STILL_FADE = '0.25s';
+  var still = function (w) {
+    var on = w.classList.contains('is-current');
+    var set = function (el, prop, v) { if (el.style.getPropertyValue(prop) !== v || el.style.getPropertyPriority(prop) !== 'important') el.style.setProperty(prop, v, 'important'); };
+    set(w, 'position', on ? 'relative' : 'absolute');
+    set(w, 'left', '0px'); set(w, 'right', '0px');
+    set(w, 'visibility', on ? 'visible' : 'hidden');
+    set(w, 'opacity', on ? '1' : '0');
+    set(w, 'pointer-events', on ? 'auto' : 'none');
+    set(w, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
+    [].forEach.call(w.querySelectorAll(':scope > .latest-rail__list, :scope > .latest-rail__all'), function (el) {
+      set(el, 'max-height', 'none');
+      set(el, 'transition', 'none');
+    });
+  };
+  var stillAll = function () {
+    if (!hold0) return;
+    var ws = [].slice.call(hold0.querySelectorAll(':scope > .latest-rail__in'));
+    ws.forEach(still);
+    ws.forEach(function (w) { w.style.removeProperty('min-height'); });
+    var cur = ws.filter(function (w) { return w.classList.contains('is-current'); })[0], cl = cur && cur.querySelector(':scope > .latest-rail__list');
+    ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur) l.style.removeProperty('margin-top'); });
+    var gap = cl ? getComputedStyle(cl).marginTop : '';
+    if (gap) ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur && l.style.getPropertyValue('margin-top') !== gap) l.style.setProperty('margin-top', gap, 'important'); });
+    var mh = 0;
+    ws.forEach(function (w) { mh = Math.max(mh, w.offsetHeight); });
+    var v = mh ? mh + 'px' : '';
+    ws.forEach(function (w) { if (v) w.style.setProperty('min-height', v, 'important'); });
+  };
+  stillAll();
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, stillAll, { passive: true }); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(stillAll);
   var wordsOf = function (rail) {
     return document.querySelector('.latest-rail__in[data-sec="' + rail.getAttribute('data-sec') + '"]') || rail;
   };
@@ -11246,6 +11278,7 @@ var ncStemX = function () {
     [].forEach.call(hold0.querySelectorAll(':scope > .latest-rail__in'), function (w) {
       w.classList.toggle('is-current', w.getAttribute('data-sec') === key);
     });
+    stillAll();
   };
   var goKey = null, goT = 0;
   var goEnd = function () { goKey = null; light(); };
@@ -12112,7 +12145,7 @@ var ncStemX = function () {
                 swH = capN;
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 if (bandE) aN = -1;
-                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = lkB - ctB;
+                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height);
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
                 var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
