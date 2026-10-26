@@ -9881,7 +9881,8 @@
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
                   if (el.classList.contains('swap-body-on') || el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('margin-left', '18px', 'important'); else el.style.removeProperty('margin-left'); }
-                  if (el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('font-style', 'normal', 'important'); }
+                  // (the section in italic since, the writer and the date upright — "italicize sections", 2026-10-25)
+                  if (el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('font-style', 'italic', 'important'); }
                   // (the row on one line, into the column's air where a long name needs it — at 1024 four broke in two)
                   if (!k) { if (wide) el.style.setProperty('white-space', 'nowrap', 'important'); else el.style.removeProperty('white-space'); }
                 });
