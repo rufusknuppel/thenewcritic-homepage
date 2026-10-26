@@ -9038,6 +9038,8 @@
   // 40.5 since, the dek's last baseline to the body's first ink the same, "actually have 40.5 for both title/writer and
   // dek/body", 2026-10-25 — and 27 for both since, "actually set both to 27px")
   var TITLE_ROW_GAP = 27, DEK_BODY_GAP = 27;
+  // (40.5 for every gap since, the rule's two as well — "make all gaps 40.5", 2026-10-25)
+  TITLE_ROW_GAP = DEK_BODY_GAP = ROW_RULE_AIR = 40.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
