@@ -9044,6 +9044,9 @@
   // ink META_DEK_GAP under the row's baseline, the rule ROW_RULE_AIR under the dek's last baseline and the body's first
   // ink DEK_BODY_GAP under the rule, every gap 40.5 still)
   var DEK_OVER_RULE = true, META_DEK_GAP = 40.5;
+  // (54 either side of the rule since, the dek's last baseline to it and it to the body's first ink — "move the gaps to
+  // 54px on either side of rule", 2026-10-27)
+  var RULE_SIDE = 54;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9960,6 +9963,8 @@
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
       // (and what the row under the title and the dek under the rule take against the stack before them)
       if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (TITLE_ROW_GAP - HEAD_GAP) + (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
+      // (and the dek over the rule, the rule's own two gaps RULE_SIDE, against the row's two over and under it before)
+      if (DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (META_DEK_GAP + 2 * RULE_SIDE) - (2 * ROW_RULE_AIR + DEK_BODY_GAP);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -10251,13 +10256,13 @@
               hairM = null;
               hairD = lineY6;
               if (DEK_OVER_RULE) {
-                var sH7 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + META_DEK_GAP + (j.dkB - j.dkT) + ROW_RULE_AIR + 1 + DEK_BODY_GAP + (j.inB - j.txT);
+                var sH7 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + META_DEK_GAP + (j.dkB - j.dkT) + RULE_SIDE + 1 + RULE_SIDE + (j.inB - j.txT);
                 var y7 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH7) / 2));
                 upY = y7 - j.ttT;
                 metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
                 dekY = (j.mB + upY + metaY + META_DEK_GAP) - j.dkT;
-                var lineY7 = (j.dkB + dekY) + ROW_RULE_AIR + 0.5;
-                dnY = (lineY7 + 0.5 + DEK_BODY_GAP) - j.txT;
+                var lineY7 = (j.dkB + dekY) + RULE_SIDE + 0.5;
+                dnY = (lineY7 + 0.5 + RULE_SIDE) - j.txT;
                 hairD = lineY7;
               }
             }
