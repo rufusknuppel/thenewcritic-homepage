@@ -9050,6 +9050,8 @@
   // (27 from the row's baseline to the dek's first ink for a minute — "move gap between dek and metadata to 27px" — and
   // 18 since, "Move to 18px", 2026-10-27)
   META_DEK_GAP = 18;
+  // (every gap 40.5 again, the rule's two too — "revert to even 40.5 gaps", 2026-10-27)
+  META_DEK_GAP = RULE_SIDE = 40.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
