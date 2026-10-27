@@ -6747,6 +6747,7 @@
   TITLE_ROW_GAP = DEK_BODY_GAP = ROW_RULE_AIR = 40.5;
   var DEK_OVER_RULE = true, META_DEK_GAP = 40.5;
   var RULE_SIDE = 54;
+  META_DEK_GAP = 18;
   var FORK_RISE = 14, FORK_RUN = 14, FORK_PAD = 9;
   FORK_PAD = 18;
   var BODY_UP = 3;
@@ -7329,6 +7330,7 @@
       var tw = document.createTreeWalker(prev, NodeFilter.SHOW_TEXT), tn = null;
       for (var t = tw.nextNode(); t; t = tw.nextNode()) if (t.nodeValue.trim()) tn = t;
       if (tn && !/\u2026\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(TRAIL_PUNCT, '') + '\u2026';
+      if (j.one) j.bt.style.height = 'auto';
     });
     twos.forEach(function (j) {
       j.bt.style.transform = 'none';
