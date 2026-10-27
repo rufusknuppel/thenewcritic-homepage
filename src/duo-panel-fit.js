@@ -9047,6 +9047,9 @@
   // (54 either side of the rule since, the dek's last baseline to it and it to the body's first ink — "move the gaps to
   // 54px on either side of rule", 2026-10-27)
   var RULE_SIDE = 54;
+  // (27 from the row's baseline to the dek's first ink for a minute — "move gap between dek and metadata to 27px" — and
+  // 18 since, "Move to 18px", 2026-10-27)
+  META_DEK_GAP = 18;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -10018,6 +10021,9 @@
       var tw = document.createTreeWalker(prev, NodeFilter.SHOW_TEXT), tn = null;
       for (var t = tw.nextNode(); t; t = tw.nextNode()) if (t.nodeValue.trim()) tn = t;
       if (tn && !/\u2026\s*$/.test(tn.nodeValue)) tn.nodeValue = tn.nodeValue.replace(TRAIL_PUNCT, '') + '\u2026';
+      // (and a single column's box drawn in to what is left, so the centring below reads the text's last line, not the
+      // empty one the dropped paragraph left in the box — Coxon Day and Safe at SlutCon stood ~22 low, 2026-10-27)
+      if (j.one) j.bt.style.height = 'auto';
     });
     // (and centred by what it SHOWS, by its ink: as much air
     // from the box's top to the painted top of the dek's first
