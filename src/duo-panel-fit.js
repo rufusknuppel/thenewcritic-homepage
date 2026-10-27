@@ -9040,6 +9040,10 @@
   var TITLE_ROW_GAP = 27, DEK_BODY_GAP = 27;
   // (40.5 for every gap since, the rule's two as well — "make all gaps 40.5", 2026-10-25)
   TITLE_ROW_GAP = DEK_BODY_GAP = ROW_RULE_AIR = 40.5;
+  // (the dek back over the rule since, under the row — "On homepage, move deks above rule", 2026-10-27: the dek's first
+  // ink META_DEK_GAP under the row's baseline, the rule ROW_RULE_AIR under the dek's last baseline and the body's first
+  // ink DEK_BODY_GAP under the rule, every gap 40.5 still)
+  var DEK_OVER_RULE = true, META_DEK_GAP = 40.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -10246,6 +10250,16 @@
               dnY = (j.dkB + dekY + DEK_BODY_GAP) - j.txT;
               hairM = null;
               hairD = lineY6;
+              if (DEK_OVER_RULE) {
+                var sH7 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + META_DEK_GAP + (j.dkB - j.dkT) + ROW_RULE_AIR + 1 + DEK_BODY_GAP + (j.inB - j.txT);
+                var y7 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH7) / 2));
+                upY = y7 - j.ttT;
+                metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
+                dekY = (j.mB + upY + metaY + META_DEK_GAP) - j.dkT;
+                var lineY7 = (j.dkB + dekY) + ROW_RULE_AIR + 0.5;
+                dnY = (lineY7 + 0.5 + DEK_BODY_GAP) - j.txT;
+                hairD = lineY7;
+              }
             }
             if (META_UNDER && META_ON_RULE) {
               var sH4 = (j.ttB - j.ttT) + TOP_RULE_GAP + (j.dkB - j.dkT) + 2 * META_RULE_AIR + 1 + (j.inB - j.txT);
