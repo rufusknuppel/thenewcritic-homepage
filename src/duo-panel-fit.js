@@ -9052,6 +9052,8 @@
   META_DEK_GAP = 18;
   // (every gap 40.5 again, the rule's two too — "revert to even 40.5 gaps", 2026-10-27)
   META_DEK_GAP = RULE_SIDE = 40.5;
+  // (the row to the dek half that since, 20.25 — "reduce the meta dek gap to 20.25", 2026-10-27)
+  META_DEK_GAP = 20.25;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
