@@ -6746,6 +6746,7 @@
   var TITLE_ROW_GAP = 27, DEK_BODY_GAP = 27;
   TITLE_ROW_GAP = DEK_BODY_GAP = ROW_RULE_AIR = 40.5;
   var DEK_OVER_RULE = true, META_DEK_GAP = 40.5;
+  var RULE_SIDE = 54;
   var FORK_RISE = 14, FORK_RUN = 14, FORK_PAD = 9;
   FORK_PAD = 18;
   var BODY_UP = 3;
@@ -7292,6 +7293,7 @@
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += 2 * INK_GAP + (2 * INK_GAP + FRAME - SWAP_PAD) + HEAD_DEK_MORE + (2 * META_AIR - HEAD_META_GAP - INK_GAP);
       if (hh && j.slide && bandedInk() && j.pdkH) j.pdkH += TOP_RULE_GAP - META_AIR + 2 + (DEK_TO_TEXT - 54);
       if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (TITLE_ROW_GAP - HEAD_GAP) + (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
+      if (DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (META_DEK_GAP + 2 * RULE_SIDE) - (2 * ROW_RULE_AIR + DEK_BODY_GAP);
     });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
@@ -7464,13 +7466,13 @@
               hairM = null;
               hairD = lineY6;
               if (DEK_OVER_RULE) {
-                var sH7 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + META_DEK_GAP + (j.dkB - j.dkT) + ROW_RULE_AIR + 1 + DEK_BODY_GAP + (j.inB - j.txT);
+                var sH7 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + META_DEK_GAP + (j.dkB - j.dkT) + RULE_SIDE + 1 + RULE_SIDE + (j.inB - j.txT);
                 var y7 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH7) / 2));
                 upY = y7 - j.ttT;
                 metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
                 dekY = (j.mB + upY + metaY + META_DEK_GAP) - j.dkT;
-                var lineY7 = (j.dkB + dekY) + ROW_RULE_AIR + 0.5;
-                dnY = (lineY7 + 0.5 + DEK_BODY_GAP) - j.txT;
+                var lineY7 = (j.dkB + dekY) + RULE_SIDE + 0.5;
+                dnY = (lineY7 + 0.5 + RULE_SIDE) - j.txT;
                 hairD = lineY7;
               }
             }
