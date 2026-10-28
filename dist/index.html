@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d14b04fe">
+<link rel="stylesheet" href="style.css?v=cc9d6ed1">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12518,7 +12518,7 @@ window.ncOpenH = function () {
       var pb = window.__ncPicBox(c), sb = c.querySelector(':scope > .swap-body'), tx = sb && sb.querySelector('.swap-body-text');
       var wb = c.querySelector(':scope > .nc-words-box'), tr = tx && tx.getBoundingClientRect();
       if (!pb || !tr || !tr.width) { if (wb) wb.remove(); return; }
-      var picL = pb.r <= tr.left + 1, bl = picL ? pb.r : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l;
+      var picL = pb.r <= tr.left + 1, bl = picL ? pb.r + 0.5 : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l - 0.5;
       if (!wb) { wb = document.createElement('span'); wb.className = 'nc-words-box'; wb.setAttribute('aria-hidden', 'true'); c.appendChild(wb); }
       var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
       var bt = pb.t, bb = pb.b;

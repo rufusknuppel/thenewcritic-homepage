@@ -3271,7 +3271,9 @@ window.ncOpenH = function () {
       if (!pb || !tr || !tr.width) { if (wb) wb.remove(); return; }
       // (its far side 40.5 past the words both ways since, 54 in from the post's outer edge — "Have at least 54px on outside
       // of the post to the edges", 2026-10-28)
-      var picL = pb.r <= tr.left + 1, bl = picL ? pb.r : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l;
+      // (its near side half a pixel off the picture since, so its own half-pixel line lies on the picture's and the two read
+      // as one — "don't double up the middle divider", "Outline should remain around the charcoal box", 2026-10-28)
+      var picL = pb.r <= tr.left + 1, bl = picL ? pb.r + 0.5 : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l - 0.5;
       if (!wb) { wb = document.createElement('span'); wb.className = 'nc-words-box'; wb.setAttribute('aria-hidden', 'true'); c.appendChild(wb); }
       var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
       // (and over the words where they run past the picture's top or foot, 40.5 past their ink, so none of the white words

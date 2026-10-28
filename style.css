@@ -33244,12 +33244,12 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 }
 
 /* THE BOX IN CHARCOAL, THE WORDS WHITE (2026-10-28 — "within box, have charcoal background and white text", "don't double
-   up the middle divider"): the box filled with the ink and no line of its own, so the picture's outline is the one line
-   between them; under the words (the words' column is 10); the title, the row, the body and the dek in the paper's
+   up the middle divider"): the box filled with the ink, its outline kept ("Outline should remain around the charcoal
+   box") and its near side laid on the picture's, so one line stands between them; under the words (the words' column is 10); the title, the row, the body and the dek in the paper's
    white, the links red under the hand. Weighted with ids (:not(#…)) to stand over the padded rules that set their ink */
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box{
-    z-index: 9; background: var(--k, #121417); box-shadow: none;
+    z-index: 9; background: var(--k, #121417);
   }
   html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2),
   html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) *{
