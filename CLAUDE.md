@@ -70,9 +70,15 @@ reused, not reinvented:
   `prefers-reduced-motion`, copied verbatim from the Give page's script.
 
 ## Open items
-- Once the apex is switched, the homepage should rebuild on a schedule
-  (re-run the build and push `gh-pages`) since Substack doesn't send a
-  webhook on publish. Nothing is scheduled yet.
+- Auto-rebuild (2026-10-28): `.github/workflows/rebuild.yml` builds and
+  publishes `dist/` to `gh-pages` on every push to `main`, on an hourly
+  cron, and on `repository_dispatch: substack-publish`, which
+  `cloudflare/feed-watch.js` (a cron-triggered Worker, deployed by hand —
+  setup steps in its header) fires within a minute of a new post. Since
+  then `gh-pages` is written by the workflow only: shipping is pushing
+  `main`; never `git subtree push` (the histories no longer line up).
+  `build.js` backfills posts Substack's archive API hasn't listed yet
+  (`addPostsTheArchiveLags`) — it lagged ~25 min on a new post.
 - The Cloudflare dashboard's code editor and rule forms do not cooperate
   with browser automation; dashboard changes are done by the user.
 

@@ -1,0 +1,65 @@
+# Rebuilds the homepage from Substack and publishes dist/ to gh-pages.
+#
+# Substack sends no webhook on publish, so the `feed-watch` Cloudflare
+# Worker (cloudflare/feed-watch.js) checks for a new post every minute and
+# fires `repository_dispatch: substack-publish` here. A push to main (the
+# "ship it" push) rebuilds too, and the hourly run picks up edits to
+# existing posts (titles, likes, covers) that no new post would trigger.
+#
+# The build exits nonzero when Substack's answers come back bad (see
+# FETCH FAILED in build.js); the job stops there, so the live site keeps
+# its last complete build rather than a gutted one.
+name: Rebuild
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [substack-publish]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+# One deploy at a time; a trigger that lands mid-build waits its turn
+# (and only the newest waiting one runs), so nothing is lost or reordered.
+concurrency:
+  group: rebuild
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # A failed fetch gets one more go after a pause (Substack rate-limits
+      # bursts); a second failure fails the job.
+      - name: Build
+        run: node build.js || (sleep 60 && node build.js)
+
+      - name: Publish to gh-pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --depth=1 origin gh-pages
+          git worktree add pages FETCH_HEAD
+          cd pages
+          git rm -rq --ignore-unmatch .
+          cp -R ../dist/. .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No change to publish."
+            exit 0
+          fi
+          git commit -qm "Rebuild (${{ github.event_name }}): ${{ github.event.client_payload.slug || github.sha }}"
+          git push origin HEAD:gh-pages

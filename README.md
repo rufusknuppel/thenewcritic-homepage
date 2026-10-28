@@ -43,21 +43,22 @@ is publishable, but nothing points at it until you pull the big trigger.
 
 ## Publishing a new build (safe any time)
 
-Rebuild, commit, and push `dist/` to `gh-pages`:
+Rebuild, commit, and push `main`; the Rebuild workflow
+(`.github/workflows/rebuild.yml`) builds again on GitHub and publishes
+`dist/` to `gh-pages`:
 
 ```
 node build.js
 git add dist build.js content-overrides.js style.css
 git commit -m "Rebuild"
 git push origin main
-git subtree push --prefix dist origin gh-pages
 ```
 
 Re-run the build until it reports no failed post fetches — Substack fetches
 fail transiently and a partial build still exits 0. Stage files by name
 (never `git add -A`; the working tree carries font packages and drafts
-that must not ship). The subtree push can take a couple of minutes. This
-only updates the GitHub Pages copy; the apex is unaffected until the
+that must not ship). The workflow writes `gh-pages`; don't
+`git subtree push` to it any more. This only updates the GitHub Pages copy; the apex is unaffected until the
 switch below.
 
 ## The big trigger: putting this build on the apex
@@ -98,10 +99,14 @@ subrequest back into the Worker (error 1042).
 
 ## Keeping it fresh
 
-Substack doesn't send a webhook when you publish, so the homepage only
-updates when you rebuild and push `gh-pages`. Once the apex is switched,
-schedule that (a cron on any machine that can run the three commands
-above) every hour or two.
+Substack doesn't send a webhook when you publish. Instead the `feed-watch`
+Cloudflare Worker (`cloudflare/feed-watch.js`, setup steps in its header)
+checks Substack's newest post every minute; when it isn't on the live
+homepage it fires the Rebuild workflow, so a new post is up about three
+minutes after publishing. The workflow also runs hourly for edits to
+existing posts, and on every push to `main`. Run it by hand from the
+repo's Actions tab (Rebuild → Run workflow). After the apex switch, set
+the Worker's `LIVE_URL` to `https://thenewcritic.com/`.
 
 ## Customizing
 

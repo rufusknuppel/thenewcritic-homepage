@@ -1331,6 +1331,34 @@ async function fetchFullArchive() {
   return all;
 }
 
+// THE ARCHIVE LAGS A NEW POST. Substack's archive API took ~25 minutes to
+// list The City of Magnificent Intentions after it went out (2026-10-28),
+// while the latest-posts API, the post's own API and the RSS feed had it
+// at once. So a build run right after publishing would miss the post. Any
+// post those fresher sources know and the archive doesn't yet is added to
+// it (the same archive-shaped object, real postTags and all), newest first.
+// ("hidden" on a post is Substack's freewall, not a reason to leave it out.)
+async function addPostsTheArchiveLags(archive, feedItems) {
+  const have = new Set(archive.map((p) => p.slug));
+  const added = [];
+  let latest = [];
+  try { latest = JSON.parse((await fetchHtml(`${SITE_URL}/api/v1/posts?limit=${ARCHIVE_API_PAGE_SIZE}`)) || '[]'); } catch {}
+  for (const p of Array.isArray(latest) ? latest : []) {
+    if (p && p.slug && p.is_published !== false && !have.has(p.slug)) { have.add(p.slug); added.push(p); }
+  }
+  for (const i of feedItems) {
+    const m = /\/p\/([^/?#]+)/.exec(i.link || '');
+    if (!m || have.has(m[1])) continue;
+    have.add(m[1]);
+    let p = null;
+    try { p = JSON.parse((await fetchHtml(`${SITE_URL}/api/v1/posts/${m[1]}`)) || 'null'); } catch {}
+    if (p && p.slug) added.push(p);
+  }
+  if (!added.length) return archive;
+  console.log(`Added ${added.length} post(s) the archive API hasn't listed yet: ${added.map((p) => p.slug).join(', ')}`);
+  return [...added, ...archive].sort((a, b) => new Date(b.post_date) - new Date(a.post_date));
+}
+
 function fetchTagPostsFrom(archive, slug) {
   return archive
     .filter((p) => (p.postTags || []).some((t) => t.slug === slug))
@@ -6406,11 +6434,12 @@ async function fetchManifesto() {
 
 async function main() {
   console.log(`Fetching feed and archive in parallel`);
-  const [xml, archive] = await Promise.all([
+  const [xml, archiveListed] = await Promise.all([
     fetchFeed(FEED_URL),
     fetchFullArchive(),
   ]);
   const items = parseItems(xml);
+  const archive = await addPostsTheArchiveLags(archiveListed, items);
   console.log(`Parsed ${items.length} posts from feed.`);
   if (items.length === 0) {
     throw new Error('No posts found in feed — check the feed URL and structure.');

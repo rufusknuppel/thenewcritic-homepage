@@ -64,7 +64,7 @@ Only on the user's explicit "ship it" (or equivalent). Then:
 1. Tasks still in flight stay in flight — they are not shipped; say which ones are staying behind.
 2. Main clean, no conflicts. `node build.js` → exit 0 and FETCH OK (re-run on FETCH FAILED).
 3. Quick check of the built front page at 1440 and 375 on :8901.
-4. Commit any rebuilt dist. `git push origin main`, then `git subtree push --prefix dist origin gh-pages` (slow — use a 10-minute timeout).
+4. Commit any rebuilt dist. `git push origin main` — the Rebuild workflow builds and publishes `gh-pages` from it (since 2026-10-28; no subtree push, the histories no longer line up). Check the run with `gh run list --workflow rebuild.yml -L 1`.
 5. Poll `https://rufusknuppel.github.io/thenewcritic-homepage/index.html?nc=$RANDOM` until the new build shows (the `style.css?v=` marker changes only if the CSS did; otherwise confirm by content).
 6. Ledger: move "Merged (unshipped)" to "Shipped <date> <hash>". Report what went live.
 The apex switch (CLAUDE.md "The big trigger") is NOT part of shipping — never do it unless the user asks for exactly that.
