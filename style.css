@@ -33296,3 +33296,22 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     color: #FAF9F6 !important;
   }
 }
+
+/* THE WHOLE BOX ON THE PAPER (2026-10-28 — "Make the whole thing background colored"): the box the page's own ground top
+   and bottom, the half pixel of the outline's line still between the two parts; every word in it in the ink again, the
+   links red under the hand. One id more than the white rules above */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{
+    background: linear-gradient(to bottom, #FAF9F6 var(--wb-split, 0px), var(--nc-outline, #D6D6D6) var(--wb-split, 0px), var(--nc-outline, #D6D6D6) calc(var(--wb-split, 0px) + 0.5px), #FAF9F6 calc(var(--wb-split, 0px) + 0.5px));
+  }
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2):not(#nc-w5) > :is(.swap-body-head, .swap-body-dek, .swap-body-text),
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2):not(#nc-w5) > :is(.swap-body-head, .swap-body-dek, .swap-body-text) *{
+    color: #121417 !important;
+  }
+}
+@media (min-width: 1024px) and (hover: hover){
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2):not(#nc-w5) > :is(.swap-body-head, .swap-body-dek) a:not(#nc-w3):hover,
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2):not(#nc-w5) > :is(.swap-body-head, .swap-body-dek) a:not(#nc-w3):hover *{
+    color: var(--nc-mark, #B3301E) !important;
+  }
+}

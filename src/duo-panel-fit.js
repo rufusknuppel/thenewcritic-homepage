@@ -9933,9 +9933,10 @@
                 // (in the column's line's dress since, the Garamond at 19 on 27.5, upright, in its own case — "Match
                 // garamond", 2026-10-28: the line "The Latest, Essays, Postscript" over the column's list)
                 // (in the paper's white for a while on the box's charcoal — "within box, have charcoal background and white
-                // text" — and the ink again since, "text back to charcoal", 2026-10-28; white again since, the head on the
-                // box's charcoal top — THE HEAD OVER THE DIVIDER)
-                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#FAF9F6', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                // text" — and the ink again since, "text back to charcoal", 2026-10-28; white for a while, the head on the
+                // box's charcoal top — THE HEAD OVER THE DIVIDER — and the ink again since, "Make the whole thing background
+                // colored")
+                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
