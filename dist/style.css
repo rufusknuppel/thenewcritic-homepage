@@ -16749,3 +16749,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on,
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-style: normal; }
 }
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side.nc-col-side.nc-col-side.nc-col-side.nc-col-side{ display: none !important; }
+}
