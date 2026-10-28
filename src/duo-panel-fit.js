@@ -9863,6 +9863,9 @@
                   hs0.className = 'swap-body-sec hl-ink';
                   hs0.href = 'archive.html#section=' + sc0.toLowerCase();
                   hs0.textContent = sc0;
+                  // (a comma between the parts since, as the column's line has them — "Make the metadata line a comma-ed
+                  // list like The Latest, Essays, Postscript", 2026-10-28: a span, so it stays out of the links' highlight)
+                  if (hm.firstChild) { var hc0 = document.createElement('span'); hc0.className = 'swap-body-sep'; hc0.textContent = ', '; hm.appendChild(hc0); }
                   hm.appendChild(hs0);
                 }
                 // (no comma since, the two 18 apart as the archive's ledger sets its title and date — "space author and
@@ -9871,6 +9874,7 @@
                   var hd0 = document.createElement('span');
                   hd0.className = 'swap-body-on';
                   hd0.textContent = on0;
+                  if (hm.firstChild) { var hc1 = document.createElement('span'); hc1.className = 'swap-body-sep'; hc1.textContent = ', '; hm.appendChild(hc1); }
                   hm.appendChild(hd0);
                 }
                 var stl = j.card.querySelector('.swap-title');
@@ -9895,6 +9899,9 @@
                 // (in the metadata's dress since — Work Sans, 13, in capitals a fiftieth apart: "Make metdata line all caps
                 // Work Sans", 2026-10-28)
                 var DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                // (in the column's line's dress since, the Garamond at 19 on 27.5, upright, in its own case — "Match
+                // garamond", 2026-10-28: the line "The Latest, Essays, Postscript" over the column's list)
+                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
@@ -9903,7 +9910,8 @@
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
-                  if (el.classList.contains('swap-body-on') || el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('margin-left', '18px', 'important'); else el.style.removeProperty('margin-left'); }
+                  // (no margin since, the comma's space between them — "a comma-ed list", 2026-10-28)
+                  if (el.classList.contains('swap-body-on') || el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('margin-left', '0px', 'important'); else el.style.removeProperty('margin-left'); }
                   // (the section in italic since, the writer and the date upright — "italicize sections", 2026-10-25)
                   // (upright with them since, the Work Sans having no italic of its own — "Make it upright", 2026-10-28)
                   // (the row on one line, into the column's air where a long name needs it — at 1024 four broke in two)
