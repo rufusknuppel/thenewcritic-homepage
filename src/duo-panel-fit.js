@@ -10416,13 +10416,15 @@
                   // 2026-10-28: the body, a rule, the title, a rule, the writer, the dek and the section and the date)
                   // (the title at the foot since, that chunk in the middle — "move titles to the bottom", 2026-10-28: the
                   // body, a rule, the writer, the dek and the section and the date, a rule, the title)
-                  var bTop9 = y9, r19 = bTop9 + bH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, tT9 = r29 + g9;
+                  // (the body at the foot again since, that chunk at the top and the title between — "move body preview to
+                  // bottom of the stack", 2026-10-28)
+                  var cT9 = y9, r19 = cT9 + cH9 + g9, tT9 = r19 + g9, r29 = tT9 + tH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
                   metaY = cT9 - j.mT - upY;
                   dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
                   j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
                   dnY = bTop9 - j.txT;
-                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: tT9 + tH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
+                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }
               }
             }
