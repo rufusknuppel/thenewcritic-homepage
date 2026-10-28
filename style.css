@@ -33321,3 +33321,15 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{ box-shadow: none; }
 }
+
+/* THE RULE DOWN FROM THE DIVIDER'S END (2026-10-28 — "Add another rule perpendicular that extends down 81px towards the
+   body text", "At the end of the rule"): a half pixel of the outline's line 81 down the box's far edge from the divider's
+   far end — the right where the picture stands on the left, the left where it stands on the right (latest-rail.js,
+   is-far-l) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box::after{
+    content: ''; position: absolute; top: var(--wb-split, 0px); right: 0; width: 0.5px; height: 81px;
+    background: var(--nc-outline, #D6D6D6);
+  }
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.is-far-l::after{ right: auto; left: 0; }
+}
