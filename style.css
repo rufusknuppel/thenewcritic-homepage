@@ -33284,3 +33284,15 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     color: var(--nc-mark, #B3301E) !important;
   }
 }
+
+/* THE WHOLE BOX CHARCOAL (2026-10-28 — "Make the whole thing charcoal"): the body's part in the ink too, the half pixel
+   of the outline's line still between the two parts, and the body's words in the paper's white with the head's */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{
+    background: linear-gradient(to bottom, var(--k, #121417) var(--wb-split, 0px), var(--nc-outline, #D6D6D6) var(--wb-split, 0px), var(--nc-outline, #D6D6D6) calc(var(--wb-split, 0px) + 0.5px), var(--k, #121417) calc(var(--wb-split, 0px) + 0.5px));
+  }
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > .swap-body-text,
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > .swap-body-text *{
+    color: #FAF9F6 !important;
+  }
+}
