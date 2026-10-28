@@ -3270,6 +3270,9 @@ window.ncOpenH = function () {
       // --nc-rule-x and its 57 of margin and line, above — run a pixel into the rule, so no hair of ground shows between)
       var nrx = parseFloat(document.documentElement.style.getPropertyValue('--nc-rule-x'));
       var rc = isNaN(nrx) ? 0 : Math.max(0, (window.innerWidth - nrx - 56) - tr.right);
+      // (none since, the rule ending at the words' edge and the column's rule standing alone — "I meant the horizontal
+      // rule that runs from each post to the vertical rule", 2026-10-28)
+      rc = 0;
       var rch = rc.toFixed(2) + 'px';
       if (sb.style.getPropertyValue('--hl-reach') !== rch) sb.style.setProperty('--hl-reach', rch);
       // (and which side the picture is on, so the line goes no farther than the fork on the other: "Remove the rule after the
