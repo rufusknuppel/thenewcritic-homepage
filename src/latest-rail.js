@@ -3288,6 +3288,8 @@ window.ncOpenH = function () {
         bt = Math.min(bt, q.top - 40.5); bb = Math.max(bb, q.bottom + 40.5);
       });
       var wst = 'left:' + (bl - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (bt - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (br - bl).toFixed(2) + 'px;height:' + (bb - bt).toFixed(2) + 'px';
+      // (and the divider, charcoal over it and white under — THE HEAD OVER THE DIVIDER, duo-panel-fit.js: on a whole pixel)
+      if (ink && ink.d != null) wst += ';--wb-split:' + Math.round(sbT + ink.d - bt) + 'px';
       if (wb.__st !== wst) { wb.__st = wst; wb.style.cssText = wst; }
     });
     // (the hairline under the byline or the dek carried across the air to the picture's outline — "connect the rule to the

@@ -33258,3 +33258,23 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box{ background: #FFFFFF; }
 }
+
+/* THE HEAD OVER THE DIVIDER (2026-10-28 — "Make top section of the box charcoal. Add a divider 40.5 px above body text"):
+   the box charcoal from its top to the divider (--wb-split, latest-rail.js) and white under it; the title, the writer,
+   the dek and the section and the date on the charcoal in the paper's white, the links red under the hand; the body
+   in the ink on the white. Weighted with ids (:not(#…)) over the padded rules that set their ink */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box{
+    background: linear-gradient(to bottom, var(--k, #121417) var(--wb-split, 0px), #FFFFFF var(--wb-split, 0px));
+  }
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > :is(.swap-body-head, .swap-body-dek),
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > :is(.swap-body-head, .swap-body-dek) *{
+    color: #FAF9F6 !important;
+  }
+}
+@media (min-width: 1024px) and (hover: hover){
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > :is(.swap-body-head, .swap-body-dek) a:not(#nc-w3):hover,
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > :is(.swap-body-head, .swap-body-dek) a:not(#nc-w3):hover *{
+    color: var(--nc-mark, #B3301E) !important;
+  }
+}

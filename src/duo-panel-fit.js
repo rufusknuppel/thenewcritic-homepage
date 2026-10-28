@@ -9073,6 +9073,8 @@
   // dek and the body last — "Have title, then Author name, then dek, then section name and date, then body preview",
   // 2026-10-28: WHEN_GAP between each, the head's .swap-body-when)
   var WHEN_ROW = true, WHEN_GAP = 40.5;
+  // (half that between the writer, the dek and the section and the date since — THE HEAD OVER THE DIVIDER)
+  var WHEN_HALF = WHEN_GAP / 2;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9931,8 +9933,9 @@
                 // (in the column's line's dress since, the Garamond at 19 on 27.5, upright, in its own case — "Match
                 // garamond", 2026-10-28: the line "The Latest, Essays, Postscript" over the column's list)
                 // (in the paper's white for a while on the box's charcoal — "within box, have charcoal background and white
-                // text" — and the ink again since, "text back to charcoal", 2026-10-28)
-                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                // text" — and the ink again since, "text back to charcoal", 2026-10-28; white again since, the head on the
+                // box's charcoal top — THE HEAD OVER THE DIVIDER)
+                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#FAF9F6', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
@@ -10038,7 +10041,7 @@
         var lb9 = function (el) { var r9 = el.getBoundingClientRect(); return r9.height ? lastBaselineIn(el, { bottom: r9.bottom, right: Infinity }, parseFloat(getComputedStyle(el).lineHeight) || 0) : null; };
         if (t9 && m9 && w9 && j.pdk.getBoundingClientRect().height) {
           var i9 = [firstInkTop(t9), lb9(t9), firstInkTop(m9), lb9(m9), firstInkTop(j.pdk), lb9(j.pdk), firstInkTop(w9), lb9(w9)];
-          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + 3 * WHEN_GAP;
+          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + WHEN_GAP + 2 * WHEN_HALF;
         }
       }
     });
@@ -10065,7 +10068,8 @@
       j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
       // (no more than leave WHEN_GAP over the title, between the section and the date's row and the body, and under the
       // body's last line — a line's height a line's ink at the most: j.u9, above)
-      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 3 * WHEN_GAP - j.u9) / j.blh)));
+      // (four of them since the divider: over the head, under it to the divider, the divider to the body, under the body)
+      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 4 * WHEN_GAP - j.u9) / j.blh)));
       var ncol = j.one ? 1 : 2;
       j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
     });
@@ -10371,32 +10375,32 @@
                 hairD = null;
                 // (the title, the writer, the dek, the section and the date, and the body, WHEN_GAP between each — first
                 // ink to last baseline — on the picture's middle as above)
+                // THE HEAD OVER THE DIVIDER (2026-10-28 — "Halve gap between author/dek/meta. Make top section of the box
+                // charcoal. Add a divider 40.5 px above body text. Have 40.5 px between title and author. Center
+                // title/author/dek/meta block in top"): the title, WHEN_GAP, the writer, WHEN_HALF, the dek, WHEN_HALF, the
+                // section and the date — the head — on the middle of the box's top over the divider, WHEN_GAP at the least
+                // either way; the divider WHEN_GAP over the body's first ink and the body's last baseline WHEN_GAP over the
+                // box's foot ("Pin the body text to sit 40.5 above the bottom"). Where it will not go in the picture's
+                // height, the whole on the picture's middle at those gaps, the box round the words running past it
+                // (latest-rail.js reads __ncInk: the head's first ink, the body's last baseline and the divider)
                 if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
-                  var sH9 = (j.ttB - j.ttT) + WHEN_GAP + (j.mB - j.mT) + WHEN_GAP + (j.dkB - j.dkT) + WHEN_GAP + (j.wB - j.wT) + WHEN_GAP + (j.inB - j.txT);
-                  var y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH9) / 2));
-                  if (j.pic && j.pic.b > j.pic.t) y9 = (j.pic.t + j.pic.b) / 2 - sH9 / 2;
+                  var uH9 = (j.ttB - j.ttT) + WHEN_GAP + (j.mB - j.mT) + WHEN_HALF + (j.dkB - j.dkT) + WHEN_HALF + (j.wB - j.wT);
+                  var bH9 = j.inB - j.txT, y9, bTop9;
+                  if (j.pic && j.pic.b > j.pic.t) {
+                    bTop9 = j.pic.b - WHEN_GAP - bH9;
+                    var g9 = ((bTop9 - WHEN_GAP - j.pic.t) - uH9) / 2;
+                    if (g9 >= WHEN_GAP) y9 = j.pic.t + g9;
+                    else { y9 = (j.pic.t + j.pic.b) / 2 - (uH9 + 2 * WHEN_GAP + bH9) / 2; bTop9 = y9 + uH9 + 2 * WHEN_GAP; }
+                  } else {
+                    y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (uH9 + 2 * WHEN_GAP + bH9)) / 2));
+                    bTop9 = y9 + uH9 + 2 * WHEN_GAP;
+                  }
                   upY = y9 - j.ttT;
                   metaY = (j.ttB + upY + WHEN_GAP) - j.mT - upY;
-                  dekY = (j.mB + upY + metaY + WHEN_GAP) - j.dkT;
-                  j.wY = (j.dkB + dekY + WHEN_GAP) - j.wT - upY;
-                  dnY = (j.wB + upY + j.wY + WHEN_GAP) - j.txT;
-                  // (the body's last baseline pinned WHEN_GAP over the box's foot since, the rest on the middle of the room
-                  // over the body's first ink, as much over it as under it and WHEN_GAP at the least — "Pin the body text
-                  // to sit 40.5 above the bottom", 2026-10-28; where it will not go, every gap WHEN_GAP as above)
-                  if (j.pic && j.pic.b > j.pic.t) {
-                    var uH9 = sH9 - WHEN_GAP - (j.inB - j.txT), bTop9 = j.pic.b - WHEN_GAP - (j.inB - j.txT);
-                    var g9 = ((bTop9 - j.pic.t) - uH9) / 2;
-                    if (g9 >= WHEN_GAP) {
-                      y9 = j.pic.t + g9;
-                      upY = y9 - j.ttT;
-                      metaY = (j.ttB + upY + WHEN_GAP) - j.mT - upY;
-                      dekY = (j.mB + upY + metaY + WHEN_GAP) - j.dkT;
-                      j.wY = (j.dkB + dekY + WHEN_GAP) - j.wT - upY;
-                      dnY = bTop9 - j.txT;
-                      sH9 = (bTop9 + (j.inB - j.txT)) - y9;
-                    }
-                    j.card.__ncInk = { t: y9 - j.bb.top, b: y9 + sH9 - j.bb.top };
-                  }
+                  dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
+                  j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
+                  dnY = bTop9 - j.txT;
+                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: bTop9 - WHEN_GAP - j.bb.top };
                 }
               }
             }
