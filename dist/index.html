@@ -7264,7 +7264,7 @@
                 DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
-                if (row === hw1) { if (wide) row.style.setProperty('display', 'block', 'important'); else row.style.removeProperty('display'); }
+                if (row === hw1) { if (wide) { row.style.setProperty('display', 'block', 'important'); row.style.setProperty('text-align', getComputedStyle(hm1).textAlign, 'important'); row.style.setProperty('text-align-last', getComputedStyle(hm1).textAlign, 'important'); } else { row.style.removeProperty('display'); row.style.removeProperty('text-align'); row.style.removeProperty('text-align-last'); } }
                 [row].concat([].slice.call(row.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);

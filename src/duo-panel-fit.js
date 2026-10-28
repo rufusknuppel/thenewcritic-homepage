@@ -9936,7 +9936,8 @@
                 var wide = window.innerWidth >= 1024;
                 // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
-                if (row === hw1) { if (wide) row.style.setProperty('display', 'block', 'important'); else row.style.removeProperty('display'); }
+                // (set as the writer's row is, on the column's middle — the sheet's rule for that row does not reach it)
+                if (row === hw1) { if (wide) { row.style.setProperty('display', 'block', 'important'); row.style.setProperty('text-align', getComputedStyle(hm1).textAlign, 'important'); row.style.setProperty('text-align-last', getComputedStyle(hm1).textAlign, 'important'); } else { row.style.removeProperty('display'); row.style.removeProperty('text-align'); row.style.removeProperty('text-align-last'); } }
                 [row].concat([].slice.call(row.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
                     // (the link's own ink and ground left to the sheet, so it lights under the hand as every link does —
