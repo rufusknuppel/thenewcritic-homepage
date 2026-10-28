@@ -3290,6 +3290,9 @@ window.ncOpenH = function () {
       var wst = 'left:' + (bl - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (bt - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (br - bl).toFixed(2) + 'px;height:' + (bb - bt).toFixed(2) + 'px';
       // (and the divider, charcoal over it and white under — THE HEAD OVER THE DIVIDER, duo-panel-fit.js: on a whole pixel)
       if (ink && ink.d != null) wst += ';--wb-split:' + Math.round(sbT + ink.d - bt) + 'px';
+      // (and the body's column across, for the divider as wide as the body and no wider — style.css THE DIVIDER THE
+      // BODY'S WIDTH)
+      wst += ';--wb-dl:' + (tr.left - bl).toFixed(2) + 'px;--wb-dw:' + tr.width.toFixed(2) + 'px';
       if (wb.__st !== wst) { wb.__st = wst; wb.style.cssText = wst; }
     });
     // (the hairline under the byline or the dek carried across the air to the picture's outline — "connect the rule to the

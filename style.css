@@ -33321,3 +33321,16 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{ box-shadow: none; }
 }
+
+/* THE DIVIDER THE BODY'S WIDTH (2026-10-28 — "Have the rule above the body text only extend to the edge of the body
+   text"): the box all paper, and the half pixel of the outline's line over the body drawn on its own, from the body's
+   first edge to its last (--wb-dl, --wb-dw: latest-rail.js) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{
+    background: #FAF9F6;
+  }
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box::after{
+    content: ''; position: absolute; top: var(--wb-split, 0px); left: var(--wb-dl, 0px); width: var(--wb-dw, 0px); height: 0.5px;
+    background: var(--nc-outline, #D6D6D6);
+  }
+}
