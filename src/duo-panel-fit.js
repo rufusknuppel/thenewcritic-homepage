@@ -9054,6 +9054,8 @@
   META_DEK_GAP = RULE_SIDE = 40.5;
   // (the row to the dek half that since, 20.25 — "reduce the meta dek gap to 20.25", 2026-10-27)
   META_DEK_GAP = 20.25;
+  // (40.5 again since, the row to the dek as every other gap — "Set gap between metadata and dek to 40.5", 2026-10-28)
+  META_DEK_GAP = 40.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9885,7 +9887,9 @@
               // outweigh any it could add)
               var hm1 = hd.querySelector('.swap-body-meta');
               if (hm1) {
-                var DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '17.5px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                // (in the metadata's dress since — Work Sans, 13, in capitals a fiftieth apart: "Make metdata line all caps
+                // Work Sans", 2026-10-28)
+                var DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
