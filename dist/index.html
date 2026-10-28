@@ -7131,6 +7131,7 @@
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');

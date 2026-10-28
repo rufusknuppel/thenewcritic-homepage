@@ -9728,6 +9728,10 @@
       // right, the side column's rule where it stands on the left — the words BOX_PAD inside it: "Have at least 54px on
       // outside of the post to the edges", 2026-10-28)
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
+      // (the words' far edge BOX_EDGE off the post's outer edge since, as the picture stands off its own — the box round
+      // them shown no more, its inner margin on that side went with it: "Readjust so that white space matches on either
+      // side of the post blocks", 2026-10-28)
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
