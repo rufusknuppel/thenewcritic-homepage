@@ -3278,8 +3278,11 @@ window.ncOpenH = function () {
       var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
       // (and over the words where they run past the picture's top or foot, 40.5 past their ink, so none of the white words
       // stand out on the paper — "within box, have charcoal background and white text", 2026-10-28)
-      var bt = pb.t, bb = pb.b;
-      [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
+      // (off the stack's ink as the fitter seated it since, the title's first ink to the dek's last baseline, 40.5 at the
+      // least each way — THE STACK ON THE BOX'S MIDDLE, duo-panel-fit.js; the words' boxes, where it has not)
+      var bt = pb.t, bb = pb.b, ink = c.__ncInk, sbT = sb.getBoundingClientRect().top;
+      if (ink) { bt = Math.min(bt, sbT + ink.t - 40.5); bb = Math.max(bb, sbT + ink.b + 40.5); }
+      else [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
         var q = e.getBoundingClientRect();
         if (!q.height || getComputedStyle(e).display === 'none') return;
         bt = Math.min(bt, q.top - 40.5); bb = Math.max(bb, q.bottom + 40.5);

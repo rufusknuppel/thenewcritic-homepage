@@ -7353,6 +7353,7 @@
     });
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      j.pic = window.__ncPicBox ? window.__ncPicBox(j.card) : null;
       j.sy = window.pageYOffset || 0; j.bcT = j.body.clientTop || 0; j.bcL = j.body.clientLeft || 0;
       j.hf = j.body.parentElement; j.hb = j.hf ? j.hf.getBoundingClientRect() : null;
       j.hd = j.body.querySelector(':scope > .swap-body-head');
@@ -7493,6 +7494,10 @@
               if (DEK_UNDER_BODY && !DEK_OVER_RULE) {
                 var sH8 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + ROW_BODY_GAP + (j.inB - j.txT) + BODY_DEK_GAP + (j.dkB - j.dkT);
                 var y8 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH8) / 2));
+                if (j.pic && j.pic.b > j.pic.t) {
+                  y8 = (j.pic.t + j.pic.b) / 2 - sH8 / 2;
+                  j.card.__ncInk = { t: y8 - j.bb.top, b: y8 + sH8 - j.bb.top };
+                }
                 upY = y8 - j.ttT;
                 metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
                 dnY = (j.mB + upY + metaY + ROW_BODY_GAP) - j.txT;
@@ -12521,8 +12526,9 @@ window.ncOpenH = function () {
       var picL = pb.r <= tr.left + 1, bl = picL ? pb.r + 0.5 : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l - 0.5;
       if (!wb) { wb = document.createElement('span'); wb.className = 'nc-words-box'; wb.setAttribute('aria-hidden', 'true'); c.appendChild(wb); }
       var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
-      var bt = pb.t, bb = pb.b;
-      [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
+      var bt = pb.t, bb = pb.b, ink = c.__ncInk, sbT = sb.getBoundingClientRect().top;
+      if (ink) { bt = Math.min(bt, sbT + ink.t - 40.5); bb = Math.max(bb, sbT + ink.b + 40.5); }
+      else [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
         var q = e.getBoundingClientRect();
         if (!q.height || getComputedStyle(e).display === 'none') return;
         bt = Math.min(bt, q.top - 40.5); bb = Math.max(bb, q.bottom + 40.5);

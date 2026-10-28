@@ -10080,6 +10080,8 @@
     // READ: the ink
     twos.forEach(function (j) {
       j.bb = j.body.getBoundingClientRect(); j.tb = j.bt.getBoundingClientRect();
+      // (the picture's painted box, for the stack centred in the box round the words — THE STACK ON THE BOX'S MIDDLE)
+      j.pic = window.__ncPicBox ? window.__ncPicBox(j.card) : null;
       // (the page's scroll and the column's border, for THE HAIRLINES' whole pixels)
       j.sy = window.pageYOffset || 0; j.bcT = j.body.clientTop || 0; j.bcL = j.body.clientLeft || 0;
       // (the card's half, where the rule over the dek stands since it runs
@@ -10315,6 +10317,14 @@
               if (DEK_UNDER_BODY && !DEK_OVER_RULE) {
                 var sH8 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + ROW_BODY_GAP + (j.inB - j.txT) + BODY_DEK_GAP + (j.dkB - j.dkT);
                 var y8 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH8) / 2));
+                // THE STACK ON THE BOX'S MIDDLE (2026-10-28 — "Vertically center elements within box so that spacing is
+                // even with floor of 40.5"): the title's first ink to the dek's last baseline on the picture's middle, the
+                // same room over and under it, BOX_PAD at the least — the box round the words then running past the
+                // picture by what that wants, BOX_PAD from the ink (latest-rail.js reads __ncInk)
+                if (j.pic && j.pic.b > j.pic.t) {
+                  y8 = (j.pic.t + j.pic.b) / 2 - sH8 / 2;
+                  j.card.__ncInk = { t: y8 - j.bb.top, b: y8 + sH8 - j.bb.top };
+                }
                 upY = y8 - j.ttT;
                 metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
                 dnY = (j.mB + upY + metaY + ROW_BODY_GAP) - j.txT;
