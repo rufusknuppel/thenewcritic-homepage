@@ -9061,6 +9061,10 @@
   // (the dek under the rule again since — "move dek under the rule", 2026-10-28: the row ROW_RULE_AIR over the rule, the
   // dek's first ink ROW_RULE_AIR under it, the body DEK_BODY_GAP under the dek, every gap 40.5)
   DEK_OVER_RULE = false;
+  // (the dek under the body since and no rule in the stack at all — "move deks below body previews", "Remove the rule
+  // between the meta and the body entirely", 2026-10-28: the body's first ink ROW_BODY_GAP under the row's baseline, the
+  // dek's first ink BODY_DEK_GAP under the body's last baseline)
+  var DEK_UNDER_BODY = true, ROW_BODY_GAP = 40.5, BODY_DEK_GAP = 40.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9989,6 +9993,8 @@
       if (META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (TITLE_ROW_GAP - HEAD_GAP) + (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP) - (TOP_RULE_GAP + 2 * META_RULE_AIR + 1);
       // (and the dek over the rule, the rule's own two gaps RULE_SIDE, against the row's two over and under it before)
       if (DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (META_DEK_GAP + 2 * RULE_SIDE) - (2 * ROW_RULE_AIR + DEK_BODY_GAP);
+      // (and the dek under the body, no rule, against the rule's stack before it)
+      if (DEK_UNDER_BODY && !DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (ROW_BODY_GAP + BODY_DEK_GAP) - (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP);
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -10291,6 +10297,15 @@
                 var lineY7 = (j.dkB + dekY) + RULE_SIDE + 0.5;
                 dnY = (lineY7 + 0.5 + RULE_SIDE) - j.txT;
                 hairD = lineY7;
+              }
+              if (DEK_UNDER_BODY && !DEK_OVER_RULE) {
+                var sH8 = (j.ttB - j.ttT) + TITLE_ROW_GAP + (j.mB - j.mT) + ROW_BODY_GAP + (j.inB - j.txT) + BODY_DEK_GAP + (j.dkB - j.dkT);
+                var y8 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH8) / 2));
+                upY = y8 - j.ttT;
+                metaY = (j.ttB + upY + TITLE_ROW_GAP) - j.mT - upY;
+                dnY = (j.mB + upY + metaY + ROW_BODY_GAP) - j.txT;
+                dekY = (j.inB + dnY + BODY_DEK_GAP) - j.dkT;
+                hairD = null;
               }
             }
             if (META_UNDER && META_ON_RULE) {
