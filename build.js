@@ -1244,7 +1244,8 @@ async function fetchHtml(url) {
     const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
     if (res.ok) return res.text();
     // Retrying only helps transient statuses; a plain 404/403 is final.
-    if (res.status !== 429 && res.status < 500) return null;
+    if (res.status !== 429 && res.status < 500) { console.warn(`fetch ${res.status} ${url}`); return null; }
+    if (attempt === 2) console.warn(`fetch ${res.status} ${url}`);
     const retryAfter = Number(res.headers.get('retry-after')) * 1000;
     const wait = Math.min(retryAfter || (attempt + 1) * 5000, 30000);
     await new Promise((r) => setTimeout(r, wait));
@@ -6422,7 +6423,7 @@ async function fetchManifesto() {
   if (!html) { failedPageFetches++; return ''; }
   const preloads = extractPreloads(html);
   const body = preloads && preloads.post && preloads.post.body_html;
-  if (!body) { failedPageFetches++; return ''; }
+  if (!body) { console.warn(`no post body in ${MANIFESTO_URL}`); failedPageFetches++; return ''; }
   return renderManifestoHtml(body);
 }
 

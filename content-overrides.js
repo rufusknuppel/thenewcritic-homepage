@@ -37,6 +37,14 @@
 
 module.exports = {
   // (the paper above and below the drawing cropped out of the frame —
+  // "Zoom to remove white border from most recent post", 2026-10-28: the
+  // drawing stands from 5.5% to 93.6% of the scan's height; 1.18 at 47%
+  // clears both edges by ~2% of the box)
+  'city-of-magnificent-intentions': {
+    boxZoom: 1.18,
+    boxPos: '50% 47%',
+  },
+  // (the paper above and below the drawing cropped out of the frame —
   // "Zoom in on the george mcnally so the top and bottom borders aren't
   // visible in the frame", 2026-10-14: the drawing stands from rows 80
   // to 830 of the scan's 912)
