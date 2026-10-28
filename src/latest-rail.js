@@ -2810,6 +2810,18 @@ var ncStemX = function () {
                 // shorter list, Editors' Picks' four, re-centred the bird and the sections' line 19 and 37 lower when it
                 // opened: "It moves around way too much, feels glitchy", 2026-10-25)
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height);
+                // (down to See All's baseline since, not the list's last — the bird, the stack and See All one group on the
+                // column's middle, all of it in the window at the opening — "on initial load I should be able to see see
+                // all, should be vertically centered in that side column", 2026-10-28)
+                var allE = inC && inC.querySelector(':scope > .latest-rail__all');
+                // (read off the last title's line as it stands — its baseline, lkB, and the rest of its box under it — and See
+                // All's own margin and baseline in its box: See All itself, and the list's box, can still stand elsewhere
+                // while the column settles)
+                if (allE && allE.getBoundingClientRect().height && kLast) {
+                  var aqA = allE.getBoundingClientRect();
+                  var allBA = lkB + (kLast.getBoundingClientRect().bottom - baseOf(kLast)) + (parseFloat(getComputedStyle(allE).marginTop) || 0) + (baseOf(allE) - aqA.top);
+                  stS = Math.max(stS, allBA - ctB);
+                }
                 // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
                 // the site", 2026-10-16: The Latest off the first picture's middle, its --rl-pt moved to its capitals)

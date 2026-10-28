@@ -12184,6 +12184,12 @@ var ncStemX = function () {
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height);
+                var allE = inC && inC.querySelector(':scope > .latest-rail__all');
+                if (allE && allE.getBoundingClientRect().height && kLast) {
+                  var aqA = allE.getBoundingClientRect();
+                  var allBA = lkB + (kLast.getBoundingClientRect().bottom - baseOf(kLast)) + (parseFloat(getComputedStyle(allE).marginTop) || 0) + (baseOf(allE) - aqA.top);
+                  stS = Math.max(stS, allBA - ctB);
+                }
                 var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
                 var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
