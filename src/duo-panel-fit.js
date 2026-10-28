@@ -7478,6 +7478,8 @@
   // top of the content, so no double spacing between sections")
   var SECTION_GAP = ROW_STEP;
   var POST_GAP = 54;
+  // (108 since, twice that — "double space between posts", 2026-10-28)
+  POST_GAP = 108;
   // (the blue rule hung under the band: style.css, --band-rule)
   // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
   // (4.5 since later that day: "Increase dividing line to 4.5px"; then 9,
