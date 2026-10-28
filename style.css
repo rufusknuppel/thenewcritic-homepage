@@ -33254,3 +33254,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 }
 /* (the paper's ground in it again since and the words in the ink, the outline kept — "Make the background of the box
    site background and text back to charcoal", 2026-10-28) */
+/* (pure white since, the box lighter than the paper round it — "make the background of the box pure white", 2026-10-28) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box{ background: #FFFFFF; }
+}

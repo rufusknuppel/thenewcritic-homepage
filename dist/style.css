@@ -16761,3 +16761,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     z-index: 9;
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box{ background: #FFFFFF; }
+}
