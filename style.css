@@ -33230,9 +33230,3 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on),
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-style: normal; }
 }
-
-/* THE COLUMN'S SIDE RULE GONE (2026-10-28 — "Remove the rule between the image and side"): the line down the side
-   column's edge (.nc-col-side--r, latest-rail.js) no longer drawn; the dek's rule still runs to where it stood */
-@media (min-width: 1024px){
-  html body main.has-mega > .nc-col-side.nc-col-side.nc-col-side.nc-col-side.nc-col-side{ display: none !important; }
-}
