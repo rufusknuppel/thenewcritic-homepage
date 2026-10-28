@@ -9056,6 +9056,9 @@
   META_DEK_GAP = 20.25;
   // (40.5 again since, the row to the dek as every other gap — "Set gap between metadata and dek to 40.5", 2026-10-28)
   META_DEK_GAP = 40.5;
+  // (the dek under the rule again since — "move dek under the rule", 2026-10-28: the row ROW_RULE_AIR over the rule, the
+  // dek's first ink ROW_RULE_AIR under it, the body DEK_BODY_GAP under the dek, every gap 40.5)
+  DEK_OVER_RULE = false;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
