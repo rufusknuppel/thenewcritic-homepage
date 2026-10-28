@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=8a75cd83">
+<link rel="stylesheet" href="style.css?v=cb4fe332">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7328,7 +7328,7 @@
         var lb9 = function (el) { var r9 = el.getBoundingClientRect(); return r9.height ? lastBaselineIn(el, { bottom: r9.bottom, right: Infinity }, parseFloat(getComputedStyle(el).lineHeight) || 0) : null; };
         if (t9 && m9 && w9 && j.pdk.getBoundingClientRect().height) {
           var i9 = [firstInkTop(t9), lb9(t9), firstInkTop(m9), lb9(m9), firstInkTop(j.pdk), lb9(j.pdk), firstInkTop(w9), lb9(w9)];
-          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + WHEN_GAP + 2 * WHEN_HALF;
+          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + 2 * WHEN_HALF;
         }
       }
     });
@@ -7340,7 +7340,7 @@
     });
     twos.forEach(function (j) {
       j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
-      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 4 * WHEN_GAP - j.u9) / j.blh)));
+      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 6 * WHEN_GAP - j.u9) / j.blh)));
       var ncol = j.one ? 1 : 2;
       j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
     });
@@ -7531,23 +7531,20 @@
                 dekY = (j.inB + dnY + BODY_DEK_GAP) - j.dkT;
                 hairD = null;
                 if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
-                  var uH9 = (j.ttB - j.ttT) + WHEN_GAP + (j.mB - j.mT) + WHEN_HALF + (j.dkB - j.dkT) + WHEN_HALF + (j.wB - j.wT);
-                  var bH9 = j.inB - j.txT, y9, bTop9;
+                  var tH9 = j.ttB - j.ttT, cH9 = (j.mB - j.mT) + WHEN_HALF + (j.dkB - j.dkT) + WHEN_HALF + (j.wB - j.wT), bH9 = j.inB - j.txT;
+                  var g9 = WHEN_GAP, y9;
                   if (j.pic && j.pic.b > j.pic.t) {
-                    bTop9 = j.pic.b - WHEN_GAP - bH9;
-                    var g9 = ((bTop9 - WHEN_GAP - j.pic.t) - uH9) / 2;
-                    if (g9 >= WHEN_GAP) y9 = j.pic.t + g9;
-                    else { y9 = (j.pic.t + j.pic.b) / 2 - (uH9 + 2 * WHEN_GAP + bH9) / 2; bTop9 = y9 + uH9 + 2 * WHEN_GAP; }
-                  } else {
-                    y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (uH9 + 2 * WHEN_GAP + bH9)) / 2));
-                    bTop9 = y9 + uH9 + 2 * WHEN_GAP;
-                  }
+                    var gq9 = ((j.pic.b - j.pic.t) - tH9 - cH9 - bH9) / 6;
+                    if (gq9 >= WHEN_GAP) { g9 = gq9; y9 = j.pic.t + g9; }
+                    else y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + cH9 + bH9 + 4 * WHEN_GAP) / 2;
+                  } else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + cH9 + bH9 + 4 * WHEN_GAP)) / 2));
+                  var r19 = y9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
                   upY = y9 - j.ttT;
-                  metaY = (j.ttB + upY + WHEN_GAP) - j.mT - upY;
+                  metaY = cT9 - j.mT - upY;
                   dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
                   j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
                   dnY = bTop9 - j.txT;
-                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: bTop9 - WHEN_GAP - j.bb.top };
+                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }
               }
             }
@@ -12574,7 +12571,7 @@ window.ncOpenH = function () {
       if (!wb) { wb = document.createElement('span'); wb.className = 'nc-words-box'; wb.setAttribute('aria-hidden', 'true'); c.appendChild(wb); }
       var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
       var bt = pb.t, bb = pb.b, ink = c.__ncInk, sbT = sb.getBoundingClientRect().top;
-      if (ink) { bt = Math.min(bt, sbT + ink.t - 40.5); bb = Math.max(bb, sbT + ink.b + 40.5); }
+      if (ink) { var gI = ink.g != null ? ink.g : 40.5; bt = Math.min(bt, sbT + ink.t - gI); bb = Math.max(bb, sbT + ink.b + gI); }
       else [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
         var q = e.getBoundingClientRect();
         if (!q.height || getComputedStyle(e).display === 'none') return;
@@ -12582,6 +12579,7 @@ window.ncOpenH = function () {
       });
       var wst = 'left:' + (bl - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (bt - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (br - bl).toFixed(2) + 'px;height:' + (bb - bt).toFixed(2) + 'px';
       if (ink && ink.d != null) wst += ';--wb-split:' + Math.round(sbT + ink.d - bt) + 'px';
+      if (ink && ink.r != null) wst += ';--wb-r1:' + Math.round(sbT + ink.r - bt) + 'px';
       wst += ';--wb-dl:' + (tr.left - bl).toFixed(2) + 'px;--wb-dw:' + tr.width.toFixed(2) + 'px';
       if (wb.__st !== wst) { wb.__st = wst; wb.style.cssText = wst; }
     });

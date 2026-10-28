@@ -33334,3 +33334,12 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     background: var(--nc-outline, #D6D6D6);
   }
 }
+
+/* THE RULE OVER THE WRITER (2026-10-28 — "Add the same rule above the author"): the divider's twin between the title and
+   the writer, the dek and the section and the date, as wide as the body text (--wb-r1: latest-rail.js) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box::before{
+    content: ''; position: absolute; top: var(--wb-r1, 0px); left: var(--wb-dl, 0px); width: var(--wb-dw, 0px); height: 0.5px;
+    background: var(--nc-outline, #D6D6D6);
+  }
+}

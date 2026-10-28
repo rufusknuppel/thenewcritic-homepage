@@ -10045,7 +10045,7 @@
         var lb9 = function (el) { var r9 = el.getBoundingClientRect(); return r9.height ? lastBaselineIn(el, { bottom: r9.bottom, right: Infinity }, parseFloat(getComputedStyle(el).lineHeight) || 0) : null; };
         if (t9 && m9 && w9 && j.pdk.getBoundingClientRect().height) {
           var i9 = [firstInkTop(t9), lb9(t9), firstInkTop(m9), lb9(m9), firstInkTop(j.pdk), lb9(j.pdk), firstInkTop(w9), lb9(w9)];
-          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + WHEN_GAP + 2 * WHEN_HALF;
+          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + 2 * WHEN_HALF;
         }
       }
     });
@@ -10073,7 +10073,8 @@
       // (no more than leave WHEN_GAP over the title, between the section and the date's row and the body, and under the
       // body's last line — a line's height a line's ink at the most: j.u9, above)
       // (four of them since the divider: over the head, under it to the divider, the divider to the body, under the body)
-      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 4 * WHEN_GAP - j.u9) / j.blh)));
+      // (six since the three chunks, two rules — THREE CHUNKS, EVENLY)
+      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 6 * WHEN_GAP - j.u9) / j.blh)));
       var ncol = j.one ? 1 : 2;
       j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
     });
@@ -10387,24 +10388,28 @@
                 // box's foot ("Pin the body text to sit 40.5 above the bottom"). Where it will not go in the picture's
                 // height, the whole on the picture's middle at those gaps, the box round the words running past it
                 // (latest-rail.js reads __ncInk: the head's first ink, the body's last baseline and the divider)
+                // THREE CHUNKS, EVENLY (2026-10-28 — "Add the same rule above the author. Space all elements evenly, chunked
+                // together, author/dek/meta as one chunk"): the title; the writer, the dek and the section and the date,
+                // WHEN_HALF between them; the body — a rule over the second and over the third, and one space, g, from the
+                // box's top to the title's first ink, from the title's last baseline to the rule, the rule to the chunk,
+                // the chunk to the rule, the rule to the body and the body's last baseline to the box's foot. g the
+                // picture's height shared six ways, WHEN_GAP at the least; where that will not go, WHEN_GAP and the whole on
+                // the picture's middle, the box round the words running past it (latest-rail.js reads __ncInk)
                 if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
-                  var uH9 = (j.ttB - j.ttT) + WHEN_GAP + (j.mB - j.mT) + WHEN_HALF + (j.dkB - j.dkT) + WHEN_HALF + (j.wB - j.wT);
-                  var bH9 = j.inB - j.txT, y9, bTop9;
+                  var tH9 = j.ttB - j.ttT, cH9 = (j.mB - j.mT) + WHEN_HALF + (j.dkB - j.dkT) + WHEN_HALF + (j.wB - j.wT), bH9 = j.inB - j.txT;
+                  var g9 = WHEN_GAP, y9;
                   if (j.pic && j.pic.b > j.pic.t) {
-                    bTop9 = j.pic.b - WHEN_GAP - bH9;
-                    var g9 = ((bTop9 - WHEN_GAP - j.pic.t) - uH9) / 2;
-                    if (g9 >= WHEN_GAP) y9 = j.pic.t + g9;
-                    else { y9 = (j.pic.t + j.pic.b) / 2 - (uH9 + 2 * WHEN_GAP + bH9) / 2; bTop9 = y9 + uH9 + 2 * WHEN_GAP; }
-                  } else {
-                    y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (uH9 + 2 * WHEN_GAP + bH9)) / 2));
-                    bTop9 = y9 + uH9 + 2 * WHEN_GAP;
-                  }
+                    var gq9 = ((j.pic.b - j.pic.t) - tH9 - cH9 - bH9) / 6;
+                    if (gq9 >= WHEN_GAP) { g9 = gq9; y9 = j.pic.t + g9; }
+                    else y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + cH9 + bH9 + 4 * WHEN_GAP) / 2;
+                  } else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + cH9 + bH9 + 4 * WHEN_GAP)) / 2));
+                  var r19 = y9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
                   upY = y9 - j.ttT;
-                  metaY = (j.ttB + upY + WHEN_GAP) - j.mT - upY;
+                  metaY = cT9 - j.mT - upY;
                   dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
                   j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
                   dnY = bTop9 - j.txT;
-                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: bTop9 - WHEN_GAP - j.bb.top };
+                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }
               }
             }

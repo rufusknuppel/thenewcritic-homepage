@@ -3281,7 +3281,7 @@ window.ncOpenH = function () {
       // (off the stack's ink as the fitter seated it since, the title's first ink to the dek's last baseline, 40.5 at the
       // least each way — THE STACK ON THE BOX'S MIDDLE, duo-panel-fit.js; the words' boxes, where it has not)
       var bt = pb.t, bb = pb.b, ink = c.__ncInk, sbT = sb.getBoundingClientRect().top;
-      if (ink) { bt = Math.min(bt, sbT + ink.t - 40.5); bb = Math.max(bb, sbT + ink.b + 40.5); }
+      if (ink) { var gI = ink.g != null ? ink.g : 40.5; bt = Math.min(bt, sbT + ink.t - gI); bb = Math.max(bb, sbT + ink.b + gI); }
       else [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
         var q = e.getBoundingClientRect();
         if (!q.height || getComputedStyle(e).display === 'none') return;
@@ -3290,6 +3290,8 @@ window.ncOpenH = function () {
       var wst = 'left:' + (bl - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (bt - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (br - bl).toFixed(2) + 'px;height:' + (bb - bt).toFixed(2) + 'px';
       // (and the divider, charcoal over it and white under — THE HEAD OVER THE DIVIDER, duo-panel-fit.js: on a whole pixel)
       if (ink && ink.d != null) wst += ';--wb-split:' + Math.round(sbT + ink.d - bt) + 'px';
+      // (and the rule over the writer — THREE CHUNKS, EVENLY)
+      if (ink && ink.r != null) wst += ';--wb-r1:' + Math.round(sbT + ink.r - bt) + 'px';
       // (and the body's column across, for the divider as wide as the body and no wider — style.css THE DIVIDER THE
       // BODY'S WIDTH)
       wst += ';--wb-dl:' + (tr.left - bl).toFixed(2) + 'px;--wb-dw:' + tr.width.toFixed(2) + 'px';
