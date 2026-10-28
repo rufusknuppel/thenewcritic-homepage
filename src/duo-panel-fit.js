@@ -9948,6 +9948,9 @@
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
+                  // (the links under the hand again in the section and the date's row — the head takes no pointer and the
+                  // sheet gives it back only to the writer's row: "section highlight no longer works", 2026-10-28)
+                  if (el.tagName === 'A') { if (wide) el.style.setProperty('pointer-events', 'auto', 'important'); else el.style.removeProperty('pointer-events'); }
                   // (no margin since, the comma's space between them — "a comma-ed list", 2026-10-28)
                   if (el.classList.contains('swap-body-on') || el.classList.contains('swap-body-sec')) { if (wide) el.style.setProperty('margin-left', '0px', 'important'); else el.style.removeProperty('margin-left'); }
                   // (the section in italic since, the writer and the date upright — "italicize sections", 2026-10-25)

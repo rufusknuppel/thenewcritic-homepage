@@ -16768,6 +16768,9 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box{
     background: linear-gradient(to bottom, var(--k, #121417) var(--wb-split, 0px), #FFFFFF var(--wb-split, 0px));
   }
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{
+    background: linear-gradient(to bottom, var(--k, #121417) var(--wb-split, 0px), var(--nc-outline, #D6D6D6) var(--wb-split, 0px), var(--nc-outline, #D6D6D6) calc(var(--wb-split, 0px) + 0.5px), #FAF9F6 calc(var(--wb-split, 0px) + 0.5px));
+  }
   html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > .swap-body-head,html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > .swap-body-dek,
   html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) > :is(.swap-body-head, .swap-body-dek) *{
     color: #FAF9F6 !important;
