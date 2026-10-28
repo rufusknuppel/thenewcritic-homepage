@@ -16809,10 +16809,3 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{ box-shadow: none; }
 }
-@media (min-width: 1024px){
-  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box::after{
-    content: ''; position: absolute; top: var(--wb-split, 0px); right: 0; width: 0.5px; height: 81px;
-    background: var(--nc-outline, #D6D6D6);
-  }
-  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.is-far-l::after{ right: auto; left: 0; }
-}
