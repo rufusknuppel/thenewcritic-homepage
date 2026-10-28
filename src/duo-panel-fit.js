@@ -9069,6 +9069,10 @@
   // between the meta and the body entirely", 2026-10-28: the body's first ink ROW_BODY_GAP under the row's baseline, the
   // dek's first ink BODY_DEK_GAP under the body's last baseline)
   var DEK_UNDER_BODY = true, ROW_BODY_GAP = 40.5, BODY_DEK_GAP = 40.5;
+  // (the writer alone under the title since, the dek under it, the section and the date in a row of their own under the
+  // dek and the body last — "Have title, then Author name, then dek, then section name and date, then body preview",
+  // 2026-10-28: WHEN_GAP between each, the head's .swap-body-when)
+  var WHEN_ROW = true, WHEN_GAP = 40.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -9903,6 +9907,15 @@
                 // Titles", after an hour under it)
                 hd.appendChild(hm);
                 hd.appendChild(ht);
+                // (the section and the date out of the writer's row into their own, under the title in the head — the
+                // stack seats it under the dek, WHEN_ROW; the comma between them kept, the one after the writer gone)
+                if (WHEN_ROW) {
+                  var hw = document.createElement('span');
+                  hw.className = 'swap-body-when';
+                  [].slice.call(hm.querySelectorAll(':scope > .swap-body-sec, :scope > .swap-body-sep, :scope > .swap-body-on')).forEach(function (e) { hw.appendChild(e); });
+                  if (hw.firstChild && hw.firstChild.classList.contains('swap-body-sep')) hw.removeChild(hw.firstChild);
+                  if (hw.firstChild) hd.appendChild(hw);
+                }
               }
               if (hd.nextElementSibling !== pdk) j.body.insertBefore(hd, pdk);
               // (upright since, "unitalicize author and date", 2026-10-25)
@@ -9910,7 +9923,7 @@
               // THE DEK IN THE GARAMOND'S ITALIC — in the ink: "Add author name and date in a dek style row above the
               // title", 2026-10-24; written on the row and its parts, since the sheet's weighted rules for the tag it was
               // outweigh any it could add)
-              var hm1 = hd.querySelector('.swap-body-meta');
+              var hm1 = hd.querySelector('.swap-body-meta'), hw1 = hd.querySelector('.swap-body-when');
               if (hm1) {
                 // (in the metadata's dress since — Work Sans, 13, in capitals a fiftieth apart: "Make metdata line all caps
                 // Work Sans", 2026-10-28)
@@ -9921,7 +9934,10 @@
                 // text" — and the ink again since, "text back to charcoal", 2026-10-28)
                 DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
-                [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
+                // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
+                (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
+                if (row === hw1) { if (wide) row.style.setProperty('display', 'block', 'important'); else row.style.removeProperty('display'); }
+                [row].concat([].slice.call(row.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
                     // (the link's own ink and ground left to the sheet, so it lights under the hand as every link does —
                     // "author names should highlight", 2026-10-24)
@@ -9934,6 +9950,7 @@
                   // (upright with them since, the Work Sans having no italic of its own — "Make it upright", 2026-10-28)
                   // (the row on one line, into the column's air where a long name needs it — at 1024 four broke in two)
                   if (!k) { if (wide) el.style.setProperty('white-space', 'nowrap', 'important'); else el.style.removeProperty('white-space'); }
+                });
                 });
               }
               // (two columns, filled in turn and cut on a whole line — or,
@@ -10009,6 +10026,20 @@
       if (DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (META_DEK_GAP + 2 * RULE_SIDE) - (2 * ROW_RULE_AIR + DEK_BODY_GAP);
       // (and the dek under the body, no rule, against the rule's stack before it)
       if (DEK_UNDER_BODY && !DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH) j.pdkH += (ROW_BODY_GAP + BODY_DEK_GAP) - (2 * ROW_RULE_AIR + 1 + DEK_BODY_GAP);
+      // (and the section and the date's own row, a gap more — its height is the head's)
+      if (WHEN_ROW && DEK_UNDER_BODY && !DEK_OVER_RULE && META_UNDER_TITLE && hh && hh.querySelector('.swap-body-when') && j.slide && bandedInk() && j.pdkH) j.pdkH += WHEN_GAP;
+      // (and the ink over the body as it stands, the title's first to the section and the date's last baseline with the
+      // gaps between — so the body takes no more lines than leave WHEN_GAP over the title, under that row and under its
+      // own last line, all in the picture's height: j.rows, below; the box round the words grew past the picture at 1024)
+      j.u9 = null;
+      if (WHEN_ROW && DEK_UNDER_BODY && !DEK_OVER_RULE && META_UNDER_TITLE && hh && j.slide && bandedInk() && j.pdkH && !(window.innerWidth < 1024)) {
+        var t9 = hh.querySelector('.swap-body-title'), m9 = hh.querySelector('.swap-body-meta'), w9 = hh.querySelector('.swap-body-when');
+        var lb9 = function (el) { var r9 = el.getBoundingClientRect(); return r9.height ? lastBaselineIn(el, { bottom: r9.bottom, right: Infinity }, parseFloat(getComputedStyle(el).lineHeight) || 0) : null; };
+        if (t9 && m9 && w9 && j.pdk.getBoundingClientRect().height) {
+          var i9 = [firstInkTop(t9), lb9(t9), firstInkTop(m9), lb9(m9), firstInkTop(j.pdk), lb9(j.pdk), firstInkTop(w9), lb9(w9)];
+          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + 3 * WHEN_GAP;
+        }
+      }
     });
     // WRITE: the dek shown or not
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
@@ -10031,6 +10062,9 @@
     // READ: the lines
     twos.forEach(function (j) {
       j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
+      // (no more than leave WHEN_GAP over the title, between the section and the date's row and the body, and under the
+      // body's last line — a line's height a line's ink at the most: j.u9, above)
+      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 3 * WHEN_GAP - j.u9) / j.blh)));
       var ncol = j.one ? 1 : 2;
       j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
     });
@@ -10075,7 +10109,7 @@
       j.bt.style.transform = 'none';
       if (j.pdk) j.pdk.style.transform = 'none';
       var h0 = j.body.querySelector(':scope > .swap-body-head');
-      if (h0) { h0.style.transform = 'none'; var m0 = h0.querySelector('.swap-body-meta'); if (m0) m0.style.removeProperty('transform'); }
+      if (h0) { h0.style.transform = 'none'; var m0 = h0.querySelector('.swap-body-meta'); if (m0) m0.style.removeProperty('transform'); var w0 = h0.querySelector('.swap-body-when'); if (w0) w0.style.removeProperty('transform'); }
     });
     // READ: the ink
     twos.forEach(function (j) {
@@ -10136,6 +10170,10 @@
       if (j.ttB == null) j.ttB = j.ttEl ? titleBaseline(j.ttEl) : null;
       j.dkC = j.pdk ? firstCapTop(j.pdk) : null;
       j.mT = j.mmEl ? firstInkTop(j.mmEl) : null;
+      // (the section and the date's row, its own ink — WHEN_ROW)
+      j.wEl = j.hd ? j.hd.querySelector('.swap-body-when') : null; j.wY = null;
+      j.wT = j.wEl ? firstInkTop(j.wEl) : null;
+      if (j.wEl) { var wr0 = j.wEl.getBoundingClientRect(); j.wB = lastBaselineIn(j.wEl, { bottom: wr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.wEl).lineHeight) || 0); }
       if (j.mmEl) { var mr0 = j.mmEl.getBoundingClientRect(); j.mB = lastBaselineIn(j.mmEl, { bottom: mr0.bottom, right: Infinity }, parseFloat(getComputedStyle(j.mmEl).lineHeight) || 0); }
       // (the dek's ink across: its lines' farthest reach either way — the
       // rule under it goes no farther from the picture, 2026-10-04)
@@ -10330,6 +10368,35 @@
                 dnY = (j.mB + upY + metaY + ROW_BODY_GAP) - j.txT;
                 dekY = (j.inB + dnY + BODY_DEK_GAP) - j.dkT;
                 hairD = null;
+                // (the title, the writer, the dek, the section and the date, and the body, WHEN_GAP between each — first
+                // ink to last baseline — on the picture's middle as above)
+                if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
+                  var sH9 = (j.ttB - j.ttT) + WHEN_GAP + (j.mB - j.mT) + WHEN_GAP + (j.dkB - j.dkT) + WHEN_GAP + (j.wB - j.wT) + WHEN_GAP + (j.inB - j.txT);
+                  var y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - sH9) / 2));
+                  if (j.pic && j.pic.b > j.pic.t) y9 = (j.pic.t + j.pic.b) / 2 - sH9 / 2;
+                  upY = y9 - j.ttT;
+                  metaY = (j.ttB + upY + WHEN_GAP) - j.mT - upY;
+                  dekY = (j.mB + upY + metaY + WHEN_GAP) - j.dkT;
+                  j.wY = (j.dkB + dekY + WHEN_GAP) - j.wT - upY;
+                  dnY = (j.wB + upY + j.wY + WHEN_GAP) - j.txT;
+                  // (the body's last baseline pinned WHEN_GAP over the box's foot since, the rest on the middle of the room
+                  // over the body's first ink, as much over it as under it and WHEN_GAP at the least — "Pin the body text
+                  // to sit 40.5 above the bottom", 2026-10-28; where it will not go, every gap WHEN_GAP as above)
+                  if (j.pic && j.pic.b > j.pic.t) {
+                    var uH9 = sH9 - WHEN_GAP - (j.inB - j.txT), bTop9 = j.pic.b - WHEN_GAP - (j.inB - j.txT);
+                    var g9 = ((bTop9 - j.pic.t) - uH9) / 2;
+                    if (g9 >= WHEN_GAP) {
+                      y9 = j.pic.t + g9;
+                      upY = y9 - j.ttT;
+                      metaY = (j.ttB + upY + WHEN_GAP) - j.mT - upY;
+                      dekY = (j.mB + upY + metaY + WHEN_GAP) - j.dkT;
+                      j.wY = (j.dkB + dekY + WHEN_GAP) - j.wT - upY;
+                      dnY = bTop9 - j.txT;
+                      sH9 = (bTop9 + (j.inB - j.txT)) - y9;
+                    }
+                    j.card.__ncInk = { t: y9 - j.bb.top, b: y9 + sH9 - j.bb.top };
+                  }
+                }
               }
             }
             if (META_UNDER && META_ON_RULE) {
@@ -10374,6 +10441,7 @@
         j.hd.style.transform = up;
         j.bt.style.transform = dn;
         if (j.mmEl) { if (metaY != null) j.mmEl.style.transform = 'translateY(' + metaY.toFixed(2) + 'px)'; else j.mmEl.style.removeProperty('transform'); }
+        if (j.wEl) { if (j.wY != null) j.wEl.style.transform = 'translateY(' + j.wY.toFixed(2) + 'px)'; else j.wEl.style.removeProperty('transform'); }
         // (the dek's last baseline 27 over the text's first ink, and the rule
         // over the dek, a whole pixel — "move rule above dek", 2026-10-05;
         // it stood between the dek and the text for an hour)
