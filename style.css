@@ -33315,3 +33315,9 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     color: var(--nc-mark, #B3301E) !important;
   }
 }
+
+/* THE BOX UNOUTLINED (2026-10-28 — "Remove all outlines from the title column except the rule above the body text"): no
+   line round the box round the words, only the half pixel over the body; the picture keeps its own outline */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box.nc-words-box{ box-shadow: none; }
+}
