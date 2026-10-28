@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=cd1ff3ec">
+<link rel="stylesheet" href="style.css?v=d14b04fe">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6709,6 +6709,8 @@
   var FRAME_ONE = FRAME + TEXT_PIC_GAP;
   var NEAR_GAP = 54;
   var WORDS_FAR = 54;
+  var BOX_PAD = 40.5;
+  var BOX_EDGE = 54;
   var PIC_FAR = 54, POST_TRIM = 36;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
@@ -7125,6 +7127,8 @@
       if (j.bp && j.cols2) j.bp = { l: ESSAY_PREVIEW_PAD, r: ESSAY_PREVIEW_PAD, t: ESSAY_PREVIEW_PAD, b: ESSAY_PREVIEW_PAD };
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -7249,7 +7253,7 @@
               var hm1 = hd.querySelector('.swap-body-meta');
               if (hm1) {
                 var DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
-                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#FAF9F6', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
@@ -12424,7 +12428,7 @@ window.ncOpenH = function () {
       cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
       var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
-      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
+      var dx = ox + (fq.left > tR ? fq.left - 40.5 - tR : tL < fq.right ? 0 : fq.right + 40.5 - tL);
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
       if (sb.style.getPropertyValue('translate') !== sv) sb.style.setProperty('translate', sv, 'important');
@@ -12509,6 +12513,22 @@ window.ncOpenH = function () {
       var po = pl.offsetParent || c, pr = po.getBoundingClientRect();
       var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
+    });
+    if (window.__ncPicBox) [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+      var pb = window.__ncPicBox(c), sb = c.querySelector(':scope > .swap-body'), tx = sb && sb.querySelector('.swap-body-text');
+      var wb = c.querySelector(':scope > .nc-words-box'), tr = tx && tx.getBoundingClientRect();
+      if (!pb || !tr || !tr.width) { if (wb) wb.remove(); return; }
+      var picL = pb.r <= tr.left + 1, bl = picL ? pb.r : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l;
+      if (!wb) { wb = document.createElement('span'); wb.className = 'nc-words-box'; wb.setAttribute('aria-hidden', 'true'); c.appendChild(wb); }
+      var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
+      var bt = pb.t, bb = pb.b;
+      [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
+        var q = e.getBoundingClientRect();
+        if (!q.height || getComputedStyle(e).display === 'none') return;
+        bt = Math.min(bt, q.top - 40.5); bb = Math.max(bb, q.bottom + 40.5);
+      });
+      var wst = 'left:' + (bl - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (bt - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (br - bl).toFixed(2) + 'px;height:' + (bb - bt).toFixed(2) + 'px';
+      if (wb.__st !== wst) { wb.__st = wst; wb.style.cssText = wst; }
     });
     if (window.__ncPicBox) [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
       var sb = c.querySelector('.swap-body'), tx = sb && sb.querySelector('.swap-body-text'), pb = window.__ncPicBox(c);

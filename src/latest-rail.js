@@ -3139,7 +3139,9 @@ window.ncOpenH = function () {
       var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
       var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
       // (54 off it again since — "Revert back to 54px margins", 2026-10-16)
-      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
+      // (40.5 since, the words' margin inside the box round them — "Move inner margin to match 40.5px", 2026-10-28:
+      // duo-panel-fit.js BOX_PAD)
+      var dx = ox + (fq.left > tR ? fq.left - 40.5 - tR : tL < fq.right ? 0 : fq.right + 40.5 - tL);
       // (the body where it stood under the dek since, the rule gone — "Remove rules between deks and body", 2026-10-16)
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
@@ -3260,6 +3262,28 @@ window.ncOpenH = function () {
       var po = pl.offsetParent || c, pr = po.getBoundingClientRect();
       var pst = 'left:' + (pb.l - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (pb.t - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (pb.r - pb.l).toFixed(2) + 'px;height:' + (pb.b - pb.t).toFixed(2) + 'px';
       if (pl.__st !== pst) { pl.__st = pst; pl.style.cssText = pst; }
+    });
+    // (and a box round the words' column from the picture's outline, the picture's height, 40.5 past the words on the far side — "Make a box around the body
+    // preview column that stretches from the outline of the image", 2026-10-28: style.css THE BOX ROUND THE WORDS)
+    if (window.__ncPicBox) [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+      var pb = window.__ncPicBox(c), sb = c.querySelector(':scope > .swap-body'), tx = sb && sb.querySelector('.swap-body-text');
+      var wb = c.querySelector(':scope > .nc-words-box'), tr = tx && tx.getBoundingClientRect();
+      if (!pb || !tr || !tr.width) { if (wb) wb.remove(); return; }
+      // (its far side 40.5 past the words both ways since, 54 in from the post's outer edge — "Have at least 54px on outside
+      // of the post to the edges", 2026-10-28)
+      var picL = pb.r <= tr.left + 1, bl = picL ? pb.r : tr.left - 40.5, br = picL ? tr.right + 40.5 : pb.l;
+      if (!wb) { wb = document.createElement('span'); wb.className = 'nc-words-box'; wb.setAttribute('aria-hidden', 'true'); c.appendChild(wb); }
+      var po = wb.offsetParent || c, pr = po.getBoundingClientRect();
+      // (and over the words where they run past the picture's top or foot, 40.5 past their ink, so none of the white words
+      // stand out on the paper — "within box, have charcoal background and white text", 2026-10-28)
+      var bt = pb.t, bb = pb.b;
+      [].forEach.call(sb.querySelectorAll('.swap-body-title, .swap-body-meta, .swap-body-text, .swap-body-dek'), function (e) {
+        var q = e.getBoundingClientRect();
+        if (!q.height || getComputedStyle(e).display === 'none') return;
+        bt = Math.min(bt, q.top - 40.5); bb = Math.max(bb, q.bottom + 40.5);
+      });
+      var wst = 'left:' + (bl - pr.left + po.clientLeft).toFixed(2) + 'px;top:' + (bt - pr.top + po.clientTop).toFixed(2) + 'px;width:' + (br - bl).toFixed(2) + 'px;height:' + (bb - bt).toFixed(2) + 'px';
+      if (wb.__st !== wst) { wb.__st = wst; wb.style.cssText = wst; }
     });
     // (the hairline under the byline or the dek carried across the air to the picture's outline — "connect the rule to the
     // outline", 2026-10-22: how far past the body's column on the picture's side, on the words' column as --hl-xl or

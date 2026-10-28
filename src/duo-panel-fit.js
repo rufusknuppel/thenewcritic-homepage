@@ -8942,6 +8942,10 @@
   // (and 54 off the post's far edge, the picture 54 narrower for it — "Reduce the images by 54px to add a 54px margin
   // on the far side of the body text", 2026-10-19: the words' column 54 wider, the text as wide, padded 54 on its far side)
   var WORDS_FAR = 54;
+  // (the words 40.5 in from the box round them since, both sides — j.bp, below)
+  var BOX_PAD = 40.5;
+  // (and the box 54 off the post's outer edge, where the side column's rule stands — j.bp, below)
+  var BOX_EDGE = 54;
   // (the picture 54 in from the post's outer edge — columnEdge, PIC_FAR — and the rows' pictures 108 shorter — fitRowScreens,
   // POST_TRIM)
   // (36 since — "Increase image height by 72px", 2026-10-20: style.css --card-words with it)
@@ -9710,6 +9714,14 @@
       // (the words' far 54 on the right only since, the left's line and its margin gone — "Remove the left vertical line
       // and margin", 2026-10-20: words at the left out to the nav's inset)
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
+      // (40.5 on either side of the words since, inside the box round them — "Make a box around the body preview column that
+      // stretches from the outline of the image. Move inner margin to match 40.5px", 2026-10-28: the picture's side and
+      // the far side where the column runs on to the side column's rule; latest-rail.js draws the box, .nc-words-box)
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
+      // (and the box 54 in from the post's outer edge since — the window's left margin where the picture stands on the
+      // right, the side column's rule where it stands on the left — the words BOX_PAD inside it: "Have at least 54px on
+      // outside of the post to the edges", 2026-10-28)
+      if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
       j.cr0 = cr0;
       j.body = j.card.querySelector(':scope > .swap-body');
@@ -9905,7 +9917,9 @@
                 var DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 // (in the column's line's dress since, the Garamond at 19 on 27.5, upright, in its own case — "Match
                 // garamond", 2026-10-28: the line "The Latest, Essays, Postscript" over the column's list)
-                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                // (in the paper's white since, on the box's charcoal — "within box, have charcoal background and white text",
+                // 2026-10-28)
+                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#FAF9F6', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 [hm1].concat([].slice.call(hm1.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {

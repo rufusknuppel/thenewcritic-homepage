@@ -16749,3 +16749,25 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--index .arc-ix-item .arc-ix-on,
   body.archive-page .arc--index .arc-ix-item .arc-ix-by:hover{ font-style: normal; }
 }
+.nc-words-box{ display: none; }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box{
+    display: block; position: absolute; pointer-events: none; z-index: 11;
+    box-shadow: 0 0 0 0.5px var(--nc-outline, #D6D6D6);
+  }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box{
+    z-index: 9; background: var(--k, #121417); box-shadow: none;
+  }
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2),
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) *{
+    color: #FAF9F6 !important;
+  }
+}
+@media (min-width: 1024px) and (hover: hover){
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) a:not(#nc-w3):hover,
+  html body main.has-mega .page-rows .duo-half--mega > .swap-body:not(#nc-w0):not(#nc-w1):not(#nc-w2) a:not(#nc-w3):hover *{
+    color: var(--nc-mark, #B3301E) !important;
+  }
+}
