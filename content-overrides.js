@@ -41,6 +41,8 @@ module.exports = {
   // drawing stands from 5.5% to 93.6% of the scan's height; 1.18 at 47%
   // clears both edges by ~2% of the box)
   'city-of-magnificent-intentions': {
+    // ("Use 'Train the Swamp' as the kicker for The City of Magnificent intentions", 2026-10-28)
+    kicker: 'Train the Swamp',
     boxZoom: 1.18,
     boxPos: '50% 47%',
   },

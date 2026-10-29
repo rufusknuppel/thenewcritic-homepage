@@ -2799,6 +2799,8 @@ var ncStemX = function () {
                 swH = capN;
                 // (a fifth smaller since, the three spaces round it the wider for it — "Make the bird 20% smaller", 2026-10-28)
                 swH = 0.8 * capN;
+                // (a tenth bigger again since — "Make bird 10% bigger", 2026-10-28)
+                swH *= 1.1;
                 // (off the band's own foot, where the hold stands at the opening and pinned alike: read off the hold, a seat
                 // made before the band came to the opening's foot stood the bird 130 high till the next)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
@@ -2825,31 +2827,51 @@ var ncStemX = function () {
                 // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
                 // the site", 2026-10-16: The Latest off the first picture's middle, its --rl-pt moved to its capitals)
-                var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - swH - stS) / 3);
+                // (four spaces since, not three, the rule under the bird on the middle of the two between it and The Latest —
+                // "space the rule with equal padding on top and bottom as above and below bird/the latest", 2026-10-28)
+                // (the spaces off the bird's ink, not its box, which runs a little past the drawing: its share of the box over
+                // and under the ink, read as fractions so a box not yet at swH reads the same)
+                // (every part of the drawing, the wing as well as the body)
+                var swBq = null, swQ = swE.getBoundingClientRect();
+                [].forEach.call(swE.querySelectorAll('.rail-swallow__body'), function (pE) {
+                  var q = pE.getBoundingClientRect();
+                  if (q.height) swBq = swBq ? { top: Math.min(swBq.top, q.top), bottom: Math.max(swBq.bottom, q.bottom) } : { top: q.top, bottom: q.bottom };
+                });
+                var okI = swBq && swQ.height;
+                var inkT = okI ? Math.max(0, (swBq.top - swQ.top) / swQ.height) * swH : 0, inkB = okI ? Math.max(0, (swQ.bottom - swBq.bottom) / swQ.height) * swH : 0;
+                var inkH = swH - inkT - inkB;
+                var g0 = Math.max(20, (document.documentElement.clientHeight - (window.ncOpenH ? window.ncOpenH() : 0) + aN - inkH - stS) / 4);
                 // (The Latest over the bird for a minute — "Flip the latest and bird" — and the bird over it again since,
                 // "Flip the latest and the bird again", 2026-10-16)
                 // (The Latest over the bird for an hour — "switch the bird and the latest", 2026-10-20 — and the bird over it
                 // again since, "flip bird and the latest positions")
-                var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
+                var swT0 = g0 - aN - inkT, cap0 = swT0 + inkT + inkH + 2 * g0;
                 // (the bird's middle on the top post's title's middle at the opening since, The Latest the same space under
                 // it, the two carried on the scroll to the even spacing as before — "start the bird in line with middle of
                 // the title, then have the column pull in its final positioning", 2026-10-28: the title's middle in the page
                 // less the hold's top at the opening, the band's foot, ncOpenH)
                 var ttl0 = document.querySelector('.page-rows section.card .duo-half--mega .swap-body-title'), tq0 = ttl0 && ttl0.getBoundingClientRect();
                 if (tq0 && tq0.height && window.ncOpenH && window.ncOpenH() > 0) {
-                  var dT0 = (tq0.top + (window.pageYOffset || 0) + tq0.height / 2 - window.ncOpenH()) - swH / 2 - swT0;
+                  var dT0 = (tq0.top + (window.pageYOffset || 0) + tq0.height / 2 - window.ncOpenH()) - (inkT + inkH / 2) - swT0;
                   swT0 += dT0; cap0 += dT0;
                 }
-                var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
-                var swT1 = gS - aN, cap1 = swT1 + swH + gS;
+                var gS = Math.max(20, (hr.height + aN - inkH - stS) / 4);
+                var swT1 = gS - aN - inkT, cap1 = swT1 + inkT + inkH + 2 * gS;
                 // (and The Latest its final space under the bird from the opening since, the whole column carried as one —
                 // "whole column should load with final spacing", 2026-10-28)
-                if (tq0 && tq0.height) cap0 = swT0 + swH + gS;
+                if (tq0 && tq0.height) cap0 = swT0 + inkT + inkH + 2 * gS;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-stdy', (cap1 - cap0).toFixed(2) + 'px');
+                // (a rule on the middle of the space between the bird and The Latest's capitals, carried with the bird, as
+                // wide as the sections' comma line — "Add a rule between the bird and the latest", 2026-10-28; style.css THE
+                // RULE UNDER THE BIRD)
+                // (one space under the bird's ink, the box's foot inkB under it)
+                hold.style.setProperty('--rl-gs', gS.toFixed(2) + 'px');
+                hold.style.setProperty('--rl-gsi', inkB.toFixed(2) + 'px');
+                if (secV) hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
               }
             }
           }
