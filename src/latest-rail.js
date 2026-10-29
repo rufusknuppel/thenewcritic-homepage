@@ -1131,8 +1131,10 @@ var ncStemX = function () {
     set(w, 'position', on ? 'relative' : 'absolute');
     set(w, 'left', '0px'); set(w, 'right', '0px');
     set(w, 'visibility', on ? 'visible' : 'hidden');
-    set(w, 'opacity', on ? '1' : '0');
-    set(w, 'pointer-events', on ? 'auto' : 'none');
+    // (and the open one unseen and out of the hand's way too while The Latest is gone from the column — "Remove the
+    // latest", 2026-10-28: LATEST_SHOWN; still laid out where it stands, the column's seat reads it)
+    set(w, 'opacity', on && LATEST_SHOWN ? '1' : '0');
+    set(w, 'pointer-events', on && LATEST_SHOWN ? 'auto' : 'none');
     set(w, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
     [].forEach.call(w.querySelectorAll(':scope > .latest-rail__list, :scope > .latest-rail__all'), function (el) {
       set(el, 'max-height', 'none');
@@ -2863,6 +2865,9 @@ var ncStemX = function () {
                 // up under the band out of sight, coming down on the scroll as the bird goes down, landing as the band pins:
                 // the stack seated where it lands, --rl-pt, and carried from --rl-st0 over it to nothing)
                 var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
+                // (The Latest gone from the column since, the bird alone on its middle once the band pins as at the opening
+                // — "Remove the latest", 2026-10-28: style.css THE LATEST GONE)
+                if (!LATEST_SHOWN) swT1 = (hr.height + aN - inkH) / 2 - aN - inkT;
                 // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
@@ -2990,6 +2995,9 @@ var ncStemX = function () {
 // rises; the column's own THE NEW CRITIC coming in over the last fifth of the climb.
 // (the width "Subscribe, " took at the head of the band's nav, in the nav's own face, before the word went to the
 // subscribe banner — THE LAST MAGAZINE is sized off the nav as it stood with it, 2026-10-28)
+// THE LATEST GONE (2026-10-28 — "Remove the latest"): the side column's sections, kickers, See All and the rule over
+// them not shown; the bird alone, on the middle of the column (style.css THE LATEST GONE)
+var LATEST_SHOWN = false;
 window.ncSubW = window.ncSubW || function (nav) {
   var a = nav && nav.querySelector('a, span'), cs = a && getComputedStyle(a);
   if (!cs) return 0;
