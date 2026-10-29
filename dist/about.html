@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=df0e1cab">
+<link rel="stylesheet" href="style.css?v=89fff480">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -664,6 +664,18 @@
 
 </script>
 <script>
+window.ncSubW = window.ncSubW || function (nav) {
+  var a = nav && nav.querySelector('a, span'), cs = a && getComputedStyle(a);
+  if (!cs) return 0;
+  var f = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var c = window.ncSubW.c || (window.ncSubW.c = {});
+  if (c[f] == null) {
+    var x = document.createElement('canvas').getContext('2d');
+    x.font = f;
+    c[f] = x.measureText('Subscribe, ').width;
+  }
+  return c[f];
+};
 (function () {
   var de = document.documentElement;
   var main = document.querySelector('main.has-mega'), band = main && main.querySelector('.op-band');
@@ -702,7 +714,7 @@
       band.style.setProperty('--opb-soc-r', socR.toFixed(2) + 'px');
       band.style.setProperty('--opb-tlm', ((navL + nw + vw - socR - sw) / 2).toFixed(1) + 'px');
       var tlm = band.querySelector(':scope > .rail-tlm'), lwt = tlm ? parseFloat(tlm.style.getPropertyValue('--rl-lwt')) || 0 : 0;
-      if (lwt > 0) band.style.setProperty('--rl-tlmf', ((nw + 25) / lwt).toFixed(3) + 'px');
+      if (lwt > 0) band.style.setProperty('--rl-tlmf', ((nw + window.ncSubW(navE) + 25) / lwt).toFixed(3) + 'px');
       var sq = socE.getBoundingClientRect(), colX = Math.floor(sq.left - (vw - sq.right)) - 2;
       de.style.setProperty('--arc-col', colX + 'px');
       de.style.setProperty('--arc-hold-x', (sq.left - colX).toFixed(2) + 'px');

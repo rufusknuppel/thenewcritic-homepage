@@ -33394,19 +33394,27 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    tall, charcoal background, white text. Subscribe in italics on the left, with the old subscribe message featured in
    previous Subscribe bands"): pinned to the window's foot from 1024 up, the charcoal 54 tall, Subscribe in the nav's
    Garamond italic at the band's left margin and the line in its roman out to the band's right margin (--sb-m:
-   latest-rail.js bandRule), both on the bar's middle, the paper's white on the charcoal and the mark's colour under the
-   hand; the page given 54 at its foot so its end clears the bar, and the side column ending on the bar's top */
+   latest-rail.js bandRule), both on the bar's middle; the page given 54 at its foot so its end clears the bar, and the side column ending on the bar's top */
 .nc-sub-banner{ display: none; }
 @media (min-width: 1024px){
   body > a.nc-sub-banner.nc-sub-banner{
     display: flex; align-items: center; justify-content: space-between; gap: 36px;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; height: 54px; box-sizing: border-box;
-    padding: 0 var(--sb-m, 52px); background: #121417; color: #FAF9F6; text-decoration: none;
+    padding: 0 var(--sb-m, 52px); background: var(--nc-mark, #B3301E); color: #121417; text-decoration: none;
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 1; white-space: nowrap;
   }
   body > a.nc-sub-banner > .nc-sub-banner__word{ font-style: italic; }
   body > a.nc-sub-banner > span{ transition: color .15s ease; }
-  body > a.nc-sub-banner:is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E); }
+  /* (the words in the highlight's red since, the line at the body text's 16 — "Make text highlight color. hover doesn't
+     look good, make message size of body text preview", 2026-10-28: under the hand the paper's white, the red's change
+     reversed) */
+  body > a.nc-sub-banner > .nc-sub-banner__line{ font-size: 16px; }
+  body > a.nc-sub-banner:is(:hover, :focus-visible) > span{ color: #FAF9F6; }
+  /* (the bar in the highlight's red since and its words in the charcoal, white under the hand — "Make band highlight
+     color", "Have hover change text to white", 2026-10-28; and each word's capitals-to-baseline on the bar's middle —
+     "Center Subscribe and message vertically", "better center Subscribe": the italic's sat 2 high, the line's a fifth) */
+  body > a.nc-sub-banner > .nc-sub-banner__word{ translate: 0 0.1056em; }
+  body > a.nc-sub-banner > .nc-sub-banner__line{ translate: 0 0.0106em; }
   body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
   html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
 }

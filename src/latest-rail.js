@@ -2479,7 +2479,9 @@ var ncStemX = function () {
         // (off the column as it stood before it grew the rows' 2 × 27 — "Make the content column 27px narrower on either
         // side", 2026-10-15 — so THE LAST MAGAZINE keeps its size)
         // (off the nav's width since, the column no longer standing as wide as it and its 135 — RAIL_COL)
-        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + 25 : railW - 110;
+        // (and "Subscribe, " counted in since, the word gone from the nav to the subscribe banner, so THE LAST MAGAZINE
+        // keeps its size — "keep the last magazine at its previous size", 2026-10-28: window.ncSubW, front-head.js)
+        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + (window.ncSubW ? window.ncSubW(navTW) : 0) + 25 : railW - 110;
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle
@@ -2986,6 +2988,20 @@ var ncStemX = function () {
 // held where it stands (style.css THE OPENING) while the column and the rows, which begin under it (ncOpenH: the
 // column's top here, the first row's in duo-panel-fit.js), come up over it — the name cut off at their top edge as it
 // rises; the column's own THE NEW CRITIC coming in over the last fifth of the climb.
+// (the width "Subscribe, " took at the head of the band's nav, in the nav's own face, before the word went to the
+// subscribe banner — THE LAST MAGAZINE is sized off the nav as it stood with it, 2026-10-28)
+window.ncSubW = window.ncSubW || function (nav) {
+  var a = nav && nav.querySelector('a, span'), cs = a && getComputedStyle(a);
+  if (!cs) return 0;
+  var f = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var c = window.ncSubW.c || (window.ncSubW.c = {});
+  if (c[f] == null) {
+    var x = document.createElement('canvas').getContext('2d');
+    x.font = f;
+    c[f] = x.measureText('Subscribe, ').width;
+  }
+  return c[f];
+};
 window.ncOpenH = function () {
   var cn = document.querySelector('a.content-name'), band = document.querySelector('main .op-band');
   return cn && band && window.innerWidth >= 1024 && band.offsetHeight ? cn.offsetHeight + band.offsetHeight : 0;

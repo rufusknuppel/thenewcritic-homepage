@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=df0e1cab">
+<link rel="stylesheet" href="style.css?v=89fff480">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12069,7 +12069,7 @@ var ncStemX = function () {
         var opBandE = document.querySelector('main .op-band');
         var tlmC = hold.querySelector(':scope > .rail-tlm') || (opBandE && opBandE.querySelector(':scope > .rail-tlm'));
         var lwTC = tlmC ? parseFloat(tlmC.style.getPropertyValue('--rl-lwt')) || 0 : 0;
-        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + 25 : railW - 110;
+        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + (window.ncSubW ? window.ncSubW(navTW) : 0) + 25 : railW - 110;
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         var topG = hold.querySelector(':scope > .rail-top'), navL = topG && topG.querySelector('.rail-top__nav');
@@ -12376,6 +12376,18 @@ var ncStemX = function () {
   setTimeout(seat, 800);
   seat();
 })();
+window.ncSubW = window.ncSubW || function (nav) {
+  var a = nav && nav.querySelector('a, span'), cs = a && getComputedStyle(a);
+  if (!cs) return 0;
+  var f = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var c = window.ncSubW.c || (window.ncSubW.c = {});
+  if (c[f] == null) {
+    var x = document.createElement('canvas').getContext('2d');
+    x.font = f;
+    c[f] = x.measureText('Subscribe, ').width;
+  }
+  return c[f];
+};
 window.ncOpenH = function () {
   var cn = document.querySelector('a.content-name'), band = document.querySelector('main .op-band');
   return cn && band && window.innerWidth >= 1024 && band.offsetHeight ? cn.offsetHeight + band.offsetHeight : 0;

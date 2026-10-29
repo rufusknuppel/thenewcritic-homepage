@@ -16851,12 +16851,15 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner.nc-sub-banner{
     display: flex; align-items: center; justify-content: space-between; gap: 36px;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; height: 54px; box-sizing: border-box;
-    padding: 0 var(--sb-m, 52px); background: #121417; color: #FAF9F6; text-decoration: none;
+    padding: 0 var(--sb-m, 52px); background: var(--nc-mark, #B3301E); color: #121417; text-decoration: none;
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 1; white-space: nowrap;
   }
   body > a.nc-sub-banner > .nc-sub-banner__word{ font-style: italic; }
   body > a.nc-sub-banner > span{ transition: color .15s ease; }
-  body > a.nc-sub-banner:is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E); }
+  body > a.nc-sub-banner > .nc-sub-banner__line{ font-size: 16px; }
+  body > a.nc-sub-banner:is(:hover, :focus-visible) > span{ color: #FAF9F6; }
+  body > a.nc-sub-banner > .nc-sub-banner__word{ translate: 0 0.1056em; }
+  body > a.nc-sub-banner > .nc-sub-banner__line{ translate: 0 0.0106em; }
   body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
   html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
 }

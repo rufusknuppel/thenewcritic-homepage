@@ -3,6 +3,20 @@
 // and the side column under the socials as it stands there. Out of src/archive.js since About took the same head ("Redesign
 // the about page in the same was as the archive redesign"); a page's own script asks for a fresh seat with the
 // newcritic:lay event.
+// (the width "Subscribe, " took at the head of the band's nav, in the nav's own face, before the word went to the
+// subscribe banner — THE LAST MAGAZINE is sized off the nav as it stood with it, 2026-10-28)
+window.ncSubW = window.ncSubW || function (nav) {
+  var a = nav && nav.querySelector('a, span'), cs = a && getComputedStyle(a);
+  if (!cs) return 0;
+  var f = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  var c = window.ncSubW.c || (window.ncSubW.c = {});
+  if (c[f] == null) {
+    var x = document.createElement('canvas').getContext('2d');
+    x.font = f;
+    c[f] = x.measureText('Subscribe, ').width;
+  }
+  return c[f];
+};
 (function () {
   var de = document.documentElement;
   var main = document.querySelector('main.has-mega'), band = main && main.querySelector('.op-band');
@@ -49,7 +63,9 @@
       band.style.setProperty('--opb-tlm', ((navL + nw + vw - socR - sw) / 2).toFixed(1) + 'px');
       // (THE LAST MAGAZINE as wide as the nav and 25, as latest-rail.js sizes it)
       var tlm = band.querySelector(':scope > .rail-tlm'), lwt = tlm ? parseFloat(tlm.style.getPropertyValue('--rl-lwt')) || 0 : 0;
-      if (lwt > 0) band.style.setProperty('--rl-tlmf', ((nw + 25) / lwt).toFixed(3) + 'px');
+      // (and "Subscribe, " counted in since, the word gone to the subscribe banner — "keep the last magazine at its
+      // previous size", 2026-10-28: ncSubW, the width the word and its comma took in the nav's own face)
+      if (lwt > 0) band.style.setProperty('--rl-tlmf', ((nw + window.ncSubW(navE) + 25) / lwt).toFixed(3) + 'px');
       // (the side column as the front page's stands: its gray rule as far left of the socials as they stand in from the
       // window's right, give or take the rounding of the front page's rows (latest-rail.js reads it off them there); its
       // hold the socials' own box; the bird as tall as the name's capitals)
