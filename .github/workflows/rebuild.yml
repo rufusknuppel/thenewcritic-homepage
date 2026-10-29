@@ -42,10 +42,11 @@ jobs:
         with:
           node-version: 24
 
-      # A failed fetch gets one more go after a pause (Substack rate-limits
-      # bursts); a second failure fails the job.
+      # A failed fetch gets two more goes after growing pauses: Substack
+      # answers bursts with 429s for a few minutes (a minute's pause wasn't
+      # enough on the first run, 2026-10-28). A third failure fails the job.
       - name: Build
-        run: node build.js || (sleep 60 && node build.js)
+        run: node build.js || (sleep 120 && node build.js) || (sleep 300 && node build.js)
 
       - name: Publish to gh-pages
         run: |
