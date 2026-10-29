@@ -3512,6 +3512,11 @@ window.ncOpenH = function () {
           // (and the subscribe banner's margins, the band's own: its left run's start and the socials' right edge)
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
+          // (and its rule's runs, the band's own — "Make the bottom banner the page color with a rule on top like the top
+          // rule", 2026-10-28: style.css THE BANNER ON THE PAPER)
+          if (sbn) [['--sb-c', cR], ['--sb-s', sL], ['--sb-r', rR]].forEach(function (v) {
+            if (sbn.style.getPropertyValue(v[0]) !== v[1] + 'px') sbn.style.setProperty(v[0], v[1] + 'px');
+          });
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');

@@ -33441,4 +33441,20 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 108px; justify-content: center; }
   body > a.nc-sub-banner > span.nc-sub-banner__word, body > a.nc-sub-banner > span.nc-sub-banner__line{ flex: none; }
 }
+
+/* THE BANNER ON THE PAPER (2026-10-28 — "Make the bottom banner the page color with a rule on top like the top rule"):
+   the bar the page's paper, its words still the charcoal and the highlight's red under the hand, and along its top the
+   band's rule in its two runs, the band's left end to the posts' edge and the side column's text to the socials' right
+   (--sb-m, --sb-c, --sb-s, --sb-r: latest-rail.js bandRule) */
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3),
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible){ background: #FAF9F6 !important; }
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E) !important; }
+  body > a.nc-sub-banner::before{
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none;
+    background: linear-gradient(to right,
+      transparent var(--sb-m, 52px), var(--nc-rule, #B3301E) var(--sb-m, 52px), var(--nc-rule, #B3301E) var(--sb-c, calc(100% - var(--sb-m, 52px))),
+      transparent var(--sb-c, calc(100% - var(--sb-m, 52px))), transparent var(--sb-s, 100%), var(--nc-rule, #B3301E) var(--sb-s, 100%),
+      var(--nc-rule, #B3301E) var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
+  }
 }
