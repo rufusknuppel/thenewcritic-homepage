@@ -7890,7 +7890,20 @@
               // (29 since, the nav's baseline's distance over the rule — "Is that the same gap as between the bottom of
               // the nav and the rule? If not, make it equal", 2026-10-20: the nav's baseline stands 29¼ over it)
               // (54 since — "Start top post 54px below top band", 2026-10-22)
-              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + 54;
+              // (as far under the band's rule as the wordmark's foot stands over it since — "Make gap above The top post the
+              // same distance between bottom of wordmark and band rule", 2026-10-28: the band's foot at the opening, ncOpenH,
+              // less the name's ink foot in its own box — the name's box heads the page, as ncOpenH counts it, and a pass can
+              // carry the name, box and ink together, so the ink is read off the box and not off the window; the frame's top
+              // a pixel over the painted picture's, so the picture stands that far under; 54 till it can be read)
+              var cnmW = document.querySelector('a.content-name');
+              if (cnmW && ohS) {
+                var wbW = -1e9, cqW = cnmW.getBoundingClientRect();
+                [].forEach.call(cnmW.querySelectorAll('svg path'), function (pW) { var qW = pW.getBoundingClientRect(); if (qW.height) wbW = Math.max(wbW, qW.bottom); });
+                var gW = ohS - (wbW - cqW.top);
+                if (wbW > -1e9 && gW > 0 && gW < 200) window.__ncWmGap = gW;
+              }
+              var topGapW = window.__ncWmGap > 0 ? window.__ncWmGap - 1 : 54;
+              if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + topGapW;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
               else if (ink) rowDelta = (cnH + 1 - (window.pageYOffset || 0)) - ink.t;
