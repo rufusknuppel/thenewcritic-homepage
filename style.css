@@ -33455,9 +33455,9 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     /* (half a pixel, the band rule's own drawing — "Make bottom rule same .5 width", 2026-10-28: the colour in the
        pixel's top half, the runs a mask) */
     background: linear-gradient(to bottom, var(--nc-rule, #B3301E) 50%, transparent 50%);
+    /* (one run since, not broken over the inner margin — "Connect the rule on the bottom", 2026-10-28) */
     --sb-mk: linear-gradient(to right,
-      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px), #000 var(--sb-c, calc(100% - var(--sb-m, 52px))),
-      transparent var(--sb-c, calc(100% - var(--sb-m, 52px))), transparent var(--sb-s, 100%), #000 var(--sb-s, 100%),
+      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px),
       #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
     -webkit-mask-image: var(--sb-mk); mask-image: var(--sb-mk);
   }
