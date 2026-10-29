@@ -16877,19 +16877,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 108px; justify-content: center; }
   body > a.nc-sub-banner > span.nc-sub-banner__word, body > a.nc-sub-banner > span.nc-sub-banner__line{ flex: none; }
 }
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3),
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible){ background: #FAF9F6 !important; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E) !important; }
-  body > a.nc-sub-banner::before{
-    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none;
-    background: linear-gradient(to bottom, var(--nc-rule, #B3301E) 50%, transparent 50%);
-    --sb-mk: linear-gradient(to right,
-      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px),
-      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
-    -webkit-mask-image: var(--sb-mk); mask-image: var(--sb-mk);
-  }
-}
 @property --rl-sta { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --rl-stb { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --rl-swa { syntax: '<length>'; inherits: false; initial-value: 0px; }
@@ -16911,67 +16898,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   }
 }
 @media (min-width: 1024px){
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navr"] > .rail-top.rail-top:not(#nc-nv0):not(#nc-nv1):not(#nc-nv2){
-    left: var(--opb-navr) !important; translate: -100% -50% !important;
-  }
-  html body main.has-mega .op-track > .op-band.op-band > .rail-socials.rail-socials:not(#nc-nv0):not(#nc-nv1):not(#nc-nv2){ visibility: hidden !important; pointer-events: none !important; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2):not(#nc-fb3){
-    height: var(--opb-h, 69px) !important; padding: 0 calc(100% - var(--sb-c, 75%)) 0 var(--sb-m, 52px) !important;
-    justify-content: center !important; gap: 108px !important; pointer-events: none;
-  }
-  body > a.nc-sub-banner > span{ pointer-events: auto; }
-  body > a.nc-sub-banner::after{
-    content: ""; position: absolute; top: 0; bottom: 0; left: var(--sb-m, 52px); width: calc(var(--sb-c, 75%) - var(--sb-m, 52px));
-    pointer-events: auto;
-  }
-  body > a.nc-sub-banner.nc-sub-banner::before{
-    --sb-mk: linear-gradient(to right,
-      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px), #000 var(--sb-c, 75%), transparent var(--sb-c, 75%),
-      transparent var(--sb-s, 100%), #000 var(--sb-s, 100%),
-      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
-  }
-  body:has(> a.nc-sub-banner).has-sb.has-sb, body:has(> a.nc-sub-banner):not(#nc-fb0){ padding-bottom: var(--opb-h, 69px) !important; }
-  html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0):not(#nc-fb0){ height: calc(100svh - 2 * var(--opb-h)) !important; }
-  body > .nc-sub-socials{
-    display: flex; align-items: center; justify-content: center; white-space: nowrap;
-    position: fixed; bottom: 0; z-index: 91; height: var(--opb-h, 69px);
-    left: var(--sb-s, calc(100% - 272px)); width: calc(var(--sb-r, calc(100% - 52px)) - var(--sb-s, calc(100% - 272px)));
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 1; color: #121417;
-  }
-  body > .nc-sub-socials > a.nc-sub-socials__a.nc-sub-socials__a{ color: inherit; text-decoration: none; transition: color .15s ease; }
-  body > .nc-sub-socials > a.nc-sub-socials__a.nc-sub-socials__a:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
-}
-.nc-sub-socials{ display: none; }
-@media (min-width: 1024px){ body > .nc-sub-socials.nc-sub-socials{ display: flex; } }
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0)::before{ background: var(--nc-rule, #B3301E); height: 1px; }
-  body > .nc-sub-socials > span{ white-space: pre; }
-}
-@media (min-width: 1024px) and (min-resolution: 2dppx){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0)::before{ height: 0.5px; }
-}
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0) > .nc-sub-banner__word{ font-style: normal; translate: 0 0.0106em; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0)::before{
-    --sb-mk: linear-gradient(to right, transparent var(--sb-m, 52px), #000 var(--sb-m, 52px),
-      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
-  }
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navr"][style*="--opb-navl"] > .nc-band-dash.nc-band-dash:not(#nc-bd0):not(#nc-bd1){
-    -webkit-mask-image: linear-gradient(to right, transparent var(--opb-navl), #000 var(--opb-navl), #000 var(--opb-navr), transparent var(--opb-navr)) !important;
-    mask-image: linear-gradient(to right, transparent var(--opb-navl), #000 var(--opb-navl), #000 var(--opb-navr), transparent var(--opb-navr)) !important;
-  }
-}
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1) > .nc-sub-banner__word{ position: absolute; left: var(--sb-m, 52px); top: 50%; translate: 0 calc(-50% + 0.0106em); }
-}
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2):not(#nc-fb3):not(#nc-fb4){
-    padding: 0 calc(100% - var(--sb-s, calc(100% - 272px))) 0 var(--sb-m, 52px) !important; gap: 0 !important; justify-content: flex-start !important;
-  }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2) > .nc-sub-banner__word{ position: static; translate: 0 0.0106em; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2) > .nc-sub-banner__line{ margin: 0 auto; }
-}
-@media (min-width: 1024px){
   html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1) svg{ opacity: 0 !important; }
   html body main a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1)::after,html body main a.band-mark--tlm:not(#nc-tlm0):not(#nc-tlm1)::after{
     content: attr(aria-label); position: absolute; left: 50%; bottom: 0; translate: -50% var(--tlm-dy, 0.2436em);
@@ -16983,4 +16909,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1)::after{
     left: 0; right: auto; translate: 0 var(--tlm-dy, 0.2436em);
   }
+}
+@media (min-width: 1024px){
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > a.rail-tlm:not(#nc-tnc0):not(#nc-tnc1),html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .rail-top:is(*, a):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
 }

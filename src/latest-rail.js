@@ -3062,7 +3062,6 @@ window.ncOpenH = function () {
       // side column's text as that and 2, as the rows stand)
       if (!band.style.getPropertyValue('--opb-navl')) band.style.setProperty('--opb-navl', socR0.toFixed(1) + 'px');
       if (!band.style.getPropertyValue('--opb-tncr')) band.style.setProperty('--opb-tncr', (vw0 - 2 * socR0 - sw - 2).toFixed(1) + 'px');
-      if (!band.style.getPropertyValue('--opb-navr')) band.style.setProperty('--opb-navr', (vw0 - socR0).toFixed(1) + 'px');
       // (the column under the socials carried to where they now stand)
       if (window.__ncGut) setTimeout(window.__ncGut, 0);
     }
@@ -3512,25 +3511,15 @@ window.ncOpenH = function () {
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
           // NAME AT THE RULE'S END)
+          // (not till the first fit pass is done since: read mid-pass the posts' edge stood 48 out and the nav jumped
+          // there and back on the load; the opening's estimate holds till then — duo-panel-fit.js __ncFitDone)
           var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
-          if (bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
+          if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
           // (and the run's left end, where the name and The Last Magazine stand since, the nav at the right end)
-          if (bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
+          if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
           // (and the subscribe banner's margins, the band's own: its left run's start and the socials' right edge)
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
-          // (and its rule's runs, the band's own — "Make the bottom banner the page color with a rule on top like the top
-          // rule", 2026-10-28: style.css THE BANNER ON THE PAPER)
-          // (on the socials beside it too since — "Move the socials into the bottom band", 2026-10-28)
-          [sbn, document.querySelector('.nc-sub-socials')].forEach(function (el) {
-            if (el) [['--sb-m', rL], ['--sb-c', cR], ['--sb-s', sL], ['--sb-r', rR]].forEach(function (v) {
-              if (el.style.getPropertyValue(v[0]) !== v[1] + 'px') el.style.setProperty(v[0], v[1] + 'px');
-            });
-          });
-          // (and the nav's right end where the socials' was since, the socials gone to the foot band — "Move the store
-          // archive about where the socials are", 2026-10-28: style.css THE NAV WHERE THE SOCIALS WERE)
-          var navR = (rR - bL) + 'px';
-          if (bandD.style.getPropertyValue('--opb-navr') !== navR) bandD.style.setProperty('--opb-navr', navR);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');
@@ -3541,6 +3530,7 @@ window.ncOpenH = function () {
       }
     }
   };
+  addEventListener('newcritic:fitdone', function () { bandRule(); });
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');
     if (rows) new ResizeObserver(function () { clearTimeout(ruleT); ruleT = setTimeout(bandRule, 120); }).observe(rows);

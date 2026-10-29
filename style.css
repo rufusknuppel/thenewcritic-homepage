@@ -33442,27 +33442,6 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   body > a.nc-sub-banner > span.nc-sub-banner__word, body > a.nc-sub-banner > span.nc-sub-banner__line{ flex: none; }
 }
 
-/* THE BANNER ON THE PAPER (2026-10-28 — "Make the bottom banner the page color with a rule on top like the top rule"):
-   the bar the page's paper, its words still the charcoal and the highlight's red under the hand, and along its top the
-   band's rule in its two runs, the band's left end to the posts' edge and the side column's text to the socials' right
-   (--sb-m, --sb-c, --sb-s, --sb-r: latest-rail.js bandRule) */
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3),
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible){ background: #FAF9F6 !important; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E) !important; }
-  body > a.nc-sub-banner::before{
-    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none;
-    /* (half a pixel, the band rule's own drawing — "Make bottom rule same .5 width", 2026-10-28: the colour in the
-       pixel's top half, the runs a mask) */
-    background: linear-gradient(to bottom, var(--nc-rule, #B3301E) 50%, transparent 50%);
-    /* (one run since, not broken over the inner margin — "Connect the rule on the bottom", 2026-10-28) */
-    --sb-mk: linear-gradient(to right,
-      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px),
-      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
-    -webkit-mask-image: var(--sb-mk); mask-image: var(--sb-mk);
-  }
-}
-
 /* THE LATEST'S REVEAL EASED (2026-10-28 — "I want the latest reveal to be smoother"): The Latest and its rule, and the
    bird, came down at one speed on the scroll and stopped dead as the band pinned; now each's way down the window eased in
    and out over the same scroll, setting off gently and settling into place. The travel split in two: the page's own
@@ -33490,90 +33469,6 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   }
 }
 
-/* THE NAV WHERE THE SOCIALS WERE, THE SOCIALS IN THE FOOT BAND (2026-10-28 — "Move the store archive about where the
-   socials are. Move the socials into the bottom band. Make the bottom band the same height as the top band. Add gap back
-   to the bottom rule. Center subscribe in the left bottom band"): the band's nav ending where its socials did, the
-   rule's right end over the side column (--opb-navr: latest-rail.js bandRule), the socials there unseen and kept only for
-   the measure the band is seated by; the foot band as tall as the band (--opb-h), its rule in the band's two runs again,
-   Subscribe and its line on the middle of the left run, only that run the link, and the socials over the side column's
-   run, as they stood in the band */
-@media (min-width: 1024px){
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navr"] > .rail-top.rail-top:not(#nc-nv0):not(#nc-nv1):not(#nc-nv2){
-    left: var(--opb-navr) !important; translate: -100% -50% !important;
-  }
-  html body main.has-mega .op-track > .op-band.op-band > .rail-socials.rail-socials:not(#nc-nv0):not(#nc-nv1):not(#nc-nv2){ visibility: hidden !important; pointer-events: none !important; }
-
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2):not(#nc-fb3){
-    height: var(--opb-h, 69px) !important; padding: 0 calc(100% - var(--sb-c, 75%)) 0 var(--sb-m, 52px) !important;
-    justify-content: center !important; gap: 108px !important; pointer-events: none;
-  }
-  body > a.nc-sub-banner > span{ pointer-events: auto; }
-  body > a.nc-sub-banner::after{
-    content: ""; position: absolute; top: 0; bottom: 0; left: var(--sb-m, 52px); width: calc(var(--sb-c, 75%) - var(--sb-m, 52px));
-    pointer-events: auto;
-  }
-  body > a.nc-sub-banner.nc-sub-banner::before{
-    --sb-mk: linear-gradient(to right,
-      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px), #000 var(--sb-c, 75%), transparent var(--sb-c, 75%),
-      transparent var(--sb-s, 100%), #000 var(--sb-s, 100%),
-      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
-  }
-  body:has(> a.nc-sub-banner).has-sb.has-sb, body:has(> a.nc-sub-banner):not(#nc-fb0){ padding-bottom: var(--opb-h, 69px) !important; }
-  html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0):not(#nc-fb0){ height: calc(100svh - 2 * var(--opb-h)) !important; }
-
-  body > .nc-sub-socials{
-    display: flex; align-items: center; justify-content: center; white-space: nowrap;
-    position: fixed; bottom: 0; z-index: 91; height: var(--opb-h, 69px);
-    left: var(--sb-s, calc(100% - 272px)); width: calc(var(--sb-r, calc(100% - 52px)) - var(--sb-s, calc(100% - 272px)));
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 1; color: #121417;
-  }
-  body > .nc-sub-socials > a.nc-sub-socials__a.nc-sub-socials__a{ color: inherit; text-decoration: none; transition: color .15s ease; }
-  body > .nc-sub-socials > a.nc-sub-socials__a.nc-sub-socials__a:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
-}
-.nc-sub-socials{ display: none; }
-@media (min-width: 1024px){ body > .nc-sub-socials.nc-sub-socials{ display: flex; } }
-/* (the foot band's rule one of the window's own pixels, as the band's is drawn: a whole pixel on a plain screen, half on
-   a sharp one — the half-filled pixel drew nothing on a plain screen; and the socials' commas each with its space, the
-   flex row had taken them) */
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0)::before{ background: var(--nc-rule, #B3301E); height: 1px; }
-  body > .nc-sub-socials > span{ white-space: pre; }
-}
-@media (min-width: 1024px) and (min-resolution: 2dppx){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0)::before{ height: 0.5px; }
-}
-
-/* SUBSCRIBE UPRIGHT, THE RULES WHOLE (2026-10-28 — "Unitalicize subscribe, connect top and bottom rules"): the foot
-   band's Subscribe in the roman, set on the bar's middle as the roman line is; the band's rule and the foot band's each
-   one run, the left margin to the right, not broken over the side column (the band's: the left run's start to the nav's
-   end, --opb-navl to --opb-navr; the foot band's: --sb-m to --sb-r) */
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0) > .nc-sub-banner__word{ font-style: normal; translate: 0 0.0106em; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0)::before{
-    --sb-mk: linear-gradient(to right, transparent var(--sb-m, 52px), #000 var(--sb-m, 52px),
-      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
-  }
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navr"][style*="--opb-navl"] > .nc-band-dash.nc-band-dash:not(#nc-bd0):not(#nc-bd1){
-    -webkit-mask-image: linear-gradient(to right, transparent var(--opb-navl), #000 var(--opb-navl), #000 var(--opb-navr), transparent var(--opb-navr)) !important;
-    mask-image: linear-gradient(to right, transparent var(--opb-navl), #000 var(--opb-navl), #000 var(--opb-navr), transparent var(--opb-navr)) !important;
-  }
-}
-/* (Subscribe at the far left since, on the rules' left end, the line alone on the left run's middle — "Move subscribe to
-   the far left", 2026-10-28) */
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1) > .nc-sub-banner__word{ position: absolute; left: var(--sb-m, 52px); top: 50%; translate: 0 calc(-50% + 0.0106em); }
-}
-/* (the line on the middle of the room between Subscribe and the socials since — "Have sign up message equidistant
-   between subscribe and socials", 2026-10-28: Subscribe back in the row at the left margin, the row ending where the
-   socials' text begins (--sb-s), the line's margins sharing what is left) */
-@media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2):not(#nc-fb3):not(#nc-fb4){
-    padding: 0 calc(100% - var(--sb-s, calc(100% - 272px))) 0 var(--sb-m, 52px) !important; gap: 0 !important; justify-content: flex-start !important;
-  }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2) > .nc-sub-banner__word{ position: static; translate: 0 0.0106em; }
-  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2) > .nc-sub-banner__line{ margin: 0 auto; }
-}
-
 /* THE LAST MAGAZINE IN ITALIC GARAMOND AGAIN (2026-10-28 — "Make the last magazine back to Italics"): as it stood that
    afternoon — the band's tagline and the foot's in the nav's Garamond, italic, at the nav's 19.5, the spaced capitals'
    outlines kept unseen as the box the band lays out round, the words' baseline on its foot; in the band flush left at
@@ -33591,4 +33486,11 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1)::after{
     left: 0; right: auto; translate: 0 var(--tlm-dy, 0.2436em);
   }
+}
+
+/* (the front page's band name and nav unseen till they are seated — "When the initial site loads, I can see the last
+   magazine flip position with the nav", 2026-10-28: a frame or two before the opening's lay drew them where they stood
+   before the flip; the archive, About and the store keep them where they are) */
+@media (min-width: 1024px){
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > :is(a.rail-tlm, .rail-top):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
 }

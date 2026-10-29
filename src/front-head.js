@@ -74,15 +74,6 @@ window.ncSubW = window.ncSubW || function (nav) {
       de.style.setProperty('--arc-hold-x', (sq.left - colX).toFixed(2) + 'px');
       de.style.setProperty('--arc-hold-w', sq.width.toFixed(2) + 'px');
       if (tR.height) de.style.setProperty('--arc-bird', tR.height.toFixed(2) + 'px');
-      // (the nav where the socials stood and the foot band's runs, as the front page's bandRule sets them — "Move the
-      // store archive about where the socials are. Move the socials into the bottom band", 2026-10-28: the left run
-      // from the socials' margin mirrored to the side column's line, the right over the socials' own box)
-      band.style.setProperty('--opb-navr', sq.right.toFixed(1) + 'px');
-      [document.querySelector('.nc-sub-banner'), document.querySelector('.nc-sub-socials')].forEach(function (el) {
-        if (el) [['--sb-m', vw - sq.right], ['--sb-c', colX], ['--sb-s', sq.left], ['--sb-r', sq.right]].forEach(function (v) {
-          el.style.setProperty(v[0], Math.round(v[1]) + 'px');
-        });
-      });
     }
   };
   var pinned = null;
