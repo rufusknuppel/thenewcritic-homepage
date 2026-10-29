@@ -12688,7 +12688,18 @@ window.ncOpenH = function () {
       var nv0 = nvA.length && nvA[0].getBoundingClientRect(), so1 = soA.length && soA[soA.length - 1].getBoundingClientRect();
       if (nv0 && so1 && nv0.width && so1.width) {
         var rL = Math.round(nv0.left), rR = Math.round(so1.right);
-        bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
+        var scE = document.querySelector('.latest-rail__hold > .rail-sections'), scQ = scE && scE.getBoundingClientRect();
+        var cRx = -1e9;
+        [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
+          var pbx = window.__ncPicBox && window.__ncPicBox(c), tx = c.querySelector('.swap-body-text'), txq = tx && tx.getBoundingClientRect();
+          if (pbx) cRx = Math.max(cRx, pbx.r);
+          if (txq && txq.width) cRx = Math.max(cRx, txq.right);
+        });
+        var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
+        if (cR > rL && sL > cR && sL < rR) {
+          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
+          bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
+        } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');
       if (bd.__st !== bkey) {
