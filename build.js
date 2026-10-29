@@ -327,7 +327,8 @@ function contentSocials() {
 function subBanner() {
   return `<a class="nc-sub-banner" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic">`
     + `<span class="nc-sub-banner__word">Subscribe</span>`
-    + `<span class="nc-sub-banner__line">${escapeHtml(SUBSCRIBE_BELOW[0])}</span></a>`;
+    // (the price in the line since — "or become a paid subscriber for $30 a year", 2026-10-28)
+    + `<span class="nc-sub-banner__line">${escapeHtml(SUBSCRIBE_BELOW[0].replace(/\.$/, ` for ${SUBSCRIBE_PITCH_PARTS[1]}.`))}</span></a>`;
 }
 function opBand(currentKey = '') {
   const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
