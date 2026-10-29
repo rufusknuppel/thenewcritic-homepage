@@ -319,10 +319,22 @@ function contentSocials() {
 // (the page the reader is on marked in its nav, its word in the page's highlight at rest — "On archive and about pages,
 // make the archive or about in the nav bar black resting or highlight", 2026-10-22: aria-current; style.css THE PAGE
 // IN THE NAV)
+// THE SUBSCRIBE BANNER (2026-10-28 — "Remove subscribe from top band. Place in a banner at the bottom of the site. 54px
+// tall, charcoal background, white text. Subscribe in italics on the left, with the old subscribe message featured in
+// previous Subscribe bands"): pinned to the window's foot, the whole bar one link to the subscribe page, Subscribe in the
+// nav's Garamond italic at the band's left margin and the old Subscribe band's line (SUBSCRIBE_BELOW) out to its right
+// margin (style.css THE SUBSCRIBE BANNER; latest-rail.js bandRule sets the margins)
+function subBanner() {
+  return `<a class="nc-sub-banner" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic">`
+    + `<span class="nc-sub-banner__word">Subscribe</span>`
+    + `<span class="nc-sub-banner__line">${escapeHtml(SUBSCRIBE_BELOW[0])}</span></a>`;
+}
 function opBand(currentKey = '') {
   const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
   const cur = (k) => (k === currentKey ? ' aria-current="page"' : '');
-  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<a class="rail-top__a" href="${STORE_HREF}"${cur('store')}>Store</a>`]
+  // (Subscribe out of the band since, to the banner pinned to the window's foot — "Remove subscribe from top band. Place
+  // in a banner at the bottom of the site", 2026-10-28: subBanner)
+  const nav = [`<a class="rail-top__a" href="${STORE_HREF}"${cur('store')}>Store</a>`]
     .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}"${cur('archive')}>Archive</a>`] : [])
     .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
@@ -4553,6 +4565,7 @@ ${duoHtml}
 ${renderMarginalia()}
 </main>
 ${cornerBird()}
+${subBanner()}
 
 ${renderFooter()}
 
@@ -5426,6 +5439,7 @@ ${preMain}
 <main id="main">
 ${bodyHtml}
 </main>
+${subBanner()}
 
 ${bare ? '' : renderFooter()}
 

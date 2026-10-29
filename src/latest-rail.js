@@ -2861,7 +2861,9 @@ var ncStemX = function () {
                 // up under the band out of sight, coming down on the scroll as the bird goes down, landing as the band pins:
                 // the stack seated where it lands, --rl-pt, and carried from --rl-st0 over it to nothing)
                 var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
-                var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - window.ncOpenH() : hr.height;
+                // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
+                var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
+                var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
                 var st0 = -(cap1 + stS + gS + 4);
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
@@ -3485,6 +3487,9 @@ window.ncOpenH = function () {
           if (bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
           // (and the run's left end, where the name and The Last Magazine stand since, the nav at the right end)
           if (bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
+          // (and the subscribe banner's margins, the band's own: its left run's start and the socials' right edge)
+          var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
+          if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');

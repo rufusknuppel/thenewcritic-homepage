@@ -33389,3 +33389,24 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold:not(#nc-rl0){ clip-path: inset(0 -100vw -100vh -100vw); }
 }
+
+/* THE SUBSCRIBE BANNER (2026-10-28 — "Remove subscribe from top band. Place in a banner at the bottom of the site. 54px
+   tall, charcoal background, white text. Subscribe in italics on the left, with the old subscribe message featured in
+   previous Subscribe bands"): pinned to the window's foot from 1024 up, the charcoal 54 tall, Subscribe in the nav's
+   Garamond italic at the band's left margin and the line in its roman out to the band's right margin (--sb-m:
+   latest-rail.js bandRule), both on the bar's middle, the paper's white on the charcoal and the mark's colour under the
+   hand; the page given 54 at its foot so its end clears the bar, and the side column ending on the bar's top */
+.nc-sub-banner{ display: none; }
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner{
+    display: flex; align-items: center; justify-content: space-between; gap: 36px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; height: 54px; box-sizing: border-box;
+    padding: 0 var(--sb-m, 52px); background: #121417; color: #FAF9F6; text-decoration: none;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 1; white-space: nowrap;
+  }
+  body > a.nc-sub-banner > .nc-sub-banner__word{ font-style: italic; }
+  body > a.nc-sub-banner > span{ transition: color .15s ease; }
+  body > a.nc-sub-banner:is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E); }
+  body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
+  html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
+}
