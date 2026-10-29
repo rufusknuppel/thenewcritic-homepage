@@ -9964,6 +9964,9 @@
                 // box's charcoal top — THE HEAD OVER THE DIVIDER — and the ink again since, "Make the whole thing background
                 // colored")
                 DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                // (the Work Sans capitals again since, the writer, the section and the date — "Make authors, sections and dates
+                // Work Sans all caps", 2026-10-28)
+                DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 var wide = window.innerWidth >= 1024;
                 // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
