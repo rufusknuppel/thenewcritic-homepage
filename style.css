@@ -33366,33 +33366,17 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   }
 }
 
-/* THE LAST MAGAZINE IN ITALIC GARAMOND (2026-10-28 — "Use italic garamond for The Last Magazine"): the band's tagline
-   and the foot's set in the nav's Garamond, italic, at the nav's 19.5, in place of the spaced capitals' outlines; the
-   outlines kept, unseen, as the box the band lays out round, the words' baseline on its foot */
-@media (min-width: 1024px){
-  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1) svg{ opacity: 0 !important; }
-  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1)::after{
-    content: attr(aria-label); position: absolute; left: 50%; bottom: 0; translate: -50% var(--tlm-dy, 0.2436em);
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: italic; font-weight: 400;
-    font-size: 19.5px; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap;
-    color: var(--k, #121417); transition: color .15s ease; pointer-events: none;
-  }
-  html body main .op-band.is-tlm-hot > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1)::after,
-  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1):hover::after{ color: var(--nc-mark, #B3301E); }
-}
+/* (THE LAST MAGAZINE IN ITALIC GARAMOND for an afternoon — "Use italic garamond for The Last Magazine", 2026-10-28 — and
+   the spaced capitals' outlines again since, "use the old last magazine") */
 
 /* THE NAME AT THE RULE'S END (2026-10-28 — "Move the new critic to the right edge of the left rule in the band", "move
    the last magazine too"; flipped since with the nav — "flip the last magazine/the new critic and nav items"): the band's
-   THE NEW CRITIC and The Last Magazine from the left end of the band's rule (--opb-navl), the words flush left in their
-   box, and the nav (Subscribe, Store, Archive, About) ending where the rule breaks for the side column, the posts' right
+   THE NEW CRITIC and The Last Magazine from the left end of the band's rule (--opb-navl), and the nav (Subscribe, Store, Archive, About) ending where the rule breaks for the side column, the posts' right
    edge (--opb-tncr: latest-rail.js bandRule); as before till those are read */
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-tnc0):not(#nc-tnc1),
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1){
     left: var(--opb-navl) !important; translate: 0 -50% !important;
-  }
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1)::after{
-    left: 0; right: auto; translate: 0 var(--tlm-dy, 0.2436em);
   }
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > .rail-top.rail-top:not(#nc-tnc0):not(#nc-tnc1){
     left: var(--opb-tncr) !important; translate: -100% -50% !important;
