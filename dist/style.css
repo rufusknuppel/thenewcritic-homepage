@@ -16890,3 +16890,23 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     -webkit-mask-image: var(--sb-mk); mask-image: var(--sb-mk);
   }
 }
+@property --rl-sta { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --rl-stb { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --rl-swa { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --rl-swb { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-st-a { from { --rl-sta: 0px; } to { --rl-sta: var(--op-s, 0px); } }
+@keyframes nc-st-b { from { --rl-stb: 0px; } to { --rl-stb: calc(var(--rl-stdy, 0px) - var(--rl-st0, 0px) - var(--op-s, 0px)); } }
+@keyframes nc-sw-a { from { --rl-swa: 0px; } to { --rl-swa: var(--op-s, 0px); } }
+@keyframes nc-sw-b { from { --rl-swb: 0px; } to { --rl-swb: calc(var(--rl-swdy, 0px) - var(--op-s, 0px)); } }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .rail-sections,html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .latest-rail__in{
+    animation: nc-st-a linear both, nc-st-b cubic-bezier(.45, 0, .25, 1) both;
+    animation-timeline: scroll(root), scroll(root); animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px);
+    translate: 0 round(nearest, calc(var(--rl-st0, 0px) + var(--rl-sta, 0px) + var(--rl-stb, 0px)), 1px);
+  }
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow{
+    animation: nc-sw-a linear both, nc-sw-b cubic-bezier(.45, 0, .25, 1) both !important;
+    animation-timeline: scroll(root), scroll(root) !important; animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px) !important;
+    translate: 0 round(nearest, calc(var(--rl-swa, 0px) + var(--rl-swb, 0px)), 1px) !important;
+  }
+}
