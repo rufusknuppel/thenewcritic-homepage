@@ -33435,3 +33435,12 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2) > span{ color: #121417 !important; }
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):is(:hover, :focus-visible) > span{ color: #FAF9F6 !important; }
 }
+/* (Subscribe in the Work Sans capitals since, the site's labels' 13 on their 0.26 spacing, upright — the face has no
+   italic here — "Have Subscribe in the bottom band be work sans", "All caps", 2026-10-28; its capitals on the bar's
+   middle, --sbw-dy) */
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0) > .nc-sub-banner__word{
+    font-family: 'Work Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-style: normal; font-weight: 400;
+    font-size: 13px; letter-spacing: 0.26px; text-transform: uppercase; translate: 0 var(--sbw-dy, -0.21px);
+  }
+}
