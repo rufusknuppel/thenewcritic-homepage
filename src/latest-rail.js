@@ -3495,13 +3495,18 @@ window.ncOpenH = function () {
         // and the column's comma line's left edge to the socials', a mask the line is seen through)
         var scE = document.querySelector('.latest-rail__hold > .rail-sections'), scQ = scE && scE.getBoundingClientRect();
         // (the posts' edge off their pictures and their text, not their boxes: the words' box runs on past the text)
-        var cRx = -1e9;
+        var cRx = -1e9, cLx = 1e9;
         [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
           var pbx = window.__ncPicBox && window.__ncPicBox(c), tx = c.querySelector('.swap-body-text'), txq = tx && tx.getBoundingClientRect();
-          if (pbx) cRx = Math.max(cRx, pbx.r);
+          if (pbx) { cRx = Math.max(cRx, pbx.r); cLx = Math.min(cLx, pbx.l); }
           if (txq && txq.width) cRx = Math.max(cRx, txq.right);
         });
         var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
+        // (the left end on the pictures' left edge since, where they come within a hand of it, not a few pixels short of
+        // them — "Why aren't these aligned?", 2026-10-28: under 1366 the socials' margin is 44–49, the left pictures' 53;
+        // the name, The Last Magazine and the banner follow it)
+        var cL = Math.round(cLx);
+        if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
           var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;

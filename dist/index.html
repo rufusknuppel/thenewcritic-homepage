@@ -12707,13 +12707,15 @@ window.ncOpenH = function () {
       if (nv0 && so1 && nv0.width && so1.width) {
         var rR = Math.round(so1.right), rL = bW - rR;
         var scE = document.querySelector('.latest-rail__hold > .rail-sections'), scQ = scE && scE.getBoundingClientRect();
-        var cRx = -1e9;
+        var cRx = -1e9, cLx = 1e9;
         [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
           var pbx = window.__ncPicBox && window.__ncPicBox(c), tx = c.querySelector('.swap-body-text'), txq = tx && tx.getBoundingClientRect();
-          if (pbx) cRx = Math.max(cRx, pbx.r);
+          if (pbx) { cRx = Math.max(cRx, pbx.r); cLx = Math.min(cLx, pbx.l); }
           if (txq && txq.width) cRx = Math.max(cRx, txq.right);
         });
         var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
+        var cL = Math.round(cLx);
+        if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
           var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
