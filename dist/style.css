@@ -16860,6 +16860,16 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner:is(:hover, :focus-visible) > span{ color: #FAF9F6; }
   body > a.nc-sub-banner > .nc-sub-banner__word{ translate: 0 0.1056em; }
   body > a.nc-sub-banner > .nc-sub-banner__line{ translate: 0 0.0106em; }
+  body > a.nc-sub-banner.nc-sub-banner{ justify-content: center; gap: 1em; }
+  body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner{ gap: 108px; }
   body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
   html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
+}
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2),
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):is(:hover, :focus-visible){
+    background: var(--nc-mark, #B3301E) !important; color: #121417 !important; box-shadow: none !important; outline: none !important;
+  }
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2) > span{ color: #121417 !important; }
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):is(:hover, :focus-visible) > span{ color: #FAF9F6 !important; }
 }
