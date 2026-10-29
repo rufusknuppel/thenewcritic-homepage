@@ -2840,9 +2840,12 @@ var ncStemX = function () {
                   var dT0 = (tq0.top + (window.pageYOffset || 0) + tq0.height / 2 - window.ncOpenH()) - swH / 2 - swT0;
                   swT0 += dT0; cap0 += dT0;
                 }
-                hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
                 var swT1 = gS - aN, cap1 = swT1 + swH + gS;
+                // (and The Latest its final space under the bird from the opening since, the whole column carried as one —
+                // "whole column should load with final spacing", 2026-10-28)
+                if (tq0 && tq0.height) cap0 = swT0 + swH + gS;
+                hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');

@@ -8942,6 +8942,10 @@
   // (and 54 off the post's far edge, the picture 54 narrower for it — "Reduce the images by 54px to add a 54px margin
   // on the far side of the body text", 2026-10-19: the words' column 54 wider, the text as wide, padded 54 on its far side)
   var WORDS_FAR = 54;
+  // (0 since, its 54 the picture's again: the words on the right went out to the rule that is gone, so their column
+  // stood 54 wider than the top post's — "All title columns should be the same width as the top title column",
+  // 2026-10-28; BOX_EDGE)
+  WORDS_FAR = 0;
   // (the words 40.5 in from the box round them since, both sides — j.bp, below)
   var BOX_PAD = 40.5;
   // (and the box 54 off the post's outer edge, where the side column's rule stands — j.bp, below)
