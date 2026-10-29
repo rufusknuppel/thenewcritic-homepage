@@ -33379,24 +33379,20 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1):hover::after{ color: var(--nc-mark, #B3301E); }
 }
 
-/* THE NAME AT THE RULE'S END (2026-10-28 — "Move the new critic to the right edge of the left rule in the band"): the
-   pinned band's THE NEW CRITIC with its right edge where the band's rule breaks for the margin over the side column,
-   the posts' right edge (--opb-tncr: latest-rail.js bandRule); centred as before till that is read */
+/* THE NAME AT THE RULE'S END (2026-10-28 — "Move the new critic to the right edge of the left rule in the band", "move
+   the last magazine too"; flipped since with the nav — "flip the last magazine/the new critic and nav items"): the band's
+   THE NEW CRITIC and The Last Magazine from the left end of the band's rule (--opb-navl), the words flush left in their
+   box, and the nav (Subscribe, Store, Archive, About) ending where the rule breaks for the side column, the posts' right
+   edge (--opb-tncr: latest-rail.js bandRule); as before till those are read */
 @media (min-width: 1024px){
-  html body main.has-mega .op-track > .op-band.op-band > a.op-tnc.op-tnc:not(#nc-tnc0):not(#nc-tnc1){
-    left: var(--opb-tncr, var(--opb-tlm, 50%)) !important;
+  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-tnc0):not(#nc-tnc1),
+  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1){
+    left: var(--opb-navl) !important; translate: 0 -50% !important;
   }
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > a.op-tnc.op-tnc:not(#nc-tnc0):not(#nc-tnc1){
-    translate: -100% -50% !important;
+  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1)::after{
+    left: 0; right: auto; translate: 0 var(--tlm-dy, 0.2436em);
   }
-}
-/* (and The Last Magazine with it — "move the last magazine too", 2026-10-28: its box's right edge on the same end, and
-   the italic words flush right in it, so their own ink ends there) */
-@media (min-width: 1024px){
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1){
+  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > .rail-top.rail-top:not(#nc-tnc0):not(#nc-tnc1){
     left: var(--opb-tncr) !important; translate: -100% -50% !important;
-  }
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1)::after{
-    left: auto; right: 0; translate: 0 var(--tlm-dy, 0.2436em);
   }
 }

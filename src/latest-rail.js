@@ -3452,7 +3452,9 @@ window.ncOpenH = function () {
       var nvA = bandD.querySelectorAll('a.rail-top__a, span.rail-top__a'), soA = bandD.querySelectorAll('a.rail-socials__a');
       var nv0 = nvA.length && nvA[0].getBoundingClientRect(), so1 = soA.length && soA[soA.length - 1].getBoundingClientRect();
       if (nv0 && so1 && nv0.width && so1.width) {
-        var rL = Math.round(nv0.left), rR = Math.round(so1.right);
+        // (the left end off the socials' margin since, mirrored, not off Subscribe: the nav stands at the left run's other
+        // end now — "flip the last magazine/the new critic and nav items", 2026-10-28)
+        var rR = Math.round(so1.right), rL = bW - rR;
         // (and broken over the inner margin since, between the posts' right edge and the side column's text — "Break top
         // band too over inner margin between side column and content", 2026-10-28: two runs, Subscribe to the posts' edge
         // and the column's comma line's left edge to the socials', a mask the line is seen through)
@@ -3471,8 +3473,10 @@ window.ncOpenH = function () {
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
           // NAME AT THE RULE'S END)
-          var tncR = (cR - bL) + 'px';
+          var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
           if (bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
+          // (and the run's left end, where the name and The Last Magazine stand since, the nav at the right end)
+          if (bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=e126eb4a">
+<link rel="stylesheet" href="style.css?v=9e348efc">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12687,7 +12687,7 @@ window.ncOpenH = function () {
       var nvA = bandD.querySelectorAll('a.rail-top__a, span.rail-top__a'), soA = bandD.querySelectorAll('a.rail-socials__a');
       var nv0 = nvA.length && nvA[0].getBoundingClientRect(), so1 = soA.length && soA[soA.length - 1].getBoundingClientRect();
       if (nv0 && so1 && nv0.width && so1.width) {
-        var rL = Math.round(nv0.left), rR = Math.round(so1.right);
+        var rR = Math.round(so1.right), rL = bW - rR;
         var scE = document.querySelector('.latest-rail__hold > .rail-sections'), scQ = scE && scE.getBoundingClientRect();
         var cRx = -1e9;
         [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
@@ -12699,8 +12699,9 @@ window.ncOpenH = function () {
         if (cR > rL && sL > cR && sL < rR) {
           var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
-          var tncR = (cR - bL) + 'px';
+          var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
           if (bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
+          if (bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');
