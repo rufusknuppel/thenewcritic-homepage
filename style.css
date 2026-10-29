@@ -33343,3 +33343,10 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     background: var(--nc-outline, #D6D6D6);
   }
 }
+
+/* THE RIGHT LINE GONE (2026-10-28 — "Remove the line between the sidebar and the content. Adjust content size
+   accordingly"): the column's side rule on the right not drawn either, and the 54 the pictures and words kept off it
+   given back (duo-panel-fit.js BOX_EDGE, PIC_FAR) */
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side--r.nc-col-side--r{ display: none; }
+}

@@ -8946,10 +8946,16 @@
   var BOX_PAD = 40.5;
   // (and the box 54 off the post's outer edge, where the side column's rule stands — j.bp, below)
   var BOX_EDGE = 54;
+  // (0 since, the side column's rule gone and its 54 given back — "Remove the line between the sidebar and the content.
+  // Adjust content size accordingly", 2026-10-28: the words and pictures out to where the rule stood; style.css THE
+  // RIGHT LINE GONE)
+  BOX_EDGE = 0;
   // (the picture 54 in from the post's outer edge — columnEdge, PIC_FAR — and the rows' pictures 108 shorter — fitRowScreens,
   // POST_TRIM)
   // (36 since — "Increase image height by 72px", 2026-10-20: style.css --card-words with it)
   var PIC_FAR = 54, POST_TRIM = 36;
+  // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
+  PIC_FAR = 0;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the

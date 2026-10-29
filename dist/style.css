@@ -16824,3 +16824,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     background: var(--nc-outline, #D6D6D6);
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega > .nc-col-side--r.nc-col-side--r{ display: none; }
+}
