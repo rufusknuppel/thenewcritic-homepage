@@ -16862,8 +16862,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner > .nc-sub-banner__line{ translate: 0 0.0106em; }
   body > a.nc-sub-banner.nc-sub-banner{ justify-content: center; gap: 1em; }
   body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner{ gap: 108px; }
-  body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner{ overflow: hidden; padding: 0; }
-  body > a.nc-sub-banner > .nc-sub-banner__word{ flex: none; }
   body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
   html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
 }
