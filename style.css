@@ -33563,3 +33563,13 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1) > .nc-sub-banner__word{ position: absolute; left: var(--sb-m, 52px); top: 50%; translate: 0 calc(-50% + 0.0106em); }
 }
+/* (the line on the middle of the room between Subscribe and the socials since — "Have sign up message equidistant
+   between subscribe and socials", 2026-10-28: Subscribe back in the row at the left margin, the row ending where the
+   socials' text begins (--sb-s), the line's margins sharing what is left) */
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2):not(#nc-fb3):not(#nc-fb4){
+    padding: 0 calc(100% - var(--sb-s, calc(100% - 272px))) 0 var(--sb-m, 52px) !important; gap: 0 !important; justify-content: flex-start !important;
+  }
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2) > .nc-sub-banner__word{ position: static; translate: 0 0.0106em; }
+  body > a.nc-sub-banner.nc-sub-banner:not(#nc-fb0):not(#nc-fb1):not(#nc-fb2) > .nc-sub-banner__line{ margin: 0 auto; }
+}
