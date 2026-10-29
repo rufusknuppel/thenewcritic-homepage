@@ -2831,6 +2831,15 @@ var ncStemX = function () {
                 // (The Latest over the bird for an hour — "switch the bird and the latest", 2026-10-20 — and the bird over it
                 // again since, "flip bird and the latest positions")
                 var swT0 = g0 - aN, cap0 = swT0 + swH + g0;
+                // (the bird's middle on the top post's title's middle at the opening since, The Latest the same space under
+                // it, the two carried on the scroll to the even spacing as before — "start the bird in line with middle of
+                // the title, then have the column pull in its final positioning", 2026-10-28: the title's middle in the page
+                // less the hold's top at the opening, the band's foot, ncOpenH)
+                var ttl0 = document.querySelector('.page-rows section.card .duo-half--mega .swap-body-title'), tq0 = ttl0 && ttl0.getBoundingClientRect();
+                if (tq0 && tq0.height && window.ncOpenH && window.ncOpenH() > 0) {
+                  var dT0 = (tq0.top + (window.pageYOffset || 0) + tq0.height / 2 - window.ncOpenH()) - swH / 2 - swT0;
+                  swT0 += dT0; cap0 += dT0;
+                }
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
                 var gS = Math.max(20, (hr.height + aN - swH - stS) / 3);
                 var swT1 = gS - aN, cap1 = swT1 + swH + gS;
