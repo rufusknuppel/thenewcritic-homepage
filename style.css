@@ -33444,3 +33444,11 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     font-size: 13px; letter-spacing: 0.26px; text-transform: uppercase; translate: 0 var(--sbw-dy, -0.21px);
   }
 }
+/* (each Subscribe on the middle of the bar between the line and the window's side since — "Center subscribes between
+   message and sides", 2026-10-28: the line on the bar's middle, either side of it a box to the window's side with the
+   word on its middle) */
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 0; justify-content: space-between; }
+  body > a.nc-sub-banner:not(#nc-sb0):not(#nc-sb1) > .nc-sub-banner__word.nc-sub-banner__word{ flex: 1 1 0; min-width: 0; text-align: center; }
+  body > a.nc-sub-banner > .nc-sub-banner__line.nc-sub-banner__line{ flex: none; }
+}

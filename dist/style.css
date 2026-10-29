@@ -16879,3 +16879,8 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     font-size: 13px; letter-spacing: 0.26px; text-transform: uppercase; translate: 0 var(--sbw-dy, -0.21px);
   }
 }
+@media (min-width: 1024px){
+  body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 0; justify-content: space-between; }
+  body > a.nc-sub-banner:not(#nc-sb0):not(#nc-sb1) > .nc-sub-banner__word.nc-sub-banner__word{ flex: 1 1 0; min-width: 0; text-align: center; }
+  body > a.nc-sub-banner > .nc-sub-banner__line.nc-sub-banner__line{ flex: none; }
+}
