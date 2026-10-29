@@ -16917,3 +16917,8 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     animation-timing-function: linear, linear !important;
   }
 }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .rail-sections:not(#nc-ln0),html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .latest-rail__in:not(#nc-ln0){
+    animation-timing-function: linear, linear !important;
+  }
+}
