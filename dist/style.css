@@ -16828,9 +16828,10 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega > .nc-col-side--r.nc-col-side--r{ display: none; }
 }
 @media (min-width: 1024px){
-  html body main .latest-rail__hold.latest-rail__hold > .rail-swallow::after{
-    content: ''; position: absolute; left: 50%; top: calc(100% - var(--rl-gsi, 0px) + var(--rl-gs, 0px)); width: var(--rl-rw, 0px);
-    height: 0.5px; translate: -50% 0; background: var(--nc-outline, #D6D6D6);
+  html body main .latest-rail__hold.latest-rail__hold > .rail-sections{ position: relative; }
+  html body main .latest-rail__hold.latest-rail__hold > .rail-sections::before{
+    content: ''; position: absolute; left: 50%; top: var(--rl-rt, 0px); width: var(--rl-rw, 0px);
+    height: 0.5px; translate: -50% 0; background: var(--nc-outline, #D6D6D6); pointer-events: none;
   }
 }
 @media (min-width: 1024px){

@@ -33352,13 +33352,15 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 }
 
 /* THE RULE UNDER THE BIRD (2026-10-28 — "Add a rule between the bird and the latest"): half a pixel of the posts'
-   rules one space under the bird's ink and one over The Latest's capitals — the four spaces of the column even, "space the
-   rule with equal padding on top and bottom as above and below bird/the latest" — as wide as the sections' comma line,
-   carried with the bird (--rl-gs the space, --rl-gsi the box's foot under the ink, --rl-rw: latest-rail.js) */
+   rules one space under the bird's ink and one over The Latest's capitals once they land — the four spaces of the column
+   even, "space the rule with equal padding on top and bottom as above and below bird/the latest" — as wide as the
+   sections' comma line; drawn on that line since, so it comes up from under the window with The Latest on the scroll
+   ("then have the rule and the latest pull up and settle on scroll"; --rl-rt, --rl-rw: latest-rail.js) */
 @media (min-width: 1024px){
-  html body main .latest-rail__hold.latest-rail__hold > .rail-swallow::after{
-    content: ''; position: absolute; left: 50%; top: calc(100% - var(--rl-gsi, 0px) + var(--rl-gs, 0px)); width: var(--rl-rw, 0px);
-    height: 0.5px; translate: -50% 0; background: var(--nc-outline, #D6D6D6);
+  html body main .latest-rail__hold.latest-rail__hold > .rail-sections{ position: relative; }
+  html body main .latest-rail__hold.latest-rail__hold > .rail-sections::before{
+    content: ''; position: absolute; left: 50%; top: var(--rl-rt, 0px); width: var(--rl-rw, 0px);
+    height: 0.5px; translate: -50% 0; background: var(--nc-outline, #D6D6D6); pointer-events: none;
   }
 }
 
