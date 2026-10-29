@@ -3446,6 +3446,15 @@ window.ncOpenH = function () {
       for (bx = sR + 10; bx < bW; bx += 12) dD.push([bx, 6]);
       dD.sort(function (a, b) { return a[0] - b[0]; });
       var bst = 'left:' + (-bL) + 'px;width:' + bW + 'px';
+      // (from Subscribe's left edge to the socials' right since, not edge to edge — "have band rule only stretch from edge
+      // of subscribe to edge of socials", 2026-10-28: the first nav link's box and the last social's, read off the band;
+      // the line's own clip, so the drawing under it stands as it was)
+      var nvA = bandD.querySelectorAll('a.rail-top__a, span.rail-top__a'), soA = bandD.querySelectorAll('a.rail-socials__a');
+      var nv0 = nvA.length && nvA[0].getBoundingClientRect(), so1 = soA.length && soA[soA.length - 1].getBoundingClientRect();
+      if (nv0 && so1 && nv0.width && so1.width) {
+        var rL = Math.round(nv0.left), rR = Math.round(so1.right);
+        bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
+      }
       var bkey = bst + '|' + dD.join(',');
       if (bd.__st !== bkey) {
         bd.__st = bkey; bd.style.cssText = bst;
