@@ -3062,6 +3062,7 @@ window.ncOpenH = function () {
       // side column's text as that and 2, as the rows stand)
       if (!band.style.getPropertyValue('--opb-navl')) band.style.setProperty('--opb-navl', socR0.toFixed(1) + 'px');
       if (!band.style.getPropertyValue('--opb-tncr')) band.style.setProperty('--opb-tncr', (vw0 - 2 * socR0 - sw - 2).toFixed(1) + 'px');
+      if (!band.style.getPropertyValue('--opb-navr')) band.style.setProperty('--opb-navr', (vw0 - socR0).toFixed(1) + 'px');
       // (the column under the socials carried to where they now stand)
       if (window.__ncGut) setTimeout(window.__ncGut, 0);
     }
@@ -3520,9 +3521,16 @@ window.ncOpenH = function () {
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
           // (and its rule's runs, the band's own — "Make the bottom banner the page color with a rule on top like the top
           // rule", 2026-10-28: style.css THE BANNER ON THE PAPER)
-          if (sbn) [['--sb-c', cR], ['--sb-s', sL], ['--sb-r', rR]].forEach(function (v) {
-            if (sbn.style.getPropertyValue(v[0]) !== v[1] + 'px') sbn.style.setProperty(v[0], v[1] + 'px');
+          // (on the socials beside it too since — "Move the socials into the bottom band", 2026-10-28)
+          [sbn, document.querySelector('.nc-sub-socials')].forEach(function (el) {
+            if (el) [['--sb-m', rL], ['--sb-c', cR], ['--sb-s', sL], ['--sb-r', rR]].forEach(function (v) {
+              if (el.style.getPropertyValue(v[0]) !== v[1] + 'px') el.style.setProperty(v[0], v[1] + 'px');
+            });
           });
+          // (and the nav's right end where the socials' was since, the socials gone to the foot band — "Move the store
+          // archive about where the socials are", 2026-10-28: style.css THE NAV WHERE THE SOCIALS WERE)
+          var navR = (rR - bL) + 'px';
+          if (bandD.style.getPropertyValue('--opb-navr') !== navR) bandD.style.setProperty('--opb-navr', navR);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');
