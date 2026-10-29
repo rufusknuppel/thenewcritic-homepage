@@ -325,13 +325,12 @@ function contentSocials() {
 // nav's Garamond italic at the band's left margin and the old Subscribe band's line (SUBSCRIBE_BELOW) out to its right
 // margin (style.css THE SUBSCRIBE BANNER; latest-rail.js bandRule sets the margins)
 function subBanner() {
+  // (Subscribe over and over across the whole bar since, the line struck — "Write Subscribe Subscribe Subscribe in the
+  // band over and over", 2026-10-28: enough of the word for the widest window, centred, the bar cutting the run at its
+  // ends; before, the word either side of the old Subscribe band's line with the price)
+  const word = (k) => `<span class="nc-sub-banner__word"${k ? ' aria-hidden="true"' : ''}>Subscribe</span>`;
   return `<a class="nc-sub-banner" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic">`
-    + `<span class="nc-sub-banner__word">Subscribe</span>`
-    // (the price in the line since — "or become a paid subscriber for $30 a year", 2026-10-28)
-    + `<span class="nc-sub-banner__line">${escapeHtml(SUBSCRIBE_BELOW[0].replace(/\.$/, ` for ${SUBSCRIBE_PITCH_PARTS[1]}.`))}</span>`
-    // (and the word again on the line's other side since — "add an identical Subscribe on the other side of the
-    // message", 2026-10-28)
-    + `<span class="nc-sub-banner__word" aria-hidden="true">Subscribe</span></a>`;
+    + Array.from({ length: 21 }, (_, k) => word(k)).join('') + `</a>`;
 }
 function opBand(currentKey = '') {
   const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');
