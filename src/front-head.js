@@ -65,7 +65,7 @@ window.ncSubW = window.ncSubW || function (nav) {
       var tlm = band.querySelector(':scope > .rail-tlm'), lwt = tlm ? parseFloat(tlm.style.getPropertyValue('--rl-lwt')) || 0 : 0;
       // (and "Subscribe, " counted in since, the word gone to the subscribe banner — "keep the last magazine at its
       // previous size", 2026-10-28: ncSubW, the width the word and its comma took in the nav's own face)
-      if (lwt > 0) band.style.setProperty('--rl-tlmf', (0.9 * (nw + window.ncSubW(navE) + 25) / lwt).toFixed(3) + 'px');
+      if (lwt > 0) band.style.setProperty('--rl-tlmf', (0.9 * (nw + 25) / lwt).toFixed(3) + 'px');
       // (the side column as the front page's stands: its gray rule as far left of the socials as they stand in from the
       // window's right, give or take the rounding of the front page's rows (latest-rail.js reads it off them there); its
       // hold the socials' own box; the bird as tall as the name's capitals)

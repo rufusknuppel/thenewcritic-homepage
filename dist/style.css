@@ -16863,7 +16863,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner.nc-sub-banner{ justify-content: center; gap: 1em; }
   body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner{ gap: 108px; }
   body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
-  html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
 }
 @media (min-width: 1024px){
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2),
@@ -16901,7 +16900,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1) svg{ opacity: 0 !important; }
   html body main a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1)::after,html body main a.band-mark--tlm:not(#nc-tlm0):not(#nc-tlm1)::after{
     content: attr(aria-label); position: absolute; left: 50%; bottom: 0; translate: -50% var(--tlm-dy, 0.2436em);
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: italic; font-weight: 400;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: normal; font-weight: 400;
     font-size: 19.5px; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap;
     color: var(--k, #121417); transition: color .15s ease; pointer-events: none;
   }

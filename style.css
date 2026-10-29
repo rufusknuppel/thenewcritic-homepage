@@ -33422,7 +33422,6 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
      Subscribe on the other side of the message", 2026-10-28) */
   body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner{ gap: 108px; }
   body:has(> a.nc-sub-banner){ padding-bottom: 54px; }
-  html body main.has-mega.logo-split.logo-split:not(.foot-band-top) .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold:not(#nc-sb0){ height: calc(100svh - var(--opb-h) - 54px) !important; }
 }
 /* (the site's link hover kept off the bar — "hover over band is breaaking it. Should only change color of text",
    2026-10-28: the page's general hover cleared the bar's red, ringed it and turned its words red; the bar holds its
@@ -33469,7 +33468,8 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   }
 }
 
-/* THE LAST MAGAZINE IN ITALIC GARAMOND AGAIN (2026-10-28 — "Make the last magazine back to Italics"): as it stood that
+/* THE LAST MAGAZINE IN GARAMOND (2026-10-28 — "Make the last magazine back to Italics", and upright since, "Unitalicize
+   the last magazine"): as it stood that
    afternoon — the band's tagline and the foot's in the nav's Garamond, italic, at the nav's 19.5, the spaced capitals'
    outlines kept unseen as the box the band lays out round, the words' baseline on its foot; in the band flush left at
    the rule's left end */
@@ -33477,7 +33477,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1) svg{ opacity: 0 !important; }
   html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1)::after{
     content: attr(aria-label); position: absolute; left: 50%; bottom: 0; translate: -50% var(--tlm-dy, 0.2436em);
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: italic; font-weight: 400;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: normal; font-weight: 400;
     font-size: 19.5px; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap;
     color: var(--k, #121417); transition: color .15s ease; pointer-events: none;
   }

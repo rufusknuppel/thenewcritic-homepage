@@ -336,7 +336,8 @@ function opBand(currentKey = '') {
   const cur = (k) => (k === currentKey ? ' aria-current="page"' : '');
   // (Subscribe out of the band since, to the banner pinned to the window's foot — "Remove subscribe from top band. Place
   // in a banner at the bottom of the site", 2026-10-28: subBanner)
-  const nav = [`<a class="rail-top__a" href="${STORE_HREF}"${cur('store')}>Store</a>`]
+  // (and back in it since, before Store, the banner gone — "Remove subscribe banner, add back next to Store", 2026-10-28)
+  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<a class="rail-top__a" href="${STORE_HREF}"${cur('store')}>Store</a>`]
     .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}"${cur('archive')}>Archive</a>`] : [])
     .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
@@ -4567,7 +4568,6 @@ ${duoHtml}
 ${renderMarginalia()}
 </main>
 ${cornerBird()}
-${subBanner()}
 
 ${renderFooter()}
 
@@ -5441,7 +5441,6 @@ ${preMain}
 <main id="main">
 ${bodyHtml}
 </main>
-${subBanner()}
 
 ${bare ? '' : renderFooter()}
 

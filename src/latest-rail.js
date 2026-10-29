@@ -2481,7 +2481,7 @@ var ncStemX = function () {
         // (off the nav's width since, the column no longer standing as wide as it and its 135 — RAIL_COL)
         // (and "Subscribe, " counted in since, the word gone from the nav to the subscribe banner, so THE LAST MAGAZINE
         // keeps its size — "keep the last magazine at its previous size", 2026-10-28: window.ncSubW, front-head.js)
-        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + (window.ncSubW ? window.ncSubW(navTW) : 0) + 25 : railW - 110;
+        var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + 25 : railW - 110;
         tlmBase *= 0.9;  // The Last Magazine a tenth smaller ("Make the last magazine 10% smaller", 2026-10-28)
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
@@ -2863,12 +2863,16 @@ var ncStemX = function () {
                 // the window's foot. At the opening the bird alone on the room's middle as before, The Latest and its rule
                 // up under the band out of sight, coming down on the scroll as the bird goes down, landing as the band pins:
                 // the stack seated where it lands, --rl-pt, and carried from --rl-st0 over it to nothing)
-                var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
+                // (the bird at the column's head and The Latest under it since, flipped again, The Latest coming up from under
+                // the window's foot — "have the latest pull up from the bottom, flip with bird", 2026-10-29: the rule under the
+                // socials to the bird's ink, the ink to the rule, the rule to The Latest's capitals, its last baseline to the
+                // window's foot; the stack carried from --rl-st0, its rule and all under the column's foot, to nothing)
+                var swT1 = gS - inkT, cap1 = 3 * gS + inkH - aN;
                 // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                var st0 = -(cap1 + stS + gS + 4);
+                var st0 = hr.height - (cap1 + aN - gS) + 4;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
@@ -2881,7 +2885,8 @@ var ncStemX = function () {
                 // BIRD)
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top + stS + gS).toFixed(2) + 'px');
+                  // (over The Latest's capitals by a space since, the bird over it — 2026-10-29)
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
                 }
               }
             }
