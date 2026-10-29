@@ -33494,3 +33494,10 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > :is(a.rail-tlm, .rail-top):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
 }
+
+/* (the bird's way up at one speed since, The Latest still eased under it — "Have bird move linearly", 2026-10-29) */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
+    animation-timing-function: linear, linear !important;
+  }
+}

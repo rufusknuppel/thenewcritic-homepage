@@ -16912,3 +16912,8 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
 @media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > a.rail-tlm:not(#nc-tnc0):not(#nc-tnc1),html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .rail-top:is(*, a):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
 }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
+    animation-timing-function: linear, linear !important;
+  }
+}
