@@ -16877,7 +16877,4 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 108px; justify-content: center; }
   body > a.nc-sub-banner > span.nc-sub-banner__word, body > a.nc-sub-banner > span.nc-sub-banner__line{ flex: none; }
 }
-@media (min-width: 1024px){
-  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold > .rail-sections:not(#nc-lg0):not(#nc-lg1):not(#nc-lg2):not(#nc-lg3):not(#nc-lg4),html body main.has-mega .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold > .latest-rail__in:not(#nc-lg0):not(#nc-lg1):not(#nc-lg2):not(#nc-lg3):not(#nc-lg4){ opacity: 0 !important; pointer-events: none !important; }
-  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold > :is(.rail-sections, .latest-rail__in):not(#nc-lg0):not(#nc-lg1):not(#nc-lg2):not(#nc-lg3):not(#nc-lg4) *{ pointer-events: none !important; }
 }

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=758aa4b5">
+<link rel="stylesheet" href="style.css?v=840d807a">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11256,8 +11256,8 @@ var ncStemX = function () {
     set(w, 'position', on ? 'relative' : 'absolute');
     set(w, 'left', '0px'); set(w, 'right', '0px');
     set(w, 'visibility', on ? 'visible' : 'hidden');
-    set(w, 'opacity', on && LATEST_SHOWN ? '1' : '0');
-    set(w, 'pointer-events', on && LATEST_SHOWN ? 'auto' : 'none');
+    set(w, 'opacity', on ? '1' : '0');
+    set(w, 'pointer-events', on ? 'auto' : 'none');
     set(w, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
     [].forEach.call(w.querySelectorAll(':scope > .latest-rail__list, :scope > .latest-rail__all'), function (el) {
       set(el, 'max-height', 'none');
@@ -12281,7 +12281,6 @@ var ncStemX = function () {
                 var swT0 = g0 - aN - inkT, cap0 = swT0 + inkT + inkH + 2 * g0;
                 var gS = Math.max(20, (hr.height + aN - inkH - stS) / 4);
                 var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
-                if (!LATEST_SHOWN) swT1 = (hr.height + aN - inkH) / 2 - aN - inkT;
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
@@ -12378,7 +12377,6 @@ var ncStemX = function () {
   setTimeout(seat, 800);
   seat();
 })();
-var LATEST_SHOWN = false;
 window.ncSubW = window.ncSubW || function (nav) {
   var a = nav && nav.querySelector('a, span'), cs = a && getComputedStyle(a);
   if (!cs) return 0;
