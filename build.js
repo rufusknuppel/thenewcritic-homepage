@@ -1367,12 +1367,32 @@ function fetchTagPostsFrom(archive, slug) {
     .filter((p) => p.title && p.link);
 }
 
-async function fetchFirstParagraph(url) {
+// A RESTACK'S PAGE CAN REFUSE THE BUILD. A post restacked from another
+// publication links to that publication's page (Asterisk's /cp/197596620),
+// and Asterisk answers GitHub's servers 403 — the Rebuild workflow failed
+// on it every run (2026-10-28) though it loads fine from a desk. When a
+// page won't come, the same post (body_html, cover_image) is asked of our
+// own posts API by its slug in our archive, which answers from anywhere.
+// Filled in main() once the archive is in.
+const SLUG_BY_LINK = new Map();
+
+async function fetchPostData(url) {
   const html = await fetchHtml(url);
-  if (!html) { failedPageFetches++; return ''; }
-  const preloads = extractPreloads(html);
-  const bodyHtml = preloads && preloads.post && preloads.post.body_html;
-  return firstParagraph(bodyHtml || '');
+  const preloads = html && extractPreloads(html);
+  if (preloads && preloads.post) return preloads.post;
+  const slug = SLUG_BY_LINK.get(url) || (url.startsWith(SITE_URL) && (/\/p\/([^/?#]+)/.exec(url) || [])[1]);
+  if (slug) {
+    let p = null;
+    try { p = JSON.parse((await fetchHtml(`${SITE_URL}/api/v1/posts/${slug}`)) || 'null'); } catch {}
+    if (p && p.body_html) { if (!html) console.warn(`  (${url} answered from ${SITE_URL}/api/v1/posts/${slug})`); return p; }
+  }
+  return html ? {} : null;
+}
+
+async function fetchFirstParagraph(url) {
+  const post = await fetchPostData(url);
+  if (!post) { failedPageFetches++; return ''; }
+  return firstParagraph(post.body_html || '');
 }
 
 // The artist credit lives in the post body: the cover image appears there
@@ -1415,14 +1435,12 @@ function artistFromCaption(caption) {
 // row panels alike), not a build-time word-count guess. The same fetch
 // also carries out the cover artist credit (see extractCoverArtist).
 async function fetchExtendedPreview(url, max) {
-  const html = await fetchHtml(url);
-  if (!html) { failedPageFetches++; return { paragraphs: [], artist: '' }; }
-  const preloads = extractPreloads(html);
-  const post = preloads && preloads.post;
-  const bodyHtml = (post && post.body_html) || '';
+  const post = await fetchPostData(url);
+  if (!post) { failedPageFetches++; return { paragraphs: [], artist: '' }; }
+  const bodyHtml = post.body_html || '';
   return {
     paragraphs: extractParagraphs(bodyHtml, max),
-    artist: extractCoverArtist(bodyHtml, (post && post.cover_image) || ''),
+    artist: extractCoverArtist(bodyHtml, post.cover_image || ''),
   };
 }
 
@@ -6443,6 +6461,7 @@ async function main() {
   ]);
   const items = parseItems(xml);
   const archive = await addPostsTheArchiveLags(archiveListed, items);
+  for (const p of archive) if (p.canonical_url && p.slug) SLUG_BY_LINK.set(p.canonical_url, p.slug);
   console.log(`Parsed ${items.length} posts from feed.`);
   if (items.length === 0) {
     throw new Error('No posts found in feed — check the feed URL and structure.');
