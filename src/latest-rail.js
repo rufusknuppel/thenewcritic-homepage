@@ -2484,6 +2484,7 @@ var ncStemX = function () {
         // (and "Subscribe, " counted in since, the word gone from the nav to the subscribe banner, so THE LAST MAGAZINE
         // keeps its size — "keep the last magazine at its previous size", 2026-10-28: window.ncSubW, front-head.js)
         var navTW = document.querySelector('main .op-band .rail-top__nav'), tlmBase = navTW ? navTW.getBoundingClientRect().width + (window.ncSubW ? window.ncSubW(navTW) : 0) + 25 : railW - 110;
+        tlmBase *= 0.9;  // The Last Magazine a tenth smaller ("Make the last magazine 10% smaller", 2026-10-28)
         if (lwTC > 0) hold.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         if (lwTC > 0 && opBandE) opBandE.style.setProperty('--rl-tlmf', (tlmBase / lwTC).toFixed(3) + 'px');
         // (the nav's capitals 27 under the column's top, the socials under it, and The Latest's stack on the middle

@@ -328,10 +328,8 @@ function subBanner() {
   return `<a class="nc-sub-banner" href="${SITE_URL}/subscribe" rel="noopener" aria-label="Subscribe to The New Critic">`
     + `<span class="nc-sub-banner__word">Subscribe</span>`
     // (the price in the line since — "or become a paid subscriber for $30 a year", 2026-10-28)
-    + `<span class="nc-sub-banner__line">${escapeHtml(SUBSCRIBE_BELOW[0].replace(/\.$/, ` for ${SUBSCRIBE_PITCH_PARTS[1]}.`))}</span>`
-    // (and the word again on the line's other side since — "add an identical Subscribe on the other side of the
-    // message", 2026-10-28)
-    + `<span class="nc-sub-banner__word" aria-hidden="true">Subscribe</span></a>`;
+    + `<span class="nc-sub-banner__line">${escapeHtml(SUBSCRIBE_BELOW[0].replace(/\.$/, ` for ${SUBSCRIBE_PITCH_PARTS[1]}.`))}</span></a>`;
+    // (the word again on the line's other side 2026-10-28, gone again the same day — "Remove the right subscribe")
 }
 function opBand(currentKey = '') {
   const ar = SITE_LINKS.find((l) => l.key === 'archive'), ab = SITE_LINKS.find((l) => l.key === 'about');

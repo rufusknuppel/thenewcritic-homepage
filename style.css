@@ -33435,13 +33435,11 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2) > span{ color: #121417 !important; }
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):is(:hover, :focus-visible) > span{ color: #FAF9F6 !important; }
 }
-/* (each Subscribe on the middle of the bar between the line and the window's side since — "Center subscribes between
-   message and sides", 2026-10-28: the line on the bar's middle, either side of it a box to the window's side with the
-   word on its middle) */
+/* (one Subscribe since — "Remove the right subscribe, have there be 108px distance between subscribe and message, both
+   centered in bottom band", 2026-10-28: the word and the line 108 apart, the pair on the bar's middle) */
 @media (min-width: 1024px){
-  body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 0; justify-content: space-between; }
-  body > a.nc-sub-banner:not(#nc-sb0):not(#nc-sb1) > .nc-sub-banner__word.nc-sub-banner__word{ flex: 1 1 0; min-width: 0; text-align: center; }
-  body > a.nc-sub-banner > .nc-sub-banner__line.nc-sub-banner__line{ flex: none; }
+  body > a.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner.nc-sub-banner{ padding: 0; gap: 108px; justify-content: center; }
+  body > a.nc-sub-banner > span.nc-sub-banner__word, body > a.nc-sub-banner > span.nc-sub-banner__line{ flex: none; }
 }
 
 /* THE LATEST GONE (2026-10-28 — "Remove the latest"): the side column's comma line of sections, the open section's
