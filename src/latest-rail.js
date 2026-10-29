@@ -2853,22 +2853,30 @@ var ncStemX = function () {
                 // pull up and settle on scroll, all landing when the top bar settles", 2026-10-28; before, the bird on the top
                 // title's middle and the column carried as one)
                 var gS = Math.max(20, (hr.height + aN - inkH - stS) / 4);
-                var swT1 = gS - aN - inkT, cap1 = swT1 + inkT + inkH + 2 * gS;
+                // (The Latest at the column's head and the bird at its foot since, flipped, the rule between — "have the latest
+                // descend from the bottom of the rule under the socials so that the bird settles in the bottom corner", "But
+                // not the corner, just flipped with the latest", 2026-10-28: the same four even spaces, the rule under the
+                // socials' to The Latest's capitals, its last baseline to the rule, the rule to the bird's ink, the ink to
+                // the window's foot. At the opening the bird alone on the room's middle as before, The Latest and its rule
+                // up under the band out of sight, coming down on the scroll as the bird goes down, landing as the band pins:
+                // the stack seated where it lands, --rl-pt, and carried from --rl-st0 over it to nothing)
+                var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                cap0 = room0 + gS + 4;
-                hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap0 - capR).toFixed(2) + 'px');
+                var st0 = -(cap1 + stS + gS + 4);
+                hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
-                hold.style.setProperty('--rl-stdy', (cap1 - cap0).toFixed(2) + 'px');
-                // (a rule one space over The Latest's capitals and one under the bird's ink once they land, as wide as the
-                // sections' comma line — "Add a rule between the bird and the latest", 2026-10-28; carried with The Latest
-                // since, not the bird, so it comes up with it: drawn on the comma line, --rl-rt its top off the line's box;
-                // style.css THE RULE UNDER THE BIRD)
+                hold.style.setProperty('--rl-st0', st0.toFixed(2) + 'px');
+                hold.style.setProperty('--rl-stdy', '0px');
+                // (the rule one space under The Latest's last baseline and one over the bird's ink once they land, as wide
+                // as the sections' comma line — "Add a rule between the bird and the latest", 2026-10-28; drawn on the comma
+                // line, --rl-rt its top off the line's box, so it comes down with The Latest; style.css THE RULE UNDER THE
+                // BIRD)
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top + stS + gS).toFixed(2) + 'px');
                 }
               }
             }

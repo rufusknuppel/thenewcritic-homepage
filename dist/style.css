@@ -15382,7 +15382,7 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
 }
 @property --rl-st { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --rl-sw { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@keyframes nc-stack-px { from { --rl-st: 0px; } to { --rl-st: var(--rl-stdy, 0px); } }
+@keyframes nc-stack-px { from { --rl-st: var(--rl-st0, 0px); } to { --rl-st: var(--rl-stdy, 0px); } }
 @keyframes nc-swallow-px { from { --rl-sw: 0px; } to { --rl-sw: var(--rl-swdy, 0px); } }
 @media (min-width: 1024px){
   html body main .latest-rail__hold.latest-rail__hold > .rail-sections,html body main .latest-rail__hold.latest-rail__hold > .latest-rail__in{
@@ -16855,4 +16855,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > .rail-top.rail-top:not(#nc-tnc0):not(#nc-tnc1){
     left: var(--opb-tncr) !important; translate: -100% -50% !important;
   }
+}
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold:not(#nc-rl0){ clip-path: inset(0 -100vw -100vh -100vw); }
 }

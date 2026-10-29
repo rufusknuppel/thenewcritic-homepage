@@ -31289,7 +31289,9 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
    travel now on whole pixels, the same pixel for both on every frame, and the bird's too */
 @property --rl-st { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --rl-sw { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@keyframes nc-stack-px { from { --rl-st: 0px; } to { --rl-st: var(--rl-stdy, 0px); } }
+@keyframes nc-stack-px { from { --rl-st: var(--rl-st0, 0px); } to { --rl-st: var(--rl-stdy, 0px); } }
+/* (from --rl-st0 since — the stack seated where it lands and carried down from over it, "have the latest descend from the
+   bottom of the rule under the socials", 2026-10-28) */
 @keyframes nc-swallow-px { from { --rl-sw: 0px; } to { --rl-sw: var(--rl-swdy, 0px); } }
 @media (min-width: 1024px){
   html body main .latest-rail__hold.latest-rail__hold > :is(.rail-sections, .latest-rail__in){
@@ -33395,4 +33397,11 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-tncr"] > .rail-top.rail-top:not(#nc-tnc0):not(#nc-tnc1){
     left: var(--opb-tncr) !important; translate: -100% -50% !important;
   }
+}
+
+/* THE LATEST OUT FROM UNDER THE RULE (2026-10-28 — "have the latest descend from the bottom of the rule under the
+   socials"): the column cut at its own top, the band's foot, at the opening and pinned alike, so The Latest and its rule
+   waiting over it are unseen (not through the wordmark's letters) and come down out from under the rule on the scroll */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold.latest-rail__hold:not(#nc-rl0){ clip-path: inset(0 -100vw -100vh -100vw); }
 }
