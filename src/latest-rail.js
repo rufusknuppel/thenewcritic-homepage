@@ -3468,6 +3468,11 @@ window.ncOpenH = function () {
         if (cR > rL && sL > cR && sL < rR) {
           var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
+          // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
+          // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
+          // NAME AT THE RULE'S END)
+          var tncR = (cR - bL) + 'px';
+          if (bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
       }
       var bkey = bst + '|' + dD.join(',');
