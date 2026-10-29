@@ -33361,3 +33361,18 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     height: 0.5px; translate: -50% 0; background: var(--nc-outline, #D6D6D6);
   }
 }
+
+/* THE LAST MAGAZINE IN ITALIC GARAMOND (2026-10-28 — "Use italic garamond for The Last Magazine"): the band's tagline
+   and the foot's set in the nav's Garamond, italic, at the nav's 19.5, in place of the spaced capitals' outlines; the
+   outlines kept, unseen, as the box the band lays out round, the words' baseline on its foot */
+@media (min-width: 1024px){
+  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1) svg{ opacity: 0 !important; }
+  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1)::after{
+    content: attr(aria-label); position: absolute; left: 50%; bottom: 0; translate: -50% var(--tlm-dy, 0.2436em);
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: italic; font-weight: 400;
+    font-size: 19.5px; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap;
+    color: var(--k, #121417); transition: color .15s ease; pointer-events: none;
+  }
+  html body main .op-band.is-tlm-hot > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1)::after,
+  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1):hover::after{ color: var(--nc-mark, #B3301E); }
+}
