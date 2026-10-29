@@ -3056,6 +3056,12 @@ window.ncOpenH = function () {
       band.style.setProperty('--opb-nav-l', navL0.toFixed(2) + 'px');
       band.style.setProperty('--opb-soc-r', socR0.toFixed(2) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - socR0 - sw) / 2).toFixed(1) + 'px');
+      // (and the name, The Last Magazine and the nav where bandRule will set them, near enough, till it reads the posts —
+      // "When the initial site loads, I can see the last magazine flip position with the nav", 2026-10-28: they stood as
+      // before the flip till then; the rule's left end the socials' margin mirrored, the posts' edge as far in from the
+      // side column's text as that and 2, as the rows stand)
+      if (!band.style.getPropertyValue('--opb-navl')) band.style.setProperty('--opb-navl', socR0.toFixed(1) + 'px');
+      if (!band.style.getPropertyValue('--opb-tncr')) band.style.setProperty('--opb-tncr', (vw0 - 2 * socR0 - sw - 2).toFixed(1) + 'px');
       // (the column under the socials carried to where they now stand)
       if (window.__ncGut) setTimeout(window.__ncGut, 0);
     }

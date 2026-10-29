@@ -16883,9 +16883,11 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   body > a.nc-sub-banner.nc-sub-banner:not(#nc-sb0):not(#nc-sb1):not(#nc-sb2):not(#nc-sb3):is(:hover, :focus-visible) > span{ color: var(--nc-mark, #B3301E) !important; }
   body > a.nc-sub-banner::before{
     content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none;
-    background: linear-gradient(to right,
-      transparent var(--sb-m, 52px), var(--nc-rule, #B3301E) var(--sb-m, 52px), var(--nc-rule, #B3301E) var(--sb-c, calc(100% - var(--sb-m, 52px))),
-      transparent var(--sb-c, calc(100% - var(--sb-m, 52px))), transparent var(--sb-s, 100%), var(--nc-rule, #B3301E) var(--sb-s, 100%),
-      var(--nc-rule, #B3301E) var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
+    background: linear-gradient(to bottom, var(--nc-rule, #B3301E) 50%, transparent 50%);
+    --sb-mk: linear-gradient(to right,
+      transparent var(--sb-m, 52px), #000 var(--sb-m, 52px), #000 var(--sb-c, calc(100% - var(--sb-m, 52px))),
+      transparent var(--sb-c, calc(100% - var(--sb-m, 52px))), transparent var(--sb-s, 100%), #000 var(--sb-s, 100%),
+      #000 var(--sb-r, calc(100% - var(--sb-m, 52px))), transparent var(--sb-r, calc(100% - var(--sb-m, 52px))));
+    -webkit-mask-image: var(--sb-mk); mask-image: var(--sb-mk);
   }
 }
