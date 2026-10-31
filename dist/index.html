@@ -7555,11 +7555,12 @@
                   upY = tT9 - j.ttT;
                   metaY = cT9 - j.mT - upY;
                   if (DEK_BODY_FLIP) {
-                    r29 = cT9 + (j.mB - j.mT) + WHEN_HALF + bH9 + WHEN_HALF + (j.wB - j.wT) + g9; bTop9 = r29 + g9;
-                    dnY = (j.mB + upY + metaY + WHEN_HALF) - j.txT;
-                    j.wY = (j.inB + dnY + WHEN_HALF) - j.wT - upY;
-                    dekY = bTop9 - j.dkT;
-                    if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + (j.dkB - j.dkT) - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
+                    r29 = cT9 + bH9 + g9; bTop9 = r29 + g9;
+                    dnY = cT9 - j.txT;
+                    metaY = bTop9 - j.mT - upY;
+                    dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
+                    j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
+                    if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + cH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                   } else {
                   dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
                   j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
