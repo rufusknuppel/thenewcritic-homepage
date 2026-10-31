@@ -6768,7 +6768,6 @@
   DEK_OVER_RULE = false;
   var DEK_UNDER_BODY = true, ROW_BODY_GAP = 40.5, BODY_DEK_GAP = 40.5;
   var WHEN_ROW = true, WHEN_GAP = 40.5;
-  var DEK_BODY_FLIP = true;
   var WHEN_HALF = WHEN_GAP / 2;
   var FORK_RISE = 14, FORK_RUN = 14, FORK_PAD = 9;
   FORK_PAD = 18;
@@ -7554,19 +7553,10 @@
                   var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
                   metaY = cT9 - j.mT - upY;
-                  if (DEK_BODY_FLIP) {
-                    r29 = cT9 + bH9 + g9; bTop9 = r29 + g9;
-                    dnY = cT9 - j.txT;
-                    metaY = bTop9 - j.mT - upY;
-                    dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
-                    j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
-                    if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + cH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
-                  } else {
                   dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
                   j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
-                  }
                 }
               }
             }
