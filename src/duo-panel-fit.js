@@ -9096,6 +9096,9 @@
   // dek and the body last — "Have title, then Author name, then dek, then section name and date, then body preview",
   // 2026-10-28: WHEN_GAP between each, the head's .swap-body-when)
   var WHEN_ROW = true, WHEN_GAP = 40.5;
+  // (the body and the dek flipped since, the body between the writer and the section and the date, the dek at the foot —
+  // "flip dek and body preview", 2026-10-31: THREE CHUNKS, EVENLY, below)
+  var DEK_BODY_FLIP = true;
   // (half that between the writer, the dek and the section and the date since — THE HEAD OVER THE DIVIDER)
   var WHEN_HALF = WHEN_GAP / 2;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
@@ -10446,10 +10449,21 @@
                   var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
                   metaY = cT9 - j.mT - upY;
+                  if (DEK_BODY_FLIP) {
+                    // (the body in the chunk since, between the writer and the section and the date, and the dek at the
+                    // foot under the second rule — "flip dek and body preview", 2026-10-31: the same heights, so the
+                    // same gaps and the same lines of the body)
+                    r29 = cT9 + (j.mB - j.mT) + WHEN_HALF + bH9 + WHEN_HALF + (j.wB - j.wT) + g9; bTop9 = r29 + g9;
+                    dnY = (j.mB + upY + metaY + WHEN_HALF) - j.txT;
+                    j.wY = (j.inB + dnY + WHEN_HALF) - j.wT - upY;
+                    dekY = bTop9 - j.dkT;
+                    if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + (j.dkB - j.dkT) - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
+                  } else {
                   dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
                   j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
+                  }
                 }
               }
             }
