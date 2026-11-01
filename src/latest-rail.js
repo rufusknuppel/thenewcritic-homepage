@@ -1128,21 +1128,15 @@ var ncStemX = function () {
   var still = function (w) {
     var on = w.classList.contains('is-current');
     var set = function (el, prop, v) { if (el.style.getPropertyValue(prop) !== v || el.style.getPropertyPriority(prop) !== 'important') el.style.setProperty(prop, v, 'important'); };
-    // (every section's name in the stack since, its kickers and See All under it, only the shut ones' words out of it —
-    // "Move the kickers so that they reside underneath their appropriate section header", 2026-11-01)
-    set(w, 'position', 'relative');
+    set(w, 'position', on ? 'relative' : 'absolute');
     set(w, 'left', '0px'); set(w, 'right', '0px');
-    set(w, 'visibility', 'visible');
-    set(w, 'opacity', '1');
+    set(w, 'visibility', on ? 'visible' : 'hidden');
+    set(w, 'opacity', on ? '1' : '0');
     set(w, 'pointer-events', on ? 'auto' : 'none');
     set(w, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
     [].forEach.call(w.querySelectorAll(':scope > .latest-rail__list, :scope > .latest-rail__all'), function (el) {
       set(el, 'max-height', 'none');
-      set(el, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
-      set(el, 'position', on ? 'relative' : 'absolute');
-      set(el, 'left', on ? 'auto' : '0px'); set(el, 'right', on ? 'auto' : '0px');
-      set(el, 'visibility', on ? 'visible' : 'hidden');
-      set(el, 'opacity', on ? '1' : '0');
+      set(el, 'transition', 'none');
     });
   };
   // (and every section's words as tall as the tallest's, so the stack stands as tall for Editors' Picks' four as for the
@@ -1151,6 +1145,17 @@ var ncStemX = function () {
     if (!hold0) return;
     var ws = [].slice.call(hold0.querySelectorAll(':scope > .latest-rail__in'));
     ws.forEach(still);
+    ws.forEach(function (w) { w.style.removeProperty('min-height'); });
+    // (every list off the sections' line as far as the open one's is, the gap the sheet gives the open one alone, so the
+    // shut ones read their true height and a new one fades in where the last stood)
+    var cur = ws.filter(function (w) { return w.classList.contains('is-current'); })[0], cl = cur && cur.querySelector(':scope > .latest-rail__list');
+    ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur) l.style.removeProperty('margin-top'); });
+    var gap = cl ? getComputedStyle(cl).marginTop : '';
+    if (gap) ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur && l.style.getPropertyValue('margin-top') !== gap) l.style.setProperty('margin-top', gap, 'important'); });
+    var mh = 0;
+    ws.forEach(function (w) { mh = Math.max(mh, w.offsetHeight); });
+    var v = mh ? mh + 'px' : '';
+    ws.forEach(function (w) { if (v) w.style.setProperty('min-height', v, 'important'); });
   };
   stillAll();
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, stillAll, { passive: true }); });
@@ -2735,17 +2740,15 @@ var ncStemX = function () {
               // (the white from the titles' last baseline to the kickers' capitals, and from the last kicker's to See All's,
               // the posts' own between the writer, the dek and the section and the date, duo-panel-fit.js WHEN_HALF — "have
               // spacing between section titles and kicker and see all match meta/dek/meta spacing on posts", 2026-11-01)
-              var CHUNK_GAP = 20.25;
+              // (twice it since, with the posts' — "Double gap between dek and meta and kickers and surroundings", 2026-11-01)
+              // (less, down to the old gap, only where a short window would run the stack off its foot: the cut read at gS below)
+              var CHUNK_GAP = 40.5 - (hold.__ncGapCut || 0);
               if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + CHUNK_GAP) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
               var allG = inC && inC.querySelector(':scope > .latest-rail__all');
               if (allG && allG.getBoundingClientRect().height && kLast && kOpen) hold.style.setProperty('--rl-allm', ((parseFloat(getComputedStyle(allG).marginTop) || 0) + (baseOf(kLast) + CHUNK_GAP) - (baseOf(allG) - capHt(allG))).toFixed(2) + 'px');
               var kNext = secV ? null : metasS[metasS.indexOf(metaC) + 1];
               if (secV) hold.style.setProperty('--rl-kmb', '0px');
-              // (the next name the same gap under See All, which stands between them)
-              if (kNext && allG && !kHeld && kOpen) {
-                hold.style.setProperty('--rl-kmb', '0px');
-                hold.style.setProperty('--rl-allb', ((parseFloat(getComputedStyle(allG).marginBottom) || 0) + (baseOf(allG) + CHUNK_GAP) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
-              } else if (kNext && !kHeld && kOpen) {
+              if (kNext && !kHeld && kOpen) {
                 var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
@@ -2860,7 +2863,11 @@ var ncStemX = function () {
                 // "On initial load, just have the bird in the side column, spaced evenly, then have the rule and the latest
                 // pull up and settle on scroll, all landing when the top bar settles", 2026-10-28; before, the bird on the top
                 // title's middle and the column carried as one)
-                var gS = Math.max(20, (hr.height + aN - inkH - stS) / 4);
+                var gSR = (hr.height + aN - inkH - stS) / 4;
+                var gS = Math.max(20, gSR);
+                // (the four spaces' shortfall of 20 shared between the stack's two gaps, and seated again)
+                var cutN = Math.max(0, Math.min(20.25, (hold.__ncGapCut || 0) + (20 - gSR) * 2));
+                if (Math.abs(cutN - (hold.__ncGapCut || 0)) > 0.5) { hold.__ncGapCut = cutN; clearTimeout(hold.__ncCutT); hold.__ncCutT = setTimeout(seat, 30); }
                 // (The Latest at the column's head and the bird at its foot since, flipped, the rule between — "have the latest
                 // descend from the bottom of the rule under the socials so that the bird settles in the bottom corner", "But
                 // not the corner, just flipped with the latest", 2026-10-28: the same four even spaces, the rule under the
@@ -2888,12 +2895,10 @@ var ncStemX = function () {
                 // as the sections' comma line — "Add a rule between the bird and the latest", 2026-10-28; drawn on the comma
                 // line, --rl-rt its top off the line's box, so it comes down with The Latest; style.css THE RULE UNDER THE
                 // BIRD)
-                // (drawn on the first section since, the comma line gone — 2026-11-01)
-                var rlIn = hold.querySelector(':scope > .latest-rail__in');
-                if (rlIn && metasS[0]) {
-                  hold.style.setProperty('--rl-rw', Math.round(rlIn.getBoundingClientRect().width) + 'px');
+                if (secV) {
+                  hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
                   // (over The Latest's capitals by a space since, the bird over it — 2026-10-29)
-                  hold.style.setProperty('--rl-rt', (capTop1(metasS[0]) - rlIn.getBoundingClientRect().top - gS).toFixed(2) + 'px');
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
                 }
               }
             }
@@ -3503,7 +3508,7 @@ window.ncOpenH = function () {
         // (and broken over the inner margin since, between the posts' right edge and the side column's text — "Break top
         // band too over inner margin between side column and content", 2026-10-28: two runs, Subscribe to the posts' edge
         // and the column's comma line's left edge to the socials', a mask the line is seen through)
-        var scE = document.querySelector('.latest-rail__hold > .latest-rail__in'), scQ = scE && scE.getBoundingClientRect();
+        var scE = document.querySelector('.latest-rail__hold > .rail-sections'), scQ = scE && scE.getBoundingClientRect();
         // (the posts' edge off their pictures and their text, not their boxes: the words' box runs on past the text)
         var cRx = -1e9, cLx = 1e9;
         [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {

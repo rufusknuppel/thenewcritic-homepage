@@ -9097,7 +9097,8 @@
   // 2026-10-28: WHEN_GAP between each, the head's .swap-body-when)
   var WHEN_ROW = true, WHEN_GAP = 40.5;
   // (half that between the writer, the dek and the section and the date since — THE HEAD OVER THE DIVIDER)
-  var WHEN_HALF = WHEN_GAP / 2;
+  // (and that whole since, twice it — "Double gap between dek and meta and kickers and surroundings", 2026-11-01)
+  var WHEN_HALF = WHEN_GAP;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
