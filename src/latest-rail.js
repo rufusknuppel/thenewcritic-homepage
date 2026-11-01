@@ -2737,7 +2737,13 @@ var ncStemX = function () {
               // section, so the gaps hold still, 2026-10-15)
               var kHeld = false;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              // (the white from the titles' last baseline to the kickers' capitals, and from the last kicker's to See All's,
+              // the posts' own between the writer, the dek and the section and the date, duo-panel-fit.js WHEN_HALF — "have
+              // spacing between section titles and kicker and see all match meta/dek/meta spacing on posts", 2026-11-01)
+              var CHUNK_GAP = 20.25;
+              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + CHUNK_GAP) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              var allG = inC && inC.querySelector(':scope > .latest-rail__all');
+              if (allG && allG.getBoundingClientRect().height && kLast && kOpen) hold.style.setProperty('--rl-allm', ((parseFloat(getComputedStyle(allG).marginTop) || 0) + (baseOf(kLast) + CHUNK_GAP) - (baseOf(allG) - capHt(allG))).toFixed(2) + 'px');
               var kNext = secV ? null : metasS[metasS.indexOf(metaC) + 1];
               if (secV) hold.style.setProperty('--rl-kmb', '0px');
               if (kNext && !kHeld && kOpen) {

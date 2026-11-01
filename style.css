@@ -33507,3 +33507,11 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
     animation-timing-function: linear, linear !important;
   }
 }
+
+/* THE SECTIONS' NAMES ONE TO A LINE (2026-11-01 — "Have the section titles on the homepage be on individual lines so The
+   Latest/Essays", "have spacing between section titles and kicker and see all match meta/dek/meta spacing on posts"): the
+   comma line's commas gone, each a break between two names; See All's margin the posts' gap (--rl-allm, latest-rail.js) */
+@media (min-width: 1024px){
+  html body main .latest-rail__hold > .rail-sections > .rail-sections__sep:not(#nc-sec0){ display: block; height: 0; overflow: hidden; }
+  html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
+}

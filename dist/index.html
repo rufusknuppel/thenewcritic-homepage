@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=77257865">
+<link rel="stylesheet" href="style.css?v=b54a95ab">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12225,7 +12225,10 @@ var ncStemX = function () {
               var kKey = document.documentElement.clientWidth + 'x' + Math.round(hr.height) + (document.fonts ? document.fonts.status : '');
               var kHeld = false;
               var kmtb = parseFloat(getComputedStyle(kList).marginTop) || 0;
-              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + 0.7 * (L2b - capHt(k0b))) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              var CHUNK_GAP = 20.25;
+              if (!kHeld && kOpen) hold.style.setProperty('--rl-kmt', (kmtb + ((secV ? baseOf(secV) : baseOf(metaC)) + CHUNK_GAP) - (baseOf(k0b) - capHt(k0b))).toFixed(2) + 'px');
+              var allG = inC && inC.querySelector(':scope > .latest-rail__all');
+              if (allG && allG.getBoundingClientRect().height && kLast && kOpen) hold.style.setProperty('--rl-allm', ((parseFloat(getComputedStyle(allG).marginTop) || 0) + (baseOf(kLast) + CHUNK_GAP) - (baseOf(allG) - capHt(allG))).toFixed(2) + 'px');
               var kNext = secV ? null : metasS[metasS.indexOf(metaC) + 1];
               if (secV) hold.style.setProperty('--rl-kmb', '0px');
               if (kNext && !kHeld && kOpen) {

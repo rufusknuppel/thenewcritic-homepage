@@ -16922,3 +16922,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     animation-timing-function: linear, linear !important;
   }
 }
+@media (min-width: 1024px){
+  html body main .latest-rail__hold > .rail-sections > .rail-sections__sep:not(#nc-sec0){ display: block; height: 0; overflow: hidden; }
+  html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
+}
