@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=b54a95ab">
+<link rel="stylesheet" href="style.css?v=45027feb">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11252,30 +11252,25 @@ var ncStemX = function () {
   var still = function (w) {
     var on = w.classList.contains('is-current');
     var set = function (el, prop, v) { if (el.style.getPropertyValue(prop) !== v || el.style.getPropertyPriority(prop) !== 'important') el.style.setProperty(prop, v, 'important'); };
-    set(w, 'position', on ? 'relative' : 'absolute');
+    set(w, 'position', 'relative');
     set(w, 'left', '0px'); set(w, 'right', '0px');
-    set(w, 'visibility', on ? 'visible' : 'hidden');
-    set(w, 'opacity', on ? '1' : '0');
+    set(w, 'visibility', 'visible');
+    set(w, 'opacity', '1');
     set(w, 'pointer-events', on ? 'auto' : 'none');
     set(w, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
     [].forEach.call(w.querySelectorAll(':scope > .latest-rail__list, :scope > .latest-rail__all'), function (el) {
       set(el, 'max-height', 'none');
-      set(el, 'transition', 'none');
+      set(el, 'transition', on ? 'opacity ' + STILL_FADE + ' ease' : 'none');
+      set(el, 'position', on ? 'relative' : 'absolute');
+      set(el, 'left', on ? 'auto' : '0px'); set(el, 'right', on ? 'auto' : '0px');
+      set(el, 'visibility', on ? 'visible' : 'hidden');
+      set(el, 'opacity', on ? '1' : '0');
     });
   };
   var stillAll = function () {
     if (!hold0) return;
     var ws = [].slice.call(hold0.querySelectorAll(':scope > .latest-rail__in'));
     ws.forEach(still);
-    ws.forEach(function (w) { w.style.removeProperty('min-height'); });
-    var cur = ws.filter(function (w) { return w.classList.contains('is-current'); })[0], cl = cur && cur.querySelector(':scope > .latest-rail__list');
-    ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur) l.style.removeProperty('margin-top'); });
-    var gap = cl ? getComputedStyle(cl).marginTop : '';
-    if (gap) ws.forEach(function (w) { var l = w.querySelector(':scope > .latest-rail__list'); if (l && w !== cur && l.style.getPropertyValue('margin-top') !== gap) l.style.setProperty('margin-top', gap, 'important'); });
-    var mh = 0;
-    ws.forEach(function (w) { mh = Math.max(mh, w.offsetHeight); });
-    var v = mh ? mh + 'px' : '';
-    ws.forEach(function (w) { if (v) w.style.setProperty('min-height', v, 'important'); });
   };
   stillAll();
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, stillAll, { passive: true }); });
@@ -12231,7 +12226,10 @@ var ncStemX = function () {
               if (allG && allG.getBoundingClientRect().height && kLast && kOpen) hold.style.setProperty('--rl-allm', ((parseFloat(getComputedStyle(allG).marginTop) || 0) + (baseOf(kLast) + CHUNK_GAP) - (baseOf(allG) - capHt(allG))).toFixed(2) + 'px');
               var kNext = secV ? null : metasS[metasS.indexOf(metaC) + 1];
               if (secV) hold.style.setProperty('--rl-kmb', '0px');
-              if (kNext && !kHeld && kOpen) {
+              if (kNext && allG && !kHeld && kOpen) {
+                hold.style.setProperty('--rl-kmb', '0px');
+                hold.style.setProperty('--rl-allb', ((parseFloat(getComputedStyle(allG).marginBottom) || 0) + (baseOf(allG) + CHUNK_GAP) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
+              } else if (kNext && !kHeld && kOpen) {
                 var kmbb = parseFloat(getComputedStyle(kList).marginBottom) || 0;
                 hold.style.setProperty('--rl-kmb', (kmbb + (baseOf(kLast) + 0.7 * (L2b - capHt(kNext))) - (baseOf(kNext) - capHt(kNext))).toFixed(2) + 'px');
               }
@@ -12293,9 +12291,10 @@ var ncStemX = function () {
                 hold.style.setProperty('--rl-swdy', (swT1 - swT0).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-st0', st0.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-stdy', '0px');
-                if (secV) {
-                  hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
+                var rlIn = hold.querySelector(':scope > .latest-rail__in');
+                if (rlIn && metasS[0]) {
+                  hold.style.setProperty('--rl-rw', Math.round(rlIn.getBoundingClientRect().width) + 'px');
+                  hold.style.setProperty('--rl-rt', (capTop1(metasS[0]) - rlIn.getBoundingClientRect().top - gS).toFixed(2) + 'px');
                 }
               }
             }
@@ -12708,7 +12707,7 @@ window.ncOpenH = function () {
       var nv0 = nvA.length && nvA[0].getBoundingClientRect(), so1 = soA.length && soA[soA.length - 1].getBoundingClientRect();
       if (nv0 && so1 && nv0.width && so1.width) {
         var rR = Math.round(so1.right), rL = bW - rR;
-        var scE = document.querySelector('.latest-rail__hold > .rail-sections'), scQ = scE && scE.getBoundingClientRect();
+        var scE = document.querySelector('.latest-rail__hold > .latest-rail__in'), scQ = scE && scE.getBoundingClientRect();
         var cRx = -1e9, cLx = 1e9;
         [].forEach.call(document.querySelectorAll('.page-rows section.card .duo-half--mega'), function (c) {
           var pbx = window.__ncPicBox && window.__ncPicBox(c), tx = c.querySelector('.swap-body-text'), txq = tx && tx.getBoundingClientRect();

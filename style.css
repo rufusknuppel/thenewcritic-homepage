@@ -33515,3 +33515,17 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main .latest-rail__hold > .rail-sections > .rail-sections__sep:not(#nc-sec0){ display: block; height: 0; overflow: hidden; }
   html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
 }
+
+/* THE KICKERS UNDER THEIR OWN NAME (2026-11-01 — "Move the kickers so that they reside underneath their appropriate section
+   header"): the sections' own names back, one to a line, the open one in the highlight, its kickers and See All under it;
+   the next name as far under See All (--rl-allb) as the kickers under the name and See All under them; the comma line out
+   of sight, the rule under the bird on the first section (--rl-rt, --rl-rw: latest-rail.js) */
+@media (min-width: 1024px){
+  html body main .latest-rail__hold.latest-rail__hold > .rail-sections:not(#nc-sec0):not(#nc-sec1){ display: none !important; }
+  html body main.has-mega.logo-split .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in > .latest-rail__meta.latest-rail__meta:not(#nc-sec0):not(#nc-sec1){ display: block !important; }
+  html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec2):not(#nc-sec3){ margin-bottom: var(--rl-allb, 0px) !important; }
+  html body main .latest-rail__hold.latest-rail__hold > .latest-rail__in:not(.latest-rail__in ~ .latest-rail__in)::before{
+    content: ''; position: absolute; left: 50%; top: var(--rl-rt, 0px); width: var(--rl-rw, 0px);
+    height: 0.5px; translate: -50% 0; background: var(--nc-outline, #D6D6D6); pointer-events: none;
+  }
+}
