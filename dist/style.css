@@ -16915,7 +16915,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   }
 }
 @media (min-width: 1024px){
-  html body main .latest-rail__hold > .rail-sections > .rail-sections__sep:not(#nc-sec0){ display: block; height: 0; overflow: hidden; }
   html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
 }
 @media (min-width: 1024px){
@@ -16936,7 +16935,4 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body a.content-name.content-name:not(#nc-ch0)::after{ background: #121417 !important; }
   html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash:not(#nc-ch0):not(#nc-ch1){ display: none !important; }
   html body main.has-mega .op-track > .op-band > a.op-tnc:not(#nc-ch0):not(#nc-ch1),html body main.has-mega .op-track > .op-band > a.rail-tlm:not(#nc-ch0):not(#nc-ch1){ --k: #FAF9F6 !important; }
-}
-@media (min-width: 1024px){
-  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line:not(#nc-pl0){ display: none !important; }
 }

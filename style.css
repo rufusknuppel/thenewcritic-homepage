@@ -33503,7 +33503,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    Latest/Essays", "have spacing between section titles and kicker and see all match meta/dek/meta spacing on posts"): the
    comma line's commas gone, each a break between two names; See All's margin the posts' gap (--rl-allm, latest-rail.js) */
 @media (min-width: 1024px){
-  html body main .latest-rail__hold > .rail-sections > .rail-sections__sep:not(#nc-sec0){ display: block; height: 0; overflow: hidden; }
+  /* (the commas back since, the names one run again — "Make the latest, essays, into commaed list", 2026-11-02) */
   html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
 }
 
@@ -33545,9 +33545,4 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash:not(#nc-ch0):not(#nc-ch1){ display: none !important; }
   /* (the archive's sheet sets the name's ink on these itself: turned over here too) */
   html body main.has-mega .op-track > .op-band > :is(a.op-tnc, a.rail-tlm):not(#nc-ch0):not(#nc-ch1){ --k: #FAF9F6 !important; }
-}
-
-/* THE PICTURES WITHOUT THEIR OUTLINE (2026-11-02 — "Remove outline from images") */
-@media (min-width: 1024px){
-  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line:not(#nc-pl0){ display: none !important; }
 }
