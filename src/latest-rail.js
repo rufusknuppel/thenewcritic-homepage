@@ -1812,10 +1812,12 @@ var ncStemX = function () {
           // gives up, duo-panel-fit.js seatSlides, so the rows fill it)
           // (the nav's width with the column under it since, at the left — "Move the latest to the left and flip the
           // posts", 2026-10-16: build.js COLUMN_AT, the root's rail-col-l)
-          var socM = document.querySelector(document.documentElement.classList.contains('rail-col-l') ? 'main .op-band .rail-top__nav' : 'main .op-band .rail-socials'), socMW = socM ? socM.getBoundingClientRect().width : 0;
+          // (and the nav's since on the right too, the socials out and the nav over the column, so the margin on the nav's left
+          // is the window's on its right — "expand side column so that margin on the left of nav matches right", 2026-11-02)
+          var socM = document.querySelector(/(archive|about)-page/.test(document.body.className) ? 'main .op-band .rail-socials' : 'main .op-band .rail-top__nav'), socMW = socM ? socM.getBoundingClientRect().width : 0;
           // (and the inset again short of the socials since, the column's margin on the rows' side its margin on the window's
           // — "Left margin of side column should match right margin", 2026-10-15)
-          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 * ncStemX() + socMW - NC_ROWL);
+          if (navMW > 0 && socMW > 0 && main.classList.contains('logo-split')) mid = vwE - 252 - Math.round(2 * ncStemX() + socMW - NC_ROWL) + 3;
           // (the bird as tall as the three lines and their two 20s, at the name's right, its beak — the left fifth of
           // its box — free to reach over the words; the letters as much smaller as lets CRITIC stand 20 clear of the
           // rest of it, the column as it was — "I want the bird to be the size of the three lines, the beak can
@@ -2064,7 +2066,7 @@ var ncStemX = function () {
     // the size of the socials, center the bird and the latest in the column", 2026-10-15: --rl-gtx the hold's carry,
     // --nc-colw the socials' width)
     // (under the nav since, with the column at the left — "Move the latest to the left and flip the posts", 2026-10-16)
-    var socG = document.querySelector(document.documentElement.classList.contains('rail-col-l') ? 'main .op-band .rail-top__nav' : 'main .op-band .rail-socials'), sq = socG && socG.getBoundingClientRect();
+    var socG = document.querySelector(/(archive|about)-page/.test(document.body.className) ? 'main .op-band .rail-socials' : 'main .op-band .rail-top__nav'), sq = socG && socG.getBoundingClientRect();
     if (!sq || !sq.width) return;
     holdG.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
     // (the column itself left where a shut column stands, out past the window's left — the rows' fitter reads it there

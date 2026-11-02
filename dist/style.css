@@ -16937,3 +16937,6 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash:not(#nc-ch0):not(#nc-ch1){ display: none !important; }
   html body main.has-mega .op-track > .op-band > a.op-tnc:not(#nc-ch0):not(#nc-ch1),html body main.has-mega .op-track > .op-band > a.rail-tlm:not(#nc-ch0):not(#nc-ch1){ --k: #FAF9F6 !important; }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line:not(#nc-pl0){ display: none !important; }
+}

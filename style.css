@@ -33546,3 +33546,8 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   /* (the archive's sheet sets the name's ink on these itself: turned over here too) */
   html body main.has-mega .op-track > .op-band > :is(a.op-tnc, a.rail-tlm):not(#nc-ch0):not(#nc-ch1){ --k: #FAF9F6 !important; }
 }
+
+/* THE PICTURES WITHOUT THEIR OUTLINE (2026-11-02 — "Remove outline from images") */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .duo-half--mega > .nc-pic-line.nc-pic-line:not(#nc-pl0){ display: none !important; }
+}
