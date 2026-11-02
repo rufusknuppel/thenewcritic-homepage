@@ -9967,7 +9967,8 @@
                 DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 // (in the metadata's dress again since, Work Sans, 13, in capitals a fiftieth apart — "Make the metadata labels,
                 // the section titles, the see all and the last magazine 13 pt all caps Work Sans", 2026-11-01)
-                DEK_ROW = Object.assign({}, DEK_ROW, { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'letter-spacing': '0.02em', 'text-transform': 'uppercase' });
+                // (15 on 22 since — "Make 15px", 2026-11-01)
+                DEK_ROW = Object.assign({}, DEK_ROW, { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '15px', 'line-height': '22px', 'letter-spacing': '0.02em', 'text-transform': 'uppercase' });
                 var wide = window.innerWidth >= 1024;
                 // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {

@@ -16931,8 +16931,8 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main .latest-rail__hold.latest-rail__hold > .rail-sections > a.rail-sections__a:not(#nc-lab0):not(#nc-lab1),
   html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-lab0):not(#nc-lab1){
     font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    font-size: 13px !important;
-    line-height: 21px !important;
+    font-size: 15px !important;
+    line-height: 22px !important;
     font-weight: 400 !important;
     font-style: normal !important;
     letter-spacing: 0.02em !important;
@@ -16940,9 +16940,9 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   }
   html body main a.rail-tlm:not(#nc-lab0):not(#nc-lab1)::after,html body main a.band-mark--tlm:not(#nc-lab0):not(#nc-lab1)::after{
     font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 13px;
+    font-size: 15px;
     letter-spacing: 0.02em;
     text-transform: uppercase;
-    --tlm-dy: 0.09em; 
+    --tlm-dy: 0.15em; 
   }
 }
