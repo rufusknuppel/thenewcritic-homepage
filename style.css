@@ -33515,13 +33515,34 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
-    left: 27px !important; right: auto !important; translate: 0 -50% !important;
+    left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
   }
   /* (the two switched since, the nav at the rule's left end, The Last Magazine at its right and, pinned, THE NEW CRITIC in
      its place — "Switch the position of the last magazine and the nav items", 2026-11-02) */
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > :is(a.op-tnc, a.rail-tlm):not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
-    left: auto !important; right: 27px !important; translate: 0 -50% !important;
+    left: var(--opb-navl, 54px) !important; right: auto !important; translate: 0 -50% !important;
   }
-  /* (both on the big name's own margins since, 27 from the window, its T's left and its last C's right, not the content's
-     — "Use the margins around The New Critic", 2026-11-02) */
+  /* (flipped again since, The Last Magazine at the left and the nav at the right — "Flip nav and the last magazine",
+     2026-11-02) */
+  /* (on the big name's own margins for an hour, 27 from the window — "Use the margins around The New Critic", 2026-11-02 —
+     and back on the T's stem and its mirror since: "Realign the last magazine and nav with the T") */
+}
+
+/* THE TOP IN CHARCOAL (2026-11-02 — "Turn the whole top banner to Charcoal background with white text", "including the
+   band"): the big name and the band under it, pinned or not, on the charcoal with their ink the page's white; the same
+   tokens turned over, so the hand's highlight and everything drawn in them follow */
+@media (min-width: 1024px){
+  html body a.content-name.content-name:not(#nc-ch0),
+  html body main.has-mega .op-track > .op-band.op-band:not(#nc-ch0){
+    --k: #FAF9F6; --tw: #121417; background: #121417 !important;
+  }
+  /* (no seam between the name and the band: the name's height falls on a fraction of a pixel at most widths and the page's
+     white showed through as a line under it — "There's a rule below the new critic right now", 2026-11-02; the name's own
+     2 of white at its foot in the charcoal too) */
+  html body a.content-name.content-name:not(#nc-ch0){ box-shadow: 0 2px 0 #121417 !important; }
+  html body a.content-name.content-name:not(#nc-ch0)::after{ background: #121417 !important; }
+  /* (the rule under the band gone — "Remove rule below the band", 2026-11-02) */
+  html body main.has-mega .op-track > .op-band > .nc-band-dash.nc-band-dash:not(#nc-ch0):not(#nc-ch1){ display: none !important; }
+  /* (the archive's sheet sets the name's ink on these itself: turned over here too) */
+  html body main.has-mega .op-track > .op-band > :is(a.op-tnc, a.rail-tlm):not(#nc-ch0):not(#nc-ch1){ --k: #FAF9F6 !important; }
 }
