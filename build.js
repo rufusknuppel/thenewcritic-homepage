@@ -373,7 +373,7 @@ function siteFooter() {
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<footer class="nc-foot" aria-label="Colophon">`
     + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
-    + `<div class="nc-foot__band"><p class="nc-foot__colo">Est. May 2025, © The New Critic, Inc.</p><p class="nc-foot__soc">${socials}</p></div>`
+    + `<div class="nc-foot__band"><p class="nc-foot__colo"><span class="nc-foot__a">Est. May 2025</span>, <span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__soc">${socials}</p></div>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
     + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
@@ -4518,7 +4518,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FAF9F6">
+<meta name="theme-color" content="#121417">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -4713,7 +4713,9 @@ function renderFontGateScript({ fitted = true } = {}) {
   };
   var setMeta = function (colour) {
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = colour;
+    // (the charcoal whatever the page's theme since, the browser's own overscroll on some — "Set background of site on
+    // overscroll to charcoal", 2026-11-02)
+    if (meta) meta.content = '#121417';
   };
   // THE LIGHT PAGE STANDS ON ONE GRAY (2026-09-24): its ground is one
   // token in the sheet, --nc-ground (style.css, THE WHOLE PAGE STANDS ON
@@ -5443,7 +5445,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#FAF9F6">
+<meta name="theme-color" content="#121417">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}

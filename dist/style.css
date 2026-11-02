@@ -16963,6 +16963,24 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
   }
   html body > footer.nc-foot .nc-foot__band > p{ margin: 0; padding: 0; white-space: nowrap; color: inherit; font: inherit; }
-  html body > footer.nc-foot a.nc-foot__a{ color: inherit; text-decoration: none; transition: color .15s ease; }
-  html body > footer.nc-foot a.nc-foot__a:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
+  html body > footer.nc-foot .nc-foot__a{ color: inherit; text-decoration: none; transition: color .15s ease; }
+  html body > footer.nc-foot .nc-foot__a:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
+}
+html:root:root:not(#nc-os0){ background: #121417 !important; }
+html body:not(#nc-os0){ background-color: var(--tw, #FAF9F6); }
+@keyframes nc-foot-tnc-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes nc-foot-tlm-in { from { opacity: 0; } to { opacity: 1; } }
+@media (min-width: 1024px){
+  html body:not(.archive-page):not(.about-page){ timeline-scope: --nc-foot-v; }
+  html body > footer.nc-foot > a.nc-foot__name{ view-timeline: --nc-foot-v block; }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+    animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards !important;
+    animation-timeline: scroll(root), --nc-foot-v !important;
+    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25% !important;
+  }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+    animation: nc-tnc-in linear both, nc-foot-tnc-out linear forwards !important;
+    animation-timeline: scroll(root), --nc-foot-v !important;
+    animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px), entry 0% entry 25% !important;
+  }
 }
