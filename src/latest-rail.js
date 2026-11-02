@@ -3534,7 +3534,9 @@ window.ncOpenH = function () {
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
+          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, var(--opb-rr, #000) ' + sL + 'px, var(--opb-rr, #000) ' + rR + 'px, transparent ' + rR + 'px)';
+          // (the socials' run in --opb-rr since, unseen over the opening with the socials — "Remove this part from the
+          // initial load", 2026-11-02; style.css THE SOCIALS NOT ON THE OPENING)
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
