@@ -10429,7 +10429,9 @@
                 if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
                   // (the writer and the section and the date over the title since, WHEN_HALF between, one chunk with it; the dek
                   // the chunk under the rule — "move author/meta above title", 2026-11-02)
-                  var tH9 = (j.mB - j.mT) + META_PITCH + WHEN_HALF + (j.ttB - j.ttT), cH9 = j.dkB - j.dkT, bH9 = j.inB - j.txT;
+                  // (and the title down under the rule since, WHEN_HALF over the dek, one chunk with it; the writer and the section
+                  // and the date the chunk over the rule — "Move titles above deks", 2026-11-02)
+                  var tH9 = (j.mB - j.mT) + META_PITCH, cH9 = (j.ttB - j.ttT) + WHEN_HALF + (j.dkB - j.dkT), bH9 = j.inB - j.txT;
                   var g9 = WHEN_GAP, y9;
                   if (j.pic && j.pic.b > j.pic.t) {
                     var gq9 = ((j.pic.b - j.pic.t) - tH9 - cH9 - bH9) / 6;
@@ -10450,13 +10452,13 @@
                   // (the title at the top again since, that chunk under it and the body at the foot — "Make titles top of
                   // stack", 2026-10-28)
                   var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
-                  upY = (tT9 + tH9 - (j.ttB - j.ttT)) - j.ttT;
+                  upY = cT9 - j.ttT;
                   // (the section and the date first since, the dek and then the writer — "Switch Author line and essay, date
                   // line", 2026-11-01)
                   // (the writer over the section and the date since, the dek under them — META_PITCH)
                   metaY = tT9 - j.mT - upY;
                   j.wY = (j.mB + metaY + META_PITCH) - j.wB;
-                  dekY = cT9 - j.dkT;
+                  dekY = (cT9 + (j.ttB - j.ttT) + WHEN_HALF) - j.dkT;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }

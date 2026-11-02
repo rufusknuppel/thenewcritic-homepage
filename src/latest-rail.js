@@ -3528,14 +3528,21 @@ window.ncOpenH = function () {
           if (txq && txq.width) cRx = Math.max(cRx, txq.right);
         });
         var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
+        // (the right run as wide as the nav standing over it since, a little past the column's text on its left — "Move nav
+        // items right to be under the critic", 2026-11-02; style.css THE NAV UNDER CRITIC)
+        var nvQ = nv0.left;
+        if (sL && nvQ > cRx && nvQ < sL) sL = Math.round(nvQ);
         // (the left end on the pictures' left edge since, where they come within a hand of it, not a few pixels short of
         // them — "Why aren't these aligned?", 2026-10-28: under 1366 the socials' margin is 44–49, the left pictures' 53;
         // the name, The Last Magazine and the banner follow it)
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          // (one run since, margin to margin — "connect the top rule", 2026-11-02 — and across the whole window, no mask
-          // on it — "have the top rule run across whole site", the same day)
+          // (one run for an hour, then across the whole window — "connect the top rule", "have the top rule run across whole
+          // site", 2026-11-02 — and broken again since: "Revert complete rule", "add back margin between nav menu and content
+          // block")
+          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
+          bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
           // NAME AT THE RULE'S END)
@@ -3549,6 +3556,11 @@ window.ncOpenH = function () {
           // (and the subscribe banner's margins, the band's own: its left run's start and the socials' right edge)
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
+        } else {
+          bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
+          // (read again a little on where the side column or the posts were not yet laid, on the front page: a last read
+          // that early left the rule unbroken on one load in a few, nothing after it to mend it, 2026-11-02)
+          if (!document.body.classList.contains('archive-page') && !document.body.classList.contains('about-page') && (bandRule.tries = (bandRule.tries || 0) + 1) <= 10) setTimeout(bandRule, 400);
         }
       }
       var bkey = bst + '|' + dD.join(',');
