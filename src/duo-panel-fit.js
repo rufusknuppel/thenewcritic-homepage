@@ -7902,7 +7902,9 @@
                 var gW = ohS - (wbW - cqW.top);
                 if (wbW > -1e9 && gW > 0 && gW < 200) window.__ncWmGap = gW;
               }
-              var topGapW = window.__ncWmGap > 0 ? window.__ncWmGap - 1 : 54;
+              // (54 under the band's foot again since, the picture's own top — "Have the top post start 54px below the band",
+              // 2026-11-02)
+              var topGapW = 53;
               if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + topGapW;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;

@@ -2881,17 +2881,15 @@ var ncStemX = function () {
                 // the window's foot — "have the latest pull up from the bottom, flip with bird", 2026-10-29: the rule under the
                 // socials to the bird's ink, the ink to the rule, the rule to The Latest's capitals, its last baseline to the
                 // window's foot; the stack carried from --rl-st0, its rule and all under the column's foot, to nothing)
-                // (The Latest at the column's head again since, coming down out from under the band, and the bird settling at the
-                // column's foot, the window's bottom right corner, the rule between: the rule under the band to The Latest's
-                // capitals, See All's baseline to the rule, the rule to the bird's ink, the ink to the window's foot — "Have the
-                // latest descend from the top rather than rise from the bottom, so the bird settles in bottom right corner",
-                // 2026-11-02; the stack carried from --rl-st0, its rule and all over the column's top, to nothing)
-                var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
+                // (The Latest at the column's head and the bird at its foot for an hour, coming down from under the band —
+                // "Have the latest descend from the top rather than rise from the bottom", 2026-11-02 — and rising again since,
+                // "Revert the latest so that it rises")
+                var swT1 = gS - inkT, cap1 = 3 * gS + inkH - aN;
                 // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                var st0 = -(cap1 + stS + gS + 4);
+                var st0 = hr.height - (cap1 + aN - gS) + 4;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
@@ -2905,8 +2903,7 @@ var ncStemX = function () {
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
                   // (over The Latest's capitals by a space since, the bird over it — 2026-10-29)
-                  // (under See All by a space since, the bird under it — 2026-11-02)
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top + stS + gS).toFixed(2) + 'px');
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
                 }
               }
             }

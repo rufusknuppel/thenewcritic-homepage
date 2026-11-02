@@ -6045,7 +6045,7 @@
                 var gW = ohS - (wbW - cqW.top);
                 if (wbW > -1e9 && gW > 0 && gW < 200) window.__ncWmGap = gW;
               }
-              var topGapW = window.__ncWmGap > 0 ? window.__ncWmGap - 1 : 54;
+              var topGapW = 53;
               if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + topGapW;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
@@ -12286,11 +12286,11 @@ var ncStemX = function () {
                 var gS = Math.max(20, gSR);
                 var cutN = Math.max(0, Math.min(20.25, (hold.__ncGapCut || 0) + (20 - gSR) * 2));
                 if (Math.abs(cutN - (hold.__ncGapCut || 0)) > 0.5) { hold.__ncGapCut = cutN; clearTimeout(hold.__ncCutT); hold.__ncCutT = setTimeout(seat, 30); }
-                var cap1 = gS - aN, swT1 = cap1 + stS + 2 * gS - inkT;
+                var swT1 = gS - inkT, cap1 = 3 * gS + inkH - aN;
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                var st0 = -(cap1 + stS + gS + 4);
+                var st0 = hr.height - (cap1 + aN - gS) + 4;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
@@ -12299,7 +12299,7 @@ var ncStemX = function () {
                 hold.style.setProperty('--rl-stdy', '0px');
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top + stS + gS).toFixed(2) + 'px');
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
                 }
               }
             }
