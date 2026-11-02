@@ -33470,11 +33470,10 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 
 /* (THE LAST MAGAZINE IN GARAMOND for some days — "Make the last magazine back to Italics", "Unitalicize the last magazine",
    2026-10-28 — and the MAILLE capitals' outlines again since, their height the nav's capitals' as the band's lay sets it,
-   "Bring back the Maille The Last magazine match height with nav items", 2026-11-01; a pixel up, on the nav's baseline) */
+   "Bring back the Maille The Last magazine match height with nav items", 2026-11-01) */
 @media (min-width: 1024px){
-  html body main .op-band > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1) > .tnc-words{ translate: 0 calc(-1px - (var(--opb-tlmf, var(--rl-tlmf, 0px)) - var(--rl-tlmf, 0px)) / 2); }
-  /* (as wide as the name's THE since, its foot still on the nav's baseline — "Make the last magazine tall enough to stretch
-     to edge of E", 2026-11-01: --opb-tlmf, latest-rail.js) */
+  /* (as wide as the name's THE since — "Make the last magazine tall enough to stretch to edge of E", 2026-11-01: --opb-tlmf,
+     latest-rail.js — and on the middle between the name's foot and the rule, "Vertically center the last magazine", 2026-11-02) */
   html body main.has-mega .op-track > .op-band[style*="--opb-tlmf"] > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1){
     font-size: var(--opb-tlmf) !important;
   }

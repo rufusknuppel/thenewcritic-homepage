@@ -9099,6 +9099,9 @@
   // (half that between the writer, the dek and the section and the date since — THE HEAD OVER THE DIVIDER)
   // (and that whole since, twice it — "Double gap between dek and meta and kickers and surroundings", 2026-11-01)
   var WHEN_HALF = WHEN_GAP;
+  // (the writer's baseline to the section and the date's, the column's section titles' own line — "move author name on top
+  // of meta line, with same spacing as the section titles", 2026-11-02)
+  var META_PITCH = 27.5;
   // (the line forking round it since, two straights over and under its words and closing again past them — "have the rule
   // form a little diamond looking thing around the metadata", 2026-10-22: FORK_RISE over and under the line's middle,
   // FORK_RUN across each slant, FORK_PAD past the words; seatHairlines draws it)
@@ -10073,7 +10076,7 @@
         var lb9 = function (el) { var r9 = el.getBoundingClientRect(); return r9.height ? lastBaselineIn(el, { bottom: r9.bottom, right: Infinity }, parseFloat(getComputedStyle(el).lineHeight) || 0) : null; };
         if (t9 && m9 && w9 && j.pdk.getBoundingClientRect().height) {
           var i9 = [firstInkTop(t9), lb9(t9), firstInkTop(m9), lb9(m9), firstInkTop(j.pdk), lb9(j.pdk), firstInkTop(w9), lb9(w9)];
-          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + (i9[7] - i9[6]) + 2 * WHEN_HALF;
+          if (i9.every(function (v) { return v != null && isFinite(v); })) j.u9 = (i9[1] - i9[0]) + (i9[3] - i9[2]) + (i9[5] - i9[4]) + META_PITCH + WHEN_HALF;
         }
       }
     });
@@ -10424,7 +10427,7 @@
                 // picture's height shared six ways, WHEN_GAP at the least; where that will not go, WHEN_GAP and the whole on
                 // the picture's middle, the box round the words running past it (latest-rail.js reads __ncInk)
                 if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
-                  var tH9 = j.ttB - j.ttT, cH9 = (j.mB - j.mT) + WHEN_HALF + (j.dkB - j.dkT) + WHEN_HALF + (j.wB - j.wT), bH9 = j.inB - j.txT;
+                  var tH9 = j.ttB - j.ttT, cH9 = (j.mB - j.mT) + META_PITCH + WHEN_HALF + (j.dkB - j.dkT), bH9 = j.inB - j.txT;
                   var g9 = WHEN_GAP, y9;
                   if (j.pic && j.pic.b > j.pic.t) {
                     var gq9 = ((j.pic.b - j.pic.t) - tH9 - cH9 - bH9) / 6;
@@ -10448,9 +10451,10 @@
                   upY = tT9 - j.ttT;
                   // (the section and the date first since, the dek and then the writer — "Switch Author line and essay, date
                   // line", 2026-11-01)
-                  j.wY = cT9 - j.wT - upY;
+                  // (the writer over the section and the date since, the dek under them — META_PITCH)
+                  metaY = cT9 - j.mT - upY;
+                  j.wY = (j.mB + metaY + META_PITCH) - j.wB;
                   dekY = (j.wB + upY + j.wY + WHEN_HALF) - j.dkT;
-                  metaY = (j.dkB + dekY + WHEN_HALF) - j.mT - upY;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }
