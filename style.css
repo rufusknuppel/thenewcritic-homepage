@@ -33507,18 +33507,14 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
 }
 
-/* THE SOCIALS NOT ON THE OPENING (2026-11-02 — "Remove this part from the initial load"): Substack, Instagram, X, Email
-   and the run of the band's rule under them unseen while the opening's name stands, coming in with the band's THE NEW
-   CRITIC over the end of its climb (--op-s) and there once the band pins. Unseen, not gone: latest-rail.js still seats
-   the band and the side column off them, and hidden they take neither the hand nor the tab key */
-@property --opb-rr { syntax: '<color>'; inherits: false; initial-value: #000; }
-@keyframes nc-soc-in { from { opacity: 0; visibility: hidden; } to { opacity: 1; visibility: visible; } }
-@keyframes nc-soc-rule-in { from { --opb-rr: transparent; } to { --opb-rr: #000; } }
+/* THE NAV UNDER CRITIC, THE SOCIALS OUT FOR NOW (2026-11-02 — "Remove this part from the initial load", then "Move nav
+   items right to be under the critic. Remove socials for now"): Subscribe, Store, Archive, About with their right edge
+   where the socials' stood, on the rule's right end, under CRITIC; the socials unseen on every scroll. Unseen, not gone:
+   latest-rail.js still sizes the side column off their width and ends the rule at their right. To bring them back,
+   take the visibility rule out and the nav's right out */
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){
-    animation: nc-soc-in linear both !important; animation-timeline: scroll(root) !important; animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px) !important;
-  }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band > .nc-band-dash:not(#nc-soc0):not(#nc-soc1){
-    animation: nc-soc-rule-in linear both !important; animation-timeline: scroll(root) !important; animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px) !important;
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
+    left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
   }
 }
