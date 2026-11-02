@@ -10446,9 +10446,11 @@
                   // stack", 2026-10-28)
                   var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
-                  metaY = cT9 - j.mT - upY;
-                  dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
-                  j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
+                  // (the section and the date first since, the dek and then the writer — "Switch Author line and essay, date
+                  // line", 2026-11-01)
+                  j.wY = cT9 - j.wT - upY;
+                  dekY = (j.wB + upY + j.wY + WHEN_HALF) - j.dkT;
+                  metaY = (j.dkB + dekY + WHEN_HALF) - j.mT - upY;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }

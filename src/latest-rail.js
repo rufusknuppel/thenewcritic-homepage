@@ -3078,6 +3078,7 @@ window.ncOpenH = function () {
       // before the flip till then; the rule's left end the socials' margin mirrored, the posts' edge as far in from the
       // side column's text as that and 2, as the rows stand)
       if (!band.style.getPropertyValue('--opb-navl')) band.style.setProperty('--opb-navl', socR0.toFixed(1) + 'px');
+      seatTlm(band);
       if (!band.style.getPropertyValue('--opb-tncr')) band.style.setProperty('--opb-tncr', (vw0 - 2 * socR0 - sw - 2).toFixed(1) + 'px');
       // (the column under the socials carried to where they now stand)
       if (window.__ncGut) setTimeout(window.__ncGut, 0);
@@ -3188,6 +3189,16 @@ window.ncOpenH = function () {
   // the picture's held top line, sticky in its frame, stretched past the picture over the words and 9 past them,
   // --rule-xl and --rule-xr, read here; the frame is the post's foot, the words ending over it, so the line leaves with
   // the post; style.css THE RULE ACROSS EACH POST'S TOP)
+  // (The Last Magazine scaled from the rule's left end to the right edge of the opening name's E — "Make the last magazine
+  // tall enough to stretch to edge of E", 2026-11-01: --opb-tlmf; style.css)
+  var seatTlm = function (band) {
+    var theE = document.querySelector('a.content-name .content-name__block > .tnc-words svg.band-logo__line');
+    var tlmA = band.querySelector(':scope > a.rail-tlm'), navLq = parseFloat(band.style.getPropertyValue('--opb-navl'));
+    var lwA = tlmA ? parseFloat(tlmA.style.getPropertyValue('--rl-lwt')) : 0, eQ = theE && theE.getBoundingClientRect();
+    if (!lwA || !eQ || !eQ.width || isNaN(navLq)) return;
+    var v = ((eQ.right - band.getBoundingClientRect().left - navLq) / lwA).toFixed(3) + 'px';
+    if (band.style.getPropertyValue('--opb-tlmf') !== v) band.style.setProperty('--opb-tlmf', v);
+  };
   var bandRule = function () {
     var band = document.querySelector('main .op-band');
     if (band) band.classList.remove('rule-runs');
@@ -3534,6 +3545,7 @@ window.ncOpenH = function () {
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
           // (and the run's left end, where the name and The Last Magazine stand since, the nav at the right end)
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
+          seatTlm(bandD);
           // (and the subscribe banner's margins, the band's own: its left run's start and the socials' right edge)
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);

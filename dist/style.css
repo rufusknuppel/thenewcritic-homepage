@@ -16897,7 +16897,10 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   }
 }
 @media (min-width: 1024px){
-  html body main .op-band > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1) > .tnc-words{ translate: 0 -1px; }
+  html body main .op-band > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1) > .tnc-words{ translate: 0 calc(-1px - (var(--opb-tlmf, var(--rl-tlmf, 0px)) - var(--rl-tlmf, 0px)) / 2); }
+  html body main.has-mega .op-track > .op-band[style*="--opb-tlmf"] > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1){
+    font-size: var(--opb-tlmf) !important;
+  }
 }
 @media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > a.rail-tlm:not(#nc-tnc0):not(#nc-tnc1),html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .rail-top:is(*, a):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }

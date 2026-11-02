@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=d159c3de">
+<link rel="stylesheet" href="style.css?v=3e2b170b">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7552,9 +7552,9 @@
                   } else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + cH9 + bH9 + 4 * WHEN_GAP)) / 2));
                   var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
-                  metaY = cT9 - j.mT - upY;
-                  dekY = (j.mB + upY + metaY + WHEN_HALF) - j.dkT;
-                  j.wY = (j.dkB + dekY + WHEN_HALF) - j.wT - upY;
+                  j.wY = cT9 - j.wT - upY;
+                  dekY = (j.wB + upY + j.wY + WHEN_HALF) - j.dkT;
+                  metaY = (j.dkB + dekY + WHEN_HALF) - j.mT - upY;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }
@@ -12434,6 +12434,7 @@ window.ncOpenH = function () {
       band.style.setProperty('--opb-soc-r', socR0.toFixed(2) + 'px');
       band.style.setProperty('--opb-tlm', ((navL0 + nw + vw0 - socR0 - sw) / 2).toFixed(1) + 'px');
       if (!band.style.getPropertyValue('--opb-navl')) band.style.setProperty('--opb-navl', socR0.toFixed(1) + 'px');
+      seatTlm(band);
       if (!band.style.getPropertyValue('--opb-tncr')) band.style.setProperty('--opb-tncr', (vw0 - 2 * socR0 - sw - 2).toFixed(1) + 'px');
       if (window.__ncGut) setTimeout(window.__ncGut, 0);
     }
@@ -12504,6 +12505,14 @@ window.ncOpenH = function () {
   };
   markHot();
   window.addEventListener('load', markHot);
+  var seatTlm = function (band) {
+    var theE = document.querySelector('a.content-name .content-name__block > .tnc-words svg.band-logo__line');
+    var tlmA = band.querySelector(':scope > a.rail-tlm'), navLq = parseFloat(band.style.getPropertyValue('--opb-navl'));
+    var lwA = tlmA ? parseFloat(tlmA.style.getPropertyValue('--rl-lwt')) : 0, eQ = theE && theE.getBoundingClientRect();
+    if (!lwA || !eQ || !eQ.width || isNaN(navLq)) return;
+    var v = ((eQ.right - band.getBoundingClientRect().left - navLq) / lwA).toFixed(3) + 'px';
+    if (band.style.getPropertyValue('--opb-tlmf') !== v) band.style.setProperty('--opb-tlmf', v);
+  };
   var bandRule = function () {
     var band = document.querySelector('main .op-band');
     if (band) band.classList.remove('rule-runs');
@@ -12727,6 +12736,7 @@ window.ncOpenH = function () {
           var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
+          seatTlm(bandD);
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
         } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
