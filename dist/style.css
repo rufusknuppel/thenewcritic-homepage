@@ -16919,7 +16919,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega .latest-rail a.latest-rail__all.latest-rail__all:not(#nc-sec0):not(#nc-sec1){ margin-top: var(--rl-allm, 19px) !important; }
 }
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
+  html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
     left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
   }

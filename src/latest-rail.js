@@ -3534,9 +3534,8 @@ window.ncOpenH = function () {
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          // (one run again since, margin to margin — "connect the top rule", 2026-11-02, the nav over its right end)
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
-          bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
+          // (one run since, margin to margin — "connect the top rule", 2026-11-02 — and across the whole window, no mask
+          // on it — "have the top rule run across whole site", the same day)
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
           // NAME AT THE RULE'S END)
@@ -3550,7 +3549,7 @@ window.ncOpenH = function () {
           // (and the subscribe banner's margins, the band's own: its left run's start and the socials' right edge)
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
-        } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
+        }
       }
       var bkey = bst + '|' + dD.join(',');
       if (bd.__st !== bkey) {

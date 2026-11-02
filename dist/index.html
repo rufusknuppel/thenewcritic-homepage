@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=ce7ca3dd">
+<link rel="stylesheet" href="style.css?v=19d105f7">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7544,7 +7544,7 @@
                 dekY = (j.inB + dnY + BODY_DEK_GAP) - j.dkT;
                 hairD = null;
                 if (WHEN_ROW && j.wEl && j.wT != null && j.wB != null) {
-                  var tH9 = j.ttB - j.ttT, cH9 = (j.mB - j.mT) + META_PITCH + WHEN_HALF + (j.dkB - j.dkT), bH9 = j.inB - j.txT;
+                  var tH9 = (j.mB - j.mT) + META_PITCH + WHEN_HALF + (j.ttB - j.ttT), cH9 = j.dkB - j.dkT, bH9 = j.inB - j.txT;
                   var g9 = WHEN_GAP, y9;
                   if (j.pic && j.pic.b > j.pic.t) {
                     var gq9 = ((j.pic.b - j.pic.t) - tH9 - cH9 - bH9) / 6;
@@ -7552,10 +7552,10 @@
                     else y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + cH9 + bH9 + 4 * WHEN_GAP) / 2;
                   } else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + cH9 + bH9 + 4 * WHEN_GAP)) / 2));
                   var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
-                  upY = tT9 - j.ttT;
-                  metaY = cT9 - j.mT - upY;
+                  upY = (tT9 + tH9 - (j.ttB - j.ttT)) - j.ttT;
+                  metaY = tT9 - j.mT - upY;
                   j.wY = (j.mB + metaY + META_PITCH) - j.wB;
-                  dekY = (j.wB + upY + j.wY + WHEN_HALF) - j.dkT;
+                  dekY = cT9 - j.dkT;
                   dnY = bTop9 - j.txT;
                   if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
                 }
@@ -12732,15 +12732,13 @@ window.ncOpenH = function () {
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
-          bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);
           seatTlm(bandD);
           var sbn = document.querySelector('.nc-sub-banner'), sbM = rL + 'px';
           if (sbn && sbn.style.getPropertyValue('--sb-m') !== sbM) sbn.style.setProperty('--sb-m', sbM);
-        } else bst += ';clip-path:inset(0 ' + (bW - rR) + 'px 0 ' + rL + 'px)';
+        }
       }
       var bkey = bst + '|' + dD.join(',');
       if (bd.__st !== bkey) {

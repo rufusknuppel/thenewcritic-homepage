@@ -33513,7 +33513,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    latest-rail.js still sizes the side column off their width and ends the rule at their right. To bring them back,
    take the visibility rule out and the nav's right out */
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
+  html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
     left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
   }
