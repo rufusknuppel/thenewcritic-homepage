@@ -359,6 +359,27 @@ function opBand(currentKey = '') {
 // the rows leave — "Have sidebar closed as default. Have the bird in the bottom right corner with 27px spacing below
 // and on sides", 2026-10-15: the swallow's body and its two cuts, the drawing's box its ink's; outside main, so nothing
 // carries it; style.css THE BIRD IN THE CORNER)
+// THE FOOTER (2026-11-02 — "Add a full footer that mimics the top band with the colophon on the left and the socials on the
+// right", "include the wordmark"): the top banner again at the page's end, after main: THE NEW CRITIC at the name's size and
+// margins, on the charcoal, and under it a band as tall as the top's, Est. and the copyright at the left and the socials at
+// the right, on the same stems; the inline script reads the name's size and the band's margins off the page's head
+// (style.css THE FOOTER)
+function siteFooter() {
+  const socials = [
+    ['https://www.thenewcritic.com', 'Substack'],
+    ['https://www.instagram.com/the_newcritic/', 'Instagram'],
+    ['https://x.com/thenewcritic', 'X'],
+    ['mailto:editors@thenewcritic.com', 'Email'],
+  ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
+  return `<footer class="nc-foot" aria-label="Colophon">`
+    + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
+    + `<div class="nc-foot__band"><p class="nc-foot__colo">Est. May 2025, © The New Critic, Inc.</p><p class="nc-foot__soc">${socials}</p></div>`
+    + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;var seat=function(){`
+    + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
+    + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
+    + `if(b){var q=getComputedStyle(b),r=b.getBoundingClientRect();if(r.height)f.style.setProperty('--nf-h',r.height+'px');var l=q.getPropertyValue('--opb-navl'),e=q.getPropertyValue('--opb-soc-r');if(l)f.style.setProperty('--nf-l',l);if(e)f.style.setProperty('--nf-r',e);}`
+    + `};seat();addEventListener('resize',function(){setTimeout(seat,250);});addEventListener('load',function(){setTimeout(seat,500);setTimeout(seat,1700);});document.addEventListener('newcritic:fit',function(){setTimeout(seat,0);});addEventListener('newcritic:fitdone',seat);var mb=document.querySelector('main .op-band');if(mb&&window.MutationObserver)new MutationObserver(seat).observe(mb,{attributes:true,attributeFilter:['style']});})();</script>`;
+}
 function cornerBird() {
   const birdSrc = (contentName().match(/<span class="content-name__bird"[\s\S]*?<\/svg><\/span>/) || [])[0] || '';
   const vb = (birdSrc.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/) || []).slice(1).map(Number);
@@ -4569,6 +4590,7 @@ ${duoHtml}
        renderColophonBand.) -->
 ${renderMarginalia()}
 </main>
+${siteFooter()}
 ${cornerBird()}
 
 ${renderFooter()}
@@ -5443,6 +5465,7 @@ ${preMain}
 <main id="main">
 ${bodyHtml}
 </main>
+${siteFooter()}
 
 ${bare ? '' : renderFooter()}
 

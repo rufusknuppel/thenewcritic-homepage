@@ -33558,3 +33558,29 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   }
   html body main.has-mega .op-track > .op-band > a.rail-tlm:not(#nc-it0):is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E) !important; }
 }
+
+/* THE FOOTER (2026-11-02 — "Add a full footer that mimics the top band with the colophon on the left and the socials on the
+   right", "include the wordmark"; build.js siteFooter): the banner over the page's head again at its end, the same charcoal
+   and white, the name at its size and 27 margins, 27 over it as at the top, the band under it as tall as the top's with
+   its words in the nav's Garamond on the same stems. From 1024 up; a phone keeps what it has */
+.nc-foot{ display: none; }
+@media (min-width: 1024px){
+  html body > footer.nc-foot{
+    display: block; position: relative; z-index: 90; width: 100%; margin: 0; padding: 27px 0 0; box-sizing: border-box;
+    background: #121417; color: #FAF9F6; --tw-space: 0.5401; --k: #FAF9F6; --tw: #121417;
+  }
+  html body > footer.nc-foot > a.nc-foot__name{ display: block; margin: 0 27px; font-size: var(--nf-fs, 12vw); line-height: 0; color: inherit; text-decoration: none; }
+  html body > footer.nc-foot > a.nc-foot__name .tnc-words.tnc-words:not(#nc-ft0){ display: flex !important; justify-content: space-between !important; height: 1em !important; font-size: var(--nf-fs, 12vw) !important; margin: 0 !important; }
+  html body > footer.nc-foot > a.nc-foot__name .tnc-words__row{ display: flex; gap: calc(var(--tw-space) * 1em); }
+  html body > footer.nc-foot > a.nc-foot__name svg{ display: block; flex: none; fill: #FAF9F6; transition: fill .15s ease; }
+  html body > footer.nc-foot > a.nc-foot__name svg path:not(#nc-ft0):not(#nc-ft1){ fill: #FAF9F6 !important; transition: fill .15s ease; }
+  html body > footer.nc-foot > a.nc-foot__name:is(:hover, :focus-visible) svg path:not(#nc-ft0):not(#nc-ft1){ fill: var(--nc-mark, #B3301E) !important; }
+  html body > footer.nc-foot > .nc-foot__band{
+    display: flex; justify-content: space-between; align-items: center; height: var(--nf-h, 69px);
+    padding: 0 var(--nf-r, 54px) 0 var(--nf-l, 54px); box-sizing: border-box;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
+  }
+  html body > footer.nc-foot .nc-foot__band > p{ margin: 0; padding: 0; white-space: nowrap; color: inherit; font: inherit; }
+  html body > footer.nc-foot a.nc-foot__a{ color: inherit; text-decoration: none; transition: color .15s ease; }
+  html body > footer.nc-foot a.nc-foot__a:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
+}
