@@ -12729,12 +12729,10 @@ window.ncOpenH = function () {
           if (txq && txq.width) cRx = Math.max(cRx, txq.right);
         });
         var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
-        var nvQ = nv0.left;
-        if (sL && nvQ > cRx && nvQ < sL) sL = Math.round(nvQ);
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
+          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);

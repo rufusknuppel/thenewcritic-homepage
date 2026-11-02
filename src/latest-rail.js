@@ -3528,17 +3528,14 @@ window.ncOpenH = function () {
           if (txq && txq.width) cRx = Math.max(cRx, txq.right);
         });
         var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
-        // (the right run as wide as the nav standing over it since, a little past the column's text on its left — "Move nav
-        // items right to be under the critic", 2026-11-02; style.css THE NAV UNDER CRITIC)
-        var nvQ = nv0.left;
-        if (sL && nvQ > cRx && nvQ < sL) sL = Math.round(nvQ);
         // (the left end on the pictures' left edge since, where they come within a hand of it, not a few pixels short of
         // them — "Why aren't these aligned?", 2026-10-28: under 1366 the socials' margin is 44–49, the left pictures' 53;
         // the name, The Last Magazine and the banner follow it)
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
+          // (one run again since, margin to margin — "connect the top rule", 2026-11-02, the nav over its right end)
+          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
