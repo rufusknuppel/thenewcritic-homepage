@@ -33515,11 +33515,13 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
-    left: var(--opb-navl, 54px) !important; right: auto !important; translate: 0 -50% !important;
+    left: 27px !important; right: auto !important; translate: 0 -50% !important;
   }
   /* (the two switched since, the nav at the rule's left end, The Last Magazine at its right and, pinned, THE NEW CRITIC in
      its place — "Switch the position of the last magazine and the nav items", 2026-11-02) */
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > :is(a.op-tnc, a.rail-tlm):not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
-    left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
+    left: auto !important; right: 27px !important; translate: 0 -50% !important;
   }
+  /* (both on the big name's own margins since, 27 from the window, its T's left and its last C's right, not the content's
+     — "Use the margins around The New Critic", 2026-11-02) */
 }
