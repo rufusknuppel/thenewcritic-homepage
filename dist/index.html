@@ -12732,8 +12732,6 @@ window.ncOpenH = function () {
         var cL = Math.round(cLx);
         if (cL > rL - 16 && cL < rL + 16) rL = cL;
         if (cR > rL && sL > cR && sL < rR) {
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
-          bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           var tncR = (cR - bL) + 'px', navL = (rL - bL) + 'px';
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-tncr') !== tncR) bandD.style.setProperty('--opb-tncr', tncR);
           if (window.__ncFitDone && bandD.style.getPropertyValue('--opb-navl') !== navL) bandD.style.setProperty('--opb-navl', navL);

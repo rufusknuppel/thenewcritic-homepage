@@ -3537,10 +3537,8 @@ window.ncOpenH = function () {
           // (one run for an hour, then across the whole window — "connect the top rule", "have the top rule run across whole
           // site", 2026-11-02 — and broken again since: "Revert complete rule", "add back margin between nav menu and content
           // block")
-          // (and one run again since, margin to margin — "connect right and left top rule", then "Revert, but keep connected
-          // rule", the nav back under CRITIC over its right end)
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
-          bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
+          // (and one run across the whole window since, no mask on it — "connect right and left top rule", "Revert, but keep
+          // connected rule", then "connect the top rule to the sides", 2026-11-02)
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
           // NAME AT THE RULE'S END)
