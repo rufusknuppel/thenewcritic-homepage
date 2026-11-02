@@ -16921,6 +16921,9 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
+    left: var(--opb-navl, 54px) !important; right: auto !important; translate: 0 -50% !important;
+  }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > a.op-tnc:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2),html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > a.rail-tlm:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
     left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
   }
 }
