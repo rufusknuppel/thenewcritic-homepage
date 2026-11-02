@@ -342,8 +342,18 @@ function opBand(currentKey = '') {
     .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
   const soc = contentSocials().replace('class="content-socials"', 'class="rail-socials"').replace(/content-socials__/g, 'rail-socials__');
+  // (the nav spread either side of The Last Magazine since, no commas — "Remove the list on nav ... Space evenly so Subscribe
+  // and store on the left, then last magazine in the center then Archive about on right", 2026-11-02; .rail-top stays,
+  // unseen, the band's and the column's measure; style.css THE NAV EITHER SIDE)
+  const spreadA = (href, label, attrs = '') => `<a class="band-spread__a" href="${escapeHtml(href)}"${attrs}>${label}</a>`;
+  const spread = `<nav class="band-spread" aria-label="Site"><span class="band-spread__side">`
+    + spreadA(`${SITE_URL}/subscribe`, 'Subscribe', ' rel="noopener"') + spreadA(STORE_HREF, 'Store', cur('store'))
+    + `</span><span class="band-spread__hole" aria-hidden="true"></span><span class="band-spread__side">`
+    + (ar ? spreadA(ar.href, 'Archive', cur('archive')) : '') + (ab ? spreadA(ab.href, 'About', cur('about')) : '')
+    + `</span></nav>`;
   return `<div class="op-track"><div class="op-band">`
     + `<div class="rail-top"><div class="rail-top__nav">${nav}</div></div>`
+    + spread
     + (TLM_WORDS ? `<a class="rail-tlm" href="#top" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}">${tlmWords()}</a>` : '')
     // (THE NEW CRITIC in THE LAST MAGAZINE's place since, as tall, coming in as it goes over the last fifth of the
     // opening name's climb out of the window — "Over the last 20% of the new critic disappearing, have the last magazine

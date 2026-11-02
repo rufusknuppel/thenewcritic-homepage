@@ -16920,7 +16920,23 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
 }
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
-    left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
+}
+.band-spread{ display: none; }
+@media (min-width: 1024px){
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band > .rail-top:not(#nc-sp0):not(#nc-sp1):not(#nc-sp2){ visibility: hidden !important; }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band[style*="--opb-navl"] > .band-spread{
+    display: flex; position: absolute; top: 50%; left: var(--opb-navl); right: var(--opb-soc-r, 54px); translate: 0 -50%;
+    margin: 0; padding: 0; pointer-events: none; z-index: 2;
+  }
+  html body main .op-band > .band-spread > .band-spread__side{ flex: 1 1 0; min-width: 0; display: flex; justify-content: space-between; }
+  html body main .op-band > .band-spread > .band-spread__side:first-child::after, html body main .op-band > .band-spread > .band-spread__side:last-child::before{ content: ""; width: 0; }
+  html body main .op-band > .band-spread > .band-spread__hole{ flex: none; width: var(--opb-tlmw, 264px); }
+  html body main .op-band > .band-spread a.band-spread__a{
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
+    color: var(--k, #121417); text-decoration: none; white-space: nowrap; pointer-events: auto; transition: color .15s ease;
+  }
+  html body main .op-band > .band-spread a.band-spread__a:is(:hover, :focus-visible){ color: var(--nc-mark, #B3301E); }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc:not(#nc-sp0):not(#nc-sp1):not(#nc-sp2),html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm:not(#nc-sp0):not(#nc-sp1):not(#nc-sp2){
+    left: calc((var(--opb-navl) + 100% - var(--opb-soc-r, 54px)) / 2) !important; translate: -50% -50% !important;
   }
 }

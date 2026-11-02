@@ -3198,6 +3198,9 @@ window.ncOpenH = function () {
     if (!lwA || !eQ || !eQ.width || isNaN(navLq)) return;
     var v = ((eQ.right - band.getBoundingClientRect().left - navLq) / lwA).toFixed(3) + 'px';
     if (band.style.getPropertyValue('--opb-tlmf') !== v) band.style.setProperty('--opb-tlmf', v);
+    // (and its width, the hole the spread nav leaves it — style.css THE NAV EITHER SIDE)
+    var wTl = (eQ.right - band.getBoundingClientRect().left - navLq).toFixed(2) + 'px';
+    if (band.style.getPropertyValue('--opb-tlmw') !== wTl) band.style.setProperty('--opb-tlmw', wTl);
   };
   var bandRule = function () {
     var band = document.querySelector('main .op-band');
@@ -3528,10 +3531,6 @@ window.ncOpenH = function () {
           if (txq && txq.width) cRx = Math.max(cRx, txq.right);
         });
         var cR = Math.round(cRx), sL = scQ && scQ.width ? Math.round(scQ.left) : 0;
-        // (the right run as wide as the nav standing over it since, a little past the column's text on its left — "Move nav
-        // items right to be under the critic", 2026-11-02; style.css THE NAV UNDER CRITIC)
-        var nvQ = nv0.left;
-        if (sL && nvQ > cRx && nvQ < sL) sL = Math.round(nvQ);
         // (the left end on the pictures' left edge since, where they come within a hand of it, not a few pixels short of
         // them — "Why aren't these aligned?", 2026-10-28: under 1366 the socials' margin is 44–49, the left pictures' 53;
         // the name, The Last Magazine and the banner follow it)
@@ -3541,7 +3540,8 @@ window.ncOpenH = function () {
           // (one run for an hour, then across the whole window — "connect the top rule", "have the top rule run across whole
           // site", 2026-11-02 — and broken again since: "Revert complete rule", "add back margin between nav menu and content
           // block")
-          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + cR + 'px, transparent ' + cR + 'px, transparent ' + sL + 'px, #000 ' + sL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
+          // (and one run again since, margin to margin — "connect right and left top rule", the nav spread over it)
+          var mk = 'linear-gradient(to right, transparent ' + rL + 'px, #000 ' + rL + 'px, #000 ' + rR + 'px, transparent ' + rR + 'px)';
           bst += ';-webkit-mask-image:' + mk + ';mask-image:' + mk;
           // (and the band's THE NEW CRITIC with its right edge on the left run's end since — "Move the new critic to the
           // right edge of the left rule in the band", 2026-10-28: --opb-tncr in the band's own measure; style.css THE
