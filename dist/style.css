@@ -16937,7 +16937,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   html body main.has-mega .op-track > .op-band > a.op-tnc:not(#nc-ch0):not(#nc-ch1),html body main.has-mega .op-track > .op-band > a.rail-tlm:not(#nc-ch0):not(#nc-ch1){ --k: #FAF9F6 !important; }
 }
 @media (min-width: 1024px){
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-it0):not(#nc-it1):not(#nc-it2){
+  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-it0):not(#nc-it1):not(#nc-it2):not(#nc-it3){
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-size: 19.5px !important; line-height: 27.5px !important;
     font-style: italic !important; font-weight: 400 !important; letter-spacing: normal !important; text-transform: none !important;
     color: var(--k, #121417) !important; white-space: nowrap !important; width: auto !important; height: auto !important;
