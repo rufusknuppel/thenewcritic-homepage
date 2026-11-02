@@ -16897,17 +16897,7 @@ body.archive-page .arc--index .arc-ix-item .arc-ix-by,body.archive-page .arc--in
   }
 }
 @media (min-width: 1024px){
-  html body main :is(a.rail-tlm, a.band-mark--tlm):not(#nc-tlm0):not(#nc-tlm1) svg{ opacity: 0 !important; }
-  html body main a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1)::after,html body main a.band-mark--tlm:not(#nc-tlm0):not(#nc-tlm1)::after{
-    content: attr(aria-label); position: absolute; left: 50%; bottom: 0; translate: -50% var(--tlm-dy, 0.2436em);
-    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-style: normal; font-weight: 400;
-    font-size: 19.5px; line-height: 1; letter-spacing: normal; text-transform: none; white-space: nowrap;
-    color: var(--k, #121417); transition: color .15s ease; pointer-events: none;
-  }
-  html body main .op-band.is-tlm-hot > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1)::after,html body main a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1):hover::after,html body main a.band-mark--tlm:not(#nc-tlm0):not(#nc-tlm1):hover::after{ color: var(--nc-mark, #B3301E); }
-  html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-tnc0):not(#nc-tnc1)::after{
-    left: 0; right: auto; translate: 0 var(--tlm-dy, 0.2436em);
-  }
+  html body main .op-band > a.rail-tlm:not(#nc-tlm0):not(#nc-tlm1) > .tnc-words{ translate: 0 -1px; }
 }
 @media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > a.rail-tlm:not(#nc-tnc0):not(#nc-tnc1),html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .rail-top:is(*, a):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
