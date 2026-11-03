@@ -33804,3 +33804,14 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
    throughout the sheet and the build, the band, the footer and the overscroll with it */
 
 /* THE HIGHLIGHT RED AGAIN (2026-11-03 — "Go back to red as highlight color"): #B3301E, written where the blue stood */
+
+/* THE COLUMN THE BIRD'S WIDTH (2026-11-03 — "narrow side column so that bird determines width + margins"): the bird and The Latest's words on
+   a column as wide as the bird, --nc-bw, its right edge the nav's end; latest-rail.js */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > :is(.rail-sections, .latest-rail__in):not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
+    margin-left: calc(100% - var(--nc-bw, 100%)) !important; width: var(--nc-bw, 100%) !important;
+  }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-swallow.rail-swallow:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
+    left: calc(100% - var(--nc-bw, 100%) / 2) !important;
+  }
+}

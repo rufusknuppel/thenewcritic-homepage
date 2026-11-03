@@ -1877,6 +1877,17 @@ var ncStemX = function () {
     // layer — "Seeing a flash on column collapse in vertical rule",
     // 2026-10-05)
     mid = Math.round(mid);
+    // (the side column the bird's width, at the nav's right end, the rows out to as much short of it as it stands from the window —
+    // "narrow side column so that bird determines width + margins", 2026-11-03: --nc-bw, style.css THE COLUMN THE BIRD'S WIDTH)
+    if (window.innerWidth >= 1024) {
+      var swQ = document.querySelector('.latest-rail__hold > .rail-swallow'), navQ = document.querySelector('main .op-band .rail-top');
+      var bwQ = swQ ? swQ.getBoundingClientRect().width : 0, nwQ = navQ ? navQ.getBoundingClientRect().width : 0;
+      if (bwQ > 0 && nwQ > bwQ) {
+        mid += Math.round(nwQ - bwQ);
+        var bwV = bwQ.toFixed(2) + 'px';
+        if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
+      }
+    }
     // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
     // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
     // OVERSCROLL: its left edge, the column's width less its 2)
