@@ -1880,7 +1880,7 @@ var ncStemX = function () {
     // (the rows out to 54 short of the narrow column, whose bird's width goes with the window's: "Narrow both side columns", "Move the
     // latest back under the bird, so only one side column on the right", 2026-11-03)
     // (read at 1024, 1440 and 1920, between them in line)
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= -62.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
+    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= -55.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
     // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
     // OVERSCROLL: its left edge, the column's width less its 2)
@@ -2832,6 +2832,8 @@ var ncStemX = function () {
                 swH *= 1.1;
                 // (and a tenth smaller since — "make bird 10% smaller", 2026-11-03)
                 swH *= 0.9;
+                // (and a tenth bigger again — "Make bird 10% bigger", 2026-11-03)
+                swH *= 1.1;
                 // (off the band's own foot, where the hold stands at the opening and pinned alike: read off the hold, a seat
                 // made before the band came to the opening's foot stood the bird 130 high till the next)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);

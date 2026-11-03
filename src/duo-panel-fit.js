@@ -8985,6 +8985,8 @@
   var PIC_FAR = 54, POST_TRIM = 36;
   // (90 for a moment — "Make posts 54px shorter" — and 36 again since, "Make posts taller", 2026-11-03: style.css --card-words with it)
   POST_TRIM = 36;
+  // (54 taller again since, past no trim at all — "Make posts taller still", 2026-11-03)
+  POST_TRIM = -18;
   // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
   PIC_FAR = 0;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
@@ -9765,6 +9767,8 @@
       // stretches from the outline of the image. Move inner margin to match 40.5px", 2026-10-28: the picture's side and
       // the far side where the column runs on to the side column's rule; latest-rail.js draws the box, .nc-words-box)
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
+      // (the column a little narrower since, from its far side — "make title columns slightly narrower", 2026-11-03)
+      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 27; else j.Bd.r -= 27; }
       // (and the box 54 in from the post's outer edge since — the window's left margin where the picture stands on the
       // right, the side column's rule where it stands on the left — the words BOX_PAD inside it: "Have at least 54px on
       // outside of the post to the edges", 2026-10-28)
@@ -10111,6 +10115,12 @@
     twos.forEach(function (j) {
       j.bt.style.flexShrink = '0';
       j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+      // (the head and the dek on the same measure, so they centre over the body — "make title columns slightly narrower", 2026-11-03)
+      if (j.slide && bandedInk() && window.innerWidth >= 1024) {
+        var hdW = j.body.querySelector(':scope > .swap-body-head');
+        if (hdW) hdW.style.setProperty('width', j.bt.style.width, 'important');
+        if (j.pdk) j.pdk.style.setProperty('width', j.bt.style.width, 'important');
+      }
     });
     // READ: the lines
     twos.forEach(function (j) {

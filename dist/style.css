@@ -17090,15 +17090,7 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
   }
 }
 @media (min-width: 1024px){
-  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sections:not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3),html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in:not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3){
-    left: 0 !important; margin-left: calc(100% - 204px) !important; width: 204px !important; right: auto !important;
-  }
-  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-swallow.rail-swallow:not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3){
-    left: calc(50% + 17px) !important;
-  }
-}
-@media (min-width: 1024px){
-  html body main.has-mega .page-rows.page-rows.page-rows{ --card-words: 36px; } 
+  html body main.has-mega .page-rows.page-rows.page-rows{ --card-words: -18px; } 
 }
 @media (min-width: 1024px){
   html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1){ will-change: transform; }

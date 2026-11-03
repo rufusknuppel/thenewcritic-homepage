@@ -33785,21 +33785,13 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
   }
 }
 
-/* THE ONE COLUMN ON THE RIGHT, NARROW (2026-11-03 — "Narrow both side columns", "Move the latest back under the bird, so only one side
-   column on the right"): the bird and The Latest's words on one 204 (150, and 54 more since: "Expand side column by 54px"), its right edge the nav's end */
-@media (min-width: 1024px){
-  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > :is(.rail-sections, .latest-rail__in):not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3){
-    left: 0 !important; margin-left: calc(100% - 204px) !important; width: 204px !important; right: auto !important;
-  }
-  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-swallow.rail-swallow:not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3){
-    left: calc(50% + 17px) !important;
-  }
-}
+/* (the one column on the right, the hold's own width since, the bird on the middle of the nav over it — "Increase width of side column
+   slighly so that bird is centered under nav", 2026-11-03; 150 and then 204 before it) */
 
 /* THE POSTS 54 SHORTER (2026-11-03 — "Make posts 54px shorter"): --card-words, 36 and 54, every row height's formula taking it off
    (duo-panel-fit.js POST_TRIM with it); 54 between the posts with it, POST_GAP */
 @media (min-width: 1024px){
-  html body main.has-mega .page-rows.page-rows.page-rows{ --card-words: 36px; } /* (36 again — "Make posts taller", 2026-11-03) */
+  html body main.has-mega .page-rows.page-rows.page-rows{ --card-words: -18px; } /* (36 again — "Make posts taller"; 54 taller still, -18 — "Make posts taller still", 2026-11-03) */
 }
 
 /* THE FOOTER ON ITS OWN LAYER (2026-11-03 — "On fast scroll the footer flickers"): its state holds steady through a fling (read frame by

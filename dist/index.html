@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=ffb2ae41">
+<link rel="stylesheet" href="style.css?v=3a3538d2">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6729,6 +6729,7 @@
   BOX_EDGE = 0;
   var PIC_FAR = 54, POST_TRIM = 36;
   POST_TRIM = 36;
+  POST_TRIM = -18;
   PIC_FAR = 0;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
@@ -7149,6 +7150,7 @@
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
+      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 27; else j.Bd.r -= 27; }
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
@@ -7357,6 +7359,11 @@
     twos.forEach(function (j) {
       j.bt.style.flexShrink = '0';
       j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+      if (j.slide && bandedInk() && window.innerWidth >= 1024) {
+        var hdW = j.body.querySelector(':scope > .swap-body-head');
+        if (hdW) hdW.style.setProperty('width', j.bt.style.width, 'important');
+        if (j.pdk) j.pdk.style.setProperty('width', j.bt.style.width, 'important');
+      }
     });
     twos.forEach(function (j) {
       j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
@@ -11685,7 +11692,7 @@ var ncStemX = function () {
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
     mid = Math.round(mid);
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= -62.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
+    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= -55.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     var rx = (document.querySelector('.latest-rail--l') ? vwE - mid - 252 - 2 : mid + 252).toFixed(2) + 'px';
     if (document.documentElement.style.getPropertyValue('--nc-rule-x') !== rx) document.documentElement.style.setProperty('--nc-rule-x', rx);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
@@ -12277,6 +12284,7 @@ var ncStemX = function () {
                 swH *= 1.1;
                 swH *= 1.1;
                 swH *= 0.9;
+                swH *= 1.1;
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height), stV = lkB - ctB;
