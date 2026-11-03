@@ -33947,7 +33947,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
    bird, the rows ending 54 short of it (--nc-vr-l), 54 under the band's foot, a post's height from the load on (--nc-vr-h: latest-rail.js; "On initial load, vertical rule should be full length") */
 @media (min-width: 1024px){
   html body main .latest-rail__hold.latest-rail__hold:not(#nc-vr0):not(#nc-vr1):not(#nc-vr2):not(#nc-vr3):not(#nc-vr4):not(#nc-vr5):not(#nc-vr6):not(#nc-vr7):not(#nc-vr8):not(#nc-vr9):not(#nc-vr10):not(#nc-vr11):not(#nc-vr12):not(#nc-vr13):not(#nc-vr14):not(#nc-vr15):not(#nc-vr16):not(#nc-vr17):not(#nc-vr18):not(#nc-vr19):not(#nc-vr20):not(#nc-vr21):not(#nc-vr22):not(#nc-vr23):not(#nc-vr24):not(#nc-vr25):not(#nc-vr26):not(#nc-vr27):not(#nc-vr28):not(#nc-vr29)::before{
-    content: '' !important; display: block !important; position: absolute !important; top: 54px !important; left: var(--nc-vr-l, 0px) !important;
+    content: '' !important; display: block !important; position: absolute !important; top: 32px !important; left: var(--nc-vr-l, 0px) !important;
     width: 0.5px !important; height: var(--nc-vr-h, 0px) !important; background: #121417 !important; pointer-events: none !important;
   }
 }
@@ -33970,4 +33970,4 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
 }
 
 /* (ALL THE RULES 22 LONGER EITHER SIDE, 2026-11-03 — "Increase all rules by 20.25px on either side", "Sorry 22": the band's 32 short of the site's sides, the bird's 32 from the
-   column's rule and the site's edge, the posts' 22 past their words: latest-rail.js. The rule between the columns keeps a post's height) */
+   column's rule and the site's edge, the posts' 22 past their words: latest-rail.js. The rule between the columns the same since, 22 past a post at each end, 32 under the band and 32 over the window's foot: "Yes, extend it") */

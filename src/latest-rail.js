@@ -3695,11 +3695,11 @@ window.ncOpenH = function () {
     }
     vrH();
   }
-  // (as long as a post is tall, the window less the pinned band and the two 54s, at the load as well: style.css THE RULE BETWEEN THE COLUMNS)
+  // (a post's height and 22 past it at each end, the window less the pinned band and two 32s, at the load as well: style.css THE RULE BETWEEN THE COLUMNS)
   function vrH() {
     var hold = document.querySelector('.latest-rail__hold'), band = document.querySelector('main .op-band');
     if (!hold || !band) return;
-    var v = Math.max(0, window.innerHeight - band.getBoundingClientRect().height - 108).toFixed(1) + 'px';
+    var v = Math.max(0, window.innerHeight - band.getBoundingClientRect().height - 64).toFixed(1) + 'px';
     if (hold.style.getPropertyValue('--nc-vr-h') !== v) hold.style.setProperty('--nc-vr-h', v);
   }
   window.__ncCentre = centre;
