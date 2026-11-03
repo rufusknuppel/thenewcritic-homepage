@@ -9967,8 +9967,11 @@
                 if (WHEN_ROW) {
                   var hw = document.createElement('span');
                   hw.className = 'swap-body-when';
-                  [].slice.call(hm.querySelectorAll(':scope > .swap-body-sec, :scope > .swap-body-sep, :scope > .swap-body-on')).forEach(function (e) { hw.appendChild(e); });
-                  if (hw.firstChild && hw.firstChild.classList.contains('swap-body-sep')) hw.removeChild(hw.firstChild);
+                  // (the date alone on the first line since, the writer and the section on the second — "Change meta so Date is on top
+                  // line, then bottom line is Author, Section", 2026-11-03: the comma before the date gone)
+                  var on1 = hm.querySelector(':scope > .swap-body-on');
+                  if (on1 && on1.previousElementSibling && on1.previousElementSibling.classList.contains('swap-body-sep')) hm.removeChild(on1.previousElementSibling);
+                  [].slice.call(hm.children).forEach(function (e) { if (e !== on1) hw.appendChild(e); });
                   if (hw.firstChild) hd.appendChild(hw);
                 }
               }

@@ -1068,8 +1068,13 @@ function lookupContraPreview(link) {
 // automatic preview fetching, so a manual value always wins. Posts can be
 // duplicated across collections (same link, different objects), so this is
 // called on the raw concatenation, not a deduped list.
+// The covers with no colour in them, inverted at rest (style.css, THE PICTURE
+// GRAY AT REST): measured in the browser (the 95th percentile of each pixel's
+// channel spread, 15 or under of 255), 2026-11-03. A new black-and-white cover joins by hand.
+const MONO_COVERS = new Set(['coxon-day', 'the-blackpill', 'high-school-or-claude', 'jasmine-suns-project-of-self-transformation', 'present-at-the-creation', 'the-new-statesman', 'change-my-mind', 'the-commodification-of-freya-india', 'behaving-badly', 'curtis-yarvin-jr']);
 function applyContentOverrides(posts) {
   for (const p of posts) {
+    if (MONO_COVERS.has(slugOf(p.link))) p.mono = true;
     const o = CONTENT_OVERRIDES[slugOf(p.link)];
     if (!o) continue;
     if (o.title) p.title = o.title;
@@ -3438,7 +3443,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
             ${likesBox}
             ${isPostscript ? '' : artBox('right')}
           </div>`;
-  const sectionClass = section === 'other' ? '' : ` duo-half--${section}`;
+  const sectionClass = (section === 'other' ? '' : ` duo-half--${section}`) + (post.mono ? ' duo-half--mono' : '');
   // The resting kicker: the topic alone, printed over the cover's
   // bottom-left corner while the card is closed — at the exact spot the
   // footer band's kicker box holds it when the panel opens, so the hover

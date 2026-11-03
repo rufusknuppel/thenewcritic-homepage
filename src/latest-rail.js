@@ -3708,3 +3708,32 @@ window.ncOpenH = function () {
   document.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform' && e.target.classList && e.target.classList.contains('wrap--sec')) centre(); }, { passive: true });
 })();
 
+// (THE PICTURE IN COLOUR UNDER THE HAND ANYWHERE ON ITS POST, 2026-11-03 — "when mouse is anywhere on the rectangle of the content block, have the image gain color": the post's
+// rectangle the words' far edge to the picture's across, the picture and the words' box down; asked again on the scroll, a post arriving under a still hand; style.css, .nc-lit)
+(function () {
+  var x = -1, y = -1, pending = false, lit = null, cards = null;
+  function within(c) {
+    var p = c.querySelector(':scope > .nc-pic-line'), t = c.querySelector('.swap-body-text'), w = c.querySelector(':scope > .nc-words-box');
+    if (!p || !t) return false;
+    var a = p.getBoundingClientRect();
+    if (!a.width) return false;
+    var b = t.getBoundingClientRect(), d = w ? w.getBoundingClientRect() : a;
+    return x >= Math.min(a.left, b.left) && x <= Math.max(a.right, b.right) && y >= Math.min(a.top, d.top) && y <= Math.max(a.bottom, d.bottom);
+  }
+  function run() {
+    pending = false;
+    if (!cards) cards = [].slice.call(document.querySelectorAll('.page-rows .duo-half--mega'));
+    var band = document.querySelector('main .op-band'), hit = null;
+    if (x >= 0 && !(band && y < band.getBoundingClientRect().bottom)) {
+      for (var i = 0; i < cards.length; i++) if (within(cards[i])) { hit = cards[i]; break; }
+    }
+    if (hit === lit) return;
+    if (lit) lit.classList.remove('nc-lit');
+    if (hit) hit.classList.add('nc-lit');
+    lit = hit;
+  }
+  function ask() { if (!pending) { pending = true; requestAnimationFrame(run); } }
+  document.addEventListener('mousemove', function (e) { x = e.clientX; y = e.clientY; ask(); }, { passive: true });
+  document.documentElement.addEventListener('mouseleave', function () { x = -1; ask(); });
+  addEventListener('scroll', function () { if (x >= 0) ask(); }, { passive: true });
+})();
