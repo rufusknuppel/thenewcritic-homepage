@@ -33642,5 +33642,7 @@ html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; r
   /* (a half-pixel of charcoal under the top band and over the footer's name, along the red's edge — "add a .5px charcoal rule
      under the top band and above the footer wordmark", 2026-11-02) */
   html body main.has-mega .op-track > .op-band.op-band:not(#nc-fr0):not(#nc-fr1)::after{ content: '' !important; display: block !important; position: absolute !important; left: 0 !important; right: 0 !important; top: 100% !important; height: 0.5px !important; background: #121417 !important; pointer-events: none; }
-  html body > footer.nc-foot.nc-foot:not(#nc-fr0)::before{ content: ''; display: block; position: absolute; left: 0; right: 0; top: 0; height: 0.5px; background: #121417; pointer-events: none; }
+  /* (the footer's a border of its own since, not a box laid on it: the footer falls on a fraction of a pixel and the box rounded
+     a pixel into the red, a sliver of red over the rule — "Footer rule seems off", 2026-11-02) */
+  html body > footer.nc-foot.nc-foot:not(#nc-fr0){ border-top: 0.5px solid #121417; padding-top: 26.5px; }
 }
