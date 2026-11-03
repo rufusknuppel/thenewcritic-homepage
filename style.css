@@ -33646,3 +33646,7 @@ html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; r
      a pixel into the red, a sliver of red over the rule — "Footer rule seems off", 2026-11-02) */
   html body > footer.nc-foot.nc-foot:not(#nc-fr0){ border-top: 0.5px solid #121417; padding-top: 26.5px; }
 }
+
+/* THE RULES AND OUTLINES CHARCOAL (2026-11-02 — "Make all rules and outlines charcoal"): both tokens on every page, the archive's
+   and the store's too; the red kept for the words under the hand and the open section */
+:root:root:not(#nc-rc0), html.is-archive.is-archive:not(#nc-rc0), html:not(#nc-rc0) body{ --nc-rule: #121417; --nc-outline: #121417; }

@@ -17003,3 +17003,4 @@ html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; r
   html body main.has-mega .op-track > .op-band.op-band:not(#nc-fr0):not(#nc-fr1)::after{ content: '' !important; display: block !important; position: absolute !important; left: 0 !important; right: 0 !important; top: 100% !important; height: 0.5px !important; background: #121417 !important; pointer-events: none; }
   html body > footer.nc-foot.nc-foot:not(#nc-fr0){ border-top: 0.5px solid #121417; padding-top: 26.5px; }
 }
+:root:root:not(#nc-rc0), html.is-archive.is-archive:not(#nc-rc0), html:not(#nc-rc0) body{ --nc-rule: #121417; --nc-outline: #121417; }
