@@ -1883,11 +1883,10 @@ var ncStemX = function () {
       var swQ = document.querySelector('.latest-rail__hold > .rail-swallow'), navQ = document.querySelector('main .op-band .rail-top');
       var bwQ = swQ ? swQ.getBoundingClientRect().width : 0, nwQ = navQ ? navQ.getBoundingClientRect().width : 0;
       if (bwQ > 0 && nwQ > bwQ) {
-        // (the column a blue panel to the window's edge since, the bird centred on it, the rows 54 either side in what's left — "Make the latest side column yves klein too")
+        // (the rows out to as far short of the bird as the bird stands from the window, 54 in from the site's left — "Expand content so that margins are equal on
+        // either side of side column", 2026-11-03)
         var mgQ = window.innerWidth - navQ.getBoundingClientRect().right + 18;
-        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 108);
-        var pnV = Math.round(bwQ + 2 * mgQ) + 'px';
-        if (document.documentElement.style.getPropertyValue('--nc-panel') !== pnV) document.documentElement.style.setProperty('--nc-panel', pnV);
+        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54);
         // // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
@@ -3655,7 +3654,7 @@ window.ncOpenH = function () {
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
-    var colL = swR ? swR.left - (window.innerWidth - swR.right) : 0; // (the panel's left edge)
+    var colL = swR ? swR.left - (window.innerWidth - swR.right) : 0; // (where the rows' room ends, the bird's margin short of it)
     // (the rows' slide stood down for the measure, as the ink's is: read mid-slide they centre on where they were, "Why is this uneven")
     var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
@@ -3664,7 +3663,7 @@ window.ncOpenH = function () {
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
-      var was = c.__ncDx || 0, dx = Math.round(colL / 2 - (Math.min(pr.left, br.left) + Math.max(pr.right, br.right)) / 2 + was);
+      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left) + Math.max(pr.right, br.right)) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });
