@@ -1889,7 +1889,9 @@ var ncStemX = function () {
         // (the nav's right end for the rule along the band's foot — style.css THE RULE UNDER THE BAND)
         var nrV = (window.innerWidth - navQ.getBoundingClientRect().right).toFixed(1) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-nav-r') !== nrV) document.documentElement.style.setProperty('--nc-nav-r', nrV);
-        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54);
+        // (less the 14 the title column's gap took, 54 since: "Increase gap between images and title columns to 54px", 2026-11-03)
+        // (and 54 short of the rule between the columns since, the bird's margin on from it — "Should be 54px side margins on content column", 2026-11-03)
+        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54) - 14 - 54;
         // // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
@@ -2102,7 +2104,9 @@ var ncStemX = function () {
     // (the column itself left where a shut column stands, out past the window's left — the rows' fitter reads it there
     // — its hold alone carried over, --rl-gtx)
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
-    var v = (t0 + (sq.left + sq.right) / 2 - (r.left + r.right) / 2).toFixed(1) + 'px';
+    // (its left on a whole pixel, the hold a layer of its own when it sticks: at 1149.5 the rule between the columns painted as two half pixels, 2026-11-03)
+    var d0 = (sq.left + sq.right) / 2 - (r.left + r.right) / 2, lG = r.left + d0;
+    var v = (t0 + d0 + Math.round(lG) - lG).toFixed(2) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
   };
   main.classList.add('rail-is-shut');
@@ -3305,7 +3309,8 @@ window.ncOpenH = function () {
       // duo-panel-fit.js BOX_PAD)
       // (54 for a moment, as the page's outer margins — "Have inner gaps match outer gaps" — and back, "Reduce gap between image and
       // title column to 40.5px", 2026-11-03)
-      var dx = ox + (fq.left > tR ? fq.left - 40.5 - tR : tL < fq.right ? 0 : fq.right + 40.5 - tL);
+      // (54 since, "Increase gap between images and title columns to 54px", 2026-11-03)
+      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
       // (the body where it stood under the dek since, the rule gone — "Remove rules between deks and body", 2026-10-16)
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
@@ -3662,7 +3667,9 @@ window.ncOpenH = function () {
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
-    var colL = swR ? swR.left - (window.innerWidth - swR.right) : 0; // (where the rows' room ends, the bird's margin short of it)
+    // (the rule between the columns the bird's margin short of it, the same either side — "Margin on the left of bird should match margin on the right",
+    // 2026-11-03 — and the rows' room ending 54 short of the rule)
+    var ruleX = swR ? Math.round(swR.left - (window.innerWidth - swR.right)) : 0, colL = ruleX ? ruleX - 54 : 0;
     // (the rows' slide stood down for the measure, as the ink's is: read mid-slide they centre on where they were, "Why is this uneven")
     var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
@@ -3676,6 +3683,23 @@ window.ncOpenH = function () {
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });
     slid.forEach(function (el) { el.style.removeProperty('transition'); });
+    // (style.css THE RULE BETWEEN THE COLUMNS)
+    var hold = sw && sw.parentElement;
+    if (hold && wide && ruleX) {
+      var vl = (ruleX - hold.getBoundingClientRect().left).toFixed(2) + 'px';
+      if (hold.style.getPropertyValue('--nc-vr-l') !== vl) hold.style.setProperty('--nc-vr-l', vl);
+      // (the rule under the bird 54 from this one and 54 from the site's edge — "Rule between bird and the latest should be 54px from the vertical rule and the site edge", 2026-11-03)
+      var rw = (window.innerWidth - ruleX - 108) + 'px';
+      if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);
+    }
+    vrH();
+  }
+  // (as long as a post is tall, the window less the pinned band and the two 54s, at the load as well: style.css THE RULE BETWEEN THE COLUMNS)
+  function vrH() {
+    var hold = document.querySelector('.latest-rail__hold'), band = document.querySelector('main .op-band');
+    if (!hold || !band) return;
+    var v = Math.max(0, window.innerHeight - band.getBoundingClientRect().height - 108).toFixed(1) + 'px';
+    if (hold.style.getPropertyValue('--nc-vr-h') !== v) hold.style.setProperty('--nc-vr-h', v);
   }
   window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });

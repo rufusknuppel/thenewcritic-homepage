@@ -640,7 +640,7 @@ function contentName() {
   if (cutsD) {
     markBody = `<defs><mask id="cuts-out" maskUnits="userSpaceOnUse" x="-50" y="-50" width="${TNC_MARK.w + 100}" height="${TNC_MARK.h + 100}"><rect x="-50" y="-50" width="${TNC_MARK.w + 100}" height="${TNC_MARK.h + 100}" fill="#fff"/><path d="${cutsD}" fill="#000"/></mask></defs>`
       + markBody.replace(/(<path[^>]*style="[^"]*stroke: currentColor[^"]*")\/>/, '$1 mask="url(#cuts-out)"/>')
-        .replace(`<path d="${cutsD}" style="fill: var(--nc-stamp-ground, #002FA7)"/>`, '');
+        .replace(`<path d="${cutsD}" style="fill: var(--nc-stamp-ground, #FDFDFB)"/>`, '');
   }
   // (the hole in the beak filled in the box's charcoal — "Make this hole in the beak charcoal fill", 2026-10-13: the
   // bird's outline's one inner subpath laid under the bird, .beak-hole)
@@ -651,7 +651,7 @@ function contentName() {
   // the left side tho", 2026-10-14: assets/mark-bird-wrap.svg, under the bird, .red-wrap)
   const wrapFile = path.join(__dirname, 'assets', 'mark-bird-wrap.svg');
   const wrapD = fs.existsSync(wrapFile) ? (fs.readFileSync(wrapFile, 'utf8').match(/<path id="wrap"[^>]*\sd="([^"]+)"/) || [])[1] : '';
-  if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #002FA7)"/>` + m);
+  if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #FDFDFB)"/>` + m);
   // (its middle on the middle of the bird's height since, 364.26, halfway between the wing tips — "Make red circle
   // centered in height of bird")
   // (a ring under the bird — "Add a circle like this under the bird ... Circle should be highlight color", 2026-10-14,
@@ -663,7 +663,7 @@ function contentName() {
   // run out past the disc's left edge)
   // (its ends run on past the drawing's top and foot, so the disc's own edge, not the clip, rounds the crescent's tips)
   const ringClip = wrapD ? wrapD.replace(/^M100 0L([\d.]+) 0/, 'M-9000 -40L$1 -40L$1 0').replace(/L([\d.]+) 728\.84L100 728\.84Z$/, 'L$1 728.84L$1 770L-9000 770Z') : '';
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + (ringClip ? `<clipPath id="ring-clip-r"><path clip-rule="evenodd" d="M-9000 -40H9000V770H-9000Z${ringClip}"/></clipPath><path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE_R.join(' ')}L${TIPS.low.join(' ')}L100 ${TIPS.low[1]}L100 ${TIPS.up[1]}Z" clip-path="url(#ring-clip-r)" style="fill: var(--nc-mark, #002FA7)"/>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #002FA7)" stroke-width="0"/>` + m);
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + (ringClip ? `<clipPath id="ring-clip-r"><path clip-rule="evenodd" d="M-9000 -40H9000V770H-9000Z${ringClip}"/></clipPath><path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE_R.join(' ')}L${TIPS.low.join(' ')}L100 ${TIPS.low[1]}L100 ${TIPS.up[1]}Z" clip-path="url(#ring-clip-r)" style="fill: var(--nc-mark, #FDFDFB)"/>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #FDFDFB)" stroke-width="0"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
@@ -772,7 +772,7 @@ function bandLogoHtml(id = 'band', cls = '') {
     const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
       // (the fill to the border's midline, so its edge lies under the border: traced on its own, the counter's
       // edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
-      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" style="fill: var(--nc-stamp-ground, #002FA7)"/>`
+      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" style="fill: var(--nc-stamp-ground, #FDFDFB)"/>`
       // (the bird clipped to the fill's edge, halfway under the border)
       + `<clipPath id="band-box-${id}">${FR.under || FR.outer ? `<path d="${FR.under || FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
       // (the right of the box behind the bird — "Set the right half of the image, behind the bird's wings to
@@ -786,8 +786,8 @@ function bandLogoHtml(id = 'band', cls = '') {
       + (FR.holes ? `<path class="band-logo__holes" d="${FR.holes}" fill="currentColor" stroke="currentColor" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
       // (the slit in the beak in the ground it sits on, the box's left: charcoal on the dark side — "this should be
       // dark too" — and white on the light, "Should be white on white background tho")
-      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #002FA7); stroke: var(--nc-stamp-ground, #002FA7)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #002FA7)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
+      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #FDFDFB); stroke: var(--nc-stamp-ground, #FDFDFB)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #FDFDFB)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
     // (the TNC monogram in the stamp's place, the band's and the colophon's - THE TNC MONOGRAM IN THE BAND)
@@ -4523,7 +4523,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#002FA7">
+<meta name="theme-color" content="#FDFDFB">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -4652,7 +4652,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // LIGHT OR DARK, before first paint: the stored choice, else light.
   // GHOST WHITE (2026-09-18): the one white on the site — the light
   // ground and the dark ink.
-  var WHITE = '#002FA7', CHARCOAL = '#FDFDFB';
+  var WHITE = '#FDFDFB', CHARCOAL = '#121417';
   // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
   // the margin used to paint the page's ground in a colour of the
   // reader's own, with the ink turned white on it. It names the
@@ -4692,7 +4692,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#002fa7';
+  var YELLOW = '#FDFDFB';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -4724,7 +4724,7 @@ function renderFontGateScript({ fitted = true } = {}) {
     var meta = document.querySelector('meta[name="theme-color"]');
     // (the red whatever the page's theme since, the browser's own overscroll on some — "Overscroll should be red",
     // 2026-11-03)
-    if (meta) meta.content = '#002FA7';
+    if (meta) meta.content = '#FDFDFB';
   };
   // THE LIGHT PAGE STANDS ON ONE GRAY (2026-09-24): its ground is one
   // token in the sheet, --nc-ground (style.css, THE WHOLE PAGE STANDS ON
@@ -4758,8 +4758,8 @@ function renderFontGateScript({ fitted = true } = {}) {
       // (the bands' words, black on the mark, white under the hand —
       // turned over where the reader's colour is too dark for black)
       var lightInk = inkOn(hex) === WHITE;
-      root.style.setProperty('--band-ink', lightInk ? '#002FA7' : '#000000');
-      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#002FA7');
+      root.style.setProperty('--band-ink', lightInk ? '#FDFDFB' : '#000000');
+      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#FDFDFB');
     } else {
       root.style.removeProperty('--nc-mark');
       root.style.removeProperty('--hl-ink');
@@ -5454,7 +5454,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#002FA7">
+<meta name="theme-color" content="#FDFDFB">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}

@@ -9572,7 +9572,7 @@
         var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - FORK_RUN - o).toFixed(2), Ro = (FORK_RUN + o).toFixed(2);
         var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
         var dR = 'M' + Ro + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + Ro + 'Z';
-        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #FDFDFB); stroke: var(--nc-rule, #002FA7)"/>'; };
+        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #121417); stroke: var(--nc-rule, #FDFDFB)"/>'; };
         var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
@@ -9580,7 +9580,7 @@
         // 2026-10-22: written on it, past the sheet's heavier rules, charcoal under the hand where the sheet turns
         // --fork-ink; style.css THE FORK FILLED)
         if (j.mmEl) [j.mmEl].concat([].slice.call(j.mmEl.querySelectorAll('a'))).forEach(function (e) {
-          e.style.setProperty('color', 'var(--fork-ink, #002FA7)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #002FA7)', 'important');
+          e.style.setProperty('color', 'var(--fork-ink, #FDFDFB)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FDFDFB)', 'important');
         });
         // (the fork under the hand the ink, its half pixel of the red round it showing — "do the same hover on the
         // homepage for authors", 2026-10-24, as the archive's writer's tag: the fork is no child of the byline's link, so
@@ -9981,14 +9981,14 @@
               if (hm1) {
                 // (in the metadata's dress since — Work Sans, 13, in capitals a fiftieth apart: "Make metdata line all caps
                 // Work Sans", 2026-10-28)
-                var DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#FDFDFB', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                var DEK_ROW = { 'font-family': '"Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', 'font-size': '13px', 'line-height': '21px', 'font-weight': '400', 'letter-spacing': '0.02em', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'uppercase', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 // (in the column's line's dress since, the Garamond at 19 on 27.5, upright, in its own case — "Match
                 // garamond", 2026-10-28: the line "The Latest, Essays, Postscript" over the column's list)
                 // (in the paper's white for a while on the box's charcoal — "within box, have charcoal background and white
                 // text" — and the ink again since, "text back to charcoal", 2026-10-28; white for a while, the head on the
                 // box's charcoal top — THE HEAD OVER THE DIVIDER — and the ink again since, "Make the whole thing background
                 // colored")
-                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#FDFDFB', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
+                DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
                 // (in Inter since, on the same line — "Make the metas ... inter", 2026-11-03)
                 DEK_ROW['font-family'] = 'Inter, "Helvetica Neue", Arial, sans-serif'; DEK_ROW['font-size'] = '13px'; DEK_ROW['line-height'] = '20px'; DEK_ROW['letter-spacing'] = '0.02em'; DEK_ROW['text-transform'] = 'uppercase'; // (and upright, in capitals, "Make all inter not italics and all caps") (at 13, "I want inter at 13px")
                 var wide = window.innerWidth >= 1024;
