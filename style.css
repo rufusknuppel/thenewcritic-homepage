@@ -33848,8 +33848,6 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
   }
 }
 /* (the side column a blue panel for an hour — "Make the latest side column yves klein too" — and white again since, its words and bird back in their ink, "Make side column background white make rule blue", 2026-11-03; --nc-panel still the room it keeps) */
-/* THE RULE OVER THE BODY BLUE (2026-11-03 — "Turn rules to blue on posts above body text"): the words' box's own, the one that paints */
-html body main.has-mega .page-rows section.card .nc-words-box:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9)::after{ background: #002FA7 !important; background-color: #002FA7 !important; border-color: #002FA7 !important; }
 /* THE BIRD BLUE (2026-11-03 — "Make bird blue") */
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > .rail-swallow .rail-swallow__body{ fill: #002FA7 !important; }

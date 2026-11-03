@@ -17130,7 +17130,6 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
     --k: #000000; color: #000000 !important; fill: #000000 !important;
   }
 }
-html body main.has-mega .page-rows section.card .nc-words-box:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9)::after{ background: #002FA7 !important; background-color: #002FA7 !important; border-color: #002FA7 !important; }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > .rail-swallow .rail-swallow__body{ fill: #002FA7 !important; }
 }
