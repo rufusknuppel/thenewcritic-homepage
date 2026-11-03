@@ -7911,6 +7911,8 @@
               var topGapW = 53;
               // (40.5 since — "Actually set top and bottom post to 40.5 px gap", 2026-11-03)
               topGapW = 39.5;
+              // (54 since — "Have gap between footer and top band and posts be 54px", 2026-11-03)
+              topGapW = 53;
               if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + topGapW;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
@@ -8265,7 +8267,8 @@
       // the last row's box runs a few pixels past the painted frame — so
       // there the rest is taken from the last row's wrap, a margin under it:
       // "Not seeing 54px under the last post", 2026-10-10)
-      if (endBanded) edgeGap = 40.5;
+      // (54 since — "Have gap between footer and top band and posts be 54px", 2026-11-03)
+      if (endBanded) edgeGap = 54;
       var tail = endBanded || (next.classList.contains('section-band--colophon') && !ONE_COL.matches) ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
       var tailM = tail ? Math.min(0, parseFloat(tail.style.marginBottom) || 0) : 0;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: (parseFloat(getComputedStyle(body).paddingBottom) || 0) + tailM, tail: tail });

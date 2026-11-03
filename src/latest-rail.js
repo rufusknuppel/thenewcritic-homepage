@@ -1877,10 +1877,6 @@ var ncStemX = function () {
     // layer — "Seeing a flash on column collapse in vertical rule",
     // 2026-10-05)
     mid = Math.round(mid);
-    // (the rows out to 54 short of the narrow column, whose bird's width goes with the window's: "Narrow both side columns", "Move the
-    // latest back under the bird, so only one side column on the right", 2026-11-03)
-    // (read at 1024, 1440 and 1920, between them in line)
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= -55.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
     // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
     // OVERSCROLL: its left edge, the column's width less its 2)
@@ -2649,6 +2645,9 @@ var ncStemX = function () {
             secLine.className = 'rail-sections';
             [].forEach.call(metasR, function (mA, k) {
               if (k) { var sp = document.createElement('span'); sp.className = 'rail-sections__sep'; sp.textContent = ', '; secLine.appendChild(sp); }
+              // (on three lines, The Latest, then Essays and Postscript, then Contra and Editors' Picks — "Separate The Latest,
+              // Essays/Postscript Contra/Editor's picks over three lines", 2026-11-03)
+              if (k === 1 || k === 3) secLine.appendChild(document.createElement('br'));
               var a2 = document.createElement('a');
               a2.className = 'rail-sections__a';
               a2.href = mA.getAttribute('href') || '#';
