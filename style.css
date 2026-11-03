@@ -2139,7 +2139,6 @@ a.about-action:hover{  border-color: var(--white); }
   border-bottom: 1px solid var(--line);
 }
 .arch-ledger-item.open + .arch-ledger-item{ border-top: 0; }
-main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transparent; }
 .arch-ledger-row{
   font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--chip-size);
   letter-spacing: var(--chip-track); text-transform: none;
