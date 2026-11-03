@@ -3688,9 +3688,8 @@ window.ncOpenH = function () {
     var animT = 0;
     btn.addEventListener('click', function () {
       var root = document.documentElement, shut = !root.classList.contains('nc-col-closed');
-      var sw = hold.querySelector('.rail-swallow').getBoundingClientRect(), edge = window.innerWidth - sw.right;
-      var delta = ((sw.left - edge) - (window.innerWidth - STRIP)) / 2; // (half what the panel gives up, the rows' way)
-      if (shut) delta = -delta;
+      var pnW = parseFloat(root.style.getPropertyValue('--nc-panel')) || 0;
+      var delta = (shut ? pnW : -pnW) / 2; // (half what the panel gives up, the rows' way)
       root.classList.add('nc-col-anim');
       void root.offsetWidth;
       root.classList.toggle('nc-col-closed', shut);
