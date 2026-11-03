@@ -33822,3 +33822,22 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
 }
 /* (the column's margins 18 wider either side — "Expand side column margins by 18px on each side", 2026-11-03: the column 18 in from the nav's end, the rows 36 less, latest-rail.js) */
 :root{ --nc-bm: 18px; }
+
+/* WHITE ON THE BLUE (2026-11-03 — "Make items white on yves"): the name, the date, The Last Magazine, the nav and the footer in the ground's white
+   on the band; the links' highlight on it their white at a remove, the blue on itself being nothing */
+html body main .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5),
+html body main .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *:not(clipPath):not(clipPath *),
+html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5),
+html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *:not(clipPath):not(clipPath *){
+  --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important;
+}
+@media (min-width: 1024px){
+  html body a.content-name:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5),
+  html body a.content-name:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *:not(clipPath):not(clipPath *){
+    --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important;
+  }
+}
+@media (hover: hover){
+  html body main .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) a:hover,
+  html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) a:hover{ opacity: 0.6; }
+}

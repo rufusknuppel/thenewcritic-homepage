@@ -17108,3 +17108,19 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
   }
 }
 :root{ --nc-bm: 18px; }
+html body main .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5),
+html body main .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *:not(clipPath):not(clipPath *),
+html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5),
+html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *:not(clipPath):not(clipPath *){
+  --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important;
+}
+@media (min-width: 1024px){
+  html body a.content-name:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5),
+  html body a.content-name:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *:not(clipPath):not(clipPath *){
+    --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important;
+  }
+}
+@media (hover: hover){
+  html body main .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) a:hover,
+  html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) a:hover{ opacity: 0.6; }
+}
