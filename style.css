@@ -5442,7 +5442,6 @@ a.about-action:hover{  border-color: var(--white); }
    which pushed every divider below the fold-out 1px off the ledger's
    34.75 line-to-line rhythm. */
 .arch-ledger-item.open + .arch-ledger-item{ border-top: 0; }
-main:has(.arch-ledger-item.open:last-child) + footer{ border-top-color: transparent; }
 .arch-ledger-row{
   /* Same voice as the head: the cards' byline cut, natural case. */
   font-family: var(--chip); font-weight: var(--chip-weight); font-size: var(--chip-size);
