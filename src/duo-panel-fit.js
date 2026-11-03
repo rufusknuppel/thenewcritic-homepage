@@ -10459,8 +10459,8 @@
                   // stack", 2026-10-28)
                   // (the body in the middle since, that chunk at the foot — "swap the meta chunk for the body text chunk", 2026-11-03:
                   // the title and the dek, a rule, the body, a rule, the writer and the section and the date)
-                  // (and under the dek since, the last of the chunk — "move meta chunk under dek", 2026-11-03)
-                  var tT9 = y9, dT9 = tT9 + (j.ttB - j.ttT) + WHEN_HALF, cT9 = dT9 + (j.dkB - j.dkT) + WHEN_HALF, r29 = tT9 + tH9 + g9, bTop9 = r29 + g9;
+                  // (under the dek for a moment, and back — "move meta chunk under dek", "Actually don't move meta", 2026-11-03)
+                  var tT9 = y9, cT9 = tT9 + (j.ttB - j.ttT) + WHEN_HALF, dT9 = cT9 + cH9 + WHEN_HALF, r29 = tT9 + tH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
                   // (the section and the date first since, the dek and then the writer — "Switch Author line and essay, date
                   // line", 2026-11-01)
