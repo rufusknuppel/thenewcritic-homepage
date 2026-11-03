@@ -3690,6 +3690,12 @@ window.ncOpenH = function () {
       var root = document.documentElement, shut = !root.classList.contains('nc-col-closed');
       var pnW = parseFloat(root.style.getPropertyValue('--nc-panel')) || 0;
       var delta = (shut ? pnW : -pnW) / 2; // (half what the panel gives up, the rows' way)
+      // (the sections' lists hold their own transition inline, for changing section: theirs the slide's while it goes)
+      var lists = [].slice.call(hold.querySelectorAll(':scope > .latest-rail__in'));
+      lists.forEach(function (el) {
+        if (el.__ncTrans == null) el.__ncTrans = el.style.getPropertyValue('transition');
+        el.style.setProperty('transition', 'transform .5s ease', 'important');
+      });
       root.classList.add('nc-col-anim');
       void root.offsetWidth;
       root.classList.toggle('nc-col-closed', shut);
@@ -3699,7 +3705,14 @@ window.ncOpenH = function () {
       });
       btn.setAttribute('aria-label', shut ? 'Open the column' : 'Close the column'); btn.setAttribute('aria-expanded', String(!shut));
       clearTimeout(animT);
-      animT = setTimeout(function () { root.classList.remove('nc-col-anim'); centre(); }, 600);
+      animT = setTimeout(function () {
+        root.classList.remove('nc-col-anim');
+        lists.forEach(function (el) {
+          if (el.__ncTrans) el.style.setProperty('transition', el.__ncTrans, 'important'); else el.style.removeProperty('transition');
+          el.__ncTrans = null;
+        });
+        centre();
+      }, 600);
     });
   }
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });

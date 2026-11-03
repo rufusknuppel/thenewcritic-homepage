@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=7da67f84">
+<link rel="stylesheet" href="style.css?v=a7b53500">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12848,6 +12848,11 @@ window.ncOpenH = function () {
       var root = document.documentElement, shut = !root.classList.contains('nc-col-closed');
       var pnW = parseFloat(root.style.getPropertyValue('--nc-panel')) || 0;
       var delta = (shut ? pnW : -pnW) / 2; // (half what the panel gives up, the rows' way)
+      var lists = [].slice.call(hold.querySelectorAll(':scope > .latest-rail__in'));
+      lists.forEach(function (el) {
+        if (el.__ncTrans == null) el.__ncTrans = el.style.getPropertyValue('transition');
+        el.style.setProperty('transition', 'transform .5s ease', 'important');
+      });
       root.classList.add('nc-col-anim');
       void root.offsetWidth;
       root.classList.toggle('nc-col-closed', shut);
@@ -12857,7 +12862,14 @@ window.ncOpenH = function () {
       });
       btn.setAttribute('aria-label', shut ? 'Open the column' : 'Close the column'); btn.setAttribute('aria-expanded', String(!shut));
       clearTimeout(animT);
-      animT = setTimeout(function () { root.classList.remove('nc-col-anim'); centre(); }, 600);
+      animT = setTimeout(function () {
+        root.classList.remove('nc-col-anim');
+        lists.forEach(function (el) {
+          if (el.__ncTrans) el.style.setProperty('transition', el.__ncTrans, 'important'); else el.style.removeProperty('transition');
+          el.__ncTrans = null;
+        });
+        centre();
+      }, 600);
     });
   }
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });

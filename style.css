@@ -33893,7 +33893,6 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
   html.nc-col-anim body main.has-mega .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9)::after{ transition: width .5s ease !important; }
   html.nc-col-anim body main.has-mega .page-rows section.card{ transition: translate .5s ease !important; }
   html.nc-col-anim body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > *{ transition: transform .5s ease, right .5s ease !important; }
-  html.nc-col-anim body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > button.nc-col-caret > svg{ transition: rotate .5s ease; }
 }
 /* (all of the closed column's words gone once it has slid, the painted layers of the kickers too, which keep themselves visible) */
 @media (min-width: 1024px){
@@ -33904,3 +33903,10 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 }
 /* THE RULE OVER THE BODY BLUE (2026-11-03 — "Turn rules to blue on posts above body text") */
 html body main.has-mega.wm-banded .duo-half--mega > .swap-body-rule:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9):not(#nc-wc0):not(#nc-wc1):not(#nc-wc2):not(#nc-wc3):not(#nc-wc4):not(#nc-wc5){ --rule-ink: #002FA7 !important; }
+/* (the whole column sliding as one: its list's own slower transitions down for the slide, nothing in it fading while it goes) */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html.nc-col-anim body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9):not(#nc-wc0):not(#nc-wc1):not(#nc-wc2):not(#nc-wc3):not(#nc-wc4):not(#nc-wc5):not(#nc-wd0):not(#nc-wd1):not(#nc-wd2):not(#nc-wd3) > :not(.nc-col-caret){ transition: transform .5s ease !important; }
+  html.nc-col-anim body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9):not(#nc-wc0):not(#nc-wc1):not(#nc-wc2):not(#nc-wc3):not(#nc-wc4):not(#nc-wc5):not(#nc-wd0):not(#nc-wd1):not(#nc-wd2):not(#nc-wd3) > :not(.nc-col-caret) *,
+  html.nc-col-anim body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9):not(#nc-wc0):not(#nc-wc1):not(#nc-wc2):not(#nc-wc3):not(#nc-wc4):not(#nc-wc5):not(#nc-wd0):not(#nc-wd1):not(#nc-wd2):not(#nc-wd3) > :not(.nc-col-caret) *::before,
+  html.nc-col-anim body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9):not(#nc-wc0):not(#nc-wc1):not(#nc-wc2):not(#nc-wc3):not(#nc-wc4):not(#nc-wc5):not(#nc-wd0):not(#nc-wd1):not(#nc-wd2):not(#nc-wd3) > :not(.nc-col-caret) *::after{ transition: none !important; }
+}
