@@ -10597,7 +10597,7 @@ window.__ncStripInk = function () {
 var RAIL_MORE = 27;
 var RAIL_COL = 238 + 36;
 var NC_ROWL = 54;
-if (window.innerWidth >= 1024) NC_ROWL = 245;
+if (window.innerWidth >= 1024) NC_ROWL = 271;
 var ncStripGone = function (st) { return !!st && st.offsetHeight === 0 && getComputedStyle(st).opacity === '0'; };
 var ncStemX = function () {
   var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
@@ -11680,7 +11680,7 @@ var ncStemX = function () {
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
     mid = Math.round(mid);
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 261 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
+    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 332.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     var rx = (document.querySelector('.latest-rail--l') ? vwE - mid - 252 - 2 : mid + 252).toFixed(2) + 'px';
     if (document.documentElement.style.getPropertyValue('--nc-rule-x') !== rx) document.documentElement.style.setProperty('--nc-rule-x', rx);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
@@ -12271,9 +12271,10 @@ var ncStemX = function () {
                 swH = 0.8 * capN;
                 swH *= 1.1;
                 swH *= 1.1;
+                swH *= 0.9;
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 if (bandE) aN = -1;
-                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height);
+                var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height), stV = lkB - ctB;
                 var allE = inC && inC.querySelector(':scope > .latest-rail__all');
                 if (allE && allE.getBoundingClientRect().height && kLast) {
                   var aqA = allE.getBoundingClientRect();
@@ -12281,6 +12282,8 @@ var ncStemX = function () {
                   var kLong = 0;
                   [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list'), function (l) { kLong = Math.max(kLong, l.getBoundingClientRect().height); });
                   stS = Math.max(stS, allBA - ctB + Math.max(0, kLong - kList.getBoundingClientRect().height));
+                  var kLat = hold.querySelector(':scope > .latest-rail__in > .latest-rail__list');
+                  stV = allBA - ctB + (kLat ? kLat.getBoundingClientRect().height - kList.getBoundingClientRect().height : 0);
                 }
                 var swBq = null, swQ = swE.getBoundingClientRect();
                 [].forEach.call(swE.querySelectorAll('.rail-swallow__body'), function (pE) {
@@ -12296,11 +12299,11 @@ var ncStemX = function () {
                 var gS = Math.max(20, gSR);
                 var cutN = Math.max(0, Math.min(20.25, (hold.__ncGapCut || 0) + (20 - gSR) * 2));
                 if (Math.abs(cutN - (hold.__ncGapCut || 0)) > 0.5) { hold.__ncGapCut = cutN; clearTimeout(hold.__ncCutT); hold.__ncCutT = setTimeout(seat, 30); }
-                var swT1 = (hr.height - inkH) / 2 - inkT, cap1 = (hr.height - (stS - aN)) / 2 - aN;
+                var swT1 = (hr.height - inkH) / 2 - inkT, cap1 = (hr.height - (stV - aN)) / 2 - aN;
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                var st0 = (room0 - (stS - aN)) / 2 - (cap1 + aN);
+                var st0 = (room0 - (stV - aN)) / 2 - (cap1 + aN);
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
@@ -12560,7 +12563,7 @@ window.ncOpenH = function () {
       cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
       var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
-      var dx = ox + (fq.left > tR ? fq.left - 40.5 - tR : tL < fq.right ? 0 : fq.right + 40.5 - tL);
+      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
       if (sb.style.getPropertyValue('translate') !== sv) sb.style.setProperty('translate', sv, 'important');
