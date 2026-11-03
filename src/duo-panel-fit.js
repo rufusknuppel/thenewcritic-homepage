@@ -7482,6 +7482,8 @@
   POST_GAP = 108;
   // (54 again since — "Reduce gap between posts to 54px", 2026-11-03)
   POST_GAP = 54;
+  // (half as much again since — "Increase gaps between posts by 50%", 2026-11-03)
+  POST_GAP = 81;
   // (the blue rule hung under the band: style.css, --band-rule)
   // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
   // (4.5 since later that day: "Increase dividing line to 4.5px"; then 9,
