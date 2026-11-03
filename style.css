@@ -33629,3 +33629,18 @@ html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; r
   html body a.content-name.content-name:not(#nc-rd0):not(#nc-rd1)::after{ background: #B3301E !important; }
   html body main.has-mega .op-track > .op-band > :is(a.op-tnc, a.rail-tlm):not(#nc-rd0):not(#nc-rd1):not(#nc-rd2){ --k: #000000 !important; }
 }
+
+/* THE FOOTER IN RED (2026-11-02 — "Match the footer"): the footer on the top's red with its ink black, the hand's mark white
+   as there; no box round the name under the hand (the old links' hover shadow — "Footer wordmark hovers with box around it, it
+   shouldn't") */
+@media (min-width: 1024px){
+  html body > footer.nc-foot.nc-foot:not(#nc-fr0){ --k: #000000; --tw: #B3301E; --nc-mark: #FAF9F6; background: #B3301E; color: #000000; }
+  html body > footer.nc-foot > a.nc-foot__name svg:not(#nc-fr0){ fill: #000000; }
+  html body > footer.nc-foot > a.nc-foot__name svg path:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ fill: #000000 !important; }
+  html body > footer.nc-foot > a.nc-foot__name:is(:hover, :focus, :focus-visible, :active) svg path:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ fill: #FAF9F6 !important; }
+  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name:is(:hover, :focus, :focus-visible, :active):not(#nc-fr0):not(#nc-fr1){ box-shadow: none !important; background: none !important; outline: none !important; }
+  /* (a half-pixel of charcoal under the top band and over the footer's name, along the red's edge — "add a .5px charcoal rule
+     under the top band and above the footer wordmark", 2026-11-02) */
+  html body main.has-mega .op-track > .op-band.op-band:not(#nc-fr0):not(#nc-fr1)::after{ content: '' !important; display: block !important; position: absolute !important; left: 0 !important; right: 0 !important; top: 100% !important; height: 0.5px !important; background: #121417 !important; pointer-events: none; }
+  html body > footer.nc-foot.nc-foot:not(#nc-fr0)::before{ content: ''; display: block; position: absolute; left: 0; right: 0; top: 0; height: 0.5px; background: #121417; pointer-events: none; }
+}
