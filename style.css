@@ -33901,7 +33901,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
 @media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band:not(#nc-rb0):not(#nc-rb1):not(#nc-rb2):not(#nc-rb3):not(#nc-rb4):not(#nc-rb5):not(#nc-rb6):not(#nc-rb7):not(#nc-rb8):not(#nc-rb9):not(#nc-rb10):not(#nc-rb11):not(#nc-rb12):not(#nc-rb13):not(#nc-rb14):not(#nc-rb15):not(#nc-rb16):not(#nc-rb17):not(#nc-rb18):not(#nc-rb19):not(#nc-rb20):not(#nc-rb21):not(#nc-rb22):not(#nc-rb23):not(#nc-rb24):not(#nc-rb25):not(#nc-rb26):not(#nc-rb27):not(#nc-rb28):not(#nc-rb29)::after{
     content: "" !important; display: block !important; position: absolute !important; top: auto !important; bottom: 0 !important;
-    left: 32px !important; right: 32px !important; width: auto !important; height: 0.5px !important;
+    left: 27px !important; right: 27px !important; width: auto !important; height: 0.5px !important;
     margin: 0 !important; background: #121417 !important; border: 0 !important; opacity: 1 !important; transform: none !important; pointer-events: none !important; z-index: 2 !important;
   }
 }
@@ -33947,7 +33947,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
    bird, the rows ending 54 short of it (--nc-vr-l), 54 under the band's foot, a post's height from the load on (--nc-vr-h: latest-rail.js; "On initial load, vertical rule should be full length") */
 @media (min-width: 1024px){
   html body main .latest-rail__hold.latest-rail__hold:not(#nc-vr0):not(#nc-vr1):not(#nc-vr2):not(#nc-vr3):not(#nc-vr4):not(#nc-vr5):not(#nc-vr6):not(#nc-vr7):not(#nc-vr8):not(#nc-vr9):not(#nc-vr10):not(#nc-vr11):not(#nc-vr12):not(#nc-vr13):not(#nc-vr14):not(#nc-vr15):not(#nc-vr16):not(#nc-vr17):not(#nc-vr18):not(#nc-vr19):not(#nc-vr20):not(#nc-vr21):not(#nc-vr22):not(#nc-vr23):not(#nc-vr24):not(#nc-vr25):not(#nc-vr26):not(#nc-vr27):not(#nc-vr28):not(#nc-vr29)::before{
-    content: '' !important; display: block !important; position: absolute !important; top: 32px !important; left: var(--nc-vr-l, 0px) !important;
+    content: '' !important; display: block !important; position: absolute !important; top: 27px !important; left: var(--nc-vr-l, 0px) !important;
     width: 0.5px !important; height: var(--nc-vr-h, 0px) !important; background: #121417 !important; pointer-events: none !important;
   }
 }
@@ -33971,3 +33971,6 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
 
 /* (ALL THE RULES 22 LONGER EITHER SIDE, 2026-11-03 — "Increase all rules by 20.25px on either side", "Sorry 22": the band's 32 short of the site's sides, the bird's 32 from the
    column's rule and the site's edge, the posts' 22 past their words: latest-rail.js. The rule between the columns the same since, 22 past a post at each end, 32 under the band and 32 over the window's foot: "Yes, extend it") */
+
+/* (AND 5 MORE ON EVERY SIDE, 2026-11-03 — "Add 5 more to every side that was extended": 27 for each of the 22s above; the band's 27 short of the site's sides, the bird's 27 from the
+   column's rule and the site's edge, the posts' 27 past their words, the column's rule 27 under the band and 27 over the window's foot) */
