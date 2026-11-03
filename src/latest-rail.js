@@ -17,10 +17,6 @@ var RAIL_COL = 238 + 36;
 // (the rows' left edge 54 off the window's side since, their right still the nav's inset short of the column under the
 // socials — "have the left margin of the content column be 54px from the side", 2026-10-15)
 var NC_ROWL = 54;
-// (the rows' ink past the left column from 1024 up — "Move the latest into a left column in the left margin", "Narrow both side
-// columns", "Make column gaps standard width", 2026-11-03: the column 150 from the window's 54, 54 clear of it since, as outside it — "Have inner gaps match outer gaps"; style.css THE LATEST
-// IN THE LEFT COLUMN)
-if (window.innerWidth >= 1024) NC_ROWL = 258;
 // (the old strip over the rows — the head rail's sub-ticker — stands out of sight since the band moved into main (style
 // .css: no height, no opacity), its words, logo and colophon with it; what only lays it out is skipped while it is
 // gone — "Identify why the site loads so slowly ... lowest risk fixes", 2026-10-15)
@@ -1881,10 +1877,10 @@ var ncStemX = function () {
     // layer — "Seeing a flash on column collapse in vertical rule",
     // 2026-10-05)
     mid = Math.round(mid);
-    // (the rows narrower by the left column and carried over it — "Move the latest into a left column in the left margin. Leave
-    // the bird on the right", 2026-11-03: style.css THE LATEST IN THE LEFT COLUMN)
-    // (the rows' right end 54 short of the bird, whose width goes with the window's: read at 1024, 1440 and 1920, between them in line)
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 291.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
+    // (the rows out to 54 short of the narrow column, whose bird's width goes with the window's: "Narrow both side columns", "Move the
+    // latest back under the bird, so only one side column on the right", 2026-11-03)
+    // (read at 1024, 1440 and 1920, between them in line)
+    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= -62.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
     // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
     // OVERSCROLL: its left edge, the column's width less its 2)
@@ -2916,16 +2912,18 @@ var ncStemX = function () {
                 // (The Latest at the column's head and the bird at its foot for an hour, coming down from under the band —
                 // "Have the latest descend from the top rather than rise from the bottom", 2026-11-02 — and rising again since,
                 // "Revert the latest so that it rises")
-                // (each on its own column's middle since, the bird on the right and The Latest on the left — "Move the latest into a
-                // left column in the left margin. Leave the bird on the right", 2026-11-03)
-                var swT1 = (hr.height - inkH) / 2 - inkT, cap1 = (hr.height - (stV - aN)) / 2 - aN;
+                // (the three spaces off The Latest's own height, whichever section stands open — "Move the latest back under the bird",
+                // 2026-11-03)
+                var gV = Math.max(20, (hr.height - inkH - (stV - aN)) / 3);
+                var swT1 = gV - inkT, cap1 = 2 * gV + inkH - aN;
                 // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                // (in sight from the first, on the room's middle under the opening's band as the bird is, and carried to its place —
-                // "Make the latest visible on intitial load like the bird", 2026-11-03)
-                var st0 = (room0 - (stV - aN)) / 2 - (cap1 + aN);
+                // (in sight from the first for an afternoon — "Make the latest visible on intitial load like the bird" — and under the
+                // window's foot again since, pulled up on the scroll, the bird alone at the load: "Have the latest pull up on scroll
+                // like it used to. Only bird on initial load", 2026-11-03)
+                var st0 = hr.height - (cap1 + aN) + 4;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
@@ -3217,17 +3215,6 @@ window.ncOpenH = function () {
       if (el.classList.contains('rail-swallow')) el.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     });
   };
-  // (The Latest's words across to the left column, the bird's hold where it is: --lat-dx, style.css THE LATEST IN THE LEFT COLUMN)
-  var seatLeftCol = function () {
-    var h = document.querySelector('.latest-rail__hold');
-    if (!h || window.innerWidth < 1024) return;
-    var v = (54 - (h.getBoundingClientRect().left + (parseFloat(getComputedStyle(h).paddingLeft) || 0))).toFixed(2) + 'px';
-    if (document.documentElement.style.getPropertyValue('--lat-dx') !== v) document.documentElement.style.setProperty('--lat-dx', v);
-  };
-  seatLeftCol();
-  addEventListener('resize', seatLeftCol);
-  addEventListener('newcritic:fit', seatLeftCol);
-  addEventListener('load', seatLeftCol);
   // (the band's date the reader's own day: THE DATE IN THE BAND)
   var opDate = document.querySelector('main .op-band > .op-date');
   if (opDate) opDate.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });

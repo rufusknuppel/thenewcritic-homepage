@@ -145,7 +145,7 @@ const loadMark = (name) => {
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   const inner = src.slice(src.indexOf('>', src.indexOf('<svg')) + 1, src.lastIndexOf('</svg>'));
   // (white the ground, the highlight's red the page's highlight, anything else the ink)
-  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FAF9F6)' : /^#(?:D52B05|B3301E|1478A7)$/i.test(v) ? 'var(--nc-mark, #1478A7)' : v === 'none' ? 'none' : 'currentColor');
+  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FAF9F6)' : /^#(?:D52B05|B3301E|1478A7)$/i.test(v) ? 'var(--nc-mark, #B3301E)' : v === 'none' ? 'none' : 'currentColor');
   const spans = ['border', 'frame', 'ground'].find((k) => new RegExp(`id="${k}"`).test(inner));
   const body = inner.replace(/<(path|rect)\b([^>]*?)\/?>/g, (m0, tag, attrs) => {
     const id = (attrs.match(/\sid="([^"]+)"/) || [])[1];
@@ -651,7 +651,7 @@ function contentName() {
   // the left side tho", 2026-10-14: assets/mark-bird-wrap.svg, under the bird, .red-wrap)
   const wrapFile = path.join(__dirname, 'assets', 'mark-bird-wrap.svg');
   const wrapD = fs.existsSync(wrapFile) ? (fs.readFileSync(wrapFile, 'utf8').match(/<path id="wrap"[^>]*\sd="([^"]+)"/) || [])[1] : '';
-  if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #1478A7)"/>` + m);
+  if (wrapD) markBody = markBody.replace(/<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => `<path class="red-wrap" d="${wrapD}" style="fill: var(--nc-mark, #B3301E)"/>` + m);
   // (its middle on the middle of the bird's height since, 364.26, halfway between the wing tips — "Make red circle
   // centered in height of bird")
   // (a ring under the bird — "Add a circle like this under the bird ... Circle should be highlight color", 2026-10-14,
@@ -663,7 +663,7 @@ function contentName() {
   // run out past the disc's left edge)
   // (its ends run on past the drawing's top and foot, so the disc's own edge, not the clip, rounds the crescent's tips)
   const ringClip = wrapD ? wrapD.replace(/^M100 0L([\d.]+) 0/, 'M-9000 -40L$1 -40L$1 0').replace(/L([\d.]+) 728\.84L100 728\.84Z$/, 'L$1 728.84L$1 770L-9000 770Z') : '';
-  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + (ringClip ? `<clipPath id="ring-clip-r"><path clip-rule="evenodd" d="M-9000 -40H9000V770H-9000Z${ringClip}"/></clipPath><path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE_R.join(' ')}L${TIPS.low.join(' ')}L100 ${TIPS.low[1]}L100 ${TIPS.up[1]}Z" clip-path="url(#ring-clip-r)" style="fill: var(--nc-mark, #1478A7)"/>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #1478A7)" stroke-width="0"/>` + m);
+  markBody = markBody.replace(/<path class="red-wrap"|<path class="beak-hole"|<path[^>]*fill-rule="evenodd"/, (m) => (ringClip ? `<clipPath id="ring-clip"><path d="${ringClip}"/></clipPath>` : '') + (ringClip ? `<clipPath id="ring-clip-r"><path clip-rule="evenodd" d="M-9000 -40H9000V770H-9000Z${ringClip}"/></clipPath><path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE_R.join(' ')}L${TIPS.low.join(' ')}L100 ${TIPS.low[1]}L100 ${TIPS.up[1]}Z" clip-path="url(#ring-clip-r)" style="fill: var(--nc-mark, #B3301E)"/>` : '') + `<path class="bird-ring" d="M${TIPS.up.join(' ')}L${TEE.join(' ')}L${TIPS.low.join(' ')}L800 ${TIPS.low[1]}L800 ${TIPS.up[1]}Z" fill="none"${ringClip ? ' clip-path="url(#ring-clip)"' : ''} style="stroke: var(--nc-mark, #B3301E)" stroke-width="0"/>` + m);
   const bird = `<span class="content-name__bird" aria-hidden="true"><svg viewBox="0 0 ${TNC_MARK.w} ${TNC_MARK.h}" preserveAspectRatio="xMidYMid meet" focusable="false" overflow="visible">${markBody.replace(/\bid="([^"]+)"/g, 'id="$1-cn"').replace(/url\(#([^)]+)\)/g, 'url(#$1-cn)').replace(/ class="band-logo__shield band-logo__frame"/g, '')}</svg></span>`;
   // (the box's outline in caps of the name, for THE's line — "I want the underline of THE to match width of outline")
   const boxStroke = +((boxSrc.match(/<path id="box"[^>]*stroke-width="([\d.]+)"/) || [])[1] || 0);
@@ -787,7 +787,7 @@ function bandLogoHtml(id = 'band', cls = '') {
       // (the slit in the beak in the ground it sits on, the box's left: charcoal on the dark side — "this should be
       // dark too" — and white on the light, "Should be white on white background tho")
       + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #FAF9F6); stroke: var(--nc-stamp-ground, #FAF9F6)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
-      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #1478A7)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
+      + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #B3301E)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
     // (the TNC monogram in the stamp's place, the band's and the colophon's - THE TNC MONOGRAM IN THE BAND)
@@ -4523,7 +4523,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1478A7">
+<meta name="theme-color" content="#B3301E">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -4670,7 +4670,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // "What is a red that matches mediterranean blue?", then a lighter
   // terracotta, #D9654F, "make the red a lighter so black stands out
   // more", then #B03A2E again, "Revert to terracotta red", then
-  // Mediterranean blue, #1478A7, 2026-10-06, "change all terracottas to
+  // Mediterranean blue, #B3301E, 2026-10-06, "change all terracottas to
   // that blue. This should be one token", then hot pink, #FF69B4, "Use hot
   // pink as the highlight color", then navy, #000080, "#000080 use this
   // for highlight color", then the navy lightened, #1A1AB0, "Lighten the
@@ -4682,13 +4682,13 @@ function renderFontGateScript({ fitted = true } = {}) {
   // then vermilion, #D52B05, 2026-10-07, "#D52B05 use this as the accent
   // color", then #B3301E, 2026-10-14, "#B3301E Use this for the highlight
   // color".
-  // then Mediterranean Blue, #1478A7, the same day, "Use mediterranean blue as
+  // then Mediterranean Blue, #B3301E, the same day, "Use mediterranean blue as
   // highlight color".
   // It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
   // returns, so a reader typing the default's own code is sent home
   // rather than stored — the banana's capitals never compared equal.)
-  var YELLOW = '#1478a7';
+  var YELLOW = '#b3301e';
   var hexOf = function (v) {
     var m = /^\s*#?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.exec(v || '');
     if (!m) return null;
@@ -4720,7 +4720,7 @@ function renderFontGateScript({ fitted = true } = {}) {
     var meta = document.querySelector('meta[name="theme-color"]');
     // (the red whatever the page's theme since, the browser's own overscroll on some — "Overscroll should be red",
     // 2026-11-03)
-    if (meta) meta.content = '#1478A7';
+    if (meta) meta.content = '#B3301E';
   };
   // THE LIGHT PAGE STANDS ON ONE GRAY (2026-09-24): its ground is one
   // token in the sheet, --nc-ground (style.css, THE WHOLE PAGE STANDS ON
@@ -5450,7 +5450,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1478A7">
+<meta name="theme-color" content="#B3301E">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}

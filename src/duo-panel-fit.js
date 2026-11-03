@@ -8983,8 +8983,8 @@
   // POST_TRIM)
   // (36 since — "Increase image height by 72px", 2026-10-20: style.css --card-words with it)
   var PIC_FAR = 54, POST_TRIM = 36;
-  // (90 since — "Make posts 54px shorter", 2026-11-03: style.css --card-words with it)
-  POST_TRIM = 90;
+  // (90 for a moment — "Make posts 54px shorter" — and 36 again since, "Make posts taller", 2026-11-03: style.css --card-words with it)
+  POST_TRIM = 36;
   // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
   PIC_FAR = 0;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
@@ -9567,7 +9567,7 @@
         var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - FORK_RUN - o).toFixed(2), Ro = (FORK_RUN + o).toFixed(2);
         var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
         var dR = 'M' + Ro + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + Ro + 'Z';
-        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #121417); stroke: var(--nc-rule, #1478A7)"/>'; };
+        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #121417); stroke: var(--nc-rule, #B3301E)"/>'; };
         var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
