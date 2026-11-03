@@ -4652,7 +4652,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // LIGHT OR DARK, before first paint: the stored choice, else light.
   // GHOST WHITE (2026-09-18): the one white on the site — the light
   // ground and the dark ink.
-  var WHITE = '#FDFDFB', CHARCOAL = '#121417';
+  var WHITE = '#FDFDFB', CHARCOAL = '#002FA7';
   // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
   // the margin used to paint the page's ground in a colour of the
   // reader's own, with the ink turned white on it. It names the
