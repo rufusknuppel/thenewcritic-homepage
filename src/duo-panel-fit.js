@@ -9989,8 +9989,8 @@
                 // box's charcoal top — THE HEAD OVER THE DIVIDER — and the ink again since, "Make the whole thing background
                 // colored")
                 DEK_ROW = { 'font-family': 'garamond-premier-pro, "EB Garamond", Garamond, serif', 'font-size': '19px', 'line-height': '27.5px', 'font-weight': '400', 'letter-spacing': 'normal', 'font-style': 'normal', 'color': '#121417', 'text-transform': 'none', 'background': 'none', 'padding': '0', 'border': '0', 'box-shadow': 'none', 'clip-path': 'none' };
-                // (in Inter since, a fifth smaller for its bigger letters, on the same line — "Make the metas ... inter", 2026-11-03)
-                DEK_ROW['font-family'] = 'Inter, "Helvetica Neue", Arial, sans-serif'; DEK_ROW['font-size'] = '15px'; DEK_ROW['letter-spacing'] = '0';
+                // (in Inter since, on the same line — "Make the metas ... inter", 2026-11-03)
+                DEK_ROW['font-family'] = 'Inter, "Helvetica Neue", Arial, sans-serif'; DEK_ROW['font-size'] = '12px'; DEK_ROW['letter-spacing'] = '0.04em'; DEK_ROW['text-transform'] = 'uppercase'; // (and upright, in capitals, "Make all inter not italics and all caps")
                 var wide = window.innerWidth >= 1024;
                 // (and the section and the date's row as the writer's, a line of its own — WHEN_ROW)
                 (hw1 ? [hm1, hw1] : [hm1]).forEach(function (row) {
