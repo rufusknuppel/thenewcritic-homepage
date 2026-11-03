@@ -3661,3 +3661,21 @@ window.ncOpenH = function () {
   }
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
 })();
+
+// (the root's red kept to the page's two ends, the only places it can overscroll, and the paper between: a hard scroll outruns the
+// painting and Chrome fills what isn't painted yet with the root's colour, the whole screen red for a frame — "Still a flicker on
+// hard scroll", 2026-11-03)
+(function () {
+  var root = document.documentElement, max = 0, atEnd = true;
+  function measure() { max = root.scrollHeight - window.innerHeight; apply(); }
+  function apply() {
+    if (window.innerWidth < 1024) { if (!atEnd) { atEnd = true; root.style.removeProperty('background-color'); } return; }
+    var y = window.scrollY, end = y < window.innerHeight || y > max - window.innerHeight;
+    if (end === atEnd) return;
+    atEnd = end;
+    if (end) root.style.removeProperty('background-color');
+    else root.style.setProperty('background-color', '#FAF9F6', 'important');
+  }
+  addEventListener('scroll', apply, { passive: true });
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, measure, { passive: true }); });
+})();
