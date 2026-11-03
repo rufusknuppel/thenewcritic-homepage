@@ -3463,7 +3463,8 @@ window.ncOpenH = function () {
       if (ink && ink.r != null) wst += ';--wb-r1:' + Math.round(sbT + ink.r - bt) + 'px';
       // (and the body's column across, for the divider as wide as the body and no wider — style.css THE DIVIDER THE
       // BODY'S WIDTH)
-      wst += ';--wb-dl:' + (tr.left - bl).toFixed(2) + 'px;--wb-dw:' + tr.width.toFixed(2) + 'px';
+      // (22 past the words on either side, as the band's and the bird's: "Increase all rules by ... 22", 2026-11-03)
+      wst += ';--wb-dl:' + (tr.left - bl - 22).toFixed(2) + 'px;--wb-dw:' + (tr.width + 44).toFixed(2) + 'px';
       if (wb.__st !== wst) { wb.__st = wst; wb.style.cssText = wst; }
     });
     // (the hairline under the byline or the dek carried across the air to the picture's outline — "connect the rule to the
@@ -3689,7 +3690,7 @@ window.ncOpenH = function () {
       var vl = (ruleX - hold.getBoundingClientRect().left).toFixed(2) + 'px';
       if (hold.style.getPropertyValue('--nc-vr-l') !== vl) hold.style.setProperty('--nc-vr-l', vl);
       // (the rule under the bird 54 from this one and 54 from the site's edge — "Rule between bird and the latest should be 54px from the vertical rule and the site edge", 2026-11-03)
-      var rw = (window.innerWidth - ruleX - 108) + 'px';
+      var rw = (window.innerWidth - ruleX - 108 + 44) + 'px'; // (22 further each way, 32 from each: "Increase all rules by ... 22", 2026-11-03)
       if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);
     }
     vrH();
