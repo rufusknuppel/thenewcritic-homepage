@@ -3654,7 +3654,7 @@ window.ncOpenH = function () {
 // (each row's picture and words centred as one between the site's left edge and the side column — "Center image and ink edge
 // between the side column and the side of the site", 2026-11-03: the card's own translate, stood down from the ink's measure above)
 (function () {
-  var STRIP = 36;
+  var STRIP = 0;
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
@@ -3676,7 +3676,7 @@ window.ncOpenH = function () {
     slid.forEach(function (el) { el.style.removeProperty('transition'); });
   }
   window.__ncCentre = centre;
-  // (a caret to close the column, the panel down to a strip that keeps it and the rows on the middle of what's left, open again by the same caret —
+  // (a caret in the gutter outside the column's left edge, sliding with it — "outside the side column in the right gutter. Slides with column. Column fully shuts" — the rows on the middle of what's left, open again by the same caret —
   // "I want a white caret that can close the side column", 2026-11-03: style.css THE COLUMN CLOSES)
   var hold = document.querySelector('.latest-rail__hold');
   if (hold) {
