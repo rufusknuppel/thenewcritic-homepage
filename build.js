@@ -4051,7 +4051,9 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
         // alternating from it — "have the top post have the title column on the left. alternate accordingly", 2026-10-28)
         // (the top post's picture at the left for an hour — "Flip the top post so image is on the left", 2026-11-02 — and its
         // words at the left again since, "Flip the top post so titles is on the left")
-        const toR = ((j % 2 === 0) !== (RAIL_SIDE === 'r')) !== (COLUMN_AT === 'l');
+        // (and the top post's words at the right again since, the rest alternating from it — "Flip top post so title column is
+        // on the right", 2026-11-03)
+        const toR = ((j % 2 === 0) === (RAIL_SIDE === 'r')) !== (COLUMN_AT === 'l');
         blocks.push(card(row[0], 'a', { solo: true, ka: 1, kb: 0.0001, alignR: toR, slide: toR ? 'r' : 'l' }));
       } else {
         // (a pair's two slide toward one another on its section's first

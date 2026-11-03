@@ -33784,3 +33784,15 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
     position: absolute; left: 50%; translate: -50% 1px; font-style: italic; white-space: nowrap;
   }
 }
+
+/* THE LATEST IN THE LEFT COLUMN (2026-11-03 — "Move the latest into a left column in the left margin. Leave the bird on the right",
+   "Narrow both side columns"): The Latest's words 150 wide, 54 from the window, across from the hold by --lat-dx; the bird on the
+   middle of a right column as wide, the nav's end its edge; the rows between (latest-rail.js NC_ROWL, --rail-edge) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > :is(.rail-sections, .latest-rail__in):not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3){
+    left: 0 !important; margin-left: var(--lat-dx, 0px) !important; width: 150px !important; right: auto !important;
+  }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-swallow.rail-swallow:not(#nc-lc0):not(#nc-lc1):not(#nc-lc2):not(#nc-lc3){
+    left: calc(50% + 44px) !important;
+  }
+}
