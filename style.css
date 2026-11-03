@@ -33809,9 +33809,17 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
    a column as wide as the bird, --nc-bw, its right edge the nav's end; latest-rail.js */
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > :is(.rail-sections, .latest-rail__in):not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
-    margin-left: calc(100% - var(--nc-bw, 100%)) !important; width: var(--nc-bw, 100%) !important;
+    margin-left: calc(100% - var(--nc-bw, 100%) - var(--nc-bm)) !important; width: var(--nc-bw, 100%) !important;
   }
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-swallow.rail-swallow:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
-    left: calc(100% - var(--nc-bw, 100%) / 2) !important;
+    left: calc(100% - var(--nc-bw, 100%) / 2 - var(--nc-bm)) !important;
   }
 }
+/* (and the sections kept on their three lines where the bird is narrower than the longest of them, centred on the bird and over its edges a little) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sections.rail-sections:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
+    margin-left: calc(100% - var(--nc-bw, 100%) / 2 - var(--nc-bm)) !important; width: max-content !important; white-space: nowrap !important; translate: -50% 0 !important;
+  }
+}
+/* (the column's margins 18 wider either side — "Expand side column margins by 18px on each side", 2026-11-03: the column 18 in from the nav's end, the rows 36 less, latest-rail.js) */
+:root{ --nc-bm: 18px; }

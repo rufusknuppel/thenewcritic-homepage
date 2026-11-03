@@ -17097,9 +17097,15 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
 }
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sections:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3),html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
-    margin-left: calc(100% - var(--nc-bw, 100%)) !important; width: var(--nc-bw, 100%) !important;
+    margin-left: calc(100% - var(--nc-bw, 100%) - var(--nc-bm)) !important; width: var(--nc-bw, 100%) !important;
   }
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-swallow.rail-swallow:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
-    left: calc(100% - var(--nc-bw, 100%) / 2) !important;
+    left: calc(100% - var(--nc-bw, 100%) / 2 - var(--nc-bm)) !important;
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sections.rail-sections:not(#nc-bc0):not(#nc-bc1):not(#nc-bc2):not(#nc-bc3){
+    margin-left: calc(100% - var(--nc-bw, 100%) / 2 - var(--nc-bm)) !important; width: max-content !important; white-space: nowrap !important; translate: -50% 0 !important;
+  }
+}
+:root{ --nc-bm: 18px; }

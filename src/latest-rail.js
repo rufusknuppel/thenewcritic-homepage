@@ -1883,7 +1883,7 @@ var ncStemX = function () {
       var swQ = document.querySelector('.latest-rail__hold > .rail-swallow'), navQ = document.querySelector('main .op-band .rail-top');
       var bwQ = swQ ? swQ.getBoundingClientRect().width : 0, nwQ = navQ ? navQ.getBoundingClientRect().width : 0;
       if (bwQ > 0 && nwQ > bwQ) {
-        mid += Math.round(nwQ - bwQ);
+        mid += Math.round(nwQ - bwQ) - 26; // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
       }
@@ -2067,11 +2067,12 @@ var ncStemX = function () {
       // (less the words' carry toward their picture, bandRule's, so the rows stand where they stood and the words alone
       // come in — THE RULE UNDER THE DEK)
       var sbG = e && e.closest('.swap-body'), oxG = sbG ? parseFloat((getComputedStyle(sbG).translate || '').split(/\s+/)[0]) || 0 : 0;
-      if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0) - oxG);
+      var cdG = c.closest('section.card'), dxG = cdG && cdG.__ncDx || 0;
+      if (q && q.width) inkL = Math.min(inkL, q.left - (c.__ncSh || 0) - oxG - dxG);
       // (the words on the right, with the column at the left — their right edge as they land, unslid)
       var eR = !c.__ncWordsL && c.querySelector('.swap-body'), qR = eR && eR.getBoundingClientRect();
       var sbR = eR && eR.closest('.swap-body'), oxR = sbR ? parseFloat((getComputedStyle(sbR).translate || '').split(/\s+/)[0]) || 0 : 0;
-      if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0) - oxR);
+      if (qR && qR.width) inkR = Math.max(inkR, qR.right - (c.__ncSh || 0) - oxR - dxG);
     });
     slidG.forEach(function (el) { el.style.removeProperty('transition'); });
     if (colL) { if (inkR > -1e8 && Math.abs(inkR - (document.documentElement.clientWidth - NC_ROWL)) > 0.5) { main.__ncInkR = inkR + sh0; shift(); } }
@@ -3642,3 +3643,21 @@ window.ncOpenH = function () {
   lay();
 })();
 
+// (each row's picture and words centred as one between the site's left edge and the side column — "Center image and ink edge
+// between the side column and the side of the site", 2026-11-03: the card's own translate, stood down from the ink's measure above)
+(function () {
+  function centre() {
+    var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
+    var wide = window.innerWidth >= 1024, colL = sw ? sw.getBoundingClientRect().left : 0;
+    [].slice.call(document.querySelectorAll('.page-rows section.card')).forEach(function (c) {
+      var p = c.querySelector('.nc-pic-line'), b = c.querySelector('.swap-body-text');
+      var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
+      if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
+      if (!pr || !br || !pr.width || !br.width) return;
+      var was = c.__ncDx || 0, dx = Math.round(colL / 2 - (Math.min(pr.left, br.left) + Math.max(pr.right, br.right)) / 2 + was);
+      if (Math.abs(dx - was) < 0.5) return;
+      c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
+    });
+  }
+  ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
+})();
