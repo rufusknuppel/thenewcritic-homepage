@@ -17051,12 +17051,12 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
     display: block; position: absolute; left: var(--opb-navl, 54px); top: 50%; translate: 0 -50%;
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
     color: var(--k, #121417); white-space: nowrap;
-    animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards;
-    animation-timeline: scroll(root), --nc-foot-v;
-    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25%;
   }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .op-date.op-date:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3){ visibility: hidden; }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
     left: 50% !important; translate: -50% calc(-50% + 1px) !important;
+  }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
+    left: 50% !important; translate: -50% -50% !important;
   }
 }

@@ -10443,15 +10443,13 @@
                   var cH9 = (j.mB - j.mT) + META_PITCH, tH9 = (j.ttB - j.ttT) + WHEN_HALF + cH9 + WHEN_HALF + (j.dkB - j.dkT), bH9 = j.inB - j.txT;
                   // (WHEN_GAP over and under the rule whatever the picture's height, the whole on the picture's middle — "make sure
                   // there is 40.5 px on top and bottom padding of rule in content columns", 2026-11-03)
-                  // (the title's first ink WHEN_GAP under the picture's top and the body's last baseline WHEN_GAP over its foot since —
-                  // "Title should sit 40.5 below top of image and body should sit 40.5 above", 2026-11-03: what the whole lines
-                  // leave over shared between the title and the meta and the meta and the dek, the rule's gaps as they are; a
-                  // head too tall for that, the whole on the picture's middle)
-                  var g9 = WHEN_GAP, y9, half9 = WHEN_HALF;
+                  // (the title's first ink WHEN_GAP under the picture's top and the body's last baseline WHEN_GAP over its foot at the
+                  // least — "Title should sit 40.5 below top of image and body should sit 40.5 above", 2026-11-03: what the whole
+                  // lines leave over shared over the title and under the body, the whole on the picture's middle — "I want the spare
+                  // space distributed above the title and below the body, not on either side of the meta")
+                  var g9 = WHEN_GAP, y9;
                   if (j.pic && j.pic.b > j.pic.t) {
-                    var left9 = (j.pic.b - j.pic.t) - tH9 - bH9 - 4 * WHEN_GAP;
-                    if (left9 >= 0) { y9 = j.pic.t + WHEN_GAP; half9 += left9 / 2; tH9 += left9; }
-                    else y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + bH9 + 2 * WHEN_GAP) / 2;
+                    y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + bH9 + 2 * WHEN_GAP) / 2;
                   } else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + bH9 + 2 * WHEN_GAP)) / 2));
                   // (the body in the middle since, the writer, the dek and the section and the date last — "Move the body
                   // preview into the center", 2026-10-28: the title, a rule, the body, a rule, that chunk)
@@ -10469,7 +10467,7 @@
                   // (the body in the middle since, that chunk at the foot — "swap the meta chunk for the body text chunk", 2026-11-03:
                   // the title and the dek, a rule, the body, a rule, the writer and the section and the date)
                   // (under the dek for a moment, and back — "move meta chunk under dek", "Actually don't move meta", 2026-11-03)
-                  var tT9 = y9, cT9 = tT9 + (j.ttB - j.ttT) + half9, dT9 = cT9 + cH9 + half9, r29 = tT9 + tH9 + g9, bTop9 = r29 + g9;
+                  var tT9 = y9, cT9 = tT9 + (j.ttB - j.ttT) + WHEN_HALF, dT9 = cT9 + cH9 + WHEN_HALF, r29 = tT9 + tH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
                   // (the section and the date first since, the dek and then the writer — "Switch Author line and essay, date
                   // line", 2026-11-01)
