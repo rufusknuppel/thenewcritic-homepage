@@ -3682,7 +3682,7 @@ window.ncOpenH = function () {
   if (hold) {
     var btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'nc-col-caret';
-    btn.innerHTML = '<svg viewBox="0 0 8 14" width="8" height="14" aria-hidden="true"><path d="M1 1L7 7L1 13" fill="none" stroke="currentColor" stroke-width="1"/></svg>';
+    btn.innerHTML = '<svg viewBox="0 0 8 14" width="8" height="14" aria-hidden="true"><path d="M1 1L7 7L1 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     btn.setAttribute('aria-label', 'Close the column'); btn.setAttribute('aria-expanded', 'true');
     hold.appendChild(btn);
     var animT = 0;

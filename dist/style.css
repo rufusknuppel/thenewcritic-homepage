@@ -17151,8 +17151,9 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 @media (min-width: 1024px){
   html{ --nc-pw: var(--nc-panel, 0px); }
   html.nc-col-closed{ --nc-pw: 36px; }
-  html body main.has-mega .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9){
-    background-image: linear-gradient(#FDFDFB, #FDFDFB) !important; background-repeat: no-repeat !important; background-position: right bottom !important; background-size: var(--nc-pw, 0px) 0.5px !important;
+  html body main.has-mega .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9)::after{
+    content: "" !important; display: block !important; position: absolute !important; top: 100% !important; bottom: auto !important; left: auto !important; right: 0 !important;
+    width: var(--nc-pw, 0px) !important; height: 0.5px !important; margin: 0 !important; background: #FDFDFB !important; border: 0 !important; opacity: 1 !important; transform: none !important; pointer-events: none !important; z-index: 2 !important;
   }
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > button.nc-col-caret{
     position: absolute !important; display: block !important; top: 6px !important; right: -12px !important; left: auto !important; padding: 12px !important; margin: 0 !important; width: auto !important; height: auto !important;
@@ -17167,7 +17168,7 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
   html.nc-col-anim body main.has-mega > .page-rows:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9){ transition: background-size .5s ease !important; }
-  html.nc-col-anim body main.has-mega .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9){ transition: background-size .5s ease !important; }
+  html.nc-col-anim body main.has-mega .op-band:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9)::after{ transition: width .5s ease !important; }
   html.nc-col-anim body main.has-mega .page-rows section.card{ transition: translate .5s ease !important; }
   html.nc-col-anim body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > *{ transition: opacity .3s ease, visibility .3s ease, right .5s ease !important; }
   html.nc-col-anim body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > button.nc-col-caret > svg{ transition: rotate .5s ease; }
