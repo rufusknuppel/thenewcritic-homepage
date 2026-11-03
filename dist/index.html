@@ -11821,6 +11821,7 @@ var ncStemX = function () {
     else if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
     holdG.style.setProperty('--opb-in', ncStemX() + 'px');
     carry();
+    if (window.__ncCentre) window.__ncCentre();
   };
   var carry = function () {
     if (!holdG || !main.classList.contains('rail-is-shut') || window.innerWidth < 1024) return;
@@ -12812,6 +12813,8 @@ window.ncOpenH = function () {
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, colL = sw ? sw.getBoundingClientRect().left : 0;
+    var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
+    slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card')).forEach(function (c) {
       var p = c.querySelector('.nc-pic-line'), b = c.querySelector('.swap-body-text');
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
@@ -12821,8 +12824,11 @@ window.ncOpenH = function () {
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });
+    slid.forEach(function (el) { el.style.removeProperty('transition'); });
   }
+  window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
+  document.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform' && e.target.classList && e.target.classList.contains('wrap--sec')) centre(); }, { passive: true });
 })();
 (function () {
   var root = document.documentElement, max = 0, atEnd = true;

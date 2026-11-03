@@ -2079,6 +2079,7 @@ var ncStemX = function () {
     else if (inkL < 1e8 && Math.abs(inkL - NC_ROWL) > 0.5) { main.__ncInkL = inkL + sh0; shift(); }
     holdG.style.setProperty('--opb-in', ncStemX() + 'px');
     carry();
+    if (window.__ncCentre) window.__ncCentre();
   };
   // (the hold's carry alone, which lay below asks for too once it has set where the socials stand — not the rows' slide,
   // which is the fitter's to settle, 2026-10-15)
@@ -3649,6 +3650,9 @@ window.ncOpenH = function () {
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, colL = sw ? sw.getBoundingClientRect().left : 0;
+    // (the rows' slide stood down for the measure, as the ink's is: read mid-slide they centre on where they were, "Why is this uneven")
+    var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
+    slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card')).forEach(function (c) {
       var p = c.querySelector('.nc-pic-line'), b = c.querySelector('.swap-body-text');
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
@@ -3658,8 +3662,12 @@ window.ncOpenH = function () {
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });
+    slid.forEach(function (el) { el.style.removeProperty('transition'); });
   }
+  window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
+  // (and again once the rows have slid anywhere, which no event says)
+  document.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform' && e.target.classList && e.target.classList.contains('wrap--sec')) centre(); }, { passive: true });
 })();
 
 // (the root's red kept to the page's two ends, the only places it can overscroll, and the paper between: a hard scroll outruns the
