@@ -17138,3 +17138,10 @@ html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: Inter, "Helvetica Neue", Arial, sans-serif !important; font-size: 16.87px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::before,
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::after{ font-family: inherit !important; font-size: inherit !important; letter-spacing: inherit !important; font-style: normal !important; text-transform: uppercase !important; }
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in:not(#nc-ik0):not(#nc-ik1):not(#nc-ik2):not(#nc-ik3):not(#nc-ik4):not(#nc-ik5):not(#nc-ik6):not(#nc-ik7):not(#nc-ik8):not(#nc-ik9){
+    margin-left: calc(100% - var(--nc-bw, 100%) - var(--nc-bm) - 60px) !important; width: calc(var(--nc-bw, 100%) + 120px) !important;
+  }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list a:not(#nc-ik0):not(#nc-ik1):not(#nc-ik2):not(#nc-ik3):not(#nc-ik4):not(#nc-ik5):not(#nc-ik6):not(#nc-ik7):not(#nc-ik8):not(#nc-ik9),
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list a:not(#nc-ik0):not(#nc-ik1):not(#nc-ik2):not(#nc-ik3):not(#nc-ik4):not(#nc-ik5):not(#nc-ik6):not(#nc-ik7):not(#nc-ik8):not(#nc-ik9) span.latest-rail__kick{ white-space: nowrap !important; }
+}
