@@ -33934,7 +33934,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
   html body main.has-mega .latest-rail__hold:hover .latest-rail__list a:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29) span.latest-rail__kick::after{ transition: none !important; }
 }
 
-/* THE RULE BETWEEN THE BIRD AND THE LATEST AGAIN (2026-11-03 — "Add a rule between the bird and the latest"): half a pixel in the white, the bird's width, halfway from its ink to the capitals (--rl-rt: latest-rail.js) */
+/* THE RULE BETWEEN THE BIRD AND THE LATEST AGAIN (2026-11-03 — "Add a rule between the bird and the latest"): half a pixel in the white, the bird's width, one of the column's four even spaces either side (--rl-rt: latest-rail.js) */
 @media (min-width: 1024px){
   html body main .latest-rail__hold.latest-rail__hold > .rail-sections:not(#nc-br0):not(#nc-br1):not(#nc-br2):not(#nc-br3):not(#nc-br4):not(#nc-br5):not(#nc-br6):not(#nc-br7):not(#nc-br8):not(#nc-br9):not(#nc-br10):not(#nc-br11):not(#nc-br12):not(#nc-br13):not(#nc-br14):not(#nc-br15):not(#nc-br16):not(#nc-br17):not(#nc-br18):not(#nc-br19):not(#nc-br20):not(#nc-br21):not(#nc-br22):not(#nc-br23):not(#nc-br24):not(#nc-br25):not(#nc-br26):not(#nc-br27):not(#nc-br28):not(#nc-br29)::before{ background: #FDFDFB !important; width: var(--nc-bw, 100%) !important; }
 }

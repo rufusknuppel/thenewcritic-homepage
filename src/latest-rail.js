@@ -2916,7 +2916,8 @@ var ncStemX = function () {
                 // pull up and settle on scroll, all landing when the top bar settles", 2026-10-28; before, the bird on the top
                 // title's middle and the column carried as one)
                 // (three spaces since, the rule gone — "Recenter bird and latest with rule missing", 2026-11-03)
-                var gSR = (hr.height + aN - inkH - stS) / 3;
+                // (four again, the rule back — "bird and the latest should be spaced evenly considering rule", 2026-11-03)
+                var gSR = (hr.height + aN - inkH - stS) / 4;
                 var gS = Math.max(20, gSR);
                 // (the four spaces' shortfall of 20 shared between the stack's two gaps, and seated again)
                 var cutN = Math.max(0, Math.min(20.25, (hold.__ncGapCut || 0) + (20 - gSR) * 2));
@@ -2937,8 +2938,8 @@ var ncStemX = function () {
                 // "Revert the latest so that it rises")
                 // (the three spaces off The Latest's own height, whichever section stands open — "Move the latest back under the bird",
                 // 2026-11-03)
-                var gV = Math.max(20, (hr.height - inkH - (stV - aN)) / 3);
-                var swT1 = gV - inkT, cap1 = 2 * gV + inkH - aN;
+                var gV = Math.max(20, (hr.height - inkH - (stV - aN)) / 4);
+                var swT1 = gV - inkT, cap1 = 3 * gV + inkH - aN;
                 // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
@@ -2959,9 +2960,9 @@ var ncStemX = function () {
                 // BIRD)
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  // (over The Latest's capitals by a space since, the bird over it — 2026-10-29; halfway from the bird's ink to
-                  // the capitals since, "Add a rule between the bird and the latest", 2026-11-03)
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS / 2).toFixed(2) + 'px');
+                  // (over The Latest's capitals by a space since, the bird over it — 2026-10-29; one of the four spaces over them,
+                  // so one under the bird's ink as well: gV, "bird and the latest should be spaced evenly considering rule", 2026-11-03)
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gV).toFixed(2) + 'px');
                 }
               }
             }
