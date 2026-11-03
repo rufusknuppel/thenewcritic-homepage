@@ -33796,3 +33796,9 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
     left: calc(50% + 44px) !important;
   }
 }
+
+/* THE POSTS 54 SHORTER (2026-11-03 — "Make posts 54px shorter"): --card-words, 36 and 54, every row height's formula taking it off
+   (duo-panel-fit.js POST_TRIM with it); 54 between the posts with it, POST_GAP */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows.page-rows.page-rows{ --card-words: 90px; }
+}

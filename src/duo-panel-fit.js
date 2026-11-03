@@ -7480,6 +7480,8 @@
   var POST_GAP = 54;
   // (108 since, twice that — "double space between posts", 2026-10-28)
   POST_GAP = 108;
+  // (54 again since — "Reduce gap between posts to 54px", 2026-11-03)
+  POST_GAP = 54;
   // (the blue rule hung under the band: style.css, --band-rule)
   // (2 since 2026-10-04: "Set yellow divider bands to 2px too")
   // (4.5 since later that day: "Increase dividing line to 4.5px"; then 9,
@@ -8973,6 +8975,8 @@
   // POST_TRIM)
   // (36 since — "Increase image height by 72px", 2026-10-20: style.css --card-words with it)
   var PIC_FAR = 54, POST_TRIM = 36;
+  // (90 since — "Make posts 54px shorter", 2026-11-03: style.css --card-words with it)
+  POST_TRIM = 90;
   // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
   PIC_FAR = 0;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
