@@ -18,10 +18,9 @@ var RAIL_COL = 238 + 36;
 // socials — "have the left margin of the content column be 54px from the side", 2026-10-15)
 var NC_ROWL = 54;
 // (the rows' ink past the left column from 1024 up — "Move the latest into a left column in the left margin", "Narrow both side
-// columns", "Make column gaps standard width", 2026-11-03: the column 150 from the window's 54, the words of the rows that set them outermost 54 clear of it since, as outside it — "Have inner
-// gaps match outer gaps", the pictures of the others a little more; style.css THE LATEST
+// columns", "Make column gaps standard width", 2026-11-03: the column 150 from the window's 54, 54 clear of it since, as outside it — "Have inner gaps match outer gaps"; style.css THE LATEST
 // IN THE LEFT COLUMN)
-if (window.innerWidth >= 1024) NC_ROWL = 271;
+if (window.innerWidth >= 1024) NC_ROWL = 258;
 // (the old strip over the rows — the head rail's sub-ticker — stands out of sight since the band moved into main (style
 // .css: no height, no opacity), its words, logo and colophon with it; what only lays it out is skipped while it is
 // gone — "Identify why the site loads so slowly ... lowest risk fixes", 2026-10-15)
@@ -1885,7 +1884,7 @@ var ncStemX = function () {
     // (the rows narrower by the left column and carried over it — "Move the latest into a left column in the left margin. Leave
     // the bird on the right", 2026-11-03: style.css THE LATEST IN THE LEFT COLUMN)
     // (the rows' right end 54 short of the bird, whose width goes with the window's: read at 1024, 1440 and 1920, between them in line)
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 332.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
+    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 291.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     // (the column's rule handed to the page's root too, for its run on into the overscroll at the page's foot —
     // "Have the vertical rule run into overscroll on the bottom", 2026-10-09; style.css, THE RULE INTO THE
     // OVERSCROLL: its left edge, the column's width less its 2)
@@ -3291,8 +3290,9 @@ window.ncOpenH = function () {
       // (54 off it again since — "Revert back to 54px margins", 2026-10-16)
       // (40.5 since, the words' margin inside the box round them — "Move inner margin to match 40.5px", 2026-10-28:
       // duo-panel-fit.js BOX_PAD)
-      // (54 since, as the page's outer margins — "Have inner gaps match outer gaps", 2026-11-03)
-      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
+      // (54 for a moment, as the page's outer margins — "Have inner gaps match outer gaps" — and back, "Reduce gap between image and
+      // title column to 40.5px", 2026-11-03)
+      var dx = ox + (fq.left > tR ? fq.left - 40.5 - tR : tL < fq.right ? 0 : fq.right + 40.5 - tL);
       // (the body where it stood under the dek since, the rule gone — "Remove rules between deks and body", 2026-10-16)
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';

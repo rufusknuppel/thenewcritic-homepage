@@ -10597,7 +10597,7 @@ window.__ncStripInk = function () {
 var RAIL_MORE = 27;
 var RAIL_COL = 238 + 36;
 var NC_ROWL = 54;
-if (window.innerWidth >= 1024) NC_ROWL = 271;
+if (window.innerWidth >= 1024) NC_ROWL = 258;
 var ncStripGone = function (st) { return !!st && st.offsetHeight === 0 && getComputedStyle(st).opacity === '0'; };
 var ncStemX = function () {
   var w0 = document.querySelector('a.content-name .content-name__block .tnc-words svg.band-logo__line'), r = w0 && w0.getBoundingClientRect();
@@ -11680,7 +11680,7 @@ var ncStemX = function () {
     if (p0) strip.style.setProperty('--colo-p', p0);
     if (mid == null) return;
     mid = Math.round(mid);
-    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 332.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
+    if (window.innerWidth >= 1024) { var vwQ = window.innerWidth; mid -= 291.5 + (vwQ <= 1440 ? 11.5 + 16 * (vwQ - 1024) / 416 : 27.5 + 6 * (vwQ - 1440) / 480); }
     var rx = (document.querySelector('.latest-rail--l') ? vwE - mid - 252 - 2 : mid + 252).toFixed(2) + 'px';
     if (document.documentElement.style.getPropertyValue('--nc-rule-x') !== rx) document.documentElement.style.setProperty('--nc-rule-x', rx);
     var cur = parseFloat(main.style.getPropertyValue('--rail-edge'));
@@ -12563,7 +12563,7 @@ window.ncOpenH = function () {
       cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
       var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
-      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
+      var dx = ox + (fq.left > tR ? fq.left - 40.5 - tR : tL < fq.right ? 0 : fq.right + 40.5 - tL);
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
       if (sb.style.getPropertyValue('translate') !== sv) sb.style.setProperty('translate', sv, 'important');
