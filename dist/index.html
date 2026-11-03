@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=fa4384b2">
+<link rel="stylesheet" href="style.css?v=825df67f">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12306,6 +12306,7 @@ var ncStemX = function () {
                 swH *= 0.9;
                 swH *= 1.1;
                 swH *= 1.08; // ("Make bird 8% bigger", 2026-11-03)
+                swH *= 0.9; // ("Make the bird 10% smaller", 2026-11-03)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height), stV = lkB - ctB;
@@ -12347,7 +12348,7 @@ var ncStemX = function () {
                 hold.style.setProperty('--rl-stdy', '0px');
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS / 2).toFixed(2) + 'px');
                 }
               }
             }

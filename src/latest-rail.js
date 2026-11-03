@@ -2854,6 +2854,7 @@ var ncStemX = function () {
                 // (and a tenth bigger again — "Make bird 10% bigger", 2026-11-03)
                 swH *= 1.1;
                 swH *= 1.08; // ("Make bird 8% bigger", 2026-11-03)
+                swH *= 0.9; // ("Make the bird 10% smaller", 2026-11-03)
                 // (off the band's own foot, where the hold stands at the opening and pinned alike: read off the hold, a seat
                 // made before the band came to the opening's foot stood the bird 130 high till the next)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
@@ -2958,8 +2959,9 @@ var ncStemX = function () {
                 // BIRD)
                 if (secV) {
                   hold.style.setProperty('--rl-rw', Math.round(secV.getBoundingClientRect().width) + 'px');
-                  // (over The Latest's capitals by a space since, the bird over it — 2026-10-29)
-                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS).toFixed(2) + 'px');
+                  // (over The Latest's capitals by a space since, the bird over it — 2026-10-29; halfway from the bird's ink to
+                  // the capitals since, "Add a rule between the bird and the latest", 2026-11-03)
+                  hold.style.setProperty('--rl-rt', (capTop1(secV) - secV.getBoundingClientRect().top - gS / 2).toFixed(2) + 'px');
                 }
               }
             }
