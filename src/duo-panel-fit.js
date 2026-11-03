@@ -9555,7 +9555,7 @@
         var W2 = fw.toFixed(2), Wr = (fw - FORK_RUN).toFixed(2), Wo = (fw - FORK_RUN - o).toFixed(2), Ro = (FORK_RUN + o).toFixed(2);
         var dL = 'M0 ' + (R + o) + 'L' + FORK_RUN + ' ' + o + 'H' + Wo + 'V' + (2 * R + o) + 'H' + FORK_RUN + 'Z';
         var dR = 'M' + Ro + ' ' + o + 'H' + Wr + 'L' + W2 + ' ' + (R + o) + 'L' + Wr + ' ' + (2 * R + o) + 'H' + Ro + 'Z';
-        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #121417); stroke: var(--nc-rule, #B3301E)"/>'; };
+        var pth = function (cls, d) { return '<path class="' + cls + '" d="' + d + '" stroke-width="' + (hi ? 0.5 : 1) + '" style="fill: var(--fork-fill, #121417); stroke: var(--nc-rule, #FFBF00)"/>'; };
         var svg = '<svg width="' + W2 + '" height="' + (2 * R + 1) + '" viewBox="0 0 ' + W2 + ' ' + (2 * R + 1) + '" overflow="visible">' + pth('fk-pic-l', dL) + pth('fk-pic-r', dR) + '</svg>';
         if (fk.__st !== fst) { fk.__st = fst; fk.style.cssText = fst; }
         if (fk.__svg !== svg) { fk.__svg = svg; fk.innerHTML = svg; }
@@ -10107,7 +10107,8 @@
       // body's last line — a line's height a line's ink at the most: j.u9, above)
       // (four of them since the divider: over the head, under it to the divider, the divider to the body, under the body)
       // (six since the three chunks, two rules — THREE CHUNKS, EVENLY)
-      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 6 * WHEN_GAP - j.u9) / j.blh)));
+      // (five since the one chunk and one rule, the second half over the dek among them — "move meta between title and dek")
+      if (j.u9 != null) j.rows = Math.max(1, Math.min(j.rows, Math.floor((j.Bd.b - j.Bd.t - 5 * WHEN_GAP - j.u9) / j.blh)));
       var ncol = j.one ? 1 : 2;
       j.H = levelRows(paraLines(j.bt, ncol, SWAP_PAD, j.blh), ncol, j.rows);
     });
@@ -10435,13 +10436,14 @@
                   // and the date the chunk over the rule — "Move titles above deks", 2026-11-02)
                   // (the two chunks switched since, the title and the dek first, a rule, the writer and the section and the date,
                   // a rule, the body — "Switch title/dek chunk and meta chunk", 2026-11-02)
-                  var tH9 = (j.ttB - j.ttT) + WHEN_HALF + (j.dkB - j.dkT), cH9 = (j.mB - j.mT) + META_PITCH, bH9 = j.inB - j.txT;
+                  // (the writer and the section and the date between the title and the dek since, all one chunk, one rule and the
+                  // body under it — "move meta between title and dek", 2026-11-03: g shared four ways, not six)
+                  var cH9 = (j.mB - j.mT) + META_PITCH, tH9 = (j.ttB - j.ttT) + WHEN_HALF + cH9 + WHEN_HALF + (j.dkB - j.dkT), bH9 = j.inB - j.txT;
+                  // (WHEN_GAP over and under the rule whatever the picture's height, the whole on the picture's middle — "make sure
+                  // there is 40.5 px on top and bottom padding of rule in content columns", 2026-11-03)
                   var g9 = WHEN_GAP, y9;
-                  if (j.pic && j.pic.b > j.pic.t) {
-                    var gq9 = ((j.pic.b - j.pic.t) - tH9 - cH9 - bH9) / 6;
-                    if (gq9 >= WHEN_GAP) { g9 = gq9; y9 = j.pic.t + g9; }
-                    else y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + cH9 + bH9 + 4 * WHEN_GAP) / 2;
-                  } else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + cH9 + bH9 + 4 * WHEN_GAP)) / 2));
+                  if (j.pic && j.pic.b > j.pic.t) y9 = (j.pic.t + j.pic.b) / 2 - (tH9 + bH9 + 2 * WHEN_GAP) / 2;
+                  else y9 = Math.round(j.bb.top + INK_GAP + Math.max(0, (room - (tH9 + bH9 + 2 * WHEN_GAP)) / 2));
                   // (the body in the middle since, the writer, the dek and the section and the date last — "Move the body
                   // preview into the center", 2026-10-28: the title, a rule, the body, a rule, that chunk)
                   // (the writer, the dek and the section and the date at the top since, the title in the middle and the body
@@ -10455,16 +10457,19 @@
                   // bottom of the stack", 2026-10-28)
                   // (the title at the top again since, that chunk under it and the body at the foot — "Make titles top of
                   // stack", 2026-10-28)
-                  var tT9 = y9, r19 = tT9 + tH9 + g9, cT9 = r19 + g9, r29 = cT9 + cH9 + g9, bTop9 = r29 + g9;
+                  // (the body in the middle since, that chunk at the foot — "swap the meta chunk for the body text chunk", 2026-11-03:
+                  // the title and the dek, a rule, the body, a rule, the writer and the section and the date)
+                  // (and under the dek since, the last of the chunk — "move meta chunk under dek", 2026-11-03)
+                  var tT9 = y9, dT9 = tT9 + (j.ttB - j.ttT) + WHEN_HALF, cT9 = dT9 + (j.dkB - j.dkT) + WHEN_HALF, r29 = tT9 + tH9 + g9, bTop9 = r29 + g9;
                   upY = tT9 - j.ttT;
                   // (the section and the date first since, the dek and then the writer — "Switch Author line and essay, date
                   // line", 2026-11-01)
                   // (the writer over the section and the date since, the dek under them — META_PITCH)
                   metaY = cT9 - j.mT - upY;
                   j.wY = (j.mB + metaY + META_PITCH) - j.wB;
-                  dekY = (tT9 + (j.ttB - j.ttT) + WHEN_HALF) - j.dkT;
+                  dekY = dT9 - j.dkT;
                   dnY = bTop9 - j.txT;
-                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, r: r19 - j.bb.top, g: g9 };
+                  if (j.pic && j.pic.b > j.pic.t) j.card.__ncInk = { t: y9 - j.bb.top, b: bTop9 + bH9 - j.bb.top, d: r29 - j.bb.top, g: g9 };
                 }
               }
             }

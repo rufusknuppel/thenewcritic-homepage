@@ -1304,8 +1304,17 @@ var ncStemX = function () {
     });
   };
   var lit = [];
+  // (THE COLUMN STILL ON A FLING, 2026-11-03 — "I want the latest to be smoother on fast scroll": past FLING px a second the lit
+  // line and the column's section hold where they are, and it takes up the page as the scroll slows or stops, so a fast scroll
+  // doesn't flash through every post and open every section between)
+  var FLING = 2500, flingT = 0;
   var light = function () {
     if (!spans.length) return;
+    if (speed > FLING && lit.length && !goKey) {
+      clearTimeout(flingT);
+      flingT = setTimeout(function () { speed = 0; light(); }, 140);
+      return;
+    }
     var strip = document.querySelector('.sub-ticker--top');
     var band = strip ? Math.max(0, strip.getBoundingClientRect().bottom) : 0;
     // (the window less the foot band too — THE LINE IN THE FOOT BAND)
@@ -1633,9 +1642,10 @@ var ncStemX = function () {
   var speed = 0, lastY = null, lastT = 0;
   var gauge = function () {
     var t = performance.now(), y = window.pageYOffset || 0;
-    if (lastY !== null && t - lastT > 0 && t - lastT < 200) {
+    // (a slow frame on a fast scroll still a fast scroll, up to the second — THE COLUMN STILL ON A FLING)
+    if (lastY !== null && t - lastT > 0 && t - lastT < 1000) {
       var v = Math.abs(y - lastY) / (t - lastT) * 1000;
-      speed = speed ? speed * 0.6 + v * 0.4 : v;
+      speed = speed && t - lastT < 200 ? speed * 0.6 + v * 0.4 : v;
     } else speed = 0;
     lastY = y; lastT = t;
   };
@@ -2872,7 +2882,8 @@ var ncStemX = function () {
                 // "On initial load, just have the bird in the side column, spaced evenly, then have the rule and the latest
                 // pull up and settle on scroll, all landing when the top bar settles", 2026-10-28; before, the bird on the top
                 // title's middle and the column carried as one)
-                var gSR = (hr.height + aN - inkH - stS) / 4;
+                // (three spaces since, the rule gone — "Recenter bird and latest with rule missing", 2026-11-03)
+                var gSR = (hr.height + aN - inkH - stS) / 3;
                 var gS = Math.max(20, gSR);
                 // (the four spaces' shortfall of 20 shared between the stack's two gaps, and seated again)
                 var cutN = Math.max(0, Math.min(20.25, (hold.__ncGapCut || 0) + (20 - gSR) * 2));
@@ -2891,12 +2902,12 @@ var ncStemX = function () {
                 // (The Latest at the column's head and the bird at its foot for an hour, coming down from under the band —
                 // "Have the latest descend from the top rather than rise from the bottom", 2026-11-02 — and rising again since,
                 // "Revert the latest so that it rises")
-                var swT1 = gS - inkT, cap1 = 3 * gS + inkH - aN;
+                var swT1 = gS - inkT, cap1 = 2 * gS + inkH - aN;
                 // (less the subscribe banner pinned to the window's foot — style.css THE SUBSCRIBE BANNER)
                 var sbnE = document.querySelector('.nc-sub-banner'), sbnH = sbnE ? sbnE.offsetHeight : 0;
                 var room0 = window.ncOpenH && window.ncOpenH() > 0 ? document.documentElement.clientHeight - sbnH - window.ncOpenH() : hr.height;
                 swT0 = (room0 - inkH) / 2 - inkT;
-                var st0 = hr.height - (cap1 + aN - gS) + 4;
+                var st0 = hr.height - (cap1 + aN) + 4;
                 hold.style.setProperty('--rl-pt', Math.max(0, Math.max(0, ptB + shB) + cap1 - capR).toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swh', swH.toFixed(2) + 'px');
                 hold.style.setProperty('--rl-swt', swT0.toFixed(2) + 'px');
