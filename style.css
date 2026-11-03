@@ -33847,3 +33847,24 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
     --k: #000000; color: #000000 !important; fill: #000000 !important;
   }
 }
+/* THE SIDE COLUMN BLUE (2026-11-03 — "Make the latest side column yves klein too"): a panel down the rows' right side, --nc-panel wide (latest-rail.js), under
+   the bands; its words and bird white, what's current and what's under the pointer black, as on the bands */
+@media (min-width: 1024px){
+  html body main.has-mega > .page-rows:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5){ background: linear-gradient(#002FA7, #002FA7) right top / var(--nc-panel, 0px) 100% no-repeat !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5){ --k: #FDFDFB; --nc-mark: #000000; --hl-ink: #000000; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) *{ --k: #FDFDFB; --nc-mark: #000000; --hl-ink: #000000; color: #FDFDFB !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) .rail-swallow__body{ fill: #FDFDFB !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) .rail-swallow__beak{ fill: #002FA7 !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) .is-current.is-current,
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) a:hover,
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5) a:hover *{ color: #000000 !important; }
+}
+/* (its kickers' two painted layers, the white and the black, and the sections' commas, which paint with no colour of their own) */
+@media (min-width: 1024px){
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) span.latest-rail__kick::before{ color: #FDFDFB !important; -webkit-text-fill-color: #FDFDFB !important; }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) span.latest-rail__kick::after{ color: #000000 !important; -webkit-text-fill-color: #000000 !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) .rail-sections__sep{ color: #FDFDFB !important; -webkit-text-fill-color: #FDFDFB !important; opacity: 1 !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) a.rail-sections__a{ color: #FDFDFB !important; -webkit-text-fill-color: #FDFDFB !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) a.rail-sections__a:is(.is-current, :hover){ color: #000000 !important; -webkit-text-fill-color: #000000 !important; }
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) a:hover, html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) a:hover *{ -webkit-text-fill-color: #000000 !important; }
+}

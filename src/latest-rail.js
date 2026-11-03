@@ -1883,7 +1883,12 @@ var ncStemX = function () {
       var swQ = document.querySelector('.latest-rail__hold > .rail-swallow'), navQ = document.querySelector('main .op-band .rail-top');
       var bwQ = swQ ? swQ.getBoundingClientRect().width : 0, nwQ = navQ ? navQ.getBoundingClientRect().width : 0;
       if (bwQ > 0 && nwQ > bwQ) {
-        mid += Math.round(nwQ - bwQ) - 26; // ("Expand side column margins by 18px on each side": --nc-bm)
+        // (the column a blue panel to the window's edge since, the bird centred on it, the rows 54 either side in what's left — "Make the latest side column yves klein too")
+        var mgQ = window.innerWidth - navQ.getBoundingClientRect().right + 18;
+        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 108);
+        var pnV = Math.round(bwQ + 2 * mgQ) + 'px';
+        if (document.documentElement.style.getPropertyValue('--nc-panel') !== pnV) document.documentElement.style.setProperty('--nc-panel', pnV);
+        // // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
       }
@@ -3649,7 +3654,8 @@ window.ncOpenH = function () {
 (function () {
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
-    var wide = window.innerWidth >= 1024, colL = sw ? sw.getBoundingClientRect().left : 0;
+    var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
+    var colL = swR ? swR.left - (window.innerWidth - swR.right) : 0; // (the panel's left edge)
     // (the rows' slide stood down for the measure, as the ink's is: read mid-slide they centre on where they were, "Why is this uneven")
     var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
