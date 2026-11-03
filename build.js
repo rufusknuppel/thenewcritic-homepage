@@ -4518,7 +4518,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121417">
+<meta name="theme-color" content="#B3301E">
 <title>${escapeHtml(SITE_NAME)} \u2014 ${escapeHtml(SITE_TAGLINE)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
 ${ogTags({
@@ -4713,9 +4713,9 @@ function renderFontGateScript({ fitted = true } = {}) {
   };
   var setMeta = function (colour) {
     var meta = document.querySelector('meta[name="theme-color"]');
-    // (the charcoal whatever the page's theme since, the browser's own overscroll on some — "Set background of site on
-    // overscroll to charcoal", 2026-11-02)
-    if (meta) meta.content = '#121417';
+    // (the red whatever the page's theme since, the browser's own overscroll on some — "Overscroll should be red",
+    // 2026-11-03)
+    if (meta) meta.content = '#B3301E';
   };
   // THE LIGHT PAGE STANDS ON ONE GRAY (2026-09-24): its ground is one
   // token in the sheet, --nc-ground (style.css, THE WHOLE PAGE STANDS ON
@@ -5445,7 +5445,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#121417">
+<meta name="theme-color" content="#B3301E">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}
 ${ogTags({ title: `${title} — ${SITE_NAME}`, description, pagePath: `/${currentKey}.html`, image: ogImage })}

@@ -33650,3 +33650,31 @@ html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; r
 /* THE RULES AND OUTLINES CHARCOAL (2026-11-02 — "Make all rules and outlines charcoal"): both tokens on every page, the archive's
    and the store's too; the red kept for the words under the hand and the open section */
 :root:root:not(#nc-rc0), html.is-archive.is-archive:not(#nc-rc0), html:not(#nc-rc0) body{ --nc-rule: #121417; --nc-outline: #121417; }
+
+/* THE COLUMN'S KICKER IN THE HIGHLIGHT, NO BRACKETS (2026-11-03 — "Remove the brackets from the kickers, instead highlight with
+   highlight color"): the post in the window stands in --nc-mark, its line lit as under the hand; the brackets gone, room and all */
+@media (min-width: 1024px){
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1)::before,
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1)::after{
+    content: none !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a.is-now:not(#nc-kh0):not(#nc-kh1),
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a.is-now:not(#nc-kh0):not(#nc-kh1) span{
+    color: var(--nc-mark, #B3301E) !important;
+    -webkit-text-fill-color: var(--nc-mark, #B3301E) !important;
+  }
+}
+
+/* THE OVERSCROLL RED (2026-11-03 — "Overscroll should be red"): the canvas past the page's ends and the cover over the page's
+   top in the band's and the footer's red, on every page; the browser's own colour with them (build.js theme-color) */
+html:root:root:not(#nc-os0):not(#nc-os2){ background: #B3301E !important; }
+html:root:root:not(#nc-os1):not(#nc-os2)::before{ background: #B3301E; }
+
+/* THE LAST MAGAZINE LIT (2026-11-03 — "The last magazine should highlight too"): the band's words, type since THE LAST MAGAZINE IN
+   ITALIC GARAMOND, had only the marks' path fills to light under the hand (main.nc-hot-tlm; latest-rail.js) and THE NEW CRITIC's
+   faded letters stand over them: their colour goes to the highlight with the hand, as the nav's words do */
+@media (min-width: 1024px){
+  html body main.has-mega.nc-hot-tlm .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-it0):not(#nc-it1):not(#nc-it2):not(#nc-it3):not(#nc-it4){
+    color: var(--nc-mark, #B3301E) !important;
+  }
+}
