@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://use.typekit.net" crossorigin>
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
-<link rel="stylesheet" href="style.css?v=ba4eb952">
+<link rel="stylesheet" href="style.css?v=122fd8e9">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6049,6 +6049,7 @@
                 if (wbW > -1e9 && gW > 0 && gW < 200) window.__ncWmGap = gW;
               }
               var topGapW = 53;
+              topGapW = 39.5;
               if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + topGapW;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
@@ -6236,9 +6237,11 @@
           });
         });
       }
+      var endBanded = !ONE_COL.matches && body.parentElement.classList.contains('m--latest') && document.querySelector('main.wm-banded');
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
       if (edgeGap === 54) { var mFb = document.querySelector('main.has-foot-band'); if (mFb && mFb.classList.contains('foot-band-top')) edgeGap = BAND_AIR; else if (mFb) edgeGap = BAND_AIR + (parseFloat(getComputedStyle(mFb).getPropertyValue('--foot-band')) || 0) + (parseFloat(getComputedStyle(mFb).getPropertyValue('--band-rule')) || 2); }
-      var tail = next.classList.contains('section-band--colophon') && !ONE_COL.matches ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
+      if (endBanded) edgeGap = 40.5;
+      var tail = endBanded || (next.classList.contains('section-band--colophon') && !ONE_COL.matches) ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
       var tailM = tail ? Math.min(0, parseFloat(tail.style.marginBottom) || 0) : 0;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: (parseFloat(getComputedStyle(body).paddingBottom) || 0) + tailM, tail: tail });
     });

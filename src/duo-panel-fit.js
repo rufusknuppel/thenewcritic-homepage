@@ -7909,6 +7909,8 @@
               // (54 under the band's foot again since, the picture's own top — "Have the top post start 54px below the band",
               // 2026-11-02)
               var topGapW = 53;
+              // (40.5 since — "Actually set top and bottom post to 40.5 px gap", 2026-11-03)
+              topGapW = 39.5;
               if (ohS && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = ohS + topGapW;
               else if (fr0 && fr0.offsetHeight && document.querySelector('.latest-rail__hold > a.rail-tnc')) cnH = (window.ncOpenH ? window.ncOpenH() : 0) + Math.max(0, (document.documentElement.clientHeight - (window.ncOpenH && window.ncOpenH() ? document.querySelector('main .op-band').offsetHeight : 0) - fr0.getBoundingClientRect().height) / 2);
               if (fr0 && fr0.offsetHeight) rowDelta = (cnH - (window.pageYOffset || 0)) - fr0.getBoundingClientRect().top;
@@ -8252,6 +8254,9 @@
           });
         });
       }
+      // (the last post's picture 40.5 over the footer on the front page — "Actually set top and bottom post to 40.5 px gap", 2026-11-03: the
+      // row's box runs past it, so a margin under its wrap, tail)
+      var endBanded = !ONE_COL.matches && body.parentElement.classList.contains('m--latest') && document.querySelector('main.wm-banded');
       var edgeGap = next.classList.contains('section-band--colophon') && document.querySelector('main.wm-opening') && !ONE_COL.matches ? (document.querySelector('main.wm-banded') ? 54 : 72) : COURIER_GAP;
       // (and the foot band's height and its rule over that, the last picture BAND_AIR over the band at the window's
       // foot — THE LINE IN THE FOOT BAND, latest-rail.js)
@@ -8260,7 +8265,8 @@
       // the last row's box runs a few pixels past the painted frame — so
       // there the rest is taken from the last row's wrap, a margin under it:
       // "Not seeing 54px under the last post", 2026-10-10)
-      var tail = next.classList.contains('section-band--colophon') && !ONE_COL.matches ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
+      if (endBanded) edgeGap = 40.5;
+      var tail = endBanded || (next.classList.contains('section-band--colophon') && !ONE_COL.matches) ? [].filter.call(body.children, function (c) { return c.classList.contains('wrap'); }).pop() || null : null;
       var tailM = tail ? Math.min(0, parseFloat(tail.style.marginBottom) || 0) : 0;
       edges.push({ el: body, prop: 'padding-bottom', delta: edgeGap - (line - nm - foot), m: (parseFloat(getComputedStyle(body).paddingBottom) || 0) + tailM, tail: tail });
     });

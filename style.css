@@ -33802,3 +33802,9 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
 @media (min-width: 1024px){
   html body main.has-mega .page-rows.page-rows.page-rows{ --card-words: 90px; }
 }
+
+/* THE FOOTER ON ITS OWN LAYER (2026-11-03 — "On fast scroll the footer flickers"): its state holds steady through a fling (read frame by
+   frame), so the flicker is its tiles painted late over the page's ground: a layer of its own, painted ahead of the scroll */
+@media (min-width: 1024px){
+  html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1){ will-change: transform; }
+}
