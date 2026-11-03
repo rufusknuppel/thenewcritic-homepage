@@ -33611,3 +33611,8 @@ html body:not(#nc-os0){ background-color: var(--tw, #FAF9F6); }
     animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px), entry 0% entry 25% !important;
   }
 }
+
+/* THE OVERSCROLL OVER THE BAND (2026-11-02 — "Overscroll on topband prints white"): the body and main, the page's white, start
+   975 over the page's top (main's negative margin, collapsed through the body), so the bounce showed their white and not the
+   canvas: charcoal laid over everything above the page's top, none of it ever inside the page */
+html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; right: 0; top: -3000px; height: 3000px; background: #121417; z-index: 2147483000; pointer-events: none; }

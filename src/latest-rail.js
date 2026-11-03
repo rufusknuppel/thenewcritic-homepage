@@ -2835,7 +2835,12 @@ var ncStemX = function () {
                 if (allE && allE.getBoundingClientRect().height && kLast) {
                   var aqA = allE.getBoundingClientRect();
                   var allBA = lkB + (kLast.getBoundingClientRect().bottom - baseOf(kLast)) + (parseFloat(getComputedStyle(allE).marginTop) || 0) + (baseOf(allE) - aqA.top);
-                  stS = Math.max(stS, allBA - ctB);
+                  // (and as low as the longest list would set it, as the line above reads the list: See All read where it stands
+                  // under Editors' Picks' four came out short, and the stack, the bird and the rule stood 39 lower for that section
+                  // alone — "When editors picks kickers appear, keep the latest as is", 2026-11-02)
+                  var kLong = 0;
+                  [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in > .latest-rail__list'), function (l) { kLong = Math.max(kLong, l.getBoundingClientRect().height); });
+                  stS = Math.max(stS, allBA - ctB + Math.max(0, kLong - kList.getBoundingClientRect().height));
                 }
                 // (at the opening the same three spaces in the room the column shows then, from the band's foot to the
                 // window's — "Have the latest and the bird on load be spaced between the ink of the socials and bottom of
