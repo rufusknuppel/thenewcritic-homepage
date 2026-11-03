@@ -4670,7 +4670,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // "What is a red that matches mediterranean blue?", then a lighter
   // terracotta, #D9654F, "make the red a lighter so black stands out
   // more", then #B03A2E again, "Revert to terracotta red", then
-  // Mediterranean blue, #B3301E, 2026-10-06, "change all terracottas to
+  // Mediterranean blue, #1478A7, 2026-10-06, "change all terracottas to
   // that blue. This should be one token", then hot pink, #FF69B4, "Use hot
   // pink as the highlight color", then navy, #000080, "#000080 use this
   // for highlight color", then the navy lightened, #1A1AB0, "Lighten the
@@ -4682,7 +4682,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // then vermilion, #D52B05, 2026-10-07, "#D52B05 use this as the accent
   // color", then #B3301E, 2026-10-14, "#B3301E Use this for the highlight
   // color".
-  // then Mediterranean Blue, #B3301E, the same day, "Use mediterranean blue as
+  // then Mediterranean Blue, #1478A7, the same day, "Use mediterranean blue as
   // highlight color".
   // It must match
   // --nc-mark in style.css. Written in lower case, the form hexOf
