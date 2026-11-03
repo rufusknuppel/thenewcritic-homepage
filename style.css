@@ -33868,3 +33868,11 @@ html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list a:not(#nc-ik0):not(#nc-ik1):not(#nc-ik2):not(#nc-ik3):not(#nc-ik4):not(#nc-ik5):not(#nc-ik6):not(#nc-ik7):not(#nc-ik8):not(#nc-ik9),
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list a:not(#nc-ik0):not(#nc-ik1):not(#nc-ik2):not(#nc-ik3):not(#nc-ik4):not(#nc-ik5):not(#nc-ik6):not(#nc-ik7):not(#nc-ik8):not(#nc-ik9) span.latest-rail__kick{ white-space: nowrap !important; }
 }
+/* (the kickers' lines closer, 20 for the Inter's 13 — "Reduce spacing betweeen inter", 2026-11-03; the metas', duo-panel-fit.js) */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list:not(#nc-il0):not(#nc-il1):not(#nc-il2):not(#nc-il3):not(#nc-il4):not(#nc-il5):not(#nc-il6):not(#nc-il7):not(#nc-il8):not(#nc-il9):not(#nc-il10):not(#nc-il11) > li,
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list:not(#nc-il0):not(#nc-il1):not(#nc-il2):not(#nc-il3):not(#nc-il4):not(#nc-il5):not(#nc-il6):not(#nc-il7):not(#nc-il8):not(#nc-il9):not(#nc-il10):not(#nc-il11) > li > a,
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .latest-rail__in .latest-rail__list:not(#nc-il0):not(#nc-il1):not(#nc-il2):not(#nc-il3):not(#nc-il4):not(#nc-il5):not(#nc-il6):not(#nc-il7):not(#nc-il8):not(#nc-il9):not(#nc-il10):not(#nc-il11) > li > a span.latest-rail__kick{
+    line-height: 20px !important; margin-top: 0 !important; margin-bottom: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important;
+  }
+}
