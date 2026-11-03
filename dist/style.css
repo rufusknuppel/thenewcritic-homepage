@@ -17037,9 +17037,12 @@ html:root:root:not(#nc-os0):not(#nc-os2):not(#nc-wt0){ background: linear-gradie
 html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; padding-top: 27px; }
 html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sections:not(#nc-nr0):not(#nc-nr1):not(#nc-nr2)::before{ content: none !important; }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
-  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1),
   html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1) span{
-    transition: color var(--bk-t, 0.4s) ease, -webkit-text-fill-color var(--bk-t, 0.4s) ease !important;
+    transition: color var(--bk-t, 0.4s) ease !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2),
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2) span{
+    -webkit-text-fill-color: currentColor !important;
   }
 }
 @media (min-width: 1024px){
@@ -17058,5 +17061,31 @@ html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sec
   }
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
     left: 50% !important; translate: -50% -50% !important;
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick{
+    display: inline-block; position: relative; color: transparent !important; -webkit-text-fill-color: transparent !important; transition: none !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::before,
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::after{
+    content: attr(data-t) !important; display: block !important; position: absolute !important; inset: 0 !important; width: auto !important; height: auto !important;
+    background: none !important; font: inherit !important; letter-spacing: inherit !important; text-align: inherit !important; pointer-events: none;
+    transition: opacity var(--bk-t, 0.4s) ease !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::before{
+    color: var(--nc-ink-k, #121417) !important; -webkit-text-fill-color: #121417 !important; opacity: 1 !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::after{
+    color: var(--nc-mark, #FFBF00) !important; -webkit-text-fill-color: var(--nc-mark, #FFBF00) !important; opacity: 0 !important;
+  }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:is(.is-now, :hover, :focus-visible):not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::before{ opacity: 0 !important; }
+  html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:is(.is-now, :hover, :focus-visible):not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::after{ opacity: 1 !important; }
+}
+@media (min-width: 1024px){
+  html body > footer.nc-foot > .nc-foot__band:not(#nc-es0){ position: relative; }
+  html body > footer.nc-foot > .nc-foot__band > .nc-foot__colo > .nc-foot__sep:not(#nc-es0){ display: none; }
+  html body > footer.nc-foot > .nc-foot__band > .nc-foot__colo > .nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){
+    position: absolute; left: 50%; translate: -50% 1px; font-style: italic; white-space: nowrap;
   }
 }

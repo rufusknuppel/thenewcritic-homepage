@@ -376,7 +376,7 @@ function siteFooter() {
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<footer class="nc-foot" aria-label="Colophon">`
     + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
-    + `<div class="nc-foot__band"><p class="nc-foot__colo"><span class="nc-foot__a">Est. May 2025</span>, <span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__soc">${socials}</p></div>`
+    + `<div class="nc-foot__band"><p class="nc-foot__colo"><span class="nc-foot__a nc-foot__est">Est. May 2025</span><span class="nc-foot__sep">, </span><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__soc">${socials}</p></div>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
     + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
@@ -4316,7 +4316,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
       // 'by'": a conversation's guest still "w/" them)
       // (no credit in the column since 2026-10-04: "Remove the garamond
       // italics from the right column")
-      return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick">${escapeHtml(railWord(p))}</span></a></li>`;
+      return `<li><a href="${escapeHtml(p.link)}" data-slug="${escapeHtml(slugOf(p.link))}"><span class="latest-rail__kick" data-t="${escapeHtml(railWord(p))}">${escapeHtml(railWord(p))}</span></a></li>`;
     // (the bird no longer under the kickers since — "Remove bird from beneath The Latest", 2026-10-13: railBird kept,
     // unused)
     }).join('')}</ul>` + (void railBird, '')
