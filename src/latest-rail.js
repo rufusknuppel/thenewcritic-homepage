@@ -1886,6 +1886,9 @@ var ncStemX = function () {
         // (the rows out to as far short of the bird as the bird stands from the window, 54 in from the site's left — "Expand content so that margins are equal on
         // either side of side column", 2026-11-03)
         var mgQ = window.innerWidth - navQ.getBoundingClientRect().right + 18;
+        // (the nav's right end for the rule along the band's foot — style.css THE RULE UNDER THE BAND)
+        var nrV = (window.innerWidth - navQ.getBoundingClientRect().right).toFixed(1) + 'px';
+        if (document.documentElement.style.getPropertyValue('--nc-nav-r') !== nrV) document.documentElement.style.setProperty('--nc-nav-r', nrV);
         mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54);
         // // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';

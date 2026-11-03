@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=27b92f70">
+<link rel="stylesheet" href="style.css?v=e00a32d1">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11703,6 +11703,8 @@ var ncStemX = function () {
       var bwQ = swQ ? swQ.getBoundingClientRect().width : 0, nwQ = navQ ? navQ.getBoundingClientRect().width : 0;
       if (bwQ > 0 && nwQ > bwQ) {
         var mgQ = window.innerWidth - navQ.getBoundingClientRect().right + 18;
+        var nrV = (window.innerWidth - navQ.getBoundingClientRect().right).toFixed(1) + 'px';
+        if (document.documentElement.style.getPropertyValue('--nc-nav-r') !== nrV) document.documentElement.style.setProperty('--nc-nav-r', nrV);
         mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54);
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
