@@ -3185,12 +3185,13 @@ window.ncOpenH = function () {
       var grpOf = function () {
         if (el.classList.contains('rail-swallow')) return 'nc-hot-bird';
         var tlm = el.matches('main .op-band > a.rail-tlm, a.content-name .content-name__tlm');
-        if (band2 && parseFloat(getComputedStyle(el).opacity) < 0.5) tlm = !tlm;
+        // (nothing lit by the one faded out since they stand apart — "Move the last magazine to the center of the top band", 2026-11-03)
+        if (band2 && parseFloat(getComputedStyle(el).opacity) < 0.5) return null;
         return tlm ? 'nc-hot-tlm' : 'nc-hot-tnc';
       };
       var grp = null;
       var on = function (v) {
-        if (v) { grp = grpOf(); mn.classList.add(grp); }
+        if (v) { grp = grpOf(); if (grp) mn.classList.add(grp); }
         else ['nc-hot-bird', 'nc-hot-tlm', 'nc-hot-tnc'].forEach(function (c) { mn.classList.remove(c); });
       };
       el.addEventListener('mouseenter', function () { on(true); });
@@ -3198,6 +3199,9 @@ window.ncOpenH = function () {
       if (el.classList.contains('rail-swallow')) el.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     });
   };
+  // (the band's date the reader's own day: THE DATE IN THE BAND)
+  var opDate = document.querySelector('main .op-band > .op-date');
+  if (opDate) opDate.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   markHot();
   window.addEventListener('load', markHot);
   // (the band's rule over the post passing under it — "Hide the rule until the top outline of the first post, grow the
