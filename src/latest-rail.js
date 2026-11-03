@@ -1887,8 +1887,6 @@ var ncStemX = function () {
         var mgQ = window.innerWidth - navQ.getBoundingClientRect().right + 18;
         mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 108);
         var pnV = Math.round(bwQ + 2 * mgQ) + 'px';
-        var egV = Math.round(mgQ - 18) + 'px';
-        if (document.documentElement.style.getPropertyValue('--nc-col-edge') !== egV) document.documentElement.style.setProperty('--nc-col-edge', egV);
         if (document.documentElement.style.getPropertyValue('--nc-panel') !== pnV) document.documentElement.style.setProperty('--nc-panel', pnV);
         // // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';
@@ -3654,13 +3652,10 @@ window.ncOpenH = function () {
 // (each row's picture and words centred as one between the site's left edge and the side column — "Center image and ink edge
 // between the side column and the side of the site", 2026-11-03: the card's own translate, stood down from the ink's measure above)
 (function () {
-  var STRIP = 0;
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
     var colL = swR ? swR.left - (window.innerWidth - swR.right) : 0; // (the panel's left edge)
-    if (colL && document.documentElement.classList.contains('nc-col-closed')) colL = window.innerWidth - STRIP;
-    if (document.documentElement.classList.contains('nc-col-anim')) return;
     // (the rows' slide stood down for the measure, as the ink's is: read mid-slide they centre on where they were, "Why is this uneven")
     var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
@@ -3676,45 +3671,6 @@ window.ncOpenH = function () {
     slid.forEach(function (el) { el.style.removeProperty('transition'); });
   }
   window.__ncCentre = centre;
-  // (a caret in the gutter outside the column's left edge, sliding with it — "outside the side column in the right gutter. Slides with column. Column fully shuts" — the rows on the middle of what's left, open again by the same caret —
-  // "I want a white caret that can close the side column", 2026-11-03: style.css THE COLUMN CLOSES)
-  var hold = document.querySelector('.latest-rail__hold');
-  if (hold) {
-    var btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'nc-col-caret';
-    btn.innerHTML = '<svg viewBox="0 0 8 14" width="8" height="14" aria-hidden="true"><path d="M1 1L7 7L1 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    btn.setAttribute('aria-label', 'Close the column'); btn.setAttribute('aria-expanded', 'true');
-    hold.appendChild(btn);
-    var animT = 0;
-    btn.addEventListener('click', function () {
-      var root = document.documentElement, shut = !root.classList.contains('nc-col-closed');
-      var pnW = parseFloat(root.style.getPropertyValue('--nc-panel')) || 0;
-      var delta = (shut ? pnW : -pnW) / 2; // (half what the panel gives up, the rows' way)
-      // (the sections' lists hold their own transition inline, for changing section: theirs the slide's while it goes)
-      var lists = [].slice.call(hold.querySelectorAll(':scope > .latest-rail__in'));
-      lists.forEach(function (el) {
-        if (el.__ncTrans == null) el.__ncTrans = el.style.getPropertyValue('transition');
-        el.style.setProperty('transition', 'transform .5s ease', 'important');
-      });
-      root.classList.add('nc-col-anim');
-      void root.offsetWidth;
-      root.classList.toggle('nc-col-closed', shut);
-      [].slice.call(document.querySelectorAll('.page-rows section.card')).forEach(function (c) {
-        if (c.__ncDx == null) return;
-        c.__ncDx += delta; c.style.setProperty('translate', c.__ncDx + 'px 0', 'important');
-      });
-      btn.setAttribute('aria-label', shut ? 'Open the column' : 'Close the column'); btn.setAttribute('aria-expanded', String(!shut));
-      clearTimeout(animT);
-      animT = setTimeout(function () {
-        root.classList.remove('nc-col-anim');
-        lists.forEach(function (el) {
-          if (el.__ncTrans) el.style.setProperty('transition', el.__ncTrans, 'important'); else el.style.removeProperty('transition');
-          el.__ncTrans = null;
-        });
-        centre();
-      }, 600);
-    });
-  }
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
   // (and again once the rows have slid anywhere, which no event says)
   document.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform' && e.target.classList && e.target.classList.contains('wrap--sec')) centre(); }, { passive: true });
