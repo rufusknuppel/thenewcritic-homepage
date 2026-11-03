@@ -3682,7 +3682,7 @@ window.ncOpenH = function () {
     if (end === atEnd) return;
     atEnd = end;
     if (end) root.style.removeProperty('background-color');
-    else root.style.setProperty('background-color', '#FAF9F6', 'important');
+    else root.style.setProperty('background-color', '#FDFDFB', 'important');
   }
   addEventListener('scroll', apply, { passive: true });
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, measure, { passive: true }); });

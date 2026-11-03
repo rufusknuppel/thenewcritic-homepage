@@ -9580,7 +9580,7 @@
         // 2026-10-22: written on it, past the sheet's heavier rules, charcoal under the hand where the sheet turns
         // --fork-ink; style.css THE FORK FILLED)
         if (j.mmEl) [j.mmEl].concat([].slice.call(j.mmEl.querySelectorAll('a'))).forEach(function (e) {
-          e.style.setProperty('color', 'var(--fork-ink, #FAF9F6)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FAF9F6)', 'important');
+          e.style.setProperty('color', 'var(--fork-ink, #FDFDFB)', 'important'); e.style.setProperty('-webkit-text-fill-color', 'var(--fork-ink, #FDFDFB)', 'important');
         });
         // (the fork under the hand the ink, its half pixel of the red round it showing — "do the same hover on the
         // homepage for authors", 2026-10-24, as the archive's writer's tag: the fork is no child of the byline's link, so

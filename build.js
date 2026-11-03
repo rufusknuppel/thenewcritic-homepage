@@ -145,7 +145,7 @@ const loadMark = (name) => {
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   const inner = src.slice(src.indexOf('>', src.indexOf('<svg')) + 1, src.lastIndexOf('</svg>'));
   // (white the ground, the highlight's red the page's highlight, anything else the ink)
-  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FAF9F6)' : /^#(?:D52B05|B3301E|1478A7|3E36FF|002FA7)$/i.test(v) ? 'var(--nc-mark, #002FA7)' : v === 'none' ? 'none' : 'currentColor');
+  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FDFDFB)' : /^#(?:D52B05|B3301E|1478A7|3E36FF|002FA7)$/i.test(v) ? 'var(--nc-mark, #002FA7)' : v === 'none' ? 'none' : 'currentColor');
   const spans = ['border', 'frame', 'ground'].find((k) => new RegExp(`id="${k}"`).test(inner));
   const body = inner.replace(/<(path|rect)\b([^>]*?)\/?>/g, (m0, tag, attrs) => {
     const id = (attrs.match(/\sid="([^"]+)"/) || [])[1];
@@ -640,7 +640,7 @@ function contentName() {
   if (cutsD) {
     markBody = `<defs><mask id="cuts-out" maskUnits="userSpaceOnUse" x="-50" y="-50" width="${TNC_MARK.w + 100}" height="${TNC_MARK.h + 100}"><rect x="-50" y="-50" width="${TNC_MARK.w + 100}" height="${TNC_MARK.h + 100}" fill="#fff"/><path d="${cutsD}" fill="#000"/></mask></defs>`
       + markBody.replace(/(<path[^>]*style="[^"]*stroke: currentColor[^"]*")\/>/, '$1 mask="url(#cuts-out)"/>')
-        .replace(`<path d="${cutsD}" style="fill: var(--nc-stamp-ground, #FAF9F6)"/>`, '');
+        .replace(`<path d="${cutsD}" style="fill: var(--nc-stamp-ground, #FDFDFB)"/>`, '');
   }
   // (the hole in the beak filled in the box's charcoal — "Make this hole in the beak charcoal fill", 2026-10-13: the
   // bird's outline's one inner subpath laid under the bird, .beak-hole)
@@ -772,7 +772,7 @@ function bandLogoHtml(id = 'band', cls = '') {
     const boxed = `<svg class="band-logo__bird" aria-hidden="true" focusable="false" viewBox="0 0 ${FR.w} ${FR.h}" overflow="visible">`
       // (the fill to the border's midline, so its edge lies under the border: traced on its own, the counter's
       // edge and the border's inner one left a hairline between them — "Make sure there are no hairlines")
-      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" style="fill: var(--nc-stamp-ground, #FAF9F6)"/>`
+      + `<path class="band-logo__counter" d="${FR.under || FR.counter}" style="fill: var(--nc-stamp-ground, #FDFDFB)"/>`
       // (the bird clipped to the fill's edge, halfway under the border)
       + `<clipPath id="band-box-${id}">${FR.under || FR.outer ? `<path d="${FR.under || FR.outer}"/>` : `<rect x="0" y="0" width="${FR.w}" height="${FR.h}"/>`}</clipPath>`
       // (the right of the box behind the bird — "Set the right half of the image, behind the bird's wings to
@@ -786,7 +786,7 @@ function bandLogoHtml(id = 'band', cls = '') {
       + (FR.holes ? `<path class="band-logo__holes" d="${FR.holes}" fill="currentColor" stroke="currentColor" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
       // (the slit in the beak in the ground it sits on, the box's left: charcoal on the dark side — "this should be
       // dark too" — and white on the light, "Should be white on white background tho")
-      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #FAF9F6); stroke: var(--nc-stamp-ground, #FAF9F6)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
+      + (FR.beak ? `<path class="band-logo__beak" d="${FR.beak}" style="fill: var(--nc-stamp-ground, #FDFDFB); stroke: var(--nc-stamp-ground, #FDFDFB)" stroke-width="4" clip-path="url(#band-box-${id})"/>` : '')
       + `<path class="wm-bird-only" d="${FR.bird}" style="fill: var(--nc-mark, #002FA7)" fill-rule="evenodd" clip-path="url(#band-box-${id})"/>`
       // (the border drawn last, over the bird's wing tips, so it runs unbroken round the box)
       + `<path class="band-logo__shield band-logo__frame" d="${FR.d}" fill="currentColor" fill-rule="evenodd"/></svg>`;
@@ -4648,7 +4648,7 @@ function renderFontGateScript({ fitted = true } = {}) {
   // LIGHT OR DARK, before first paint: the stored choice, else light.
   // GHOST WHITE (2026-09-18): the one white on the site — the light
   // ground and the dark ink.
-  var WHITE = '#FAF9F6', CHARCOAL = '#121417';
+  var WHITE = '#FDFDFB', CHARCOAL = '#121417';
   // HEX SETS THE MARK, NOT THE GROUND (2026-09-21). The third word in
   // the margin used to paint the page's ground in a colour of the
   // reader's own, with the ink turned white on it. It names the
@@ -4754,8 +4754,8 @@ function renderFontGateScript({ fitted = true } = {}) {
       // (the bands' words, black on the mark, white under the hand —
       // turned over where the reader's colour is too dark for black)
       var lightInk = inkOn(hex) === WHITE;
-      root.style.setProperty('--band-ink', lightInk ? '#FAF9F6' : '#000000');
-      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#FAF9F6');
+      root.style.setProperty('--band-ink', lightInk ? '#FDFDFB' : '#000000');
+      root.style.setProperty('--band-hover', lightInk ? '#000000' : '#FDFDFB');
     } else {
       root.style.removeProperty('--nc-mark');
       root.style.removeProperty('--hl-ink');
