@@ -346,7 +346,7 @@ function opBand(currentKey = '') {
     + `<div class="rail-top"><div class="rail-top__nav">${nav}</div></div>`
     // (today's date at the band's left — "add a Tuesday, November 2, 2026 date Garamond to the left side of the top band",
     // 2026-11-03: the build's day here, the reader's own set on load, latest-rail.js; style.css THE DATE IN THE BAND)
-    + `<time class="op-date">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/New_York' })}</time>`
+    + `<time class="op-date">${new Date().toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric', timeZone: 'America/New_York' }).replace(/\//g, '.')}</time>`
     + (TLM_WORDS ? `<a class="rail-tlm" href="#top" aria-label="${escapeHtml(SITE_TAGLINE)}" style="--rl-lwt: ${tlmLineW().toFixed(4)}"><span class="rail-tlm__g">The Last Magazine</span></a>` : '')
     // (THE NEW CRITIC in THE LAST MAGAZINE's place since, as tall, coming in as it goes over the last fifth of the
     // opening name's climb out of the window — "Over the last 20% of the new critic disappearing, have the last magazine

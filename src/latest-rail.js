@@ -3247,7 +3247,7 @@ window.ncOpenH = function () {
   };
   // (the band's date the reader's own day: THE DATE IN THE BAND)
   var opDate = document.querySelector('main .op-band > .op-date');
-  if (opDate) opDate.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  if (opDate) opDate.textContent = new Date().toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' }).replace(/\//g, '.'); // (as the metas' dates, 11.3.26: "Display the date in the nav like the dates in the meta", 2026-11-03)
   markHot();
   window.addEventListener('load', markHot);
   // (the band's rule over the post passing under it — "Hide the rule until the top outline of the first post, grow the
