@@ -34032,3 +34032,8 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 }
 
 /* (HOT PINK FOR THE BLUE, 2026-11-04 — "Replace the blue with hot pink": the highlight, the rules and the outlines, #FF69B4 where #002FA7 stood) */
+
+/* THE SECTIONS' NAMES AT THE NAV'S SIZE (2026-11-04 — "Make section titles in the latest the same font size as the nav"): 19.5, from 19 */
+@media (min-width: 1024px){
+  html body main.has-mega .page-rows .latest-rail > .latest-rail__hold > .rail-sections.rail-sections:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ font-size: 19.5px !important; }
+}
