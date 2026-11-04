@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=f7f2b4df">
+<link rel="stylesheet" href="style.css?v=b5280844">
 <style>:root{--colo-span:9.3572;--band-span:7.7365;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -6472,6 +6472,7 @@
   POST_TRIM = 36;
   POST_TRIM = -18;
   PIC_FAR = 40.5;
+  PIC_FAR = 13.5;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -12574,6 +12575,7 @@ window.ncOpenH = function () {
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
       var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 27), R9 = Math.max(pr.right, br.right + 27);
+      if (pr.width > pr.height + 1) { L9 = Math.min(L9, pr.left - 27); R9 = Math.max(R9, pr.right + 27); }
       var dx = Math.round((27 + colL) / 2 - (L9 + R9) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');

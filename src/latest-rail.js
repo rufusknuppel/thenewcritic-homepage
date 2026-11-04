@@ -3682,6 +3682,8 @@ window.ncOpenH = function () {
       if (!pr || !br || !pr.width || !br.width) return;
       // (centred as if the words still ran the 27 they gave up on their far side, so the pictures stay where they stood — "Keep images in place", 2026-11-04: duo-panel-fit.js j.Bd)
       var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 27), R9 = Math.max(pr.right, br.right + 27);
+      // (a picture wider than tall holding its far edge where it stood, 27 off the rows' room, the title column out to the room's edge: "grow images wider by 27px and push title columns out by 27px", 2026-11-04; a square or a 4:5 keeps its shape, and its row its centre)
+      if (pr.width > pr.height + 1) { L9 = Math.min(L9, pr.left - 27); R9 = Math.max(R9, pr.right + 27); }
       var dx = Math.round((27 + colL) / 2 - (L9 + R9) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');

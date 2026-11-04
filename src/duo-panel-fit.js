@@ -8995,6 +8995,8 @@
   // (54 since, the row re-centring takes it from the picture's near edge: the title column's 27 from the picture and not the page's margin — "The expanded title column shouldn't have moved out, should take from image instead", 2026-11-04: latest-rail.js centre)
   // (40.5 since, 13.5 back to the picture from the title column — "Expand images by 13.5px and decrease title columns by 13.5px", 2026-11-04)
   PIC_FAR = 40.5;
+  // (13.5 since, 27 to the picture, the title column keeping its width and moving out with it — "grow images wider by 27px and push title columns out by 27px", 2026-11-04: latest-rail.js holds the picture's far edge)
+  PIC_FAR = 13.5;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
