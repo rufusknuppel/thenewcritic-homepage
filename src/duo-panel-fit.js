@@ -8992,7 +8992,7 @@
   // (54 taller again since, past no trim at all — "Make posts taller still", 2026-11-03)
   POST_TRIM = -18;
   // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
-  PIC_FAR = 0;
+  PIC_FAR = 27;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
@@ -9181,7 +9181,8 @@
       // window all read this edge, so the picture itself is cut 54 further in; PIC_FAR)
       // (on the right only since, the left's line and its 54 gone — "Remove the left vertical line and margin",
       // 2026-10-20: the left pictures out to the nav's inset)
-      if (Pe) return d < 0 ? Pe.l : Pe.r - (bandedInk() ? PIC_FAR : 0);
+      // (27 in on both since, the pictures alone, the words where they stand — "For images only, move their outer edge 27px in", 2026-11-04)
+      if (Pe) return d < 0 ? Pe.l + (bandedInk() ? PIC_FAR : 0) : Pe.r - (bandedInk() ? PIC_FAR : 0);
     }
     var sec = card.closest('section.card');
     var key = sec && (/card--sec-([a-z]+)/.exec(sec.className) || [])[1];
