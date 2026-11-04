@@ -1891,7 +1891,8 @@ var ncStemX = function () {
         if (document.documentElement.style.getPropertyValue('--nc-nav-r') !== nrV) document.documentElement.style.setProperty('--nc-nav-r', nrV);
         // (less the 14 the title column's gap took, 54 since: "Increase gap between images and title columns to 54px", 2026-11-03)
         // (and 54 short of the rule between the columns since, the bird's margin on from it — "Should be 54px side margins on content column", 2026-11-03)
-        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54) - 14 - 54;
+        // (27 out each way since, 27 from the site's left and from the rule — "Expand edges of content column 27px on either side", 2026-11-04: centre(), below, takes half of this back)
+        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54) - 14;
         // // ("Expand side column margins by 18px on each side": --nc-bm)
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
@@ -3670,7 +3671,7 @@ window.ncOpenH = function () {
     var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
     // (the rule between the columns the bird's margin short of it, the same either side — "Margin on the left of bird should match margin on the right",
     // 2026-11-03 — and the rows' room ending 54 short of the rule)
-    var ruleX = swR ? Math.round(swR.left - (window.innerWidth - swR.right)) : 0, colL = ruleX ? ruleX - 54 : 0;
+    var ruleX = swR ? Math.round(swR.left - (window.innerWidth - swR.right)) : 0, colL = ruleX ? ruleX - 27 : 0;
     // (the rows' slide stood down for the measure, as the ink's is: read mid-slide they centre on where they were, "Why is this uneven")
     var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
@@ -3680,7 +3681,7 @@ window.ncOpenH = function () {
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
       // (centred as if the words still ran the 27 they gave up on their far side, so the pictures stay where they stood — "Keep images in place", 2026-11-04: duo-panel-fit.js j.Bd)
-      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left - 27) + Math.max(pr.right, br.right + 27)) / 2 + was);
+      var was = c.__ncDx || 0, dx = Math.round((27 + colL) / 2 - (Math.min(pr.left, br.left - 27) + Math.max(pr.right, br.right + 27)) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });

@@ -11709,7 +11709,7 @@ var ncStemX = function () {
         var mgQ = window.innerWidth - navQ.getBoundingClientRect().right + 18;
         var nrV = (window.innerWidth - navQ.getBoundingClientRect().right).toFixed(1) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-nav-r') !== nrV) document.documentElement.style.setProperty('--nc-nav-r', nrV);
-        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54) - 14 - 54;
+        mid += Math.round(nwQ - bwQ) - 26 + Math.round(mgQ - 54) - 14;
         var bwV = bwQ.toFixed(2) + 'px';
         if (document.documentElement.style.getPropertyValue('--nc-bw') !== bwV) document.documentElement.style.setProperty('--nc-bw', bwV);
       }
@@ -12829,7 +12829,7 @@ window.ncOpenH = function () {
   function centre() {
     var sw = document.querySelector('.latest-rail__hold > .rail-swallow');
     var wide = window.innerWidth >= 1024, swR = sw ? sw.getBoundingClientRect() : null;
-    var ruleX = swR ? Math.round(swR.left - (window.innerWidth - swR.right)) : 0, colL = ruleX ? ruleX - 54 : 0;
+    var ruleX = swR ? Math.round(swR.left - (window.innerWidth - swR.right)) : 0, colL = ruleX ? ruleX - 27 : 0;
     var slid = [].slice.call(document.querySelectorAll('.page-rows > .movement.m--latest > .movement-body > .wrap.wrap--sec'));
     slid.forEach(function (el) { el.style.setProperty('transition', 'none', 'important'); });
     [].slice.call(document.querySelectorAll('.page-rows section.card')).forEach(function (c) {
@@ -12837,7 +12837,7 @@ window.ncOpenH = function () {
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
-      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left - 27) + Math.max(pr.right, br.right + 27)) / 2 + was);
+      var was = c.__ncDx || 0, dx = Math.round((27 + colL) / 2 - (Math.min(pr.left, br.left - 27) + Math.max(pr.right, br.right + 27)) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });
