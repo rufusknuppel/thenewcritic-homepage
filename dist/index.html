@@ -7278,8 +7278,7 @@
                 ht.className = 'swap-body-title';
                 if (lk) ht.href = lk.getAttribute('href');
                 ht.textContent = stl ? (stl.getAttribute('data-text') || stl.textContent).trim() : '';
-                hd.appendChild(hm);
-                hd.appendChild(ht);
+                if (window.innerWidth >= 1024) { hd.appendChild(ht); hd.appendChild(hm); } else { hd.appendChild(hm); hd.appendChild(ht); }
                 if (WHEN_ROW) {
                   var hw = document.createElement('span');
                   hw.className = 'swap-body-when';

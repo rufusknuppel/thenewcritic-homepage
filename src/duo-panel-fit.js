@@ -9970,8 +9970,9 @@
                 ht.textContent = stl ? (stl.getAttribute('data-text') || stl.textContent).trim() : '';
                 // (the byline over the title again — "move metadata above
                 // Titles", after an hour under it)
-                hd.appendChild(hm);
-                hd.appendChild(ht);
+                // (the title first since, as it stands from 1024 up, so a selection dragged from the title runs on to the writer and is copied in the order it's read —
+                // "Why do these highlight together", "Yes, fix the hover glitch", 2026-11-04; the writer over it under 1024 as before)
+                if (window.innerWidth >= 1024) { hd.appendChild(ht); hd.appendChild(hm); } else { hd.appendChild(hm); hd.appendChild(ht); }
                 // (the section and the date out of the writer's row into their own, under the title in the head — the
                 // stack seats it under the dek, WHEN_ROW; the comma between them kept, the one after the writer gone)
                 if (WHEN_ROW) {
