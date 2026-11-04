@@ -34007,7 +34007,7 @@ html.is-archive body.archive-page:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc
 /* THE RULE OVER THE FOOTER (2026-11-03 — "Add a rule above the footer that matches how the top rule looks"): a pixel of the blue, 27 short of the site's sides */
 html body > footer.nc-foot.nc-foot:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2):not(#nc-fr3):not(#nc-fr4):not(#nc-fr5):not(#nc-fr6):not(#nc-fr7):not(#nc-fr8):not(#nc-fr9):not(#nc-fr10):not(#nc-fr11):not(#nc-fr12):not(#nc-fr13):not(#nc-fr14):not(#nc-fr15):not(#nc-fr16):not(#nc-fr17):not(#nc-fr18):not(#nc-fr19):not(#nc-fr20):not(#nc-fr21):not(#nc-fr22):not(#nc-fr23):not(#nc-fr24):not(#nc-fr25):not(#nc-fr26):not(#nc-fr27):not(#nc-fr28):not(#nc-fr29){ position: relative; }
 html body > footer.nc-foot.nc-foot:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2):not(#nc-fr3):not(#nc-fr4):not(#nc-fr5):not(#nc-fr6):not(#nc-fr7):not(#nc-fr8):not(#nc-fr9):not(#nc-fr10):not(#nc-fr11):not(#nc-fr12):not(#nc-fr13):not(#nc-fr14):not(#nc-fr15):not(#nc-fr16):not(#nc-fr17):not(#nc-fr18):not(#nc-fr19):not(#nc-fr20):not(#nc-fr21):not(#nc-fr22):not(#nc-fr23):not(#nc-fr24):not(#nc-fr25):not(#nc-fr26):not(#nc-fr27):not(#nc-fr28):not(#nc-fr29)::before{
-  content: ''; position: absolute; top: 0; left: 27px; right: 27px; height: 1px; background: #000000; pointer-events: none;
+  content: ''; position: absolute; top: 0; left: 27px; right: 27px; height: 1px; background: #FF69B4; pointer-events: none;
 }
 
 /* THE COLOPHON THE LAST THING ON THE SITE (2026-11-04 — "Move colophon below the wordmark"): the name 27 under the rule, as it stands 27 from the sides, and the colophon's line under it to the page's foot ("In colophon move the wordmark so that it's the last thing on the site", the day before, the other way) */
@@ -34057,4 +34057,4 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 /* THE SELECTION HOT PINK (2026-11-04 — "Make hot pink the highlight for text for copy past"): the words kept in their ink over it, a title lit pink included */
 ::selection{ background: #FF69B4; color: #121417; -webkit-text-fill-color: #121417; }
 
-/* (the top rule pink again, alone of the rules — "Make top rule pink", 2026-11-04: .op-band::after, THE RULES AND OUTLINES ONE PIXEL) */
+/* (the top rule and the footer's pink again, the rest black — "Make top rule pink", "and footer rule", 2026-11-04: .op-band::after, THE RULES AND OUTLINES ONE PIXEL; footer.nc-foot::before, THE RULE OVER THE FOOTER) */
