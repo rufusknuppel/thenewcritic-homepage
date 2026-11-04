@@ -375,8 +375,8 @@ function siteFooter() {
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<footer class="nc-foot" aria-label="Colophon">`
-    + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
     + `<div class="nc-foot__band"><p class="nc-foot__colo"><span class="nc-foot__a nc-foot__est">Est. May 2025</span><span class="nc-foot__sep">, </span><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__soc">${socials}</p></div>`
+    + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
     + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
