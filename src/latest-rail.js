@@ -3682,7 +3682,7 @@ window.ncOpenH = function () {
       if (!pr || !br || !pr.width || !br.width) return;
       // (centred as if the words still ran the 27 they gave up on their far side, so the pictures stay where they stood — "Keep images in place", 2026-11-04: duo-panel-fit.js j.Bd)
       // (a picture cut on its row's edge counted to where the cut stands 27 further out, so the words don't move for it — "For images only, move their outer edge 27px in", 2026-11-04: duo-panel-fit.js PIC_FAR; a narrower row, not cut, as it is)
-      var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 27), R9 = Math.max(pr.right, br.right + 27);
+      var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 54), R9 = Math.max(pr.right, br.right + 54);
       if (R9 - L9 + 27 >= colL - 27 - 8) { if (pr.left < br.left) L9 -= 27; else R9 += 27; }
       var dx = Math.round((27 + colL) / 2 - (L9 + R9) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;

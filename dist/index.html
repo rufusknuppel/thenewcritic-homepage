@@ -7156,7 +7156,7 @@
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
-      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 54; else j.Bd.r -= 54; }
+      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 81; else j.Bd.r -= 81; }
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);
@@ -12839,7 +12839,7 @@ window.ncOpenH = function () {
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
-      var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 27), R9 = Math.max(pr.right, br.right + 27);
+      var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 54), R9 = Math.max(pr.right, br.right + 54);
       if (R9 - L9 + 27 >= colL - 27 - 8) { if (pr.left < br.left) L9 -= 27; else R9 += 27; }
       var dx = Math.round((27 + colL) / 2 - (L9 + R9) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;

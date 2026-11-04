@@ -9774,7 +9774,8 @@
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
       // (the column a little narrower since, from its far side — "make title columns slightly narrower", 2026-11-03)
       // (27 narrower again, the pictures where they stand — "Keep images in place but move the edge of far edge of title column 27px toward the image", 2026-11-04)
-      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 54; else j.Bd.r -= 54; }
+      // (and 27 again, as the pictures' outer edge — "Do the same with title columns also", 2026-11-04)
+      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 81; else j.Bd.r -= 81; }
       // (and the box 54 in from the post's outer edge since — the window's left margin where the picture stands on the
       // right, the side column's rule where it stands on the left — the words BOX_PAD inside it: "Have at least 54px on
       // outside of the post to the edges", 2026-10-28)
