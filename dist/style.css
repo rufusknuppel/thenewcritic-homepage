@@ -17244,3 +17244,18 @@ html body > footer.nc-foot.nc-foot:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2):not(#n
   content: ''; position: absolute; top: 0; left: 27px; right: 27px; height: 1px; background: #002FA7; pointer-events: none;
 }
 html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#nc-fl3):not(#nc-fl4):not(#nc-fl5):not(#nc-fl6):not(#nc-fl7):not(#nc-fl8):not(#nc-fl9):not(#nc-fl10):not(#nc-fl11):not(#nc-fl12):not(#nc-fl13):not(#nc-fl14):not(#nc-fl15):not(#nc-fl16):not(#nc-fl17):not(#nc-fl18):not(#nc-fl19):not(#nc-fl20):not(#nc-fl21):not(#nc-fl22):not(#nc-fl23):not(#nc-fl24):not(#nc-fl25):not(#nc-fl26):not(#nc-fl27):not(#nc-fl28):not(#nc-fl29){ padding-top: 27px; padding-bottom: 0; }
+@property --nc-band-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-band-l { to { --nc-band-x: -27px; } }
+@keyframes nc-band-r { to { transform: translateX(calc(var(--opb-soc-r, 52px) - 27px)); } }
+@media (min-width: 1024px){
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+    animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards, nc-band-l linear both !important;
+    animation-timeline: scroll(root), --nc-foot-v, scroll(root) !important;
+    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25%, 0 calc(0.9 * var(--op-s, 1px)) !important;
+  }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > .rail-top > .rail-top__nav:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+    display: block !important; animation: nc-band-r linear both !important; animation-timeline: scroll(root) !important; animation-range: 0 calc(0.9 * var(--op-s, 1px)) !important;
+  }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(var(--nc-band-x)) !important; }
+  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(27px - var(--opb-navl, 52px))) !important; }
+}

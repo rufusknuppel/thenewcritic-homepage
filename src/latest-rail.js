@@ -3718,7 +3718,12 @@ window.ncOpenH = function () {
     var p = c.querySelector(':scope > .nc-pic-line');
     if (!p) return false;
     var a = p.getBoundingClientRect();
-    return a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom;
+    if (a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom) return true;
+    // (and on the title's own letters — "hovering the title of post should also engage the image flip", 2026-11-04)
+    var t = c.querySelector('.swap-body-title'), q = t && t.getBoundingClientRect();
+    if (!q || y < q.top || y > q.bottom) return false;
+    var r = document.createRange(); r.selectNodeContents(t);
+    return [].some.call(r.getClientRects(), function (l) { return x >= l.left && x <= l.right && y >= l.top && y <= l.bottom; });
   }
   function run() {
     pending = false;
