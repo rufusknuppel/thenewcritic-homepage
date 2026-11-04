@@ -223,7 +223,10 @@ const LETTER_K = 1.2 * 1.2 * 1.2; // (a fifth more again since — "Increase gap
 // gaps past what the boxes say — "Half the letter spacing between I and T of Critic between the T and I of Critic and
 // between the E and W of NEW", 2026-10-15: 15 of the drawing's 30; THE's T and H and CRITIC's I and T too — "Also half
 // the space between the T and H in the and the I and T in Critic")
-const WM_KERN = { the: { 1: 15 }, critic: { 1: 26, 3: 15, 4: 15, 5: 30 }, new: { 2: 15 } };
+// (CRITIC's C and R and its last I and C a quarter closer, 26 to 19.5 and 30 to 22.5, as THE's H and E, NEW's N and E and
+// CRITIC's R and I are in the drawing — "Reduce the space between the H and E, the N and E, the C and R, the R and I, and
+// the I and C in the wordmark by 25%", 2026-11-04)
+const WM_KERN = { the: { 1: 15 }, critic: { 1: 19.5, 3: 15, 4: 15, 5: 22.5 }, new: { 2: 15 } };
 // (CRITIC's two Cs 3% bigger than the other letters, about their own middles, so they stand over the capitals' line and
 // under the baseline as a round letter must to look as tall — "Make Cs 3% bigger than other letters", 2026-10-15)
 const WM_GROW = { critic: { 0: 1.03, 5: 1.03 } };
