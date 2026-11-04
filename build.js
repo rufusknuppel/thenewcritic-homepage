@@ -1355,26 +1355,37 @@ function normalizeTagPost(p) {
 // Pages of 12 come back full, and stepping the offset by the count
 // actually received means a short page can never open a gap.
 const ARCHIVE_API_PAGE_SIZE = 12;
+// THE ARCHIVE API STOPPED PAGING (2026-11-04): /api/v1/archive answers its
+// first page and then nothing at any offset, and the build went on happily
+// with 20 posts of 98 ("Why are the other contras and the editors picks not
+// on the homepage?"). /api/v1/posts answers the same posts, postTags and all,
+// as { posts, nextCursor }, and walks by the cursor; offset is an error there.
+const POSTS_API_PAGE_SIZE = 50;
+// Fewer posts than this and the fetch went wrong, not the magazine: the build
+// fails, and rebuild.yml publishes nothing (98 posts on the day it was set).
+const POSTS_FLOOR = 90;
 
 async function fetchFullArchive() {
   const all = [];
   const seen = new Set();
   const MAX_PAGES = 100;
-  let offset = 0;
+  let cursor = '';
   for (let page = 0; page < MAX_PAGES; page++) {
-    const url = `${SITE_URL}/api/v1/archive?sort=new&offset=${offset}&limit=${ARCHIVE_API_PAGE_SIZE}`;
+    const url = `${SITE_URL}/api/v1/posts?limit=${POSTS_API_PAGE_SIZE}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
     const json = await fetchHtml(url);
     if (!json) break;
-    let items;
-    try { items = JSON.parse(json); } catch { break; }
+    let body;
+    try { body = JSON.parse(json); } catch { break; }
+    const items = body && body.posts;
     if (!Array.isArray(items) || items.length === 0) break;
     for (const p of items) {
       const key = p.canonical_url || p.slug || p.id;
-      if (seen.has(key)) continue;
+      if (seen.has(key) || p.is_published === false) continue;
       seen.add(key);
       all.push(p);
     }
-    offset += items.length;
+    cursor = body.nextCursor;
+    if (!cursor) break;
   }
   return all;
 }
@@ -1390,12 +1401,17 @@ async function addPostsTheArchiveLags(archive, feedItems) {
   const have = new Set(archive.map((p) => p.slug));
   const added = [];
   let latest = [];
-  try { latest = JSON.parse((await fetchHtml(`${SITE_URL}/api/v1/posts?limit=${ARCHIVE_API_PAGE_SIZE}`)) || '[]'); } catch {}
+  try { latest = JSON.parse((await fetchHtml(`${SITE_URL}/api/v1/posts?limit=${ARCHIVE_API_PAGE_SIZE}`)) || '{}').posts; } catch {}
   for (const p of Array.isArray(latest) ? latest : []) {
     if (p && p.slug && p.is_published !== false && !have.has(p.slug)) { have.add(p.slug); added.push(p); }
   }
-  for (const i of feedItems) {
-    const m = /\/p\/([^/?#]+)/.exec(i.link || '');
+  // (the posts API leaves out a restack, Asterisk's "Is Gen Z afraid of risk, or just more aware?", 2026-11-04: the sitemap
+  // lists it, so what the sitemap has and the list hasn't is asked for by its slug too)
+  let sitemap = '';
+  try { sitemap = (await fetchHtml(`${SITE_URL}/sitemap.xml`)) || ''; } catch {}
+  const links = [...feedItems.map((i) => i.link || ''), ...(sitemap.match(/\/p\/[a-z0-9-]+/g) || [])];
+  for (const link of links) {
+    const m = /\/p\/([^/?#]+)/.exec(link);
     if (!m || have.has(m[1])) continue;
     have.add(m[1]);
     let p = null;
@@ -1403,7 +1419,7 @@ async function addPostsTheArchiveLags(archive, feedItems) {
     if (p && p.slug) added.push(p);
   }
   if (!added.length) return archive;
-  console.log(`Added ${added.length} post(s) the archive API hasn't listed yet: ${added.map((p) => p.slug).join(', ')}`);
+  console.log(`Added ${added.length} post(s) the posts API hasn't listed: ${added.map((p) => p.slug).join(', ')}`);
   return [...added, ...archive].sort((a, b) => new Date(b.post_date) - new Date(a.post_date));
 }
 
@@ -6536,7 +6552,10 @@ async function main() {
     .filter((i) => i.title && i.link)
     .map(normalizeRssItem)
     .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
-  console.log(`Fetched ${archive.length} total posts from the archive API.`);
+  console.log(`Fetched ${archive.length} total posts from the posts API.`);
+  if (archive.length < POSTS_FLOOR) {
+    throw new Error(`Only ${archive.length} posts came back, under the floor of ${POSTS_FLOOR} - check the posts API.`);
+  }
 
   const [essaysAll, postscriptAll, contraAll] = SECTIONS.map((s) =>
     fetchTagPostsFrom(archive, s.slug)

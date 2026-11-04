@@ -77,8 +77,10 @@ reused, not reinvented:
   setup steps in its header) fires within a minute of a new post. Since
   then `gh-pages` is written by the workflow only: shipping is pushing
   `main`; never `git subtree push` (the histories no longer line up).
-  `build.js` backfills posts Substack's archive API hasn't listed yet
-  (`addPostsTheArchiveLags`) — it lagged ~25 min on a new post.
+  `build.js` backfills posts Substack's posts API hasn't listed
+  (`addPostsTheArchiveLags`, from the feed and the sitemap). Its post list is
+  `/api/v1/posts` by cursor since `/api/v1/archive` stopped paging (2026-11-04);
+  under `POSTS_FLOOR` posts the build fails and nothing publishes.
 - The Cloudflare dashboard's code editor and rule forms do not cooperate
   with browser automation; dashboard changes are done by the user.
 
