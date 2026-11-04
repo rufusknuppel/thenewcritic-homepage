@@ -7264,8 +7264,10 @@
                   hm.appendChild(hs0);
                 }
                 if (on0) {
-                  var hd0 = document.createElement('span');
-                  hd0.className = 'swap-body-on';
+                  var hd0 = document.createElement('a');
+                  hd0.className = 'swap-body-on hl-ink';
+                  var sl0 = /\/p\/([^\/?#]+)/.exec(lk0.getAttribute('href') || '');
+                  hd0.href = 'archive.html' + (sl0 ? '#post=' + sl0[1] : '');
                   hd0.textContent = on0;
                   if (hm.firstChild) { var hc1 = document.createElement('span'); hc1.className = 'swap-body-sep'; hc1.textContent = ', '; hm.appendChild(hc1); }
                   hm.appendChild(hd0);

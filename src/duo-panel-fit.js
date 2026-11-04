@@ -9948,8 +9948,12 @@
                 // (no comma since, the two 18 apart as the archive's ledger sets its title and date — "space author and
                 // date like the archive page does", "no comma", 2026-10-24: the date's margin, below)
                 if (on0) {
-                  var hd0 = document.createElement('span');
-                  hd0.className = 'swap-body-on';
+                  // (a link to its own line in the archive's whole list since, under the hand as the section's is — "Have date hover too, when clicked take the
+                  // user to the entry's position in the full archive list", 2026-11-04: src/archive.js lands on #post=)
+                  var hd0 = document.createElement('a');
+                  hd0.className = 'swap-body-on hl-ink';
+                  var sl0 = /\/p\/([^\/?#]+)/.exec(lk0.getAttribute('href') || '');
+                  hd0.href = 'archive.html' + (sl0 ? '#post=' + sl0[1] : '');
                   hd0.textContent = on0;
                   if (hm.firstChild) { var hc1 = document.createElement('span'); hc1.className = 'swap-body-sep'; hc1.textContent = ', '; hm.appendChild(hc1); }
                   hm.appendChild(hd0);
