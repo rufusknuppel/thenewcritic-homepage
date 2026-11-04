@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=fccca787">
+<link rel="stylesheet" href="style.css?v=5fab8b6d">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7285,7 +7285,7 @@
                   var on1 = hm.querySelector(':scope > .swap-body-on'), se1 = hm.querySelector(':scope > .swap-body-sec');
                   [on1, se1].forEach(function (e) { if (e && e.previousElementSibling && e.previousElementSibling.classList.contains('swap-body-sep')) hm.removeChild(e.previousElementSibling); });
                   if (on1) hw.appendChild(on1);
-                  if (on1 && se1) { var hb1 = document.createElement('span'); hb1.className = 'swap-body-sep'; hb1.textContent = ' | '; hw.appendChild(hb1); }
+                  if (on1 && se1) { var hb1 = document.createElement('span'); hb1.className = 'swap-body-sep'; hb1.textContent = ' \u00b7 '; hw.appendChild(hb1); }
                   if (se1) hw.appendChild(se1);
                   if (hw.firstChild) hd.appendChild(hw);
                 }
@@ -7302,7 +7302,7 @@
                 [row].concat([].slice.call(row.querySelectorAll('a, span'))).forEach(function (el, k) {
                   for (var pp in DEK_ROW) {
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
-                    else if ((pp === 'color' || pp === 'background') && row === hw1 && el.classList.contains('swap-body-sep')) el.style.setProperty(pp, '#82C8E5', 'important');
+                    else if (pp === 'color' && row === hw1 && el.classList.contains('swap-body-sep')) el.style.setProperty(pp, '#82C8E5', 'important');
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
                   if (el.tagName === 'A') { if (wide) el.style.setProperty('pointer-events', 'auto', 'important'); else el.style.removeProperty('pointer-events'); }

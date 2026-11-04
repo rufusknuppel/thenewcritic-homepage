@@ -9980,12 +9980,12 @@
                   hw.className = 'swap-body-when';
                   // (the date alone on the first line since, the writer and the section on the second — "Change meta so Date is on top
                   // line, then bottom line is Author, Section", 2026-11-03: the comma before the date gone)
-                  // (the writer alone on the first line since, the date and the section on the second with a bar between them — "I want the
+                  // (the writer alone on the first line since, the date and the section on the second with a dot between them, a bar at first — "I want the
                   // meta chunk to go Author (new line) Date | Section", 2026-11-04: the commas before them gone)
                   var on1 = hm.querySelector(':scope > .swap-body-on'), se1 = hm.querySelector(':scope > .swap-body-sec');
                   [on1, se1].forEach(function (e) { if (e && e.previousElementSibling && e.previousElementSibling.classList.contains('swap-body-sep')) hm.removeChild(e.previousElementSibling); });
                   if (on1) hw.appendChild(on1);
-                  if (on1 && se1) { var hb1 = document.createElement('span'); hb1.className = 'swap-body-sep'; hb1.textContent = ' | '; hw.appendChild(hb1); }
+                  if (on1 && se1) { var hb1 = document.createElement('span'); hb1.className = 'swap-body-sep'; hb1.textContent = ' \u00b7 '; hw.appendChild(hb1); }
                   if (se1) hw.appendChild(se1);
                   if (hw.firstChild) hd.appendChild(hw);
                 }
@@ -10021,8 +10021,8 @@
                     // "author names should highlight", 2026-10-24)
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
                     // (the bar between the date and the section blue — "turn the | between date and section to blue", 2026-11-04)
-                    // (and half a pixel, drawn by its background — "Can you make the width of | also .5px?": style.css THE BAR BLUE)
-                    else if ((pp === 'color' || pp === 'background') && row === hw1 && el.classList.contains('swap-body-sep')) el.style.setProperty(pp, '#82C8E5', 'important');
+                    // (a small dot for the bar since — "Remove the bar and just add a small dot between date and section", 2026-11-04)
+                    else if (pp === 'color' && row === hw1 && el.classList.contains('swap-body-sep')) el.style.setProperty(pp, '#82C8E5', 'important');
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
                   // (the links under the hand again in the section and the date's row — the head takes no pointer and the
