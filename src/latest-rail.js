@@ -3310,7 +3310,8 @@ window.ncOpenH = function () {
       // (54 for a moment, as the page's outer margins — "Have inner gaps match outer gaps" — and back, "Reduce gap between image and
       // title column to 40.5px", 2026-11-03)
       // (54 since, "Increase gap between images and title columns to 54px", 2026-11-03)
-      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
+      // (81 since, "add 27px of blank space between title column and images", 2026-11-04)
+      var dx = ox + (fq.left > tR ? fq.left - 81 - tR : tL < fq.right ? 0 : fq.right + 81 - tL);
       // (the body where it stood under the dek since, the rule gone — "Remove rules between deks and body", 2026-10-16)
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
@@ -3679,8 +3680,7 @@ window.ncOpenH = function () {
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
-      // (centred as if the words still ran the 27 they gave up on their far side, so the pictures stay where they stood — "Keep images in place", 2026-11-04: duo-panel-fit.js j.Bd)
-      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left - 27) + Math.max(pr.right, br.right + 27)) / 2 + was);
+      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left) + Math.max(pr.right, br.right)) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });

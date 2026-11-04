@@ -12592,7 +12592,7 @@ window.ncOpenH = function () {
       cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       var capH = cx.measureText('H').actualBoundingBoxAscent || 0.66 * parseFloat(cs.fontSize);
       var capT = baseAt(p0, true) - oy - capH, dkB = baseAt(dk, false);
-      var dx = ox + (fq.left > tR ? fq.left - 54 - tR : tL < fq.right ? 0 : fq.right + 54 - tL);
+      var dx = ox + (fq.left > tR ? fq.left - 81 - tR : tL < fq.right ? 0 : fq.right + 81 - tL);
       var ruleT = dkB + 27, dy = 0;
       var sv = dx.toFixed(2) + 'px 0px', tv = '0px ' + dy.toFixed(2) + 'px';
       if (sb.style.getPropertyValue('translate') !== sv) sb.style.setProperty('translate', sv, 'important');
@@ -12834,7 +12834,7 @@ window.ncOpenH = function () {
       var pr = p && p.getBoundingClientRect(), br = b && b.getBoundingClientRect();
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
-      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left - 27) + Math.max(pr.right, br.right + 27)) / 2 + was);
+      var was = c.__ncDx || 0, dx = Math.round((54 + colL) / 2 - (Math.min(pr.left, br.left) + Math.max(pr.right, br.right)) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
     });
