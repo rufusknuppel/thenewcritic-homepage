@@ -10021,8 +10021,7 @@
                     // "author names should highlight", 2026-10-24)
                     if (!wide || (el.tagName === 'A' && (pp === 'color' || pp === 'background'))) el.style.removeProperty(pp);
                     // (the bar between the date and the section blue — "turn the | between date and section to blue", 2026-11-04)
-                    // (a small dot for the bar since — "Remove the bar and just add a small dot between date and section", 2026-11-04)
-                    else if (pp === 'color' && row === hw1 && el.classList.contains('swap-body-sep')) el.style.setProperty(pp, '#82C8E5', 'important');
+                    // (a small dot for the bar since, in the words' ink — "Remove the bar and just add a small dot between date and section", "make small dot black not blue", 2026-11-04)
                     else el.style.setProperty(pp, k && /^(font|line|letter|color)/.test(pp) ? 'inherit' : DEK_ROW[pp], 'important');
                   }
                   // (the links under the hand again in the section and the date's row — the head takes no pointer and the
