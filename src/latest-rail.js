@@ -3708,17 +3708,15 @@ window.ncOpenH = function () {
   document.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform' && e.target.classList && e.target.classList.contains('wrap--sec')) centre(); }, { passive: true });
 })();
 
-// (THE PICTURE IN COLOUR UNDER THE HAND ANYWHERE ON ITS POST, 2026-11-03 — "when mouse is anywhere on the rectangle of the content block, have the image gain color": the post's
-// rectangle the words' far edge to the picture's across, the picture and the words' box down; asked again on the scroll, a post arriving under a still hand; style.css, .nc-lit)
+// (THE PICTURE ANSWERS THE HAND ON THE PICTURE, 2026-11-04 — "Hover should only go when mouse is on image"; anywhere on the post the day before, "when mouse is anywhere on the
+// rectangle of the content block"; asked again on the scroll, a post arriving under a still hand; style.css, .nc-lit)
 (function () {
   var x = -1, y = -1, pending = false, lit = null, cards = null;
   function within(c) {
-    var p = c.querySelector(':scope > .nc-pic-line'), t = c.querySelector('.swap-body-text'), w = c.querySelector(':scope > .nc-words-box');
-    if (!p || !t) return false;
+    var p = c.querySelector(':scope > .nc-pic-line');
+    if (!p) return false;
     var a = p.getBoundingClientRect();
-    if (!a.width) return false;
-    var b = t.getBoundingClientRect(), d = w ? w.getBoundingClientRect() : a;
-    return x >= Math.min(a.left, b.left) && x <= Math.max(a.right, b.right) && y >= Math.min(a.top, d.top) && y <= Math.max(a.bottom, d.bottom);
+    return a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom;
   }
   function run() {
     pending = false;

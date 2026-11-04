@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=b2f26c6b">
+<link rel="stylesheet" href="style.css?v=91b88003">
 <style>:root{--colo-span:9.4921;--band-span:7.8714;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12861,12 +12861,10 @@ window.ncOpenH = function () {
 (function () {
   var x = -1, y = -1, pending = false, lit = null, cards = null;
   function within(c) {
-    var p = c.querySelector(':scope > .nc-pic-line'), t = c.querySelector('.swap-body-text'), w = c.querySelector(':scope > .nc-words-box');
-    if (!p || !t) return false;
+    var p = c.querySelector(':scope > .nc-pic-line');
+    if (!p) return false;
     var a = p.getBoundingClientRect();
-    if (!a.width) return false;
-    var b = t.getBoundingClientRect(), d = w ? w.getBoundingClientRect() : a;
-    return x >= Math.min(a.left, b.left) && x <= Math.max(a.right, b.right) && y >= Math.min(a.top, d.top) && y <= Math.max(a.bottom, d.bottom);
+    return a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom;
   }
   function run() {
     pending = false;
