@@ -93,7 +93,9 @@
   var land = function () {
     if (!target) return;
     // (under the band and the search's row pinned under it)
-    var top = bandH() + (findRow ? findRow.offsetHeight : 0), r = target.getBoundingClientRect(), room = de.clientHeight - top;
+    // (only where it stands over the list: from 1024 it is the side column, the window's height, and the landing stood just under the window — "take the user to the entry's position", 2026-11-04)
+    var r = target.getBoundingClientRect(), fq = findRow && findRow.getBoundingClientRect();
+    var top = bandH() + (fq && fq.right > r.left && fq.left < r.right ? findRow.offsetHeight : 0), room = de.clientHeight - top;
     window.scrollTo({ top: Math.max(0, window.pageYOffset + r.top - top - Math.max(0, (room - r.height) / 2)), behavior: 'instant' });
   };
   var arcMain = arc.querySelector('.arc-main') || arc;
@@ -371,7 +373,9 @@
     // top result is of the search", 2026-10-24)
     // (and lit, as the hand lights one, since its opening is the one showing — "When archive page opens, I want top post
     // to be hovered because preview text is showing", 2026-10-24)
+    // (the landed entry's opening instead where there is one, and it lit alone — the date's link, 2026-11-04)
     var showTop = function () {
+      if (target && !target.hidden) { light(target); showPeek(target); return; }
       for (var i = 0; i < items.length; i++) if (!items[i].hidden) { light(items[i]); showPeek(items[i]); return; }
     };
     afterFilter.push(showTop);

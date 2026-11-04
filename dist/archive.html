@@ -825,7 +825,8 @@ window.ncSubW = window.ncSubW || function (nav) {
   var target = null;
   var land = function () {
     if (!target) return;
-    var top = bandH() + (findRow ? findRow.offsetHeight : 0), r = target.getBoundingClientRect(), room = de.clientHeight - top;
+    var r = target.getBoundingClientRect(), fq = findRow && findRow.getBoundingClientRect();
+    var top = bandH() + (fq && fq.right > r.left && fq.left < r.right ? findRow.offsetHeight : 0), room = de.clientHeight - top;
     window.scrollTo({ top: Math.max(0, window.pageYOffset + r.top - top - Math.max(0, (room - r.height) / 2)), behavior: 'instant' });
   };
   var arcMain = arc.querySelector('.arc-main') || arc;
@@ -1047,6 +1048,7 @@ window.ncSubW = window.ncSubW || function (nav) {
     };
     if (document.readyState === 'complete') loadPeek(); else addEventListener('load', loadPeek, { once: true });
     var showTop = function () {
+      if (target && !target.hidden) { light(target); showPeek(target); return; }
       for (var i = 0; i < items.length; i++) if (!items[i].hidden) { light(items[i]); showPeek(items[i]); return; }
     };
     afterFilter.push(showTop);
