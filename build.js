@@ -145,7 +145,7 @@ const loadMark = (name) => {
   const [w, h] = src.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
   const inner = src.slice(src.indexOf('>', src.indexOf('<svg')) + 1, src.lastIndexOf('</svg>'));
   // (white the ground, the highlight's red the page's highlight, anything else the ink)
-  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FDFDFB)' : /^#(?:D52B05|B3301E|1478A7|3E36FF|002FA7)$/i.test(v) ? 'var(--nc-mark, #FF69B4)' : v === 'none' ? 'none' : 'currentColor');
+  const ink = (v) => (/^#(?:FFF|FFFFFF)$/i.test(v) ? 'var(--nc-stamp-ground, #FDFDFB)' : /^#(?:D52B05|B3301E|1478A7|3E36FF|002FA7)$/i.test(v) ? 'var(--nc-mark, #82C8E5)' : v === 'none' ? 'none' : 'currentColor');
   const spans = ['border', 'frame', 'ground'].find((k) => new RegExp(`id="${k}"`).test(inner));
   const body = inner.replace(/<(path|rect)\b([^>]*?)\/?>/g, (m0, tag, attrs) => {
     const id = (attrs.match(/\sid="([^"]+)"/) || [])[1];
