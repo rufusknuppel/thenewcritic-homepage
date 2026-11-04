@@ -6736,7 +6736,7 @@
   var PIC_FAR = 54, POST_TRIM = 36;
   POST_TRIM = 36;
   POST_TRIM = -18;
-  PIC_FAR = 54;
+  PIC_FAR = 40.5;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -7156,7 +7156,7 @@
       if (j.slide) j.bp = { l: 0, r: 0, t: SWAP_PAD, b: SWAP_PAD };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + NEAR_GAP, t: 0, b: 0 } : { l: FRAME + NEAR_GAP, r: WORDS_FAR, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_PAD, t: 0, b: 0 };
-      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 54; else j.Bd.r -= 54; }
+      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 67.5; else j.Bd.r -= 67.5; }
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: BOX_PAD, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE + BOX_PAD, t: 0, b: 0 };
       if (j.slide && bandedInk()) j.bp = j.picR ? { l: 0, r: FRAME + BOX_PAD, t: 0, b: 0 } : { l: FRAME + BOX_PAD, r: BOX_EDGE, t: 0, b: 0 };
       j.card.classList.toggle('is-slide', !!j.slide);

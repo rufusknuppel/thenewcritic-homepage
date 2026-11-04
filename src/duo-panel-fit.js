@@ -8993,7 +8993,8 @@
   POST_TRIM = -18;
   // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
   // (54 since, the row re-centring takes it from the picture's near edge: the title column's 27 from the picture and not the page's margin — "The expanded title column shouldn't have moved out, should take from image instead", 2026-11-04: latest-rail.js centre)
-  PIC_FAR = 54;
+  // (40.5 since, 13.5 back to the picture from the title column — "Expand images by 13.5px and decrease title columns by 13.5px", 2026-11-04)
+  PIC_FAR = 40.5;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the
@@ -9776,7 +9777,8 @@
       // (the column a little narrower since, from its far side — "make title columns slightly narrower", 2026-11-03)
       // (27 narrower again, the pictures where they stand — "Keep images in place but move the edge of far edge of title column 27px toward the image", 2026-11-04)
       // (27 again for a moment, as the pictures' outer edge, and back — "Do the same with title columns also", "Make title column 27px wider", 2026-11-04)
-      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 54; else j.Bd.r -= 54; }
+      // (13.5 more, to the picture — "Expand images by 13.5px and decrease title columns by 13.5px", 2026-11-04: PIC_FAR)
+      if (j.slide && bandedInk() && j.Bd && window.innerWidth >= 1024) { if (j.picR) j.Bd.l += 67.5; else j.Bd.r -= 67.5; }
       // (and the box 54 in from the post's outer edge since — the window's left margin where the picture stands on the
       // right, the side column's rule where it stands on the left — the words BOX_PAD inside it: "Have at least 54px on
       // outside of the post to the edges", 2026-10-28)
