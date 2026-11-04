@@ -3691,7 +3691,7 @@ window.ncOpenH = function () {
       var vl = (ruleX - hold.getBoundingClientRect().left).toFixed(2) + 'px';
       if (hold.style.getPropertyValue('--nc-vr-l') !== vl) hold.style.setProperty('--nc-vr-l', vl);
       // (the rule under the bird 54 from this one and 54 from the site's edge — "Rule between bird and the latest should be 54px from the vertical rule and the site edge", 2026-11-03)
-      var rw = (window.innerWidth - ruleX - 108) + 'px'; // (27 further each way for a while, "Increase all rules by ... 22", "Add 5 more", 2026-11-03; 54 from each again, "Move rule in the side column 27px in on either side", 2026-11-04)
+      var rw = (window.innerWidth - ruleX - 108 + 54) + 'px'; // (27 further each way, 27 from each: "Increase all rules by ... 22", "Add 5 more", 2026-11-03; in to 54 and out again, "Move rule in the side column 27px in on either side", "Add 27px back to rule in side column", 2026-11-04)
       if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);
     }
     vrH();
