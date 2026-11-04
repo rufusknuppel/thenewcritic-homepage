@@ -8992,7 +8992,8 @@
   // (54 taller again since, past no trim at all — "Make posts taller still", 2026-11-03)
   POST_TRIM = -18;
   // (0 since, with BOX_EDGE: the rule it stood clear of gone, 2026-10-28)
-  PIC_FAR = 27;
+  // (54 since, the row re-centring takes it from the picture's near edge: the title column's 27 from the picture and not the page's margin — "The expanded title column shouldn't have moved out, should take from image instead", 2026-11-04: latest-rail.js centre)
+  PIC_FAR = 54;
   // (36 for a while on 2026-10-11 — "Do the same for the margins of text around the posts" — then 54 again: "increase
   // margins of text in posts back to 54px")
   // (and 5 in from either end: the head 5 under the picture's top, the

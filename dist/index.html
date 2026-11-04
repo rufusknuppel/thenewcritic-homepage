@@ -6736,7 +6736,7 @@
   var PIC_FAR = 54, POST_TRIM = 36;
   POST_TRIM = 36;
   POST_TRIM = -18;
-  PIC_FAR = 27;
+  PIC_FAR = 54;
   var PIN_IN = 5;
   var HEAD_DEK_MORE = 36;
   var RULE_AIR = 54;
@@ -12840,7 +12840,6 @@ window.ncOpenH = function () {
       if (!wide || !colL) { if (c.__ncDx) { c.__ncDx = 0; c.style.removeProperty('translate'); } return; }
       if (!pr || !br || !pr.width || !br.width) return;
       var was = c.__ncDx || 0, L9 = Math.min(pr.left, br.left - 27), R9 = Math.max(pr.right, br.right + 27);
-      if (R9 - L9 + 27 >= colL - 27 - 8) { if (pr.left < br.left) L9 -= 27; else R9 += 27; }
       var dx = Math.round((27 + colL) / 2 - (L9 + R9) / 2 + was);
       if (Math.abs(dx - was) < 0.5) return;
       c.__ncDx = dx; c.style.setProperty('translate', dx + 'px 0', 'important');
