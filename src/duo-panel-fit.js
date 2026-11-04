@@ -9970,9 +9970,13 @@
                   hw.className = 'swap-body-when';
                   // (the date alone on the first line since, the writer and the section on the second — "Change meta so Date is on top
                   // line, then bottom line is Author, Section", 2026-11-03: the comma before the date gone)
-                  var on1 = hm.querySelector(':scope > .swap-body-on');
-                  if (on1 && on1.previousElementSibling && on1.previousElementSibling.classList.contains('swap-body-sep')) hm.removeChild(on1.previousElementSibling);
-                  [].slice.call(hm.children).forEach(function (e) { if (e !== on1) hw.appendChild(e); });
+                  // (the writer alone on the first line since, the date and the section on the second with a bar between them — "I want the
+                  // meta chunk to go Author (new line) Date | Section", 2026-11-04: the commas before them gone)
+                  var on1 = hm.querySelector(':scope > .swap-body-on'), se1 = hm.querySelector(':scope > .swap-body-sec');
+                  [on1, se1].forEach(function (e) { if (e && e.previousElementSibling && e.previousElementSibling.classList.contains('swap-body-sep')) hm.removeChild(e.previousElementSibling); });
+                  if (on1) hw.appendChild(on1);
+                  if (on1 && se1) { var hb1 = document.createElement('span'); hb1.className = 'swap-body-sep'; hb1.textContent = ' | '; hw.appendChild(hb1); }
+                  if (se1) hw.appendChild(se1);
                   if (hw.firstChild) hd.appendChild(hw);
                 }
               }
