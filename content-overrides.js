@@ -61,6 +61,12 @@ module.exports = {
     boxZoom: 1.16,
     boxPos: '50% 44%',
   },
+  // (and the wall above and the paper below its drawing, "Same with samba
+  // coutu", 2026-11-04: rows 38 to 548 of the scan's 594)
+  'depleted-shells': {
+    boxZoom: 1.17,
+    boxPos: '50% 46%',
+  },
   // (The Latest's kickers, 2026-10-04, at the user's word: "Set top 6
   // kickers to 'Bay Area Seduction Camp', 'Who's Still Masking?', 'AI
   // Middle School' ... I like the current MrBeast 'Becoming a Journalist'
