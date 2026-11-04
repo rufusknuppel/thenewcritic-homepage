@@ -54,6 +54,13 @@ module.exports = {
     boxZoom: 1.24,
     boxPos: '50% 49%',
   },
+  // (the paper round the drawing cropped out of the frame, as McNally's —
+  // "Remove outline from most recent post, like the george mcnally",
+  // 2026-11-04: the drawing stands from rows 34 to 564 of the scan's 608)
+  'the-puri-teens': {
+    boxZoom: 1.16,
+    boxPos: '50% 44%',
+  },
   // (The Latest's kickers, 2026-10-04, at the user's word: "Set top 6
   // kickers to 'Bay Area Seduction Camp', 'Who's Still Masking?', 'AI
   // Middle School' ... I like the current MrBeast 'Becoming a Journalist'
