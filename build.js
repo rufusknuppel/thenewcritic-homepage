@@ -4821,7 +4821,10 @@ function renderFontGateScript({ fitted = true } = {}) {
     // stood white on either side, so it opens on the light side, as it has
     // looked, and the dot turns it to the charcoal; a reader's stored Dark
     // kept)
-    paint(chosen === 'dark' ? 'dark' : 'light');
+    // (AND A STORED DARK LET GO, 2026-11-04 — "The latest doesn't look right here": the page has no dark side since it went white on 2026-11-03, and a reader
+    // who once pressed the dot kept data-theme="dark" under the new colours, the sections' line white on white)
+    try { localStorage.removeItem('nc-mode'); } catch (e4) {}
+    paint('light');
   } catch (e) {}
   // (THE READER'S COLOUR came back on the next visit from 2026-09-30;
   // HEX IS STRUCK, 2026-10-01, at the user's word, so a colour kept from

@@ -102,7 +102,8 @@
     }
     var chosen = null;
     try { chosen = localStorage.getItem('nc-mode'); } catch (e3) {}
-    paint(chosen === 'dark' ? 'dark' : 'light');
+    try { localStorage.removeItem('nc-mode'); } catch (e4) {}
+    paint('light');
   } catch (e) {}
   try { localStorage.removeItem('nc-accent'); } catch (e) {}
   try {
