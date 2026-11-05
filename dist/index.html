@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=dd10ca22">
+<link rel="stylesheet" href="style.css?v=c640be69">
 <style>:root{--colo-span:9.3572;--band-span:7.7365;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -11850,8 +11850,8 @@ var ncStemX = function () {
     if (!sq || !sq.width) return;
     holdG.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
-    var navSl = new DOMMatrixReadOnly(getComputedStyle(socG).transform).m41;
-    var d0 = (sq.left + sq.right) / 2 - navSl - (r.left + r.right) / 2, lG = r.left + d0;
+    var navBox = socG.closest('.rail-top') || socG, nq = navBox.getBoundingClientRect();
+    var d0 = (nq.left + nq.right) / 2 - (r.left + r.right) / 2, lG = r.left + d0;
     var v = (t0 + d0 + Math.round(lG) - lG).toFixed(2) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
   };
