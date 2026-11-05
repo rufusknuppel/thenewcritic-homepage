@@ -17351,7 +17351,7 @@ html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(
     --k: var(--nc-lit-ink); color: var(--nc-lit-ink) !important; -webkit-text-fill-color: var(--nc-lit-ink) !important; fill: var(--nc-lit-ink) !important;
   }
 }
-:root{ --nc-pic-lit: brightness(0.9); }
+:root{ --nc-pic-lit: brightness(0.8); }
 @media (hover: hover) and (min-width: 1024px){
   html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-gl0):not(#nc-gl1):not(#nc-gl2):not(#nc-gl3):not(#nc-gl4):not(#nc-gl5):not(#nc-gl6):not(#nc-gl7):not(#nc-gl8):not(#nc-gl9):not(#nc-gl10):not(#nc-gl11):not(#nc-gl12):not(#nc-gl13):not(#nc-gl14):not(#nc-gl15):not(#nc-gl16):not(#nc-gl17):not(#nc-gl18):not(#nc-gl19):not(#nc-gl20):not(#nc-gl21):not(#nc-gl22):not(#nc-gl23):not(#nc-gl24):not(#nc-gl25):not(#nc-gl26):not(#nc-gl27):not(#nc-gl28):not(#nc-gl29):not(#nc-gl30):not(#nc-gl31):not(#nc-gl32):not(#nc-gl33):not(#nc-gl34):not(#nc-gl35):not(#nc-gl36):not(#nc-gl37):not(#nc-gl38):not(#nc-gl39)::before{ filter: var(--nc-pic-lit) !important; }
 }

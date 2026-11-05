@@ -34180,7 +34180,8 @@ html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(
 /* (the dim gone an hour on, the glow alone — "don't dim just have shadow glow", 2026-11-05) */
 /* (no shadow at all since, a very slight dim for it — "Remove shadow. Do a very sublte dim effect instead", 2026-11-05) */
 /* (brighter for a moment, "What about rather than dim, brighten?", then the dim back, "I like dim more", 2026-11-05) */
-:root{ --nc-pic-lit: brightness(0.9); }
+/* (0.8 from 0.9 — "Make dim a little more dramatic", 2026-11-05) */
+:root{ --nc-pic-lit: brightness(0.8); }
 /* (on the front page's pictures the words' box and the ground stand over a filter's shadow on all but the top, so there the dim alone in the filter and the glow on .nc-pic-line, the picture's own line, which stands over them all (an inset to close a hairline for a while, "Seeing hairline", gone since it doubled the line, "why does outline double on hover?"); the store's tile clips its picture for the zoom, so the glow on the tile's picture box) */
 @media (hover: hover) and (min-width: 1024px){
   html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-gl0):not(#nc-gl1):not(#nc-gl2):not(#nc-gl3):not(#nc-gl4):not(#nc-gl5):not(#nc-gl6):not(#nc-gl7):not(#nc-gl8):not(#nc-gl9):not(#nc-gl10):not(#nc-gl11):not(#nc-gl12):not(#nc-gl13):not(#nc-gl14):not(#nc-gl15):not(#nc-gl16):not(#nc-gl17):not(#nc-gl18):not(#nc-gl19):not(#nc-gl20):not(#nc-gl21):not(#nc-gl22):not(#nc-gl23):not(#nc-gl24):not(#nc-gl25):not(#nc-gl26):not(#nc-gl27):not(#nc-gl28):not(#nc-gl29):not(#nc-gl30):not(#nc-gl31):not(#nc-gl32):not(#nc-gl33):not(#nc-gl34):not(#nc-gl35):not(#nc-gl36):not(#nc-gl37):not(#nc-gl38):not(#nc-gl39)::before{ filter: var(--nc-pic-lit) !important; }
