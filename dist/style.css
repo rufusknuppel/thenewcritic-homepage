@@ -17297,3 +17297,7 @@ html body main .op-band.op-band:not(#nc-cp0):not(#nc-cp1):not(#nc-cp2):not(#nc-c
 @media (min-width: 1024px){
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item.is-target:not(#nc-at0):not(#nc-at1):not(#nc-at2):not(#nc-at3):not(#nc-at4):not(#nc-at5):not(#nc-at6):not(#nc-at7):not(#nc-at8):not(#nc-at9):not(#nc-at10):not(#nc-at11):not(#nc-at12):not(#nc-at13):not(#nc-at14):not(#nc-at15):not(#nc-at16):not(#nc-at17):not(#nc-at18):not(#nc-at19):not(#nc-at20):not(#nc-at21):not(#nc-at22):not(#nc-at23):not(#nc-at24):not(#nc-at25):not(#nc-at26):not(#nc-at27):not(#nc-at28):not(#nc-at29):not(#nc-at30):not(#nc-at31) .arc-ix-title{ color: #82C8E5 !important; -webkit-text-fill-color: #82C8E5 !important; }
 }
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item:nth-of-type(even):not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6):not(#nc-as7):not(#nc-as8):not(#nc-as9):not(#nc-as10):not(#nc-as11) .arc-ix-by{ left: calc(100% + 18px) !important; right: auto !important; }
+  html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item:nth-of-type(even):not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6):not(#nc-as7):not(#nc-as8):not(#nc-as9):not(#nc-as10):not(#nc-as11) .arc-ix-on{ left: auto !important; right: calc(100% + 18px) !important; }
+}
