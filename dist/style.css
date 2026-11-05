@@ -17204,16 +17204,19 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 @property --nc-band-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @keyframes nc-band-l { to { --nc-band-x: -27px; } }
 @keyframes nc-band-r { to { transform: translateX(calc(var(--opb-soc-r, 52px) - 27px)); } }
+@property --nc-band-x2 { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-band-l2 { to { --nc-band-x2: 27px; } }
+@keyframes nc-band-r2 { to { translate: calc(27px - var(--opb-soc-r, 52px)) 0; } }
 @media (min-width: 1024px){
   html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
-    animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards, nc-band-l linear both !important;
-    animation-timeline: scroll(root), --nc-foot-v, scroll(root) !important;
-    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25%, 0 calc(0.9 * var(--op-s, 1px)) !important;
+    animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards, nc-band-l linear both, nc-band-l2 linear both !important;
+    animation-timeline: scroll(root), --nc-foot-v, scroll(root), --nc-foot-all !important;
+    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25%, 0 calc(0.9 * var(--op-s, 1px)), entry 0px entry calc(0.9 * var(--op-s, 1px)) !important;
   }
   html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > .rail-top > .rail-top__nav:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
-    display: block !important; animation: nc-band-r linear both !important; animation-timeline: scroll(root) !important; animation-range: 0 calc(0.9 * var(--op-s, 1px)) !important;
+    display: block !important; animation: nc-band-r linear both, nc-band-r2 linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 calc(0.9 * var(--op-s, 1px)), entry 0px entry calc(0.9 * var(--op-s, 1px)) !important;
   }
-  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(var(--nc-band-x)) !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(var(--nc-band-x) + var(--nc-band-x2))) !important; }
   html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(27px - var(--opb-navl, 52px))) !important; }
 }
 @media (min-width: 1024px){
