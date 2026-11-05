@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=c26afed6">
+<link rel="stylesheet" href="style.css?v=dd10ca22">
 <style>:root{--colo-span:9.3572;--band-span:7.7365;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -787,7 +787,7 @@ window.ncSubW = window.ncSubW || function (nav) {
       var navL = stemX + glyph(navA, false).l, socR = stemX + glyph(socA, true).over - 1;
       band.style.setProperty('--opb-nav-l', navL.toFixed(2) + 'px');
       band.style.setProperty('--opb-soc-r', socR.toFixed(2) + 'px');
-      if (document.body.classList.contains('archive-page')) band.style.setProperty('--opb-navl', socR.toFixed(1) + 'px');
+      band.style.setProperty('--opb-navl', socR.toFixed(1) + 'px');
       band.style.setProperty('--opb-tlm', ((navL + nw + vw - socR - sw) / 2).toFixed(1) + 'px');
       var tlm = band.querySelector(':scope > .rail-tlm'), lwt = tlm ? parseFloat(tlm.style.getPropertyValue('--rl-lwt')) || 0 : 0;
       if (lwt > 0) band.style.setProperty('--rl-tlmf', (0.9 * (nw + 25) / lwt).toFixed(3) + 'px');
