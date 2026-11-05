@@ -3769,7 +3769,13 @@ window.ncOpenH = function () {
         even = Math.round((bandH + window.innerHeight - F - pinned - (latTop + drop + own)) / 2 * 2) / 2;
       }
       var run = Math.max(opS, F), lm = even, be = even;
-      var at = function (u, m) { var ride = Math.max(0, F - u), go = u < F ? m * (F - u) / F : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
+      // (and the hold no longer shoved up by the colophon to be pushed back down by the frames — "Glitching with the bird and
+      // the latest when colophon lands", 2026-11-05: the two, 69 up and 55.5 down, met a frame apart as a trackpad scrolls;
+      // its column now reaches F past the colophon's top, --rail-foot, main clipping it, so the hold stays stuck and the
+      // frames carry only the even shift)
+      var asd = hold.parentElement;
+      if (asd && asd.style.getPropertyValue('--rail-foot') !== -F + 'px') asd.style.setProperty('--rail-foot', -F + 'px');
+      var at = function (u, m) { var ride = 0, go = u < F ? m * (F - u) / F : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
       var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
       var kf = '@keyframes nc-lat-out{' + frames(lm) + '}@keyframes nc-bird-out{' + frames(be) + '}';
