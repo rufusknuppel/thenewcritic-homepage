@@ -3741,6 +3741,21 @@ window.ncOpenH = function () {
     var latTop = bandH + (parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0), latRule = Math.abs(parseFloat(hold.style.getPropertyValue('--rl-rt')) || 0);
     var le = Math.round(window.innerHeight - F + latRule + 2 - latTop) + 'px';
     if (hold.style.getPropertyValue('--nc-lat-end') !== le) hold.style.setProperty('--nc-lat-end', le);
+    // (the going the coming run backwards — "Why isn't the latest disappering and bird repositioning at the bottom a mirror of the top?
+    // Everything mvoes weirdly", 2026-11-05: over the footer's first --op-s The Latest goes down at the speed it came up, by
+    // --op-s and --rl-st0, and the bird to the middle, while the hold rides up with the page, made good by the same frames, so
+    // each stands still on the window once its going is done and the footer comes on over it; the frames' middle stop is
+    // --op-s over the footer's height, which a sheet cannot write, so they are written here; style.css THE GOING THE COMING
+    // RUN BACKWARDS)
+    var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0, st0 = parseFloat(hold.style.getPropertyValue('--rl-st0')) || 0;
+    if (opS > 0 && F > opS) {
+      var p = (100 * opS / F).toFixed(3), be = parseFloat(e) || 0;
+      var kf = '@keyframes nc-lat-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (2 * opS + st0).toFixed(2) + 'px)}100%{transform:translateY(' + (F + opS + st0).toFixed(2) + 'px)}}'
+        + '@keyframes nc-bird-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (opS + be).toFixed(2) + 'px)}100%{transform:translateY(' + (F + be).toFixed(2) + 'px)}}';
+      var ks = document.getElementById('nc-foot-going');
+      if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }
+      if (ks.textContent !== kf) ks.textContent = kf;
+    }
   }
   window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
