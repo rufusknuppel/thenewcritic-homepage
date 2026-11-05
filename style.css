@@ -33448,7 +33448,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    magazine flip position with the nav", 2026-10-28: a frame or two before the opening's lay drew them where they stood
    before the flip; the archive, About and the store keep them where they are) */
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > :is(a.rail-tlm, .rail-top):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > :is(a.rail-tlm, .rail-top):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
 }
 
 /* THE SECTIONS' NAMES ONE TO A LINE (2026-11-01 — "Have the section titles on the homepage be on individual lines so The
@@ -33466,12 +33466,12 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    take the visibility rule out and the nav's right out */
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band > .rail-socials:not(#nc-soc0):not(#nc-soc1){ visibility: hidden !important; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > .rail-top.rail-top:not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
     left: auto !important; right: var(--opb-soc-r, 54px) !important; translate: 0 -50% !important;
   }
   /* (the two switched since, the nav at the rule's left end, The Last Magazine at its right and, pinned, THE NEW CRITIC in
      its place — "Switch the position of the last magazine and the nav items", 2026-11-02) */
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > :is(a.op-tnc, a.rail-tlm):not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-soc-r"] > :is(a.op-tnc, a.rail-tlm):not(#nc-soc0):not(#nc-soc1):not(#nc-soc2){
     left: var(--opb-navl, 54px) !important; right: auto !important; translate: 0 -50% !important;
   }
   /* (flipped again since, The Last Magazine at the left and the nav at the right — "Flip nav and the last magazine",
@@ -33550,14 +33550,14 @@ html body:not(#nc-os0){ background-color: var(--tw, #FDFDFB); }
 @keyframes nc-foot-tnc-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes nc-foot-tlm-in { from { opacity: 0; } to { opacity: 1; } }
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page){ timeline-scope: --nc-foot-v; }
+  html body:not(.about-page){ timeline-scope: --nc-foot-v; }
   html body > footer.nc-foot > a.nc-foot__name{ view-timeline: --nc-foot-v block; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards !important;
     animation-timeline: scroll(root), --nc-foot-v !important;
     animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25% !important;
   }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     animation: nc-tnc-in linear both, nc-foot-tnc-out linear forwards !important;
     animation-timeline: scroll(root), --nc-foot-v !important;
     animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px), entry 0% entry 25% !important;
@@ -33686,18 +33686,18 @@ html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; pad
    the left where The Last Magazine stood */
 .op-date{ display: none; }
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > .op-date.op-date:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > .op-date.op-date:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3){
     display: block; position: absolute; left: var(--opb-navl, 54px); top: 50%; translate: 0 -50%;
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
     color: var(--k, #121417); white-space: nowrap;
   }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .op-date.op-date:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3){ visibility: hidden; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > .op-date.op-date:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3){ visibility: hidden; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
     left: 50% !important; translate: -50% calc(-50% + 1px) !important;
   }
   /* (THE NEW CRITIC taking over from it in the middle since, the date at the left the whole way down — "I want the new critic to
      take over the last magazine in the center", 2026-11-03) */
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-dt0):not(#nc-dt1):not(#nc-dt2):not(#nc-dt3):not(#nc-dt4){
     left: 50% !important; translate: -50% -50% !important;
   }
 }
@@ -33829,9 +33829,9 @@ html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest
 }
 /* THE DATE ON THE BAND'S MIDDLE (2026-11-03 — "switch date and the last magazine/same with The New Critic in the nav band"): The Last Magazine and then The New Critic at its left, where the date stood */
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > .op-date.op-date:not(#nc-ds0):not(#nc-ds1):not(#nc-ds2):not(#nc-ds3):not(#nc-ds4):not(#nc-ds5):not(#nc-ds6):not(#nc-ds7):not(#nc-ds8):not(#nc-ds9):not(#nc-ds10):not(#nc-ds11):not(#nc-ds12):not(#nc-ds13){ left: 50% !important; translate: -50% -50% !important; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-ds0):not(#nc-ds1):not(#nc-ds2):not(#nc-ds3):not(#nc-ds4):not(#nc-ds5):not(#nc-ds6):not(#nc-ds7):not(#nc-ds8):not(#nc-ds9):not(#nc-ds10):not(#nc-ds11):not(#nc-ds12):not(#nc-ds13){ left: var(--opb-navl, 54px) !important; translate: 0 calc(-50% + 1px) !important; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-ds0):not(#nc-ds1):not(#nc-ds2):not(#nc-ds3):not(#nc-ds4):not(#nc-ds5):not(#nc-ds6):not(#nc-ds7):not(#nc-ds8):not(#nc-ds9):not(#nc-ds10):not(#nc-ds11):not(#nc-ds12):not(#nc-ds13){ left: var(--opb-navl, 54px) !important; translate: 0 -50% !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > .op-date.op-date:not(#nc-ds0):not(#nc-ds1):not(#nc-ds2):not(#nc-ds3):not(#nc-ds4):not(#nc-ds5):not(#nc-ds6):not(#nc-ds7):not(#nc-ds8):not(#nc-ds9):not(#nc-ds10):not(#nc-ds11):not(#nc-ds12):not(#nc-ds13){ left: 50% !important; translate: -50% -50% !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-ds0):not(#nc-ds1):not(#nc-ds2):not(#nc-ds3):not(#nc-ds4):not(#nc-ds5):not(#nc-ds6):not(#nc-ds7):not(#nc-ds8):not(#nc-ds9):not(#nc-ds10):not(#nc-ds11):not(#nc-ds12):not(#nc-ds13){ left: var(--opb-navl, 54px) !important; translate: 0 calc(-50% + 1px) !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-ds0):not(#nc-ds1):not(#nc-ds2):not(#nc-ds3):not(#nc-ds4):not(#nc-ds5):not(#nc-ds6):not(#nc-ds7):not(#nc-ds8):not(#nc-ds9):not(#nc-ds10):not(#nc-ds11):not(#nc-ds12):not(#nc-ds13){ left: var(--opb-navl, 54px) !important; translate: 0 -50% !important; }
 }
 /* (See All in italic — "Italicize See all", 2026-11-03) */
 html body main.has-mega .page-rows .latest-rail a.latest-rail__all:not(#nc-sa0):not(#nc-sa1):not(#nc-sa2):not(#nc-sa3):not(#nc-sa4):not(#nc-sa5):not(#nc-sa6):not(#nc-sa7):not(#nc-sa8):not(#nc-sa9):not(#nc-sa10):not(#nc-sa11):not(#nc-sa12):not(#nc-sa13){ font-style: italic !important; }
@@ -33853,7 +33853,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
 @media (hover: hover){ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-sc3):not(#nc-sc4):not(#nc-sc5):not(#nc-sc6):not(#nc-sc7):not(#nc-sc8):not(#nc-sc9):not(#nc-sc10):not(#nc-sc11):not(#nc-sc12):not(#nc-sc13):not(#nc-sc14):not(#nc-sc15):not(#nc-sc16):not(#nc-sc17):not(#nc-sc18):not(#nc-sc19):not(#nc-sc20):not(#nc-sc21):not(#nc-sc22):not(#nc-sc23):not(#nc-sc24):not(#nc-sc25):not(#nc-sc26):not(#nc-sc27):not(#nc-sc28):not(#nc-sc29):hover{ color: #82C8E5 !important; -webkit-text-fill-color: #82C8E5 !important; } }
 /* THE RULE UNDER THE BAND (2026-11-03 — "Add a .5 px white rule on the bottom of the top band that runs from edge of the last magazine to edge of nav") */
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band:not(#nc-rb0):not(#nc-rb1):not(#nc-rb2):not(#nc-rb3):not(#nc-rb4):not(#nc-rb5):not(#nc-rb6):not(#nc-rb7):not(#nc-rb8):not(#nc-rb9):not(#nc-rb10):not(#nc-rb11):not(#nc-rb12):not(#nc-rb13):not(#nc-rb14):not(#nc-rb15):not(#nc-rb16):not(#nc-rb17):not(#nc-rb18):not(#nc-rb19):not(#nc-rb20):not(#nc-rb21):not(#nc-rb22):not(#nc-rb23):not(#nc-rb24):not(#nc-rb25):not(#nc-rb26):not(#nc-rb27):not(#nc-rb28):not(#nc-rb29)::after{
+  html body:not(.about-page) main.has-mega .op-track > .op-band:not(#nc-rb0):not(#nc-rb1):not(#nc-rb2):not(#nc-rb3):not(#nc-rb4):not(#nc-rb5):not(#nc-rb6):not(#nc-rb7):not(#nc-rb8):not(#nc-rb9):not(#nc-rb10):not(#nc-rb11):not(#nc-rb12):not(#nc-rb13):not(#nc-rb14):not(#nc-rb15):not(#nc-rb16):not(#nc-rb17):not(#nc-rb18):not(#nc-rb19):not(#nc-rb20):not(#nc-rb21):not(#nc-rb22):not(#nc-rb23):not(#nc-rb24):not(#nc-rb25):not(#nc-rb26):not(#nc-rb27):not(#nc-rb28):not(#nc-rb29)::after{
     content: "" !important; display: block !important; position: absolute !important; top: auto !important; bottom: 0 !important;
     left: 27px !important; right: 27px !important; width: auto !important; height: 1px !important;
     margin: 0 !important; background: #121417 !important; border: 0 !important; opacity: 1 !important; transform: none !important; pointer-events: none !important; z-index: 2 !important;
@@ -33928,7 +33928,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
 /* THE LAST MAGAZINE STANDS STILL THROUGH THE LOAD (2026-11-03 — "On initial load, the last magazine flips to italics in sight"): its left was --opb-navl, read off the rows and
    written again as the fitter finished, so on a cold load it stood 46 through the fade and jumped to 55 in sight; 54 from the first now, the top rule's own left end */
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-tp0):not(#nc-tp1):not(#nc-tp2):not(#nc-tp3):not(#nc-tp4):not(#nc-tp5):not(#nc-tp6):not(#nc-tp7):not(#nc-tp8):not(#nc-tp9):not(#nc-tp10):not(#nc-tp11):not(#nc-tp12):not(#nc-tp13):not(#nc-tp14):not(#nc-tp15):not(#nc-tp16):not(#nc-tp17):not(#nc-tp18):not(#nc-tp19):not(#nc-tp20):not(#nc-tp21):not(#nc-tp22):not(#nc-tp23):not(#nc-tp24):not(#nc-tp25):not(#nc-tp26):not(#nc-tp27):not(#nc-tp28):not(#nc-tp29){ left: 54px !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-tp0):not(#nc-tp1):not(#nc-tp2):not(#nc-tp3):not(#nc-tp4):not(#nc-tp5):not(#nc-tp6):not(#nc-tp7):not(#nc-tp8):not(#nc-tp9):not(#nc-tp10):not(#nc-tp11):not(#nc-tp12):not(#nc-tp13):not(#nc-tp14):not(#nc-tp15):not(#nc-tp16):not(#nc-tp17):not(#nc-tp18):not(#nc-tp19):not(#nc-tp20):not(#nc-tp21):not(#nc-tp22):not(#nc-tp23):not(#nc-tp24):not(#nc-tp25):not(#nc-tp26):not(#nc-tp27):not(#nc-tp28):not(#nc-tp29){ left: 54px !important; }
 }
 
 /* (ALL THE RULES 22 LONGER EITHER SIDE, 2026-11-03 — "Increase all rules by 20.25px on either side", "Sorry 22": the band's 32 short of the site's sides, the bird's 32 from the
@@ -33942,7 +33942,7 @@ html:root:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#
 html:root body:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29),
 html.is-archive body.archive-page:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29){ --nc-outline: #82C8E5 !important; --nc-rule: #82C8E5 !important; }
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29)::after{ height: var(--nc-hair) !important; background: #82C8E5 !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29)::after{ height: var(--nc-hair) !important; background: #82C8E5 !important; }
   html body main .latest-rail__hold.latest-rail__hold:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29)::before{ width: var(--nc-hair) !important; background: #82C8E5 !important; }
   html body main .latest-rail__hold.latest-rail__hold > .rail-sections:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29)::before{ height: var(--nc-hair) !important; background: #82C8E5 !important; }
   html body main.has-mega .page-rows .duo-half--mega > .nc-words-box.nc-words-box:not(#nc-rw0):not(#nc-rw1):not(#nc-rw2):not(#nc-rw3):not(#nc-rw4):not(#nc-rw5):not(#nc-rw6):not(#nc-rw7):not(#nc-rw8):not(#nc-rw9):not(#nc-rw10):not(#nc-rw11):not(#nc-rw12):not(#nc-rw13):not(#nc-rw14):not(#nc-rw15):not(#nc-rw16):not(#nc-rw17):not(#nc-rw18):not(#nc-rw19):not(#nc-rw20):not(#nc-rw21):not(#nc-rw22):not(#nc-rw23):not(#nc-rw24):not(#nc-rw25):not(#nc-rw26):not(#nc-rw27):not(#nc-rw28):not(#nc-rw29)::after{ height: var(--nc-hair) !important; background: #82C8E5 !important; }
@@ -33973,16 +33973,16 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 @keyframes nc-band-l { to { --nc-band-x: -27px; } }
 @keyframes nc-band-r { to { transform: translateX(calc(var(--opb-soc-r, 52px) - 27px)); } }
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards, nc-band-l linear both !important;
     animation-timeline: scroll(root), --nc-foot-v, scroll(root) !important;
     animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25%, 0 calc(0.9 * var(--op-s, 1px)) !important;
   }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band > .rail-top > .rail-top__nav:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band > .rail-top > .rail-top__nav:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     display: block !important; animation: nc-band-r linear both !important; animation-timeline: scroll(root) !important; animation-range: 0 calc(0.9 * var(--op-s, 1px)) !important;
   }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(var(--nc-band-x)) !important; }
-  html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(27px - var(--opb-navl, 52px))) !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(var(--nc-band-x)) !important; }
+  html body:not(.about-page) main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(27px - var(--opb-navl, 52px))) !important; }
 }
 
 /* (HOT PINK FOR THE BLUE, 2026-11-04 — "Replace the blue with hot pink": the highlight, the rules and the outlines, #FF69B4 where #002FA7 stood) */
@@ -34035,7 +34035,7 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 @keyframes nc-bird-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-bird-end, 0px) + var(--op-s, 0px))); } }
 @keyframes nc-bird-hold { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-foot-h, 0px) - var(--op-s, 0px))); } }
 @media (min-width: 1024px){
-  html body:not(.archive-page):not(.about-page){ timeline-scope: --nc-foot-v, --nc-foot-all; }
+  html body:not(.about-page){ timeline-scope: --nc-foot-v, --nc-foot-all; }
   html body > footer.nc-foot.nc-foot{ view-timeline: --nc-foot-all block; }
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > :is(.rail-sections, .latest-rail__in):not(#nc-ln0){
     animation: nc-lat-in linear both; animation-timeline: scroll(root); animation-range: 0 var(--op-s, 1px);
@@ -34057,3 +34057,10 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 }
 
 /* (HOST GROTESK FOR THE INTER, 2026-11-05 — "Change inter to Host Grotesk", "Same height as now": at 13.5 for the Inter's 13, its capitals 0.70 of the size to the Inter's 0.7275, the same 9.46 tall; written where the Inter stood, the band's date, the kickers, the metas (duo-panel-fit.js) and the copyright; its capitals 0.06em apart for the Inter's 0.02 since, "Increase kerning on the grotesk") */
+
+/* THE ARCHIVE UNDER THE FRONT PAGE'S HEAD AND RULES (2026-11-05 — "Update the archive with new rules and header/footer styles from homepage"): the band's rules opened to it (The Last Magazine and the small name at the left, the date in the middle, the nav at the right, the rule under it; src/front-head.js sets its left margin), the footer already the same. Its columns' two rules as the front page's between its columns: 27 short of the band's rule and the footer's at each end, half a pixel where the screen has it (--nc-hair), and on whole pixels, where 326.02 painted them gray. The main's foot on a whole pixel too (archive.js): the footer is a layer of its own, and at a fraction its rule smeared gray. The band's old dash stands down, drawn over the rule */
+@media (min-width: 1024px){
+  body.archive-page .arc--index .arc-main::before{ left: round(nearest, calc(270px + 3.89vw), 1px); top: 27px; bottom: 27px; width: var(--nc-hair, 1px); }
+  body.archive-page .arc--index .arc-main::after{ right: calc(round(nearest, calc(270px + 3.89vw), 1px) + 1px - var(--nc-hair, 1px)); top: 27px; bottom: 27px; width: var(--nc-hair, 1px); }
+  html.is-archive body.archive-page main .op-band > .nc-band-dash{ display: none !important; }
+}

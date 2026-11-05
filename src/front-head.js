@@ -60,6 +60,8 @@ window.ncSubW = window.ncSubW || function (nav) {
       var navL = stemX + glyph(navA, false).l, socR = stemX + glyph(socA, true).over - 1;
       band.style.setProperty('--opb-nav-l', navL.toFixed(2) + 'px');
       band.style.setProperty('--opb-soc-r', socR.toFixed(2) + 'px');
+      // (the archive's band dressed as the front page's since, The Last Magazine and the small name at the left, the date in the middle, the nav at the right; no posts here for the front page's bandRule to read the left end off, so the right's margin mirrored: "Update the archive with new rules and header/footer styles from homepage", 2026-11-05)
+      if (document.body.classList.contains('archive-page')) band.style.setProperty('--opb-navl', socR.toFixed(1) + 'px');
       band.style.setProperty('--opb-tlm', ((navL + nw + vw - socR - sw) / 2).toFixed(1) + 'px');
       // (THE LAST MAGAZINE as wide as the nav and 25, as latest-rail.js sizes it)
       var tlm = band.querySelector(':scope > .rail-tlm'), lwt = tlm ? parseFloat(tlm.style.getPropertyValue('--rl-lwt')) || 0 : 0;

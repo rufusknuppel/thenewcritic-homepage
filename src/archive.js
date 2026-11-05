@@ -399,3 +399,15 @@
     el.addEventListener('mouseleave', function () { mn.classList.remove('nc-hot-tlm', 'nc-hot-tnc'); document.body.classList.remove('nc-hot-tlm', 'nc-hot-tnc'); });
   });
 })();
+
+// (the archive's foot on a whole pixel, whatever the search leaves standing: style.css THE ARCHIVE UNDER THE FRONT PAGE'S HEAD AND RULES)
+(function () {
+  var mn = document.querySelector('body.archive-page > main');
+  if (!mn || !window.ResizeObserver) return;
+  var seat = function () {
+    mn.style.marginBottom = '0px';
+    var b = mn.getBoundingClientRect().bottom + (window.pageYOffset || 0);
+    mn.style.marginBottom = (Math.ceil(b) - b).toFixed(3) + 'px';
+  };
+  new ResizeObserver(seat).observe(mn);
+})();
