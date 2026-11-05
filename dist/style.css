@@ -17165,7 +17165,7 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
 }
 @media (min-width: 1024px){
   html body main .latest-rail__hold.latest-rail__hold:not(#nc-vr0):not(#nc-vr1):not(#nc-vr2):not(#nc-vr3):not(#nc-vr4):not(#nc-vr5):not(#nc-vr6):not(#nc-vr7):not(#nc-vr8):not(#nc-vr9):not(#nc-vr10):not(#nc-vr11):not(#nc-vr12):not(#nc-vr13):not(#nc-vr14):not(#nc-vr15):not(#nc-vr16):not(#nc-vr17):not(#nc-vr18):not(#nc-vr19):not(#nc-vr20):not(#nc-vr21):not(#nc-vr22):not(#nc-vr23):not(#nc-vr24):not(#nc-vr25):not(#nc-vr26):not(#nc-vr27):not(#nc-vr28):not(#nc-vr29)::before{
-    content: '' !important; display: block !important; position: absolute !important; top: 27px !important; left: var(--nc-vr-l, 0px) !important;
+    content: none !important; display: none !important; position: absolute !important; top: 27px !important; left: 0 !important; 
     width: 1px !important; height: var(--nc-vr-h, 0px) !important; background: #121417 !important; pointer-events: none !important;
   }
 }
@@ -17264,15 +17264,27 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
   }
 }
 @media (min-width: 1024px){
-  body.archive-page .arc--index .arc-main::before{ left: round(nearest, calc(270px + 3.89vw), 1px); top: 27px; bottom: 27px; width: var(--nc-hair, 1px); }
-  body.archive-page .arc--index .arc-main::after{ right: calc(round(nearest, calc(270px + 3.89vw), 1px) + 1px - var(--nc-hair, 1px)); top: 27px; bottom: 27px; width: var(--nc-hair, 1px); }
+  body.archive-page .arc--index .arc-main::before,
+  body.archive-page .arc--index .arc-main::after{ content: none; }
   html.is-archive body.archive-page main .op-band > .nc-band-dash{ display: none !important; }
 }
-html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31){ --k: #000000; --tw: #82C8E5; --nc-mark: #FDFDFB; background: #82C8E5 !important; color: #000000 !important; padding-top: 54px !important; }
-html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31)::before{ top: 27px !important; background: #000000 !important; }
-html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) *:not(clipPath):not(clipPath *){ --k: #000000; color: #000000 !important; fill: #000000 !important; }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31){ --k: #FDFDFB; --tw: #82C8E5; --nc-mark: #000000; background: #82C8E5 !important; color: #FDFDFB !important; padding-top: 54px !important; box-shadow: 0 -27px 0 0 #FDFDFB !important; }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31)::before{ top: 27px !important; background: #FDFDFB !important; }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) *:not(clipPath):not(clipPath *){ --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important; }
 @media (hover: hover){
   html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) a:hover,
-  html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) a:hover *{ --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important; }
+  html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) a:hover *{ --k: #000000; color: #000000 !important; fill: #000000 !important; }
 }
-html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) ::selection{ background: #FDFDFB; color: #000000; -webkit-text-fill-color: #000000; }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) ::selection{ background: #000000; color: #FDFDFB; -webkit-text-fill-color: #FDFDFB; }
+.nc-vr{ display: none; }
+@keyframes nc-vr-rise { from { transform: scaleY(var(--nv-s, 1)); } to { transform: scaleY(1); } }
+@media (min-width: 1024px){
+  html body.has-mega > i.nc-vr[style*="left:"],
+  html body.archive-page > i.nc-vr{
+    display: block; position: fixed; z-index: 2; top: var(--nv-t, 96px); bottom: 27px; width: var(--nc-hair, 1px); background: #82C8E5; pointer-events: none;
+    transform-origin: 50% 100%;
+    animation: nc-vr-rise linear both; animation-timeline: scroll(root); animation-range: 0 var(--op-s, 1px);
+  }
+  html body.archive-page > i.nc-vr{ left: round(nearest, calc(270px + 3.89vw), 1px); }
+  html body.archive-page > i.nc-vr.nc-vr--2{ left: auto; right: calc(round(nearest, calc(270px + 3.89vw), 1px) + 1px - var(--nc-hair, 1px)); }
+}

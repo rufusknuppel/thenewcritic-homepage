@@ -377,13 +377,13 @@ function siteFooter() {
     ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
-  return `<footer class="nc-foot" aria-label="Colophon">`
+  return `<i class="nc-vr" aria-hidden="true"></i><i class="nc-vr nc-vr--2" aria-hidden="true"></i><footer class="nc-foot" aria-label="Colophon">`
     + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
     + `<div class="nc-foot__band"><p class="nc-foot__soc">${socials}</p><p class="nc-foot__copy"><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__est"><span class="nc-foot__a">Est. May 2025</span></p></div>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
     + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
-    + `if(b){var q=getComputedStyle(b),r=b.getBoundingClientRect();if(r.height)f.style.setProperty('--nf-h',r.height+'px');var l=q.getPropertyValue('--opb-navl'),e=q.getPropertyValue('--opb-soc-r');if(l)f.style.setProperty('--nf-l',l);if(e)f.style.setProperty('--nf-r',e);}`
+    + `if(b){var q=getComputedStyle(b),r=b.getBoundingClientRect();if(r.height){f.style.setProperty('--nf-h',r.height+'px');var H=innerHeight-r.height-54,op=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s'))||0,s0=H>0?Math.max(0,(H-op)/H):1;[].forEach.call(document.querySelectorAll('body > .nc-vr'),function(v){v.style.setProperty('--nv-t',(r.height+27)+'px');v.style.setProperty('--nv-s',s0.toFixed(5));});}var l=q.getPropertyValue('--opb-navl'),e=q.getPropertyValue('--opb-soc-r');if(l)f.style.setProperty('--nf-l',l);if(e)f.style.setProperty('--nf-r',e);}`
     + `};seat();addEventListener('resize',function(){setTimeout(seat,250);});addEventListener('load',function(){setTimeout(seat,500);setTimeout(seat,1700);});document.addEventListener('newcritic:fit',function(){setTimeout(seat,0);});addEventListener('newcritic:fitdone',seat);var mb=document.querySelector('main .op-band');if(mb&&window.MutationObserver)new MutationObserver(seat).observe(mb,{attributes:true,attributeFilter:['style']});})();</script>`;
 }
 function cornerBird() {

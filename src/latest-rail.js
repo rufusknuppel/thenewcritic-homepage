@@ -3713,8 +3713,9 @@ window.ncOpenH = function () {
     // (style.css THE RULE BETWEEN THE COLUMNS)
     var hold = sw && sw.parentElement;
     if (hold && wide && ruleX) {
-      var vl = (ruleX - hold.getBoundingClientRect().left).toFixed(2) + 'px';
-      if (hold.style.getPropertyValue('--nc-vr-l') !== vl) hold.style.setProperty('--nc-vr-l', vl);
+      // (the rule on the window now, body > .nc-vr: style.css THE COLUMNS' RULES ON THE WINDOW)
+      var vrE = document.querySelector('body > .nc-vr'), vl = ruleX + 'px';
+      if (vrE && vrE.style.left !== vl) vrE.style.left = vl;
       // (the rule under the bird 54 from this one and 54 from the site's edge — "Rule between bird and the latest should be 54px from the vertical rule and the site edge", 2026-11-03)
       var rw = (window.innerWidth - ruleX - 108 + 54) + 'px'; // (27 further each way, 27 from each: "Increase all rules by ... 22", "Add 5 more", 2026-11-03; in to 54 and out again, "Move rule in the side column 27px in on either side", "Add 27px back to rule in side column", 2026-11-04)
       if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);
@@ -3725,8 +3726,6 @@ window.ncOpenH = function () {
   function vrH() {
     var hold = document.querySelector('.latest-rail__hold'), band = document.querySelector('main .op-band');
     if (!hold || !band) return;
-    var v = Math.max(0, window.innerHeight - band.getBoundingClientRect().height - 54).toFixed(1) + 'px';
-    if (hold.style.getPropertyValue('--nc-vr-h') !== v) hold.style.setProperty('--nc-vr-h', v);
     // (the bird's way down the window to the middle between the band and the footer's rule at the page's end: "Have the bird move to center when the latest disappears", 2026-11-05; style.css THE BIRD TO THE MIDDLE AS THE LATEST GOES)
     var sw = hold.querySelector(':scope > .rail-swallow'), ft = document.querySelector('body > footer.nc-foot');
     if (!sw || !ft || !ft.offsetHeight) return;
