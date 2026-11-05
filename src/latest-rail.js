@@ -2106,7 +2106,9 @@ var ncStemX = function () {
     // — its hold alone carried over, --rl-gtx)
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
     // (its left on a whole pixel, the hold a layer of its own when it sticks: at 1149.5 the rule between the columns painted as two half pixels, 2026-11-03)
-    var d0 = (sq.left + sq.right) / 2 - (r.left + r.right) / 2, lG = r.left + d0;
+    // (the nav where it stands at rest, its slide on the scroll, nc-band-r, taken off: read from further down the page the column stood 25 right and the rule 50 — "Why is this side column smaller on reload?", 2026-11-05)
+    var navSl = new DOMMatrixReadOnly(getComputedStyle(socG).transform).m41;
+    var d0 = (sq.left + sq.right) / 2 - navSl - (r.left + r.right) / 2, lG = r.left + d0;
     var v = (t0 + d0 + Math.round(lG) - lG).toFixed(2) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
   };

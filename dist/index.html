@@ -11843,7 +11843,8 @@ var ncStemX = function () {
     if (!sq || !sq.width) return;
     holdG.style.setProperty('--nc-colw', sq.width.toFixed(1) + 'px');
     var r = holdG.getBoundingClientRect(), t0 = parseFloat(getComputedStyle(holdG).translate) || 0;
-    var d0 = (sq.left + sq.right) / 2 - (r.left + r.right) / 2, lG = r.left + d0;
+    var navSl = new DOMMatrixReadOnly(getComputedStyle(socG).transform).m41;
+    var d0 = (sq.left + sq.right) / 2 - navSl - (r.left + r.right) / 2, lG = r.left + d0;
     var v = (t0 + d0 + Math.round(lG) - lG).toFixed(2) + 'px';
     if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
   };
