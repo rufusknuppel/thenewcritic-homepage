@@ -2411,8 +2411,7 @@ var ncStemX = function () {
     var hs = document.querySelector('.latest-rail__hold'), ft = document.querySelector('body > footer.nc-foot');
     if (!hs || !ft || ft.getBoundingClientRect().top >= window.innerHeight) { seatNow(); return; }
     var stood = [].slice.call(hs.querySelectorAll(':scope > .rail-sections, :scope > .latest-rail__in')).map(function (el) { return [el, 'nc-lat-in']; })
-      .concat([].slice.call(hs.querySelectorAll(':scope > .rail-swallow')).map(function (el) { return [el, 'nc-bird-in']; }))
-      .concat([].slice.call(hs.querySelectorAll(':scope > .rail-swallow > svg')).map(function (el) { return [el, 'none']; }));
+      .concat([].slice.call(hs.querySelectorAll(':scope > .rail-swallow')).map(function (el) { return [el, 'nc-bird-in']; }));
     stood.forEach(function (p) { p[0].style.setProperty('animation-name', p[1], 'important'); });
     try { seatNow(); } finally { stood.forEach(function (p) { p[0].style.removeProperty('animation-name'); }); }
   };
@@ -3734,6 +3733,10 @@ window.ncOpenH = function () {
     var e = Math.round((bandH + window.innerHeight - F - br.height) / 2 - pinned) + 'px';
     if (hold.style.getPropertyValue('--nc-bird-end') !== e) hold.style.setProperty('--nc-bird-end', e);
     if (hold.style.getPropertyValue('--nc-foot-h') !== F + 'px') hold.style.setProperty('--nc-foot-h', F + 'px');
+    // (The Latest's way down till the ground over the footer, 27, has its rule, which stands --rl-rt over its head)
+    var latTop = bandH + (parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0), latRule = Math.abs(parseFloat(hold.style.getPropertyValue('--rl-rt')) || 0);
+    var le = Math.round(window.innerHeight - F - 27 + latRule + 2 - latTop) + 'px';
+    if (hold.style.getPropertyValue('--nc-lat-end') !== le) hold.style.setProperty('--nc-lat-end', le);
   }
   window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });

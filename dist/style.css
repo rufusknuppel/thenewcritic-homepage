@@ -17241,10 +17241,9 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
   html body main.has-mega .page-rows .latest-rail .latest-rail__hold a.latest-rail__all.latest-rail__all:not(#nc-ry0):not(#nc-ry1):not(#nc-ry2):not(#nc-ry3):not(#nc-ry4):not(#nc-ry5):not(#nc-ry6):not(#nc-ry7):not(#nc-ry8):not(#nc-ry9):not(#nc-ry10):not(#nc-ry11):not(#nc-ry12):not(#nc-ry13):not(#nc-ry14):not(#nc-ry15):not(#nc-ry16):not(#nc-ry17):not(#nc-ry18):not(#nc-ry19):not(#nc-ry20):not(#nc-ry21):not(#nc-ry22):not(#nc-ry23):not(#nc-ry24):not(#nc-ry25):not(#nc-ry26):not(#nc-ry27):not(#nc-ry28):not(#nc-ry29):not(#nc-rz0):not(#nc-rz1):not(#nc-rz2):not(#nc-rz3):not(#nc-rz4):not(#nc-rz5):not(#nc-rz6):not(#nc-rz7):not(#nc-rz8):not(#nc-rz9):not(#nc-rz10):not(#nc-rz11):not(#nc-rz12):not(#nc-rz13):not(#nc-rz14):not(#nc-rz15):not(#nc-rz16):not(#nc-rz17):not(#nc-rz18):not(#nc-rz19):not(#nc-rz20):not(#nc-rz21):not(#nc-rz22):not(#nc-rz23):not(#nc-rz24):not(#nc-rz25):not(#nc-rz26):not(#nc-rz27):not(#nc-rz28):not(#nc-rz29):not(#nc-ra0):not(#nc-ra1):not(#nc-ra2):not(#nc-ra3):not(#nc-ra4):not(#nc-ra5):not(#nc-ra6):not(#nc-ra7):not(#nc-ra8):not(#nc-ra9):not(#nc-ra10):not(#nc-ra11):not(#nc-ra12):not(#nc-ra13):not(#nc-ra14):not(#nc-ra15):not(#nc-ra16):not(#nc-ra17):not(#nc-ra18):not(#nc-ra19):not(#nc-ra20):not(#nc-ra21):not(#nc-ra22):not(#nc-ra23):not(#nc-ra24):not(#nc-ra25):not(#nc-ra26):not(#nc-ra27):not(#nc-ra28):not(#nc-ra29){ font-size: 19.5px !important; }
 }
 @keyframes nc-lat-in { from { translate: 0 var(--rl-st0, 0px); } to { translate: 0 var(--rl-stdy, 0px); } }
-@keyframes nc-lat-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--rl-st0, 0px) + 2 * var(--op-s, 0px))); } }
+@keyframes nc-lat-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-lat-end, 0px) + var(--nc-foot-h, 0px))); } }
 @keyframes nc-bird-in { from { translate: 0 0; } to { translate: 0 round(nearest, var(--rl-swdy, 0px), 1px); } }
-@keyframes nc-bird-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-bird-end, 0px) + var(--op-s, 0px))); } }
-@keyframes nc-bird-hold { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-foot-h, 0px) - var(--op-s, 0px))); } }
+@keyframes nc-bird-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-bird-end, 0px) + var(--nc-foot-h, 0px))); } }
 @media (min-width: 1024px){
   html body:not(.about-page){ timeline-scope: --nc-foot-v, --nc-foot-all; }
   html body > footer.nc-foot.nc-foot{ view-timeline: --nc-foot-all block; }
@@ -17257,13 +17256,10 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .rail-sections:not(#nc-ln0),html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .latest-rail__in:not(#nc-ln0){
-    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px);
+    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 0% entry 100%;
   }
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
-    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px) !important;
-  }
-  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow > svg{
-    animation: nc-bird-hold linear both; animation-timeline: --nc-foot-all; animation-range: entry var(--op-s, 1px) entry 100%;
+    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 0% entry 100% !important;
   }
 }
 @media (min-width: 1024px){

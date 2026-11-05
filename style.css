@@ -34032,12 +34032,11 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 
 /* THE BIRD AND THE LATEST MOVE WITH THE SCROLL (2026-11-05 — "Bird and the latest look a little glitchy on scroll"): both had been carried by whole-pixel registered lengths (THE COLUMN'S STACK ON WHOLE PIXELS, 2026-10-20), worked out on the main thread and rounded, against a hold that rides up with the page at its own fractions, so they jittered; now plain keyframes on translate and transform, which the compositor runs in step with the scroll.
    The reveal: --rl-st0 to nothing and the bird by --rl-swdy, over --op-s.
-   The going: as the footer starts to come, over the same scroll, The Latest and its rule back down the window behind the footer at the speed they rose ("Have the latest disappear when colophon comes the same way that it appears at top"), the bird to the middle between the band and the footer's rule at the page's end ("Have the bird move to center when the latest disappears", "Have the bird and the latest move exactly as they do on reveal", "Linearly": --nc-bird-end, latest-rail.js); the bird's svg taking back the page's rise for the rest of the footer's coming, so it holds there */
+   The going: over the footer's whole coming, landing as it lands, as the reveal lands as the band pins ("The latest and the bird movement in colophon doesn't look nearly as good as at the top", 2026-11-05; over the reveal's length before, The Latest gone in a third of it, the bird crawling): The Latest and its rule down the window till the 27 of ground over the footer has them (--nc-lat-end) and the bird to the middle between the band and the footer's rule (--nc-bird-end; latest-rail.js), about the reveal's two to one between them, the page's rise taken back (--nc-foot-h); "Have the latest disappear when colophon comes the same way that it appears at top", "Have the bird move to center when the latest disappears", "Linearly" */
 @keyframes nc-lat-in { from { translate: 0 var(--rl-st0, 0px); } to { translate: 0 var(--rl-stdy, 0px); } }
-@keyframes nc-lat-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--rl-st0, 0px) + 2 * var(--op-s, 0px))); } }
+@keyframes nc-lat-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-lat-end, 0px) + var(--nc-foot-h, 0px))); } }
 @keyframes nc-bird-in { from { translate: 0 0; } to { translate: 0 round(nearest, var(--rl-swdy, 0px), 1px); } }
-@keyframes nc-bird-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-bird-end, 0px) + var(--op-s, 0px))); } }
-@keyframes nc-bird-hold { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-foot-h, 0px) - var(--op-s, 0px))); } }
+@keyframes nc-bird-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-bird-end, 0px) + var(--nc-foot-h, 0px))); } }
 @media (min-width: 1024px){
   html body:not(.about-page){ timeline-scope: --nc-foot-v, --nc-foot-all; }
   html body > footer.nc-foot.nc-foot{ view-timeline: --nc-foot-all block; }
@@ -34050,13 +34049,10 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > :is(.rail-sections, .latest-rail__in):not(#nc-ln0){
-    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px);
+    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 0% entry 100%;
   }
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
-    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px) !important;
-  }
-  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow > svg{
-    animation: nc-bird-hold linear both; animation-timeline: --nc-foot-all; animation-range: entry var(--op-s, 1px) entry 100%;
+    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 0% entry 100% !important;
   }
 }
 
