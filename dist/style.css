@@ -17368,3 +17368,9 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 }
 @keyframes nc-band-l2 { }
 @keyframes nc-band-r2 { }
+@media (min-width: 1024px){
+  html body > footer.nc-foot.nc-foot:not(#nc-cm0):not(#nc-cm1):not(#nc-cm2):not(#nc-cm3):not(#nc-cm4):not(#nc-cm5):not(#nc-cm6):not(#nc-cm7):not(#nc-cm8):not(#nc-cm9):not(#nc-cm10):not(#nc-cm11):not(#nc-cm12):not(#nc-cm13):not(#nc-cm14):not(#nc-cm15):not(#nc-cm16):not(#nc-cm17):not(#nc-cm18):not(#nc-cm19):not(#nc-cm20):not(#nc-cm21):not(#nc-cm22):not(#nc-cm23):not(#nc-cm24):not(#nc-cm25):not(#nc-cm26):not(#nc-cm27):not(#nc-cm28):not(#nc-cm29):not(#nc-cm30):not(#nc-cm31):not(#nc-cm32):not(#nc-cm33):not(#nc-cm34):not(#nc-cm35):not(#nc-cm36):not(#nc-cm37):not(#nc-cm38):not(#nc-cm39):not(#nc-cm40):not(#nc-cm41):not(#nc-cm42):not(#nc-cm43){ padding-top: 0 !important; }
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-cm0):not(#nc-cm1):not(#nc-cm2):not(#nc-cm3):not(#nc-cm4):not(#nc-cm5):not(#nc-cm6):not(#nc-cm7):not(#nc-cm8):not(#nc-cm9):not(#nc-cm10):not(#nc-cm11):not(#nc-cm12):not(#nc-cm13):not(#nc-cm14):not(#nc-cm15):not(#nc-cm16):not(#nc-cm17):not(#nc-cm18):not(#nc-cm19):not(#nc-cm20):not(#nc-cm21):not(#nc-cm22):not(#nc-cm23):not(#nc-cm24):not(#nc-cm25):not(#nc-cm26):not(#nc-cm27):not(#nc-cm28):not(#nc-cm29):not(#nc-cm30):not(#nc-cm31):not(#nc-cm32):not(#nc-cm33):not(#nc-cm34):not(#nc-cm35):not(#nc-cm36):not(#nc-cm37):not(#nc-cm38):not(#nc-cm39):not(#nc-cm40):not(#nc-cm41):not(#nc-cm42):not(#nc-cm43){ padding-left: 27px !important; padding-right: 27px !important; }
+}
+@keyframes nc-foot-tnc-out { }
+@keyframes nc-foot-tlm-in { }
