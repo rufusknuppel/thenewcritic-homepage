@@ -2003,7 +2003,7 @@ a.likes:hover::after,
    carries a shadow: the frame is the whole signal now. */
 .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image,
 .duo-half:not(.duo-half--mega):is(:hover, :focus-within) .card-image{
-  filter: grayscale(1) brightness(0.5);
+  filter: brightness(0.6);
 }
 .card--feature .card-title,
 .card--duo .card-title{
@@ -14498,7 +14498,7 @@ html[data-theme="hex"] :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ --klein
   :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
   .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
   .duo-half:not(.duo-half--mega):is(:hover, :focus-within) .card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    filter: grayscale(1) brightness(0.3);
+    filter: brightness(0.6);
   }
 }
 
@@ -17256,7 +17256,7 @@ main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r
    is in the preview's box or on the picture (cover-cue.js) — not the
    frame round the box. */
 main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra).is-inbox :is(.card-image-link, .latest-cover) img.card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  filter: grayscale(1) brightness(0.3);
+  filter: brightness(0.6);
   transition: none;
 }
 main.has-mega .duo-half--mega.is-inbox .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
@@ -33865,16 +33865,16 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
    card while the hand is on the picture (latest-rail.js; anywhere on the post before, "Hover should only go when mouse is on image"). A phone has no hand, and keeps its colour; the change .3s each way, "Make transition between two image states more gradual", "not too long though" */
 @media (hover: hover) and (min-width: 1024px){
   html body main.has-mega .duo-half--mega h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: none !important; transition: filter 0.3s ease !important; }
-  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: grayscale(1) !important; }
+  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: brightness(0.6) !important; }
 }
 @media (hover: hover){
-  :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29){ filter: none !important; }
+  :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29){ filter: brightness(0.6) !important; }
 }
 
 /* (a cover with no colour to give, gray under the hand as the rest, "Gray the monochrome as well, don't dim", 2026-11-04, dimmed for an hour before it, "For color images gray. For monochrome, gray and dim", the invert gone; its own at rest — "Make images color resting/gray invert on hover", 2026-11-04; inverted at rest the day before, "For images that are monochrome, invert the image on rest": duo-half--mono, build.js MONO_COVERS) */
 @media (hover: hover) and (min-width: 1024px){
   html body main.has-mega .duo-half--mega.duo-half--mono h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: none !important; }
-  html body main.has-mega .duo-half--mega.duo-half--mono.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: grayscale(1) !important; }
+  html body main.has-mega .duo-half--mega.duo-half--mono.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: brightness(0.6) !important; }
 }
 
 /* THE HAND ANSWERED AT ONCE (2026-11-03 — "Make hover snappier"): the words already change with no fade; the marks' .15s and the
@@ -34122,7 +34122,44 @@ html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(
   html body main.has-mega .page-rows .duo-half--mega .swap-body-title.swap-body-title:not(#nc-ts0):not(#nc-ts1):not(#nc-ts2):not(#nc-ts3):not(#nc-ts4):not(#nc-ts5):not(#nc-ts6):not(#nc-ts7):not(#nc-ts8):not(#nc-ts9):not(#nc-ts10):not(#nc-ts11):not(#nc-ts12):not(#nc-ts13):not(#nc-ts14):not(#nc-ts15):not(#nc-ts16):not(#nc-ts17):not(#nc-ts18):not(#nc-ts19):not(#nc-ts20):not(#nc-ts21):not(#nc-ts22):not(#nc-ts23):not(#nc-ts24):not(#nc-ts25):not(#nc-ts26):not(#nc-ts27):not(#nc-ts28):not(#nc-ts29):not(#nc-ts30):not(#nc-ts31) *{ transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease !important; }
 }
 
-/* THE NAME CUT WHERE THE BAND BEGINS (2026-11-05 — "A pixel of wordmark shows when I click The latest"): the name's box is 205.28 tall where the band stands at 205 (--op-s, its height rounded), so a page scrolled to the band's pin left .28 of it over the band; one device pixel on a Retina screen, the letters' feet in a row of dashes along the window's top */
+
+/* THE BAND ALONE AT THE HEAD (2026-11-05 — "On archive/store/about, should only be top nav band, remove the big wordmark at the top"): from 1024 up these pages open as the front page stands pinned, the small name at the left and the nav's end out at 27, on the band at the window's top (src/front-head.js seats it, --op-s 0). The name's box stays, unseen, for its measures. The name's own leaving is gone from the band's animations; the coming of the footer stays, its length --nc-pinch, the big name's height as on the front page. A phone keeps what it has */
 @media (min-width: 1024px){
-  html body a.content-name.content-name:not(#nc-cl0):not(#nc-cl1):not(#nc-cl2):not(#nc-cl3):not(#nc-cl4):not(#nc-cl5):not(#nc-cl6):not(#nc-cl7):not(#nc-cl8):not(#nc-cl9):not(#nc-cl10):not(#nc-cl11){ clip-path: inset(0 -100vw calc(100% - var(--op-s, 100%)) -100vw) !important; }
+  html body:is(.archive-page, .about-page) a.content-name.content-name:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39){ visibility: hidden !important; pointer-events: none !important; }
+  html body:is(.archive-page, .about-page) a.content-name.content-name:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) *{ visibility: hidden !important; }
+  html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) > a.rail-tlm.rail-tlm{
+    --nc-band-x: -27px; opacity: 0;
+    animation: nc-foot-tlm-in linear both, nc-band-l2 linear both !important;
+    animation-timeline: --nc-foot-v, --nc-foot-all !important;
+    animation-range: entry 0% entry 25%, entry 0px entry calc(0.9 * var(--nc-pinch, 185px)) !important;
+  }
+  html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) > a.op-tnc.op-tnc{
+    opacity: 1;
+    animation: nc-foot-tnc-out linear forwards !important;
+    animation-timeline: --nc-foot-v !important;
+    animation-range: entry 0% entry 25% !important;
+  }
+  html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) > .rail-top > .rail-top__nav{
+    transform: translateX(calc(var(--opb-soc-r, 52px) - 27px));
+    animation: nc-band-r2 linear both !important;
+    animation-timeline: --nc-foot-all !important;
+    animation-range: entry 0px entry calc(0.9 * var(--nc-pinch, 185px)) !important;
+  }
+}
+
+/* EVERY PICTURE DIMS UNDER THE HAND (2026-11-05 — "Rather than grayscale, have all images dim on hvoer"): the gray gone from every hover, brightness 0.6 in its place, in the rules where the gray stood; here the same .3s each way for the covers as the mega's picture has, and the store's tiles join. A phone has no hand */
+@media (hover: hover){
+  html body img.card-image:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ transition: filter 0.3s ease !important; }
+  body.store-page .sto-tile .sto-tile__img:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ transition: transform 0.4s ease, filter 0.3s ease !important; }
+  body.store-page .sto-tile:hover .sto-tile__img:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ filter: brightness(0.6) !important; }
+}
+
+/* THE NAME GONE WHERE THE BAND PINS (2026-11-05 — "A pixel of wordmark shows when I click The latest", cut at the box's foot for an hour, then "bottom of the Cs of Critic are being cropped": the C's round foot stands below the box and over the band by right, so nothing cuts it): the name unseen only from a page scrolled to the band's pin, where its feet would show along the window's top */
+@keyframes nc-name-gone { to { clip-path: inset(0 0 100% 0); } }
+@media (min-width: 1024px){
+  html body:not(.archive-page):not(.about-page) a.content-name.content-name:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){
+    animation: nc-name-gone linear both !important;
+    animation-timeline: scroll(root) !important;
+    animation-range: calc(var(--op-s, 205px) - 1px) calc(var(--op-s, 205px) - 0.5px) !important;
+  }
 }

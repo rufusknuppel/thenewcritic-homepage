@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=81fc319d">
+<link rel="stylesheet" href="style.css?v=0a2f9e82">
 <style>:root{--colo-span:9.3572;--band-span:7.7365;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -766,7 +766,7 @@ window.ncSubW = window.ncSubW || function (nav) {
   };
   var lay = function () {
     if (!main || !band || !cn) return;
-    var h = window.innerWidth >= 1024 && band.offsetHeight ? cn.offsetHeight + band.offsetHeight : 0;
+    var h = window.innerWidth >= 1024 && band.offsetHeight ? band.offsetHeight : 0;
     var mt = h - (main.getBoundingClientRect().top + (window.pageYOffset || 0));
     var ws = cn.querySelectorAll('.content-name__block .tnc-words svg');
     var mids = [].map.call(ws, function (w) { var r = w.getBoundingClientRect(); return (r.left + r.right) / 2; });
@@ -777,7 +777,8 @@ window.ncSubW = window.ncSubW || function (nav) {
     band.style.setProperty('--op-mt', mt.toFixed(1) + 'px');
     de.style.setProperty('--arc-top', Math.max(0, mt).toFixed(1) + 'px');
     de.style.setProperty('--arc-band', band.offsetHeight + 'px');
-    de.style.setProperty('--op-s', cn.offsetHeight.toFixed(1) + 'px');
+    de.style.setProperty('--op-s', '0px');
+    de.style.setProperty('--nc-pinch', cn.offsetHeight.toFixed(1) + 'px');
     ['--opb-the', '--opb-new', '--opb-critic'].forEach(function (v, k) { if (mids[k] != null) band.style.setProperty(v, mids[k].toFixed(1) + 'px'); });
     if (navE && socE && ws[0]) {
       var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width, vw = de.clientWidth;

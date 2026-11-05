@@ -38,7 +38,8 @@ window.ncSubW = window.ncSubW || function (nav) {
   };
   var lay = function () {
     if (!main || !band || !cn) return;
-    var h = window.innerWidth >= 1024 && band.offsetHeight ? cn.offsetHeight + band.offsetHeight : 0;
+    // (the band alone at the head since, the big name unseen and kept only to read its measures from: "On archive/store/about, should only be top nav band, remove the big wordmark at the top", 2026-11-05; style.css THE BAND ALONE AT THE HEAD)
+    var h = window.innerWidth >= 1024 && band.offsetHeight ? band.offsetHeight : 0;
     var mt = h - (main.getBoundingClientRect().top + (window.pageYOffset || 0));
     var ws = cn.querySelectorAll('.content-name__block .tnc-words svg');
     var mids = [].map.call(ws, function (w) { var r = w.getBoundingClientRect(); return (r.left + r.right) / 2; });
@@ -50,7 +51,8 @@ window.ncSubW = window.ncSubW || function (nav) {
     // (the ledger begins on the band's foot, its head pinning under the band)
     de.style.setProperty('--arc-top', Math.max(0, mt).toFixed(1) + 'px');
     de.style.setProperty('--arc-band', band.offsetHeight + 'px');
-    de.style.setProperty('--op-s', cn.offsetHeight.toFixed(1) + 'px');
+    de.style.setProperty('--op-s', '0px');
+    de.style.setProperty('--nc-pinch', cn.offsetHeight.toFixed(1) + 'px');
     ['--opb-the', '--opb-new', '--opb-critic'].forEach(function (v, k) { if (mids[k] != null) band.style.setProperty(v, mids[k].toFixed(1) + 'px'); });
     if (navE && socE && ws[0]) {
       var nw = navE.getBoundingClientRect().width, sw = socE.getBoundingClientRect().width, vw = de.clientWidth;

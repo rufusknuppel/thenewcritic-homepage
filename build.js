@@ -1754,6 +1754,10 @@ function emHtml(text) {
 // first possessive. A dek that doesn't fit the pattern passes through
 // plain. (The first "'s" is the artist's — a later apostrophe inside the
 // title itself, like "Dad Don't Read This", stays inside the italics.)
+// (the O of On and the C of Contra capitals at a dek's head — "Capitalize the O in On and the C of Contra on the deks on the homepage", 2026-11-05)
+function capDek(s) {
+  return String(s || '').replace(/^(on|contra)(?=\s)/, (w) => w[0].toUpperCase() + w.slice(1));
+}
 function contraWorkDek(subtitle) {
   const m = /^([\s\S]*?[’']s\s+)(\S[\s\S]*)$/.exec(subtitle || '');
   if (!m) return escapeHtml(subtitle || '');
@@ -3263,7 +3267,7 @@ function renderDuoHalf(post, { tag, btnLabel, btnHref, sectionBtn = true, showAr
   // .meta-dek, displacing the date down to the band) — with the work's
   // title in italics (see contraWorkDek).
   const dekHtml = showDek && post.subtitle
-    ? `<p class="card-dek">${section === 'contra' || megaKind === 'contra' ? contraWorkDek(post.subtitle) : escapeHtml(post.subtitle)}</p>`
+    ? `<p class="card-dek">${section === 'contra' || megaKind === 'contra' ? contraWorkDek(capDek(post.subtitle)) : escapeHtml(capDek(post.subtitle))}</p>`
     : '';
   // Full, untruncated paragraphs (several of them where the row-posts
   // fetch in main() ran) — duo-panel-fit.js decides at render time how
@@ -6757,7 +6761,7 @@ async function main() {
   const pages = {
     // (the deks' opening On and Contra in lower case on the front page — "lowercase on and contra on homepage", "the
     // deks only", 2026-10-24; the cards' deks are the copies the overlays and the hidden twins are made from)
-    'index.html': html.replace(/(<p class="card-dek"[^>]*>(?:\s|<[^>]+>)*)(On|Contra)(?=\s)/g, (m, a, w) => a + w.toLowerCase()),
+    'index.html': html,
     'about.html': renderAboutPage(founders),
     'archive.html': renderArchivePage(archivePool),
     'store.html': renderStorePage(await loadStore()),
