@@ -1919,6 +1919,8 @@ var ncStemX = function () {
   // their whole pixels; a width that has changed asks for the fit again, one that has not does nothing, 2026-10-15)
   if (document.fonts) document.fonts.addEventListener('loadingdone', function () { setTimeout(measure, 0); });
   addEventListener('resize', measure, { passive: true });
+  // (and again after each fit, the only event a resize's passes send: at the resize itself the bird still stands at the old window's size, and the rows kept a margin read off it, 76 too far right after 1300 and back to 1440, 2026-11-05)
+  addEventListener('newcritic:fit', function () { setTimeout(measure, 0); }, { passive: true });
   addEventListener('load', measure);
 })();
 
@@ -3708,6 +3710,15 @@ window.ncOpenH = function () {
     if (!hold || !band) return;
     var v = Math.max(0, window.innerHeight - band.getBoundingClientRect().height - 54).toFixed(1) + 'px';
     if (hold.style.getPropertyValue('--nc-vr-h') !== v) hold.style.setProperty('--nc-vr-h', v);
+    // (the bird's way down the window to the middle between the band and the footer's rule at the page's end: "Have the bird move to center when the latest disappears", 2026-11-05; style.css THE BIRD TO THE MIDDLE AS THE LATEST GOES)
+    var sw = hold.querySelector(':scope > .rail-swallow'), ft = document.querySelector('body > footer.nc-foot');
+    if (!sw || !ft || !ft.offsetHeight) return;
+    var br = sw.getBoundingClientRect(), bandH = band.getBoundingClientRect().height, F = ft.offsetHeight;
+    var inHold = br.top - hold.getBoundingClientRect().top - (parseFloat((getComputedStyle(sw).translate || '').split(/\s+/)[1]) || 0);
+    var pinned = bandH + inHold + (parseFloat(hold.style.getPropertyValue('--rl-swdy')) || 0);
+    var e = Math.round((bandH + window.innerHeight - F - br.height) / 2 - pinned) + 'px';
+    if (hold.style.getPropertyValue('--nc-bird-end') !== e) hold.style.setProperty('--nc-bird-end', e);
+    if (hold.style.getPropertyValue('--nc-foot-h') !== F + 'px') hold.style.setProperty('--nc-foot-h', F + 'px');
   }
   window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });

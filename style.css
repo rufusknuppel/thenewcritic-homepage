@@ -33774,12 +33774,12 @@ html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; pad
 }
 
 /* THE COLOPHON'S LINE: THE SOCIALS, THE COPYRIGHT, EST. (2026-11-05 — "In colophon move socials to left. Make copyright the center in inter. Move est to the right"):
-   the copyright on the band's middle in the Inter the band's date wears at the top, Est. at the right end, still in the italic of The Last Magazine ("In the colophon, move the est. into a center italics like the last magazine", 2026-11-03, the middle then); footer hidden under 1024 as it was */
+   the copyright on the band's middle in the Host Grotesk the band's date wears at the top, Est. at the right end, still in the italic of The Last Magazine ("In the colophon, move the est. into a center italics like the last magazine", 2026-11-03, the middle then); footer hidden under 1024 as it was */
 @media (min-width: 1024px){
   html body > footer.nc-foot > .nc-foot__band:not(#nc-es0){ position: relative; }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__copy.nc-foot__copy:not(#nc-es0):not(#nc-es1){
     position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-    font-family: Inter, "Helvetica Neue", Arial, sans-serif; font-size: 13px; letter-spacing: 0.02em; font-style: normal; text-transform: uppercase;
+    font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 13.5px; letter-spacing: 0.02em; font-style: normal; text-transform: uppercase;
   }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){ font-style: italic; translate: 0 1px; }
 }
@@ -33854,8 +33854,8 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 }
 /* INTER ON THE KICKERS AND THE BAND'S DATE, THE METAS TOO (duo-panel-fit.js) (2026-11-03 — "Make the metas and the deks and the dates inter", "Sorry not the deks, the kickers", "The date in the top band"):
    upright and in capitals ("Make all inter not italics and all caps"), at 13 ("I want inter at 13px") */
-html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: Inter, "Helvetica Neue", Arial, sans-serif !important; font-size: 13px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
-html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: Inter, "Helvetica Neue", Arial, sans-serif !important; font-size: 13px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::before,
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::after{ font-family: inherit !important; font-size: inherit !important; letter-spacing: inherit !important; font-style: normal !important; text-transform: uppercase !important; }
 /* (the kickers each on its one line, the Inter's capitals being wider than the bird: their list a wider box on the bird's middle) */
@@ -34086,3 +34086,19 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
     translate: 0 round(nearest, calc(var(--rl-st0, 0px) + var(--rl-sta, 0px) + var(--rl-stb, 0px) + var(--rl-stc, 0px)), 1px);
   }
 }
+
+/* THE BIRD TO THE MIDDLE AS THE LATEST GOES (2026-11-05 — "Have the bird move to center when the latest disappears", "Have the bird and the latest move exactly as they do on reveal", "Linearly"): at one speed over the reveal's own length of scroll (--op-s), as the footer starts to come, to the middle between the band and the footer's rule at the page's end (--nc-bird-end, latest-rail.js); the page's rise taken back for that scroll and, nc-sw-d, for the rest of the footer's coming, so it holds there */
+@property --rl-swc { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --rl-swd { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-sw-c { from { --rl-swc: 0px; } to { --rl-swc: calc(var(--nc-bird-end, 0px) + var(--op-s, 0px)); } }
+@keyframes nc-sw-d { from { --rl-swd: 0px; } to { --rl-swd: calc(var(--nc-foot-h, 0px) - var(--op-s, 0px)); } }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
+    animation: nc-sw-a linear both, nc-sw-b linear both, nc-sw-c linear both, nc-sw-d linear both !important;
+    animation-timeline: scroll(root), scroll(root), --nc-foot-all, --nc-foot-all !important;
+    animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px), entry var(--op-s, 1px) entry 100% !important;
+    translate: 0 round(nearest, calc(var(--rl-swa, 0px) + var(--rl-swb, 0px) + var(--rl-swc, 0px) + var(--rl-swd, 0px)), 1px) !important;
+  }
+}
+
+/* (HOST GROTESK FOR THE INTER, 2026-11-05 — "Change inter to Host Grotesk", "Same height as now": at 13.5 for the Inter's 13, its capitals 0.70 of the size to the Inter's 0.7275, the same 9.46 tall; written where the Inter stood, the band's date, the kickers, the metas (duo-panel-fit.js) and the copyright) */

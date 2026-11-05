@@ -17084,7 +17084,7 @@ html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; pad
   html body > footer.nc-foot > .nc-foot__band:not(#nc-es0){ position: relative; }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__copy.nc-foot__copy:not(#nc-es0):not(#nc-es1){
     position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-    font-family: Inter, "Helvetica Neue", Arial, sans-serif; font-size: 13px; letter-spacing: 0.02em; font-style: normal; text-transform: uppercase;
+    font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 13.5px; letter-spacing: 0.02em; font-style: normal; text-transform: uppercase;
   }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){ font-style: italic; translate: 0 1px; }
 }
@@ -17133,8 +17133,8 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 @media (min-width: 1024px){
   html body main.has-mega .page-rows .latest-rail > .latest-rail__hold:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not(#nc-wb4):not(#nc-wb5):not(#nc-wb6):not(#nc-wb7):not(#nc-wb8):not(#nc-wb9) > .rail-swallow .rail-swallow__body{ fill: #121417 !important; }
 }
-html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: Inter, "Helvetica Neue", Arial, sans-serif !important; font-size: 13px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
-html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: Inter, "Helvetica Neue", Arial, sans-serif !important; font-size: 13px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::before,
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::after{ font-family: inherit !important; font-size: inherit !important; letter-spacing: inherit !important; font-style: normal !important; text-transform: uppercase !important; }
 @media (min-width: 1024px){
@@ -17291,5 +17291,17 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
     animation-timeline: scroll(root), scroll(root), --nc-foot-all !important;
     animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px) !important;
     translate: 0 round(nearest, calc(var(--rl-st0, 0px) + var(--rl-sta, 0px) + var(--rl-stb, 0px) + var(--rl-stc, 0px)), 1px);
+  }
+}
+@property --rl-swc { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --rl-swd { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@keyframes nc-sw-c { from { --rl-swc: 0px; } to { --rl-swc: calc(var(--nc-bird-end, 0px) + var(--op-s, 0px)); } }
+@keyframes nc-sw-d { from { --rl-swd: 0px; } to { --rl-swd: calc(var(--nc-foot-h, 0px) - var(--op-s, 0px)); } }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
+    animation: nc-sw-a linear both, nc-sw-b linear both, nc-sw-c linear both, nc-sw-d linear both !important;
+    animation-timeline: scroll(root), scroll(root), --nc-foot-all, --nc-foot-all !important;
+    animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px), entry var(--op-s, 1px) entry 100% !important;
+    translate: 0 round(nearest, calc(var(--rl-swa, 0px) + var(--rl-swb, 0px) + var(--rl-swc, 0px) + var(--rl-swd, 0px)), 1px) !important;
   }
 }
