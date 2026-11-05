@@ -31286,22 +31286,7 @@ html body main .op-track > .op-band > .opb-swallow{ display: none !important; }
    column move independently, causes wobbling"): the comma line and the kickers were carried by the same fraction of a
    pixel on the scroll, each drawn on its own and snapped to the pixel apart, so they shimmered against each other; the
    travel now on whole pixels, the same pixel for both on every frame, and the bird's too */
-@property --rl-st { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --rl-sw { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@keyframes nc-stack-px { from { --rl-st: var(--rl-st0, 0px); } to { --rl-st: var(--rl-stdy, 0px); } }
-/* (from --rl-st0 since — the stack seated where it lands and carried down from over it, "have the latest descend from the
-   bottom of the rule under the socials", 2026-10-28) */
-@keyframes nc-swallow-px { from { --rl-sw: 0px; } to { --rl-sw: var(--rl-swdy, 0px); } }
-@media (min-width: 1024px){
-  html body main .latest-rail__hold.latest-rail__hold > :is(.rail-sections, .latest-rail__in){
-    animation: nc-stack-px linear both; animation-timeline: scroll(root); animation-range: 0 var(--op-s, 1px);
-    translate: 0 round(nearest, var(--rl-st, 0px), 1px);
-  }
-  html body main .latest-rail__hold.latest-rail__hold > .rail-swallow{
-    animation: nc-swallow-px linear both !important; animation-timeline: scroll(root) !important; animation-range: 0 var(--op-s, 1px) !important;
-    translate: 0 round(nearest, var(--rl-sw, 0px), 1px) !important;
-  }
-}
+/* (the travel on the sheet's end since, THE BIRD AND THE LATEST MOVE WITH THE SCROLL, 2026-11-05) */
 
 /* THE DEKS CENTRED AGAIN (2026-10-20 — "Add another rule above the dek between the dek and the title, center deks"):
    the dek on its column's middle, the title and the byline still ranged left; a second rule over it (latest-rail.js
@@ -33446,26 +33431,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    scroll taken back on the line (--rl-sta, --rl-swa: the column's hold rides up with the page till the band pins), and
    the way seen on the window eased (--rl-stb, --rl-swb), so the window shows the ease alone. Where the column is seated
    (latest-rail.js sets --rl-st0, --rl-swdy) */
-@property --rl-sta { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --rl-stb { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --rl-swa { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --rl-swb { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@keyframes nc-st-a { from { --rl-sta: 0px; } to { --rl-sta: var(--op-s, 0px); } }
-@keyframes nc-st-b { from { --rl-stb: 0px; } to { --rl-stb: calc(var(--rl-stdy, 0px) - var(--rl-st0, 0px) - var(--op-s, 0px)); } }
-@keyframes nc-sw-a { from { --rl-swa: 0px; } to { --rl-swa: var(--op-s, 0px); } }
-@keyframes nc-sw-b { from { --rl-swb: 0px; } to { --rl-swb: calc(var(--rl-swdy, 0px) - var(--op-s, 0px)); } }
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
-  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > :is(.rail-sections, .latest-rail__in){
-    animation: nc-st-a linear both, nc-st-b cubic-bezier(.45, 0, .25, 1) both;
-    animation-timeline: scroll(root), scroll(root); animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px);
-    translate: 0 round(nearest, calc(var(--rl-st0, 0px) + var(--rl-sta, 0px) + var(--rl-stb, 0px)), 1px);
-  }
-  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow{
-    animation: nc-sw-a linear both, nc-sw-b cubic-bezier(.45, 0, .25, 1) both !important;
-    animation-timeline: scroll(root), scroll(root) !important; animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px) !important;
-    translate: 0 round(nearest, calc(var(--rl-swa, 0px) + var(--rl-swb, 0px)), 1px) !important;
-  }
-}
+/* (the travel on the sheet's end since, THE BIRD AND THE LATEST MOVE WITH THE SCROLL, 2026-11-05) */
 
 /* (THE LAST MAGAZINE IN GARAMOND for some days — "Make the last magazine back to Italics", "Unitalicize the last magazine",
    2026-10-28 — and the MAILLE capitals' outlines again since, their height the nav's capitals' as the band's lay sets it,
@@ -33483,19 +33449,6 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
    before the flip; the archive, About and the store keep them where they are) */
 @media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page) main.has-mega .op-track > .op-band.op-band:not([style*="--opb-navl"]) > :is(a.rail-tlm, .rail-top):not(#nc-tnc0):not(#nc-tnc1){ visibility: hidden !important; }
-}
-
-/* (the bird's way up at one speed since, The Latest still eased under it — "Have bird move linearly", 2026-10-29) */
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
-  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
-    animation-timing-function: linear, linear !important;
-  }
-}
-/* (and The Latest's at one speed too since, the whole column linear — "The latest should move linearly too", 2026-10-29) */
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
-  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > :is(.rail-sections, .latest-rail__in):not(#nc-ln0){
-    animation-timing-function: linear, linear !important;
-  }
 }
 
 /* THE SECTIONS' NAMES ONE TO A LINE (2026-11-01 — "Have the section titles on the homepage be on individual lines so The
@@ -33576,7 +33529,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body > footer.nc-foot > a.nc-foot__name:is(:hover, :focus-visible) svg path:not(#nc-ft0):not(#nc-ft1){ fill: var(--nc-mark, #FDFDFB) !important; }
   html body > footer.nc-foot > .nc-foot__band{
     display: flex; justify-content: space-between; align-items: center; height: var(--nf-h, 69px);
-    padding: 0 27px; box-sizing: border-box; /* (the nav band's margins as it stands pinned, its ends on the rule, the name's edges too — "Align margins with the margins in the nav band", 2026-11-05) */
+    padding: 0 var(--nf-r, 54px) 0 var(--nf-l, 54px); box-sizing: border-box; /* (the margins the band keeps under the top's name: 27 for an hour, on the pinned band's, "Align margins with the margins in the nav band", and in again since, "move colophon items in a little like they look under top wordmark", 2026-11-05) */
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
   }
   html body > footer.nc-foot .nc-foot__band > p{ margin: 0; padding: 0; white-space: nowrap; color: inherit; font: inherit; }
@@ -33779,7 +33732,7 @@ html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; pad
   html body > footer.nc-foot > .nc-foot__band:not(#nc-es0){ position: relative; }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__copy.nc-foot__copy:not(#nc-es0):not(#nc-es1){
     position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-    font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 13.5px; letter-spacing: 0.02em; font-style: normal; text-transform: uppercase;
+    font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 13.5px; letter-spacing: 0.06em; font-style: normal; text-transform: uppercase;
   }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){ font-style: italic; translate: 0 1px; }
 }
@@ -33854,8 +33807,8 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 }
 /* INTER ON THE KICKERS AND THE BAND'S DATE, THE METAS TOO (duo-panel-fit.js) (2026-11-03 — "Make the metas and the deks and the dates inter", "Sorry not the deks, the kickers", "The date in the top band"):
    upright and in capitals ("Make all inter not italics and all caps"), at 13 ("I want inter at 13px") */
-html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
-html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.02em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.06em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.06em !important; font-style: normal !important; text-transform: uppercase !important; }
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::before,
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::after{ font-family: inherit !important; font-size: inherit !important; letter-spacing: inherit !important; font-style: normal !important; text-transform: uppercase !important; }
 /* (the kickers each on its one line, the Inter's capitals being wider than the bird: their list a wider box on the bird's middle) */
@@ -34073,32 +34026,34 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
   html body main.has-mega .page-rows .latest-rail .latest-rail__hold a.latest-rail__all.latest-rail__all:not(#nc-ry0):not(#nc-ry1):not(#nc-ry2):not(#nc-ry3):not(#nc-ry4):not(#nc-ry5):not(#nc-ry6):not(#nc-ry7):not(#nc-ry8):not(#nc-ry9):not(#nc-ry10):not(#nc-ry11):not(#nc-ry12):not(#nc-ry13):not(#nc-ry14):not(#nc-ry15):not(#nc-ry16):not(#nc-ry17):not(#nc-ry18):not(#nc-ry19):not(#nc-ry20):not(#nc-ry21):not(#nc-ry22):not(#nc-ry23):not(#nc-ry24):not(#nc-ry25):not(#nc-ry26):not(#nc-ry27):not(#nc-ry28):not(#nc-ry29):not(#nc-rz0):not(#nc-rz1):not(#nc-rz2):not(#nc-rz3):not(#nc-rz4):not(#nc-rz5):not(#nc-rz6):not(#nc-rz7):not(#nc-rz8):not(#nc-rz9):not(#nc-rz10):not(#nc-rz11):not(#nc-rz12):not(#nc-rz13):not(#nc-rz14):not(#nc-rz15):not(#nc-rz16):not(#nc-rz17):not(#nc-rz18):not(#nc-rz19):not(#nc-rz20):not(#nc-rz21):not(#nc-rz22):not(#nc-rz23):not(#nc-rz24):not(#nc-rz25):not(#nc-rz26):not(#nc-rz27):not(#nc-rz28):not(#nc-rz29):not(#nc-ra0):not(#nc-ra1):not(#nc-ra2):not(#nc-ra3):not(#nc-ra4):not(#nc-ra5):not(#nc-ra6):not(#nc-ra7):not(#nc-ra8):not(#nc-ra9):not(#nc-ra10):not(#nc-ra11):not(#nc-ra12):not(#nc-ra13):not(#nc-ra14):not(#nc-ra15):not(#nc-ra16):not(#nc-ra17):not(#nc-ra18):not(#nc-ra19):not(#nc-ra20):not(#nc-ra21):not(#nc-ra22):not(#nc-ra23):not(#nc-ra24):not(#nc-ra25):not(#nc-ra26):not(#nc-ra27):not(#nc-ra28):not(#nc-ra29){ font-size: 19.5px !important; }
 }
 
-/* THE LATEST GOES AS IT CAME (2026-11-05 — "Have the latest disappear when colophon comes the same way that it appears at top"): The Latest and its rule back down the window as the footer comes up into it, behind the footer, at the speed they rose at the top, over the same scroll (--op-s): the page's rise taken back, nc-st-c, and the travel of the opening added. The bird rides up with the page as it did */
-@property --rl-stc { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@keyframes nc-st-c { from { --rl-stc: 0px; } to { --rl-stc: calc(var(--rl-st0, 0px) + 2 * var(--op-s, 0px)); } }
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+/* THE BIRD AND THE LATEST MOVE WITH THE SCROLL (2026-11-05 — "Bird and the latest look a little glitchy on scroll"): both had been carried by whole-pixel registered lengths (THE COLUMN'S STACK ON WHOLE PIXELS, 2026-10-20), worked out on the main thread and rounded, against a hold that rides up with the page at its own fractions, so they jittered; now plain keyframes on translate and transform, which the compositor runs in step with the scroll.
+   The reveal: --rl-st0 to nothing and the bird by --rl-swdy, over --op-s.
+   The going: as the footer starts to come, over the same scroll, The Latest and its rule back down the window behind the footer at the speed they rose ("Have the latest disappear when colophon comes the same way that it appears at top"), the bird to the middle between the band and the footer's rule at the page's end ("Have the bird move to center when the latest disappears", "Have the bird and the latest move exactly as they do on reveal", "Linearly": --nc-bird-end, latest-rail.js); the bird's svg taking back the page's rise for the rest of the footer's coming, so it holds there */
+@keyframes nc-lat-in { from { translate: 0 var(--rl-st0, 0px); } to { translate: 0 var(--rl-stdy, 0px); } }
+@keyframes nc-lat-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--rl-st0, 0px) + 2 * var(--op-s, 0px))); } }
+@keyframes nc-bird-in { from { translate: 0 0; } to { translate: 0 round(nearest, var(--rl-swdy, 0px), 1px); } }
+@keyframes nc-bird-out { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-bird-end, 0px) + var(--op-s, 0px))); } }
+@keyframes nc-bird-hold { from { transform: translateY(0); } to { transform: translateY(calc(var(--nc-foot-h, 0px) - var(--op-s, 0px))); } }
+@media (min-width: 1024px){
   html body:not(.archive-page):not(.about-page){ timeline-scope: --nc-foot-v, --nc-foot-all; }
   html body > footer.nc-foot.nc-foot{ view-timeline: --nc-foot-all block; }
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > :is(.rail-sections, .latest-rail__in):not(#nc-ln0){
-    animation: nc-st-a linear both, nc-st-b linear both, nc-st-c linear both !important;
-    animation-timeline: scroll(root), scroll(root), --nc-foot-all !important;
-    animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px) !important;
-    translate: 0 round(nearest, calc(var(--rl-st0, 0px) + var(--rl-sta, 0px) + var(--rl-stb, 0px) + var(--rl-stc, 0px)), 1px);
+    animation: nc-lat-in linear both; animation-timeline: scroll(root); animation-range: 0 var(--op-s, 1px);
   }
-}
-
-/* THE BIRD TO THE MIDDLE AS THE LATEST GOES (2026-11-05 — "Have the bird move to center when the latest disappears", "Have the bird and the latest move exactly as they do on reveal", "Linearly"): at one speed over the reveal's own length of scroll (--op-s), as the footer starts to come, to the middle between the band and the footer's rule at the page's end (--nc-bird-end, latest-rail.js); the page's rise taken back for that scroll and, nc-sw-d, for the rest of the footer's coming, so it holds there */
-@property --rl-swc { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --rl-swd { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@keyframes nc-sw-c { from { --rl-swc: 0px; } to { --rl-swc: calc(var(--nc-bird-end, 0px) + var(--op-s, 0px)); } }
-@keyframes nc-sw-d { from { --rl-swd: 0px; } to { --rl-swd: calc(var(--nc-foot-h, 0px) - var(--op-s, 0px)); } }
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
-    animation: nc-sw-a linear both, nc-sw-b linear both, nc-sw-c linear both, nc-sw-d linear both !important;
-    animation-timeline: scroll(root), scroll(root), --nc-foot-all, --nc-foot-all !important;
-    animation-range: 0 var(--op-s, 1px), 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px), entry var(--op-s, 1px) entry 100% !important;
-    translate: 0 round(nearest, calc(var(--rl-swa, 0px) + var(--rl-swb, 0px) + var(--rl-swc, 0px) + var(--rl-swd, 0px)), 1px) !important;
+    animation: nc-bird-in linear both !important; animation-timeline: scroll(root) !important; animation-range: 0 var(--op-s, 1px) !important;
+  }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > :is(.rail-sections, .latest-rail__in):not(#nc-ln0){
+    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px);
+  }
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
+    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px) !important;
+  }
+  html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow > svg{
+    animation: nc-bird-hold linear both; animation-timeline: --nc-foot-all; animation-range: entry var(--op-s, 1px) entry 100%;
   }
 }
 
-/* (HOST GROTESK FOR THE INTER, 2026-11-05 — "Change inter to Host Grotesk", "Same height as now": at 13.5 for the Inter's 13, its capitals 0.70 of the size to the Inter's 0.7275, the same 9.46 tall; written where the Inter stood, the band's date, the kickers, the metas (duo-panel-fit.js) and the copyright) */
+/* (HOST GROTESK FOR THE INTER, 2026-11-05 — "Change inter to Host Grotesk", "Same height as now": at 13.5 for the Inter's 13, its capitals 0.70 of the size to the Inter's 0.7275, the same 9.46 tall; written where the Inter stood, the band's date, the kickers, the metas (duo-panel-fit.js) and the copyright; its capitals 0.06em apart for the Inter's 0.02 since, "Increase kerning on the grotesk") */

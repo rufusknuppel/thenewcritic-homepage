@@ -131,7 +131,7 @@ module.exports = {
   },
   'terms-of-service': {
     kicker: 'Movies',
-    author: 'Nadav',
+    author: 'Nadav Asal',
   },
   'snug-as-a-gun': {
     kicker: 'Books',
@@ -293,7 +293,7 @@ module.exports = {
   },
   'a-cruel-joke-is-still-a-joke': {
     kicker: 'Collegiate Blues',
-    author: 'Nadav',
+    author: 'Nadav Asal',
   },
   'imagematic-life': {
     kicker: 'Keeping Track of Self',

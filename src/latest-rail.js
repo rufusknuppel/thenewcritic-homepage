@@ -2406,7 +2406,17 @@ var ncStemX = function () {
     var m = cx.measureText('H');
     return base - (m.actualBoundingBoxAscent || fs * 0.66);
   };
+  // (read with the going stood down as the footer comes, THE BIRD AND THE LATEST MOVE WITH THE SCROLL: a seat that read The Latest part way down took its slide for its place and left it 319 high, "Bird and the latest look a little glitchy on scroll", 2026-11-05)
   var seat = function () {
+    var hs = document.querySelector('.latest-rail__hold'), ft = document.querySelector('body > footer.nc-foot');
+    if (!hs || !ft || ft.getBoundingClientRect().top >= window.innerHeight) { seatNow(); return; }
+    var stood = [].slice.call(hs.querySelectorAll(':scope > .rail-sections, :scope > .latest-rail__in')).map(function (el) { return [el, 'nc-lat-in']; })
+      .concat([].slice.call(hs.querySelectorAll(':scope > .rail-swallow')).map(function (el) { return [el, 'nc-bird-in']; }))
+      .concat([].slice.call(hs.querySelectorAll(':scope > .rail-swallow > svg')).map(function (el) { return [el, 'none']; }));
+    stood.forEach(function (p) { p[0].style.setProperty('animation-name', p[1], 'important'); });
+    try { seatNow(); } finally { stood.forEach(function (p) { p[0].style.removeProperty('animation-name'); }); }
+  };
+  var seatNow = function () {
     // (the name over the content into main, under the band at the top as it scrolls — "wordmark should pass under top
     // band": main a stacking context of its own over everything outside it; the name's top off main's, which stands
     // above the document's top)
@@ -3721,8 +3731,7 @@ window.ncOpenH = function () {
     var sw = hold.querySelector(':scope > .rail-swallow'), ft = document.querySelector('body > footer.nc-foot');
     if (!sw || !ft || !ft.offsetHeight) return;
     var br = sw.getBoundingClientRect(), bandH = band.getBoundingClientRect().height, F = ft.offsetHeight;
-    var inHold = br.top - hold.getBoundingClientRect().top - (parseFloat((getComputedStyle(sw).translate || '').split(/\s+/)[1]) || 0);
-    var pinned = bandH + inHold + (parseFloat(hold.style.getPropertyValue('--rl-swdy')) || 0);
+    var pinned = bandH + (parseFloat(hold.style.getPropertyValue('--rl-swt')) || 0) + (parseFloat(hold.style.getPropertyValue('--rl-swdy')) || 0);
     var e = Math.round((bandH + window.innerHeight - F - br.height) / 2 - pinned) + 'px';
     if (hold.style.getPropertyValue('--nc-bird-end') !== e) hold.style.setProperty('--nc-bird-end', e);
     if (hold.style.getPropertyValue('--nc-foot-h') !== F + 'px') hold.style.setProperty('--nc-foot-h', F + 'px');
@@ -3731,6 +3740,8 @@ window.ncOpenH = function () {
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
   // (and again once the rows have slid anywhere, which no event says)
   document.addEventListener('transitionend', function (e) { if (e.propertyName === 'transform' && e.target.classList && e.target.classList.contains('wrap--sec')) centre(); }, { passive: true });
+  // (the bird's way as well, the footer's height settling with the name's size, read after each fit: a reload at the page's end kept the first reading, 109 for 57, 2026-11-05)
+  addEventListener('newcritic:fit', function () { setTimeout(vrH, 0); }, { passive: true });
 })();
 
 // (THE PICTURE ANSWERS THE HAND ON THE PICTURE, 2026-11-04 — "Hover should only go when mouse is on image"; anywhere on the post the day before, "when mouse is anywhere on the
