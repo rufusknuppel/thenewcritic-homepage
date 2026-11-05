@@ -11731,6 +11731,12 @@ var ncStemX = function () {
   if (document.fonts) document.fonts.addEventListener('loadingdone', function () { setTimeout(measure, 0); });
   addEventListener('resize', measure, { passive: true });
   addEventListener('newcritic:fit', function () { setTimeout(measure, 0); }, { passive: true });
+  var resizeEcho = false, resizeTs = [];
+  addEventListener('resize', function () {
+    if (resizeEcho) return;
+    resizeTs.forEach(clearTimeout);
+    resizeTs = [1200, 2600].map(function (ms) { return setTimeout(function () { resizeEcho = true; window.dispatchEvent(new Event('resize')); resizeEcho = false; }, ms); });
+  }, { passive: true });
   addEventListener('load', measure);
 })();
 (function () {
