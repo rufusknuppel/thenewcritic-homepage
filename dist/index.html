@@ -12332,6 +12332,7 @@ var ncStemX = function () {
                 swH *= 0.9; // ("Make the bird 10% smaller", 2026-11-03)
                 swH *= 0.9; // (and again, "Make bird 10% smaller", 2026-11-03)
                 swH *= 1.04; // ("Make bird 4% bigger", 2026-11-05)
+                swH *= 0.96; // ("Make bird 4% smaller", 2026-11-05)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
                 if (bandE) aN = -1;
                 var capR = ctB + Math.max(0, ptB + shB) - ptB - hr.top, stS = (lkB - ctB) + Math.max(0, maxLH - kList.getBoundingClientRect().height), stV = lkB - ctB;
