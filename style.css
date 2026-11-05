@@ -34110,3 +34110,8 @@ html body main .op-band.op-band:not(#nc-cp0):not(#nc-cp1):not(#nc-cp2):not(#nc-c
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item:nth-of-type(even):not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6):not(#nc-as7):not(#nc-as8):not(#nc-as9):not(#nc-as10):not(#nc-as11) .arc-ix-by{ left: calc(100% + 18px) !important; right: auto !important; }
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item:nth-of-type(even):not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6):not(#nc-as7):not(#nc-as8):not(#nc-as9):not(#nc-as10):not(#nc-as11) .arc-ix-on{ left: auto !important; right: calc(100% + 18px) !important; }
 }
+
+/* THE SEARCH AND ITS CLEAR IN THE META'S DRESS (2026-11-05 — "Make the clear/search in meta text"): Host Grotesk at 13.5, in capitals, the word in the field and what is typed there */
+html body.archive-page .arc.arc--index .arc-search:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11),
+html body.archive-page .arc.arc--index .arc-search:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11)::placeholder,
+html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.06em !important; font-style: normal !important; text-transform: uppercase !important; }
