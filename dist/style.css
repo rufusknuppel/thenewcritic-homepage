@@ -17254,13 +17254,13 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 }
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference){
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .rail-sections:not(#nc-ln0),html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-st0"] > .latest-rail__in:not(#nc-ln0){
-    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px);
+    animation: nc-lat-in linear both, nc-lat-out linear both; animation-timeline: scroll(root), --nc-foot-all; animation-range: 0 var(--op-s, 1px), entry 27px entry calc(27px + var(--op-s, 1px));
   }
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow{
-    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 0px entry var(--op-s, 1px) !important;
+    animation: nc-bird-in linear both, nc-bird-out linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 var(--op-s, 1px), entry 27px entry calc(27px + var(--op-s, 1px)) !important;
   }
   html body main .latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold.latest-rail__hold[style*="--rl-swdy"] > .rail-swallow.rail-swallow.rail-swallow > svg{
-    animation: nc-bird-hold linear both; animation-timeline: --nc-foot-all; animation-range: entry var(--op-s, 1px) entry 100%;
+    animation: nc-bird-hold linear both; animation-timeline: --nc-foot-all; animation-range: entry calc(27px + var(--op-s, 1px)) entry 100%;
   }
 }
 @media (min-width: 1024px){
@@ -17268,3 +17268,11 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
   body.archive-page .arc--index .arc-main::after{ right: calc(round(nearest, calc(270px + 3.89vw), 1px) + 1px - var(--nc-hair, 1px)); top: 27px; bottom: 27px; width: var(--nc-hair, 1px); }
   html.is-archive body.archive-page main .op-band > .nc-band-dash{ display: none !important; }
 }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31){ --k: #000000; --tw: #82C8E5; --nc-mark: #FDFDFB; background: #82C8E5 !important; color: #000000 !important; margin-top: -27px !important; padding-top: 54px !important; }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31)::before{ top: 27px !important; background: #FDFDFB !important; }
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) *:not(clipPath):not(clipPath *){ --k: #000000; color: #000000 !important; fill: #000000 !important; }
+@media (hover: hover){
+  html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) a:hover,
+  html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) a:hover *{ --k: #FDFDFB; color: #FDFDFB !important; fill: #FDFDFB !important; }
+}
+html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#nc-lb3):not(#nc-lb4):not(#nc-lb5):not(#nc-lb6):not(#nc-lb7):not(#nc-lb8):not(#nc-lb9):not(#nc-lb10):not(#nc-lb11):not(#nc-lb12):not(#nc-lb13):not(#nc-lb14):not(#nc-lb15):not(#nc-lb16):not(#nc-lb17):not(#nc-lb18):not(#nc-lb19):not(#nc-lb20):not(#nc-lb21):not(#nc-lb22):not(#nc-lb23):not(#nc-lb24):not(#nc-lb25):not(#nc-lb26):not(#nc-lb27):not(#nc-lb28):not(#nc-lb29):not(#nc-lb30):not(#nc-lb31) ::selection{ background: #FDFDFB; color: #000000; -webkit-text-fill-color: #000000; }
