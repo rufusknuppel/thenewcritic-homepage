@@ -2003,7 +2003,7 @@ a.likes:hover::after,
    carries a shadow: the frame is the whole signal now. */
 .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image,
 .duo-half:not(.duo-half--mega):is(:hover, :focus-within) .card-image{
-  filter: var(--nc-pic-dim);
+  filter: var(--nc-pic-lit);
 }
 .card--feature .card-title,
 .card--duo .card-title{
@@ -14498,7 +14498,7 @@ html[data-theme="hex"] :is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){ --klein
   :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
   .card.card--feature:has(:is(.card-image-link, .duo-panel):is(:hover, :focus-within)) .card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r),
   .duo-half:not(.duo-half--mega):is(:hover, :focus-within) .card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-    filter: var(--nc-pic-dim);
+    filter: var(--nc-pic-lit);
   }
 }
 
@@ -17256,7 +17256,7 @@ main.has-mega .marginalia .theme-toggle > span:not(.theme-toggle-sep):is(*, .r.r
    is in the preview's box or on the picture (cover-cue.js) — not the
    frame round the box. */
 main.has-mega :is(.duo-half--mega, .latest-cell--ps, .latest-cell--contra).is-inbox :is(.card-image-link, .latest-cover) img.card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r){
-  filter: var(--nc-pic-dim);
+  filter: var(--nc-pic-lit);
   transition: none;
 }
 main.has-mega .duo-half--mega.is-inbox .duo-card-image:is(*, .r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r.r)::after,
@@ -33732,7 +33732,7 @@ html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; pad
   html body > footer.nc-foot > .nc-foot__band:not(#nc-es0){ position: relative; }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__copy.nc-foot__copy:not(#nc-es0):not(#nc-es1){
     position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-    font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 13.5px; letter-spacing: 0.06em; font-style: normal; text-transform: uppercase;
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif; font-size: 12.7px; letter-spacing: 0.0638em; font-style: normal; text-transform: uppercase;
   }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){ font-style: italic; translate: 0 1px; }
 }
@@ -33807,8 +33807,8 @@ html body footer.nc-foot:not(#nc-wb0):not(#nc-wb1):not(#nc-wb2):not(#nc-wb3):not
 }
 /* INTER ON THE KICKERS AND THE BAND'S DATE, THE METAS TOO (duo-panel-fit.js) (2026-11-03 — "Make the metas and the deks and the dates inter", "Sorry not the deks, the kickers", "The date in the top band"):
    upright and in capitals ("Make all inter not italics and all caps"), at 13 ("I want inter at 13px") */
-html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.06em !important; font-style: normal !important; text-transform: uppercase !important; }
-html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.06em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega time.op-date:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif !important; font-size: 12.7px !important; letter-spacing: 0.0638em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1){ font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif !important; font-size: 12.7px !important; letter-spacing: 0.0638em !important; font-style: normal !important; text-transform: uppercase !important; }
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::before,
 html body main.has-mega .page-rows .latest-rail .latest-rail__list a span.latest-rail__kick:not(#nc-in0):not(#nc-in1):not(#nc-in2):not(#nc-in3):not(#nc-in4):not(#nc-in5):not(#nc-in6):not(#nc-in7):not(#nc-in8):not(#nc-in9):not(#nc-io0):not(#nc-io1)::after{ font-family: inherit !important; font-size: inherit !important; letter-spacing: inherit !important; font-style: normal !important; text-transform: uppercase !important; }
 /* (the kickers each on its one line, the Inter's capitals being wider than the bird: their list a wider box on the bird's middle) */
@@ -33865,16 +33865,16 @@ html body.store-page .sto-shelf:not(#nc-sc0):not(#nc-sc1):not(#nc-sc2):not(#nc-s
    card while the hand is on the picture (latest-rail.js; anywhere on the post before, "Hover should only go when mouse is on image"). A phone has no hand, and keeps its colour; the change .3s each way, "Make transition between two image states more gradual", "not too long though" */
 @media (hover: hover) and (min-width: 1024px){
   html body main.has-mega .duo-half--mega h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: none !important; transition: filter 0.3s ease !important; }
-  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: var(--nc-pic-dim) !important; }
+  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: var(--nc-pic-lit) !important; }
 }
 @media (hover: hover){
-  :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29){ filter: var(--nc-pic-dim) !important; }
+  :is(.card-image-link, .latest-cover, .ticker-cover-link):is(:hover, :focus-visible, .is-cued) img.card-image:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29){ filter: var(--nc-pic-lit) !important; }
 }
 
 /* (a cover with no colour to give, gray under the hand as the rest, "Gray the monochrome as well, don't dim", 2026-11-04, dimmed for an hour before it, "For color images gray. For monochrome, gray and dim", the invert gone; its own at rest — "Make images color resting/gray invert on hover", 2026-11-04; inverted at rest the day before, "For images that are monochrome, invert the image on rest": duo-half--mono, build.js MONO_COVERS) */
 @media (hover: hover) and (min-width: 1024px){
   html body main.has-mega .duo-half--mega.duo-half--mono h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: none !important; }
-  html body main.has-mega .duo-half--mega.duo-half--mono.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: var(--nc-pic-dim) !important; }
+  html body main.has-mega .duo-half--mega.duo-half--mono.nc-lit h3.card-title.rx:not(#nc-hs0):not(#nc-hs1):not(#nc-hs2):not(#nc-hs3):not(#nc-hs4):not(#nc-hs5):not(#nc-hs6):not(#nc-hs7):not(#nc-hs8):not(#nc-hs9):not(#nc-hs10):not(#nc-hs11):not(#nc-hs12):not(#nc-hs13):not(#nc-hs14):not(#nc-hs15):not(#nc-hs16):not(#nc-hs17):not(#nc-hs18):not(#nc-hs19):not(#nc-hs20):not(#nc-hs21):not(#nc-hs22):not(#nc-hs23):not(#nc-hs24):not(#nc-hs25):not(#nc-hs26):not(#nc-hs27):not(#nc-hs28):not(#nc-hs29)::before{ filter: var(--nc-pic-lit) !important; }
 }
 
 /* THE HAND ANSWERED AT ONCE (2026-11-03 — "Make hover snappier"): the words already change with no fade; the marks' .15s and the
@@ -34094,7 +34094,7 @@ html body main .op-band.op-band:not(#nc-cp0):not(#nc-cp1):not(#nc-cp2):not(#nc-c
 @media (min-width: 1024px){
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item :is(.arc-ix-by, .arc-ix-on),
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item .arc-ix-by:hover{
-    font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 13.5px; letter-spacing: 0.06em; font-style: normal; text-transform: uppercase; white-space: nowrap; top: 0;
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif; font-size: 12.7px; letter-spacing: 0.0638em; font-style: normal; text-transform: uppercase; white-space: nowrap; top: 0;
   }
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item:not(#nc-am0):not(#nc-am1):not(#nc-am2):not(#nc-am3):not(#nc-am4):not(#nc-am5):not(#nc-am6):not(#nc-am7):not(#nc-am8):not(#nc-am9):not(#nc-am10):not(#nc-am11):not(#nc-am12):not(#nc-am13):not(#nc-am14):not(#nc-am15):not(#nc-am16):not(#nc-am17):not(#nc-am18):not(#nc-am19):not(#nc-am20):not(#nc-am21):not(#nc-am22):not(#nc-am23):not(#nc-am24):not(#nc-am25):not(#nc-am26):not(#nc-am27):not(#nc-am28):not(#nc-am29):not(#nc-am30):not(#nc-am31) :is(.arc-ix-by, .arc-ix-on){ color: #000000 !important; -webkit-text-fill-color: #000000 !important; --nc-mark: #000000; --hl-ink: #000000; }
   html body.archive-page .arc.arc--index .arc-ix-item.arc-ix-item:not(#nc-am0):not(#nc-am1):not(#nc-am2):not(#nc-am3):not(#nc-am4):not(#nc-am5):not(#nc-am6):not(#nc-am7):not(#nc-am8):not(#nc-am9):not(#nc-am10):not(#nc-am11):not(#nc-am12):not(#nc-am13):not(#nc-am14):not(#nc-am15):not(#nc-am16):not(#nc-am17):not(#nc-am18):not(#nc-am19):not(#nc-am20):not(#nc-am21):not(#nc-am22):not(#nc-am23):not(#nc-am24):not(#nc-am25):not(#nc-am26):not(#nc-am27):not(#nc-am28):not(#nc-am29):not(#nc-am30):not(#nc-am31) :is(.arc-ix-by, .arc-ix-on):hover{ color: var(--nc-lit-ink) !important; -webkit-text-fill-color: var(--nc-lit-ink) !important; --nc-mark: var(--nc-lit-ink); --hl-ink: var(--nc-lit-ink); cursor: pointer; }
@@ -34114,7 +34114,7 @@ html body main .op-band.op-band:not(#nc-cp0):not(#nc-cp1):not(#nc-cp2):not(#nc-c
 /* THE SEARCH AND ITS CLEAR IN THE META'S DRESS (2026-11-05 — "Make the clear/search in meta text"): Host Grotesk at 13.5, in capitals, the word in the field and what is typed there */
 html body.archive-page .arc.arc--index .arc-search:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11),
 html body.archive-page .arc.arc--index .arc-search:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11)::placeholder,
-html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11){ font-family: "Host Grotesk", "Helvetica Neue", Arial, sans-serif !important; font-size: 13.5px !important; letter-spacing: 0.06em !important; font-style: normal !important; text-transform: uppercase !important; }
+html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(#nc-sm2):not(#nc-sm3):not(#nc-sm4):not(#nc-sm5):not(#nc-sm6):not(#nc-sm7):not(#nc-sm8):not(#nc-sm9):not(#nc-sm10):not(#nc-sm11){ font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif !important; font-size: 12.7px !important; letter-spacing: 0.0638em !important; font-style: normal !important; text-transform: uppercase !important; }
 
 /* THE TITLE ON THE PICTURE'S TIME (2026-11-05 — "Have the title hover timing be synchronous with the image timing"): the same .3s ease as the picture's filter and its outline, coming and going; the title had changed at once */
 @media (hover: hover) and (min-width: 1024px){
@@ -34151,7 +34151,7 @@ html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(
 @media (hover: hover){
   html body img.card-image:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ transition: filter 0.3s ease !important; }
   body.store-page .sto-tile .sto-tile__img:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ transition: transform 0.4s ease, filter 0.3s ease !important; }
-  body.store-page .sto-tile:hover .sto-tile__img:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ filter: var(--nc-pic-dim) !important; }
+  body.store-page .sto-tile:hover .sto-tile__img:not(#nc-dn0):not(#nc-dn1):not(#nc-dn2):not(#nc-dn3):not(#nc-dn4):not(#nc-dn5):not(#nc-dn6):not(#nc-dn7):not(#nc-dn8):not(#nc-dn9):not(#nc-dn10):not(#nc-dn11):not(#nc-dn12):not(#nc-dn13):not(#nc-dn14):not(#nc-dn15):not(#nc-dn16):not(#nc-dn17):not(#nc-dn18):not(#nc-dn19):not(#nc-dn20):not(#nc-dn21):not(#nc-dn22):not(#nc-dn23):not(#nc-dn24):not(#nc-dn25):not(#nc-dn26):not(#nc-dn27):not(#nc-dn28):not(#nc-dn29):not(#nc-dn30):not(#nc-dn31):not(#nc-dn32):not(#nc-dn33):not(#nc-dn34):not(#nc-dn35):not(#nc-dn36):not(#nc-dn37):not(#nc-dn38):not(#nc-dn39){ filter: var(--nc-pic-lit) !important; }
 }
 
 /* THE NAME GONE WHERE THE BAND PINS (2026-11-05 — "A pixel of wordmark shows when I click The latest", cut at the box's foot for an hour, then "bottom of the Cs of Critic are being cropped": the C's round foot stands below the box and over the band by right, so nothing cuts it): the name unseen only from a page scrolled to the band's pin, where its feet would show along the window's top */
@@ -34176,14 +34176,19 @@ html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(
   }
 }
 
-/* THE DIMMED PICTURE GLOWS (2026-11-05 — "for images that dim also cast out a shadow, a blue glow around the images", "not more than 9px"): the dim first and the shadow after it, filter's order, so the glow keeps its full blue; --nc-pic-dim the one place for the two */
+/* THE DIMMED PICTURE GLOWS (2026-11-05 — "for images that dim also cast out a shadow, a blue glow around the images", "not more than 9px"): the dim first and the shadow after it, filter's order, so the glow keeps its full blue; --nc-pic-lit the one place for the two */
 /* (the dim gone an hour on, the glow alone — "don't dim just have shadow glow", 2026-11-05) */
 /* (no shadow at all since, a very slight dim for it — "Remove shadow. Do a very sublte dim effect instead", 2026-11-05) */
-:root{ --nc-pic-dim: brightness(0.9); }
+/* (brighter for a moment, "What about rather than dim, brighten?", then the dim back, "I like dim more", 2026-11-05) */
+:root{ --nc-pic-lit: brightness(0.9); }
 /* (on the front page's pictures the words' box and the ground stand over a filter's shadow on all but the top, so there the dim alone in the filter and the glow on .nc-pic-line, the picture's own line, which stands over them all, its inset closing the sliver of ground the dim shows between the line and the picture ("Seeing hairline"); the store's tile clips its picture for the zoom, so the glow on the tile's picture box) */
 @media (hover: hover) and (min-width: 1024px){
-  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-gl0):not(#nc-gl1):not(#nc-gl2):not(#nc-gl3):not(#nc-gl4):not(#nc-gl5):not(#nc-gl6):not(#nc-gl7):not(#nc-gl8):not(#nc-gl9):not(#nc-gl10):not(#nc-gl11):not(#nc-gl12):not(#nc-gl13):not(#nc-gl14):not(#nc-gl15):not(#nc-gl16):not(#nc-gl17):not(#nc-gl18):not(#nc-gl19):not(#nc-gl20):not(#nc-gl21):not(#nc-gl22):not(#nc-gl23):not(#nc-gl24):not(#nc-gl25):not(#nc-gl26):not(#nc-gl27):not(#nc-gl28):not(#nc-gl29):not(#nc-gl30):not(#nc-gl31):not(#nc-gl32):not(#nc-gl33):not(#nc-gl34):not(#nc-gl35):not(#nc-gl36):not(#nc-gl37):not(#nc-gl38):not(#nc-gl39)::before{ filter: var(--nc-pic-dim) !important; }
+  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-gl0):not(#nc-gl1):not(#nc-gl2):not(#nc-gl3):not(#nc-gl4):not(#nc-gl5):not(#nc-gl6):not(#nc-gl7):not(#nc-gl8):not(#nc-gl9):not(#nc-gl10):not(#nc-gl11):not(#nc-gl12):not(#nc-gl13):not(#nc-gl14):not(#nc-gl15):not(#nc-gl16):not(#nc-gl17):not(#nc-gl18):not(#nc-gl19):not(#nc-gl20):not(#nc-gl21):not(#nc-gl22):not(#nc-gl23):not(#nc-gl24):not(#nc-gl25):not(#nc-gl26):not(#nc-gl27):not(#nc-gl28):not(#nc-gl29):not(#nc-gl30):not(#nc-gl31):not(#nc-gl32):not(#nc-gl33):not(#nc-gl34):not(#nc-gl35):not(#nc-gl36):not(#nc-gl37):not(#nc-gl38):not(#nc-gl39)::before{ filter: var(--nc-pic-lit) !important; }
 }
 @media (hover: hover){
-  body.store-page .sto-tile:hover .sto-tile__img:not(#nc-gl0):not(#nc-gl1):not(#nc-gl2):not(#nc-gl3):not(#nc-gl4):not(#nc-gl5):not(#nc-gl6):not(#nc-gl7):not(#nc-gl8):not(#nc-gl9):not(#nc-gl10):not(#nc-gl11):not(#nc-gl12):not(#nc-gl13):not(#nc-gl14):not(#nc-gl15):not(#nc-gl16):not(#nc-gl17):not(#nc-gl18):not(#nc-gl19):not(#nc-gl20):not(#nc-gl21):not(#nc-gl22):not(#nc-gl23):not(#nc-gl24):not(#nc-gl25):not(#nc-gl26):not(#nc-gl27):not(#nc-gl28):not(#nc-gl29):not(#nc-gl30):not(#nc-gl31):not(#nc-gl32):not(#nc-gl33):not(#nc-gl34):not(#nc-gl35):not(#nc-gl36):not(#nc-gl37):not(#nc-gl38):not(#nc-gl39){ filter: var(--nc-pic-dim) !important; }
+  body.store-page .sto-tile:hover .sto-tile__img:not(#nc-gl0):not(#nc-gl1):not(#nc-gl2):not(#nc-gl3):not(#nc-gl4):not(#nc-gl5):not(#nc-gl6):not(#nc-gl7):not(#nc-gl8):not(#nc-gl9):not(#nc-gl10):not(#nc-gl11):not(#nc-gl12):not(#nc-gl13):not(#nc-gl14):not(#nc-gl15):not(#nc-gl16):not(#nc-gl17):not(#nc-gl18):not(#nc-gl19):not(#nc-gl20):not(#nc-gl21):not(#nc-gl22):not(#nc-gl23):not(#nc-gl24):not(#nc-gl25):not(#nc-gl26):not(#nc-gl27):not(#nc-gl28):not(#nc-gl29):not(#nc-gl30):not(#nc-gl31):not(#nc-gl32):not(#nc-gl33):not(#nc-gl34):not(#nc-gl35):not(#nc-gl36):not(#nc-gl37):not(#nc-gl38):not(#nc-gl39){ filter: var(--nc-pic-lit) !important; }
 }
+
+/* (NEUE HAAS GROTESK FOR THE HOST GROTESK, 2026-11-05 — "Use neue haas grotesk for the current meta font everywhere. Match weight and height and kerning": the kit's Text cut at 400, its stem 0.102 of the size to the Host's 0.09, the nearest of the kit's weights; at 12.7 for the Host's 13.5, its capitals 0.744 of the size to the Host's 0.70, the same 9.45 tall; 0.0638em for the 0.06em, the same 0.81 between letters; a line of the meta 238 long to the Host's 240. Written where the Host stood, the band's date, the kickers, the metas (duo-panel-fit.js), the colophon's and the archive's) */
+/* (the About page's roles in it too, the last of the meta left in another face) */
+body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#nc-ar3):not(#nc-ar4):not(#nc-ar5):not(#nc-ar6):not(#nc-ar7):not(#nc-ar8):not(#nc-ar9):not(#nc-ar10):not(#nc-ar11){ font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif !important; font-size: 12.7px !important; letter-spacing: 0.0638em !important; font-weight: 400 !important; font-style: normal !important; text-transform: uppercase !important; }
