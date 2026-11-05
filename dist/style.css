@@ -17366,3 +17366,5 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 @media (min-width: 1024px){
   html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-vh0):not(#nc-vh1):not(#nc-vh2):not(#nc-vh3):not(#nc-vh4):not(#nc-vh5):not(#nc-vh6):not(#nc-vh7):not(#nc-vh8):not(#nc-vh9):not(#nc-vh10):not(#nc-vh11):not(#nc-vh12):not(#nc-vh13):not(#nc-vh14):not(#nc-vh15):not(#nc-vh16):not(#nc-vh17):not(#nc-vh18):not(#nc-vh19):not(#nc-vh20):not(#nc-vh21):not(#nc-vh22):not(#nc-vh23):not(#nc-vh24):not(#nc-vh25):not(#nc-vh26):not(#nc-vh27):not(#nc-vh28):not(#nc-vh29):not(#nc-vh30):not(#nc-vh31):not(#nc-vh32):not(#nc-vh33):not(#nc-vh34):not(#nc-vh35):not(#nc-vh36):not(#nc-vh37):not(#nc-vh38):not(#nc-vh39):not(#nc-vh40):not(#nc-vh41):not(#nc-vh42):not(#nc-vh43) > a.rail-tlm.rail-tlm{ visibility: hidden; }
 }
+@keyframes nc-band-l2 { }
+@keyframes nc-band-r2 { }

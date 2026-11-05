@@ -34212,3 +34212,7 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 /* THE GOING THE COMING RUN BACKWARDS (2026-11-05 — "Why isn't the latest disappering and bird repositioning at the bottom a mirror of the top? Everything mvoes weirdly"): the going had crept over the footer's whole height, The Latest 119 down and the bird 58, against a hold riding up the same 274; now over the footer's first --op-s, as the coming takes the first --op-s of the page, The Latest down the window at the pace it came up and the bird to the middle between the band and the footer's rule, then both still on the window as the footer finishes. nc-lat-out and nc-bird-out are written by latest-rail.js (vrH), their middle stop being --op-s over the footer's height; the ones above stand for a page whose script has not run */
 
 /* (the foot's runs counted back from the page's end since, the last --op-s of the scroll as the head's are its first — "Remove the wordmark from the footer", 2026-11-05: the colophon, its name gone, stands 96 tall, under the 205 they had taken from its coming; --nc-go-run, latest-rail.js, the greater of the two) */
+
+/* NO PINCH AT THE FOOT (2026-11-05 — "Don't do the pinch"): the band holds as it is pinned to the page's end, The Last Magazine and the nav out at 27 and 1413; the swap of the names stays, the band's widening back is gone (nc-band-l2, nc-band-r2 left with nothing to do) */
+@keyframes nc-band-l2 { }
+@keyframes nc-band-r2 { }
