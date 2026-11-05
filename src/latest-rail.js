@@ -3750,7 +3750,10 @@ window.ncOpenH = function () {
     var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0, st0 = parseFloat(hold.style.getPropertyValue('--rl-st0')) || 0;
     if (opS > 0 && F > opS) {
       var p = (100 * opS / F).toFixed(3), be = parseFloat(e) || 0;
-      var kf = '@keyframes nc-lat-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (2 * opS + st0).toFixed(2) + 'px)}100%{transform:translateY(' + (F + opS + st0).toFixed(2) + 'px)}}'
+      // (The Latest under the footer's rule just as the bird reaches the middle, both even all the way — "Why don't they move
+      // linearly and simultaneously", "Same finish", 2026-11-05: its way the footer's rule's place at --op-s, not the coming's pace)
+      var lm = (parseFloat(le) || 0) + F - opS;
+      var kf = '@keyframes nc-lat-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (opS + lm).toFixed(2) + 'px)}100%{transform:translateY(' + (F + lm).toFixed(2) + 'px)}}'
         + '@keyframes nc-bird-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (opS + be).toFixed(2) + 'px)}100%{transform:translateY(' + (F + be).toFixed(2) + 'px)}}';
       var ks = document.getElementById('nc-foot-going');
       if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }
