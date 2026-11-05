@@ -3715,7 +3715,7 @@ window.ncOpenH = function () {
     if (hold && wide && ruleX) {
       // (the rule on the window now, body > .nc-vr: style.css THE COLUMNS' RULES ON THE WINDOW)
       var vrE = document.querySelector('body > .nc-vr'), vl = ruleX + 'px';
-      if (vrE && vrE.style.left !== vl) vrE.style.left = vl;
+      if (vrE && vrE.style.marginLeft !== vl) vrE.style.marginLeft = vl;
       // (the rule under the bird 54 from this one and 54 from the site's edge — "Rule between bird and the latest should be 54px from the vertical rule and the site edge", 2026-11-03)
       var rw = (window.innerWidth - ruleX - 108 + 54) + 'px'; // (27 further each way, 27 from each: "Increase all rules by ... 22", "Add 5 more", 2026-11-03; in to 54 and out again, "Move rule in the side column 27px in on either side", "Add 27px back to rule in side column", 2026-11-04)
       if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);

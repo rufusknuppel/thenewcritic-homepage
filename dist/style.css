@@ -17279,12 +17279,14 @@ html body > footer.nc-foot.nc-foot:not(#nc-lb0):not(#nc-lb1):not(#nc-lb2):not(#n
 .nc-vr{ display: none; }
 @keyframes nc-vr-rise { from { transform: scaleY(var(--nv-s, 1)); } to { transform: scaleY(1); } }
 @media (min-width: 1024px){
-  html body.has-mega > i.nc-vr[style*="left:"],
-  html body.archive-page > i.nc-vr{
-    display: block; position: fixed; z-index: 2; top: var(--nv-t, 96px); bottom: 27px; width: var(--nc-hair, 1px); background: #82C8E5; pointer-events: none;
+  html body.has-mega > i.nc-vr[style*="margin-left:"],
+  html body.archive-page > i.nc-vr{ display: block; position: sticky; top: 0; z-index: 2; height: 0; width: var(--nc-hair, 1px); pointer-events: none; }
+  html body.has-mega > i.nc-vr[style*="margin-left:"]::before,
+  html body.archive-page > i.nc-vr::before{
+    content: ''; position: absolute; left: 0; top: var(--nv-t, 96px); width: 100%; height: calc(100vh - var(--nv-t, 96px) - 27px); background: #82C8E5;
     transform-origin: 50% 100%;
     animation: nc-vr-rise linear both; animation-timeline: scroll(root); animation-range: 0 var(--op-s, 1px);
   }
-  html body.archive-page > i.nc-vr{ left: round(nearest, calc(270px + 3.89vw), 1px); }
-  html body.archive-page > i.nc-vr.nc-vr--2{ left: auto; right: calc(round(nearest, calc(270px + 3.89vw), 1px) + 1px - var(--nc-hair, 1px)); }
+  html body.archive-page > i.nc-vr{ margin-left: round(nearest, calc(270px + 3.89vw), 1px); }
+  html body.archive-page > i.nc-vr.nc-vr--2{ margin-left: calc(100% - round(nearest, calc(270px + 3.89vw), 1px) - 1px); }
 }
