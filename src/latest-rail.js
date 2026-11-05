@@ -3751,10 +3751,11 @@ window.ncOpenH = function () {
     // the footer", 2026-11-05: the run counted back from the page's end, u, the hold riding up only while the footer
     // comes, its last F; stops where the going starts, where the footer starts and at the end)
     // (The Latest kept for the colophon, no going — "keep the latest for the colophon", 2026-11-05: its frames only ride, lm 0; the bird kept over it too, be 0, as dropped to the middle it sat on The Latest)
+    // (and both recentred as the colophon pulls up — "recenter bird and the latest when colophon pulls up", 2026-11-05: over the footer's F they go up by F/2, half the room it takes, lm = be = -F/2)
     var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0;
     if (opS > 0 && F > 0) {
-      var run = Math.max(opS, F), lm = 0, be = 0;
-      var at = function (u, m) { var ride = Math.max(0, F - u), go = u < opS ? m * (opS - u) / opS : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
+      var run = Math.max(opS, F), lm = -F / 2, be = -F / 2;
+      var at = function (u, m) { var ride = Math.max(0, F - u), go = u < F ? m * (F - u) / F : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
       var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
       var kf = '@keyframes nc-lat-out{' + frames(lm) + '}@keyframes nc-bird-out{' + frames(be) + '}';
