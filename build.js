@@ -310,7 +310,6 @@ function contentSocials() {
   return `<div class="content-socials">${[
     ['https://www.thenewcritic.com', 'Substack'],
     ['https://www.instagram.com/the_newcritic/', 'Instagram'],
-    ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="content-socials__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join('<span class="content-socials__sep">, </span>')}</div>`;
 }
@@ -374,7 +373,6 @@ function siteFooter() {
   const socials = [
     ['https://www.thenewcritic.com', 'Substack'],
     ['https://www.instagram.com/the_newcritic/', 'Instagram'],
-    ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<i class="nc-vr" aria-hidden="true"></i><i class="nc-vr nc-vr--2" aria-hidden="true"></i><footer class="nc-foot" aria-label="Colophon">`
@@ -2528,10 +2526,9 @@ function renderSocialStack() {
   // logo, and two crossed strokes would read as a close button. Its
   // bars run about 2.6 of the 24 wide against the others' 2.2, so it
   // stands with them at 13 without a rule of its own.
-  const x = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.153h7.594l5.243 6.932zM17.61 20.644h2.039L6.486 3.24H4.298z" fill="currentColor"/></svg>';
   const email = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false"><rect x="1.5" y="4" width="21" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M2.5 6.5 12 13.5l9.5-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
   const sep = '';
-  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="https://x.com/thenewcritic" rel="noopener" aria-label="X">${x}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
+  return `<span class="social-stack"><a href="https://www.thenewcritic.com" rel="noopener" aria-label="Substack">${substack}</a>${sep}<a href="https://www.instagram.com/the_newcritic/" rel="noopener" aria-label="Instagram">${instagram}</a>${sep}<a href="mailto:editors@thenewcritic.com" aria-label="Email">${email}</a></span>`;
 }
 // THE MIDDLE SLOT IS EMPTY ON THE WORD PAGES (2026-09-19). The
 // magazine's name stood a second time in the band's middle there —
@@ -2626,7 +2623,6 @@ function bandUnder() {
   const soc = [
     ['https://www.thenewcritic.com', 'Substack'],
     ['https://www.instagram.com/the_newcritic/', 'Instagram'],
-    ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="band-under__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(sep);
   // (each piece from its word's first stroke since — "Left align under each word"; the copyright stood at the
@@ -2788,7 +2784,7 @@ function renderPageFoot(onHome = false, onMark = false) {
 // the markup.
 function renderColophonBand(mk = '') {
   return `<nav class="section-band section-band--colophon section-band--three${mk}" aria-label="Colophon">
-    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a>${BAND_SEP}<a href="https://x.com/thenewcritic" rel="noopener">X</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
+    <p class="band-deks"><a href="https://www.thenewcritic.com" rel="noopener">Substack</a>${BAND_SEP}<a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a>${BAND_SEP}<a href="mailto:editors@thenewcritic.com">Email</a></p>
     <p class="band-deks band-dek"><span class="band-copyright">© The New Critic, Inc.</span></p>
     ${bandName('<span>Est. May 2025</span>')}
   </nav>`;
@@ -2811,7 +2807,6 @@ function renderHomeColophon() {
   const links = [
     '<a href="https://www.thenewcritic.com" rel="noopener">Substack</a>',
     '<a href="https://www.instagram.com/the_newcritic/" rel="noopener">Instagram</a>',
-    '<a href="https://x.com/thenewcritic" rel="noopener">X</a>',
     '<a href="mailto:editors@thenewcritic.com">Email</a>',
     '<span>© The New Critic, Inc.</span>',
   ];
@@ -2848,7 +2843,6 @@ function railColo() {
   const socials = [
     ['https://www.thenewcritic.com', 'Substack'],
     ['https://www.instagram.com/the_newcritic/', 'Instagram'],
-    ['https://x.com/thenewcritic', 'X'],
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="rail-colo__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<footer class="rail-colo" aria-label="Colophon"><span class="rail-colo__top">Est. May 2025</span><span class="rail-colo__mid">© The New Critic, Inc.</span><span class="rail-colo__soc">${socials}</span></footer>`;
