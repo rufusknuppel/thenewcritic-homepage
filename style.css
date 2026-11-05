@@ -33576,7 +33576,7 @@ body.archive-page .arc--index .arc-ix-item :is(.arc-ix-by, .arc-ix-on){ font-sty
   html body > footer.nc-foot > a.nc-foot__name:is(:hover, :focus-visible) svg path:not(#nc-ft0):not(#nc-ft1){ fill: var(--nc-mark, #FDFDFB) !important; }
   html body > footer.nc-foot > .nc-foot__band{
     display: flex; justify-content: space-between; align-items: center; height: var(--nf-h, 69px);
-    padding: 0 var(--nf-r, 54px) 0 var(--nf-l, 54px); box-sizing: border-box;
+    padding: 0 27px; box-sizing: border-box; /* (the nav band's margins as it stands pinned, its ends on the rule, the name's edges too — "Align margins with the margins in the nav band", 2026-11-05) */
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif; font-size: 19.5px; line-height: 27.5px; font-style: normal; font-weight: 400;
   }
   html body > footer.nc-foot .nc-foot__band > p{ margin: 0; padding: 0; white-space: nowrap; color: inherit; font: inherit; }
@@ -33773,14 +33773,15 @@ html body > footer.nc-foot.nc-foot:not(#nc-nr0):not(#nc-nr1){ border-top: 0; pad
   html body:not(.word-page) main.has-mega.wm-banded .page-rows > .movement.m--latest > .movement-body > .latest-rail .latest-rail__list a:is(.is-now, :hover, :focus-visible):not(#nc-kh0):not(#nc-kh1):not(#nc-kh2):not(#nc-kh3) span.latest-rail__kick::after{ opacity: 1 !important; }
 }
 
-/* EST. IN THE MIDDLE OF THE COLOPHON (2026-11-03 — "In the colophon, move the est. into a center italics like the last magazine"):
-   the band's middle, italic, as The Last Magazine stands in the top's; the copyright left where it was; phones as they were */
+/* THE COLOPHON'S LINE: THE SOCIALS, THE COPYRIGHT, EST. (2026-11-05 — "In colophon move socials to left. Make copyright the center in inter. Move est to the right"):
+   the copyright on the band's middle in the Inter the band's date wears at the top, Est. at the right end, still in the italic of The Last Magazine ("In the colophon, move the est. into a center italics like the last magazine", 2026-11-03, the middle then); footer hidden under 1024 as it was */
 @media (min-width: 1024px){
   html body > footer.nc-foot > .nc-foot__band:not(#nc-es0){ position: relative; }
-  html body > footer.nc-foot > .nc-foot__band > .nc-foot__colo > .nc-foot__sep:not(#nc-es0){ display: none; }
-  html body > footer.nc-foot > .nc-foot__band > .nc-foot__colo > .nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){
-    position: absolute; left: 50%; translate: -50% 1px; font-style: italic; white-space: nowrap;
+  html body > footer.nc-foot > .nc-foot__band > p.nc-foot__copy.nc-foot__copy:not(#nc-es0):not(#nc-es1){
+    position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif; font-size: 13px; letter-spacing: 0.02em; font-style: normal; text-transform: uppercase;
   }
+  html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est.nc-foot__est:not(#nc-es0):not(#nc-es1){ font-style: italic; translate: 0 1px; }
 }
 
 /* (the one column on the right, the hold's own width since, the bird on the middle of the nav over it — "Increase width of side column
@@ -34010,8 +34011,8 @@ html body > footer.nc-foot.nc-foot:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2):not(#n
   content: ''; position: absolute; top: 0; left: 27px; right: 27px; height: var(--nc-hair); background: #82C8E5; pointer-events: none;
 }
 
-/* THE COLOPHON THE LAST THING ON THE SITE (2026-11-04 — "Move colophon below the wordmark"): the name 27 under the rule, as it stands 27 from the sides, and the colophon's line under it to the page's foot ("In colophon move the wordmark so that it's the last thing on the site", the day before, the other way) */
-html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#nc-fl3):not(#nc-fl4):not(#nc-fl5):not(#nc-fl6):not(#nc-fl7):not(#nc-fl8):not(#nc-fl9):not(#nc-fl10):not(#nc-fl11):not(#nc-fl12):not(#nc-fl13):not(#nc-fl14):not(#nc-fl15):not(#nc-fl16):not(#nc-fl17):not(#nc-fl18):not(#nc-fl19):not(#nc-fl20):not(#nc-fl21):not(#nc-fl22):not(#nc-fl23):not(#nc-fl24):not(#nc-fl25):not(#nc-fl26):not(#nc-fl27):not(#nc-fl28):not(#nc-fl29){ padding-top: 27px; padding-bottom: 0; }
+/* THE WORDMARK THE LAST THING ON THE SITE (2026-11-05 — "Move text above the wordmark"): the rule, the colophon's line, the name, and 27 under the name as it stands 27 from the sides ("Move colophon below the wordmark", the day before, the other way) */
+html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#nc-fl3):not(#nc-fl4):not(#nc-fl5):not(#nc-fl6):not(#nc-fl7):not(#nc-fl8):not(#nc-fl9):not(#nc-fl10):not(#nc-fl11):not(#nc-fl12):not(#nc-fl13):not(#nc-fl14):not(#nc-fl15):not(#nc-fl16):not(#nc-fl17):not(#nc-fl18):not(#nc-fl19):not(#nc-fl20):not(#nc-fl21):not(#nc-fl22):not(#nc-fl23):not(#nc-fl24):not(#nc-fl25):not(#nc-fl26):not(#nc-fl27):not(#nc-fl28):not(#nc-fl29){ padding-top: 0; padding-bottom: 27px; }
 
 /* THE BAND'S ENDS OUT TO ITS RULE AS THE NAME GOES (2026-11-04 — "As the new critic disappears, slide the nav and the last magazine 27px right and left, so edges line up with rule, the THE NEW CRITIC in nav should take this position"):
    The Last Magazine from 54 to 27 and the nav's end to the rule's, over the name's leaving, and the small name standing at 27 when it comes. The nav's inner line moved, not .rail-top, whose box the rows' width is read from (latest-rail.js); The Last Magazine by a registered length, its transform held none !important by the sheet before */

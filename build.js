@@ -367,8 +367,8 @@ function opBand(currentKey = '') {
 // carries it; style.css THE BIRD IN THE CORNER)
 // THE FOOTER (2026-11-02 — "Add a full footer that mimics the top band with the colophon on the left and the socials on the
 // right", "include the wordmark"): the top banner again at the page's end, after main: THE NEW CRITIC at the name's size and
-// margins, on the charcoal, and under it a band as tall as the top's, Est. and the copyright at the left and the socials at
-// the right, on the same stems; the inline script reads the name's size and the band's margins off the page's head
+// margins, on the charcoal, and under it a band as tall as the top's, on the same stems (the socials at the left, the
+// copyright in the middle and Est. at the right since — "In colophon move socials to left. Make copyright the center in inter. Move est to the right", 2026-11-05); the inline script reads the name's size and the band's margins off the page's head
 // (style.css THE FOOTER)
 function siteFooter() {
   const socials = [
@@ -378,12 +378,12 @@ function siteFooter() {
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<footer class="nc-foot" aria-label="Colophon">`
+    + `<div class="nc-foot__band"><p class="nc-foot__soc">${socials}</p><p class="nc-foot__copy"><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__est"><span class="nc-foot__a">Est. May 2025</span></p></div>`
     + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
-    + `<div class="nc-foot__band"><p class="nc-foot__colo"><span class="nc-foot__a nc-foot__est">Est. May 2025</span><span class="nc-foot__sep">, </span><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__soc">${socials}</p></div>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
     + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
-    + `if(b){var q=getComputedStyle(b),r=b.getBoundingClientRect();if(r.height)f.style.setProperty('--nf-h',r.height+'px');var l=q.getPropertyValue('--opb-navl'),e=q.getPropertyValue('--opb-soc-r');if(l)f.style.setProperty('--nf-l',l);if(e)f.style.setProperty('--nf-r',e);}`
+    + `if(b){var r=b.getBoundingClientRect();if(r.height)f.style.setProperty('--nf-h',r.height+'px');}`
     + `};seat();addEventListener('resize',function(){setTimeout(seat,250);});addEventListener('load',function(){setTimeout(seat,500);setTimeout(seat,1700);});document.addEventListener('newcritic:fit',function(){setTimeout(seat,0);});addEventListener('newcritic:fitdone',seat);var mb=document.querySelector('main .op-band');if(mb&&window.MutationObserver)new MutationObserver(seat).observe(mb,{attributes:true,attributeFilter:['style']});})();</script>`;
 }
 function cornerBird() {
