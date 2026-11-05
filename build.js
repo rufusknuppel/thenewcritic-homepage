@@ -340,7 +340,7 @@ function opBand(currentKey = '') {
   // (Subscribe out of the band since, to the banner pinned to the window's foot — "Remove subscribe from top band. Place
   // in a banner at the bottom of the site", 2026-10-28: subBanner)
   // (and back in it since, before Store, the banner gone — "Remove subscribe banner, add back next to Store", 2026-10-28)
-  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<a class="rail-top__a" href="${STORE_HREF}"${cur('store')}>Store</a>`]
+  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<span class="rail-top__a">Store (Coming Soon)</span>`]
     .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}"${cur('archive')}>Archive</a>`] : [])
     .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
@@ -2324,7 +2324,7 @@ function railLinks(currentKey = 'home') {
     // Store and Events stand in the list but go nowhere yet — plain
     // spans, no href, no hover; they take the list's cut by inheritance
     // and turn into navLink entries the day they have destinations.
-    + `\n      <li><a href="${STORE_HREF}">Store</a></li>`
+    + `\n      <li><span>Store (Coming Soon)</span></li>`
     + '\n      <li><span class="nav-links-dead">Events</span></li>'
     // Subscribe rides in the list now — the one item that keeps a place
     // in the collapsed bar (see the ≤720px rules in style.css).
@@ -2436,7 +2436,7 @@ function bandDeks(m) {
     // and the list stands centred in the band (style.css)
     const about = by('about');
     const tlm = about ? a({ ...about, label: 'The Last Magazine' }) : '';
-    return [tlm, a(by('archive')), '<span class="nav-links-dead">Events</span>', `<a href="${STORE_HREF}">Store</a>`].filter(Boolean).join(BAND_SEP);
+    return [tlm, a(by('archive')), '<span class="nav-links-dead">Events</span>', `<span class="nav-links-dead">Store (Coming Soon)</span>`].filter(Boolean).join(BAND_SEP);
   }
   const list = m === 'contra' ? CONTRA_CATEGORIES : RAIL_CATEGORIES;
   return list.map((c) => `<a href="archive.html#topic=${encodeURIComponent(c.toLowerCase())}">${escapeHtml(c)}</a>`).join(BAND_SEP);
@@ -2620,7 +2620,7 @@ function bandUnder() {
   const ab = by('about'), ar = by('archive');
   const sep = '<span class="band-under__sep">, </span>';
   const tlm = ab ? `<a class="band-under__a band-under__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="band-under__tlm">${escapeHtml(SITE_TAGLINE)}</span>`;
-  const nav = [`<a class="band-under__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<a class="band-under__a" href="${STORE_HREF}">Store</a>`]
+  const nav = [`<a class="band-under__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<span class="band-under__a">Store (Coming Soon)</span>`]
     .concat(ar ? [`<a class="band-under__a" href="${escapeHtml(ar.href)}">Archive</a>`] : [])
     .concat(ab ? [`<a class="band-under__a" href="${escapeHtml(ab.href)}">About</a>`] : []).join(sep);
   const soc = [
@@ -2661,7 +2661,7 @@ function navStrip() {
     `<a class="sub-ticker-half sub-ticker-half--sub" href="${SITE_URL}/subscribe" rel="noopener"><b>Subscribe</b></a>`,
     // (STORE and ARCHIVE change places, design/stacked-wordmark, at the
     // user's word — "switch archive and store")
-    `<a class="sub-ticker-half" href="${STORE_HREF}"><b>Store</b></a>`,
+    `<span class="sub-ticker-half"><b>Store (Coming Soon)</b></span>`,
     // (THE LAST MAGAZINE IN ABOUT'S PLACE, 2026-10-01, at the user's word
     // — "Replace about with The Last Magazine in helvetica style": the
     // About link reads THE LAST MAGAZINE in the strip's capitals, black
@@ -4150,7 +4150,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
     const sep = '<span class="rail-nav__sep">, </span>';
     return `<nav class="rail-nav" aria-label="The New Critic">`
       + (ab ? `<a class="rail-nav__tlm" href="${escapeHtml(ab.href)}">${escapeHtml(SITE_TAGLINE)}</a>` : `<span class="rail-nav__tlm">${escapeHtml(SITE_TAGLINE)}</span>`)
-      + `<span class="rail-nav__row"><a class="rail-nav__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>${sep}<a class="rail-nav__a" href="${STORE_HREF}">Store</a>`
+      + `<span class="rail-nav__row"><a class="rail-nav__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>${sep}<span class="rail-nav__a">Store (Coming Soon)</span>`
       + (ar ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ar.href)}">Archive</a>` : '')
       // (and About after it — "Add about after Archive", 2026-10-09)
       + (ab ? `${sep}<a class="rail-nav__a" href="${escapeHtml(ab.href)}">About</a>` : '')
@@ -6764,7 +6764,9 @@ async function main() {
     'index.html': html,
     'about.html': renderAboutPage(founders),
     'archive.html': renderArchivePage(archivePool),
-    'store.html': renderStorePage(await loadStore()),
+    // (the store shut for now, its address sent home — "Make the store not reachable, write (Coming Soon) next to it", 2026-11-05;
+    // renderStorePage(await loadStore()) here again, and the nav's links back, to open it)
+    'store.html': '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=index.html"><title>The New Critic</title></head><body><a href="index.html">The New Critic</a></body></html>',
   };
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
