@@ -2881,6 +2881,7 @@ var ncStemX = function () {
                 swH *= 1.08; // ("Make bird 8% bigger", 2026-11-03)
                 swH *= 0.9; // ("Make the bird 10% smaller", 2026-11-03)
                 swH *= 0.9; // (and again, "Make bird 10% smaller", 2026-11-03)
+                swH *= 1.04; // ("Make bird 4% bigger", 2026-11-05)
                 // (off the band's own foot, where the hold stands at the opening and pinned alike: read off the hold, a seat
                 // made before the band came to the opening's foot stood the bird 130 high till the next)
                 var bandE = document.querySelector('main .op-band'), aN = bandE ? bandE.getBoundingClientRect().bottom - baseOf(navA) : hr.top - baseOf(navA);
