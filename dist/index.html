@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=ecd4b9f1">
+<link rel="stylesheet" href="style.css?v=c26afed6">
 <style>:root{--colo-span:9.3572;--band-span:7.7365;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12866,6 +12866,8 @@ window.ncOpenH = function () {
     if (hold && wide && ruleX) {
       var vrE = document.querySelector('body > .nc-vr'), vl = ruleX + 'px';
       if (vrE && vrE.style.marginLeft !== vl) vrE.style.marginLeft = vl;
+      var ftE = document.querySelector('body > footer.nc-foot');
+      if (ftE && ftE.style.getPropertyValue('--nv-x') !== vl) ftE.style.setProperty('--nv-x', vl);
       var rw = (window.innerWidth - ruleX - 108 + 54) + 'px'; // (27 further each way, 27 from each: "Increase all rules by ... 22", "Add 5 more", 2026-11-03; in to 54 and out again, "Move rule in the side column 27px in on either side", "Add 27px back to rule in side column", 2026-11-04)
       if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);
     }
@@ -12882,7 +12884,7 @@ window.ncOpenH = function () {
     if (hold.style.getPropertyValue('--nc-bird-end') !== e) hold.style.setProperty('--nc-bird-end', e);
     if (hold.style.getPropertyValue('--nc-foot-h') !== F + 'px') hold.style.setProperty('--nc-foot-h', F + 'px');
     var latTop = bandH + (parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0), latRule = Math.abs(parseFloat(hold.style.getPropertyValue('--rl-rt')) || 0);
-    var le = Math.round(window.innerHeight - F - 27 + latRule + 2 - latTop) + 'px';
+    var le = Math.round(window.innerHeight - F + latRule + 2 - latTop) + 'px';
     if (hold.style.getPropertyValue('--nc-lat-end') !== le) hold.style.setProperty('--nc-lat-end', le);
   }
   window.__ncCentre = centre;

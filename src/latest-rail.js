@@ -3715,6 +3715,8 @@ window.ncOpenH = function () {
       // (the rule on the window now, body > .nc-vr: style.css THE COLUMNS' RULES ON THE WINDOW)
       var vrE = document.querySelector('body > .nc-vr'), vl = ruleX + 'px';
       if (vrE && vrE.style.marginLeft !== vl) vrE.style.marginLeft = vl;
+      var ftE = document.querySelector('body > footer.nc-foot');
+      if (ftE && ftE.style.getPropertyValue('--nv-x') !== vl) ftE.style.setProperty('--nv-x', vl);
       // (the rule under the bird 54 from this one and 54 from the site's edge — "Rule between bird and the latest should be 54px from the vertical rule and the site edge", 2026-11-03)
       var rw = (window.innerWidth - ruleX - 108 + 54) + 'px'; // (27 further each way, 27 from each: "Increase all rules by ... 22", "Add 5 more", 2026-11-03; in to 54 and out again, "Move rule in the side column 27px in on either side", "Add 27px back to rule in side column", 2026-11-04)
       if (hold.style.getPropertyValue('--nc-rl-w') !== rw) hold.style.setProperty('--nc-rl-w', rw);
@@ -3733,9 +3735,9 @@ window.ncOpenH = function () {
     var e = Math.round((bandH + window.innerHeight - F - br.height) / 2 - pinned) + 'px';
     if (hold.style.getPropertyValue('--nc-bird-end') !== e) hold.style.setProperty('--nc-bird-end', e);
     if (hold.style.getPropertyValue('--nc-foot-h') !== F + 'px') hold.style.setProperty('--nc-foot-h', F + 'px');
-    // (The Latest's way down till the ground over the footer, 27, has its rule, which stands --rl-rt over its head)
+    // (The Latest's way down till the footer's rule has its own, which stands --rl-rt over its head)
     var latTop = bandH + (parseFloat(hold.style.getPropertyValue('--rl-pt')) || 0), latRule = Math.abs(parseFloat(hold.style.getPropertyValue('--rl-rt')) || 0);
-    var le = Math.round(window.innerHeight - F - 27 + latRule + 2 - latTop) + 'px';
+    var le = Math.round(window.innerHeight - F + latRule + 2 - latTop) + 'px';
     if (hold.style.getPropertyValue('--nc-lat-end') !== le) hold.style.setProperty('--nc-lat-end', le);
   }
   window.__ncCentre = centre;
