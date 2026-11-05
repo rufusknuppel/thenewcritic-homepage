@@ -16930,13 +16930,13 @@ html body:not(#nc-os0){ background-color: var(--tw, #FDFDFB); }
   html body > footer.nc-foot > a.nc-foot__name{ view-timeline: --nc-foot-v block; }
   html body main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards !important;
-    animation-timeline: scroll(root), --nc-foot-v !important;
-    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25% !important;
+    animation-timeline: scroll(root), --nc-foot-all !important;
+    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry calc(0.05 * var(--op-s, 1px)) entry calc(0.1 * var(--op-s, 1px)) !important;
   }
   html body main.has-mega .op-track > .op-band.op-band > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     animation: nc-tnc-in linear both, nc-foot-tnc-out linear forwards !important;
-    animation-timeline: scroll(root), --nc-foot-v !important;
-    animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px), entry 0% entry 25% !important;
+    animation-timeline: scroll(root), --nc-foot-all !important;
+    animation-range: calc(0.95 * var(--op-s, 0px)) var(--op-s, 1px), entry 0px entry calc(0.05 * var(--op-s, 1px)) !important;
   }
 }
 html:root:root:not(#nc-os1)::before{ content: ''; position: absolute; left: 0; right: 0; top: -3000px; height: 3000px; background: #121417; z-index: 2147483000; pointer-events: none; }
@@ -17210,11 +17210,11 @@ html body > footer.nc-foot.nc-foot:not(#nc-fl0):not(#nc-fl1):not(#nc-fl2):not(#n
 @media (min-width: 1024px){
   html body main.has-mega .op-track > .op-band.op-band > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
     animation: nc-tlm-out linear both, nc-foot-tlm-in linear forwards, nc-band-l linear both, nc-band-l2 linear both !important;
-    animation-timeline: scroll(root), --nc-foot-v, scroll(root), --nc-foot-all !important;
-    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry 0% entry 25%, 0 calc(0.9 * var(--op-s, 1px)), entry 0px entry calc(0.9 * var(--op-s, 1px)) !important;
+    animation-timeline: scroll(root), --nc-foot-all, scroll(root), --nc-foot-all !important;
+    animation-range: calc(0.9 * var(--op-s, 0px)) calc(0.95 * var(--op-s, 1px)), entry calc(0.05 * var(--op-s, 1px)) entry calc(0.1 * var(--op-s, 1px)), 0 calc(0.9 * var(--op-s, 1px)), entry calc(0.1 * var(--op-s, 1px)) entry var(--op-s, 1px) !important;
   }
   html body main.has-mega .op-track > .op-band.op-band > .rail-top > .rail-top__nav:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){
-    display: block !important; animation: nc-band-r linear both, nc-band-r2 linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 calc(0.9 * var(--op-s, 1px)), entry 0px entry calc(0.9 * var(--op-s, 1px)) !important;
+    display: block !important; animation: nc-band-r linear both, nc-band-r2 linear both !important; animation-timeline: scroll(root), --nc-foot-all !important; animation-range: 0 calc(0.9 * var(--op-s, 1px)), entry calc(0.1 * var(--op-s, 1px)) entry var(--op-s, 1px) !important;
   }
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.rail-tlm.rail-tlm:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(var(--nc-band-x) + var(--nc-band-x2))) !important; }
   html body main.has-mega .op-track > .op-band.op-band[style*="--opb-navl"] > a.op-tnc.op-tnc:not(#nc-fv0):not(#nc-fv1):not(#nc-fv2):not(#nc-fv3){ transform: translateX(calc(27px - var(--opb-navl, 52px))) !important; }
@@ -17314,20 +17314,20 @@ html body.archive-page .arc.arc--index .arc-clear:not(#nc-sm0):not(#nc-sm1):not(
   html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) > a.rail-tlm.rail-tlm{
     --nc-band-x: -27px; opacity: 0;
     animation: nc-foot-tlm-in linear both, nc-band-l2 linear both !important;
-    animation-timeline: --nc-foot-v, --nc-foot-all !important;
-    animation-range: entry 0% entry 25%, entry 0px entry calc(0.9 * var(--nc-pinch, 185px)) !important;
+    animation-timeline: --nc-foot-all, --nc-foot-all !important;
+    animation-range: entry calc(0.05 * var(--nc-pinch, 185px)) entry calc(0.1 * var(--nc-pinch, 185px)), entry calc(0.1 * var(--nc-pinch, 185px)) entry var(--nc-pinch, 185px) !important;
   }
   html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) > a.op-tnc.op-tnc{
     opacity: 1;
     animation: nc-foot-tnc-out linear forwards !important;
-    animation-timeline: --nc-foot-v !important;
-    animation-range: entry 0% entry 25% !important;
+    animation-timeline: --nc-foot-all !important;
+    animation-range: entry 0px entry calc(0.05 * var(--nc-pinch, 185px)) !important;
   }
   html body:is(.archive-page, .about-page) main.has-mega .op-track > .op-band.op-band:not(#nc-ba0):not(#nc-ba1):not(#nc-ba2):not(#nc-ba3):not(#nc-ba4):not(#nc-ba5):not(#nc-ba6):not(#nc-ba7):not(#nc-ba8):not(#nc-ba9):not(#nc-ba10):not(#nc-ba11):not(#nc-ba12):not(#nc-ba13):not(#nc-ba14):not(#nc-ba15):not(#nc-ba16):not(#nc-ba17):not(#nc-ba18):not(#nc-ba19):not(#nc-ba20):not(#nc-ba21):not(#nc-ba22):not(#nc-ba23):not(#nc-ba24):not(#nc-ba25):not(#nc-ba26):not(#nc-ba27):not(#nc-ba28):not(#nc-ba29):not(#nc-ba30):not(#nc-ba31):not(#nc-ba32):not(#nc-ba33):not(#nc-ba34):not(#nc-ba35):not(#nc-ba36):not(#nc-ba37):not(#nc-ba38):not(#nc-ba39) > .rail-top > .rail-top__nav{
     transform: translateX(calc(var(--opb-soc-r, 52px) - 27px));
     animation: nc-band-r2 linear both !important;
     animation-timeline: --nc-foot-all !important;
-    animation-range: entry 0px entry calc(0.9 * var(--nc-pinch, 185px)) !important;
+    animation-range: entry calc(0.1 * var(--nc-pinch, 185px)) entry var(--nc-pinch, 185px) !important;
   }
 }
 @media (hover: hover){
