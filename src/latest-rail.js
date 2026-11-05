@@ -3734,8 +3734,7 @@ window.ncOpenH = function () {
     var pinned = bandH + (parseFloat(hold.style.getPropertyValue('--rl-swt')) || 0) + (parseFloat(hold.style.getPropertyValue('--rl-swdy')) || 0);
     var e = Math.round((bandH + window.innerHeight - F - br.height) / 2 - pinned) + 'px';
     if (hold.style.getPropertyValue('--nc-bird-end') !== e) hold.style.setProperty('--nc-bird-end', e);
-    // (the page carries the column up for all but the 27 of the footer that stand on the main: style.css THE FOOTER ON THE LIGHT BLUE)
-    if (hold.style.getPropertyValue('--nc-foot-h') !== (F - 27) + 'px') hold.style.setProperty('--nc-foot-h', (F - 27) + 'px');
+    if (hold.style.getPropertyValue('--nc-foot-h') !== F + 'px') hold.style.setProperty('--nc-foot-h', F + 'px');
   }
   window.__ncCentre = centre;
   ['load', 'resize', 'newcritic:fitdone', 'newcritic:settled'].forEach(function (ev) { addEventListener(ev, centre, { passive: true }); });
