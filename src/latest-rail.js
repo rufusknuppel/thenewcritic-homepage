@@ -3750,9 +3750,10 @@ window.ncOpenH = function () {
     // (over the page's last --op-s since the colophon lost its name and stands shorter than that — "Remove the wordmark from
     // the footer", 2026-11-05: the run counted back from the page's end, u, the hold riding up only while the footer
     // comes, its last F; stops where the going starts, where the footer starts and at the end)
+    // (The Latest kept for the colophon, no going — "keep the latest for the colophon", 2026-11-05: its frames only ride, lm 0; the bird kept over it too, be 0, as dropped to the middle it sat on The Latest)
     var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0;
     if (opS > 0 && F > 0) {
-      var run = Math.max(opS, F), lm = parseFloat(le) || 0, be = parseFloat(e) || 0;
+      var run = Math.max(opS, F), lm = 0, be = 0;
       var at = function (u, m) { var ride = Math.max(0, F - u), go = u < opS ? m * (opS - u) / opS : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
       var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
