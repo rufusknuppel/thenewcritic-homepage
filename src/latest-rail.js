@@ -3754,7 +3754,21 @@ window.ncOpenH = function () {
     // (and both recentred as the colophon pulls up — "recenter bird and the latest when colophon pulls up", 2026-11-05: over the footer's F they go up by F/2, half the room it takes, lm = be = -F/2)
     var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0;
     if (opS > 0 && F > 0) {
-      var run = Math.max(opS, F), lm = -F / 2, be = -F / 2;
+      // (the room round the column even at the end — "Make spacing around rule match too", 2026-11-05: from the band's rule to
+      // the bird's top as from See All's baseline to the footer's rule; at the end the last tab's list is the one up, set its
+      // drop under the hidden ones, so it stands at The Latest's pinned top, latTop, plus that drop plus its own height)
+      var ins = hold.querySelectorAll('.latest-rail__in'), last = ins[ins.length - 1], cur = hold.querySelector('.latest-rail__in.is-current');
+      var rest = [].filter.call(ins, function (n) { return n !== cur; })[0], all = last && last.querySelector('.latest-rail__all'), even = -F / 2;
+      if (all && cur && rest) {
+        var z = document.createElement('span');
+        z.style.cssText = 'display:inline-block !important;width:0 !important;height:0 !important;padding:0 !important;margin:0 !important;border:0 !important;vertical-align:baseline !important';
+        all.appendChild(z);
+        var own = z.getBoundingClientRect().bottom - last.getBoundingClientRect().top;
+        z.remove();
+        var drop = cur.getBoundingClientRect().top - rest.getBoundingClientRect().top;
+        even = Math.round((bandH + window.innerHeight - F - pinned - (latTop + drop + own)) / 2 * 2) / 2;
+      }
+      var run = Math.max(opS, F), lm = even, be = even;
       var at = function (u, m) { var ride = Math.max(0, F - u), go = u < F ? m * (F - u) / F : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
       var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
