@@ -3747,14 +3747,17 @@ window.ncOpenH = function () {
     // each stands still on the window once its going is done and the footer comes on over it; the frames' middle stop is
     // --op-s over the footer's height, which a sheet cannot write, so they are written here; style.css THE GOING THE COMING
     // RUN BACKWARDS)
-    var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0, st0 = parseFloat(hold.style.getPropertyValue('--rl-st0')) || 0;
-    if (opS > 0 && F > opS) {
-      var p = (100 * opS / F).toFixed(3), be = parseFloat(e) || 0;
-      // (The Latest under the footer's rule just as the bird reaches the middle, both even all the way — "Why don't they move
-      // linearly and simultaneously", "Same finish", 2026-11-05: its way the footer's rule's place at --op-s, not the coming's pace)
-      var lm = (parseFloat(le) || 0) + F - opS;
-      var kf = '@keyframes nc-lat-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (opS + lm).toFixed(2) + 'px)}100%{transform:translateY(' + (F + lm).toFixed(2) + 'px)}}'
-        + '@keyframes nc-bird-out{0%{transform:translateY(0)}' + p + '%{transform:translateY(' + (opS + be).toFixed(2) + 'px)}100%{transform:translateY(' + (F + be).toFixed(2) + 'px)}}';
+    // (over the page's last --op-s since the colophon lost its name and stands shorter than that — "Remove the wordmark from
+    // the footer", 2026-11-05: the run counted back from the page's end, u, the hold riding up only while the footer
+    // comes, its last F; stops where the going starts, where the footer starts and at the end)
+    var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0;
+    if (opS > 0 && F > 0) {
+      var run = Math.max(opS, F), lm = parseFloat(le) || 0, be = parseFloat(e) || 0;
+      var at = function (u, m) { var ride = Math.max(0, F - u), go = u < opS ? m * (opS - u) / opS : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
+      var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
+      var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
+      var kf = '@keyframes nc-lat-out{' + frames(lm) + '}@keyframes nc-bird-out{' + frames(be) + '}';
+      if (document.documentElement.style.getPropertyValue('--nc-go-run') !== run + 'px') document.documentElement.style.setProperty('--nc-go-run', run + 'px');
       var ks = document.getElementById('nc-foot-going');
       if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }
       if (ks.textContent !== kf) ks.textContent = kf;

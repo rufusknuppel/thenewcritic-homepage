@@ -376,7 +376,7 @@ function siteFooter() {
     ['mailto:editors@thenewcritic.com', 'Email'],
   ].map(([href, label]) => `<a class="nc-foot__a" href="${href}"${href.startsWith('http') ? ' rel="noopener"' : ''}>${label}</a>`).join(', ');
   return `<i class="nc-vr" aria-hidden="true"></i><i class="nc-vr nc-vr--2" aria-hidden="true"></i><footer class="nc-foot" aria-label="Colophon">`
-    + `<a class="nc-foot__name" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
+    // (the name out of the colophon, the line of socials, copyright and Est. alone under its rule — "Remove the wordmark from the footer", 2026-11-05)
     + `<div class="nc-foot__band"><p class="nc-foot__soc">${socials}</p><p class="nc-foot__copy"><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__est"><span class="nc-foot__a">Est. May 2025</span></p></div>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;[].slice.call(document.querySelectorAll('body > .nc-vr')).reverse().forEach(function(v){document.body.insertBefore(v,document.body.firstChild);});var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
