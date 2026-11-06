@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=90a58851">
+<link rel="stylesheet" href="style.css?v=3c0dba38">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12888,24 +12888,15 @@ window.ncOpenH = function () {
     if (hold.style.getPropertyValue('--nc-lat-end') !== le) hold.style.setProperty('--nc-lat-end', le);
     var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0;
     if (opS > 0 && F > 0) {
-      var ins = hold.querySelectorAll('.latest-rail__in'), last = ins[ins.length - 1], cur = hold.querySelector('.latest-rail__in.is-current');
-      var rest = [].filter.call(ins, function (n) { return n !== cur; })[0], all = last && last.querySelector('.latest-rail__all'), even = -F / 2;
-      if (all && cur && rest) {
-        var z = document.createElement('span');
-        z.style.cssText = 'display:inline-block !important;width:0 !important;height:0 !important;padding:0 !important;margin:0 !important;border:0 !important;vertical-align:baseline !important';
-        all.appendChild(z);
-        var own = z.getBoundingClientRect().bottom - last.getBoundingClientRect().top;
-        z.remove();
-        var drop = cur.getBoundingClientRect().top - rest.getBoundingClientRect().top;
-        even = Math.round((bandH + window.innerHeight - F - pinned - (latTop + drop + own)) / 2 * 2) / 2;
-      }
-      var run = Math.max(opS, F), lm = even, be = even;
+      var run = Math.max(opS, F), lm = parseFloat(le) || 0, be = parseFloat(e) || 0;
       var asd = hold.parentElement;
       if (asd && asd.style.getPropertyValue('--rail-foot') !== -F + 'px') asd.style.setProperty('--rail-foot', -F + 'px');
-      var at = function (u, m) { var ride = 0, go = u < F ? m * (F - u) / F : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
-      var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
-      var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
-      var kf = '@keyframes nc-lat-out{' + frames(lm) + '}@keyframes nc-bird-out{' + frames(be) + '}';
+      var rule0 = latTop - latRule, ih = window.innerHeight;
+      var uL = Math.round(Math.min(opS - 1, Math.max(0, (rule0 + lm - (ih - F)) / (1 + lm / opS))) * 100) / 100;
+      var at = function (u, m, R, L) { L = L || 0; var ride = 0, go = u >= R ? 0 : u <= L ? m : m * (R - u) / (R - L); return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
+      var us = [run, opS, F, uL, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
+      var frames = function (m, R, L) { return us.map(function (u) { return at(u, m, R, L); }).join(''); };
+      var kf = '@keyframes nc-lat-out{' + frames(lm, opS) + '}@keyframes nc-bird-out{' + frames(be, opS, uL) + '}';
       if (document.documentElement.style.getPropertyValue('--nc-go-run') !== run + 'px') document.documentElement.style.setProperty('--nc-go-run', run + 'px');
       var ks = document.getElementById('nc-foot-going');
       if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }
