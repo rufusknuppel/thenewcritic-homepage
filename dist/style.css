@@ -17408,3 +17408,26 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 @media (min-width: 1024px){
   body.archive-page .arc-ix-item > :where(.arc-ix-by:not(.arc-ix-by--subj)):is(*, .r.r):not(#nc-es0):not(#nc-es1):not(#nc-es2),body.archive-page .arc-ix-item > .arc-ix-on:is(*, .r):not(#nc-es0):not(#nc-es1):not(#nc-es2){ display: none !important; }
 }
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main.arc-main:not(#nc-es0):not(#nc-es1):not(#nc-es2){ grid-template-columns: calc(29.117vw - 46.4px) minmax(0, 1fr) calc(29.117vw - 46.4px) !important; }
+}
+@media (min-width: 1024px){
+  body.archive-page .arc-peek > .arc-peek__head > button.arc-peek__by{ font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; display: block; }
+  body.archive-page .arc-peek > .arc-peek__head > button.arc-peek__by:is(:hover, :focus-visible){ color: var(--nc-lit-ink, #5F9EA0); outline: none; }
+}
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:not(#nc-es0):not(#nc-es1):not(#nc-es2),
+  html body.archive-page .arc.arc--whole.arc--index .arc-main > .arc-find-row .arc-search:not(#nc-es0):not(#nc-es1):not(#nc-es2):focus{ background: none !important; }
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row > .arc-find:not(#nc-es0):not(#nc-es1):not(#nc-es2){ position: relative; }
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row > .arc-find:not(#nc-es0):not(#nc-es1):not(#nc-es2)::after{ content: ""; position: absolute; left: -27px; right: -27px; bottom: 0; height: 1px; background: var(--nc-rule, #FDFDFB); pointer-events: none; }
+}
+@media (min-width: 1024px) and (min-resolution: 2dppx){
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row > .arc-find:not(#nc-es0):not(#nc-es1):not(#nc-es2)::after{ height: 0.5px; }
+}
+@media (min-width: 1024px){
+  html body.archive-page > i.nc-vr:not(#nc-es0):not(#nc-es1):not(#nc-es2){ margin-left: round(nearest, calc(29.117vw - 46.4px), 1px); }
+  html body.archive-page > i.nc-vr.nc-vr--2:not(#nc-es0):not(#nc-es1):not(#nc-es2){ margin-left: calc(100% - round(nearest, calc(29.117vw - 46.4px), 1px) - 1px); }
+  html.is-archive body > footer.nc-foot.nc-foot:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-es3)::after{ background:
+    linear-gradient(#FDFDFB, #FDFDFB) round(nearest, calc(29.117vw - 46.4px), 1px) 0 / 2px 100% no-repeat,
+    linear-gradient(#FDFDFB, #FDFDFB) right calc(round(nearest, calc(29.117vw - 46.4px), 1px) - 1px) top 0 / 2px 100% no-repeat; }
+}

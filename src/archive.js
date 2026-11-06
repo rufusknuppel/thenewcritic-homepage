@@ -230,6 +230,14 @@
     var peekHead = document.createElement('div');
     peekHead.className = 'arc-peek__head';
     peek.insertBefore(peekHead, peekBody);
+    peekHead.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('.arc-peek__by');
+      if (!b || !search) return;
+      var n = b.getAttribute('data-name');
+      search.value = search.value.trim().toLowerCase() === n.toLowerCase() ? '' : n;
+      if (target) { target.classList.remove('is-target'); target = null; }
+      applyFilter(); markWho(); toHead();
+    });
     // THE CUT AS THE FRONT PAGE'S (2026-10-24 — "have ellipsis for body preview work exactly as it does on homepage body
     // previews": duo-panel-fit.js cutPlates): the paragraph crossing the column's foot cut to the last whole word the
     // room holds, its trailing point or comma given up to the … joined on ("below." reads "below…"), the … in a mark of
@@ -342,8 +350,11 @@
       var esc = function (t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
       // (the writer from the entry's data, a postscript's first by being its subject; the dek after the date)
       // (a shared byline a name to a line, each on the middle — "Center and separate names", 2026-11-06)
-      var names = (r.getAttribute('data-author') || txt('.arc-ix-by')).split(/\s*(?:,|&|\band\b)\s*/).filter(Boolean);
-      peekHead.innerHTML = names.map(function (n) { return '<span class="arc-peek__by">' + esc(n) + '</span>'; }).join('') + '<span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
+      // (each name pressed filters the index to that writer, as the writers' column does — "Want to be able to click author
+      // and apply filer in the preview column", 2026-11-06: the names as the byline writes them, capitals and all)
+      var byEl = r.querySelector('.arc-ix-by:not(.arc-ix-by--subj)');
+      var names = ((byEl && byEl.textContent.trim()) || r.getAttribute('data-author') || '').split(/\s*(?:,|&|\band\b)\s*/).filter(Boolean);
+      peekHead.innerHTML = names.map(function (n) { return '<button type="button" class="arc-peek__by" data-name="' + esc(n).replace(/"/g, '&quot;') + '">' + esc(n) + '</button>'; }).join('') + '<span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
         + (d.d ? '<span class="arc-peek__dek">' + d.d + '</span>' : '');
       peekBody.innerHTML = (d.p || d).map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');

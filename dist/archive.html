@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=a3efcdcc">
+<link rel="stylesheet" href="style.css?v=3ab6cb84">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -930,6 +930,14 @@ window.ncSubW = window.ncSubW || function (nav) {
     var peekHead = document.createElement('div');
     peekHead.className = 'arc-peek__head';
     peek.insertBefore(peekHead, peekBody);
+    peekHead.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('.arc-peek__by');
+      if (!b || !search) return;
+      var n = b.getAttribute('data-name');
+      search.value = search.value.trim().toLowerCase() === n.toLowerCase() ? '' : n;
+      if (target) { target.classList.remove('is-target'); target = null; }
+      applyFilter(); markWho(); toHead();
+    });
     var cutTo = function (p, html, n) {
       p.innerHTML = html;
       var tw = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), t, seen = 0, last = null;
@@ -1027,8 +1035,9 @@ window.ncSubW = window.ncSubW || function (nav) {
       peekAt = r;
       var txt = function (sel) { var e = r.querySelector(sel); return e ? e.textContent.trim() : ''; };
       var esc = function (t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
-      var names = (r.getAttribute('data-author') || txt('.arc-ix-by')).split(/\s*(?:,|&|\band\b)\s*/).filter(Boolean);
-      peekHead.innerHTML = names.map(function (n) { return '<span class="arc-peek__by">' + esc(n) + '</span>'; }).join('') + '<span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
+      var byEl = r.querySelector('.arc-ix-by:not(.arc-ix-by--subj)');
+      var names = ((byEl && byEl.textContent.trim()) || r.getAttribute('data-author') || '').split(/\s*(?:,|&|\band\b)\s*/).filter(Boolean);
+      peekHead.innerHTML = names.map(function (n) { return '<button type="button" class="arc-peek__by" data-name="' + esc(n).replace(/"/g, '&quot;') + '">' + esc(n) + '</button>'; }).join('') + '<span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
         + (d.d ? '<span class="arc-peek__dek">' + d.d + '</span>' : '');
       peekBody.innerHTML = (d.p || d).map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
