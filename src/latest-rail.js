@@ -3768,17 +3768,19 @@ window.ncOpenH = function () {
         var drop = cur.getBoundingClientRect().top - rest.getBoundingClientRect().top;
         even = Math.round((bandH + window.innerHeight - F - pinned - (latTop + drop + own)) / 2 * 2) / 2;
       }
-      var run = Math.max(opS, F), lm = even, be = even;
+      // (The Latest gone again on the colophon — "Have the latest disappear on colophon", 2026-11-06: down over the page's
+      // last --op-s as it came up, under the footer's rule at the end, main's clip taking it; the bird keeps its even shift)
+      var run = Math.max(opS, F), lm = parseFloat(le) || 0, be = even;
       // (and the hold no longer shoved up by the colophon to be pushed back down by the frames — "Glitching with the bird and
       // the latest when colophon lands", 2026-11-05: the two, 69 up and 55.5 down, met a frame apart as a trackpad scrolls;
       // its column now reaches F past the colophon's top, --rail-foot, main clipping it, so the hold stays stuck and the
       // frames carry only the even shift)
       var asd = hold.parentElement;
       if (asd && asd.style.getPropertyValue('--rail-foot') !== -F + 'px') asd.style.setProperty('--rail-foot', -F + 'px');
-      var at = function (u, m) { var ride = 0, go = u < F ? m * (F - u) / F : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
+      var at = function (u, m, R) { var ride = 0, go = u < R ? m * (R - u) / R : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
-      var frames = function (m) { return us.map(function (u) { return at(u, m); }).join(''); };
-      var kf = '@keyframes nc-lat-out{' + frames(lm) + '}@keyframes nc-bird-out{' + frames(be) + '}';
+      var frames = function (m, R) { return us.map(function (u) { return at(u, m, R); }).join(''); };
+      var kf = '@keyframes nc-lat-out{' + frames(lm, opS) + '}@keyframes nc-bird-out{' + frames(be, F) + '}';
       if (document.documentElement.style.getPropertyValue('--nc-go-run') !== run + 'px') document.documentElement.style.setProperty('--nc-go-run', run + 'px');
       var ks = document.getElementById('nc-foot-going');
       if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }

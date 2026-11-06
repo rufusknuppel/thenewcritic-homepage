@@ -3,15 +3,12 @@
   "configurations": [
     {
       "name": "dist",
-      "runtimeExecutable": "python3",
+      "runtimeExecutable": "node",
       "runtimeArgs": [
-        "-m",
-        "http.server",
-        "8901",
-        "-d",
-        "dist"
+        "serve.js",
+        "8765"
       ],
-      "port": 8901
+      "port": 8765
     },
     {
       "name": "placard-trial",
