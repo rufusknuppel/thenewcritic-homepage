@@ -17374,3 +17374,19 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 }
 @keyframes nc-foot-tnc-out { }
 @keyframes nc-foot-tlm-in { }
+@media (min-width: 1024px){
+  html body > footer.nc-foot > .nc-foot__band > p:is(.nc-foot__soc, .nc-foot__est):not(#nc-es0):not(#nc-es1):not(#nc-es2),
+  html body > footer.nc-foot > .nc-foot__band > p:is(.nc-foot__soc, .nc-foot__est):not(#nc-es0):not(#nc-es1):not(#nc-es2) .nc-foot__a{
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif !important; font-size: 12.7px !important; letter-spacing: 0.0638em !important;
+    font-style: normal !important; font-weight: 400 !important; text-transform: uppercase !important;
+  }
+  html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est:not(#nc-es0):not(#nc-es1):not(#nc-es2){ translate: none !important; }
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ top: -1px !important; }
+}
+@font-face {
+  font-family: "neue-haas-grotesk-text";
+  src: url("https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff2"), url("https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff");
+  font-style: normal; font-weight: 400; font-display: auto;
+  unicode-range: U+0030-0039;
+  size-adjust: 104.49%;
+}

@@ -34226,3 +34226,24 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 /* NO SWAP AT THE FOOT EITHER (2026-11-05 — "Don't sub the new critic for the last magazine either keep in the top band"): THE NEW CRITIC stays in the band to the page's end, The Last Magazine kept to the page's head; the foot's two fades left with nothing to do */
 @keyframes nc-foot-tnc-out { }
 @keyframes nc-foot-tlm-in { }
+
+/* THE WHOLE COLOPHON IN THE META'S FACE (2026-11-06 — "Make entire colophon meta font"): the socials and Est. in the copyright's Neue Haas Grotesk, 12.7 in capitals spaced 0.0638em, upright; Est.'s nudge for the italic gone with it */
+@media (min-width: 1024px){
+  html body > footer.nc-foot > .nc-foot__band > p:is(.nc-foot__soc, .nc-foot__est):not(#nc-es0):not(#nc-es1):not(#nc-es2),
+  html body > footer.nc-foot > .nc-foot__band > p:is(.nc-foot__soc, .nc-foot__est):not(#nc-es0):not(#nc-es1):not(#nc-es2) .nc-foot__a{
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif !important; font-size: 12.7px !important; letter-spacing: 0.0638em !important;
+    font-style: normal !important; font-weight: 400 !important; text-transform: uppercase !important;
+  }
+  html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est:not(#nc-es0):not(#nc-es1):not(#nc-es2){ translate: none !important; }
+  /* (the line a pixel up in the smaller face, its capitals 27 under the rule again) */
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ top: -1px !important; }
+}
+
+/* NEUE HAAS'S FIGURES AS TALL AS ITS CAPITALS (2026-11-06 — "I want numbers to be the same height as the letters in Neue Haas"): the kit's Text 400, its figures standing 712 to the capitals' 744 (the flat tops of 7 and 5 against H, E, T, I), declared again for the digits alone and scaled from the baseline by 744/712; a later face wins its unicode-range, so every use of the meta's face takes them */
+@font-face {
+  font-family: "neue-haas-grotesk-text";
+  src: url("https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff2"), url("https://use.typekit.net/af/912d1e/00000000000000007735bb33/31/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff");
+  font-style: normal; font-weight: 400; font-display: auto;
+  unicode-range: U+0030-0039;
+  size-adjust: 104.49%;
+}
