@@ -6027,10 +6027,12 @@ function renderAboutPage(founders = []) {
 // still reads its posts from here.
 const LEDGER_FEATURE_SLUGS = {
   lead: 'pdoom',
-  pair: ['curtis-yarvin-jr', 'beyond-pain-an-interview-with-the'],
+  pair: ['curtis-yarvin-jr'],
   close: 'freak-show',
   // (two more after them — "Add two more entries to the editor's picks: End Times and Notes on Camp", 2026-11-06)
-  more: ['end-times', 'notes-on-camp'],
+  // (End Times the site's last post — "Make end times the last post on the site", 2026-11-06)
+  // (Beyond Pain after Freak Show, ahead of these two — "move beyond pain between freak show and notes on camp", 2026-11-06)
+  more: ['beyond-pain-an-interview-with-the', 'notes-on-camp', 'end-times'],
 };
 
 // THE ARCHIVE ON THE FRONT PAGE'S HEAD (2026-10-22 — "Redesign the

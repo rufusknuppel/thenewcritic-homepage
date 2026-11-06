@@ -2714,9 +2714,20 @@ var ncStemX = function () {
             if (window.MutationObserver) {
               // (and again as the lists' opening and shutting settle — at once and once they have, since: four seats a
               // change, ~50ms each in the middle of a scroll, where the gaps they set are held now, 2026-10-15)
-              var reseat = [], mo = new MutationObserver(function () {
+              // (not while the page is scrolling, since — "The page is shuddering a little as I scroll", 2026-11-06: each
+              // seat forces a layout of the page, 55 to 80ms, and the four tab changes of a scroll made eight of them, a
+              // few frames dropped each; held now till the scroll has stood still 200ms, then the two as before)
+              var reseat = [], lastScroll = 0, stillT = 0;
+              addEventListener('scroll', function () { lastScroll = Date.now(); }, { passive: true });
+              var whenStill = function () {
+                clearTimeout(stillT);
+                var wait = 200 - (Date.now() - lastScroll);
+                if (wait > 0) { stillT = setTimeout(whenStill, wait); return; }
+                reseat = [0, 870].map(function (ms) { return setTimeout(seat, ms); });
+              };
+              var mo = new MutationObserver(function () {
                 reseat.forEach(clearTimeout);
-                reseat = [30, 900].map(function (ms) { return setTimeout(seat, ms); });
+                stillT = setTimeout(whenStill, 30);
               });
               [].forEach.call(hold.querySelectorAll(':scope > .latest-rail__in'), function (inE) { mo.observe(inE, { attributes: true, attributeFilter: ['class'] }); });
             }

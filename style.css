@@ -34223,9 +34223,6 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-cm0):not(#nc-cm1):not(#nc-cm2):not(#nc-cm3):not(#nc-cm4):not(#nc-cm5):not(#nc-cm6):not(#nc-cm7):not(#nc-cm8):not(#nc-cm9):not(#nc-cm10):not(#nc-cm11):not(#nc-cm12):not(#nc-cm13):not(#nc-cm14):not(#nc-cm15):not(#nc-cm16):not(#nc-cm17):not(#nc-cm18):not(#nc-cm19):not(#nc-cm20):not(#nc-cm21):not(#nc-cm22):not(#nc-cm23):not(#nc-cm24):not(#nc-cm25):not(#nc-cm26):not(#nc-cm27):not(#nc-cm28):not(#nc-cm29):not(#nc-cm30):not(#nc-cm31):not(#nc-cm32):not(#nc-cm33):not(#nc-cm34):not(#nc-cm35):not(#nc-cm36):not(#nc-cm37):not(#nc-cm38):not(#nc-cm39):not(#nc-cm40):not(#nc-cm41):not(#nc-cm42):not(#nc-cm43){ padding-left: 27px !important; padding-right: 27px !important; }
 }
 
-/* NO SWAP AT THE FOOT EITHER (2026-11-05 — "Don't sub the new critic for the last magazine either keep in the top band"): THE NEW CRITIC stays in the band to the page's end, The Last Magazine kept to the page's head; the foot's two fades left with nothing to do */
-@keyframes nc-foot-tnc-out { }
-@keyframes nc-foot-tlm-in { }
 
 /* THE WHOLE COLOPHON IN THE META'S FACE (2026-11-06 — "Make entire colophon meta font"): the socials and Est. in the copyright's Neue Haas Grotesk, 12.7 in capitals spaced 0.0638em, upright; Est.'s nudge for the italic gone with it */
 @media (min-width: 1024px){
@@ -34250,7 +34247,9 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   size-adjust: 104.49%;
 }
 
-/* THE NAME UNDER THE COLOPHON, MIRRORED (2026-11-06 — "Add the wordmark back to the footer under the colophon but mirror it vertically"): the footer's name back, after the line of socials, copyright and Est., turned top to bottom about its own middle; 27 under the line's baseline and 27 over the page's end, as at its sides */
+/* THE NAME UNDER THE COLOPHON (2026-11-06 — "Add the wordmark back to the footer under the colophon but mirror it vertically", then "Have the wordmark print normally"): the footer's name back, after the line of socials, copyright and Est., the right way up; 27 under the line's baseline and 27 over the page's end, as at its sides */
 @media (min-width: 1024px){
-  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name--under:not(#nc-es0):not(#nc-es1):not(#nc-es2){ transform: scaleY(-1) !important; margin-top: 2px !important; margin-bottom: 27px !important; }
+  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name--under:not(#nc-es0):not(#nc-es1):not(#nc-es2){ margin-top: 2px !important; margin-bottom: 0 !important; }
+  /* (the 27 under the name the footer's own, not the name's margin, which ran out of the footer and set its end, the foot's runs with it, 27 short of the page's) */
+  html body > footer.nc-foot.nc-foot:not(#nc-es0):not(#nc-es1):not(#nc-es2){ padding-bottom: 27px !important; }
 }

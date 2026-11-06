@@ -17372,8 +17372,6 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   html body > footer.nc-foot.nc-foot:not(#nc-cm0):not(#nc-cm1):not(#nc-cm2):not(#nc-cm3):not(#nc-cm4):not(#nc-cm5):not(#nc-cm6):not(#nc-cm7):not(#nc-cm8):not(#nc-cm9):not(#nc-cm10):not(#nc-cm11):not(#nc-cm12):not(#nc-cm13):not(#nc-cm14):not(#nc-cm15):not(#nc-cm16):not(#nc-cm17):not(#nc-cm18):not(#nc-cm19):not(#nc-cm20):not(#nc-cm21):not(#nc-cm22):not(#nc-cm23):not(#nc-cm24):not(#nc-cm25):not(#nc-cm26):not(#nc-cm27):not(#nc-cm28):not(#nc-cm29):not(#nc-cm30):not(#nc-cm31):not(#nc-cm32):not(#nc-cm33):not(#nc-cm34):not(#nc-cm35):not(#nc-cm36):not(#nc-cm37):not(#nc-cm38):not(#nc-cm39):not(#nc-cm40):not(#nc-cm41):not(#nc-cm42):not(#nc-cm43){ padding-top: 0 !important; }
   html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-cm0):not(#nc-cm1):not(#nc-cm2):not(#nc-cm3):not(#nc-cm4):not(#nc-cm5):not(#nc-cm6):not(#nc-cm7):not(#nc-cm8):not(#nc-cm9):not(#nc-cm10):not(#nc-cm11):not(#nc-cm12):not(#nc-cm13):not(#nc-cm14):not(#nc-cm15):not(#nc-cm16):not(#nc-cm17):not(#nc-cm18):not(#nc-cm19):not(#nc-cm20):not(#nc-cm21):not(#nc-cm22):not(#nc-cm23):not(#nc-cm24):not(#nc-cm25):not(#nc-cm26):not(#nc-cm27):not(#nc-cm28):not(#nc-cm29):not(#nc-cm30):not(#nc-cm31):not(#nc-cm32):not(#nc-cm33):not(#nc-cm34):not(#nc-cm35):not(#nc-cm36):not(#nc-cm37):not(#nc-cm38):not(#nc-cm39):not(#nc-cm40):not(#nc-cm41):not(#nc-cm42):not(#nc-cm43){ padding-left: 27px !important; padding-right: 27px !important; }
 }
-@keyframes nc-foot-tnc-out { }
-@keyframes nc-foot-tlm-in { }
 @media (min-width: 1024px){
   html body > footer.nc-foot > .nc-foot__band > p:is(.nc-foot__soc, .nc-foot__est):not(#nc-es0):not(#nc-es1):not(#nc-es2),
   html body > footer.nc-foot > .nc-foot__band > p:is(.nc-foot__soc, .nc-foot__est):not(#nc-es0):not(#nc-es1):not(#nc-es2) .nc-foot__a{
@@ -17392,5 +17390,6 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   size-adjust: 104.49%;
 }
 @media (min-width: 1024px){
-  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name--under:not(#nc-es0):not(#nc-es1):not(#nc-es2){ transform: scaleY(-1) !important; margin-top: 2px !important; margin-bottom: 27px !important; }
+  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name--under:not(#nc-es0):not(#nc-es1):not(#nc-es2){ margin-top: 2px !important; margin-bottom: 0 !important; }
+  html body > footer.nc-foot.nc-foot:not(#nc-es0):not(#nc-es1):not(#nc-es2){ padding-bottom: 27px !important; }
 }

@@ -208,7 +208,7 @@ module.exports = {
     author: 'Aitan Avgar, Milo Tasman',
   },
   'notes-on-camp': {
-    kicker: 'The Michigan Kibbutz',
+    kicker: 'Camp Kibbutz',
     author: 'Elan Kluger',
   },
   'pee-1': {
