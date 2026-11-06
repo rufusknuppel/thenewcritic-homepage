@@ -378,6 +378,8 @@ function siteFooter() {
   return `<i class="nc-vr" aria-hidden="true"></i><i class="nc-vr nc-vr--2" aria-hidden="true"></i><footer class="nc-foot" aria-label="Colophon">`
     // (the name out of the colophon, the line of socials, copyright and Est. alone under its rule — "Remove the wordmark from the footer", 2026-11-05)
     + `<div class="nc-foot__band"><p class="nc-foot__soc">${socials}</p><p class="nc-foot__copy"><span class="nc-foot__a">© The New Critic, Inc.</span></p><p class="nc-foot__est"><span class="nc-foot__a">Est. May 2025</span></p></div>`
+    // (the name back, under the line and mirrored top to bottom — "Add the wordmark back to the footer under the colophon but mirror it vertically", 2026-11-06)
+    + `<a class="nc-foot__name nc-foot__name--under" href="#top" aria-label="${escapeHtml(SITE_NAME)}">${bandBlockWords()}</a>`
     + `</footer><script>(function(){var f=document.querySelector('.nc-foot');if(!f)return;[].slice.call(document.querySelectorAll('body > .nc-vr')).reverse().forEach(function(v){document.body.insertBefore(v,document.body.firstChild);});var seat=function(){`
     + `var w=document.querySelector('a.content-name .content-name__block > .tnc-words'),b=document.querySelector('main .op-band');`
     + `if(w){var fs=parseFloat(getComputedStyle(w).fontSize);if(fs>0)f.style.setProperty('--nf-fs',fs+'px');}`
@@ -3997,7 +3999,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
   // pair, the closing essay.
   // (from every post the build holds, the homepage's own objects first)
   const bySlug = (slug) => [...essays, ...postscripts, ...contras, ...archives, ...pool].find((p) => p && slugOf(p.link) === slug) || null;
-  const pickRows = [[bySlug(LEDGER_FEATURE_SLUGS.lead)], LEDGER_FEATURE_SLUGS.pair.map(bySlug), [bySlug(LEDGER_FEATURE_SLUGS.close)]]
+  const pickRows = [[bySlug(LEDGER_FEATURE_SLUGS.lead)], LEDGER_FEATURE_SLUGS.pair.map(bySlug), [bySlug(LEDGER_FEATURE_SLUGS.close)], LEDGER_FEATURE_SLUGS.more.map(bySlug)]
     .map((r) => r.filter((p) => p && !latestPosts.includes(p))).filter((r) => r.length);
   const taken = new Set([...latestPosts, ...pickRows.flat()]);
   const fresh = (list) => list.filter((p) => p && !taken.has(p)).slice(0, SEC_N);
@@ -6027,6 +6029,8 @@ const LEDGER_FEATURE_SLUGS = {
   lead: 'pdoom',
   pair: ['curtis-yarvin-jr', 'beyond-pain-an-interview-with-the'],
   close: 'freak-show',
+  // (two more after them — "Add two more entries to the editor's picks: End Times and Notes on Camp", 2026-11-06)
+  more: ['end-times', 'notes-on-camp'],
 };
 
 // THE ARCHIVE ON THE FRONT PAGE'S HEAD (2026-10-22 — "Redesign the

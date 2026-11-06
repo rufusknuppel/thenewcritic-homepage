@@ -208,7 +208,7 @@ module.exports = {
     author: 'Aitan Avgar, Milo Tasman',
   },
   'notes-on-camp': {
-    kicker: 'Rage and Forgiveness at Jewish Summer Camp',
+    kicker: 'The Michigan Kibbutz',
     author: 'Elan Kluger',
   },
   'pee-1': {

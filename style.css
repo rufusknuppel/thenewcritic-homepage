@@ -34235,8 +34235,10 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
     font-style: normal !important; font-weight: 400 !important; text-transform: uppercase !important;
   }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est:not(#nc-es0):not(#nc-es1):not(#nc-es2){ translate: none !important; }
-  /* (the line a pixel up in the smaller face, its capitals 27 under the rule again) */
-  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ top: -1px !important; }
+  /* (the line set so its capitals stand 27 clear under the rule, in the smaller face and the colophon of 63) */
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ top: 2px !important; }
+  /* (as much under the line as over it — "Reduce the space under the text in the colophon so matches space above text", 2026-11-06: 27 clear under the baseline as over the capitals, the colophon 63) */
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ height: 63px !important; min-height: 0 !important; }
 }
 
 /* NEUE HAAS'S FIGURES AS TALL AS ITS CAPITALS (2026-11-06 — "I want numbers to be the same height as the letters in Neue Haas"): the kit's Text 400, its figures standing 712 to the capitals' 744 (the flat tops of 7 and 5 against H, E, T, I), declared again for the digits alone and scaled from the baseline by 744/712; a later face wins its unicode-range, so every use of the meta's face takes them */
@@ -34246,4 +34248,9 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   font-style: normal; font-weight: 400; font-display: auto;
   unicode-range: U+0030-0039;
   size-adjust: 104.49%;
+}
+
+/* THE NAME UNDER THE COLOPHON, MIRRORED (2026-11-06 — "Add the wordmark back to the footer under the colophon but mirror it vertically"): the footer's name back, after the line of socials, copyright and Est., turned top to bottom about its own middle; 27 under the line's baseline and 27 over the page's end, as at its sides */
+@media (min-width: 1024px){
+  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name--under:not(#nc-es0):not(#nc-es1):not(#nc-es2){ transform: scaleY(-1) !important; margin-top: 2px !important; margin-bottom: 27px !important; }
 }

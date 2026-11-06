@@ -3768,11 +3768,13 @@ window.ncOpenH = function () {
       // colophon rule", 2026-11-06: the rule, latTop - latRule at rest, comes down by lm over --op-s as the footer's rule
       // comes up from the window's foot, ih - F + u; they meet at uL, and the bird's run ends there)
       var rule0 = latTop - latRule, ih = window.innerHeight;
-      var uL = Math.round(Math.min(opS - 1, Math.max(0, (rule0 + lm - (ih - F)) / (1 + lm / opS))) * 100) / 100;
+      // (both only once the colophon's rule shows — "Only start the latest disappearing/bird move when colophon rule shows
+      // up", 2026-11-06: over the footer's F, not the last --op-s)
+      var uL = Math.round(Math.min(F - 1, Math.max(0, (rule0 + lm - (ih - F)) / (1 + lm / F))) * 100) / 100;
       var at = function (u, m, R, L) { L = L || 0; var ride = 0, go = u >= R ? 0 : u <= L ? m : m * (R - u) / (R - L); return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, uL, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
       var frames = function (m, R, L) { return us.map(function (u) { return at(u, m, R, L); }).join(''); };
-      var kf = '@keyframes nc-lat-out{' + frames(lm, opS) + '}@keyframes nc-bird-out{' + frames(be, opS, uL) + '}';
+      var kf = '@keyframes nc-lat-out{' + frames(lm, F) + '}@keyframes nc-bird-out{' + frames(be, F, uL) + '}';
       if (document.documentElement.style.getPropertyValue('--nc-go-run') !== run + 'px') document.documentElement.style.setProperty('--nc-go-run', run + 'px');
       var ks = document.getElementById('nc-foot-going');
       if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }

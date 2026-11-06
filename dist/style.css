@@ -17381,7 +17381,8 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
     font-style: normal !important; font-weight: 400 !important; text-transform: uppercase !important;
   }
   html body > footer.nc-foot > .nc-foot__band > p.nc-foot__est:not(#nc-es0):not(#nc-es1):not(#nc-es2){ translate: none !important; }
-  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ top: -1px !important; }
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ top: 2px !important; }
+  html body > footer.nc-foot > .nc-foot__band.nc-foot__band.nc-foot__band:not(#nc-es0):not(#nc-es1):not(#nc-es2){ height: 63px !important; min-height: 0 !important; }
 }
 @font-face {
   font-family: "neue-haas-grotesk-text";
@@ -17389,4 +17390,7 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   font-style: normal; font-weight: 400; font-display: auto;
   unicode-range: U+0030-0039;
   size-adjust: 104.49%;
+}
+@media (min-width: 1024px){
+  html body > footer.nc-foot > a.nc-foot__name.nc-foot__name--under:not(#nc-es0):not(#nc-es1):not(#nc-es2){ transform: scaleY(-1) !important; margin-top: 2px !important; margin-bottom: 27px !important; }
 }
