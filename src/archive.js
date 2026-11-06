@@ -341,7 +341,9 @@
       var txt = function (sel) { var e = r.querySelector(sel); return e ? e.textContent.trim() : ''; };
       var esc = function (t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
       // (the writer from the entry's data, a postscript's first by being its subject; the dek after the date)
-      peekHead.innerHTML = '<span class="arc-peek__by">' + esc(r.getAttribute('data-author') || txt('.arc-ix-by')) + '</span><span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
+      // (a shared byline a name to a line, each on the middle — "Center and separate names", 2026-11-06)
+      var names = (r.getAttribute('data-author') || txt('.arc-ix-by')).split(/\s*(?:,|&|\band\b)\s*/).filter(Boolean);
+      peekHead.innerHTML = names.map(function (n) { return '<span class="arc-peek__by">' + esc(n) + '</span>'; }).join('') + '<span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
         + (d.d ? '<span class="arc-peek__dek">' + d.d + '</span>' : '');
       peekBody.innerHTML = (d.p || d).map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=860fd04b">
+<link rel="stylesheet" href="style.css?v=a3efcdcc">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -1027,7 +1027,8 @@ window.ncSubW = window.ncSubW || function (nav) {
       peekAt = r;
       var txt = function (sel) { var e = r.querySelector(sel); return e ? e.textContent.trim() : ''; };
       var esc = function (t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
-      peekHead.innerHTML = '<span class="arc-peek__by">' + esc(r.getAttribute('data-author') || txt('.arc-ix-by')) + '</span><span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
+      var names = (r.getAttribute('data-author') || txt('.arc-ix-by')).split(/\s*(?:,|&|\band\b)\s*/).filter(Boolean);
+      peekHead.innerHTML = names.map(function (n) { return '<span class="arc-peek__by">' + esc(n) + '</span>'; }).join('') + '<span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
         + (d.d ? '<span class="arc-peek__dek">' + d.d + '</span>' : '');
       peekBody.innerHTML = (d.p || d).map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');

@@ -34258,6 +34258,7 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 @media (min-width: 1024px){
   body.archive-page .arc-peek > .arc-peek__head{
     display: none; flex-direction: column; align-items: center;
+    text-align: center;
     font-family: neue-haas-grotesk-text, "Helvetica Neue", Arial, sans-serif; font-size: 12.7px; line-height: 20px; letter-spacing: 0.0638em; text-transform: uppercase; font-weight: 400;
     color: inherit; padding-bottom: 34px; margin-bottom: 38px; position: relative;
   }
