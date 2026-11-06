@@ -3754,23 +3754,10 @@ window.ncOpenH = function () {
     // (and both recentred as the colophon pulls up — "recenter bird and the latest when colophon pulls up", 2026-11-05: over the footer's F they go up by F/2, half the room it takes, lm = be = -F/2)
     var opS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--op-s')) || 0;
     if (opS > 0 && F > 0) {
-      // (the room round the column even at the end — "Make spacing around rule match too", 2026-11-05: from the band's rule to
-      // the bird's top as from See All's baseline to the footer's rule; at the end the last tab's list is the one up, set its
-      // drop under the hidden ones, so it stands at The Latest's pinned top, latTop, plus that drop plus its own height)
-      var ins = hold.querySelectorAll('.latest-rail__in'), last = ins[ins.length - 1], cur = hold.querySelector('.latest-rail__in.is-current');
-      var rest = [].filter.call(ins, function (n) { return n !== cur; })[0], all = last && last.querySelector('.latest-rail__all'), even = -F / 2;
-      if (all && cur && rest) {
-        var z = document.createElement('span');
-        z.style.cssText = 'display:inline-block !important;width:0 !important;height:0 !important;padding:0 !important;margin:0 !important;border:0 !important;vertical-align:baseline !important';
-        all.appendChild(z);
-        var own = z.getBoundingClientRect().bottom - last.getBoundingClientRect().top;
-        z.remove();
-        var drop = cur.getBoundingClientRect().top - rest.getBoundingClientRect().top;
-        even = Math.round((bandH + window.innerHeight - F - pinned - (latTop + drop + own)) / 2 * 2) / 2;
-      }
       // (The Latest gone again on the colophon — "Have the latest disappear on colophon", 2026-11-06: down over the page's
-      // last --op-s as it came up, under the footer's rule at the end, main's clip taking it; the bird keeps its even shift)
-      var run = Math.max(opS, F), lm = parseFloat(le) || 0, be = even;
+      // last --op-s as it came up, under the footer's rule at the end, main's clip taking it; and the bird, alone in the
+      // column then, to the middle between the band and the footer's rule over the same run — "Yes, centre it": e)
+      var run = Math.max(opS, F), lm = parseFloat(le) || 0, be = parseFloat(e) || 0;
       // (and the hold no longer shoved up by the colophon to be pushed back down by the frames — "Glitching with the bird and
       // the latest when colophon lands", 2026-11-05: the two, 69 up and 55.5 down, met a frame apart as a trackpad scrolls;
       // its column now reaches F past the colophon's top, --rail-foot, main clipping it, so the hold stays stuck and the
@@ -3780,7 +3767,7 @@ window.ncOpenH = function () {
       var at = function (u, m, R) { var ride = 0, go = u < R ? m * (R - u) / R : 0; return ((run - u) / run * 100).toFixed(3) + '%{transform:translateY(' + (ride + go).toFixed(2) + 'px)}'; };
       var us = [run, opS, F, 0].filter(function (u, i, a) { return a.indexOf(u) === i; }).sort(function (x, y) { return y - x; });
       var frames = function (m, R) { return us.map(function (u) { return at(u, m, R); }).join(''); };
-      var kf = '@keyframes nc-lat-out{' + frames(lm, opS) + '}@keyframes nc-bird-out{' + frames(be, F) + '}';
+      var kf = '@keyframes nc-lat-out{' + frames(lm, opS) + '}@keyframes nc-bird-out{' + frames(be, opS) + '}';
       if (document.documentElement.style.getPropertyValue('--nc-go-run') !== run + 'px') document.documentElement.style.setProperty('--nc-go-run', run + 'px');
       var ks = document.getElementById('nc-foot-going');
       if (!ks) { ks = document.createElement('style'); ks.id = 'nc-foot-going'; document.head.appendChild(ks); }
