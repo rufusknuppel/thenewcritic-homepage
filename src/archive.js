@@ -224,6 +224,12 @@
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
     var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    // (the entry's author and date over its opening, a rule between — "On archive have Author/Date in a section above the
+    // body preview", "Separated by rule", 2026-11-06: read from the entry's own by and on; style.css THE AUTHOR AND DATE
+    // OVER THE OPENING)
+    var peekHead = document.createElement('div');
+    peekHead.className = 'arc-peek__head';
+    peek.insertBefore(peekHead, peekBody);
     // THE CUT AS THE FRONT PAGE'S (2026-10-24 — "have ellipsis for body preview work exactly as it does on homepage body
     // previews": duo-panel-fit.js cutPlates): the paragraph crossing the column's foot cut to the last whole word the
     // room holds, its trailing point or comma given up to the … joined on ("below." reads "below…"), the … in a mark of
@@ -318,19 +324,26 @@
       peek.style.setProperty('--peek-nudge', '0px');
       var firstP = peekBody.firstElementChild, lastP = peekBody.lastElementChild;
       if (!firstP) return;
+      var by = peekHead.firstElementChild;
       // (from the opening's first line's tallest letters to its last line's deepest — the title, that stood over it,
       // gone: "remove title from the body preview", 2026-10-24; Read on, under it, before)
-      var top = baseOf(firstP, false) - inkOf(firstP, lineOf(firstP, false)).actualBoundingBoxAscent;
+      var top = by ? baseOf(by, false) - inkOf(by, by.textContent.toUpperCase()).actualBoundingBoxAscent
+        : baseOf(firstP, false) - inkOf(firstP, lineOf(firstP, false)).actualBoundingBoxAscent;
       var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lineOf(lastP, true)).actualBoundingBoxDescent);
       var k = peek.getBoundingClientRect();
-      peek.style.setProperty('--peek-nudge', ((k.top + k.bottom) / 2 - (top + foot) / 2).toFixed(2) + 'px');
+      peek.style.setProperty('--peek-nudge', Math.round((k.top + k.bottom) / 2 - (top + foot) / 2) + 'px'); // (whole pixels, the rule under the author and date on one row)
     };
     var showPeek = function (r) {
       if (!peekData) { peekWant = r; return; }
       var d = peekData[r.getAttribute('data-slug')];
       if (!d) return;
       peekAt = r;
-      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      var txt = function (sel) { var e = r.querySelector(sel); return e ? e.textContent.trim() : ''; };
+      var esc = function (t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+      // (the writer from the entry's data, a postscript's first by being its subject; the dek after the date)
+      peekHead.innerHTML = '<span class="arc-peek__by">' + esc(r.getAttribute('data-author') || txt('.arc-ix-by')) + '</span><span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
+        + (d.d ? '<span class="arc-peek__dek">' + d.d + '</span>' : '');
+      peekBody.innerHTML = (d.p || d).map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       // (fitted once, to the room the window shows under the head as it is shown — the column less 54 over and under,
       // less the head still showing — then let go to its own height, so the lines are kept as the head scrolls away
@@ -341,7 +354,8 @@
       var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
       var pcs = getComputedStyle(peek), pad = (parseFloat(pcs.paddingTop) || 0) + (parseFloat(pcs.paddingBottom) || 0);
-      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0) + 'px';
+      var hcs = getComputedStyle(peekHead), hH = peekHead.getBoundingClientRect().height + (parseFloat(hcs.marginTop) || 0) + (parseFloat(hcs.marginBottom) || 0);
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - hH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
       inkPeek();

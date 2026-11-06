@@ -6172,7 +6172,10 @@ function archivePeekJson(posts) {
     const keep = [];
     let n = 0;
     for (const t of paras) { if (n >= 2000) break; keep.push(emHtml(t)); n += t.length; }
-    peek[slugOf(p.link)] = keep;
+    // (and its dek, as the front page's cards set it, under the author and date — "Add the dek under the meta too", 2026-11-06)
+    const sub = (p.subtitle || '').trim();
+    const dek = !sub ? '' : arcIndexSection(p) === 'contra' ? contraWorkDek(capDek(sub)) : escapeHtml(capDek(sub));
+    peek[slugOf(p.link)] = { d: dek, p: keep };
   }
   return JSON.stringify(peek);
 }

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=5c0cab00">
+<link rel="stylesheet" href="style.css?v=860fd04b">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -396,7 +396,7 @@
     </section></div>
     <nav class="arc-who" aria-label="The writers"><h2 class="arc-ix-sec__name arc-who__name">Writers</h2><ul class="arc-who__list"><li><button class="arc-who__w" type="button" data-name="Will Diana">Will Diana</button></li><li><button class="arc-who__w" type="button" data-name="Theodore Gary">Theodore Gary</button></li><li><button class="arc-who__w" type="button" data-name="Rufus Knuppel">Rufus Knuppel</button></li><li><button class="arc-who__w" type="button" data-name="Elan Kluger">Elan Kluger</button></li><li><button class="arc-who__w" type="button" data-name="Benjamin Samuels">Benjamin Samuels</button></li><li><button class="arc-who__w" type="button" data-name="Isabel Mehta">Isabel Mehta</button></li><li><button class="arc-who__w" type="button" data-name="Owen Yingling">Owen Yingling</button></li><li><button class="arc-who__w" type="button" data-name="Nadav Asal">Nadav Asal</button></li><li><button class="arc-who__w" type="button" data-name="Clare Ashcraft">Clare Ashcraft</button></li><li><button class="arc-who__w" type="button" data-name="Tessa Augsberger">Tessa Augsberger</button></li><li><button class="arc-who__w" type="button" data-name="Josie Barboriak">Josie Barboriak</button></li><li><button class="arc-who__w" type="button" data-name="Sarah Miller">Sarah Miller</button></li><li><button class="arc-who__w" type="button" data-name="overlocked">overlocked</button></li><li><button class="arc-who__w" type="button" data-name="Brendilou Armstrong">Brendilou Armstrong</button></li><li><button class="arc-who__w" type="button" data-name="Milla Ben-Ezra">Milla Ben-Ezra</button></li><li><button class="arc-who__w" type="button" data-name="Alex Bronzini-Vender">Alex Bronzini-Vender</button></li><li><button class="arc-who__w" type="button" data-name="Bentham’s Bulldog">Bentham’s Bulldog</button></li><li><button class="arc-who__w" type="button" data-name="Toni Burns">Toni Burns</button></li><li><button class="arc-who__w" type="button" data-name="Julia Byrne">Julia Byrne</button></li><li><button class="arc-who__w" type="button" data-name="Grace Caplan">Grace Caplan</button></li><li><button class="arc-who__w" type="button" data-name="Sagar Castleman">Sagar Castleman</button></li><li><button class="arc-who__w" type="button" data-name="John Coleman">John Coleman</button></li><li><button class="arc-who__w" type="button" data-name="Cathy Li">Cathy Li</button></li><li><button class="arc-who__w" type="button" data-name="Ryan Merrifield">Ryan Merrifield</button></li><li><button class="arc-who__w" type="button" data-name="James Milstead">James Milstead</button></li><li><button class="arc-who__w" type="button" data-name="Eva Murillo">Eva Murillo</button></li><li><button class="arc-who__w" type="button" data-name="Max Parness">Max Parness</button></li><li><button class="arc-who__w" type="button" data-name="Dylan Partner">Dylan Partner</button></li><li><button class="arc-who__w" type="button" data-name="George Porteous">George Porteous</button></li><li><button class="arc-who__w" type="button" data-name="Madeline Posner">Madeline Posner</button></li><li><button class="arc-who__w" type="button" data-name="Henry Reichman">Henry Reichman</button></li><li><button class="arc-who__w" type="button" data-name="Declan Rexer">Declan Rexer</button></li><li><button class="arc-who__w" type="button" data-name="Samuel Rigg">Samuel Rigg</button></li><li><button class="arc-who__w" type="button" data-name="Jonas Rosenthal">Jonas Rosenthal</button></li><li><button class="arc-who__w" type="button" data-name="Soleil Saint-Cyr">Soleil Saint-Cyr</button></li><li><button class="arc-who__w" type="button" data-name="Daniel Sandoval">Daniel Sandoval</button></li><li><button class="arc-who__w" type="button" data-name="James Urquhart">James Urquhart</button></li><li><button class="arc-who__w" type="button" data-name="Zayd Vlach">Zayd Vlach</button></li><li><button class="arc-who__w" type="button" data-name="Arden Yum">Arden Yum</button></li><li><button class="arc-who__w" type="button" data-name="Everett Yum">Everett Yum</button></li><li><button class="arc-who__w" type="button" data-name="Jacob Zucker">Jacob Zucker</button></li></ul></nav>
     <p class="arc-none" hidden>Nothing matches</p>
-    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=fce2d0801f"><div class="arc-peek__body"></div></aside>
+    <aside class="arc-peek" aria-hidden="true" data-src="archive-peek.json?v=20eac581f8"><div class="arc-peek__body"></div></aside>
   </div>
 </section>
 </main>
@@ -927,6 +927,9 @@ window.ncSubW = window.ncSubW || function (nav) {
   var peek = arc.querySelector('.arc-peek'), peekData = null, peekWant = null;
   if (peek && peek.getAttribute('data-src') && window.fetch) {
     var peekBody = peek.querySelector('.arc-peek__body'), peekAt = null;
+    var peekHead = document.createElement('div');
+    peekHead.className = 'arc-peek__head';
+    peek.insertBefore(peekHead, peekBody);
     var cutTo = function (p, html, n) {
       p.innerHTML = html;
       var tw = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), t, seen = 0, last = null;
@@ -1010,22 +1013,29 @@ window.ncSubW = window.ncSubW || function (nav) {
       peek.style.setProperty('--peek-nudge', '0px');
       var firstP = peekBody.firstElementChild, lastP = peekBody.lastElementChild;
       if (!firstP) return;
-      var top = baseOf(firstP, false) - inkOf(firstP, lineOf(firstP, false)).actualBoundingBoxAscent;
+      var by = peekHead.firstElementChild;
+      var top = by ? baseOf(by, false) - inkOf(by, by.textContent.toUpperCase()).actualBoundingBoxAscent
+        : baseOf(firstP, false) - inkOf(firstP, lineOf(firstP, false)).actualBoundingBoxAscent;
       var foot = baseOf(lastP, true) + Math.max(0, inkOf(lastP, lineOf(lastP, true)).actualBoundingBoxDescent);
       var k = peek.getBoundingClientRect();
-      peek.style.setProperty('--peek-nudge', ((k.top + k.bottom) / 2 - (top + foot) / 2).toFixed(2) + 'px');
+      peek.style.setProperty('--peek-nudge', Math.round((k.top + k.bottom) / 2 - (top + foot) / 2) + 'px'); // (whole pixels, the rule under the author and date on one row)
     };
     var showPeek = function (r) {
       if (!peekData) { peekWant = r; return; }
       var d = peekData[r.getAttribute('data-slug')];
       if (!d) return;
       peekAt = r;
-      peekBody.innerHTML = d.map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
+      var txt = function (sel) { var e = r.querySelector(sel); return e ? e.textContent.trim() : ''; };
+      var esc = function (t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+      peekHead.innerHTML = '<span class="arc-peek__by">' + esc(r.getAttribute('data-author') || txt('.arc-ix-by')) + '</span><span class="arc-peek__on">' + esc(txt('.arc-ix-on')) + '</span>'
+        + (d.d ? '<span class="arc-peek__dek">' + d.d + '</span>' : '');
+      peekBody.innerHTML = (d.p || d).map(function (h) { return '<p class="arc-peek__p">' + h + '</p>'; }).join('');
       peek.classList.add('is-on');
       var band0 = parseFloat(getComputedStyle(de).getPropertyValue('--arc-band')) || bandH();
       var head0 = Math.max(0, arcMain.getBoundingClientRect().top + window.pageYOffset - band0);
       var pcs = getComputedStyle(peek), pad = (parseFloat(pcs.paddingTop) || 0) + (parseFloat(pcs.paddingBottom) || 0);
-      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0) + 'px';
+      var hcs = getComputedStyle(peekHead), hH = peekHead.getBoundingClientRect().height + (parseFloat(hcs.marginTop) || 0) + (parseFloat(hcs.marginBottom) || 0);
+      peekBody.style.maxHeight = Math.max(0, peek.clientHeight - pad - head0 - hH) + 'px';
       fitPeek();
       peekBody.style.maxHeight = '';
       inkPeek();
