@@ -34330,7 +34330,7 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 }
 /* (the next band at the S as the last one's middle leaves the e since — "I want the S wave to start right when the e finsihes", 2026-11-07: two bands a tile twice the word's width, a word apart, the tile slid whole each run, two passes a run at the pace of before) */
 
-/* THE BIRD 27 IN AS THE LATEST COMES (2026-11-07 — "Shrink bird by 27px on either side when latest appears. Pinned to scroll"): the drawing from --nc-bird-k, 54 clear of the rule and the side, to --nc-bird-k2, 81 clear, over the scroll The Latest comes in on (0 to --op-s), and back over the colophon's coming as The Latest goes; the going's run held forward only, so before it the coming's end stands */
+/* THE BIRD 27 IN AS THE LATEST COMES (2026-11-07 — "Shrink bird by 27px on either side when latest appears. Pinned to scroll"): the drawing from --nc-bird-k, 54 clear of the rule and the side, to --nc-bird-k2, 67.5 clear (81 at first, "Shrink only 13.5 px on either side"), over the scroll The Latest comes in on (0 to --op-s), and back over the colophon's coming as The Latest goes; the going's run held forward only, so before it the coming's end stands */
 @keyframes nc-bird-shrink { from { transform: scale(var(--nc-bird-k, 1)); } to { transform: scale(var(--nc-bird-k2, 1)); } }
 @keyframes nc-bird-grow { from { transform: scale(var(--nc-bird-k2, 1)); } to { transform: scale(var(--nc-bird-k, 1)); } }
 @media (min-width: 1024px){

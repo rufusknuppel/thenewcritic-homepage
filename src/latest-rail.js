@@ -3736,7 +3736,7 @@ window.ncOpenH = function () {
       // (and 27 in from each of those once The Latest has come — "Shrink bird by 27px on either side when latest appears.
       // Pinned to scroll", 2026-11-07: --nc-bird-k2, the drawing run from the one to the other over The Latest's coming and
       // back as it goes; style.css THE BIRD 27 IN AS THE LATEST COMES)
-      var birdK2 = ((window.innerWidth - 81) - (ruleX + 1 + 81)) / swR.width;
+      var birdK2 = ((window.innerWidth - 67.5) - (ruleX + 1 + 67.5)) / swR.width; // (13.5 in since, not 27 — "Shrink only 13.5 px on either side", 2026-11-07)
       if (birdK2 > 0.3 && birdK2 < 3 && Math.abs((parseFloat(sw.style.getPropertyValue('--nc-bird-k2')) || 1) - birdK2) > 0.002) sw.style.setProperty('--nc-bird-k2', birdK2.toFixed(4));
       if (vrE && vrE.style.marginLeft !== vl) vrE.style.marginLeft = vl;
       var ftE = document.querySelector('body > footer.nc-foot');

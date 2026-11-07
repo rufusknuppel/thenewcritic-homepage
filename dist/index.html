@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=1d0b5ddb">
+<link rel="stylesheet" href="style.css?v=86759860">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -12943,7 +12943,7 @@ window.ncOpenH = function () {
       var vrE = document.querySelector('body > .nc-vr'), vl = ruleX + 'px';
       var birdK = ((window.innerWidth - 54) - (ruleX + 1 + 54)) / swR.width;
       if (birdK > 0.5 && birdK < 3 && Math.abs((parseFloat(sw.style.getPropertyValue('--nc-bird-k')) || 1) - birdK) > 0.002) sw.style.setProperty('--nc-bird-k', birdK.toFixed(4));
-      var birdK2 = ((window.innerWidth - 81) - (ruleX + 1 + 81)) / swR.width;
+      var birdK2 = ((window.innerWidth - 67.5) - (ruleX + 1 + 67.5)) / swR.width; // (13.5 in since, not 27 — "Shrink only 13.5 px on either side", 2026-11-07)
       if (birdK2 > 0.3 && birdK2 < 3 && Math.abs((parseFloat(sw.style.getPropertyValue('--nc-bird-k2')) || 1) - birdK2) > 0.002) sw.style.setProperty('--nc-bird-k2', birdK2.toFixed(4));
       if (vrE && vrE.style.marginLeft !== vl) vrE.style.marginLeft = vl;
       var ftE = document.querySelector('body > footer.nc-foot');
