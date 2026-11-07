@@ -17459,3 +17459,6 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 @media (min-width: 1024px){
   html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-es3){ animation: none !important; transform: scale(var(--nc-bird-k2, 1)) !important; }
 }
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row .arc-clear:not(#nc-cg0):not(#nc-cg1):not(#nc-cg2){ top: calc(50% + 17.5px) !important; }
+}

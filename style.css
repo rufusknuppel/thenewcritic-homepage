@@ -34344,3 +34344,9 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 @media (min-width: 1024px){
   html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-es3){ animation: none !important; transform: scale(var(--nc-bird-k2, 1)) !important; }
 }
+
+/* CLEAR AS FAR UNDER THE RULE AS THE WORDS SIT OVER IT (2026-11-07 — "Have clear sit same distance under rule as text
+   sits above"): the typed words' ink ends 10 over the rule and CLEAR's caps began 16.5 under it, so CLEAR comes up 5.5 (10.5 each side, ±0.5 with the pixel snapping). */
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row .arc-clear:not(#nc-cg0):not(#nc-cg1):not(#nc-cg2){ top: calc(50% + 17.5px) !important; }
+}
