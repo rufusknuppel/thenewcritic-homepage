@@ -17432,3 +17432,15 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
     linear-gradient(#FDFDFB, #FDFDFB) right calc(round(nearest, calc(29.117vw - 46.4px), 1px) - 1px) top 0 / 2px 100% no-repeat !important; }
 }
 html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :focus-visible){ box-shadow: none !important; background: none !important; }
+@property --nc-sw { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+@keyframes nc-sub-wave { from { --nc-sw: 100%; } to { --nc-sw: 0%; } }
+@media (prefers-reduced-motion: no-preference){
+  html body main .op-band .rail-top__nav a.rail-top__a[href$="/subscribe"]:not(#nc-sw0):not(#nc-sw1):not(#nc-sw2):not(#nc-sw3):not(#nc-sw4):not(#nc-sw5):not(#nc-sw6):not(#nc-sw7):not(:hover):not(:focus-visible){
+    background-image: linear-gradient(90deg, #121417 40%, var(--nc-lit-ink, #5F9EA0) 50%, #121417 60%) !important;
+    background-size: 300% 100% !important; background-repeat: no-repeat !important;
+    background-position: var(--nc-sw) 0 !important;
+    -webkit-background-clip: text !important; background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: nc-sub-wave 5s linear infinite;
+  }
+}
