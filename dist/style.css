@@ -17433,14 +17433,14 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
 }
 html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :focus-visible){ box-shadow: none !important; background: none !important; }
 @property --nc-sw { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
-@keyframes nc-sub-wave { from { --nc-sw: 100%; } to { --nc-sw: 0%; } }
+@keyframes nc-sub-wave { from { --nc-sw: 0%; } to { --nc-sw: -350%; } }
 @media (prefers-reduced-motion: no-preference){
   html body main .op-band .rail-top__nav a.rail-top__a[href$="/subscribe"]:not(#nc-sw0):not(#nc-sw1):not(#nc-sw2):not(#nc-sw3):not(#nc-sw4):not(#nc-sw5):not(#nc-sw6):not(#nc-sw7):not(:hover):not(:focus-visible){
-    background-image: linear-gradient(90deg, #121417 40%, var(--nc-lit-ink, #5F9EA0) 50%, #121417 60%) !important;
-    background-size: 300% 100% !important; background-repeat: no-repeat !important;
+    background-image: linear-gradient(90deg, #121417 35.7%, var(--nc-lit-ink, #5F9EA0) 50%, #121417 64.3%) !important;
+    background-size: 140% 100% !important; background-repeat: repeat-x !important;
     background-position: var(--nc-sw) 0 !important;
     -webkit-background-clip: text !important; background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-    animation: nc-sub-wave 5s linear infinite;
+    animation: nc-sub-wave 3s linear infinite;
   }
 }
