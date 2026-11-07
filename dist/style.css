@@ -17462,3 +17462,7 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 @media (min-width: 1024px){
   html body.archive-page .arc.arc--index .arc-main > .arc-find-row .arc-clear:not(#nc-cg0):not(#nc-cg1):not(#nc-cg2){ top: calc(50% + 17.5px) !important; }
 }
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-none:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ max-width: none !important; }
+  html body.archive-page .arc.arc--index .arc-main:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ min-height: calc(100vh - var(--arc-band, 69px) + 4px); }
+}

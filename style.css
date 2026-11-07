@@ -34350,3 +34350,12 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 @media (min-width: 1024px){
   html body.archive-page .arc.arc--index .arc-main > .arc-find-row .arc-clear:not(#nc-cg0):not(#nc-cg1):not(#nc-cg2){ top: calc(50% + 17.5px) !important; }
 }
+
+/* NOTHING MATCHES CENTRED, THE SEARCH STILL (2026-11-07 — "Search moves when nothing matches appears. Nothing matches
+   should be centered"): the line was held to 558 from the column's left, so it sat left of the middle; and with the list
+   gone the page was only the window tall, so the 4 the search scrolls to under the band carried the pinned columns up
+   4 with it. The middle column is now 4 more than the window under the band, so they hold where they were. */
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-none:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ max-width: none !important; }
+  html body.archive-page .arc.arc--index .arc-main:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ min-height: calc(100vh - var(--arc-band, 69px) + 4px); }
+}
