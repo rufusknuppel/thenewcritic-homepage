@@ -17431,3 +17431,4 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
     linear-gradient(#FDFDFB, #FDFDFB) round(nearest, calc(29.117vw - 46.4px), 1px) 0 / 2px 100% no-repeat,
     linear-gradient(#FDFDFB, #FDFDFB) right calc(round(nearest, calc(29.117vw - 46.4px), 1px) - 1px) top 0 / 2px 100% no-repeat; }
 }
+html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :focus-visible){ box-shadow: none !important; background: none !important; }
