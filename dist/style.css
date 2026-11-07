@@ -17401,7 +17401,7 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
     color: inherit; padding-bottom: 34px; margin-bottom: 38px; position: relative;
   }
   body.archive-page .arc-peek > .arc-peek__head::after{ content: ""; position: absolute; left: -27px; right: -27px; bottom: -0.5px; height: 0.5px; background: #5F9EA0; }
-  body.archive-page .arc-peek > .arc-peek__head > .arc-peek__dek{ display: block; margin-top: 33px; font-family: garamond-premier-pro, "EB Garamond", serif; font-size: 17.5px; line-height: 21px; font-style: italic; letter-spacing: normal; text-transform: none; text-align: center; }
+  body.archive-page .arc-peek > .arc-peek__head > .arc-peek__dek{ display: block; margin-top: 33px; font-family: garamond-premier-pro, "EB Garamond", serif; font-size: 17.5px; line-height: 21px; font-style: italic; letter-spacing: normal; text-transform: none; text-align: center; text-wrap: balance; }
   body.archive-page .arc-peek > .arc-peek__head > .arc-peek__dek em{ font-style: normal; }
   body.archive-page .arc-peek.is-on > .arc-peek__head{ display: flex; }
 }
