@@ -17447,3 +17447,12 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 @media (min-width: 1024px){
   html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1){ transform: scale(var(--nc-bird-k, 1)); transform-origin: 50% 50%; }
 }
+@keyframes nc-bird-shrink { from { transform: scale(var(--nc-bird-k, 1)); } to { transform: scale(var(--nc-bird-k2, 1)); } }
+@keyframes nc-bird-grow { from { transform: scale(var(--nc-bird-k2, 1)); } to { transform: scale(var(--nc-bird-k, 1)); } }
+@media (min-width: 1024px){
+  html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1):not(#nc-es2){
+    animation: nc-bird-shrink linear both, nc-bird-grow linear forwards;
+    animation-timeline: scroll(root), --nc-foot-all;
+    animation-range: 0 var(--op-s, 1px), entry calc(100% - var(--nc-foot-h, 1px)) entry 100%;
+  }
+}
