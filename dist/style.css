@@ -17456,3 +17456,18 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
     animation-range: 0 var(--op-s, 1px), entry calc(100% - var(--nc-foot-h, 1px)) entry 100%;
   }
 }
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row.has-who:not(#nc-wu0):not(#nc-wu1):not(#nc-wu2):not(#nc-wu3){
+    position: relative !important; top: auto !important; height: auto !important; align-self: stretch !important;
+    display: block !important; padding-top: 79px !important;
+  }
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row.has-who > .arc-find:not(#nc-wu0):not(#nc-wu1):not(#nc-wu2):not(#nc-wu3){
+    position: sticky !important; top: calc(var(--arc-band, 69px) + 79px) !important; z-index: 2; display: flex;
+  }
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row.has-who > .arc-find:not(#nc-wu0):not(#nc-wu1):not(#nc-wu2):not(#nc-wu3)::before{
+    content: ""; position: absolute; left: -54px; right: -53px; top: -160px; bottom: 0; background: #FDFDFB; z-index: -1; pointer-events: none;
+  }
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row.has-who > .arc-who:not(#nc-wu0):not(#nc-wu1):not(#nc-wu2):not(#nc-wu3){
+    position: relative; z-index: 1; margin: 39px 0 0 !important; padding: 0 !important; grid-area: auto !important;
+  }
+}

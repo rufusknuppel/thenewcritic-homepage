@@ -88,6 +88,13 @@
 
   // THE LANDING: a named title in the middle of the room under the band
   var findRow = arc.querySelector('.arc-find-row');
+  // (the writers under the search, in its column, from 1024 up — "Move writers into the search column on the archive",
+  // "Have writers scroll under the rule", 2026-11-07: the field pinned 108 under the column's top and the writers going up
+  // under its rule with the page; style.css THE WRITERS UNDER THE SEARCH)
+  if (findRow && window.matchMedia && matchMedia('(min-width: 1024px)').matches) {
+    var whoN = arc.querySelector('.arc-who');
+    if (whoN) { findRow.appendChild(whoN); findRow.classList.add('has-who'); }
+  }
   var bandH = function () { return band ? band.getBoundingClientRect().height : 0; };
   var target = null;
   var land = function () {
