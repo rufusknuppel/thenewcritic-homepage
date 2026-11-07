@@ -3727,6 +3727,12 @@ window.ncOpenH = function () {
     if (hold && wide && ruleX) {
       // (the rule on the window now, body > .nc-vr: style.css THE COLUMNS' RULES ON THE WINDOW)
       var vrE = document.querySelector('body > .nc-vr'), vl = ruleX + 'px';
+      // (the bird drawn as wide as the column leaves it 54 clear of this rule and of the window's side — "Make the bird the
+      // width of 54px from the side and the 54px from the rule", 2026-11-07: its box, which places the rule, left as it is,
+      // and its drawing, whose wing and tail tips touch its box's sides, scaled about its middle till it fills that room; style.css THE
+      // BIRD 54 FROM THE RULE AND THE SIDE)
+      var birdK = ((window.innerWidth - 54) - (ruleX + 1 + 54)) / swR.width;
+      if (birdK > 0.5 && birdK < 3 && Math.abs((parseFloat(sw.style.getPropertyValue('--nc-bird-k')) || 1) - birdK) > 0.002) sw.style.setProperty('--nc-bird-k', birdK.toFixed(4));
       if (vrE && vrE.style.marginLeft !== vl) vrE.style.marginLeft = vl;
       var ftE = document.querySelector('body > footer.nc-foot');
       if (ftE && ftE.style.getPropertyValue('--nv-x') !== vl) ftE.style.setProperty('--nv-x', vl);

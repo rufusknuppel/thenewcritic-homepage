@@ -34311,15 +34311,21 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
 
 /* SUBSCRIBE'S WAVE (2026-11-07 — "Have the subscribe button pulse with a highlight slowly", "But it should be a left to right wave"): a soft band of the highlight passing through the band's Subscribe from its first letter to its last, five seconds a pass, without end — the word's letters filled from a charcoal ground three times its width with the band at its middle, slid right to left under them (a registered --nc-sw, the band's own background held !important) so the band crosses left to right and the word rests charcoal between passes; ranked over the band's own ink (six IDs) to be seen; still for a reader who asks for less motion, and lit whole under the hand */
 @property --nc-sw { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
-@keyframes nc-sub-wave { from { --nc-sw: 0%; } to { --nc-sw: -350%; } }
+@keyframes nc-sub-wave { from { --nc-sw: 0%; } to { --nc-sw: -200%; } }
 @media (prefers-reduced-motion: no-preference){
   html body main .op-band .rail-top__nav a.rail-top__a[href$="/subscribe"]:not(#nc-sw0):not(#nc-sw1):not(#nc-sw2):not(#nc-sw3):not(#nc-sw4):not(#nc-sw5):not(#nc-sw6):not(#nc-sw7):not(:hover):not(:focus-visible){
-    background-image: linear-gradient(90deg, #121417 35.7%, var(--nc-lit-ink, #5F9EA0) 50%, #121417 64.3%) !important;
-    background-size: 140% 100% !important; background-repeat: repeat-x !important;
+    background-image: linear-gradient(90deg, #121417 15%, var(--nc-lit-ink, #5F9EA0) 25%, #121417 35%, #121417 65%, var(--nc-lit-ink, #5F9EA0) 75%, #121417 85%) !important;
+    background-size: 200% 100% !important; background-repeat: repeat-x !important;
     background-position: var(--nc-sw) 0 !important;
     -webkit-background-clip: text !important; background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-    animation: nc-sub-wave 3s linear infinite;
+    animation: nc-sub-wave 4.29s linear infinite;
   }
 }
 /* (no rest between passes since — "Have no pause between cycles on the subscribe button", 2026-11-07: the ground tiled, a tile 1.4 the word's width with the band, 0.4 of the word, at its middle, slid a whole tile a pass, so one band comes in at the S as the last leaves the e; 3.5s a pass at first and 3 since, "Speed up cycles slighly") */
+
+/* THE BIRD 54 FROM THE RULE AND THE SIDE (2026-11-07 — "Make the bird the width of 54px from the side and the 54px from the rule"): the drawing scaled about its middle by --nc-bird-k (latest-rail.js) so its ink runs from 54 past the column's rule to 54 short of the window's side; its box, off which the rule is set, unscaled */
+@media (min-width: 1024px){
+  html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1){ transform: scale(var(--nc-bird-k, 1)); transform-origin: 50% 50%; }
+}
+/* (the next band at the S as the last one's middle leaves the e since — "I want the S wave to start right when the e finsihes", 2026-11-07: two bands a tile twice the word's width, a word apart, the tile slid whole each run, two passes a run at the pace of before) */
