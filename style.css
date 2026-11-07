@@ -34302,7 +34302,7 @@ body.about-page .abo-role.abo-role:not(#nc-ar0):not(#nc-ar1):not(#nc-ar2):not(#n
   html body.archive-page > i.nc-vr.nc-vr--2:not(#nc-es0):not(#nc-es1):not(#nc-es2){ margin-left: calc(100% - round(nearest, calc(29.117vw - 46.4px), 1px) - 1px); }
   html.is-archive body > footer.nc-foot.nc-foot:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-es3)::after{ background:
     linear-gradient(#FDFDFB, #FDFDFB) round(nearest, calc(29.117vw - 46.4px), 1px) 0 / 2px 100% no-repeat,
-    linear-gradient(#FDFDFB, #FDFDFB) right calc(round(nearest, calc(29.117vw - 46.4px), 1px) - 1px) top 0 / 2px 100% no-repeat; }
+    linear-gradient(#FDFDFB, #FDFDFB) right calc(round(nearest, calc(29.117vw - 46.4px), 1px) - 1px) top 0 / 2px 100% no-repeat !important; }
 }
 
 /* NO BOX ROUND THE COLOPHON'S LINKS (2026-11-07 — "Why are there boxes around the socials in the footer on hover?"): the old ink block every link drew under the hand, a ring of --yves --hl-pad wide, which the front page's script takes off its own marked links but the archive and About never mark; the footer's links, the name with them, just turn the highlight */

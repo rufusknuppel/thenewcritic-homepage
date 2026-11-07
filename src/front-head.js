@@ -23,6 +23,10 @@ window.ncSubW = window.ncSubW || function (nav) {
   var cn = document.querySelector('a.content-name');
   // (the nav upright and the socials as they stand on the front page, which latest-rail.js marks this way there)
   if (main) main.classList.add('logo-split');
+  // (the band's date the reader's own day here too, as latest-rail.js sets it on the front page — "Does the date in the nav
+  // band update automatically?", 2026-11-07: the build's day stood on the archive and About till the next rebuild)
+  var opDate = band && band.querySelector(':scope > .op-date');
+  if (opDate) opDate.textContent = new Date().toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' }).replace(/\//g, '.');
 
   // THE BAND UNDER THE NAME, as the front page lays it (latest-rail.js, THE OPENING): its place in main (--op-mt), the
   // scroll at which it pins (--op-s, for THE NEW CRITIC's coming into it), THE, NEW and CRITIC's middles (--opb-the,

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=a3179a6e">
+<link rel="stylesheet" href="style.css?v=165159d5">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -686,6 +686,8 @@ window.ncSubW = window.ncSubW || function (nav) {
   var main = document.querySelector('main.has-mega'), band = main && main.querySelector('.op-band');
   var cn = document.querySelector('a.content-name');
   if (main) main.classList.add('logo-split');
+  var opDate = band && band.querySelector(':scope > .op-date');
+  if (opDate) opDate.textContent = new Date().toLocaleDateString('en-US', { year: '2-digit', month: 'numeric', day: 'numeric' }).replace(/\//g, '.');
   var last = '', cx = null;
   var glyph = function (el, end) {
     var t = (el.textContent || '').trim(), ch = end ? t.slice(-1) : t.charAt(0), cs = getComputedStyle(el);
