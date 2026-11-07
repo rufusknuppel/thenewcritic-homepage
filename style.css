@@ -34357,3 +34357,7 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
     position: relative; z-index: 1; margin: 39px 0 0 !important; padding: 0 !important; grid-area: auto !important;
   }
 }
+/* (the bird at the small size always since — "Keep bird always at small size", 2026-11-07: --nc-bird-k2, 67.5 clear of the rule and the side, from the top to the page's end, the runs between the two sizes stood down) */
+@media (min-width: 1024px){
+  html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-es3){ animation: none !important; transform: scale(var(--nc-bird-k2, 1)) !important; }
+}

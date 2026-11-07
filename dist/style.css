@@ -17471,3 +17471,6 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
     position: relative; z-index: 1; margin: 39px 0 0 !important; padding: 0 !important; grid-area: auto !important;
   }
 }
+@media (min-width: 1024px){
+  html body main .latest-rail__hold > .rail-swallow > svg:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-es3){ animation: none !important; transform: scale(var(--nc-bird-k2, 1)) !important; }
+}
