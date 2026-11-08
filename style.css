@@ -34364,3 +34364,9 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
    took the paper's own colour, made for the dark mark that is no longer under it, and vanished; now it lights in the
    index's teal as a title does. */
 html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not(#nc-wp2):is(:hover, :focus-visible, .is-on){ color: var(--nc-lit-ink, #5F9EA0) !important; -webkit-text-fill-color: var(--nc-lit-ink, #5F9EA0) !important; }
+
+/* NO SUBJECT BESIDE A POSTSCRIPT'S TITLE EITHER (2026-11-07 — "Why is postscript subject showing on hover?"): the
+   subject kept out by the hand on 2026-11-06 goes the way of the writer and the date. */
+@media (min-width: 1024px){
+  html body.archive-page .arc-ix-item > .arc-ix-by.arc-ix-by--subj:not(#nc-es0):not(#nc-es1):not(#nc-es2){ display: none !important; }
+}
