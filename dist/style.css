@@ -17466,3 +17466,4 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
   html body.archive-page .arc.arc--index .arc-main > .arc-none:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ max-width: none !important; }
   html body.archive-page .arc.arc--index .arc-main:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ min-height: calc(100vh - var(--arc-band, 69px) + 4px); }
 }
+html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not(#nc-wp2):is(:hover, :focus-visible, .is-on){ color: var(--nc-lit-ink, #5F9EA0) !important; -webkit-text-fill-color: var(--nc-lit-ink, #5F9EA0) !important; }

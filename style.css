@@ -34359,3 +34359,8 @@ html body > footer.nc-foot a:not(#nc-es0):not(#nc-es1):not(#nc-es2):is(:hover, :
   html body.archive-page .arc.arc--index .arc-main > .arc-none:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ max-width: none !important; }
   html body.archive-page .arc.arc--index .arc-main:not(#nc-nm0):not(#nc-nm1):not(#nc-nm2){ min-height: calc(100vh - var(--arc-band, 69px) + 4px); }
 }
+
+/* A WRITER PRESSED, SEEN (2026-11-07 — "Why is overlocked not shown?… under writers?"): a writer hovered or pressed
+   took the paper's own colour, made for the dark mark that is no longer under it, and vanished; now it lights in the
+   index's teal as a title does. */
+html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not(#nc-wp2):is(:hover, :focus-visible, .is-on){ color: var(--nc-lit-ink, #5F9EA0) !important; -webkit-text-fill-color: var(--nc-lit-ink, #5F9EA0) !important; }
