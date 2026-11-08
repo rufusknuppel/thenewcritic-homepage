@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=c3add665">
+<link rel="stylesheet" href="style.css?v=e375197d">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -915,6 +915,26 @@ window.ncSubW = window.ncSubW || function (nav) {
   afterFilter.push(shrinkWho);
   shrinkWho();
   if (clear) clear.addEventListener('click', markWho);
+  var findBox = search && search.closest('.arc-find');
+  if (findBox) {
+    var twin = document.createElement('span');
+    twin.setAttribute('aria-hidden', 'true');
+    twin.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre;pointer-events:none';
+    document.body.appendChild(twin);
+    var fitFindRule = function () {
+      var c = getComputedStyle(search, search.value ? null : '::placeholder');
+      ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'fontStretch', 'letterSpacing', 'textTransform', 'fontFeatureSettings', 'fontVariant'].forEach(function (p) { twin.style[p] = c[p]; });
+      twin.textContent = search.value || search.placeholder || '';
+      var ls = parseFloat(c.letterSpacing) || 0;
+      var w = Math.min(Math.max(0, twin.getBoundingClientRect().width - ls), search.clientWidth);
+      findBox.style.setProperty('--arc-find-tw', w.toFixed(2) + 'px');
+    };
+    afterFilter.push(fitFindRule);
+    search.addEventListener('input', fitFindRule);
+    addEventListener('resize', fitFindRule);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitFindRule);
+    fitFindRule();
+  }
   markWho();
   items.forEach(function (r) {
     var by = r.querySelector('.arc-ix-by');

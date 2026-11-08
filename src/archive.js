@@ -197,6 +197,30 @@
   afterFilter.push(shrinkWho);
   shrinkWho();
   if (clear) clear.addEventListener('click', markWho);
+
+  // THE SEARCH'S RULE 27 PAST ITS WORDS (2026-11-07 — "Make search rule 27px longer than search on either side only"):
+  // the words typed (or Search, before) measured in a hidden twin of their face, and the rule drawn that wide and 27 more
+  // either side (style.css, --arc-find-tw), never past the column's 27
+  var findBox = search && search.closest('.arc-find');
+  if (findBox) {
+    var twin = document.createElement('span');
+    twin.setAttribute('aria-hidden', 'true');
+    twin.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:pre;pointer-events:none';
+    document.body.appendChild(twin);
+    var fitFindRule = function () {
+      var c = getComputedStyle(search, search.value ? null : '::placeholder');
+      ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'fontStretch', 'letterSpacing', 'textTransform', 'fontFeatureSettings', 'fontVariant'].forEach(function (p) { twin.style[p] = c[p]; });
+      twin.textContent = search.value || search.placeholder || '';
+      var ls = parseFloat(c.letterSpacing) || 0;
+      var w = Math.min(Math.max(0, twin.getBoundingClientRect().width - ls), search.clientWidth);
+      findBox.style.setProperty('--arc-find-tw', w.toFixed(2) + 'px');
+    };
+    afterFilter.push(fitFindRule);
+    search.addEventListener('input', fitFindRule);
+    addEventListener('resize', fitFindRule);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitFindRule);
+    fitFindRule();
+  }
   markWho();
 
   // (the writer's tag beside a title pressed puts the writer in the search, as their name in the writers' column does,

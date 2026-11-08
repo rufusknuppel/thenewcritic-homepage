@@ -17470,3 +17470,8 @@ html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not
 @media (min-width: 1024px){
   html body.archive-page .arc-ix-item > .arc-ix-by.arc-ix-by--subj:not(#nc-es0):not(#nc-es1):not(#nc-es2){ display: none !important; }
 }
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row > .arc-find:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-fw0)::after{
+    left: calc(50% - var(--arc-find-tw, 100%) / 2 - 27px); right: auto; width: calc(var(--arc-find-tw, 100%) + 54px);
+  }
+}

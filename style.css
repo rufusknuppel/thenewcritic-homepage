@@ -34370,3 +34370,12 @@ html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not
 @media (min-width: 1024px){
   html body.archive-page .arc-ix-item > .arc-ix-by.arc-ix-by--subj:not(#nc-es0):not(#nc-es1):not(#nc-es2){ display: none !important; }
 }
+
+/* THE SEARCH'S RULE 27 PAST ITS WORDS (2026-11-07 — "Make search rule 27px longer than search on either side only"): the
+   rule under the search as wide as the words in it (Search, before any are typed) and 27 more either side, on the
+   column's middle where the words are centred (src/archive.js measures them into --arc-find-tw). */
+@media (min-width: 1024px){
+  html body.archive-page .arc.arc--index .arc-main > .arc-find-row > .arc-find:not(#nc-es0):not(#nc-es1):not(#nc-es2):not(#nc-fw0)::after{
+    left: calc(50% - var(--arc-find-tw, 100%) / 2 - 27px); right: auto; width: calc(var(--arc-find-tw, 100%) + 54px);
+  }
+}
