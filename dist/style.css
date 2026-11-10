@@ -17546,11 +17546,7 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     color: var(--k, #121417) !important; text-decoration: none !important; white-space: nowrap !important;
   }
   html body main .op-track > .op-band > a.rail-tlm > .rail-tlm__g:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ display: inline !important; font: inherit !important; color: inherit !important; opacity: 1 !important; transform: none !important; }
-  html body main .op-track > .op-band > time.op-date:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){
-    display: block !important; position: static !important; order: 2 !important; transform: none !important; translate: none !important; opacity: 1 !important;
-    font-family: neue-haas-grotesk-text, "Helvetica Neue", Helvetica, Arial, sans-serif !important; font-size: calc(var(--ph-f) * 0.65) !important; letter-spacing: 0.064em !important;
-    text-transform: uppercase !important; line-height: 1 !important; color: var(--k, #121417) !important; white-space: nowrap !important;
-  }
+  html body main .op-track > .op-band > time.op-date:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ display: none !important; }
   html body main .op-track > .op-band > .rail-top:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ order: 3 !important; white-space: nowrap !important; }
   html body main .op-track > .op-band .rail-top__nav > .rail-top__a:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4),html body main .op-track > .op-band .rail-top__nav > .rail-top__sep:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ font-size: var(--ph-f) !important; }
 }
