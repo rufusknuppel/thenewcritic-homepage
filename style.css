@@ -34379,3 +34379,5 @@ html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not
     left: calc(50% - var(--arc-find-tw, 100%) / 2 - 27px); right: auto; width: calc(var(--arc-find-tw, 100%) + 54px);
   }
 }
+/* NO KEYBOARD FOCUS RING (2026-11-10 — "Remove keyboard focus ring"): the outline drawn round whatever the keyboard reaches is gone everywhere; a focused link still lights as it does under the hand */
+html body :focus-visible:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ outline: none !important; }

@@ -17475,3 +17475,4 @@ html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not
     left: calc(50% - var(--arc-find-tw, 100%) / 2 - 27px); right: auto; width: calc(var(--arc-find-tw, 100%) + 54px);
   }
 }
+html body :focus-visible:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ outline: none !important; }
