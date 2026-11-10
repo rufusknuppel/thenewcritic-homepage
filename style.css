@@ -34390,3 +34390,56 @@ html body :focus-visible:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ outline: none !
 html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run:not(#nc-sx0):not(#nc-sx1){
   overflow-x: clip !important;
 }
+
+/* PHONE DRAFT (2026-11-10 — "draft a better version for the phone"): behind ?phone=draft only (src/phone-draft.js,
+   html.phone-draft), under 1024, the front page only; without the flag nothing here applies. The front page's phone
+   head was the stacked THE NEW / CRI TIC, 207 tall and pinned the whole way down (a quarter of an iPhone's window),
+   with no way to Subscribe, the Archive or About. The draft gives it the archive's and the about page's phone head:
+   the name on one line 36 in from the sides, scrolling away, and under it the nav band, 54 tall, pinned, its rule
+   under it; the stacked name and the tagline band under it gone */
+@media (max-width: 1023.98px){
+  html.phone-draft body:not(.archive-page):not(.about-page) a.wordmark.topbar-wordmark:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: none !important;
+  }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .page-rows > nav.section-band--head:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: none !important;
+  }
+  /* (the name stands last in the front page's markup, so it is set at main's top and main gives it its 65; the rows
+     then as far under the band as the stacked name's air was, the first picture 36 under the band's rule) */
+  html.phone-draft body:not(.archive-page):not(.about-page) main.has-mega:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ padding-top: 65px !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .page-rows:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ padding-top: 72px !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: block !important;
+    position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 81 !important;
+    height: auto !important;
+    padding: 24px 36px 0 !important;
+    color: var(--k, #121417) !important;
+    transform: none !important;
+  }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name > .content-name__line:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: none !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name > .content-name__block:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: block !important;
+    font-size: calc((100vw - 72px) / var(--cn-lwb, 9)) !important;
+    height: 1em !important;
+    line-height: 1 !important;
+  }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name > .content-name__block > .tnc-words:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: flex !important; justify-content: space-between !important; height: 1em !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name > .content-name__block > .tnc-words .tnc-words__row:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: flex !important; justify-content: space-between !important; gap: calc(var(--tw-space, 0.4) * 1em); }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name > .content-name__block > .tnc-words svg:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: block !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) a.content-name > .content-name__block .content-name__tlm:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: none !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: block !important; position: sticky !important; top: 0 !important; bottom: auto !important; height: auto !important; z-index: 80 !important; pointer-events: auto !important;
+  }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track > .op-band:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: flex !important; position: relative !important; justify-content: center; align-items: center;
+    height: 54px !important; margin: 0 !important; background: var(--tw, #FDFDFB) !important;
+    box-shadow: 0 1px 0 0 var(--nc-rule, #D6D6D6) !important;
+  }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track > .op-band > :is(.rail-tlm, .op-tnc, .rail-socials, .op-date):not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: none !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track > .op-band > .rail-top:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: block !important; position: static !important; transform: none !important; translate: none !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track > .op-band .rail-top__a:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-size: 18px !important; font-style: normal !important; color: var(--k, #121417) !important; text-decoration: none !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track > .op-band .rail-top__sep:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){ display: inline !important; font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-size: 18px !important; color: var(--k, #121417) !important; }
+  html.phone-draft body:not(.archive-page):not(.about-page) main .op-track > .op-band > .nc-band-dash:not(#nc-pd0):not(#nc-pd1):not(#nc-pd2):not(#nc-pd3){
+    display: block !important; position: absolute !important; top: 100% !important; left: 0 !important; right: 0 !important; height: 1px !important; background: var(--nc-rule, #D6D6D6) !important;
+  }
+}

@@ -4564,6 +4564,7 @@ ${leadPreload}
 <style>:root{${WM_ROOT_VARS}}</style>
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
+${renderPhoneDraftScript()}
 </head>
 <body>
 ${renderStampDefs()}
@@ -5365,6 +5366,14 @@ ${js}
 // gate and its capture-phase load listener before the first <img> is
 // parsed, or early covers could paint-then-hide (a flash) or load before
 // anyone's listening (stuck invisible). See src/img-fade.js.
+// The front page's phone draft, behind ?phone=draft (src/phone-draft.js); head-inlined so its class is on before the
+// first paint.
+function renderPhoneDraftScript() {
+  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/phone-draft.js'), 'utf8'));
+  return `<script>
+${js}
+</script>`;
+}
 function renderImgFadeScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/img-fade.js'), 'utf8'));
   return `<script>
