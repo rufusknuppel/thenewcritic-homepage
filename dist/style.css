@@ -17476,3 +17476,6 @@ html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not
   }
 }
 html body :focus-visible:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ outline: none !important; }
+html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run:not(#nc-sx0):not(#nc-sx1){
+  overflow-x: clip !important;
+}

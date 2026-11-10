@@ -34381,3 +34381,12 @@ html body.archive-page .arc.arc--index .arc-who__w:not(#nc-wp0):not(#nc-wp1):not
 }
 /* NO KEYBOARD FOCUS RING (2026-11-10 — "Remove keyboard focus ring"): the outline drawn round whatever the keyboard reaches is gone everywhere; a focused link still lights as it does under the hand */
 html body :focus-visible:not(#nc-fr0):not(#nc-fr1):not(#nc-fr2){ outline: none !important; }
+
+/* NO SIDEWAYS SCROLL FROM THE HIDDEN BAND BIRD (2026-11-10 — "Make sure the site scales for all window sizes on the
+   computer"): since THE NAME IN THE COLUMN the top band's name and bird stand unseen (visibility hidden) but are still
+   laid out and measured by latest-rail.js; the bird grows with the name's size and from about 1700 wide its box ran
+   past the window's right (5 at 1920, 38 at 2560), so the page scrolled sideways. The band's run is clipped at its own
+   edges, the window's, across only: nothing seen changes and the script's measurements read as before */
+html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .sub-ticker-run:not(#nc-sx0):not(#nc-sx1){
+  overflow-x: clip !important;
+}
