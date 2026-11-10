@@ -17554,3 +17554,8 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
   html body main .op-track > .op-band > .rail-top:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ order: 3 !important; white-space: nowrap !important; }
   html body main .op-track > .op-band .rail-top__nav > .rail-top__a:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4),html body main .op-track > .op-band .rail-top__nav > .rail-top__sep:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ font-size: var(--ph-f) !important; }
 }
+@media (max-width: 1023.98px){
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col:not(#nc-ps0):not(#nc-ps1):not(#nc-ps2):not(#nc-ps3):not(#nc-ps4){ align-items: center !important; text-align: center !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-title:not(#nc-ps0):not(#nc-ps1):not(#nc-ps2):not(#nc-ps3):not(#nc-ps4){ text-align: center !important; align-self: stretch !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-ps0):not(#nc-ps1):not(#nc-ps2):not(#nc-ps3):not(#nc-ps4){ margin-left: auto !important; margin-right: auto !important; text-align: center !important; }
+}
