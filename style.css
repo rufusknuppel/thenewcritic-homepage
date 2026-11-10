@@ -34450,3 +34450,38 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
 @media (max-width: 1023.98px){
   html body main .op-track > .op-band .rail-top__nav > :is(.rail-top__store, .rail-top__store + .rail-top__sep):not(#nc-cs0):not(#nc-cs1):not(#nc-cs2):not(#nc-cs3){ display: none !important; }
 }
+
+/* THE PHONE'S HEAD AS THE COMPUTER'S (2026-11-10 — "Phone doesn't match styles of homepage tho", "All"): under 1024 on
+   every page the name runs edge to edge 20 from the window's sides, as the computer's does, and the band under it
+   carries what the computer's band does, in its faces: The Last Magazine in the Garamond italic at the left, the date
+   in the grotesque's capitals in the middle, the nav in the Garamond at the right, all three sized together to fit
+   the window's width (the computer's 19.5 and 12.7 at most), 20 in; the rule under the band 20 in from either side */
+@media (max-width: 1023.98px){
+  html body a.content-name.content-name:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ padding: 20px 20px 0 !important; }
+  html body a.content-name > .content-name__block:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ font-size: calc((100vw - 40px) / var(--cn-lwb, 9)) !important; }
+  /* (the front page's name is set at main's top, so main gives it its height: 20 over it and its line, --cn-lwb 7.772) */
+  html body:not(.archive-page):not(.about-page) main.has-mega:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ padding-top: calc(20px + (100vw - 40px) / 7.772) !important; }
+  html body main .op-track > .op-band:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){
+    --ph-f: min(19.5px, calc((100vw - 64px) / 20.5));
+    justify-content: space-between !important; padding: 0 20px !important; box-sizing: border-box !important;
+    box-shadow: none !important;
+  }
+  html body main .op-track > .op-band:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4)::after{
+    content: "" !important; display: block !important; position: absolute !important; left: 20px !important; right: 20px !important; bottom: -1px !important; height: 1px !important;
+    background: var(--nc-rule, #D6D6D6) !important;
+  }
+  html body main .op-track > .op-band > .nc-band-dash:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ display: none !important; }
+  html body main .op-track > .op-band > a.rail-tlm:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){
+    display: block !important; position: static !important; order: 1 !important; transform: none !important; translate: none !important; animation: none !important; opacity: 1 !important;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-style: italic !important; font-size: var(--ph-f) !important; line-height: 1 !important;
+    color: var(--k, #121417) !important; text-decoration: none !important; white-space: nowrap !important;
+  }
+  html body main .op-track > .op-band > a.rail-tlm > .rail-tlm__g:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ display: inline !important; font: inherit !important; color: inherit !important; opacity: 1 !important; transform: none !important; }
+  html body main .op-track > .op-band > time.op-date:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){
+    display: block !important; position: static !important; order: 2 !important; transform: none !important; translate: none !important; opacity: 1 !important;
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", Helvetica, Arial, sans-serif !important; font-size: calc(var(--ph-f) * 0.65) !important; letter-spacing: 0.064em !important;
+    text-transform: uppercase !important; line-height: 1 !important; color: var(--k, #121417) !important; white-space: nowrap !important;
+  }
+  html body main .op-track > .op-band > .rail-top:not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ order: 3 !important; white-space: nowrap !important; }
+  html body main .op-track > .op-band .rail-top__nav > :is(.rail-top__a, .rail-top__sep):not(#nc-ph0):not(#nc-ph1):not(#nc-ph2):not(#nc-ph3):not(#nc-ph4){ font-size: var(--ph-f) !important; }
+}
