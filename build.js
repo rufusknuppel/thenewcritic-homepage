@@ -339,7 +339,7 @@ function opBand(currentKey = '') {
   // (Subscribe out of the band since, to the banner pinned to the window's foot — "Remove subscribe from top band. Place
   // in a banner at the bottom of the site", 2026-10-28: subBanner)
   // (and back in it since, before Store, the banner gone — "Remove subscribe banner, add back next to Store", 2026-10-28)
-  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<span class="rail-top__a">Store (Coming Soon)</span>`]
+  const nav = [`<a class="rail-top__a" href="${SITE_URL}/subscribe" rel="noopener">Subscribe</a>`, `<span class="rail-top__a rail-top__store">Store<span class="rail-top__soon"> (Coming Soon)</span></span>`]
     .concat(ar ? [`<a class="rail-top__a" href="${escapeHtml(ar.href)}"${cur('archive')}>Archive</a>`] : [])
     .concat(ab ? [`<a class="rail-top__a" href="${escapeHtml(ab.href)}"${cur('about')}>About</a>`] : [])
     .join('<span class="rail-top__sep">, </span>');
@@ -4564,7 +4564,6 @@ ${leadPreload}
 <style>:root{${WM_ROOT_VARS}}</style>
 ${renderFontGateScript()}
 ${renderImgFadeScript()}
-${renderPhoneDraftScript()}
 </head>
 <body>
 ${renderStampDefs()}
@@ -5366,14 +5365,6 @@ ${js}
 // gate and its capture-phase load listener before the first <img> is
 // parsed, or early covers could paint-then-hide (a flash) or load before
 // anyone's listening (stuck invisible). See src/img-fade.js.
-// The front page's phone draft, behind ?phone=draft (src/phone-draft.js); head-inlined so its class is on before the
-// first paint.
-function renderPhoneDraftScript() {
-  const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/phone-draft.js'), 'utf8'));
-  return `<script>
-${js}
-</script>`;
-}
 function renderImgFadeScript() {
   const js = slimJs(fs.readFileSync(path.join(__dirname, 'src/img-fade.js'), 'utf8'));
   return `<script>
