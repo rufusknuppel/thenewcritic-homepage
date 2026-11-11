@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=58175a20">
+<link rel="stylesheet" href="style.css?v=d23a88e4">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -5873,7 +5873,7 @@
       for (var i = 0; i < rs.length; i++) if (rs[i].width > 0) { if (rs[i].top < t) t = rs[i].top; if (rs[i].bottom > eb) eb = rs[i].bottom; }
       if (isFinite(eb)) { if (inked) eb = inkFoot(el, eb); if (eb > b) b = eb; }
     };
-    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink'), function (el) {
+    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink, .swap-meta > span'), function (el) {
       if (inked && el.closest('.duo-half--mega.is-rest-open.is-slide > .swap-body')) return;
       add(el);
     });
@@ -6519,6 +6519,15 @@
         sd.className = 'swap-dek';
         sd.innerHTML = '<span class="swap-dek-ink">' + dek.innerHTML + '</span>';
         col.appendChild(sd);
+      }
+      var by0 = card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
+      var on2 = link.getAttribute && link.getAttribute('data-on'), sc2 = link.getAttribute && link.getAttribute('data-sec');
+      if (by0 || on2 || sc2) {
+        var sm = document.createElement('span');
+        sm.className = 'swap-meta';
+        if (by0) { var smb = document.createElement('span'); smb.className = 'swap-meta-by'; smb.textContent = by0.textContent.trim(); sm.appendChild(smb); }
+        if (on2 || sc2) { var smw = document.createElement('span'); smw.className = 'swap-meta-when'; smw.textContent = [on2, sc2].filter(Boolean).join(' · '); sm.appendChild(smw); }
+        if (sd) col.insertBefore(sm, sd); else col.appendChild(sm);
       }
       link.appendChild(col);
       var paras = [].map.call(card.querySelectorAll('.card-preview-block .card-preview, .latest-plate .latest-plate-p'), function (pp) { return pp.innerHTML.trim(); }).filter(Boolean);

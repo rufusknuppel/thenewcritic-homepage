@@ -7438,7 +7438,9 @@
     // height — THE FRAME ROUND THE PICTURE ALONE, 2026-10-04 — so the
     // picture is the row; read here they may stand where the last pass
     // left them)
-    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink'), function (el) {
+    // (and the writer, the date and the section under a phone's title since — THE PHONE'S STORY AS THE COMPUTER'S,
+    // 2026-11-10: unseen from 1024 up, so nothing there)
+    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink, .swap-meta > span'), function (el) {
       if (inked && el.closest('.duo-half--mega.is-rest-open.is-slide > .swap-body')) return;
       add(el);
     });
@@ -8554,6 +8556,18 @@
         sd.className = 'swap-dek';
         sd.innerHTML = '<span class="swap-dek-ink">' + dek.innerHTML + '</span>';
         col.appendChild(sd);
+      }
+      // (THE PHONE'S STORY AS THE COMPUTER'S, 2026-11-10 — "I want the phone to much better match what the computer
+      // looks like", "Bring back date and section and author": under the title the writer, and under that the date and
+      // the section with a dot between them, as the computer's preview column has them; seen under 1024 only, style.css)
+      var by0 = card.querySelector('.cover-meta--kick:not(.cover-meta--cdate) .cover-kicker a');
+      var on2 = link.getAttribute && link.getAttribute('data-on'), sc2 = link.getAttribute && link.getAttribute('data-sec');
+      if (by0 || on2 || sc2) {
+        var sm = document.createElement('span');
+        sm.className = 'swap-meta';
+        if (by0) { var smb = document.createElement('span'); smb.className = 'swap-meta-by'; smb.textContent = by0.textContent.trim(); sm.appendChild(smb); }
+        if (on2 || sc2) { var smw = document.createElement('span'); smw.className = 'swap-meta-when'; smw.textContent = [on2, sc2].filter(Boolean).join(' · '); sm.appendChild(smw); }
+        if (sd) col.insertBefore(sm, sd); else col.appendChild(sm);
       }
       link.appendChild(col);
       // THE BODY COLUMN (2026-09-22): the preview's paragraphs, copied
