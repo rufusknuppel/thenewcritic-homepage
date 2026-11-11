@@ -17625,3 +17625,20 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     box-shadow: inset 0 0 0 0.5px #5F9EA0, 0 0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417), 0 -0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417) !important;
   }
 }
+@media (max-width: 1023.98px){
+  html body main .op-track > .op-band > a.rail-tlm:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6) > .rail-tlm__g{ display: none !important; }
+  html body main .op-track > .op-band > a.rail-tlm:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6)::before{
+    content: "The New Critic" !important; display: inline !important; position: static !important;
+    font: inherit !important; color: inherit !important; letter-spacing: inherit !important; text-transform: none !important;
+    opacity: 1 !important; transform: none !important; visibility: visible !important;
+  }
+  html body main .op-track > .op-band:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6)::after{
+    left: round(nearest, 1.875vw, 1px) !important; right: round(nearest, 1.875vw, 1px) !important;
+  }
+}
+@media (max-width: 1023.98px) and (min-resolution: 2dppx){
+  html body main .op-track > .op-band:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6)::after{
+    height: 1px !important; bottom: -1px !important;
+    background: linear-gradient(var(--nc-rule-c, #5F9EA0) 50%, transparent 50%) !important;
+  }
+}
