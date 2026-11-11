@@ -34608,17 +34608,32 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
 }
 
 /* THE PHONE'S BAND: THE NEW CRITIC, ON A HALF-PIXEL RULE (2026-11-11 — "What about the rule at the top?", "Replace the
-   last magazine with the new critic on phone width"): under 1024 the band's left reads The New Critic, in the same
-   Garamond italic, where The Last Magazine stood (the computer keeps The Last Magazine); the rule under the band keeps
-   the wordmark's span, its ends on the whole pixel, and on two-to-the-pixel screens is half a pixel as the pictures'
-   outlines are */
+   last magazine with the new critic on phone width", "Replace with the wordmark tho"): under 1024 the band's left
+   carries the wordmark, the block letters the computer's band takes on as the opening name leaves, where The Last
+   Magazine stood (the computer keeps The Last Magazine till then); as tall against the nav as the computer's is
+   (1.69 of the nav's size) where the room before the nav allows, else as wide as that room less a nav's word space;
+   the rule under the band keeps the opening wordmark's span, its ends on the whole pixel, and on two-to-the-pixel
+   screens is half a pixel as the pictures' outlines are */
 @media (max-width: 1023.98px){
-  html body main .op-track > .op-band > a.rail-tlm:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6) > .rail-tlm__g{ display: none !important; }
-  html body main .op-track > .op-band > a.rail-tlm:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6)::before{
-    content: "The New Critic" !important; display: inline !important; position: static !important;
-    font: inherit !important; color: inherit !important; letter-spacing: inherit !important; text-transform: none !important;
-    opacity: 1 !important; transform: none !important; visibility: visible !important;
+  html body main .op-track > .op-band > a.rail-tlm:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6){ display: none !important; }
+  html body main .op-track > .op-band > a.op-tnc:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6){
+    /* (the nav's three words run 9.86 of its size, the name 7.77 of its height) */
+    --pt-h: min(calc(1.69 * var(--ph-f, 16.9px)), calc((100vw - 2 * round(nearest, 3.75vw, 1px) - 11.4 * var(--ph-f, 16.9px)) / 7.77));
+    display: block !important; position: static !important; order: 1 !important; flex: none !important; align-self: center !important;
+    font-size: var(--pt-h) !important; line-height: 0 !important; margin: 0 !important; padding: 0 !important;
+    color: var(--k, #121417) !important; opacity: 1 !important; visibility: visible !important;
+    transform: none !important; translate: none !important; animation: none !important; transition: none !important;
+    pointer-events: auto !important;
   }
+  html body main .op-track > .op-band > a.op-tnc:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6) :is(.tnc-words, .tnc-words__grp, .tnc-words__row){
+    display: flex !important; flex-direction: row !important; align-items: flex-start !important; flex-wrap: nowrap !important;
+    gap: calc(var(--tw-space, 0.54) * 1em) !important; white-space: nowrap !important; margin: 0 !important;
+  }
+  html body main .op-track > .op-band > a.op-tnc:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6) svg{ display: block !important; flex: none !important; }
+  /* (the opening name off the phone's page since, the band's wordmark its name — "Remove the top wordmark", 2026-11-11:
+     the band at the window's top) */
+  html body a.content-name:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6){ display: none !important; }
+  html body main.has-mega:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6){ padding-top: 0 !important; }
   html body main .op-track > .op-band:not(#nc-pt0):not(#nc-pt1):not(#nc-pt2):not(#nc-pt3):not(#nc-pt4):not(#nc-pt5):not(#nc-pt6)::after{
     left: round(nearest, 1.875vw, 1px) !important; right: round(nearest, 1.875vw, 1px) !important;
   }
