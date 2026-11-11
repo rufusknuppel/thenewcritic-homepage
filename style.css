@@ -34542,15 +34542,6 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
   }
 }
 
-/* THE PHONE'S STORIES TO THE LEFT (2026-11-10 — "On phone width, left-align text"): under 1024 a story's title, writer
-   and date stand from the picture's left edge, not centred under it */
-@media (max-width: 1023.98px){
-  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
-  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-title:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ text-align: left !important; }
-  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ margin-left: 0 !important; margin-right: auto !important; text-align: left !important; }
-  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
-}
-
 /* THE PHONE'S BAND ON ONE BASELINE (2026-11-10 — "The last magazine doesn't look aligned with the other nav items"):
    the italic and the roman are two faces with their own heights, so each centred in the band left them off one
    another's line; under 1024 the band's words are set on one baseline, the line they make centred in the band */
@@ -34575,4 +34566,31 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
   html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::after{
     width: 3.75vw !important;
   }
+}
+
+/* THE PHONE'S STORIES CENTRED, WITH THEIR DEKS (2026-11-10 — "Add deck too, center, not left align text. Reduce space
+   between image and titles"): under 1024 the title, the dek and the writer and the date stand centred under the
+   picture again (THE PHONE'S STORIES TO THE LEFT is struck), and the dek — hidden on the computer, where it waits in
+   the preview — reads between the title and the writer, in the band's Garamond italic at the band's size (the
+   computer's 19.5 at the phone's 0.866). The title stands 18 under the picture's foot rather than 18 under the
+   hidden courier line (seatSwapCols, duo-panel-fit.js). */
+@media (max-width: 1023.98px){
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-title:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){ order: 0 !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-dek:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){
+    order: 1 !important; display: block !important; position: static !important; top: auto !important;
+    width: auto !important; max-width: 100% !important; align-self: stretch !important; margin: 14px 0 0 !important;
+    font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-style: italic !important; font-weight: 400 !important;
+    font-size: 16.9px !important; line-height: 1.32 !important; letter-spacing: 0 !important; text-transform: none !important;
+    color: var(--k, #121417) !important; text-align: center !important; white-space: normal !important;
+    visibility: visible !important; opacity: 1 !important; transform: none !important; translate: none !important; clip-path: none !important;
+  }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-dek > .swap-dek-ink:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){
+    font: inherit !important; letter-spacing: inherit !important; visibility: visible !important; opacity: 1 !important; clip-path: none !important; text-transform: none !important; font-variant: normal !important;
+  }
+  /* (a title named in the dek, set in italics in the post, stands upright in the dek's own Garamond) */
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-dek > .swap-dek-ink :is(em, i):not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){
+    font-family: inherit !important; font-size: inherit !important; font-weight: inherit !important; font-style: normal !important;
+    letter-spacing: inherit !important; text-transform: none !important; font-variant: normal !important;
+  }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){ order: 2 !important; margin-top: 20px !important; }
 }

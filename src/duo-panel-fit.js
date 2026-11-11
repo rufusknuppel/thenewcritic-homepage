@@ -10757,6 +10757,12 @@
         var rr = [].filter.call(rc.getClientRects(), function (x) { return x.width > 0; })[0];
         if (!rr || rr.top < j.B.b - 1) return;
         var ccs = getComputedStyle(cm);
+        // (a courier the sheet hides holds no title down: on the phone the
+        // line under the picture is struck and the title stands 18 under
+        // the picture's own foot — 2026-11-10, "Reduce space between image
+        // and titles")
+        // (the phone only: the computer keeps its titles where they stood)
+        if (ONE_COL.matches && ccs.visibility === 'hidden') return;
         measureCtx.font = ccs.fontStyle + ' ' + ccs.fontWeight + ' ' + ccs.fontSize + ' ' + ccs.fontFamily;
         var cmm = measureCtx.measureText(ccs.textTransform === 'uppercase' ? t0.toUpperCase() : t0);
         var cfa = cmm.fontBoundingBoxAscent, cfd = cmm.fontBoundingBoxDescent;

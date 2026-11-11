@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=53dfe54e">
+<link rel="stylesheet" href="style.css?v=a9148cbd">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -7812,6 +7812,7 @@
         var rr = [].filter.call(rc.getClientRects(), function (x) { return x.width > 0; })[0];
         if (!rr || rr.top < j.B.b - 1) return;
         var ccs = getComputedStyle(cm);
+        if (ONE_COL.matches && ccs.visibility === 'hidden') return;
         measureCtx.font = ccs.fontStyle + ' ' + ccs.fontWeight + ' ' + ccs.fontSize + ' ' + ccs.fontFamily;
         var cmm = measureCtx.measureText(ccs.textTransform === 'uppercase' ? t0.toUpperCase() : t0);
         var cfa = cmm.fontBoundingBoxAscent, cfd = cmm.fontBoundingBoxDescent;
