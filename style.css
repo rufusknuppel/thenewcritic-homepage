@@ -34561,11 +34561,18 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
 }
 
 /* THE PHONE'S PICTURES WIDER (2026-11-10 — "Margins on images should be narrower on phone width", "Padding should
-   also size proportionally"): under 1024 a picture is the window less its two 36 mats, not nine tenths of that — 36
-   from the window's sides rather than 52 at 390. Nearer still (the computer's 3.75%) needs the fitter's 36s, --wrap and
-   the --rx-* insets it writes on each title, made proportional too (duo-panel-fit.js) */
+   also size proportionally"; then "Yes, do it" to the computer's 3.75%): under 1024 a picture stands 3.75% of the
+   window in from each side, as the computer's do — 92.5vw wide (no wider than 540, centred, on a tablet) — and the
+   page's two side strips (main's ::before and ::after, 36 since THE GUTTERS ARE 36), which painted the page's white
+   over the picture's outer 21 and the words under it, narrow to the same 3.75%. The card keeps its 36 mats either
+   side of the picture and runs past the window there; the row's own clip (.movement-body) trims it, and the fitter
+   seats the picture and the words off the card's measures as before. */
 @media (max-width: 1023.98px){
   body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3){
-    --pic-w: min(calc(100vw - 72px), 540px) !important;
+    --pic-w: min(92.5vw, 540px) !important;
+  }
+  html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::before,
+  html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::after{
+    width: 3.75vw !important;
   }
 }

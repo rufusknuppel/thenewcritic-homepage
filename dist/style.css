@@ -17600,6 +17600,10 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
 }
 @media (max-width: 1023.98px){
   body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3){
-    --pic-w: min(calc(100vw - 72px), 540px) !important;
+    --pic-w: min(92.5vw, 540px) !important;
+  }
+  html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::before,
+  html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::after{
+    width: 3.75vw !important;
   }
 }
