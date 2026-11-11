@@ -34550,3 +34550,22 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
   html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ margin-left: 0 !important; margin-right: auto !important; text-align: left !important; }
   html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
 }
+
+/* THE PHONE'S BAND ON ONE BASELINE (2026-11-10 — "The last magazine doesn't look aligned with the other nav items"):
+   the italic and the roman are two faces with their own heights, so each centred in the band left them off one
+   another's line; under 1024 the band's words are set on one baseline, the line they make centred in the band */
+@media (max-width: 1023.98px){
+  html body main .op-track > .op-band:not(#nc-pb0):not(#nc-pb1):not(#nc-pb2):not(#nc-pb3):not(#nc-pb4):not(#nc-pb5):not(#nc-pb6){
+    flex-wrap: wrap !important; align-content: center !important; align-items: baseline !important;
+  }
+}
+
+/* THE PHONE'S PICTURES WIDER (2026-11-10 — "Margins on images should be narrower on phone width", "Padding should
+   also size proportionally"): under 1024 a picture is the window less its two 36 mats, not nine tenths of that — 36
+   from the window's sides rather than 52 at 390. Nearer still (the computer's 3.75%) needs the fitter's 36s, --wrap and
+   the --rx-* insets it writes on each title, made proportional too (duo-panel-fit.js) */
+@media (max-width: 1023.98px){
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3){
+    --pic-w: min(calc(100vw - 72px), 540px) !important;
+  }
+}

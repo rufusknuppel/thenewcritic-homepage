@@ -17593,3 +17593,13 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
   html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ margin-left: 0 !important; margin-right: auto !important; text-align: left !important; }
   html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
 }
+@media (max-width: 1023.98px){
+  html body main .op-track > .op-band:not(#nc-pb0):not(#nc-pb1):not(#nc-pb2):not(#nc-pb3):not(#nc-pb4):not(#nc-pb5):not(#nc-pb6){
+    flex-wrap: wrap !important; align-content: center !important; align-items: baseline !important;
+  }
+}
+@media (max-width: 1023.98px){
+  body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3){
+    --pic-w: min(calc(100vw - 72px), 540px) !important;
+  }
+}
