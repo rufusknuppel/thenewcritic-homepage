@@ -17572,3 +17572,24 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     box-shadow: inset 0 0 0 1px #5F9EA0, 0 0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417), 0 -0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417) !important;
   }
 }
+@media (max-width: 1023.98px){
+  html body a.content-name.content-name:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ padding: 1.6875vw 1.875vw 0 !important; }
+  html body a.content-name > .content-name__block:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ font-size: calc(96.25vw / var(--cn-lwb, 9)) !important; }
+  html body:not(.archive-page):not(.about-page) main.has-mega:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ padding-top: calc(1.6875vw + 96.25vw / 7.772) !important; }
+  html body main .op-track > .op-band:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){
+    --ph-f: min(16.9px, calc((92.5vw - 24px) / 17));
+    height: calc(var(--ph-f) * 3.54) !important; padding: 0 3.75vw !important;
+  }
+  html body main .op-track > .op-band > :where(a.rail-tlm):is(*, .r.r):not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5),html body main .op-track > .op-band > .rail-top:is(*, .r):not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5),html body main .op-track > .op-band > :where(.rail-top > .rail-top__nav):is(*, .r.r):not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ line-height: 1.6 !important; font-size: var(--ph-f) !important; }
+  html body main .op-track > .op-band:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5)::after{ left: 1.875vw !important; right: 1.875vw !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-title:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5),html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ font-size: 37.9px !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){
+    font-size: 11px !important; line-height: 13px !important; row-gap: 4.3px !important; margin-top: 24px !important;
+  }
+}
+@media (max-width: 1023.98px){
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-title:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ text-align: left !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ margin-left: 0 !important; margin-right: auto !important; text-align: left !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
+}

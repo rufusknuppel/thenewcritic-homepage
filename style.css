@@ -34515,3 +34515,38 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     box-shadow: inset 0 0 0 1px #5F9EA0, 0 0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417), 0 -0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417) !important;
   }
 }
+
+/* THE PHONE IN THE COMPUTER'S PROPORTIONS (2026-11-10 — "The last magazine looks really off center", "I want the
+   margins to match proportionally with how they look on the computer", "Same with the fonts", then "Same ratios,
+   readable floor"): under 1024 the head's side margins are the computer's at 1440 taken as shares of the window — the
+   name 27 in (1.875%), 24 under the window's top (1.6875%), the rule under the band 27 in from either side, The Last
+   Magazine and the nav 54 in (3.75%); the type keeps the computer's sizes one to another, the smallest, the writer's
+   capitals, at 11 rather than 12.7 — all of it 0.866 of the computer's: the band's words 16.9 (19.5), a story's title
+   37.9 (43.75), the writer and the date 11 (12.7), their lines 17.3 apart (20) and 24 under the title (28) — and the
+   band as tall to its words as the computer's, the name's foot to the rule 3.54 of the words' size (69 to 19.5), the
+   words on its middle */
+@media (max-width: 1023.98px){
+  html body a.content-name.content-name:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ padding: 1.6875vw 1.875vw 0 !important; }
+  html body a.content-name > .content-name__block:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ font-size: calc(96.25vw / var(--cn-lwb, 9)) !important; }
+  html body:not(.archive-page):not(.about-page) main.has-mega:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ padding-top: calc(1.6875vw + 96.25vw / 7.772) !important; }
+  html body main .op-track > .op-band:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){
+    --ph-f: min(16.9px, calc((92.5vw - 24px) / 17));
+    height: calc(var(--ph-f) * 3.54) !important; padding: 0 3.75vw !important;
+  }
+  /* (The Last Magazine and the nav on one line's height, so they sit on one baseline as on the computer) */
+  html body main .op-track > .op-band > :is(a.rail-tlm, .rail-top, .rail-top > .rail-top__nav):not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ line-height: 1.6 !important; font-size: var(--ph-f) !important; }
+  html body main .op-track > .op-band:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5)::after{ left: 1.875vw !important; right: 1.875vw !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col :is(.swap-title, .swap-line):not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){ font-size: 37.9px !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pr0):not(#nc-pr1):not(#nc-pr2):not(#nc-pr3):not(#nc-pr4):not(#nc-pr5){
+    font-size: 11px !important; line-height: 13px !important; row-gap: 4.3px !important; margin-top: 24px !important;
+  }
+}
+
+/* THE PHONE'S STORIES TO THE LEFT (2026-11-10 — "On phone width, left-align text"): under 1024 a story's title, writer
+   and date stand from the picture's left edge, not centred under it */
+@media (max-width: 1023.98px){
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-title:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ text-align: left !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col .swap-line:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ margin-left: 0 !important; margin-right: auto !important; text-align: left !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pl0):not(#nc-pl1):not(#nc-pl2):not(#nc-pl3):not(#nc-pl4):not(#nc-pl5){ align-items: flex-start !important; text-align: left !important; }
+}
