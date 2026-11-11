@@ -17652,3 +17652,23 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     background: linear-gradient(var(--nc-rule-c, #5F9EA0) 50%, transparent 50%) !important;
   }
 }
+@media (max-width: 1023.98px){
+  html body main .arc-find-row:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6){ border-bottom-color: transparent !important; }
+  html body main .arc-find-row:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6)::after{
+    content: "" !important; display: block !important; position: absolute !important; pointer-events: none !important;
+    left: round(nearest, 1.875vw, 1px) !important; right: round(nearest, 1.875vw, 1px) !important; bottom: -1px !important; top: auto !important;
+    height: 1px !important; background: var(--nc-rule-c, #5F9EA0) !important;
+  }
+  html body main .arc-ix-item:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6) > .arc-ix-by,html body main .arc-ix-item:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6) > .arc-ix-on,
+  html body main .arc-ix-item:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6) > .arc-ix-by::after{
+    font-family: neue-haas-grotesk-text, "Helvetica Neue", Helvetica, Arial, sans-serif !important; font-size: 11px !important; font-weight: 400 !important;
+    font-style: normal !important; line-height: 13px !important; text-transform: uppercase !important; letter-spacing: 0.0638em !important;
+    color: var(--k, #121417) !important;
+  }
+  html body main .arc-ix-item:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6) > .arc-ix-by,html body main .arc-ix-item:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6) > .arc-ix-on{ margin-top: 6px !important; }
+}
+@media (max-width: 1023.98px) and (min-resolution: 2dppx){
+  html body main .arc-find-row:not(#nc-as0):not(#nc-as1):not(#nc-as2):not(#nc-as3):not(#nc-as4):not(#nc-as5):not(#nc-as6)::after{
+    background: linear-gradient(var(--nc-rule-c, #5F9EA0) 50%, transparent 50%) !important;
+  }
+}
