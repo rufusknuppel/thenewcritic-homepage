@@ -5821,6 +5821,20 @@
   var wmSizeKey = '';
   var ROW_GAP = 36;
   var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
+  var DESK_VARS = {
+    html: ['--wm-size', '--strip-settled', '--cn-l', '--cn-r', '--cn-m', '--nc-rule-x', '--nc-nav-r', '--nc-bw', '--nc-go-run',
+      '--band-h', '--masthead-air', '--masthead-h'],
+    main: ['--foot-band', '--foot-cover', '--fill-top', '--fill-bot', '--rail-edge', '--wm-under']
+  };
+  var onOneCol = function (e) {
+    if (!e.matches) return;
+    var h = document.documentElement, m = document.querySelector('main');
+    DESK_VARS.html.forEach(function (p) { h.style.removeProperty(p); });
+    if (m) DESK_VARS.main.forEach(function (p) { m.style.removeProperty(p); });
+    try { window.dispatchEvent(new Event('resize')); } catch (er) {}
+  };
+  if (ONE_COL.addEventListener) ONE_COL.addEventListener('change', onOneCol);
+  else if (ONE_COL.addListener) ONE_COL.addListener(onOneCol);
   function fitStdWidth() {
     var main = document.querySelector('main');
     if (!main) return;

@@ -7362,6 +7362,26 @@
   // under the one before it (style.css, ONE COLUMN ON A PHONE), a pair's
   // second card with them, so nothing is drawn up beside anything.
   var ONE_COL = window.matchMedia ? window.matchMedia('(max-width: 1023.98px)') : { matches: false };
+  // DOWN TO A PHONE WITHOUT A RELOAD (2026-11-10 — "How to prevent the scenario where someone opens at one window size,
+  // then resizes the window? Currently the site freaks out when this happens"): the computer's head and rail write
+  // their measures on <html> and <main> (the masthead's height, the band's, the name's run, the rail's edge…) and only
+  // the computer's code reads or clears them, so a window narrowed past 1024 kept them and the phone's rows were seated
+  // off them, the first story under the head. Crossing to one column they are taken away and the page fitted again,
+  // as a phone opened fresh has it; widening needs nothing (checked headless both ways, 1440 to 390 and back)
+  var DESK_VARS = {
+    html: ['--wm-size', '--strip-settled', '--cn-l', '--cn-r', '--cn-m', '--nc-rule-x', '--nc-nav-r', '--nc-bw', '--nc-go-run',
+      '--band-h', '--masthead-air', '--masthead-h'],
+    main: ['--foot-band', '--foot-cover', '--fill-top', '--fill-bot', '--rail-edge', '--wm-under']
+  };
+  var onOneCol = function (e) {
+    if (!e.matches) return;
+    var h = document.documentElement, m = document.querySelector('main');
+    DESK_VARS.html.forEach(function (p) { h.style.removeProperty(p); });
+    if (m) DESK_VARS.main.forEach(function (p) { m.style.removeProperty(p); });
+    try { window.dispatchEvent(new Event('resize')); } catch (er) {}
+  };
+  if (ONE_COL.addEventListener) ONE_COL.addEventListener('change', onOneCol);
+  else if (ONE_COL.addListener) ONE_COL.addListener(onOneCol);
   // ONE STANDARD WIDTH (2026-09-23): a review's square — a third of a
   // row less its two 72 gutters. The essay's picture is two of it and a
   // postscript's one (style.css, ESSAYS TWICE A REVIEW'S WIDTH), the
