@@ -17594,18 +17594,18 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
 }
 @media (max-width: 1023.98px){
   body:not(.word-page) main.has-mega .page-rows .movement-body > .wrap > .card--mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3){
-    --pic-w: min(92.5vw, 540px) !important;
+    --pic-w: min(calc(100vw - 2 * round(nearest, 3.75vw, 1px)), 540px) !important;
   }
   html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::before,
   html body main.has-mega:not(#nc-pw0):not(#nc-pw1):not(#nc-pw2):not(#nc-pw3)::after{
-    width: 3.75vw !important;
+    width: round(nearest, 3.75vw, 1px) !important;
   }
 }
 @media (max-width: 1023.98px){
   html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-title:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){ order: 0 !important; }
   html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-dek:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){
-    order: 1 !important; display: block !important; position: static !important; top: auto !important;
-    width: auto !important; max-width: 100% !important; align-self: stretch !important; margin: 14px 0 0 !important;
+    order: 2 !important; display: block !important; position: static !important; top: auto !important;
+    width: auto !important; max-width: 100% !important; align-self: stretch !important; margin: 16px 0 0 !important;
     font-family: garamond-premier-pro, "EB Garamond", Garamond, serif !important; font-style: italic !important; font-weight: 400 !important;
     font-size: 16.9px !important; line-height: 1.32 !important; letter-spacing: 0 !important; text-transform: none !important;
     color: var(--k, #121417) !important; text-align: center !important; white-space: normal !important;
@@ -17618,5 +17618,10 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     font-family: inherit !important; font-size: inherit !important; font-weight: inherit !important; font-style: normal !important;
     letter-spacing: inherit !important; text-transform: none !important; font-variant: normal !important;
   }
-  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){ order: 2 !important; margin-top: 20px !important; }
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega .swap-col > .swap-meta:not(#nc-pk0):not(#nc-pk1):not(#nc-pk2):not(#nc-pk3):not(#nc-pk4):not(#nc-pk5):not(#nc-pk6){ order: 1 !important; margin-top: 20px !important; }
+}
+@media (max-width: 1023.98px) and (min-resolution: 2dppx){
+  html body:not(.word-page) main.has-mega .card--mega .duo-half--mega h3.card-title:not(#nc-po0):not(#nc-po1):not(#nc-po2):not(#nc-po3):not(#nc-po4):not(#nc-po5):not(#nc-po6)::before{
+    box-shadow: inset 0 0 0 0.5px #5F9EA0, 0 0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417), 0 -0.5px 0 var(--wrap, 0px) var(--nc-frame, #121417) !important;
+  }
 }
