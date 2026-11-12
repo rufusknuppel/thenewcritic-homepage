@@ -34671,3 +34671,14 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     background: linear-gradient(var(--nc-rule-c, #5F9EA0) 50%, transparent 50%) !important;
   }
 }
+
+/* THE BAND'S WORDMARK IN THE OPENING NAME'S PROPORTION (2026-11-12 — "The margins around the new critic don't match the
+   proportion of the top", "Bigger wordmark, same band"): on the computer the name at the page's top stands 27 under
+   the window's top for its (100vw - 54) / 7.772 of letter; the band's wordmark, 69 tall, now as tall as keeps that
+   ratio over and under it, 69 / (1 + 2 x 27 / name) — 48 at 1024, 53 at 1440, 56 at 1920, two chords of that curve,
+   at most a pixel under it — its left on the rule's end as before */
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band > a.op-tnc:not(#nc-bm0):not(#nc-bm1):not(#nc-bm2):not(#nc-bm3):not(#nc-bm4):not(#nc-bm5):not(#nc-bm6):not(#nc-bm7):not(#nc-bm8):not(#nc-bm9):not(#nc-bm10):not(#nc-bm11):not(#nc-bm12):not(#nc-bm13){
+    font-size: min(calc(1.144vw + 36.49px), calc(0.696vw + 42.94px)) !important;
+  }
+}

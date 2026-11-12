@@ -17672,3 +17672,8 @@ html body main.has-mega.wm-banded .page-rows > .head-rail > .sub-ticker--top > .
     background: linear-gradient(var(--nc-rule-c, #5F9EA0) 50%, transparent 50%) !important;
   }
 }
+@media (min-width: 1024px){
+  html body main.has-mega .op-track > .op-band > a.op-tnc:not(#nc-bm0):not(#nc-bm1):not(#nc-bm2):not(#nc-bm3):not(#nc-bm4):not(#nc-bm5):not(#nc-bm6):not(#nc-bm7):not(#nc-bm8):not(#nc-bm9):not(#nc-bm10):not(#nc-bm11):not(#nc-bm12):not(#nc-bm13){
+    font-size: min(calc(1.144vw + 36.49px), calc(0.696vw + 42.94px)) !important;
+  }
+}
