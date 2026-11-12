@@ -5146,8 +5146,8 @@ function renderFontGateScript({ fitted = true } = {}) {
   // so the listener is what actually answers on every real load.
   // A page without the fitter has no pass to wait for.
   var fitDone = new Promise(function (resolve) {
-    if (${fitted ? 'window.__ncFitDone' : 'true'}) { resolve(); return; }
-    addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
+    if (${fitted ? 'window.__ncFitSeated' : 'true'}) { resolve(); return; }
+    addEventListener('newcritic:fitseated', function () { resolve(); }, { once: true });
   }).then(function () { gate.fitted = performance.now(); });
   Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
   setTimeout(go, 8000);

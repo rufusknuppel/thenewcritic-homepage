@@ -1922,9 +1922,14 @@ var ncStemX = function () {
   // (and again after each fit, the only event a resize's passes send: at the resize itself the bird still stands at the old window's size, and the rows kept a margin read off it, 76 too far right after 1300 and back to 1440, 2026-11-05)
   addEventListener('newcritic:fit', function () { setTimeout(measure, 0); }, { passive: true });
   // (and the whole page's resize run over twice once the window has stopped, the bird, the band and the rows each reading what the others only then settled on: one pass left the rows 66 off)
-  var resizeEcho = false, resizeTs = [];
-  addEventListener('resize', function () {
+  // (not till the window has been resized once, and from then on as before, the page's own resizes running it on: on a fresh load
+  // the page's resizes — the ticker's, measure's above — began it, and the whole fit ran again as the page was shown, the fade held
+  // ~2.5s at 1440; the load's last turns settle what those passes did, duo-panel-fit.js, lastTurns, 2026-11-12)
+  var resizeEcho = false, resizeTs = [], resized = false;
+  addEventListener('resize', function (e) {
     if (resizeEcho) return;
+    if (e.isTrusted) resized = true;
+    if (!resized) return;
     resizeTs.forEach(clearTimeout);
     resizeTs = [1200, 2600].map(function (ms) { return setTimeout(function () { resizeEcho = true; window.dispatchEvent(new Event('resize')); resizeEcho = false; }, ms); });
   }, { passive: true });
@@ -3678,6 +3683,7 @@ window.ncOpenH = function () {
       }
     }
   };
+  window.__ncBandRule = bandRule;
   addEventListener('newcritic:fitdone', function () { bandRule(); });
   if (window.ResizeObserver) {
     var ruleT = 0, rows = document.querySelector('.page-rows');

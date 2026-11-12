@@ -7092,11 +7092,43 @@
   // script: it cannot listen for something already announced, so it
   // checks the flag first and only then listens.
   var firstFitAnnounced = false;
+  // (a tick after a whole pass's word the cards open at rest, card-open.js; a
+  // frame after that their pictures are laid. A hidden tab runs no frames.)
+  function afterRest(fn) {
+    setTimeout(function () {
+      var said = false;
+      var go = function () { if (said) return; said = true; fn(); };
+      if (window.requestAnimationFrame) requestAnimationFrame(go);
+      setTimeout(go, 100);
+    }, 0);
+  }
+  // (the band's rule and the rows' centring read the open cards' frames and
+  // each moves what the other reads: a few turns)
+  function lastTurns() {
+    var dxs = function () { return [].map.call(document.querySelectorAll('.page-rows section.card'), function (c) { return c.style.getPropertyValue('translate'); }).join(); };
+    for (var turn = 0; turn < 3; turn++) {
+      var was = dxs();
+      if (window.__ncBandRule) window.__ncBandRule();
+      if (window.__ncCentre) window.__ncCentre();
+      if (was === dxs()) break;
+    }
+    if (window.__ncBandRule) window.__ncBandRule();
+  }
   function announceFirstFit() {
     if (firstFitAnnounced) return;
     firstFitAnnounced = true;
     try { window.__ncFitDone = true; } catch (e) {}
     try { window.dispatchEvent(new Event('newcritic:fitdone')); } catch (e) {}
+    // (AND THE GATE WAITS ON THE LAST TURNS, 2026-11-12: the whole pass run
+    // again after the load's own resizes, latest-rail.js, is what had been
+    // settling the rows, ~2.5s as the page was shown; without it, on about
+    // one fresh load in six, every row stood 7–20 off. A few turns of the
+    // band's rule and the centring settle them for a few ms.)
+    afterRest(function () {
+      lastTurns();
+      try { window.__ncFitSeated = true; } catch (e) {}
+      try { window.dispatchEvent(new Event('newcritic:fitseated')); } catch (e) {}
+    });
   }
   function fitAllSteps() {
     // (read with nothing carried: the name's opening carries the band, the first rows and the column's words down by a
