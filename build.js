@@ -4981,11 +4981,14 @@ function renderFontGateScript({ fitted = true } = {}) {
       lifted = true;
       gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
+      // (stage two starts with the fade, not after it, in pieces as it is:
+      // the rows back behind their veil before a hand can reach the page's
+      // short foot — src/duo-panel-fit.js, STAGE TWO IN PIECES)
+      try { window.__ncLifted = true; } catch (err) {}
+      try { window.dispatchEvent(new Event('newcritic:lifted')); } catch (err) {}
       setTimeout(function () {
         root.classList.add('page-shown');
-        // The fade is over: the fitter may take the thread for the rest
-        // of the page (src/duo-panel-fit.js, THE PAGE IS FITTED IN TWO
-        // STAGES) without stalling the dissolve the reader is watching.
+        // The fade is over.
         try { window.__ncShown = true; } catch (err) {}
         try { window.dispatchEvent(new Event('newcritic:shown')); } catch (err) {}
       }, 400);

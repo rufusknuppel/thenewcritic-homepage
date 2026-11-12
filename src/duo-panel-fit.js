@@ -6595,6 +6595,7 @@
     if (st.getPropertyValue(k) !== v) st.setProperty(k, v);
   }
   function step(name, fn) {
+    if (pieceSteps) { if (!PIECES_SKIP.test(name)) pieceSteps.push([name, fn]); return; }
     var t0 = performance.now();
     try { fn(); } catch (e) {
       fitErrors.push(name + ': ' + (e && e.message ? e.message : e));
@@ -6837,12 +6838,25 @@
   }
   function fitAll() { whenStill(fitAllNow); }
   function fitAllNow() {
+    // (the window's timer is this pass's own: a resize's asked-for pass left
+    // to run behind one begun for another reason was a second whole pass on
+    // anything slower than this Mac, 2026-11-04 — CPU×3 15.2s → 12.3s shown)
+    clearTimeout(resizeTimer);
+    // (an ask that finds the world as stage two found it waits for nothing;
+    // one that does not takes the whole page in one pass, as ever)
+    var cut = false;
+    if (pieces) {
+      if (worldSig() === pieces.world) return;
+      pieces.stop();
+      cut = true;
+    }
+    if (stage === 1 && (window.__ncShown || window.__ncLifted) && lastWorld && lastWorld.end === worldSig()) { stageTwoInPieces(); return; }
     fitErrors.length = 0;
     fitTimes.length = 0;
     // A new pass: what the reviews remember of their last fit is void
     // (fitContra keys its second look on this).
     fitPassId++;
-    var veiled = stageBegin();
+    var veiled = stageBegin() || cut;
     // (STAGE TWO RUNS TWICE, 2026-09-30: a row's deks are seated off its
     // titles before seatRowTitles has seated them, so the first run over
     // a row is never its last — the rows stage one kept out of the
@@ -6977,10 +6991,8 @@
   // fewer than two — the hero and the pair under it, which carry the
   // three covers the gate holds for. Read off the unfitted layout, which
   // is near enough: the rows' heights are the sheet's, not the fitter's.
-  //   WHAT STAGE TWO COSTS: the thread, for the length of a whole pass,
-  // a breath after the page appears — a hover in those seconds answers
-  // late. Scrolling is the compositor's and is not held. It is the same
-  // 2.9s the reader used to spend looking at nothing.
+  //   WHAT STAGE TWO COSTS: nothing the reader can see, and the thread
+  // only in pieces — STAGE TWO IN PIECES, below (2026-11-04).
   //   ONLY ON A FRESH VISIT AT THE HEAD OF THE PAGE. A reload or a
   // back/forward is put back where the reader was, and a page with most
   // of its length missing cannot be scrolled to where that is; a hash
@@ -6991,16 +7003,15 @@
   // it leaves with removeProperty, so a settled page carries no trace.
   var stage = 0; // 0 nothing fitted · 1 the first screen, the rest out · 2 the whole page
   var laterEls = [];
-  var STAGE_NEVER = true;
   function canStage() {
-    // THE PAGE IS HELD UNTIL IT IS WHOLLY STILL (2026-10-01, at the
-    // user's word: "hid until totally stable"). The two stages showed
-    // the first screen early and fitted the rest behind a veil while
-    // the thread was held — the page seen, and dead to the hand, for
-    // the length of a pass. One pass over the whole page now, the
-    // gate lifting on its word; the staging below stays for a change
-    // of mind.
-    if (STAGE_NEVER) return false;
+    // (THE PAGE WAS HELD UNTIL IT WAS WHOLLY STILL from 2026-10-01 to
+    // 2026-11-04, at the user's word — "hid until totally stable" — because
+    // these two stages showed the first screen early and fitted the rest
+    // while the thread was held: the page seen, and dead to the hand, for
+    // the length of a pass. Stage two fits the rest in pieces now, the
+    // thread let go between them, and nothing in view moves: STAGE TWO IN
+    // PIECES, below. "Yes, try it", to whether the page could show before
+    // the lower rows are fitted.)
     if (window.__ncShown) return false;
     if (document.body.classList.contains('word-page')) return false;
     var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
@@ -7028,7 +7039,7 @@
     // there from the first paint: the rows kept run past the first
     // screen, so its seat is under the window and it rides the foot.)
     for (var sib = movs[0].nextElementSibling; sib; sib = sib.nextElementSibling) {
-      if (sib.classList.contains('sub-ticker--pin')) continue;
+      if (sib.classList.contains('sub-ticker--pin') || sib.classList.contains('latest-rail')) continue;
       if (out.indexOf(sib) < 0) out.push(sib);
     }
     // the later movements go first, so the one measure below is taken
@@ -7038,6 +7049,10 @@
     if (!body) return out;
     var floor = window.innerHeight * 1.5, wraps = 0, cut = false;
     [].forEach.call(body.children, function (el) {
+      // (the side column stays, every row's or none: out of the layout it
+      // read as nothing wide at the window's left, and the rows centred
+      // between it and the site's edge went a screen off, 2026-11-04)
+      if (el.classList.contains('latest-rail')) return;
       if (cut) { out.push(el); return; }
       if (!el.classList.contains('wrap')) return;
       wraps++;
@@ -7069,12 +7084,170 @@
     laterEls.forEach(function (el) { el.style.removeProperty('visibility'); });
     laterEls = [];
   }
+  // ---------- STAGE TWO IN PIECES (2026-11-04) ----------------------------
+  // What stage one has in view stands; only what comes back behind the veil
+  // is fitted. Each step of the pass runs as it always did, one at a time,
+  // with the thread let go whenever PIECE_MS has gone, so a hover answers
+  // and nothing painted between two steps has a reset still on it.
+  //   THE SCOPE is the page-wide query: for the length of a step
+  // document.querySelectorAll leaves out what stands in view — the rows
+  // stage one kept and the bands — and every step that deals cards finds the
+  // late ones alone. (A helper at its 72 call sites would be the tidier
+  // spelling; the sites stay as they are, as other work moves through them.)
+  // A row-walking step (seatRowGaps) still reads the kept rows for its
+  // first gap, and writes them what they have.
+  //   PIECES_SKIP are what the name, the column and the head hold, all fitted
+  // by stage one, none of them the late rows' to move.
+  //   THE VEIL comes off last, on what a whole pass's end says: the cards
+  // open at rest a tick after that word (card-open.js), their frames with
+  // them, and the band's rule and the rows' centring read those frames, each
+  // moving what the other reads — so a few turns, and then off.
+  //   A resize or the window's load during the pieces is held, and said once
+  // at their end: the column's own (gut) reads the first rows, and read
+  // half-fitted ones would slide the whole page in view.
+  //   A real change of the window or a face landing cuts it short: all of it
+  // back in the layout, one whole pass, the old way.
+  //   Measured, covers blocked: reveal at 1440 ~4.0s → ~1.9s (CPU×3 15.4s →
+  // 5.6s, 390 at ×4 7.4s → 2.7s), the longest hold after it ~0.2s where
+  // staging as it stood held ~2.3s, the rest in by ~4s. Every frame from the
+  // fade's end on is the finished first screen, pixel for pixel. Against one
+  // pass: the same page but for the first late row's seat (0.02px) and what
+  // rounds off it, picture frames a pixel or two either way, as they already
+  // vary row to row. Check any change here by value-diff at several widths
+  // AND a film at CPU×3: the 7 above never showed unthrottled.
+  var pieces = null, pieceSteps = null;
+  var PIECE_MS = 24;
+  // (the three dearest steps deal each row on its own, and run over a few at a time)
+  var PIECES_BY_ROWS = /^(seatSwapCols|seatSlides|seatRowTitles)$/, ROWS_AT_ONCE = 6;
+  var PIECES_SKIP = /^(fitStdWidth|wmSize|fitMastheadFill|fitMastheadFill#2|seatSectionHeads|fitSubscribeName|fitWordSpacers|railMeasure|fitGroundStops|fitToggle)$/;
+  var heldEvents = [];
+  ['resize', 'load'].forEach(function (ev) {
+    window.addEventListener(ev, function (e) {
+      if (!pieces) return;
+      if (ev === 'resize' && worldSig() !== pieces.world) return;
+      if (heldEvents.indexOf(ev) < 0) heldEvents.push(ev);
+      e.stopImmediatePropagation();
+    }, true);
+  });
+  function stageTwoInPieces() {
+    stage = 2;
+    fitErrors.length = 0;
+    fitTimes.length = 0;
+    var later = laterEls, live = true;
+    var cards = [], wraps = [], squares = [];
+    window.__ncFitting = true;
+    later.forEach(function (el) {
+      el.style.removeProperty('display');
+      el.style.setProperty('visibility', 'hidden', 'important');
+      if (el.classList.contains('wrap')) { wraps.push(el); el.style.setProperty('transition', 'none', 'important'); }
+      [].forEach.call(el.querySelectorAll('.latest-cell--ps, .latest-cell--contra, .duo-half--mega'), function (c) { cards.push(c); c.classList.add('fit-still'); });
+      [].forEach.call(el.querySelectorAll('.latest-cover-col--square'), function (c) { squares.push(c); c.style.transition = 'none'; });
+    });
+    var letGo = function () {
+      window.__ncFitting = false;
+      squares.forEach(function (el) { el.style.transition = ''; });
+      wraps.forEach(function (el) { el.style.removeProperty('transition'); });
+      void document.body.offsetHeight;
+      cards.forEach(function (el) { el.classList.remove('fit-still'); });
+    };
+    var inView = [].filter.call(document.querySelectorAll('main.has-mega > .page-rows > .movement > .movement-body > *'), function (el) {
+      return later.indexOf(el) < 0;
+    }).concat([].filter.call(document.querySelectorAll('.section-band, .dek-band, .page-banner, .reprint'), function (el) {
+      return !later.some(function (b) { return b.contains(el); });
+    }));
+    var pageAll = document.querySelectorAll;
+    var rowsLate = later.filter(function (el) { return el.classList.contains('wrap'); });
+    var notNow = [];
+    var scopedAll = function (sel) {
+      var list = pageAll.call(document, sel), out = [];
+      for (var i = 0; i < list.length; i++) {
+        var hit = false;
+        for (var k = 0; k < inView.length && !hit; k++) hit = inView[k].contains(list[i]);
+        for (var m = 0; m < notNow.length && !hit; m++) hit = notNow[m].contains(list[i]);
+        if (!hit) out.push(list[i]);
+      }
+      return out;
+    };
+    var channel = new MessageChannel(), next = null;
+    channel.port1.onmessage = function () { if (live && next) { var go = next; next = null; go(); } };
+    var pause = function (fn) { next = fn; channel.port2.postMessage(0); };
+    var plan = function (first, again) {
+      var q = [];
+      pieceSteps = q;
+      firstOfTwo = first; rowKAgain = again;
+      try { fitAllSteps(); } finally { pieceSteps = null; firstOfTwo = false; rowKAgain = false; }
+      return q;
+    };
+    fitPassId++;
+    freshMemos();
+    var q = plan(true, false), i = 0, phase = 1, halos = null;
+    var pump = function () {
+      if (!live) return;
+      var t0 = performance.now();
+      document.querySelectorAll = scopedAll;
+      try {
+        for (;;) {
+          if (i >= q.length) {
+            if (phase === 1) { phase = 2; rowKDirty = false; q = plan(false, false); i = 0; continue; }
+            if (phase === 2) { phase = 3; if (rowKDirty) { rowKDirty = false; q = plan(false, true); i = 0; continue; } }
+            if (phase === 3) { phase = 4; q = halos ? [halos] : []; i = 0; continue; }
+            break;
+          }
+          var s = q[i++];
+          // (the halos rounded once, on the rows' last seats: reseatHalos)
+          if (s[0] === 'reseatHalos' && phase < 3) { halos = s; continue; }
+          if (PIECES_BY_ROWS.test(s[0]) && rowsLate.length > ROWS_AT_ONCE) {
+            var from = s[2] || 0;
+            notNow = rowsLate.slice(0, from).concat(rowsLate.slice(from + ROWS_AT_ONCE));
+            try { step(s[0], s[1]); } finally { notNow = []; }
+            if (from + ROWS_AT_ONCE < rowsLate.length) { s[2] = from + ROWS_AT_ONCE; i--; }
+          } else step(s[0], s[1]);
+          if (performance.now() - t0 > PIECE_MS) break;
+        }
+      } finally { delete document.querySelectorAll; }
+      if (phase >= 4 && i >= q.length) { finish(); return; }
+      pause(pump);
+    };
+    var finish = function () {
+      pieces = null;
+      letGo();
+      laterEls = [];
+      var w = worldSig();
+      lastWorld = { start: w, end: w };
+      if (window.__ncStructure) window.__ncStructure();
+      var say = function (ev, then) { try { window.dispatchEvent(new Event(ev)); } catch (e) {} setTimeout(then, 0); };
+      say('newcritic:fit', function () {
+        say('newcritic:fitdone', function () {
+          announceSettled();
+          heldEvents.splice(0).forEach(function (ev) { try { window.dispatchEvent(new Event(ev)); } catch (e) {} });
+          // (the pass those asked for is this one; a real change of the window keeps its own)
+          if (worldSig() === lastWorld.end) clearTimeout(resizeTimer);
+          afterRest(function () {
+            lastTurns();
+            later.forEach(function (el) { el.style.removeProperty('visibility'); });
+            window.__ncUnveiled = performance.now();
+          });
+        });
+      });
+    };
+    pieces = {
+      world: lastWorld.end,
+      stop: function () {
+        live = false; next = null;
+        pieces = null;
+        heldEvents.length = 0;
+        letGo();
+      }
+    };
+    pump();
+  }
   function afterShown() {
     if (stage !== 1) return;
     var go = function () { if (stage === 1) fitAll(); };
     if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 400 });
     else setTimeout(go, 60);
   }
+  window.addEventListener('newcritic:lifted', afterShown);
   window.addEventListener('newcritic:shown', afterShown);
   // Never left half-fitted: if the gate's word is lost, the rest of the
   // page is fitted anyway.
@@ -7134,7 +7307,7 @@
     // (read with nothing carried: the name's opening carries the band, the first rows and the column's words down by a
     // translate of their own, and stands down for the pass, coming back once it is done — latest-rail.js, THE NAME
     // OPENS BIG; read carried, the rows were seated a growth's height higher)
-    if (window.__ncOpenClear) window.__ncOpenClear();
+    if (!pieceSteps && window.__ncOpenClear) window.__ncOpenClear();
     // THE BLOCKS ARE SEATED ON EVERY PAGE, and last. It hung off
     // fitSubscribeLines, which is a step about the offer's own lines
     // and does not run where there is no offer — so the archive's band
@@ -7147,7 +7320,7 @@
     // scroll's shrink of the name and the bird's flight onto the strip are
     // transforms the pass must not measure — cleared first, written again
     // last: band-mark.js, __ncPullClear / __ncPullApply)
-    if (window.__ncPullClear && !rowKAgain) window.__ncPullClear();
+    if (!pieceSteps && window.__ncPullClear && !rowKAgain) window.__ncPullClear();
     // The columns' 24 step into their blocks (fitTitleHalo) is a
     // transform the rest of the pass must not measure: cleared first,
     // written last, so every seat is taken off the untransformed box
@@ -7277,8 +7450,11 @@
     // lock-in).
     // (the structural classes that answer the sheet's former :has()
     // questions are re-read once the pass has settled the titles)
-    if (window.__ncStructure) window.__ncStructure();
-    try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
+    if (pieceSteps) step('structure', function () { if (window.__ncStructure) window.__ncStructure(); });
+    else {
+      if (window.__ncStructure) window.__ncStructure();
+      try { window.dispatchEvent(new Event('newcritic:fit')); } catch (e) {}
+    }
     step('seatInkBlocks', seatInkBlocks);
     step('seatDekBlocks', seatDekBlocks);
     step('seatMatterMeta', seatMatterMeta);
@@ -7316,13 +7492,13 @@
     step('seatSlides', seatSlides);
     step('seatPeekCorners', seatPeekCorners);
     // (a postscript's width changed this pass — seatRowTitles: once more)
-    if (rowKDirty && !rowKAgain && !firstOfTwo) {
+    if (!pieceSteps && rowKDirty && !rowKAgain && !firstOfTwo) {
       rowKDirty = false; rowKAgain = true;
       try { fitAllSteps(); } finally { rowKAgain = false; rowKDirty = false; }
     }
     // (the halos rounded again on the rows' last seats: reseatHalos)
     if (!rowKAgain) step('reseatHalos', reseatHalos);
-    if (window.__ncPullApply && !rowKAgain) window.__ncPullApply();
+    if (!pieceSteps && window.__ncPullApply && !rowKAgain) window.__ncPullApply();
   }
   var rowKDirty = false, rowKAgain = false;
   var firstOfTwo = false;
