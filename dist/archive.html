@@ -195,6 +195,8 @@
       lifted = true;
       gate.lifted = performance.now();
       root.classList.remove('fonts-loading');
+      try { window.__ncLifted = true; } catch (err) {}
+      try { window.dispatchEvent(new Event('newcritic:lifted')); } catch (err) {}
       setTimeout(function () {
         root.classList.add('page-shown');
         try { window.__ncShown = true; } catch (err) {}
@@ -304,7 +306,7 @@
   }).then(function () { gate.covers = performance.now(); });
   var fitDone = new Promise(function (resolve) {
     if (true) { resolve(); return; }
-    addEventListener('newcritic:fitdone', function () { resolve(); }, { once: true });
+    addEventListener('newcritic:fitseated', function () { resolve(); }, { once: true });
   }).then(function () { gate.fitted = performance.now(); });
   Promise.all([fontsDone, coversDone, fitDone]).then(go, go);
   setTimeout(go, 8000);
