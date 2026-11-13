@@ -3312,6 +3312,8 @@ window.ncOpenH = function () {
     if (band.style.getPropertyValue('--opb-tlmf') !== v) band.style.setProperty('--opb-tlmf', v);
   };
   var bandRule = function () {
+    // (not while the late rows are mid-fit, their pictures read for the band's own ends: said at their end — duo-panel-fit.js, STAGE TWO IN PIECES)
+    if (window.__ncFitting) return;
     var band = document.querySelector('main .op-band');
     if (band) band.classList.remove('rule-runs');
     if (window.innerWidth < 1024) { [].forEach.call(document.querySelectorAll('.page-rows .swap-body, .page-rows .swap-body-text'), function (t) { t.style.removeProperty('translate'); }); return; }
