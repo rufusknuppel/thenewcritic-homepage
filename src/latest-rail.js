@@ -3827,12 +3827,9 @@ window.ncOpenH = function () {
     var p = c.querySelector(':scope > .nc-pic-line');
     if (!p) return false;
     var a = p.getBoundingClientRect();
-    if (a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom) return true;
-    // (and on the title's own letters — "hovering the title of post should also engage the image flip", 2026-11-04)
-    var t = c.querySelector('.swap-body-title'), q = t && t.getBoundingClientRect();
-    if (!q || y < q.top || y > q.bottom) return false;
-    var r = document.createRange(); r.selectNodeContents(t);
-    return [].some.call(r.getClientRects(), function (l) { return x >= l.left && x <= l.right && y >= l.top && y <= l.bottom; });
+    // (the picture alone: the title's letters lit it too from 2026-11-04, "hovering the title of post should also engage the image
+    //  flip", until "Decouple the title hover from the image hover", 2026-11-15 — the title answers its own :hover, style.css)
+    return !!(a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom);
   }
   function run() {
     pending = false;
