@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=fe7880cb">
+<link rel="stylesheet" href="style.css?v=676993ce">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -13182,11 +13182,7 @@ window.ncOpenH = function () {
     var p = c.querySelector(':scope > .nc-pic-line');
     if (!p) return false;
     var a = p.getBoundingClientRect();
-    if (a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom) return true;
-    var t = c.querySelector('.swap-body-title'), q = t && t.getBoundingClientRect();
-    if (!q || y < q.top || y > q.bottom) return false;
-    var r = document.createRange(); r.selectNodeContents(t);
-    return [].some.call(r.getClientRects(), function (l) { return x >= l.left && x <= l.right && y >= l.top && y <= l.bottom; });
+    return !!(a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom);
   }
   function run() {
     pending = false;
