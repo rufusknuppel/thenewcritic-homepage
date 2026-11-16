@@ -34776,6 +34776,9 @@ html.is-about body:not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-p
 }
 /* THE BIRD OVER SUBSCRIBE (2026-11-15 — "Add bird on about page above Subscribe"): the front page's column bird, centred,
    in the page's white, between the magazine's line and the Subscribe card (build.js renderAboutPage) */
-html body.about-page .abo > .abo-bird{ display: block; width: 108px; margin: 54px auto 0; line-height: 0; }
+html body.about-page .abo > .abo-bird{ display: block; width: 108px; margin: 70px auto -4px; line-height: 0; } /* (72 of ground between the ink above and below it — "Make spacing above and below equal", "Want 72 on both sides", 2026-11-15: the line's descent takes 3 of the 69 over it, the card's own head room 77 under it) */
+/* (the homepage's size since — "Make bird as big as homepage": its column bird runs 93 at 1024, 131 at 1280, 154 at 1440,
+   223 at 1920, a line through them; the phone, which has none, keeps 108) */
+@media (min-width: 1024px){ html body.about-page .abo > .abo-bird{ width: round(nearest, calc(14.375vw - 53px), 1px); } }
 html body.about-page .abo > .abo-bird svg{ display: block; width: 100%; height: auto; overflow: visible; }
 html body.about-page .abo > .abo-bird svg path{ fill: #FDFDFB; }
