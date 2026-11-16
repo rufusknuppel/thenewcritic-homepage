@@ -6021,7 +6021,8 @@ function renderAboutPage(founders = []) {
   </div>
 </section>`,
     script: 'src/about.js',
-  });
+  }).replace('<html lang="en">', '<html lang="en" class="is-about">');
+  // (the root marked, as the archive's, for the page's teal ground — "Make the about page teal background", 2026-11-15)
 }
 
 // The four posts the archive's Editors' Picks block opened on — the
