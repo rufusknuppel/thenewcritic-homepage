@@ -6007,6 +6007,13 @@ function renderAboutPage(founders = []) {
         <p>Subscribe to our <a href="https://substack.com/@thenewcritic" rel="noopener" target="_blank">Substack</a>.<br>Follow us on <a href="https://www.instagram.com/the_newcritic/" rel="noopener" target="_blank">Instagram</a>.</p>
       </div>`),
   ].join('\n    ');
+  // THE BIRD OVER SUBSCRIBE (2026-11-15 — "Add bird on about page above Subscribe"): the front page's column bird
+  // (assets/bird-column.svg), in the page's ink, centred between the magazine's line and the first card
+  const birdSvg = fs.existsSync(path.join(__dirname, 'assets', 'bird-column.svg')) ? fs.readFileSync(path.join(__dirname, 'assets', 'bird-column.svg'), 'utf8') : '';
+  const birdVb = (birdSvg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/) || []).slice(1).map(Number);
+  const aboutBird = birdVb.length === 2
+    ? `<div class="abo-bird" aria-hidden="true"><svg viewBox="0 0 ${birdVb[0]} ${birdVb[1]}" focusable="false">${(birdSvg.match(/<path\b[^>]*\/>/g) || []).map((pa) => pa.replace(/\sfill="[^"]*"/, '')).join('')}</svg></div>`
+    : '';
   // (no line of the page's parts under the band since — "Remove the band under the top band on the about page",
   // 2026-10-25; the parts keep their ids, so about.html#masthead still lands on its part, src/about.js)
   return renderFrontPage({
@@ -6016,6 +6023,7 @@ function renderAboutPage(founders = []) {
     bodyClass: 'about-page',
     bodyHtml: `<section class="abo" aria-label="About The New Critic">
   <p class="abo-lead" id="about">The New Critic is the young American magazine. We publish essays, interviews, and criticism by and for generation z.</p>
+  ${aboutBird}
   <div class="abo-col">
     ${cards}
   </div>

@@ -17748,3 +17748,6 @@ html.is-about body:not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-p
     background-image: linear-gradient(90deg, #121417 15%, #5F9EA0 25%, #121417 35%, #121417 65%, #5F9EA0 75%, #121417 85%) !important;
   }
 }
+html body.about-page .abo > .abo-bird{ display: block; width: 108px; margin: 54px auto 0; line-height: 0; }
+html body.about-page .abo > .abo-bird svg{ display: block; width: 100%; height: auto; overflow: visible; }
+html body.about-page .abo > .abo-bird svg path{ fill: #FDFDFB; }
