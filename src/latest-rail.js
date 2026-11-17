@@ -2124,7 +2124,10 @@ var ncStemX = function () {
     var navBox = socG.closest('.rail-top') || socG, nq = navBox.getBoundingClientRect();
     var d0 = (nq.left + nq.right) / 2 - (r.left + r.right) / 2, lG = r.left + d0;
     var v = (t0 + d0 + Math.round(lG) - lG).toFixed(2) + 'px';
-    if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
+    // (and the rows centred again on where it now stands: centre() reads the rule between the columns off the bird, and a carry
+    // that came after the last centring — the band laid late, as on a return from About or the archive — left the rows set on
+    // where the column had stood, 54 to 223 off and the rule with them, "Something wrong here", 2026-11-16)
+    if (holdG.style.getPropertyValue('--rl-gtx') !== v) { holdG.style.setProperty('--rl-gtx', v); if (window.__ncCentre) window.__ncCentre(); }
   };
   main.classList.add('rail-is-shut');
   document.documentElement.classList.add('nc-rail-shut');

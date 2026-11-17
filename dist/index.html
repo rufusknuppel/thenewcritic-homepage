@@ -12105,7 +12105,7 @@ var ncStemX = function () {
     var navBox = socG.closest('.rail-top') || socG, nq = navBox.getBoundingClientRect();
     var d0 = (nq.left + nq.right) / 2 - (r.left + r.right) / 2, lG = r.left + d0;
     var v = (t0 + d0 + Math.round(lG) - lG).toFixed(2) + 'px';
-    if (holdG.style.getPropertyValue('--rl-gtx') !== v) holdG.style.setProperty('--rl-gtx', v);
+    if (holdG.style.getPropertyValue('--rl-gtx') !== v) { holdG.style.setProperty('--rl-gtx', v); if (window.__ncCentre) window.__ncCentre(); }
   };
   main.classList.add('rail-is-shut');
   document.documentElement.classList.add('nc-rail-shut');
