@@ -5979,7 +5979,7 @@ function renderAboutPage(founders = []) {
     const people = byRole.get(role).slice().sort((x, y) => surnameOf(x.name).localeCompare(surnameOf(y.name)));
     const names = people.map((p) => {
       const cls = `abo-name abo-name--${sideIdx++ % 2 === 0 ? 'left' : 'right'}`;
-      const face = p.photo ? `<img class="abo-face" src="${escapeHtml(p.photo)}" alt="" aria-hidden="true" loading="lazy" decoding="async">` : '';
+      const face = p.photo ? `<img class="abo-face" src="${escapeHtml(p.photo)}" alt="" aria-hidden="true" loading="eager" decoding="async">` : '';
       return p.href
         ? `<a class="${cls}" href="${escapeHtml(p.href)}" rel="noopener" target="_blank">${escapeHtml(p.name)}${face}</a>`
         : `<span class="${cls}">${escapeHtml(p.name)}${face}</span>`;

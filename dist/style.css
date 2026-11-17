@@ -15753,7 +15753,7 @@ body.about-page .abo-face{
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  border: 1px solid var(--nc-outline, #D6D6D6);
+  border: 0.5px solid var(--nc-outline, #D6D6D6);
   object-fit: cover;
   object-position: center;
   filter: grayscale(0.15) contrast(1.02);
