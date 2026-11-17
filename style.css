@@ -34737,3 +34737,14 @@ html body.about-page .abo > .abo-bird{ display: block; width: 108px; margin: 70p
 @media (min-width: 1024px){ html body.about-page .abo > .abo-bird{ width: round(nearest, calc(14.375vw - 53px), 1px); } }
 html body.about-page .abo > .abo-bird svg{ display: block; width: 100%; height: auto; overflow: visible; }
 html body.about-page .abo > .abo-bird svg path{ fill: #121417; } /* (the page's black since About went light again, 2026-11-17) */
+
+/* THE SAMPLES IN NEUE HAAS (2026-11-17 — "Try the body text samples as the Neue haas sentence case the same approximate
+   size as the current garamond"): the cards' preview paragraphs and the archive's preview column in Neue Haas Grotesk Text,
+   sentence case, its x-height near the Garamond's at 16 (Haas's lowercase stands about 0.52 of the em, the Garamond's 0.40,
+   so 13), the 19.2 line kept so the fit passes see the same rows */
+html body p.card-preview:not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-pg4):not(#nc-pg5):not(#nc-pg6):not(#nc-pg7):not(#nc-pg8):not(#nc-pg9):not(#nc-pg10):not(#nc-pg11):not(#nc-pg12):not(#nc-pg13):not(#nc-pg14):not(#nc-pg15):not(#nc-pg16):not(#nc-pg17):not(#nc-pg18):not(#nc-pg19):not(#nc-pg20):not(#nc-pg21):not(#nc-pg22):not(#nc-pg23):not(#nc-pg24):not(#nc-pg25):not(#nc-pg26):not(#nc-pg27):not(#nc-pg28):not(#nc-pg29):not(#nc-pg30):not(#nc-pg31), html body .arc-peek .arc-peek__p:not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-pg4):not(#nc-pg5):not(#nc-pg6):not(#nc-pg7):not(#nc-pg8):not(#nc-pg9):not(#nc-pg10):not(#nc-pg11):not(#nc-pg12):not(#nc-pg13):not(#nc-pg14):not(#nc-pg15):not(#nc-pg16):not(#nc-pg17):not(#nc-pg18):not(#nc-pg19):not(#nc-pg20):not(#nc-pg21):not(#nc-pg22):not(#nc-pg23):not(#nc-pg24):not(#nc-pg25):not(#nc-pg26):not(#nc-pg27):not(#nc-pg28):not(#nc-pg29):not(#nc-pg30):not(#nc-pg31){
+  font-family: neue-haas-grotesk-text, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-size: 13px !important; line-height: 19.2px !important; letter-spacing: 0.005em !important;
+  text-transform: none !important; font-weight: 400 !important;
+}
+html body :is(p.card-preview, .arc-peek .arc-peek__p):not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-pg4):not(#nc-pg5):not(#nc-pg6):not(#nc-pg7):not(#nc-pg8):not(#nc-pg9):not(#nc-pg10):not(#nc-pg11):not(#nc-pg12):not(#nc-pg13):not(#nc-pg14):not(#nc-pg15):not(#nc-pg16):not(#nc-pg17):not(#nc-pg18):not(#nc-pg19):not(#nc-pg20):not(#nc-pg21):not(#nc-pg22):not(#nc-pg23):not(#nc-pg24):not(#nc-pg25):not(#nc-pg26):not(#nc-pg27):not(#nc-pg28):not(#nc-pg29):not(#nc-pg30):not(#nc-pg31) :is(em, i){ font-family: inherit !important; font-style: italic !important; }
