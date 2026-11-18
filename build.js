@@ -4542,6 +4542,7 @@ function renderHomepage({ essays = [], postscripts = [], contras = [], archives 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${resizeHushScript()}
 <meta name="theme-color" content="#FDFDFB">
 <title>${escapeHtml(SITE_NAME)}</title>
 <meta name="description" content="${escapeHtml(SITE_TAGLINE)}. Criticism, essays, and conversation from the most urgent writers of our generation.">
@@ -5402,6 +5403,11 @@ function ogTags({ title, description, pagePath, image }) {
 function slimCss(css) {
   return fastCss(css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\n\s*\n+/g, '\n'));
 }
+// THE WINDOW DRAGGED IN ONE MOVE (src/resize-hush.js): first in <head>, so it
+// stands ahead of every resize listener and ResizeObserver on the page.
+function resizeHushScript() {
+  return `<script>${slimJs(fs.readFileSync(path.join(__dirname, 'src/resize-hush.js'), 'utf8'))}</script>`;
+}
 function slimJs(js) {
   return js.replace(/^[ \t]*\/\/[^\n]*\n/gm, '').replace(/\n\s*\n+/g, '\n');
 }
@@ -5479,6 +5485,7 @@ function renderPageShell({ currentKey, title, description, bodyHtml, extraScript
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+${resizeHushScript()}
 <meta name="theme-color" content="#FDFDFB">
 <title>${escapeHtml(title)} — ${escapeHtml(SITE_NAME)}</title>${description ? `
 <meta name="description" content="${escapeHtml(description)}">` : ''}

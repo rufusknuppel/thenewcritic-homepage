@@ -1928,7 +1928,7 @@ var ncStemX = function () {
   var resizeEcho = false, resizeTs = [], resized = false;
   addEventListener('resize', function (e) {
     if (resizeEcho) return;
-    if (e.isTrusted) resized = true;
+    if (e.isTrusted || window.__ncResizeSettle) resized = true;
     if (!resized) return;
     resizeTs.forEach(clearTimeout);
     resizeTs = [1200, 2600].map(function (ms) { return setTimeout(function () { resizeEcho = true; window.dispatchEvent(new Event('resize')); resizeEcho = false; }, ms); });

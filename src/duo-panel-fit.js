@@ -6937,8 +6937,14 @@
     });
     lastWorld = { start: world0, end: worldSig() };
     stageEnd(veiled);
+    var turned = firstFitAnnounced;
     announceFirstFit();
     if (stage === 2) announceSettled();
+    // (AND A RESIZE'S PASS ENDS ON THE LAST TURNS TOO, 2026-11-18: the load's first pass has them, announceFirstFit; a
+    // resize's did not, and one resize — a window maximised, snapped, or a drag now answered once at rest, resize-hush.js —
+    // left every row 8 off at 1440 → 1280 and the band's name and nav a few off with them. A drag had hidden it: each
+    // of its steps ran the rule and the centring again)
+    if (turned && turnsDue) { turnsDue = false; afterRest(lastTurns); }
   }
   // THE WHOLE PAGE IS FITTED (2026-09-24): said once, when a pass has
   // run over every row — the second stage's, or the first where there
@@ -10315,6 +10321,22 @@
       }
     });
     var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
+    // WRITE: the text, the head and the dek at this window's measure, before anything below reads them
+    // (the head's lines, the byline's margin and the room they leave the body, j.u9, were read at the measure the LAST
+    // pass wrote — a window's old width: after one resize from 1440 to 1100 a preview took 17 lines where its picture
+    // holds 15, its words 29 high, and only a drag's steps on the way had walked it in; a load's later passes had too,
+    // 2026-11-18)
+    function setMeasure(j) {
+      j.bt.style.flexShrink = '0';
+      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+      // (the head and the dek on the same measure, so they centre over the body — "make title columns slightly narrower", 2026-11-03)
+      if (j.slide && bandedInk() && window.innerWidth >= 1024) {
+        var hdW = j.body.querySelector(':scope > .swap-body-head');
+        if (hdW) hdW.style.setProperty('width', j.bt.style.width, 'important');
+        if (j.pdk) j.pdk.style.setProperty('width', j.bt.style.width, 'important');
+      }
+    }
+    twos.forEach(setMeasure);
     // READ: the deks' heights
     // THE BYLINE 18 UNDER THE TITLE'S INK (2026-10-04, at the user's word
     // — "Readjust metadata based on descenders in last line or not"): the
@@ -10382,16 +10404,7 @@
     // cut: snapPictures later lays the box on whole pixels, a
     // hair narrower, and a line cut full to the hair ran its
     // last word, …, out into a third column)
-    twos.forEach(function (j) {
-      j.bt.style.flexShrink = '0';
-      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
-      // (the head and the dek on the same measure, so they centre over the body — "make title columns slightly narrower", 2026-11-03)
-      if (j.slide && bandedInk() && window.innerWidth >= 1024) {
-        var hdW = j.body.querySelector(':scope > .swap-body-head');
-        if (hdW) hdW.style.setProperty('width', j.bt.style.width, 'important');
-        if (j.pdk) j.pdk.style.setProperty('width', j.bt.style.width, 'important');
-      }
-    });
+    twos.forEach(setMeasure);
     // READ: the lines
     twos.forEach(function (j) {
       j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
@@ -11233,8 +11246,12 @@
   // THE HEADS AT THE NAME'S SIZE — and the edit mode when a picture is
   // sized by hand: neither changes what worldSig reads, so the ask
   // forgets the last world and the pass runs)
-  window.__ncRequestFit = function () { lastWorld = null; requestFit(); };
+  // (not while the window is being dragged: the name's size follows the window, and band-mark.js asked for a whole pass at
+  // every step of a drag; the resize sent when the window comes to rest fits the page once, src/resize-hush.js, 2026-11-18)
+  window.__ncRequestFit = function () { if (window.__ncResizing && window.__ncResizing()) return; lastWorld = null; requestFit(); };
+  // (nor any other ask — a face landing at the new width, a picture — while the window moves: the pass at rest takes them in)
   function requestFit() {
+    if (window.__ncResizing && window.__ncResizing()) return;
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
   }
@@ -13426,8 +13443,9 @@
   }
   function refitAfterClose() { atRest(function () { step('fitTitleHalo#close', fitTitleHalo); }); }
   window.addEventListener('newcritic:closed', function () { whenStill(refitAfterClose); });
-  var resizeTimer;
+  var resizeTimer, turnsDue = false;
   window.addEventListener('resize', function(){
+    turnsDue = true;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(fitAll, 100);
   });

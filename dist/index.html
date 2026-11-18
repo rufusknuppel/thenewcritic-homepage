@@ -3,6 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function () {
+  if (/[?&]nohush\b/.test(location.search)) return; // (the old way, for an A/B)
+  var HUSH_MS = 160;
+  var root = document.documentElement;
+  var timer = 0, moving = false, held = [];
+  function settle() {
+    timer = 0; moving = false;
+    root.classList.remove('is-resizing');
+    window.__ncResizeSettle = true;
+    try { window.dispatchEvent(new Event('resize')); } finally { window.__ncResizeSettle = false; }
+    var q = held; held = [];
+    q.forEach(function (h) { try { h.cb.call(h.ro, h.entries, h.ro); } catch (e) { setTimeout(function () { throw e; }); } });
+  }
+  window.addEventListener('resize', function (e) {
+    if (!e.isTrusted && !moving) return;
+    e.stopImmediatePropagation();
+    if (!e.isTrusted) return;
+    if (!moving) { moving = true; root.classList.add('is-resizing'); }
+    clearTimeout(timer);
+    timer = setTimeout(settle, window.__ncHushMs || HUSH_MS);
+  }, true);
+  window.__ncResizing = function () { return moving; };
+  var RO = window.ResizeObserver;
+  if (!RO) return;
+  function Hushed(cb) {
+    var ro = new RO(function (entries, obs) {
+      if (moving) {
+        for (var i = 0; i < held.length; i++) if (held[i].ro === ro) { held[i].entries = entries; return; }
+        held.push({ ro: ro, cb: cb, entries: entries });
+        return;
+      }
+      cb.call(ro, entries, ro);
+    });
+    return ro;
+  }
+  Hushed.prototype = RO.prototype;
+  window.ResizeObserver = Hushed;
+})();
+</script>
 <meta name="theme-color" content="#FDFDFB">
 <title>The New Critic</title>
 <meta name="description" content="The Last Magazine. Criticism, essays, and conversation from the most urgent writers of our generation.">
@@ -5613,8 +5652,10 @@
     });
     lastWorld = { start: world0, end: worldSig() };
     stageEnd(veiled);
+    var turned = firstFitAnnounced;
     announceFirstFit();
     if (stage === 2) announceSettled();
+    if (turned && turnsDue) { turnsDue = false; afterRest(lastTurns); }
   }
   var settledAnnounced = false;
   function announceSettled() {
@@ -7586,6 +7627,16 @@
       }
     });
     var twos = jobs.filter(function (j) { return j.bt && j.cols2; });
+    function setMeasure(j) {
+      j.bt.style.flexShrink = '0';
+      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
+      if (j.slide && bandedInk() && window.innerWidth >= 1024) {
+        var hdW = j.body.querySelector(':scope > .swap-body-head');
+        if (hdW) hdW.style.setProperty('width', j.bt.style.width, 'important');
+        if (j.pdk) j.pdk.style.setProperty('width', j.bt.style.width, 'important');
+      }
+    }
+    twos.forEach(setMeasure);
     var heads = twos.map(function (j) {
       var hh = j.body.querySelector(':scope > .swap-body-head');
       var tt = hh && hh.querySelector('.swap-body-title'), mm = hh && hh.querySelector('.swap-body-meta');
@@ -7617,15 +7668,7 @@
     });
     twos.forEach(function (j) { if (!j.pdkH) j.pdk.style.display = 'none'; else j.pdk.style.removeProperty('display'); });
     twos.forEach(function (j) { j.natural = j.bt.getBoundingClientRect().height; });
-    twos.forEach(function (j) {
-      j.bt.style.flexShrink = '0';
-      j.bt.style.width = Math.max(0, (j.Bd.r - j.Bd.l) - j.bp.l - j.bp.r).toFixed(2) + 'px';
-      if (j.slide && bandedInk() && window.innerWidth >= 1024) {
-        var hdW = j.body.querySelector(':scope > .swap-body-head');
-        if (hdW) hdW.style.setProperty('width', j.bt.style.width, 'important');
-        if (j.pdk) j.pdk.style.setProperty('width', j.bt.style.width, 'important');
-      }
-    });
+    twos.forEach(setMeasure);
     twos.forEach(function (j) {
       j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - j.bp.t - j.bp.b - j.pdkH + 0.5) / j.blh));
       if (j.u9 != null) j.rows = Math.max(1, Math.floor((j.Bd.b - j.Bd.t - 5 * WHEN_GAP - j.u9) / j.blh));
@@ -8167,8 +8210,9 @@
     if (lastWorld && lastWorld.start === w && lastWorld.end === w) return;
     fitAll();
   }
-  window.__ncRequestFit = function () { lastWorld = null; requestFit(); };
+  window.__ncRequestFit = function () { if (window.__ncResizing && window.__ncResizing()) return; lastWorld = null; requestFit(); };
   function requestFit() {
+    if (window.__ncResizing && window.__ncResizing()) return;
     if (fitQuietTimer) clearTimeout(fitQuietTimer);
     fitQuietTimer = setTimeout(function () { fitQuietTimer = null; answerAsk(); }, FIT_QUIET);
   }
@@ -9346,8 +9390,9 @@
   }
   function refitAfterClose() { atRest(function () { step('fitTitleHalo#close', fitTitleHalo); }); }
   window.addEventListener('newcritic:closed', function () { whenStill(refitAfterClose); });
-  var resizeTimer;
+  var resizeTimer, turnsDue = false;
   window.addEventListener('resize', function(){
+    turnsDue = true;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(fitAll, 100);
   });
@@ -11984,7 +12029,7 @@ var ncStemX = function () {
   var resizeEcho = false, resizeTs = [], resized = false;
   addEventListener('resize', function (e) {
     if (resizeEcho) return;
-    if (e.isTrusted) resized = true;
+    if (e.isTrusted || window.__ncResizeSettle) resized = true;
     if (!resized) return;
     resizeTs.forEach(clearTimeout);
     resizeTs = [1200, 2600].map(function (ms) { return setTimeout(function () { resizeEcho = true; window.dispatchEvent(new Event('resize')); resizeEcho = false; }, ms); });
