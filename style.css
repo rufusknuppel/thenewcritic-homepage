@@ -34789,3 +34789,8 @@ html body :is(p.card-preview, .arc-peek .arc-peek__p):not(#nc-pg0):not(#nc-pg1):
    only from 1024 up till now: under it the scrim stood the paper's own colour and blanked the picture) */
 html body main.has-mega .duo-half--mega > .essay-acts.essay-acts:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11),
 html body main.has-mega .duo-half--mega > a.essay-acts.essay-acts:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11):is(:hover, :focus-visible){ background: none !important; background-color: transparent !important; outline: none !important; box-shadow: none !important; }
+
+/* NO SUBSCRIBE STRIP AT THE FOOT UNDER 1024 (2026-11-19 — "Why is this hidden", "Or there at all"): the foot's subscribe
+   strip, SUBSCRIBE in the paper's white since the page went light, stood unseen till the hand lit it; gone under 1024 as
+   it is from 1024 up */
+html body main.has-mega nav.sub-ticker.sub-ticker--foot:not(#nc-ft0):not(#nc-ft1):not(#nc-ft2):not(#nc-ft3):not(#nc-ft4):not(#nc-ft5):not(#nc-ft6):not(#nc-ft7):not(#nc-ft8):not(#nc-ft9):not(#nc-ft10):not(#nc-ft11){ display: none !important; }
