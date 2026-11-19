@@ -8025,6 +8025,23 @@
       });
       var above = isFinite(cFoot) ? cFoot : j.B.b;
       var tTop = above + ESSAY_TITLE_GAP;
+      if (ONE_COL.matches && !isFinite(cFoot)) {
+        var tms = j.st.querySelectorAll('.swap-line'), tml = tms[tms.length - 1];
+        var mEl = j.col.querySelector(':scope > .swap-meta');
+        mEl = mEl && (mEl.firstElementChild || mEl);
+        var tr = tml && (function () { var q = document.createRange(); q.selectNodeContents(tml); return [].filter.call(q.getClientRects(), function (x) { return x.width > 0; }).pop(); })();
+        var mr = mEl && (function () { var q = document.createRange(); q.selectNodeContents(mEl); return [].filter.call(q.getClientRects(), function (x) { return x.width > 0; })[0]; })();
+        var mt0 = mEl && (mEl.textContent || '').trim();
+        if (tr && mr && mt0) {
+          var tBase = tr.top + (tr.height - (fa + fd)) / 2 + fa;
+          var mcs = getComputedStyle(mEl);
+          measureCtx.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' ' + mcs.fontSize + ' ' + mcs.fontFamily;
+          var mm = measureCtx.measureText(mcs.textTransform === 'uppercase' ? mt0.toUpperCase() : mt0);
+          var mCap = mr.top + (mr.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent - mm.actualBoundingBoxAscent;
+          if (mCap - tBase > 0) tTop = above + (mCap - tBase);
+        }
+        measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      }
       j.inkShift = tTop - inkTop;
       var lns = j.st.querySelectorAll('.swap-line'), last = lns[lns.length - 1];
       var rl = document.createRange(); rl.selectNodeContents(last);

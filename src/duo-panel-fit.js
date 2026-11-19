@@ -10996,6 +10996,27 @@
       // between them for an afternoon is struck, 2026-09-23)
       var above = isFinite(cFoot) ? cFoot : j.B.b;
       var tTop = above + ESSAY_TITLE_GAP;
+      // THE PICTURE TO THE TITLE AS THE TITLE TO ITS META (2026-11-19 — "On smaller widths, want space between image
+      // and title to match between title and meta"): under 1024, where the title stands under the picture's own foot,
+      // its ink's top as far under the foot as the writer's capitals stand under the title's last baseline (29 at the
+      // phone's sizes, to the 18 it stood); the two move together, so the gap is read before the title is moved
+      if (ONE_COL.matches && !isFinite(cFoot)) {
+        var tms = j.st.querySelectorAll('.swap-line'), tml = tms[tms.length - 1];
+        var mEl = j.col.querySelector(':scope > .swap-meta');
+        mEl = mEl && (mEl.firstElementChild || mEl);
+        var tr = tml && (function () { var q = document.createRange(); q.selectNodeContents(tml); return [].filter.call(q.getClientRects(), function (x) { return x.width > 0; }).pop(); })();
+        var mr = mEl && (function () { var q = document.createRange(); q.selectNodeContents(mEl); return [].filter.call(q.getClientRects(), function (x) { return x.width > 0; })[0]; })();
+        var mt0 = mEl && (mEl.textContent || '').trim();
+        if (tr && mr && mt0) {
+          var tBase = tr.top + (tr.height - (fa + fd)) / 2 + fa;
+          var mcs = getComputedStyle(mEl);
+          measureCtx.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' ' + mcs.fontSize + ' ' + mcs.fontFamily;
+          var mm = measureCtx.measureText(mcs.textTransform === 'uppercase' ? mt0.toUpperCase() : mt0);
+          var mCap = mr.top + (mr.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent - mm.actualBoundingBoxAscent;
+          if (mCap - tBase > 0) tTop = above + (mCap - tBase);
+        }
+        measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      }
       j.inkShift = tTop - inkTop;
       // and the dek beside the title, its ink's top on the title's
       var lns = j.st.querySelectorAll('.swap-line'), last = lns[lns.length - 1];
