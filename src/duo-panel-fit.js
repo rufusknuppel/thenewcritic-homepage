@@ -7979,6 +7979,22 @@
             // (72 under the strip where the posts stand two to a row and no
             // name stands over them: TEN ROWS, 2026-09-30)
             var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
+            // THE FIRST PICTURE AS FAR UNDER THE RULE AS THE NAV STANDS OVER IT (2026-11-19 — "On phone/tablet widths,
+            // have the distance between the image and the rule match the distance between the nav items and the rule"):
+            // under 1024 the band's rule is its foot, and the rows open there; the first row's ink stands under it by
+            // what lies between the nav's baseline and the band's foot (25 at the phone's 16.9)
+            if (ONE_COL.matches) {
+              var nvA = document.querySelector('main .op-band .rail-top__a'), nvB = document.querySelector('main .op-band');
+              var nvR = nvA && [].filter.call(nvA.getClientRects(), function (x) { return x.width > 0; })[0];
+              if (nvR && nvB) {
+                var nvCs = getComputedStyle(nvA);
+                measureCtx.font = nvCs.fontStyle + ' ' + nvCs.fontWeight + ' ' + nvCs.fontSize + ' ' + nvCs.fontFamily;
+                var nvM = measureCtx.measureText('H');
+                var nvBase = nvR.top + (nvR.height - (nvM.fontBoundingBoxAscent + nvM.fontBoundingBoxDescent)) / 2 + nvM.fontBoundingBoxAscent;
+                var nvG = nvB.getBoundingClientRect().bottom - nvBase;
+                if (nvG > 0) firstAt = bandFoot + nvG;
+              }
+            }
             // (72 UNDER THE NAV'S INK, 2026-09-30, at the user's word: where
             // the rows stand, the first row's highest ink 72 under the
             // lowest ink of the band's list — its commas' tails — read off

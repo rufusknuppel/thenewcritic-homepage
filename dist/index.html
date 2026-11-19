@@ -6281,6 +6281,18 @@
               : document.querySelector('.page-rows > .sub-ticker--head') || body.querySelector(':scope > .sub-ticker');
             if (tk && tk.offsetHeight) bandFoot += tk.offsetHeight;
             var firstAt = bandFoot + (stacked ? ROWS_GAP : ROW_GAP);
+            if (ONE_COL.matches) {
+              var nvA = document.querySelector('main .op-band .rail-top__a'), nvB = document.querySelector('main .op-band');
+              var nvR = nvA && [].filter.call(nvA.getClientRects(), function (x) { return x.width > 0; })[0];
+              if (nvR && nvB) {
+                var nvCs = getComputedStyle(nvA);
+                measureCtx.font = nvCs.fontStyle + ' ' + nvCs.fontWeight + ' ' + nvCs.fontSize + ' ' + nvCs.fontFamily;
+                var nvM = measureCtx.measureText('H');
+                var nvBase = nvR.top + (nvR.height - (nvM.fontBoundingBoxAscent + nvM.fontBoundingBoxDescent)) / 2 + nvM.fontBoundingBoxAscent;
+                var nvG = nvB.getBoundingClientRect().bottom - nvBase;
+                if (nvG > 0) firstAt = bandFoot + nvG;
+              }
+            }
             var hbGone = hb && getComputedStyle(hb).visibility === 'hidden';
             if (stacked && !tk && hbGone) {
               var nmEl = document.querySelector('.site-nav--top .topbar-name');
