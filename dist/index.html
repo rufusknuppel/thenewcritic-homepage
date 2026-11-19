@@ -13295,6 +13295,46 @@ window.ncOpenH = function () {
   document.documentElement.addEventListener('mouseleave', function () { x = -1; ask(); });
   addEventListener('scroll', function () { if (x >= 0) ask(); }, { passive: true });
 })();
+(function () {
+  var ONE = window.matchMedia('(max-width: 1023.98px)');
+  var cx = null, last = null;
+  function base(el) {
+    var rg = document.createRange(); rg.selectNodeContents(el);
+    var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; }).pop();
+    if (!r) return -Infinity;
+    var cs = getComputedStyle(el);
+    cx = cx || document.createElement('canvas').getContext('2d');
+    cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    var m = cx.measureText('H');
+    return r.top + (r.height - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2 + m.fontBoundingBoxAscent;
+  }
+  function seat() {
+    var f = document.querySelector('main.has-mega ~ footer.nc-foot, body > footer.nc-foot');
+    if (!f) return;
+    if (!ONE.matches) { if (last != null) { f.style.removeProperty('margin-top'); last = null; } return; }
+    var nm = [].filter.call(f.querySelectorAll('.nc-foot__name svg'), function (s) { return s.getBoundingClientRect().width > 0; })[0];
+    var cards = document.querySelectorAll('.page-rows .duo-half--mega');
+    var card = cards[cards.length - 1];
+    if (!nm || !card) return;
+    var lo = -Infinity;
+    [].forEach.call(card.querySelectorAll('.swap-line, .swap-dek-ink, .swap-meta > span'), function (el) {
+      if (getComputedStyle(el).visibility === 'hidden') return;
+      lo = Math.max(lo, base(el));
+    });
+    if (!isFinite(lo)) return;
+    var mt = parseFloat(f.style.getPropertyValue('margin-top')) || 0;
+    var fr = f.getBoundingClientRect();
+    var air = nm.getBoundingClientRect().top - fr.top;
+    var want = mt + (lo + air) - fr.top;
+    if (last != null && Math.abs(want - last) < 0.25) return;
+    last = want;
+    f.style.setProperty('margin-top', want.toFixed(2) + 'px', 'important');
+  }
+  addEventListener('newcritic:fit', function () { setTimeout(seat, 0); }, { passive: true });
+  addEventListener('newcritic:settled', function () { setTimeout(seat, 0); }, { passive: true });
+  addEventListener('resize', function () { setTimeout(seat, 300); }, { passive: true });
+  addEventListener('load', function () { setTimeout(seat, 0); });
+})();
 
 </script>
 <script>
