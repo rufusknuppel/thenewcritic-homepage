@@ -61,7 +61,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=eb4b4f8c">
+<link rel="stylesheet" href="style.css?v=319c7203">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
@@ -13261,8 +13261,9 @@ window.ncOpenH = function () {
   var x = -1, y = -1, pending = false, lit = null, cards = null;
   function within(c) {
     var p = c.querySelector(':scope > .nc-pic-line');
-    if (!p) return false;
-    var a = p.getBoundingClientRect();
+    var a = p ? p.getBoundingClientRect() : window.__ncPicBox ? window.__ncPicBox(c) : null;
+    if (!a) return false;
+    if (!p) a = { left: a.l, right: a.r, top: a.t, bottom: a.b, width: a.r - a.l };
     return !!(a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom);
   }
   function run() {

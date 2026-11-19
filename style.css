@@ -34773,3 +34773,19 @@ html body :is(p.card-preview, .arc-peek .arc-peek__p):not(#nc-pg0):not(#nc-pg1):
     animation-range: calc(var(--tb-s) - 24px) var(--tb-s) !important;
   }
 }
+
+/* THE HAND ON THE PHONE'S WIDTH AS ON THE COMPUTER (2026-11-19 — "Can you make the mouse movements on this width the same
+   as would be on the computer?"): under 1024, where there is a mouse, a picture under it dims to the computer's 0.8 on
+   the computer's .3s (latest-rail.js lights the card from the picture's painted box there, no outline being laid), and
+   the title under it goes to the highlight on the same .3s, as the computer's does; the nav already did. A touch screen
+   (hover: none) keeps none of it */
+@media (hover: hover) and (max-width: 1023.98px){
+  html body main.has-mega .duo-half--mega h3.card-title.rx:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11)::before{ transition: filter 0.3s ease !important; }
+  html body main.has-mega .duo-half--mega.nc-lit h3.card-title.rx:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11)::before{ filter: var(--nc-pic-lit, brightness(0.8)) !important; }
+  html body main.has-mega .page-rows .duo-half--mega .swap-col .swap-title:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11),
+  html body main.has-mega .page-rows .duo-half--mega .swap-col .swap-title:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11) *{ transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease !important; }
+}
+/* (and no scrim over the picture under the hand at any width — NOTHING ON THE PICTURE UNDER THE HAND, 2026-10-22, held
+   only from 1024 up till now: under it the scrim stood the paper's own colour and blanked the picture) */
+html body main.has-mega .duo-half--mega > .essay-acts.essay-acts:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11),
+html body main.has-mega .duo-half--mega > a.essay-acts.essay-acts:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11):is(:hover, :focus-visible){ background: none !important; background-color: transparent !important; outline: none !important; box-shadow: none !important; }

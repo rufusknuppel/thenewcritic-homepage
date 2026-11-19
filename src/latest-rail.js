@@ -3828,8 +3828,11 @@ window.ncOpenH = function () {
   var x = -1, y = -1, pending = false, lit = null, cards = null;
   function within(c) {
     var p = c.querySelector(':scope > .nc-pic-line');
-    if (!p) return false;
-    var a = p.getBoundingClientRect();
+    // (under 1024 no outline is laid, the picture's line drawn on the picture itself: its painted box there — "make the
+    // mouse movements on this width the same as would be on the computer", 2026-11-19)
+    var a = p ? p.getBoundingClientRect() : window.__ncPicBox ? window.__ncPicBox(c) : null;
+    if (!a) return false;
+    if (!p) a = { left: a.l, right: a.r, top: a.t, bottom: a.b, width: a.r - a.l };
     // (the picture alone: the title's letters lit it too from 2026-11-04, "hovering the title of post should also engage the image
     //  flip", until "Decouple the title hover from the image hover", 2026-11-15 — the title answers its own :hover, style.css)
     return !!(a.width && x >= a.left && x <= a.right && y >= a.top && y <= a.bottom);
