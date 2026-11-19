@@ -3,6 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function () {
+  if (/[?&]nohush\b/.test(location.search)) return; // (the old way, for an A/B)
+  var HUSH_MS = 160;
+  var root = document.documentElement;
+  var timer = 0, moving = false, held = [];
+  function settle() {
+    timer = 0; moving = false;
+    root.classList.remove('is-resizing');
+    window.__ncResizeSettle = true;
+    try { window.dispatchEvent(new Event('resize')); } finally { window.__ncResizeSettle = false; }
+    var q = held; held = [];
+    q.forEach(function (h) { try { h.cb.call(h.ro, h.entries, h.ro); } catch (e) { setTimeout(function () { throw e; }); } });
+  }
+  window.addEventListener('resize', function (e) {
+    if (!e.isTrusted && !moving) return;
+    e.stopImmediatePropagation();
+    if (!e.isTrusted) return;
+    if (!moving) { moving = true; root.classList.add('is-resizing'); }
+    clearTimeout(timer);
+    timer = setTimeout(settle, window.__ncHushMs || HUSH_MS);
+  }, true);
+  window.__ncResizing = function () { return moving; };
+  var RO = window.ResizeObserver;
+  if (!RO) return;
+  function Hushed(cb) {
+    var ro = new RO(function (entries, obs) {
+      if (moving) {
+        for (var i = 0; i < held.length; i++) if (held[i].ro === ro) { held[i].entries = entries; return; }
+        held.push({ ro: ro, cb: cb, entries: entries });
+        return;
+      }
+      cb.call(ro, entries, ro);
+    });
+    return ro;
+  }
+  Hushed.prototype = RO.prototype;
+  window.ResizeObserver = Hushed;
+})();
+</script>
 <meta name="theme-color" content="#FDFDFB">
 <title>Archive — The New Critic</title>
 <meta name="description" content="Every post in The New Critic, by section, title to title.">
@@ -20,7 +59,7 @@
 <link rel="preconnect" href="https://substackcdn.com">
 <link rel="stylesheet" href="https://use.typekit.net/fnn8swo.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="style.css?v=d9674e6c">
+<link rel="stylesheet" href="style.css?v=f8495819">
 <style>:root{--colo-span:9.3564;--band-span:7.7356;--wm-space:0.3601;--bird-ar:0.9738}</style>
 <style>html.fonts-loading body{opacity:0}body{transition:opacity .25s ease}</style>
 <script>
