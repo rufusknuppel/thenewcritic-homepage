@@ -17718,3 +17718,19 @@ html body p.card-preview:not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not
   text-transform: none !important; font-weight: 400 !important;
 }
 html body :is(p.card-preview, .arc-peek .arc-peek__p):not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-pg4):not(#nc-pg5):not(#nc-pg6):not(#nc-pg7):not(#nc-pg8):not(#nc-pg9):not(#nc-pg10):not(#nc-pg11):not(#nc-pg12):not(#nc-pg13):not(#nc-pg14):not(#nc-pg15):not(#nc-pg16):not(#nc-pg17):not(#nc-pg18):not(#nc-pg19):not(#nc-pg20):not(#nc-pg21):not(#nc-pg22):not(#nc-pg23):not(#nc-pg24):not(#nc-pg25):not(#nc-pg26):not(#nc-pg27):not(#nc-pg28):not(#nc-pg29):not(#nc-pg30):not(#nc-pg31) em,html body :is(p.card-preview, .arc-peek .arc-peek__p):not(#nc-pg0):not(#nc-pg1):not(#nc-pg2):not(#nc-pg3):not(#nc-pg4):not(#nc-pg5):not(#nc-pg6):not(#nc-pg7):not(#nc-pg8):not(#nc-pg9):not(#nc-pg10):not(#nc-pg11):not(#nc-pg12):not(#nc-pg13):not(#nc-pg14):not(#nc-pg15):not(#nc-pg16):not(#nc-pg17):not(#nc-pg18):not(#nc-pg19):not(#nc-pg20):not(#nc-pg21):not(#nc-pg22):not(#nc-pg23):not(#nc-pg24):not(#nc-pg25):not(#nc-pg26):not(#nc-pg27):not(#nc-pg28):not(#nc-pg29):not(#nc-pg30):not(#nc-pg31) i{ font-family: inherit !important; font-style: italic !important; }
+@keyframes nc-tb-in { from { opacity: 0; visibility: hidden; } to { opacity: 1; visibility: visible; } }
+@keyframes nc-tb-out { from { filter: opacity(1); visibility: visible; } to { filter: opacity(0); visibility: hidden; } }
+@media (min-width: 640px) and (max-width: 1023.98px){
+  :root{ --tb-s: calc(1.6875vw + 96.25vw / 7.772); }
+  html body:not(.archive-page):not(.about-page) a.content-name:not(#nc-tb0):not(#nc-tb1):not(#nc-tb2):not(#nc-tb3):not(#nc-tb4):not(#nc-tb5):not(#nc-tb6):not(#nc-tb7):not(#nc-tb8){ display: block !important; }
+  html body:not(.archive-page):not(.about-page) main.has-mega:not(#nc-tb0):not(#nc-tb1):not(#nc-tb2):not(#nc-tb3):not(#nc-tb4):not(#nc-tb5):not(#nc-tb6):not(#nc-tb7):not(#nc-tb8){ padding-top: var(--tb-s) !important; }
+  html body:not(.archive-page):not(.about-page) main .op-track > .op-band > a.rail-tlm:not(#nc-tb0):not(#nc-tb1):not(#nc-tb2):not(#nc-tb3):not(#nc-tb4):not(#nc-tb5):not(#nc-tb6):not(#nc-tb7):not(#nc-tb8){
+    display: block !important; position: absolute !important; left: 3.75vw !important; top: 50% !important; translate: 0 -50% !important;
+    animation: nc-tb-out linear both !important; animation-timeline: scroll(root) !important;
+    animation-range: calc(var(--tb-s) - 48px) calc(var(--tb-s) - 24px) !important; 
+  }
+  html body:not(.archive-page):not(.about-page) main .op-track > .op-band > a.op-tnc:not(#nc-tb0):not(#nc-tb1):not(#nc-tb2):not(#nc-tb3):not(#nc-tb4):not(#nc-tb5):not(#nc-tb6):not(#nc-tb7):not(#nc-tb8) > .tnc-words{
+    animation: nc-tb-in linear both !important; animation-timeline: scroll(root) !important;
+    animation-range: calc(var(--tb-s) - 24px) var(--tb-s) !important;
+  }
+}
