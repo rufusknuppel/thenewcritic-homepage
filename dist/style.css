@@ -17743,3 +17743,13 @@ html body :is(p.card-preview, .arc-peek .arc-peek__p):not(#nc-pg0):not(#nc-pg1):
 html body main.has-mega .duo-half--mega > .essay-acts.essay-acts:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11),
 html body main.has-mega .duo-half--mega > a.essay-acts.essay-acts:not(#nc-hv0):not(#nc-hv1):not(#nc-hv2):not(#nc-hv3):not(#nc-hv4):not(#nc-hv5):not(#nc-hv6):not(#nc-hv7):not(#nc-hv8):not(#nc-hv9):not(#nc-hv10):not(#nc-hv11):is(:hover, :focus-visible){ background: none !important; background-color: transparent !important; outline: none !important; box-shadow: none !important; }
 html body main.has-mega nav.sub-ticker.sub-ticker--foot:not(#nc-ft0):not(#nc-ft1):not(#nc-ft2):not(#nc-ft3):not(#nc-ft4):not(#nc-ft5):not(#nc-ft6):not(#nc-ft7):not(#nc-ft8):not(#nc-ft9):not(#nc-ft10):not(#nc-ft11){ display: none !important; }
+@property --tb-in { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@keyframes nc-tb-pinch { from { --tb-in: 3.75vw; } to { --tb-in: 1.875vw; } }
+@media (min-width: 640px) and (max-width: 1023.98px){
+  html body:not(.archive-page):not(.about-page) main .op-track > .op-band:not(#nc-tp0):not(#nc-tp1):not(#nc-tp2):not(#nc-tp3):not(#nc-tp4):not(#nc-tp5):not(#nc-tp6):not(#nc-tp7):not(#nc-tp8):not(#nc-tp9){
+    animation: nc-tb-pinch linear both !important; animation-timeline: scroll(root) !important;
+    animation-range: 0px var(--tb-s) !important;
+    padding-left: var(--tb-in, 3.75vw) !important; padding-right: var(--tb-in, 3.75vw) !important;
+  }
+  html body:not(.archive-page):not(.about-page) main .op-track > .op-band > a.rail-tlm:not(#nc-tp0):not(#nc-tp1):not(#nc-tp2):not(#nc-tp3):not(#nc-tp4):not(#nc-tp5):not(#nc-tp6):not(#nc-tp7):not(#nc-tp8):not(#nc-tp9){ left: var(--tb-in, 3.75vw) !important; }
+}

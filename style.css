@@ -34794,3 +34794,20 @@ html body main.has-mega .duo-half--mega > a.essay-acts.essay-acts:not(#nc-hv0):n
    strip, SUBSCRIBE in the paper's white since the page went light, stood unseen till the hand lit it; gone under 1024 as
    it is from 1024 up */
 html body main.has-mega nav.sub-ticker.sub-ticker--foot:not(#nc-ft0):not(#nc-ft1):not(#nc-ft2):not(#nc-ft3):not(#nc-ft4):not(#nc-ft5):not(#nc-ft6):not(#nc-ft7):not(#nc-ft8):not(#nc-ft9):not(#nc-ft10):not(#nc-ft11){ display: none !important; }
+
+/* THE BAND PINCHES OUT AS THE NAME LEAVES (2026-11-19 — "On widths above phone with the big wordmark displayed, have the
+   nav work in the same way, pinching out/in on scroll"): from 640 to 1024, as on the computer, The Last Magazine and the
+   nav's end stand in from the window's sides under the opening name and slide out to the rule's ends as the name scrolls
+   away, back in as it returns — 3.75% of the window in at the page's top, 1.875% (the rule's and the name's margin) where
+   the band pins; a custom length on the band the scroll drives, which its !important padding and The Last Magazine's
+   seat read */
+@property --tb-in { syntax: '<length>'; inherits: true; initial-value: 0px; }
+@keyframes nc-tb-pinch { from { --tb-in: 3.75vw; } to { --tb-in: 1.875vw; } }
+@media (min-width: 640px) and (max-width: 1023.98px){
+  html body:not(.archive-page):not(.about-page) main .op-track > .op-band:not(#nc-tp0):not(#nc-tp1):not(#nc-tp2):not(#nc-tp3):not(#nc-tp4):not(#nc-tp5):not(#nc-tp6):not(#nc-tp7):not(#nc-tp8):not(#nc-tp9){
+    animation: nc-tb-pinch linear both !important; animation-timeline: scroll(root) !important;
+    animation-range: 0px var(--tb-s) !important;
+    padding-left: var(--tb-in, 3.75vw) !important; padding-right: var(--tb-in, 3.75vw) !important;
+  }
+  html body:not(.archive-page):not(.about-page) main .op-track > .op-band > a.rail-tlm:not(#nc-tp0):not(#nc-tp1):not(#nc-tp2):not(#nc-tp3):not(#nc-tp4):not(#nc-tp5):not(#nc-tp6):not(#nc-tp7):not(#nc-tp8):not(#nc-tp9){ left: var(--tb-in, 3.75vw) !important; }
+}
