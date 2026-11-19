@@ -7650,6 +7650,25 @@
       return rb - m.fontBoundingBoxDescent + m.actualBoundingBoxDescent;
     } catch (e) { return rb; }
   }
+  // (THE GAP UNDER THE DEK, 2026-11-19: a phone's row's words' last baseline — the lowest of its title's, its meta's
+  // and its dek's — read as the title's is, off the line's box and the face's own ascent and descent)
+  var baseCtx = null;
+  function wordsBase(row) {
+    var best = -Infinity;
+    [].forEach.call(row.querySelectorAll('.swap-line, .swap-dek-ink, .swap-meta > span'), function (el) {
+      if (getComputedStyle(el).visibility === 'hidden') return;
+      var rg = document.createRange(); rg.selectNodeContents(el);
+      var r = [].filter.call(rg.getClientRects(), function (x) { return x.width > 0; }).pop();
+      if (!r) return;
+      var cs = getComputedStyle(el);
+      baseCtx = baseCtx || document.createElement('canvas').getContext('2d');
+      baseCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var m = baseCtx.measureText('H'), fa = m.fontBoundingBoxAscent, fd = m.fontBoundingBoxDescent;
+      var b = r.top + (r.height - (fa + fd)) / 2 + fa;
+      if (b > best) best = b;
+    });
+    return best;
+  }
   function rowInk(row) {
     var t = Infinity, b = -Infinity;
     var inked = bandedInk();
@@ -7922,7 +7941,7 @@
       // the moves of the rows over it — acc, the flow's — so a pair's
       // second card can be drawn up beside the first and the row under
       // the pair spaced from the lower of the two, all in one pass)
-      var acc = 0, prevFoot = null, prevPic = null, cols = [];
+      var acc = 0, prevFoot = null, prevPic = null, cols = [], prevBase = null;
       // (THE LATEST IN ONE STACK, 2026-09-28: style.css says so on the
       // movement from 1024 up; the hand-set offsets down the page are
       // not read there)
@@ -8250,6 +8269,10 @@
           // (54 between the posts on the wide screen since, the rule between them gone — "Have 54px between posts",
           // 2026-10-20: POST_GAP)
           rowDelta = (stacked && row.classList.contains('card--row-a') ? (bandedInk() ? POST_GAP : row.classList.contains('card--sec-first') ? SECTION_GAP : ROW_STEP) : COURIER_GAP) - (curT - prevFoot); hasJob = true;
+          // THE GAP UNDER THE DEK AS THE GAPS OVER IT (2026-11-19 — "Match that gap with the gap below the dek"): on the
+          // phone the next picture stands as far under the row's last baseline as the title stands under its picture
+          // and the meta under the title (seatSwapCols, window.__ncOneColGap), not 36 under the dek's line box
+          if (ONE_COL.matches && prevBase != null && window.__ncOneColGap > 0) rowDelta = (prevBase + window.__ncOneColGap) - curT;
           // (a picture sharing width with the last one's clears only the
           // ink over it: the last picture by 36, and its words by 36 only
           // where they stand over it — 36 AROUND THE INK)
@@ -8293,6 +8316,7 @@
         if (hasJob) jobs.push({ el: el, delta: rowDelta, m: parseFloat(getComputedStyle(el).marginTop) || 0, exact: stepped });
         var foot = Math.max(cur ? cur.b : -Infinity, ink ? ink.b : -Infinity) + acc + rowDelta;
         prevFoot = stepped && prevFoot != null ? Math.max(prevFoot, foot) : (isFinite(foot) ? foot : null);
+        if (ONE_COL.matches) { var wb = wordsBase(row); prevBase = isFinite(wb) ? wb + acc + rowDelta : null; }
         if (pic && isFinite(foot)) cols.push({ side: side, foot: foot });
         prevPic = pic ? { t: pic.t + acc + rowDelta, b: pic.b + acc + rowDelta, l: pic.l, r: pic.r } : null;
         acc += rowDelta;
@@ -11013,7 +11037,7 @@
           measureCtx.font = mcs.fontStyle + ' ' + mcs.fontWeight + ' ' + mcs.fontSize + ' ' + mcs.fontFamily;
           var mm = measureCtx.measureText(mcs.textTransform === 'uppercase' ? mt0.toUpperCase() : mt0);
           var mCap = mr.top + (mr.height - (mm.fontBoundingBoxAscent + mm.fontBoundingBoxDescent)) / 2 + mm.fontBoundingBoxAscent - mm.actualBoundingBoxAscent;
-          if (mCap - tBase > 0) tTop = above + (mCap - tBase);
+          if (mCap - tBase > 0) { tTop = above + (mCap - tBase); window.__ncOneColGap = mCap - tBase; }
         }
         measureCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
       }
